@@ -31,3 +31,20 @@ generate_jni("native_unit_test_support_jni") {
     "java/src/org/chromium/chrome/browser/ui/side_panel/WindowScopedSidePanelRegistryBridgeNativeUnitTestSupport.java",
   ]
 }
+
+source_set("browser_test_support") {
+  testonly = true
+  sources = [
+    "side_panel_android_browser_test_base.cc",
+    "side_panel_android_browser_test_base.h",
+  ]
+  deps = [
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/side_panel/android",
+    "//chrome/test:test_support_ui_android",
+    "//components/tabs:public",
+    "//testing/gtest",
+  ]
+}

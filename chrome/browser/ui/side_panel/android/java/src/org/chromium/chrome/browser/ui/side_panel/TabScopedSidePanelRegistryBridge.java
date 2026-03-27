@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tab.TabObserver;
 
 /** JNI bridge for a tab-scoped {@code SidePanelRegistry}. */
 @NullMarked
-public interface TabScopedSidePanelRegistryBridge extends TabObserver {}
+public interface TabScopedSidePanelRegistryBridge extends UserData {}

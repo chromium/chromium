@@ -24,13 +24,19 @@ public final class SidePanelRegistryBridgeFactory {
         return new WindowScopedSidePanelRegistryBridgeImpl();
     }
 
-    /** Creates a {@link TabScopedSidePanelRegistryBridge}. */
-    @Nullable
-    public static TabScopedSidePanelRegistryBridge createTabScopedBridge(Tab tab) {
+    /**
+     * Creates a {@link TabScopedSidePanelRegistryBridge} and associate it with the given {@link
+     * Tab}'s {@code UserDataHost}.
+     *
+     * <p>This method doesn't return the created bridge as its lifecycle will be managed by the
+     * {@link Tab}.
+     */
+    public static void createTabScopedBridge(Tab tab) {
         if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
-            return null;
+            return;
         }
 
-        return new TabScopedSidePanelRegistryBridgeImpl(tab);
+        var bridge = new TabScopedSidePanelRegistryBridgeImpl(tab);
+        tab.getUserDataHost().setUserData(TabScopedSidePanelRegistryBridge.class, bridge);
     }
 }

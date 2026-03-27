@@ -6,11 +6,6 @@
 
 #include <memory>
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -19,9 +14,8 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
-#include "chrome/test/base/android/android_browser_test.h"
+#include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 #include "content/public/test/browser_test.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -50,62 +44,13 @@ std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(SidePanelEntryKey key) {
   return std::make_unique<SidePanelEntry>(key, create_content_callback,
                                           default_content_width_callback);
 }
-
-BrowserWindowInterface* GetBrowserWindow() {
-  std::vector<BrowserWindowInterface*> windows =
-      GetAllBrowserWindowInterfaces();
-  EXPECT_EQ(1u, windows.size())
-      << "We don't expect more than one window in this test.";
-  return windows[0];
-}
 }  // namespace
 
-class SidePanelCoordinatorAndroidBrowserTest : public AndroidBrowserTest {
- public:
-  SidePanelCoordinatorAndroidBrowserTest() {
-    // Note:
-    //
-    // Java code reads the cached `kEnableAndroidSidePanel` flag because we
-    // use this flag to decide whether to inflate the main layout that contains
-    // the side panel container, which happens _before_ the native library is
-    // loaded.
-    //
-    // As of Mar 25, 2026, there was no way to override a cached flag in native
-    // browser tests, so http://crrev.com/c/7689838 made the default value of
-    // the cached flag `true` in tests.
-    //
-    // However, we still need to explicitly enable the flag here:
-    //
-    // On a newly installed ChromeBrowserTests APK, the `SharedPreferences`
-    // backing the cached flag is empty so http://crrev.com/c/7689838 makes the
-    // test pass the 1st run.
-    //
-    // After the 1st run, the `SharedPreferences` will contain the key for the
-    // cached flag, but the default value of the cached flag won't be persisted.
-    // If we don't explicitly enable the flag here, the cached flag value will
-    // be `false` on subsequent runs and the tests will fail.
-    feature_list_.InitAndEnableFeature(
-        chrome::android::kEnableAndroidSidePanel);
-  }
-
-  ~SidePanelCoordinatorAndroidBrowserTest() override = default;
-
-  void SetUp() override {
-    // Despite the flag setup in the constructor, not all bots can see the
-    // flag's "default value in tests". For example, bots with
-    // "is_chrome_branded=true" don't read the "default value in tests". For
-    // more details, please see `CachedFlag.java`.
-    //
-    // Here we'll do a final check of the flag and skip all tests if the flag
-    // isn't enabled in tests.
-    if (!AndroidSidePanelEnabledFn::IsEnabled()) {
-      GTEST_SKIP() << "Android Side Panel is disabled";
-    }
-    AndroidBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
+class SidePanelCoordinatorAndroidBrowserTest
+    : public SidePanelAndroidBrowserTestBase {
+ protected:
+  using SidePanelAndroidBrowserTestBase::GetActiveTab;
+  using SidePanelAndroidBrowserTestBase::GetBrowserWindow;
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,

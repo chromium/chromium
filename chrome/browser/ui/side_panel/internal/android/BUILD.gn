@@ -47,6 +47,7 @@ android_library("java") {
   ]
 
   deps = [
+    "//base:base_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
@@ -90,7 +91,10 @@ source_set("unit_tests") {
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "side_panel_coordinator_android_browsertest.cc" ]
+  sources = [
+    "side_panel_coordinator_android_browsertest.cc",
+    "side_panel_registry_android_browsertest.cc",
+  ]
   deps = [
     ":android",
     "//chrome/browser/ui/browser_window",
@@ -98,7 +102,8 @@ source_set("browser_tests") {
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",
-    "//chrome/test:test_support",
+    "//chrome/browser/ui/side_panel/test/android:browser_test_support",
+    "//components/tabs:public",
     "//content/test:test_support",
     "//testing/gtest",
   ]

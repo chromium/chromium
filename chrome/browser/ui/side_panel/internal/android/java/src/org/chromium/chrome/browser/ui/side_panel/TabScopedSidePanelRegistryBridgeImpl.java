@@ -10,32 +10,47 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Implements {@link TabScopedSidePanelRegistryBridge}.
- *
- * <p>{@link TabScopedSidePanelRegistryBridge} is a {@link
- * org.chromium.chrome.browser.tab.TabObserver}. This class extends {@link EmptyTabObserver} to only
- * implement {@code TabObserver} methods we care about.
- */
+/** Implements {@link TabScopedSidePanelRegistryBridge}. */
 @NullMarked
-final class TabScopedSidePanelRegistryBridgeImpl extends EmptyTabObserver
-        implements TabScopedSidePanelRegistryBridge {
+final class TabScopedSidePanelRegistryBridgeImpl implements TabScopedSidePanelRegistryBridge {
+
+    private final EmptyTabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onInitialized(Tab tab, @Nullable String appId) {
+                    createNativePtr(tab);
+                }
+
+                @Override
+                public void onDestroyed(Tab tab) {
+                    destroyNativePtr();
+                }
+            };
+
+    private @Nullable Tab mTab;
     private long mNativeTabScopedSidePanelRegistryBridge;
 
     TabScopedSidePanelRegistryBridgeImpl(Tab tab) {
-        createNativePtr(tab);
+        mTab = tab;
+        mTab.addObserver(mTabObserver);
     }
 
     @VisibleForTesting
     TabScopedSidePanelRegistryBridgeImpl() {}
 
     @Override
-    public void onDestroyed(Tab tab) {
+    public void destroy() {
+        // In some cases mTabObserver#onDestroyed() isn't called, so we'll call destroyNativePtr()
+        // here as part of UserData#destroy() implementation.
         destroyNativePtr();
-        tab.removeObserver(this);
+
+        if (mTab != null) {
+            mTab.removeObserver(mTabObserver);
+        }
     }
 
     @VisibleForTesting
