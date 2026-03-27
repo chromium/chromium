@@ -78,6 +78,19 @@
 namespace {
 const size_t kMaxURLDisplayChars = 32 * 1024;
 const CGFloat kSnackbarBottomMargin = 10;
+
+// Converts ComposeboxEntrypoint to ContextualSearchSource.
+contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
+    ComposeboxEntrypoint entrypoint) {
+  switch (entrypoint) {
+    case ComposeboxEntrypoint::kNTPAIMButton:
+      return contextual_search::ContextualSearchSource::kNewTabPage;
+    case ComposeboxEntrypoint::kNTPFakebox:
+    case ComposeboxEntrypoint::kOther:
+      return contextual_search::ContextualSearchSource::kOmnibox;
+  }
+}
+
 }  // namespace
 
 @interface ComposeboxInputPlateCoordinator () <
@@ -173,7 +186,7 @@ const CGFloat kSnackbarBottomMargin = 10;
 
     contextualSearchSession = _contextualService->CreateSession(
         std::move(query_controller_config_params),
-        contextual_search::ContextualSearchSource::kOmnibox,
+        ContextualSearchSourceFromEntrypoint(_entrypoint),
         lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
   }
 
