@@ -661,6 +661,7 @@ targets.binaries.script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "pyunit",
 )
 
 targets.binaries.script(
@@ -678,6 +679,7 @@ targets.binaries.script(
     resultdb = targets.resultdb(
         enable = True,
     ),
+    module_scheme = "pyunit",
 )
 
 targets.binaries.windowed_test_launcher(
