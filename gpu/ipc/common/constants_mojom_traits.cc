@@ -35,39 +35,29 @@ gpu::mojom::Error EnumTraits<gpu::mojom::Error, gpu::error::Error>::ToMojom(
 }
 
 // static
-bool EnumTraits<gpu::mojom::Error, gpu::error::Error>::FromMojom(
-    gpu::mojom::Error input,
-    gpu::error::Error* out) {
+gpu::error::Error EnumTraits<gpu::mojom::Error, gpu::error::Error>::FromMojom(
+    gpu::mojom::Error input) {
   switch (input) {
     case gpu::mojom::Error::kNoError:
-      *out = gpu::error::kNoError;
-      return true;
+      return gpu::error::kNoError;
     case gpu::mojom::Error::kInvalidSize:
-      *out = gpu::error::kInvalidSize;
-      return true;
+      return gpu::error::kInvalidSize;
     case gpu::mojom::Error::kOutOfBounds:
-      *out = gpu::error::kOutOfBounds;
-      return true;
+      return gpu::error::kOutOfBounds;
     case gpu::mojom::Error::kUnknownCommand:
-      *out = gpu::error::kUnknownCommand;
-      return true;
+      return gpu::error::kUnknownCommand;
     case gpu::mojom::Error::kInvalidArguments:
-      *out = gpu::error::kInvalidArguments;
-      return true;
+      return gpu::error::kInvalidArguments;
     case gpu::mojom::Error::kLostContext:
-      *out = gpu::error::kLostContext;
-      return true;
+      return gpu::error::kLostContext;
     case gpu::mojom::Error::kGenericError:
-      *out = gpu::error::kGenericError;
-      return true;
+      return gpu::error::kGenericError;
     case gpu::mojom::Error::kDeferCommandUntilLater:
-      *out = gpu::error::kDeferCommandUntilLater;
-      return true;
+      return gpu::error::kDeferCommandUntilLater;
     case gpu::mojom::Error::kDeferLaterCommands:
-      *out = gpu::error::kDeferLaterCommands;
-      return true;
+      return gpu::error::kDeferLaterCommands;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -94,33 +84,26 @@ EnumTraits<gpu::mojom::ContextLostReason, gpu::error::ContextLostReason>::
 }
 
 // static
-bool EnumTraits<gpu::mojom::ContextLostReason, gpu::error::ContextLostReason>::
-    FromMojom(gpu::mojom::ContextLostReason input,
-              gpu::error::ContextLostReason* out) {
+gpu::error::ContextLostReason
+EnumTraits<gpu::mojom::ContextLostReason, gpu::error::ContextLostReason>::
+    FromMojom(gpu::mojom::ContextLostReason input) {
   switch (input) {
     case gpu::mojom::ContextLostReason::kGuilty:
-      *out = gpu::error::kGuilty;
-      return true;
+      return gpu::error::kGuilty;
     case gpu::mojom::ContextLostReason::kInnocent:
-      *out = gpu::error::kInnocent;
-      return true;
+      return gpu::error::kInnocent;
     case gpu::mojom::ContextLostReason::kUnknown:
-      *out = gpu::error::kUnknown;
-      return true;
+      return gpu::error::kUnknown;
     case gpu::mojom::ContextLostReason::kOutOfMemory:
-      *out = gpu::error::kOutOfMemory;
-      return true;
+      return gpu::error::kOutOfMemory;
     case gpu::mojom::ContextLostReason::kMakeCurrentFailed:
-      *out = gpu::error::kMakeCurrentFailed;
-      return true;
+      return gpu::error::kMakeCurrentFailed;
     case gpu::mojom::ContextLostReason::kGpuChannelLost:
-      *out = gpu::error::kGpuChannelLost;
-      return true;
+      return gpu::error::kGpuChannelLost;
     case gpu::mojom::ContextLostReason::kInvalidGpuMessage:
-      *out = gpu::error::kInvalidGpuMessage;
-      return true;
+      return gpu::error::kInvalidGpuMessage;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -150,34 +133,26 @@ EnumTraits<gpu::mojom::CommandBufferNamespace, gpu::CommandBufferNamespace>::
 }
 
 // static
-bool EnumTraits<gpu::mojom::CommandBufferNamespace,
-                gpu::CommandBufferNamespace>::
-    FromMojom(gpu::mojom::CommandBufferNamespace input,
-              gpu::CommandBufferNamespace* out) {
+gpu::CommandBufferNamespace
+EnumTraits<gpu::mojom::CommandBufferNamespace, gpu::CommandBufferNamespace>::
+    FromMojom(gpu::mojom::CommandBufferNamespace input) {
   switch (input) {
     case gpu::mojom::CommandBufferNamespace::INVALID:
-      *out = gpu::CommandBufferNamespace::INVALID;
-      return true;
+      return gpu::CommandBufferNamespace::INVALID;
     case gpu::mojom::CommandBufferNamespace::GPU_IO:
-      *out = gpu::CommandBufferNamespace::GPU_IO;
-      return true;
+      return gpu::CommandBufferNamespace::GPU_IO;
     case gpu::mojom::CommandBufferNamespace::IN_PROCESS:
-      *out = gpu::CommandBufferNamespace::IN_PROCESS;
-      return true;
+      return gpu::CommandBufferNamespace::IN_PROCESS;
     case gpu::mojom::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE:
-      *out = gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE;
-      return true;
+      return gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE;
     case gpu::mojom::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL:
-      *out = gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL;
-      return true;
+      return gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE_NON_DDL;
     case gpu::mojom::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE:
-      *out = gpu::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE;
-      return true;
+      return gpu::CommandBufferNamespace::GPU_CHANNEL_SHARED_IMAGE_INTERFACE;
     case gpu::mojom::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE:
-      *out = gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE;
-      return true;
+      return gpu::CommandBufferNamespace::WEBNN_CONTEXT_INTERFACE;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

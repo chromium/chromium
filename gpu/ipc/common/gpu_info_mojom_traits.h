@@ -85,8 +85,7 @@ template <>
 struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SkiaBackendType,
                                         gpu::SkiaBackendType> {
   static gpu::mojom::SkiaBackendType ToMojom(gpu::SkiaBackendType type);
-  static bool FromMojom(gpu::mojom::SkiaBackendType input,
-                        gpu::SkiaBackendType* out);
+  static gpu::SkiaBackendType FromMojom(gpu::mojom::SkiaBackendType input);
 };
 
 template <>
@@ -94,8 +93,7 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::VideoCodecProfile,
                                         gpu::VideoCodecProfile> {
   static gpu::mojom::VideoCodecProfile ToMojom(
       gpu::VideoCodecProfile video_codec_profile);
-  static bool FromMojom(gpu::mojom::VideoCodecProfile input,
-                        gpu::VideoCodecProfile* out);
+  static gpu::VideoCodecProfile FromMojom(gpu::mojom::VideoCodecProfile input);
 };
 
 template <>
@@ -183,8 +181,7 @@ template <>
 struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::OverlaySupport,
                                         gpu::OverlaySupport> {
   static gpu::mojom::OverlaySupport ToMojom(gpu::OverlaySupport support);
-  static bool FromMojom(gpu::mojom::OverlaySupport input,
-                        gpu::OverlaySupport* out);
+  static gpu::OverlaySupport FromMojom(gpu::mojom::OverlaySupport input);
 };
 
 template <>

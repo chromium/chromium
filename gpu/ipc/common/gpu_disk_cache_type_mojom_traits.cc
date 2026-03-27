@@ -27,19 +27,16 @@ EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::ToMojom(
 }
 
 // static
-bool EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::FromMojom(
-    gpu::mojom::GpuDiskCacheType input,
-    gpu::GpuDiskCacheType* out) {
+gpu::GpuDiskCacheType
+EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::FromMojom(
+    gpu::mojom::GpuDiskCacheType input) {
   switch (input) {
     case gpu::mojom::GpuDiskCacheType::kGlShaders:
-      *out = gpu::GpuDiskCacheType::kGlShaders;
-      return true;
+      return gpu::GpuDiskCacheType::kGlShaders;
     case gpu::mojom::GpuDiskCacheType::kDawnWebGPU:
-      *out = gpu::GpuDiskCacheType::kDawnWebGPU;
-      return true;
+      return gpu::GpuDiskCacheType::kDawnWebGPU;
     case gpu::mojom::GpuDiskCacheType::kDawnGraphite:
-      *out = gpu::GpuDiskCacheType::kDawnGraphite;
-      return true;
+      return gpu::GpuDiskCacheType::kDawnGraphite;
     default:
       break;
   }

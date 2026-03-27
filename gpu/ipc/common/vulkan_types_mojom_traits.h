@@ -123,24 +123,19 @@ struct EnumTraits<gpu::mojom::VkPhysicalDeviceType, VkPhysicalDeviceType> {
     }
   }
 
-  static bool FromMojom(gpu::mojom::VkPhysicalDeviceType input,
-                        VkPhysicalDeviceType* out) {
+  static VkPhysicalDeviceType FromMojom(
+      gpu::mojom::VkPhysicalDeviceType input) {
     switch (input) {
       case gpu::mojom::VkPhysicalDeviceType::OTHER:
-        *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_OTHER;
-        return true;
+        return VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_OTHER;
       case gpu::mojom::VkPhysicalDeviceType::INTEGRATED_GPU:
-        *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
-        return true;
+        return VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU;
       case gpu::mojom::VkPhysicalDeviceType::DISCRETE_GPU:
-        *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
-        return true;
+        return VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU;
       case gpu::mojom::VkPhysicalDeviceType::VIRTUAL_GPU:
-        *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU;
-        return true;
+        return VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU;
       case gpu::mojom::VkPhysicalDeviceType::CPU:
-        *out = VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU;
-        return true;
+        return VkPhysicalDeviceType::VK_PHYSICAL_DEVICE_TYPE_CPU;
       case gpu::mojom::VkPhysicalDeviceType::INVALID_VALUE:
         NOTREACHED();
     }

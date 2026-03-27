@@ -18,8 +18,7 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::Direct3DFeatureLevel,
                                         D3D_FEATURE_LEVEL> {
   static gpu::mojom::Direct3DFeatureLevel ToMojom(
       D3D_FEATURE_LEVEL d3d_feature_level);
-  static bool FromMojom(gpu::mojom::Direct3DFeatureLevel input,
-                        D3D_FEATURE_LEVEL* out);
+  static D3D_FEATURE_LEVEL FromMojom(gpu::mojom::Direct3DFeatureLevel input);
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -28,8 +27,7 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::HasDiscreteGpu,
                                         gpu::HasDiscreteGpu> {
   static gpu::mojom::HasDiscreteGpu ToMojom(
       gpu::HasDiscreteGpu has_discrete_gpu);
-  static bool FromMojom(gpu::mojom::HasDiscreteGpu input,
-                        gpu::HasDiscreteGpu* out);
+  static gpu::HasDiscreteGpu FromMojom(gpu::mojom::HasDiscreteGpu input);
 };
 
 template <>

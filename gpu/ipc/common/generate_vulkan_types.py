@@ -393,7 +393,7 @@ struct EnumTraits<gpu::mojom::%s, %s> {
     }
   }
 
-  static bool FromMojom(gpu::mojom::%s input, %s* out) {
+  static %s FromMojom(gpu::mojom::%s input) {
     switch (input) {
 """ % (name, name))
 
@@ -401,14 +401,12 @@ struct EnumTraits<gpu::mojom::%s, %s> {
     traits_header_file.write(
 """
      case gpu::mojom::%s::%s:
-       *out = %s::%s;
-       return true;""" % (name, mojom_value_name, name, value_name))
+       return %s::%s;""" % (name, mojom_value_name, name, value_name))
 
   traits_header_file.write(
 """
       case gpu::mojom::%s::INVALID_VALUE:
         NOTREACHED();
-
     }
     NOTREACHED();
   }

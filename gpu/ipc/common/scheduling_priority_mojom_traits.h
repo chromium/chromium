@@ -30,20 +30,17 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::SchedulingPriority,
     }
   }
 
-  static bool FromMojom(gpu::mojom::SchedulingPriority priority,
-                        gpu::SchedulingPriority* out_priority) {
+  static gpu::SchedulingPriority FromMojom(
+      gpu::mojom::SchedulingPriority priority) {
     switch (priority) {
       case gpu::mojom::SchedulingPriority::kHigh:
-        *out_priority = gpu::SchedulingPriority::kHigh;
-        return true;
+        return gpu::SchedulingPriority::kHigh;
       case gpu::mojom::SchedulingPriority::kNormal:
-        *out_priority = gpu::SchedulingPriority::kNormal;
-        return true;
+        return gpu::SchedulingPriority::kNormal;
       case gpu::mojom::SchedulingPriority::kLow:
-        *out_priority = gpu::SchedulingPriority::kLow;
-        return true;
+        return gpu::SchedulingPriority::kLow;
       default:
-        return false;
+        NOTREACHED();
     }
   }
 };

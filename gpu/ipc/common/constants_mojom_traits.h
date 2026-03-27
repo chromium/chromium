@@ -13,7 +13,7 @@ namespace mojo {
 template <>
 struct EnumTraits<gpu::mojom::Error, gpu::error::Error> {
   static gpu::mojom::Error ToMojom(gpu::error::Error error);
-  static bool FromMojom(gpu::mojom::Error input, gpu::error::Error* out);
+  static gpu::error::Error FromMojom(gpu::mojom::Error input);
 };
 
 template <>
@@ -21,8 +21,8 @@ struct EnumTraits<gpu::mojom::ContextLostReason,
                   gpu::error::ContextLostReason> {
   static gpu::mojom::ContextLostReason ToMojom(
       gpu::error::ContextLostReason reason);
-  static bool FromMojom(gpu::mojom::ContextLostReason input,
-                        gpu::error::ContextLostReason* out);
+  static gpu::error::ContextLostReason FromMojom(
+      gpu::mojom::ContextLostReason input);
 };
 
 template <>
@@ -30,8 +30,8 @@ struct EnumTraits<gpu::mojom::CommandBufferNamespace,
                   gpu::CommandBufferNamespace> {
   static gpu::mojom::CommandBufferNamespace ToMojom(
       gpu::CommandBufferNamespace namespace_id);
-  static bool FromMojom(gpu::mojom::CommandBufferNamespace input,
-                        gpu::CommandBufferNamespace* out);
+  static gpu::CommandBufferNamespace FromMojom(
+      gpu::mojom::CommandBufferNamespace input);
 };
 
 }  // namespace mojo

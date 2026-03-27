@@ -30,23 +30,20 @@ struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::ContextType,
     }
   }
 
-  static bool FromMojom(gpu::mojom::ContextType type, gpu::ContextType* out) {
+  static gpu::ContextType FromMojom(gpu::mojom::ContextType type) {
     switch (type) {
       case gpu::mojom::ContextType::kWebGL1:
-        *out = gpu::CONTEXT_TYPE_WEBGL1;
-        return true;
+        return gpu::CONTEXT_TYPE_WEBGL1;
       case gpu::mojom::ContextType::kWebGL2:
-        *out = gpu::CONTEXT_TYPE_WEBGL2;
-        return true;
+        return gpu::CONTEXT_TYPE_WEBGL2;
       case gpu::mojom::ContextType::kOpenGLES2:
-        *out = gpu::CONTEXT_TYPE_OPENGLES2;
-        return true;
+        return gpu::CONTEXT_TYPE_OPENGLES2;
       // OPENGLES3 should not be serialized as there are no production usages
       // and it is planned to be removed.
       case gpu::mojom::ContextType::kOpenGLES3:
-        return false;
+        NOTREACHED();
     }
-    return false;
+    NOTREACHED();
   }
 };
 

@@ -15,8 +15,7 @@ template <>
 struct GPU_IPC_COMMON_EXPORT EnumTraits<gpu::mojom::GpuDiskCacheType,
                                         gpu::GpuDiskCacheType> {
   static gpu::mojom::GpuDiskCacheType ToMojom(gpu::GpuDiskCacheType support);
-  static bool FromMojom(gpu::mojom::GpuDiskCacheType input,
-                        gpu::GpuDiskCacheType* out);
+  static gpu::GpuDiskCacheType FromMojom(gpu::mojom::GpuDiskCacheType input);
 };
 
 namespace internal {
