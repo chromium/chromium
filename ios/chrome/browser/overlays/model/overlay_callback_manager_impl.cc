@@ -39,8 +39,13 @@ void OverlayCallbackManagerImpl::AddCompletionCallback(
 void OverlayCallbackManagerImpl::DispatchResponse(
     std::unique_ptr<OverlayResponse> response) {
   DCHECK(response);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   for (auto& callback : dispatch_callbacks_) {
     callback.Run(response.get());
+    // If deleted by the callback, bail now.
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
