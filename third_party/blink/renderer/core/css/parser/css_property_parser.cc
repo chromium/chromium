@@ -98,9 +98,11 @@ bool CSSPropertyParser::ParseValue(
 }
 
 // NOTE: “stream” cannot include !important; this is for setting properties
-// from CSSOM or similar.
+// from CSSOM or similar. |unresolved_property| may be an alias (e.g.,
+// kWebkitBackgroundClip); it is resolved internally but the unresolved ID is
+// preserved in the local context so that UseAliasParsing() works correctly.
 const CSSValue* CSSPropertyParser::ParseSingleValue(
-    CSSPropertyID property,
+    CSSPropertyID unresolved_property,
     CSSParserTokenStream& stream,
     const CSSParserContext* context) {
   DCHECK(context);
@@ -110,9 +112,9 @@ const CSSValue* CSSPropertyParser::ParseSingleValue(
       css_parsing_utils::ConsumeCSSWideKeyword(stream, *context);
   if (!value) {
     auto local_context = CSSParserLocalContext(
-        CSSPropertyName(property), CSSPropertyID::kInvalid,
+        CSSPropertyName(unresolved_property), CSSPropertyID::kInvalid,
         /*custom_function_name=*/g_null_atom);
-    value = ParseLonghand(property, *context, local_context, stream);
+    value = ParseLonghand(unresolved_property, *context, local_context, stream);
   }
   if (!value || !stream.AtEnd()) {
     return nullptr;
