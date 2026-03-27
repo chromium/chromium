@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -110,7 +111,9 @@
       AuthenticationServiceFactory::GetForProfile(profile);
 
   PrefService* localState = GetApplicationContext()->GetLocalState();
-  if (!localState->GetBoolean(prefs::kMultiProfileForcedMigrationDone)) {
+  BOOL force = experimental_flags::ShouldForceMultiProfileForcedMigrationDone();
+  if (!localState->GetBoolean(prefs::kMultiProfileForcedMigrationDone) &&
+      !force) {
     return;
   }
 

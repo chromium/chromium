@@ -78,6 +78,8 @@ NSString* const kForceDisableDeepSearchEligibility =
 NSString* const kForceDisablePdfUploadEligibility =
     @"ForceDisablePdfUploadEligibility";
 NSString* const kShowCatalogItems = @"ShowCatalogItems";
+NSString* const kForceMultiProfileForcedMigrationDone =
+    @"ForceMultiProfileForcedMigrationDone";
 }  // namespace
 
 namespace experimental_flags {
@@ -405,6 +407,11 @@ bool ShouldShowCatalogItems() {
 #else
   return [[NSUserDefaults standardUserDefaults] boolForKey:kShowCatalogItems];
 #endif
+}
+
+bool ShouldForceMultiProfileForcedMigrationDone() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kForceMultiProfileForcedMigrationDone];
 }
 
 }  // namespace experimental_flags

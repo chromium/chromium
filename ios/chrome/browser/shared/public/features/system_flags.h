@@ -199,6 +199,9 @@ bool ShouldForceDisableComposeboxPdfUpload();
 // in debug builds.
 bool ShouldShowCatalogItems();
 
+// Returns true if multi-profile forced migration should be considered done.
+bool ShouldForceMultiProfileForcedMigrationDone();
+
 }  // namespace experimental_flags
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_SYSTEM_FLAGS_H_

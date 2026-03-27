@@ -518,6 +518,16 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>Force Multi-Profile Forced Migration Done</string>
+			<key>Key</key>
+			<string>ForceMultiProfileForcedMigrationDone</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>Enable Startup Crash</string>
 			<key>Key</key>
 			<string>EnableStartupCrash</string>
