@@ -11019,6 +11019,24 @@
             ]
         }
     ],
+    "GlicSummarizeVideoSuggestion": [
+        {
+            "platforms": [
+                "mac",
+                "windows",
+                "linux",
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GlicSummarizeVideoSuggestion"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicTeamfoodAllowlistedChromeOS": [
         {
             "platforms": [
