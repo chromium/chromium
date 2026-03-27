@@ -11,7 +11,6 @@ source_set("contextual_cueing") {
   public_deps = [
     "//base",
     "//components/page_content_annotations/core",
-    "//content/public/browser",
   ]
 }
 
@@ -31,6 +30,7 @@ source_set("impl") {
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/tab_list",
     "//chrome/browser/ui/browser_window",
+    "//content/public/browser",
   ]
 }
 
@@ -44,6 +44,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/browser/ui/browser_window",
       "//chrome/test:test_support",
+      "//content/public/browser",
       "//testing/gmock",
       "//testing/gtest",
     ]
