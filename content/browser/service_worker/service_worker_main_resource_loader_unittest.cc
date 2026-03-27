@@ -2133,7 +2133,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, SearchPrefetchHitInSyntheticResponse
   StartRequest(std::move(request));
 
   EXPECT_TRUE(handler_called);
-  EXPECT_EQ(version_->fetch_handler_bypass_option(),
+  EXPECT_EQ(service_worker_client()->fetch_handler_bypass_option(),
             blink::mojom::ServiceWorkerFetchHandlerBypassOption::
                 kSyntheticResponse);
 

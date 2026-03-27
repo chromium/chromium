@@ -421,6 +421,16 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   bool bypass_redirect_checks() const { return bypass_redirect_checks_; }
 
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+  fetch_handler_bypass_option() const {
+    return fetch_handler_bypass_option_;
+  }
+
+  void set_fetch_handler_bypass_option(
+      blink::mojom::ServiceWorkerFetchHandlerBypassOption option) {
+    fetch_handler_bypass_option_ = option;
+  }
+
   base::WeakPtr<ServiceWorkerClient> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -658,6 +668,20 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // information is critical to decide whether the synthetic response is used or
   // not, we'll keep it. If not, we'll remove it.
   bool bypass_redirect_checks_ = false;
+
+  // The fetch handler bypass option. The renderer skips to dispatch a fetch
+  // event to a service worker for subresources if kAutoPreload,
+  // kRaceNetworkRequest, or kSyntheticResponse is set. Otherwise, fetch events
+  // are normally dispatched for subresources.
+  //
+  // This is stored per-client rather than globally on ServiceWorkerVersion
+  // because concurrent navigations in the same Service Worker scope (e.g. an
+  // outermost main frame and an iframe) can have different bypass options.
+  // Keeping it per-client prevents race conditions where one navigation
+  // overwrites another's bypass option.
+  blink::mojom::ServiceWorkerFetchHandlerBypassOption
+      fetch_handler_bypass_option_ =
+          blink::mojom::ServiceWorkerFetchHandlerBypassOption::kDefault;
 
   // For all instances --------------------------------------------------------
 

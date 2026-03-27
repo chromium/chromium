@@ -109,12 +109,13 @@ void RecordHasSearchPrefetchCache(bool has_cache) {
 }
 
 void MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
-    scoped_refptr<ServiceWorkerVersion> version,
+  ServiceWorkerClient* client,
     blink::mojom::ServiceWorkerFetchHandlerBypassOption option) {
+  CHECK(client);
   static const bool bypass_subresource(
       blink::features::kServiceWorkerSyntheticResponseBypassSubresource.Get());
   if (bypass_subresource) {
-    version->set_fetch_handler_bypass_option(option);
+    client->set_fetch_handler_bypass_option(option);
   }
 }
 
@@ -428,6 +429,7 @@ void ServiceWorkerMainResourceLoader::MaybeDispatchPreload(
     RaceNetworkRequestMode race_network_request_mode,
     scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     scoped_refptr<ServiceWorkerVersion> version) {
+  CHECK(service_worker_client_);
   switch (race_network_request_mode) {
     case RaceNetworkRequestMode::kForced:
       if (StartRaceNetworkRequest(
@@ -529,7 +531,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartAutoPreload(
   // If |enable_subresource_preload| feature param is true, preload requests
   // are dispatched on any subresources, otherwise preload requests won't be
   // dispatched for subresources.
-  version->set_fetch_handler_bypass_option(
+  service_worker_client_->set_fetch_handler_bypass_option(
       base::GetFieldTrialParamByFeatureAsBool(
           features::kServiceWorkerAutoPreload, "enable_subresource_preload",
           /*default_value=*/false)
@@ -545,7 +547,7 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
     base::OnceCallback<void()> clone_completed_for_fetch_handler_callback) {
   // Set fetch_handler_bypass_option to tell the renderer that
   // RaceNetworkRequest is enabled.
-  version->set_fetch_handler_bypass_option(
+  service_worker_client_->set_fetch_handler_bypass_option(
       blink::mojom::ServiceWorkerFetchHandlerBypassOption::kRaceNetworkRequest);
 
   // RaceNetworkRequest only supports GET method.
@@ -1077,8 +1079,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     // Set fetch handler bypass option here to let the renderer know that the
     // service worker should not handle any subresources.
     MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
-        version, blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-                     kSyntheticResponse);
+        service_worker_client_.get(),
+        blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+            kSyntheticResponse);
     std::move(handler.value())
         .Run(resource_request_, receiver_.Unbind(),
              url_loader_client_.Unbind());
@@ -1114,8 +1117,9 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
           SyntheticResponseEligibility::kNotEligibleByNoHeaderStored);
     }
     MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
-        version, blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-                     kSyntheticResponseDryRunMode);
+        service_worker_client_.get(),
+        blink::mojom::ServiceWorkerFetchHandlerBypassOption::
+            kSyntheticResponseDryRunMode);
 
     return false;
   }
@@ -1181,7 +1185,7 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   }
 
   MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
-      version,
+      service_worker_client_.get(),
       blink::mojom::ServiceWorkerFetchHandlerBypassOption::kSyntheticResponse);
 
   return true;

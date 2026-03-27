@@ -457,7 +457,7 @@ ServiceWorkerContainerHostForClient::CreateControllerServiceWorkerInfo() {
   controller_info->mode = controller()->GetControllerMode();
   controller_info->fetch_handler_type = controller()->fetch_handler_type();
   controller_info->fetch_handler_bypass_option =
-      controller()->fetch_handler_bypass_option();
+      service_worker_client().fetch_handler_bypass_option();
   controller_info->sha256_script_checksum =
       controller()->sha256_script_checksum();
   controller_info->need_router_evaluate = controller()->NeedRouterEvaluate();

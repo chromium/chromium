@@ -248,17 +248,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FetchHandlerType fetch_handler_type() const;
   void set_fetch_handler_type(FetchHandlerType fetch_handler_type);
 
-  // Return the option indicating how the fetch handler should be bypassed.
-  // This is used to let the renderer know to bypass fetch handlers for
-  // subresources.
-  FetchHandlerBypassOption fetch_handler_bypass_option() {
-    return fetch_handler_bypass_option_;
-  }
-  void set_fetch_handler_bypass_option(
-      FetchHandlerBypassOption fetch_handler_bypass_option) {
-    fetch_handler_bypass_option_ = fetch_handler_bypass_option;
-  }
-
   bool has_hid_event_handlers() const { return has_hid_event_handlers_; }
   void set_has_hid_event_handlers(bool has_hid_event_handlers);
 
