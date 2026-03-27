@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_constants.h"
 #import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -34,12 +35,27 @@ NSArray<TableViewTextEditItem*>* CreateItemsFromEntity(
   std::string locale =
       base::SysNSStringToUTF8([[NSLocale currentLocale] localeIdentifier]);
 
+  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+  dateFormatter.timeStyle = NSDateFormatterNoStyle;
+  dateFormatter.locale =
+      [NSLocale localeWithLocaleIdentifier:base::SysUTF8ToNSString(locale)];
+
   for (const auto& attribute : entity.attributes()) {
     TableViewTextEditItem* item = [[TableViewTextEditItem alloc] init];
     item.fieldNameLabelText =
         autofill::DisplayNameForAutofillAiAttributeType(attribute.type());
 
-    std::u16string value = attribute.GetCompleteInfo(locale);
+    std::u16string value;
+    if (attribute.type().data_type() ==
+        autofill::AttributeType::DataType::kDate) {
+      NSDate* dateValue = NSDateFromAttributeInstance(attribute);
+      value =
+          base::SysNSStringToUTF16([dateFormatter stringFromDate:dateValue]);
+    } else {
+      value = attribute.GetCompleteInfo(locale);
+    }
+
     if (attribute.masked()) {
       // If the attribute is masked, the obfuscated value is shown.
       value = autofill::GetObfuscatedValue(value, /*visible_suffix_length=*/4);

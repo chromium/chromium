@@ -16,6 +16,7 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/autofill_ai/public",
     "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/utils",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
