@@ -114,7 +114,6 @@ std::vector<BnplIssuerContext> GetSortedBnplIssuerContext(
         CHECK(price_range.has_value());
 
         BnplIssuerEligibilityForPage eligibility;
-
         if (!autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
                 issuer.issuer_id(), merchant_url)) {
           eligibility = BnplIssuerEligibilityForPage::
@@ -288,8 +287,14 @@ std::u16string GetBnplIssuerSelectionOptionText(
       }
       NOTREACHED();
     case BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant:
-      return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT);
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnablePayNowPayLaterTabs)) {
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_FOR_MERCHANT);
+      } else {
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT);
+      }
     case BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow:
       // Divide displayed price by `1'000'000.0` to convert from micros and
       // retain decimals.
@@ -309,22 +314,24 @@ std::u16string GetBnplIssuerSelectionOptionText(
     case BnplIssuerEligibilityForPage::
         kNotEligibleAmountExtractionErrorMissingServerResponse:
     case BnplIssuerEligibilityForPage::
-        kNotEligibleAmountExtractionErrorNegativeAmount:
-    case BnplIssuerEligibilityForPage::
         kNotEligibleAmountExtractionErrorAmountMissing:
     case BnplIssuerEligibilityForPage::
         kNotEligibleAmountExtractionErrorMissingCurrency:
-      // TODO(crbug.com/477689220): Use the correct error message for each
-      // error type once strings are aligned by UX.
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+    case BnplIssuerEligibilityForPage::kNotEligibleAmountExtractionErrorTimeout:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW);
+    case BnplIssuerEligibilityForPage::
+        kNotEligibleAmountExtractionErrorNegativeAmount:
+      // Divide displayed price by `1'000'000.0` to convert from micros and
+      // retain decimals.
+      return l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          formatter.Format(base::NumberToString(
+              eligible_price_range->price_lower_bound / 1'000'000.0)));
     case BnplIssuerEligibilityForPage::
         kNotEligibleAmountExtractionErrorUnsupportedCurrency:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE);
-    case BnplIssuerEligibilityForPage::kNotEligibleAmountExtractionErrorTimeout:
-      // TODO(crbug.com/477689220): Use the correct error message for each
-      // error type once strings are aligned by UX.
-      return l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE);
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CURRENCY_NOT_SUPPORTED);
   }
   NOTREACHED();
 }

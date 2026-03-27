@@ -205,6 +205,24 @@ TEST_F(
       GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
                                        "en-US", issuer_contexts),
       l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_FOR_MERCHANT));
+}
+
+TEST_F(
+    BnplUtilTest,
+    GetBnplIssuerSelectionOptionText_NotEligibleIssuerDoesNotSupportMerchant_TabsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
+  std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
+      test::GetTestLinkedBnplIssuer(),
+      BnplIssuerEligibilityForPage::kNotEligibleIssuerDoesNotSupportMerchant)};
+
+  EXPECT_EQ(
+      GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
+                                       "en-US", issuer_contexts),
+      l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT));
 }
 
@@ -561,6 +579,22 @@ TEST_F(BnplUtilTest, IsEligibleForBnpl_UrlSupportedByOneIssuer) {
   EXPECT_TRUE(IsEligibleForBnpl(autofill_client()));
 }
 
+TEST_F(
+    BnplUtilTest,
+    GetBnplIssuerSelectionOptionText_NotEligibleAmountExtractionErrorNegativeAmount) {
+  std::vector<BnplIssuerContext> issuer_contexts = {
+      BnplIssuerContext(test::GetTestLinkedBnplIssuer(),
+                        BnplIssuerEligibilityForPage::
+                            kNotEligibleAmountExtractionErrorNegativeAmount)};
+
+  EXPECT_EQ(
+      GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
+                                       "en-US", issuer_contexts),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          u"$50.00"));
+}
+
 struct AmountExtractionErrorParams {
   AiAmountExtractionResult::Error error;
   BnplIssuerEligibilityForPage expected_eligibility;
@@ -595,37 +629,32 @@ INSTANTIATE_TEST_SUITE_P(
             AiAmountExtractionResult::Error::kFailureToGenerateApc,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorFailureToGenerateApc,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW},
         AmountExtractionErrorParams{
             AiAmountExtractionResult::Error::kMissingServerResponse,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorMissingServerResponse,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
-        AmountExtractionErrorParams{
-            AiAmountExtractionResult::Error::kNegativeAmount,
-            BnplIssuerEligibilityForPage::
-                kNotEligibleAmountExtractionErrorNegativeAmount,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW},
         AmountExtractionErrorParams{
             AiAmountExtractionResult::Error::kAmountMissing,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorAmountMissing,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW},
         AmountExtractionErrorParams{
             AiAmountExtractionResult::Error::kMissingCurrency,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorMissingCurrency,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE},
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW},
         AmountExtractionErrorParams{
             AiAmountExtractionResult::Error::kUnsupportedCurrency,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorUnsupportedCurrency,
-            IDS_AUTOFILL_BNPL_UNSUPPORTED_CURRENCY_ERROR_DIALOG_TITLE},
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CURRENCY_NOT_SUPPORTED},
         AmountExtractionErrorParams{
             AiAmountExtractionResult::Error::kTimeout,
             BnplIssuerEligibilityForPage::
                 kNotEligibleAmountExtractionErrorTimeout,
-            IDS_AUTOFILL_BNPL_ERROR_DIALOG_TITLE}));
+            IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW}));
 
 struct BnplSuggestionIconParams {
   BnplIssuer::IssuerId issuer_id;

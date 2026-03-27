@@ -1030,6 +1030,15 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_CLEAR_FORM_TO_ENABLE" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the user must clear the form to enable and use the pay later option.">
       Clear form to use pay later option
   </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_RIGHT_NOW" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the option is not available right now.">
+      Not available right now
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CURRENCY_NOT_SUPPORTED" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the currency is not supported.">
+      Currency not supported
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_NOT_AVAILABLE_FOR_MERCHANT" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the option is not available for this merchant.">
+      Not available for this merchant
+  </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_NOT_SUPPORTED_BY_MERCHANT" desc="Text for the disabled payment option button in the BNPL select provider screen, explaining that the provider is not supported by the merchant based on the page's URL.">
       Not supported by merchant
   </message>
