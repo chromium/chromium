@@ -1634,6 +1634,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Modules.AutoRemovalSkipped{Reason}"
     enum="NtpModules" expires_after="2026-08-30">
+  <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1661,6 +1662,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.Modules.AutoRemovalStaleDays{NewTabPageModules}"
     units="count" expires_after="2026-08-30">
+  <owner>giannich@google.com</owner>
   <owner>romanarora@chromium.org</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -2066,6 +2068,40 @@ chromium-metrics-reviews@google.com.
   <owner>tiborg@chromium.org</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>Logs whether the NTP modules are visible at NTP load.</summary>
+</histogram>
+
+<histogram name="NewTabPage.MostVisited.AutoRemovalSkipped"
+    enum="NtpShortcutsAutoRemovalReason" expires_after="2026-08-30">
+  <owner>giannich@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the auto-removal logic is skipped for the most visited tiles.
+    This can happen due to a variety of reasons, and it's the default steady
+    state for the most visited tiles.
+
+    Only logged on the 1P NTP. Note that even if the user has Google as their
+    default search engine, Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MostVisited.AutoRemovalStaleDays" units="count"
+    expires_after="2026-08-30">
+  <owner>giannich@google.com</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the staleness count is updated for most visited tiles. This is
+    logged only once per staleness threshold update interval, which is typically
+    once a day. Note that the value being logged is the old staleness count.
+
+    Only logged on the 1P NTP. Note that even if the user has Google as their
+    default search engine, Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
 </histogram>
 
 <histogram name="NewTabPage.MostVisited.DeciScore.{TileIndex}.Local"
