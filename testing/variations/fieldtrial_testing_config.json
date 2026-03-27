@@ -24845,6 +24845,21 @@
             ]
         }
     ],
+    "WebViewNonBlockingCookieStoreHandoff": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260326",
+                    "enable_features": [
+                        "WebViewNonBlockingCookieStoreHandoff"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewOptInToGmsBindServiceOptimization": [
         {
             "platforms": [
