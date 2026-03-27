@@ -19,8 +19,12 @@ class ElementId;
 class RecordReplayDriver;
 class RecordReplayManager;
 
-// Replays a Recording. Replays are asynchronous because of the delay between
+// Replays a `Recording`. Replays are asynchronous because of the delay between
 // actions.
+//
+// Owned and used by `RecordReplayManager`. It is a transient object that only
+// exists during a replay session (0 or 1 per tab). It runs exclusively on the
+// UI thread and uses `base::OneShotTimer` for scheduling actions.
 class Replayer {
  public:
   // Initializes the replayer. To start it, call Run().

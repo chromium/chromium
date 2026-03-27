@@ -16,7 +16,11 @@ class GURL;
 
 namespace record_replay {
 
-// Builds a `Recording` from a series of actions.
+// Builds a `Recording` from a series of actions within a tab.
+//
+// Owned and used by `RecordReplayManager`. It is a transient object that only
+// exists during a recording session (0 or 1 per tab). It runs exclusively on
+// the UI thread.
 class Recorder {
  public:
   explicit Recorder(GURL start_url, base::Time start_time = base::Time::Now());

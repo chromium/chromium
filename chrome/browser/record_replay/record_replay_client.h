@@ -23,7 +23,8 @@ class RecordingDataManager;
 class RecordReplayDriverFactory;
 class RecordReplayManager;
 
-// The root owner of most record & replay classes in the browser process.
+// The abstract base interface for the tab-level owner of most record & replay
+// classes in the browser process.
 //
 // One instance per WebContents.
 class RecordReplayClient {

@@ -31,6 +31,15 @@ class RenderFrame;
 
 namespace record_replay {
 
+// The core renderer agent.
+//
+// Inherits from `content::RenderFrameObserver`,
+// `blink::WebRecordReplayClient`, and the Mojo interface
+// `mojom::RecordReplayAgent`. It listens directly to layout and DOM triggers
+// (like mouse clicks, text updates, control selections) and routes these events
+// via IPC to the browser's `RecordReplayDriver`. It also implements commands
+// sent from the browser to query element selectors and programmatically actuate
+// DOM nodes (e.g., `DoClick`, `DoSelect`, `DoPaste`, `GetElementSelector`).
 class RecordReplayAgent : public content::RenderFrameObserver,
                           public blink::WebRecordReplayClient,
                           public mojom::RecordReplayAgent {

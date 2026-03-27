@@ -14,7 +14,9 @@
 
 namespace record_replay {
 
-// Stores the recording protos.
+// Manages persistent storage for recording protos.
+//
+// Tied to the lifecycle of a `Profile`.
 class RecordingDataManager : public KeyedService {
  public:
   RecordingDataManager() = default;

@@ -25,9 +25,18 @@ class ElementId;
 class RecordReplayClient;
 class RecordReplayDriver;
 
-// Coordinates the recording and replay.
+// The primary state machine and coordinator for a tab.
 //
-// Owned by RecordReplayClient.
+// The state machine has three states:
+// - `kIdle`: The default state. Neither recording nor replaying is active.
+// - `kRecording`: Entered via `StartRecording()`. In this state, the manager
+//   listens to events from `RecordReplayDriver` and `AutofillManager` to build
+//   a `Recording`. Exited via `StopRecording()`.
+// - `kReplaying`: Entered via `StartReplay()`. In this state, the manager
+//   executes a previously saved `Recording`. Exited via `StopReplay()`.
+//
+// Owned by `RecordReplayClient`, and thus tied to the lifecycle of a tab.
+// It runs exclusively on the UI thread.
 class RecordReplayManager : public autofill::AutofillManager::Observer {
  public:
   enum class State { kIdle, kRecording, kReplaying };
@@ -75,6 +84,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   void GetMatchingElements(Selector element_selector,
                            base::OnceCallback<void(std::vector<ElementId>)> cb);
 
+  // Displays a message to the user, typically via the browser's UI or console.
   void ReportToUser(std::string_view message);
 
   base::WeakPtr<RecordReplayManager> GetWeakPtr() {

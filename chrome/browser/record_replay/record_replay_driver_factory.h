@@ -16,9 +16,11 @@ namespace record_replay {
 class RecordReplayClient;
 class RecordReplayDriver;
 
-// This class manages the lifecycle of RecordReplayDriver instances.
+// This class manages the lifecycle of RecordReplayDriver instances within a
+// tab. It is a WebContentsObserver that automatically creates drivers for new
+// frames.
 //
-// Owned by RecordReplayClient.
+// Owned by `RecordReplayClient` (1 per tab) and runs on the UI thread.
 class RecordReplayDriverFactory : public content::WebContentsObserver {
  public:
   explicit RecordReplayDriverFactory(RecordReplayClient& client);
@@ -51,6 +53,7 @@ class RecordReplayDriverFactory : public content::WebContentsObserver {
   absl::flat_hash_map<blink::LocalFrameToken,
                       std::unique_ptr<RecordReplayDriver>>
       drivers_;
+  // If true, `StartRecording()` will be called on newly created drivers.
   bool record_future_drivers_ = false;
 };
 

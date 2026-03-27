@@ -14,6 +14,11 @@ namespace record_replay {
 
 class RecordingDataManager;
 
+// Manages the creation and retrieval of `RecordingDataManager` (1 per
+// `Profile`).
+//
+// It is a `ProfileKeyedServiceFactory` and exists as a singleton for the
+// lifetime of the browser process.
 class RecordingDataManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static RecordingDataManager* GetForProfile(Profile* profile);

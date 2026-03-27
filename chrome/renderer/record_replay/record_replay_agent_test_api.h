@@ -10,6 +10,9 @@
 
 namespace record_replay {
 
+// A test utility class that exposes internal event emission methods of
+// `RecordReplayAgent` to tests, allowing them to simulate DOM interactions
+// (such as mouse downs, selection changes, and text edits) efficiently.
 class RecordReplayAgentTestApi {
  public:
   explicit RecordReplayAgentTestApi(RecordReplayAgent* agent)

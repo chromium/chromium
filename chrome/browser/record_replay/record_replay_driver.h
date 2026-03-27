@@ -22,9 +22,12 @@ namespace record_replay {
 
 class RecordReplayClient;
 
-// The gateway for communication with the RenderReplayAgent in the renderer.
+// The browser-side endpoint for Mojo communication with the renderer
+// implementation of the interface (`RecordReplayAgent`).
 //
-// Owned by RecordReplayDriverFactory.
+// Owned by `RecordReplayDriverFactory` (1 per frame). Tied to a
+// `RenderFrameHost`. Created when a `RenderFrameHost` is created and
+// destroyed when it is deleted. It runs exclusively on the UI thread.
 class RecordReplayDriver : public mojom::RecordReplayDriver {
  public:
   // TODO(b/476101114): Remove once RecordReplayDriver has a

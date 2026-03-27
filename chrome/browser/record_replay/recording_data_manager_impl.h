@@ -21,7 +21,13 @@ class ProtoDatabaseProvider;
 
 namespace record_replay {
 
-// One instance per BrowserContext.
+// Concrete implementation for `RecordingDataManager` using a LevelDB-backed
+// database to save and load `Recording` protos by URL.
+//
+// Owned by `RecordingDataManagerFactory` as a `KeyedService`, and thus tied to
+// the lifecycle of a `Profile`.
+// It runs on the UI thread but uses `leveldb_proto` for background database
+// I/O.
 class RecordingDataManagerImpl : public RecordingDataManager {
  public:
   explicit RecordingDataManagerImpl(

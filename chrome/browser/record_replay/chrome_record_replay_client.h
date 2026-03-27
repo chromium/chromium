@@ -28,6 +28,9 @@ namespace record_replay {
 class RecordingDataManager;
 }
 
+// The Chrome-specific concrete implementation of `RecordReplayClient`.
+//
+// Initialized as a `tabs::TabFeature` (1 per tab) and runs on the UI thread.
 class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
                                  public tabs::ContentsObservingTabFeature {
  public:
