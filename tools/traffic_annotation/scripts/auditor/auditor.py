@@ -16,6 +16,7 @@ import re
 import subprocess
 import sys
 import textwrap
+import time
 import traceback
 import xml.etree.ElementTree as ElementTree
 
@@ -690,6 +691,7 @@ class FileFilter:
 
   def get_files_from_git(self) -> None:
     """Populates self.git_files with the output of `git ls-files`."""
+    start_time = time.perf_counter()
     # Change directory to source path to access git and check files.
     original_cwd = os.getcwd()
     os.chdir(SRC_DIR)
@@ -710,6 +712,8 @@ class FileFilter:
 
     # Now that we're done, undo the chdir().
     os.chdir(original_cwd)
+    logger.debug("get_files_from_git() took %.3f seconds",
+                 time.perf_counter() - start_time)
 
 
 class IdChecker:
@@ -1493,8 +1497,15 @@ class Auditor:
       else:
         logger.info("Generating compile_commands.json")
         tools = NetworkTrafficAnnotationTools(str(build_path))
-        compdb_files_future = executor.submit(tools.GetCompDBFiles,
-                                              not skip_compdb)
+
+        def get_compdb_timed():
+          start_time = time.perf_counter()
+          res = tools.GetCompDBFiles(not skip_compdb)
+          logger.debug("Generating compile_commands.json took %.3f seconds",
+                       time.perf_counter() - start_time)
+          return res
+
+        compdb_files_future = executor.submit(get_compdb_timed)
 
       _ = files_future.result()
       compdb_files = compdb_files_future.result(
@@ -1514,6 +1525,7 @@ class Auditor:
     all_annotations = []
     num_workers = 5
     chunksize = len(files) // num_workers if len(files) > num_workers else 1
+    start_time = time.perf_counter()
     with concurrent.futures.ProcessPoolExecutor(
         max_workers=num_workers) as executor:
       process_files_with_args = partial(self.process_file,
@@ -1525,6 +1537,9 @@ class Auditor:
                                       chunksize=chunksize):
         if annotations:
           all_annotations.extend(annotations)
+
+    logger.debug("Parsing %d %s files took %.3f seconds", len(files), suffixes,
+                 time.perf_counter() - start_time)
 
     return all_annotations
 
@@ -1934,6 +1949,10 @@ if __name__ == "__main__":
       " --build-path supplied are older than the traffic_annotation.proto."
       "This is useful if you're actively working on the protobuf.",
       action="store_true")
+  args_parser.add_argument("--verbose",
+                           "-v",
+                           help="More verbose logs for debugging.",
+                           action="store_true")
   args_parser.add_argument(
       "path_filters",
       nargs="*",
@@ -1945,6 +1964,8 @@ if __name__ == "__main__":
 
   args = args_parser.parse_args()
   build_path = Path(args.build_path)
+  if args.verbose:
+    logger.setLevel(level=logging.DEBUG)
 
   # Check if in cog - if so, fail early.
   if is_cog():
