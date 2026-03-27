@@ -170,6 +170,57 @@ test_light_dark_image(
   'dark.png")'
 );
 
+// Nested light-dark with image values
+test_light_dark_image(
+  "background-image",
+  "light-dark(light-dark(url('a.png'), url('b.png')), url('c.png'))",
+  'a.png")',
+  'c.png")'
+);
+
+test_light_dark_image(
+  "background-image",
+  "light-dark(url('a.png'), light-dark(url('b.png'), url('c.png')))",
+  'a.png")',
+  'c.png")'
+);
+
+test(() => {
+  for (let element of [light, dark]) {
+    element.style.setProperty("background-image", "");
+    element.style.setProperty(
+        "background-image",
+        "image-set(-webkit-cross-fade(light-dark(url('dummy://light-a.png'), " +
+            "url('dummy://dark-a.png')), image-set(light-dark(" +
+            "url('dummy://light-b.png'), url('dummy://dark-b.png')) 1x), " +
+            "50%) 1x)");
+    assert_not_equals(element.style.getPropertyValue("background-image"), "",
+                      "Should parse nested image functions");
+
+    const computed = getComputedStyle(element).getPropertyValue(
+        "background-image");
+    const expected = element.id == "dark"
+        ? ["dummy://dark-a.png", "dummy://dark-b.png"]
+        : ["dummy://light-a.png", "dummy://light-b.png"];
+    const unexpected = element.id == "dark"
+        ? ["dummy://light-a.png", "dummy://light-b.png"]
+        : ["dummy://dark-a.png", "dummy://dark-b.png"];
+
+    for (const url of expected) {
+      assert_true(
+          computed.includes(url),
+          `Expected "${computed}" to include resolved URL "${url}"`);
+    }
+    for (const url of unexpected) {
+      assert_false(
+          computed.includes(url),
+          `Expected "${computed}" not to include unresolved URL "${url}"`);
+    }
+
+    element.style.setProperty("background-image", "");
+  }
+}, "background-image: nested image-set() / -webkit-cross-fade() resolve light-dark() at any depth");
+
 // Serialization round-trip
 test(() => {
   for (let element of [light, dark]) {

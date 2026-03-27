@@ -408,43 +408,50 @@ PseudoElement* StyleResolverState::GetPseudoElement() const {
 }
 
 const CSSValue& StyleResolverState::ResolveLightDarkPair(
-    const CSSValue& value) {
+    const CSSValue& value) const {
   if (const auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {
-    if (StyleBuilder().UsedColorScheme() == mojom::blink::ColorScheme::kLight) {
-      return pair->First();
-    }
-    return pair->Second();
+    const CSSValue& resolved =
+        StyleBuilder().UsedColorScheme() == mojom::blink::ColorScheme::kLight
+            ? pair->First()
+            : pair->Second();
+    // Recurse to handle nested light-dark() pairs.
+    return ResolveLightDarkPair(resolved);
   }
   return value;
 }
 
 const CSSValue& StyleResolverState::ResolveGradients(
     const CSSValue& value) const {
+  const CSSValue& resolved_value = ResolveLightDarkPair(value);
   if (const auto* gradient_value =
-          DynamicTo<cssvalue::CSSGradientValue>(value)) {
+          DynamicTo<cssvalue::CSSGradientValue>(resolved_value)) {
     return gradient_value->ResolveValuesIfNeeded(*this);
   }
-  if (const auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
+  if (const auto* image_set_value =
+          DynamicTo<CSSImageSetValue>(resolved_value)) {
     return image_set_value->ResolveValuesIfNeeded(*this);
   }
   if (const auto* cross_fade_value =
-          DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
+          DynamicTo<cssvalue::CSSCrossfadeValue>(resolved_value)) {
     return cross_fade_value->ResolveValuesIfNeeded(*this);
   }
-  return value;
+  return resolved_value;
 }
 
 CSSValue& StyleResolverState::ResolveGradients(CSSValue& value) const {
-  if (auto* gradient_value = DynamicTo<cssvalue::CSSGradientValue>(value)) {
+  CSSValue& resolved_value = const_cast<CSSValue&>(ResolveLightDarkPair(value));
+  if (auto* gradient_value =
+          DynamicTo<cssvalue::CSSGradientValue>(resolved_value)) {
     return gradient_value->ResolveValuesIfNeeded(*this);
   }
-  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(value)) {
+  if (auto* image_set_value = DynamicTo<CSSImageSetValue>(resolved_value)) {
     return image_set_value->ResolveValuesIfNeeded(*this);
   }
-  if (auto* cross_fade_value = DynamicTo<cssvalue::CSSCrossfadeValue>(value)) {
+  if (auto* cross_fade_value =
+          DynamicTo<cssvalue::CSSCrossfadeValue>(resolved_value)) {
     return cross_fade_value->ResolveValuesIfNeeded(*this);
   }
-  return value;
+  return resolved_value;
 }
 
 void StyleResolverState::UpdateFont() {
