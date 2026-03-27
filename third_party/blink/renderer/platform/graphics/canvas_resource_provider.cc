@@ -1967,9 +1967,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
     return;
   }
 
-  cc::PaintRecord recording;
-  recording = recorder_->ReleaseMainRecording();
-  RasterRecord(recording);
+  RasterRecord(recorder_->ReleaseMainRecording());
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
