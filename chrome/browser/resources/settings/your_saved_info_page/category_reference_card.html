@@ -22,11 +22,18 @@
   cr-button {
     --chip-icon-size_: var(--cr-icon-size);
     --cr-button-border-color: transparent;
-    --cr-button-text-color: var(--cr-secondary-text-color);
+    --cr-button-text-color: var(--cr-primary-text-color);
     --cr-button-height: 36px;
     border-radius: 4px;
     display: flex;
     justify-content: flex-start;
+    font-size: 12px;
+  }
+
+  .button-content {
+    display: flex;
+    align-items: center;
+    line-height: normal;
   }
 
   cr-button span {
@@ -37,10 +44,12 @@
     width: var(--chip-icon-size_);
     height: var(--chip-icon-size_);
     margin-inline-end: 10px;
+    --iron-icon-fill-color: var(--color-sys-light-on-surface-variant);
   }
 
   .counter {
     color: var(--cr-secondary-text-color);
+    margin-inline-start: 2px;
   }
 </style>
 
@@ -51,11 +60,13 @@
 <div class="chips-container">
   <template is="dom-repeat" items="[[chips]]">
     <cr-button on-click="onDataChipClick_">
-      <cr-icon icon="[[item.icon]]"></cr-icon>
-      <span>[[item.label]]</span>
-      <span class="counter" hidden$="[[!item.count]]">
-        ([[item.count]])
-      </span>
+      <div class="button-content">
+        <cr-icon icon="[[item.icon]]"></cr-icon>
+        <span>[[item.label]]</span>
+        <span class="counter" hidden$="[[!item.count]]">
+          ([[item.count]])
+        </span>
+      </div>
     </cr-button>
   </template>
 </div>
