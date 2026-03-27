@@ -590,7 +590,7 @@ bool GlicEnabling::ShouldBypassFreUi(
 }
 
 bool GlicEnabling::IsContextualMenuItemEnabled(Profile* profile) {
-  return IsEnabledForProfile(profile) &&
+  return IsProfileEligible(profile) &&
          IsTrustFirstOnboardingGatedFeatureEnabled(
              profile, features::kGlicContextMenu,
              features::kGlicContextMenuWithOnboarding);
