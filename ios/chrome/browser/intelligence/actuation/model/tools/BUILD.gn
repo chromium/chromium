@@ -99,6 +99,18 @@ optimize_ts("click_tool_ts") {
   ]
 }
 
+optimize_ts("type_tool_ts") {
+  sources = [ "resources/type_tool.ts" ]
+  output_name = "type_tool"
+
+  deps = [
+    ":actuation_utils_ts",
+    "//components/autofill/ios/form_util:fill_js_dependencies",
+    "//ios/chrome/browser/intelligence/proto_wrappers:dom_node_ids_ts",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 source_set("click_tool") {
   sources = [
     "click_tool.h",
@@ -151,6 +163,7 @@ source_set("unit_tests") {
     "click_tool_unittest.mm",
     "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
+    "type_tool_js_unittest.mm",
   ]
   deps = [
     ":actuation_interface",
@@ -160,6 +173,7 @@ source_set("unit_tests") {
     ":history_tool",
     ":java_script_features",
     ":navigate_tool",
+    ":type_tool_ts",
     "//base/test:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/form_util:autofill_form_features",
