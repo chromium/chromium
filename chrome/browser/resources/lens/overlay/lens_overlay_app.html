@@ -216,7 +216,8 @@
     z-index: 7;
   }
 
-  :host([is-lens-overlay-contextual-searchbox-visible]) #moreOptions {
+  :host([is-lens-overlay-contextual-searchbox-visible]) #moreOptions,
+  :host([is-routing-to-contextual-tasks][side-panel-opened]) #moreOptions {
     display: none;
   }
 

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/lens/lens_results_panel_router.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "chrome/browser/ui/lens/lens_searchbox_controller.h"
@@ -299,6 +300,13 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
                          controller.GetInvocationTimeSinceEpoch());
   html_source->AddString("invocationSource",
                          controller.GetInvocationSourceString());
+  html_source->AddBoolean(
+      "isRoutingToContextualTasks",
+      GetLensSearchController().should_route_to_contextual_tasks());
+  html_source->AddBoolean(
+      "isSidePanelOpen",
+      GetLensSearchController().results_panel_router() &&
+          GetLensSearchController().results_panel_router()->IsEntryShowing());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =
