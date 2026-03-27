@@ -1,0 +1,27 @@
+caption: Enable Krisp noise cancellation
+desc: |-
+  This policy controls the Krisp AI noise cancellation technology on the device.
+  It is integrated as a separate local third-party library into <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> and is available only for managed users.
+
+  Setting the policy to Enabled turns on Krisp AI noise cancellation audio processing and prevents users from disabling it.
+
+  Setting the policy to Disabled or not setting the policy turns off Krisp AI noise cancellation audio processing.
+default: false
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable Krisp noise cancellation
+  value: true
+- caption: Disable Krisp noise cancellation
+  value: false
+owners:
+- file://services/audio/OWNERS
+- poromov@chromium.org
+schema:
+  type: boolean
+future_on:
+- chrome_os
+tags: []
+type: main

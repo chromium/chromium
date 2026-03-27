@@ -709,6 +709,8 @@ void AudioDevicesPrefHandlerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAudioDevicesState);
   registry->RegisterIntegerPref(prefs::kInputVoiceIsolationPreferredEffect, 0);
   registry->RegisterBooleanPref(prefs::kInputVoiceIsolationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kInputKrispNoiseCancellationEnabled,
+                                false);
   registry->RegisterBooleanPref(prefs::kInputNoiseCancellationEnabled, false);
   registry->RegisterBooleanPref(prefs::kInputStyleTransferEnabled, false);
   registry->RegisterBooleanPref(prefs::kHandsFreeProfileInputSuperResolution,
