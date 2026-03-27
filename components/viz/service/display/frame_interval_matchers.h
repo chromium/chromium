@@ -26,6 +26,7 @@ namespace viz {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(FrameIntervalMatcherType)
 enum class FrameIntervalMatcherType {
   kNone = 0,
   kInputBoost = 1,
@@ -37,6 +38,7 @@ enum class FrameIntervalMatcherType {
   kSlowScrollThrottle = 7,
   kMaxValue = kSlowScrollThrottle,
 };
+// LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:FrameIntervalMatcherType)
 
 // Works with `FrameIntervalDecider` to compute the ideal frame interval.
 // Matchers are independent and each matcher matches a specific scenario. Note
@@ -48,16 +50,23 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
  public:
   // Result can either be an interval class or a specific frame interval,
   // depending on setting and the inputs.
+
+  // LINT.IfChange(FrameIntervalClass)
   enum class FrameIntervalClass {
     // These are ordered from lowest frame interval to highest.
     kBoost,    // Used for latency or smoothness sensitive situation such as
                // scrolling.
     kDefault,  // Used if nothing matched.
   };
+  // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:FrameIntervalClass)
+
+  // LINT.IfChange(ResultIntervalType)
   enum class ResultIntervalType {
     kExact,
     kAtLeast,
   };
+  // LINT.ThenChange(//base/tracing/protos/chrome_track_event.proto:ResultIntervalType)
+
   struct ResultInterval {
     base::TimeDelta interval;
     ResultIntervalType type = ResultIntervalType::kExact;

@@ -13,12 +13,57 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace viz {
+
+namespace {
+
+void WriteDeciderResultToProto(
+    perfetto::protos::pbzero::FrameIntervalDecider::Result* proto,
+    const FrameIntervalMatcher::Result& result) {
+  std::visit(
+      absl::Overload(
+          [&](FrameIntervalMatcher::FrameIntervalClass frame_interval_class) {
+            // Increment by 1 to convert from C++ to proto enum. The perfetto
+            // FrameIntervalClass proto enum values are incremented by 1 to
+            // leave 0 value for unknown/unset field.
+            proto->set_frame_interval_class(
+                static_cast<perfetto::protos::pbzero::FrameIntervalDecider::
+                                FrameIntervalClass>(
+                    static_cast<int>(frame_interval_class) + 1));
+          },
+          [&](FrameIntervalMatcher::ResultInterval interval) {
+            auto* result_interval = proto->set_result_interval();
+            result_interval->set_interval_us(
+                interval.interval.InMicroseconds());
+            // Increment by 1 to convert from C++ to proto enum. The perfetto
+            // ResultIntervalType proto enum values are incremented by 1 to
+            // leave 0 value for unknown/unset field.
+            result_interval->set_type(
+                static_cast<perfetto::protos::pbzero::FrameIntervalDecider::
+                                ResultIntervalType>(
+                    static_cast<int>(interval.type) + 1));
+          }),
+      result);
+}
+
+perfetto::protos::pbzero::FrameIntervalDecider::FrameIntervalMatcherType
+ToProtoMatcherType(FrameIntervalMatcherType type) {
+  // Increment by 1 to convert from C++ to proto enum. The perfetto
+  // FrameIntervalMatcherType proto enum values are incremented by 1 to leave 0
+  // value for unknown/unset field.
+  return static_cast<
+      perfetto::protos::pbzero::FrameIntervalDecider::FrameIntervalMatcherType>(
+      static_cast<int>(type) + 1);
+}
+
+}  // namespace
 
 FrameIntervalDecider::ScopedAggregate::ScopedAggregate(
     FrameIntervalDecider& decider,
@@ -144,10 +189,13 @@ void FrameIntervalDecider::Decide(
           settings_.increase_frame_interval_timeout ||
       MayDecreaseFrameInterval(current_result_, match_result)) {
     TRACE_EVENT_INSTANT(
-        "viz", "FrameIntervalDeciderResult", "result",
-        FrameIntervalMatcher::ResultToString(match_result.value()),
-        "matcher_type",
-        FrameIntervalMatcher::MatcherTypeToString(matcher_type));
+        "viz", "FrameIntervalDeciderResult", [&](perfetto::EventContext ctx) {
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* decider = event->set_frame_interval_decider();
+          WriteDeciderResultToProto(decider->set_result(),
+                                    match_result.value());
+          decider->set_matcher_type(ToProtoMatcherType(matcher_type));
+        });
     current_result_frame_time_ = frame_time;
     current_result_ = match_result;
     if (settings_.result_callback) {
