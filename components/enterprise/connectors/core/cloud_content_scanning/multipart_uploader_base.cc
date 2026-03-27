@@ -31,6 +31,12 @@
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+// TODO(b/488379014): Exclude the `enterprise_connectors/core` from compiling on
+// fuchsia.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
@@ -221,6 +227,10 @@ void MultipartUploadRequestBase::SendRequest() {
   resource_request->url = base_url_;
   resource_request->method = "POST";
   SetRequestHeaders(resource_request.get());
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddHeadersToDeepScanRequests(request_token_, resource_request->headers);
+#endif
 
   switch (data_source_) {
     case STRING:

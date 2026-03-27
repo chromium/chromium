@@ -99,6 +99,8 @@ class ConnectorUploadRequest {
 
   void set_access_token(const std::string& access_token);
 
+  void set_request_token(const std::string& request_token);
+
   // Start the upload. This must be called on the UI thread. When complete, this
   // will call `callback_` on the UI thread.
   virtual void Start() = 0;
@@ -134,12 +136,16 @@ class ConnectorUploadRequest {
   // Whether the file has been obfuscated. Only populated for FILE requests.
   bool is_obfuscated_ = false;
 
-  // Data pipe getter used to stream a file or a page. Only populated for the
+  // Data pipe getter used to svtream a file or a page. Only populated for the
   // corresponding requests.
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter_;
 
   // Suffix to be used for common histograms broken out by consumer.
   std::string histogram_suffix_;
+
+  // ContentAnalysisRequest::request_token, used for attaching http header info
+  // to the safe browsing debug page.
+  std::string request_token_;
 
   Callback callback_;
 

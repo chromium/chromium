@@ -27,6 +27,12 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
+// TODO(b/488379014): Exclude the `enterprise_connectors/core` from compiling on
+// fuchsia.
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
+#endif
+
 namespace enterprise_connectors {
 
 namespace {
@@ -247,6 +253,10 @@ void ResumableUploadRequestBase::SendMetadataRequest() {
   resource_request->url = base_url_;
   resource_request->method = "POST";
   SetMetadataRequestHeaders(resource_request.get());
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  safe_browsing::WebUIContentInfoSingleton::GetInstance()
+      ->AddHeadersToDeepScanRequests(request_token_, resource_request->headers);
+#endif
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation_);

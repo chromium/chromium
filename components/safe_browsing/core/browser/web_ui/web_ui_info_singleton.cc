@@ -399,6 +399,21 @@ void WebUIInfoSingleton::AddToDeepScanRequests(
   }
 }
 
+void WebUIInfoSingleton::AddHeadersToDeepScanRequests(
+    const std::string& request_token,
+    const net::HttpRequestHeaders& headers) {
+  if (!HasListener()) {
+    return;
+  }
+
+  // Only update the request time the first time we see a token.
+  if (deep_scan_requests_.find(request_token) == deep_scan_requests_.end()) {
+    deep_scan_requests_[request_token].request_time = base::Time::Now();
+  }
+
+  deep_scan_requests_[request_token].request_headers = headers;
+}
+
 void WebUIInfoSingleton::AddToDeepScanResponses(
     const std::string& token,
     const std::string& status,

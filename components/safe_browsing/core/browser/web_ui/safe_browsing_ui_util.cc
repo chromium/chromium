@@ -472,6 +472,15 @@ base::DictValue SerializeUploadEventsRequest(
 }
 
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+std::string SerializeRequestHeaders(const net::HttpRequestHeaders& headers) {
+  std::ostringstream string_stream;
+  for (net::HttpRequestHeaders::Iterator it(headers); it.GetNext();) {
+    string_stream << it.name() << ": " << it.value() << "\r\n";
+  }
+
+  return string_stream.str();
+}
+
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
@@ -500,6 +509,10 @@ base::DictValue SerializeDeepScanDebugData(const std::string& token,
   if (!data.request_time.is_null()) {
     value.Set("request_time",
               data.request_time.InMillisecondsFSinceUnixEpoch());
+  }
+
+  if (!data.request_headers.IsEmpty()) {
+    value.Set("http_headers", SerializeRequestHeaders(data.request_headers));
   }
 
   if (data.request.has_value()) {

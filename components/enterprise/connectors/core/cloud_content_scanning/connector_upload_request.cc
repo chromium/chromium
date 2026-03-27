@@ -100,6 +100,11 @@ void ConnectorUploadRequest::set_access_token(const std::string& access_token) {
   access_token_ = access_token;
 }
 
+void ConnectorUploadRequest::set_request_token(
+    const std::string& request_token) {
+  request_token_ = request_token;
+}
+
 void ConnectorUploadRequest::AssertCalledOnUIThread() {
   DCHECK(ui_task_runner_ && ui_task_runner_->RunsTasksInCurrentSequence());
 }

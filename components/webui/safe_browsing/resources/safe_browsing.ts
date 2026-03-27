@@ -33,6 +33,7 @@ interface RealtimeReportingResult {
 interface DeepScanResult {
   request: string;
   request_time: string;
+  http_headers: string;
   token: string;
   response: string;
   response_time: string;
@@ -542,11 +543,17 @@ function addResultToTableHelper(
 
 function addDeepScan(result: DeepScanResult) {
   if (result.request_time !== null) {
-    const requestFormatted = '[' +
-        (new Date(result.request_time)).toLocaleString() + ']\n' +
-        result.request;
+    let requestFormatted =
+        '[' + (new Date(result.request_time)).toLocaleString() + ']\n';
+
+    if (result.http_headers != null) {
+      requestFormatted += result.http_headers;
+    }
+    requestFormatted += result.request;
+
     addResultToTable('deep-scan-list', result.token, requestFormatted, 0);
   }
+
 
   if (result.response_time != null) {
     if (result.response_status === 'SUCCESS') {
@@ -572,6 +579,7 @@ function exportDeepScanData(): void {
   const exportData = Array.from(deepScanData.values()).map(entry => {
     return {
       'request_time': new Date(entry.request_time).toLocaleString(),
+      'http_headers': entry.http_headers,
       'request': JSON.parse(entry.request),
       'response_time': new Date(entry.response_time).toLocaleString(),
       'response': JSON.parse(entry.response),

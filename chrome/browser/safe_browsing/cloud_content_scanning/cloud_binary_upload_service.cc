@@ -483,11 +483,8 @@ void CloudBinaryUploadService::OnGetRequestData(
   // TODO(b/485578457): Add test validation to check that the
   // `access_token` is indeed set for the `upload_request`.
   upload_request->set_access_token(request->access_token());
-
-  WebUIContentInfoSingleton::GetInstance()->AddToDeepScanRequests(
-      request->per_profile_request(), request->access_token(),
-      upload_request->GetUploadInfo(), url.spec(),
-      request->content_analysis_request());
+  upload_request->set_request_token(
+      request->content_analysis_request().request_token());
 
   // |request| might have been deleted by the call to Start() in tests, so don't
   // dereference it afterwards.
@@ -670,8 +667,8 @@ void CloudBinaryUploadService::FinishRequest(
     }
   }
 
-  // We add the request here in case we never actually uploaded anything, so
-  // it wasn't added in OnGetRequestData
+  // Always record deep scan request here to ensure it is invoked after http
+  // headers are attached.
   WebUIContentInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->per_profile_request(), request->access_token(), upload_info,
       request->GetUrlWithParams().spec(), request->content_analysis_request());

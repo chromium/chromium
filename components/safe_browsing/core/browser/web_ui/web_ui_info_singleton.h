@@ -169,6 +169,12 @@ class WebUIInfoSingleton : public RealTimeUrlLookupServiceBase::WebUIDelegate,
       const std::string& upload_url,
       const enterprise_connectors::ContentAnalysisRequest& request);
 
+  // Add the http headers of the new request to |deep_scan_requests_| and send
+  // it to all the open chrome://safe-browsing tabs. Uses |request_token| as an
+  // identifier, as `AddToDeepScanRequests()` does.
+  void AddHeadersToDeepScanRequests(const std::string& request_token,
+                                    const net::HttpRequestHeaders& headers);
+
   // Add the new response to |deep_scan_requests_| and send it to all the open
   // chrome://safe-browsing tabs.
   void AddToDeepScanResponses(

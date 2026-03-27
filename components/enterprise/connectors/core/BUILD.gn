@@ -154,6 +154,10 @@ source_set("cloud_content_scanning") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
   ]
+
+  if (!is_ios && !is_fuchsia) {
+    deps += [ "//components/safe_browsing/content/browser/web_ui" ]
+  }
 }
 
 source_set("constants") {

@@ -16,6 +16,7 @@
 #include "components/safe_browsing/core/common/proto/safebrowsingv5.pb.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 namespace safe_browsing {
@@ -35,6 +36,7 @@ struct DeepScanDebugData {
   ~DeepScanDebugData();
 
   base::Time request_time;
+  net::HttpRequestHeaders request_headers;
   std::optional<enterprise_connectors::ContentAnalysisRequest> request;
   bool per_profile_request;
   std::string access_token_truncated;
@@ -169,6 +171,7 @@ base::DictValue SerializeUploadEventsRequest(
         upload_events_request,
     const base::DictValue& result);
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+std::string SerializeRequestHeaders(const net::HttpRequestHeaders& headers);
 std::string SerializeContentAnalysisRequest(
     bool per_profile_request,
     const std::string& access_token_truncated,
