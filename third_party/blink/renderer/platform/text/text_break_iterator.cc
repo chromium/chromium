@@ -438,6 +438,7 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
   unsigned pos = std::min(offset, string_.length());
   // +2 to ensure at least one code point is included.
   unsigned end = std::min(pos + 2, string_.length());
+  const UChar* chars16 = string_.Is8Bit() ? nullptr : string_.Span16().data();
   while (pos > min) {
     unsigned next_break = NextBreakablePosition(pos, end);
     if (next_break == pos) {
@@ -446,10 +447,14 @@ unsigned LazyLineBreakIterator::PreviousBreakOpportunity(unsigned offset,
 
     // There's no break opportunities at |pos| or after.
     end = pos;
-    if (string_.Is8Bit())
+    if (!chars16) {
       --pos;
-    else
-      UNSAFE_TODO(U16_BACK_1(string_.Characters16(), 0, pos));
+    } else {
+      // We don't use string_.Span16() here for performance reasons.
+      // SAFETY: U16_BACK_1() accesses `pos - 1` and `pos - 2`, and `pos` is
+      // <= string_.length().
+      UNSAFE_BUFFERS(U16_BACK_1(chars16, 0, pos));
+    }
   }
   return min;
 }
