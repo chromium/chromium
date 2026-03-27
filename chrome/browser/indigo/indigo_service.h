@@ -1,0 +1,77 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_INDIGO_INDIGO_SERVICE_H_
+#define CHROME_BROWSER_INDIGO_INDIGO_SERVICE_H_
+
+#include <optional>
+
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+
+class Profile;
+
+namespace indigo {
+
+enum class LocalEligibility {
+  kEligible,
+  kNotSignedIn,
+  kMissingCapabilities,
+};
+
+class IndigoService : public KeyedService,
+                      public signin::IdentityManager::Observer {
+ public:
+  using LocalEligibilityChangedCallback =
+      base::RepeatingCallback<void(LocalEligibility)>;
+
+  IndigoService(Profile* profile, signin::IdentityManager* identity_manager);
+  ~IndigoService() override;
+
+  // Get and subscribe to information about whether the profile is eligible to
+  // use the feature, as far as Chrome is concerned. This includes the user
+  // being signed in with an account which isn't barred, for instance, but not
+  // whether the user has actually completed all the steps required to use it.
+  //
+  // If the profile is not locally eligible, there is no point in offering the
+  // feature to users.
+  LocalEligibility GetLocalEligibility() const {
+    return last_known_local_eligibility_;
+  }
+  bool IsLocallyEligible() const {
+    return GetLocalEligibility() == LocalEligibility::kEligible;
+  }
+  base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
+      LocalEligibilityChangedCallback callback);
+
+  // KeyedService:
+  void Shutdown() override;
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
+
+ private:
+  LocalEligibility ComputeLocalEligibility() const;
+  void UpdateLocalEligibilityAndNotify();
+
+  raw_ptr<Profile> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+
+  LocalEligibility last_known_local_eligibility_;
+  base::RepeatingCallbackList<void(LocalEligibility)>
+      local_eligibility_callback_list_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
+};
+
+}  // namespace indigo
+#endif  // CHROME_BROWSER_INDIGO_INDIGO_SERVICE_H_

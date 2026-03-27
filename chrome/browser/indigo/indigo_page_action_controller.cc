@@ -14,11 +14,12 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_alpha_rpc.h"
+#include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -50,9 +51,6 @@ IndigoPageActionController::IndigoPageActionController(
       optimization_guide_(OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
               tab_interface.GetContents()->GetBrowserContext()))),
-      identity_manager_(
-          IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
-              tab_interface.GetContents()->GetBrowserContext()))),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
@@ -61,8 +59,13 @@ IndigoPageActionController::IndigoPageActionController(
         {optimization_guide::proto::OptimizationType::INDIGO});
   }
 
-  if (identity_manager_) {
-    identity_manager_observation_.Observe(identity_manager_);
+  Profile* profile = Profile::FromBrowserContext(
+      tab_interface.GetContents()->GetBrowserContext());
+  if (IndigoService* service = IndigoServiceFactory::GetForProfile(profile)) {
+    indigo_service_subscription_ =
+        service->RegisterLocalEligibilityChangedCallback(base::BindRepeating(
+            &IndigoPageActionController::OnLocalEligibilityChanged,
+            base::Unretained(this)));
   }
 
   UpdateEntryPointsState();
@@ -188,16 +191,6 @@ void IndigoPageActionController::DidFinishNavigation(
   }
 }
 
-void IndigoPageActionController::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event_details) {
-  UpdateEntryPointsState();
-}
-
-void IndigoPageActionController::OnExtendedAccountInfoUpdated(
-    const AccountInfo& info) {
-  UpdateEntryPointsState();
-}
-
 void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
   NOTIMPLEMENTED();
 }
@@ -218,11 +211,15 @@ void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
 void IndigoPageActionController::UpdateEntryPointsState() {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
+  Profile* profile =
+      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
+  IndigoService* service = IndigoServiceFactory::GetForProfile(profile);
+
   const bool should_show =
       base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch) ||
       (optimization_guide_decision_ ==
            optimization_guide::OptimizationGuideDecision::kTrue &&
-       CanUseModelExecutionFeatures());
+       service && service->IsLocallyEligible());
   if (should_show == is_shown_) {
     return;
   }
@@ -241,6 +238,11 @@ void IndigoPageActionController::OnOnboardingDialogClosed() {
   onboarding_dialog_.reset();
 }
 
+void IndigoPageActionController::OnLocalEligibilityChanged(
+    LocalEligibility state) {
+  UpdateEntryPointsState();
+}
+
 void IndigoPageActionController::OnOptimizationGuideDecision(
     const GURL& url,
     optimization_guide::OptimizationGuideDecision decision,
@@ -251,23 +253,6 @@ void IndigoPageActionController::OnOptimizationGuideDecision(
   }
   optimization_guide_decision_ = decision;
   UpdateEntryPointsState();
-}
-
-bool IndigoPageActionController::CanUseModelExecutionFeatures() const {
-  if (!identity_manager_) {
-    return false;
-  }
-
-  CoreAccountId account_id =
-      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  if (account_id.empty()) {
-    return false;
-  }
-
-  AccountInfo info =
-      identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
-  return info.capabilities.can_use_model_execution_features() ==
-         signin::Tribool::kTrue;
 }
 
 }  // namespace indigo

@@ -106,6 +106,7 @@
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
 #include "chrome/browser/language/accept_languages_service_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
@@ -1011,6 +1012,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   IdentityManagerFactory::EnsureFactoryAndDependeeFactoriesBuilt();
 #if !BUILDFLAG(IS_ANDROID)
   ImmediateRequestRateLimiterFactory::GetInstance();
+  if (base::FeatureList::IsEnabled(features::kIndigo)) {
+    indigo::IndigoServiceFactory::GetInstance();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
   InMemoryURLIndexFactory::GetInstance();
   visited_url_ranking::VisitedURLRankingServiceFactory::GetInstance();

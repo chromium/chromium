@@ -11,14 +11,19 @@ source_set("indigo") {
     "indigo_image_replacement_manager.h",
     "indigo_page_action_controller.h",
     "indigo_script_loader.h",
+    "indigo_service.h",
+    "indigo_service_factory.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/tabs",
     "//chrome/browser/ui/views/indigo",
     "//chrome/common:mojo_bindings",
+    "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/tabs:public",
     "//content/public/browser",
@@ -34,6 +39,8 @@ source_set("impl") {
     "indigo_image_replacement_manager.cc",
     "indigo_page_action_controller.cc",
     "indigo_script_loader.cc",
+    "indigo_service.cc",
+    "indigo_service_factory.cc",
   ]
 
   deps = [
@@ -66,6 +73,7 @@ source_set("unit_tests") {
     "indigo_alpha_rpc_unittest.cc",
     "indigo_page_action_controller_unittest.cc",
     "indigo_script_loader_unittest.cc",
+    "indigo_service_unittest.cc",
   ]
   deps = [
     ":impl",
