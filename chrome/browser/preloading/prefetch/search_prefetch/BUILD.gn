@@ -17,6 +17,7 @@ source_set("search_prefetch") {
   public_deps = [
     "//base",
     "//chrome/browser/preloading/prerender",
+    "//chrome/browser/preloading/search_preload:feature",
     "//chrome/browser/profiles:profile",
     "//components/search_engines",
     "//content/public/browser",

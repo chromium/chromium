@@ -4,13 +4,11 @@
 
 source_set("search_preload") {
   public = [
-    "search_preload_features.h",
     "search_preload_service.h",
     "search_preload_service_factory.h",
   ]
 
   sources = [
-    "search_preload_features.cc",
     "search_preload_pipeline.cc",
     "search_preload_pipeline.h",
     "search_preload_pipeline_manager.cc",
@@ -29,11 +27,23 @@ source_set("search_preload") {
     "//chrome/browser/preloading",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/preloading/prerender",
+    "//chrome/browser/preloading/search_preload:feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
     "//components/search_engines",
+  ]
+}
+
+source_set("feature") {
+  public = [ "search_preload_features.h" ]
+
+  sources = [ "search_preload_features.cc" ]
+
+  deps = [
+    "//base",
+    "//components/omnibox/browser:mojo_bindings",
   ]
 }
 
@@ -52,6 +62,7 @@ source_set("browser_tests") {
     "//chrome/browser/preloading/prefetch:test_support",
     "//chrome/browser/preloading/prefetch/search_prefetch:field_trial_settings",
     "//chrome/browser/preloading/prerender",
+    "//chrome/browser/preloading/search_preload:feature",
     "//chrome/browser/search_engines",
     "//chrome/test:platform_browser_tests",
     "//chrome/test:test_support",

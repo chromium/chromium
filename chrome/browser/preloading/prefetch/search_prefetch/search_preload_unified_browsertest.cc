@@ -30,6 +30,7 @@
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_paths.h"
@@ -103,7 +104,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
               {"cache_size", "1"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kDsePreload2});
   }
 
   void SetUp() override {
@@ -1124,7 +1125,7 @@ class HoldbackSearchPreloadUnifiedBrowserTest
               {"cache_size", "4"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        {});
+        {features::kDsePreload2});
     preloading_config_override_.SetHoldback(
         content::PreloadingType::kPrerender,
         chrome_preloading_predictor::kDefaultSearchEngine, true);
@@ -1236,7 +1237,8 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
          {{"max_attempts_per_caching_duration", "3"},
           {"cache_size", "4"},
           {"device_memory_threshold_MB", "0"}}}};
-    std::vector<base::test::FeatureRef> disabled_features = {};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::kDsePreload2};
     if (GetParam()) {
       enabled_features.emplace_back(base::test::FeatureRefAndParams(
           kSearchPrefetchWithNoVarySearchDiskCache, {}));

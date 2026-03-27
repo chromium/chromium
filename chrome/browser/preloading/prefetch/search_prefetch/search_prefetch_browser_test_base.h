@@ -183,6 +183,7 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest,
   raw_ptr<DevToolsWindow> window_ = nullptr;
   // Disable sampling for UKM preloading logs.
   content::test::PreloadingConfigOverride preloading_config_override_;
+  base::test::ScopedFeatureList feature_list_for_dse_preload2_;
 };
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_BROWSER_TEST_BASE_H_
