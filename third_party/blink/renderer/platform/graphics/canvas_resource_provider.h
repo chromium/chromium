@@ -142,9 +142,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
   MemoryManagedPaintCanvas& Canvas();
-  // FlushCanvas and preserve recording only if IsPrinting or
-  // FlushReason indicates printing in progress.
-  std::optional<cc::PaintRecord> FlushCanvas(FlushReason = FlushReason::kOther);
   std::optional<cc::PaintRecord> FlushCanvas2D(
       FlushReason = FlushReason::kOther);
   virtual ScopedRasterTimer CreateScopedRasterTimer();
@@ -458,6 +455,8 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
 
+  ScopedRasterTimer CreateScopedRasterTimer() override;
+
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
 
@@ -477,7 +476,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
   void DisableLineDrawingAsPathsIfNecessary() override;
-  ScopedRasterTimer CreateScopedRasterTimer() override;
 
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
@@ -745,6 +743,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
  private:
   bool IsCanvas2D() const override { return false; }
+
+  std::optional<cc::PaintRecord> FlushCanvas(FlushReason = FlushReason::kOther);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 };

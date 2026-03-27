@@ -1961,8 +1961,30 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
                            always_enable_raster_timers_for_testing_);
 }
 
-std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
+std::optional<cc::PaintRecord>
+CanvasNon2DResourceProviderSharedImage::FlushCanvas(FlushReason reason) {
+  if (!recorder_->HasReleasableDrawOps()) {
+    return std::nullopt;
+  }
+  auto timer = CreateScopedRasterTimer();
+
+  // If a previous flush rasterized some paint ops, we lost part of the
+  // recording and must fallback to raster printing instead of vectorial
+  // printing.
+  clear_frame_ = false;
+  cc::PaintRecord recording;
+  recording = recorder_->ReleaseMainRecording();
+  RasterRecord(recording);
+  // Images are locked for the duration of the rasterization, in case they get
+  // used multiple times. We can unlock them once the rasterization is complete.
+  ReleaseLockedImages();
+
+  return recording;
+}
+
+std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
     FlushReason reason /*=FlushReason::kOther*/) {
+  CHECK(IsCanvas2D());
   if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
@@ -1982,18 +2004,10 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas(
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
 
-  if (IsCanvas2D()) {
-    last_recording_for_canvas2d_ =
-        preserve_recording ? std::optional(recording) : std::nullopt;
-  }
+  last_recording_for_canvas2d_ =
+      preserve_recording ? std::optional(recording) : std::nullopt;
 
   return recording;
-}
-
-std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
-    FlushReason reason /*=FlushReason::kOther*/) {
-  CHECK(IsCanvas2D());
-  return FlushCanvas(reason);
 }
 
 void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
