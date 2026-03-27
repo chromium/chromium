@@ -335,7 +335,7 @@ const LocalizedErrorMap net_error_options[] = {
    SHOW_BUTTON_RELOAD,
   },
   {net::ERR_BLOCKED_BY_ADMINISTRATOR,
-   IDS_ERRORPAGES_HEADING_BLOCKED,
+   IDS_ERRORPAGES_HEADING_BLOCKED_BY_ADMINISTRATOR,
    IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR,
    SUGGEST_NONE,
    SHOW_NO_BUTTONS,
@@ -519,7 +519,6 @@ std::u16string GetStringWithPlaceholder(int resource_id,
     case IDS_ERRORPAGES_CHECK_TYPO_SUMMARY:
     case IDS_ERRORPAGES_HEADING_ACCESS_DENIED:
     case IDS_ERRORPAGES_HEADING_BLOCKED:
-    case IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME:
     case IDS_ERRORPAGES_HEADING_NOT_FOUND:
     case IDS_ERRORPAGES_SUMMARY_BAD_SSL_CLIENT_AUTH_CERT:
     case IDS_ERRORPAGES_SUMMARY_CONNECTION_CLOSED:
@@ -1075,13 +1074,6 @@ LocalizedError::PageState LocalizedError::GetPageState(
     result.strings.Set("title", host_name);
   } else {
     result.strings.Set("title", failed_url_string);
-
-    // If the page is blocked by policy, and no hostname is available to show,
-    // instead show the scheme.
-    if (error_code == net::ERR_BLOCKED_BY_ADMINISTRATOR && host_name.empty()) {
-      options.heading_resource_id = IDS_ERRORPAGES_HEADING_BLOCKED_SCHEME;
-      host_name = base::UTF8ToUTF16(failed_url.GetScheme());
-    }
   }
 
   result.strings.Set("iconClass",
