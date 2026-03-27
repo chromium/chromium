@@ -269,14 +269,14 @@ AwMetricsServiceClient::AwMetricsServiceClient(
 
 AwMetricsServiceClient::~AwMetricsServiceClient() = default;
 
-void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
+void AwMetricsServiceClient::Initialize(PrefService* local_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!init_finished_);
 
-  pref_service_ = pref_service;
+  local_state_ = local_state;
 
   metrics_state_manager_ = metrics::MetricsStateManager::Create(
-      pref_service_, this,
+      local_state_, this,
       // Pass an empty file path since the path is for Extended Variations Safe
       // Mode, which is N/A to Android embedders.
       std::wstring(), base::FilePath(), metrics::StartupVisibility::kUnknown,
@@ -304,7 +304,7 @@ void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
   // Create the MetricsService immediately so that other code can make use of
   // it. Chrome always creates the MetricsService as well.
   metrics_service_ = std::make_unique<metrics::MetricsService>(
-      metrics_state_manager_.get(), this, pref_service_);
+      metrics_state_manager_.get(), this, local_state_);
 
   // Registration of providers has to wait until consent is determined. To
   // do otherwise means the providers would always be configured with reporting
@@ -354,17 +354,17 @@ void AwMetricsServiceClient::MaybeStartMetrics() {
     // Even though reporting is not enabled, CreateFileMetricsProvider() is
     // called. This ensures on disk state is removed.
     metrics_service_->RegisterMetricsProvider(
-        CreateFileMetricsProvider(pref_service_, metrics_dir_, old_metrics_dir_,
+        CreateFileMetricsProvider(local_state_, metrics_dir_, old_metrics_dir_,
                                   /* metrics_reporting_enabled */ false));
-    pref_service_->ClearPref(metrics::prefs::kMetricsClientID);
-    pref_service_->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
-    pref_service_->ClearPref(metrics::prefs::kMetricsLogRecordId);
+    local_state_->ClearPref(metrics::prefs::kMetricsClientID);
+    local_state_->ClearPref(metrics::prefs::kMetricsProvisionalClientID);
+    local_state_->ClearPref(metrics::prefs::kMetricsLogRecordId);
   }
 }
 
-PrefService* AwMetricsServiceClient::GetPrefService() const {
+PrefService* AwMetricsServiceClient::GetLocalState() const {
   CHECK(init_finished_);
-  return pref_service_;
+  return local_state_;
 }
 
 void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
@@ -376,13 +376,13 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::EntropyStateProvider>(pref_service_));
+      std::make_unique<metrics::EntropyStateProvider>(local_state_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ScreenInfoMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::FormFactorMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(CreateFileMetricsProvider(
-      pref_service_, metrics_dir_, old_metrics_dir_,
+      local_state_, metrics_dir_, old_metrics_dir_,
       metrics_state_manager_->IsMetricsReportingEnabled()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::CallStackProfileMetricsProvider>());
@@ -390,7 +390,7 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
       std::make_unique<metrics::AndroidMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::DriveMetricsProvider>(
-          base::DIR_ANDROID_APP_DATA, pref_service_));
+          base::DIR_ANDROID_APP_DATA, local_state_));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
@@ -398,7 +398,7 @@ void AwMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           GetUnfilteredSampleRatePerMille()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::ContentStabilityMetricsProvider>(
-          pref_service_, /*extensions_helper=*/nullptr));
+          local_state_, /*extensions_helper=*/nullptr));
   delegate_->RegisterAdditionalMetricsProviders(metrics_service_.get());
 
   // The file metrics provider performs IO.
@@ -474,7 +474,7 @@ int32_t AwMetricsServiceClient::GetProduct() {
 std::string AwMetricsServiceClient::GetApplicationLocale() {
   if (base::FeatureList::IsEnabled(
           metrics::features::kConsolidateMetricsServiceLocales)) {
-    return language::GetApplicationLocale(pref_service_);
+    return language::GetApplicationLocale(local_state_);
   }
   return base::i18n::GetConfiguredLocale();
 }

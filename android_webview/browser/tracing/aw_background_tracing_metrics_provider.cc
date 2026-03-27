@@ -51,7 +51,7 @@ void AwBackgroundTracingMetricsProvider::Init() {
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::DriveMetricsProvider>(
           base::DIR_ANDROID_APP_DATA,
-          aw_metrics_service_client->GetPrefService()));
+          aw_metrics_service_client->GetLocalState()));
   system_profile_providers_.emplace_back(
       std::make_unique<metrics::NetworkMetricsProvider>(
           content::CreateNetworkConnectionTrackerAsyncGetter()));
