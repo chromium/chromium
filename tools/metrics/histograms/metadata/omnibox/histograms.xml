@@ -2674,6 +2674,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.TextEditedBeforeAiMode" enum="Boolean"
+    expires_after="2027-03-25">
+  <owner>stkhapugin@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the user edited the text in the Fusebox input plate before
+    entering AI Mode. Recorded when AI Mode is activated.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MostVisitedProvider.QueryMostVisitedURLs.Duration"
     units="ms" expires_after="2026-11-12">
   <owner>niharm@google.com</owner>

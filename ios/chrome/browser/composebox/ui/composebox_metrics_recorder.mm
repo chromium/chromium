@@ -178,6 +178,11 @@ std::string GetStringForDragAndDropType(ComposeboxDragAndDropType type) {
   }
 }
 
+- (void)recordTextEditedBeforeAiMode:(BOOL)edited {
+  base::UmaHistogramBoolean("Omnibox.MobileFusebox.TextEditedBeforeAiMode",
+                            edited);
+}
+
 #pragma mark - private
 
 - (void)recordAttachmentButtonUsedInSession:
