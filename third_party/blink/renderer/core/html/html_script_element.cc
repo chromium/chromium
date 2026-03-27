@@ -252,8 +252,9 @@ String HTMLScriptElement::scriptInnerTextForBinding() {
   return innerTextForBinding();
 }
 
-V8UnionStringOrTrustedScript* HTMLScriptElement::text() {
-  return MakeGarbageCollected<V8UnionStringOrTrustedScript>(TextFromChildren());
+V8UnionStringOrTrustedScript::Ret HTMLScriptElement::text(
+    ScriptState* script_state) {
+  return V8UnionStringOrTrustedScript::Ret(script_state, TextFromChildren());
 }
 
 void HTMLScriptElement::setText(V8UnionStringOrTrustedScript* value,

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/html/track/audio_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/video_track.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -63,20 +64,22 @@ const AtomicString& TrackEvent::InterfaceName() const {
   return event_interface_names::kTrackEvent;
 }
 
-V8UnionAudioTrackOrTextTrackOrVideoTrack* TrackEvent::track() {
-  if (!track_)
-    return nullptr;
+V8UnionAudioTrackOrTextTrackOrVideoTrack::Ret TrackEvent::track(
+    ScriptState* script_state) {
+  if (!track_) {
+    return {};
+  }
 
   switch (track_->GetType()) {
     case WebMediaPlayer::kTextTrack:
-      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
-          To<TextTrack>(track_.Get()));
+      return V8UnionAudioTrackOrTextTrackOrVideoTrack::Ret(
+          script_state, To<TextTrack>(track_.Get()));
     case WebMediaPlayer::kAudioTrack:
-      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
-          To<AudioTrack>(track_.Get()));
+      return V8UnionAudioTrackOrTextTrackOrVideoTrack::Ret(
+          script_state, To<AudioTrack>(track_.Get()));
     case WebMediaPlayer::kVideoTrack:
-      return MakeGarbageCollected<V8UnionAudioTrackOrTextTrackOrVideoTrack>(
-          To<VideoTrack>(track_.Get()));
+      return V8UnionAudioTrackOrTextTrackOrVideoTrack::Ret(
+          script_state, To<VideoTrack>(track_.Get()));
   }
 
   NOTREACHED();

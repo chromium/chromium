@@ -10,7 +10,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
@@ -103,7 +105,8 @@ class GPUCanvasContext : public ScriptWrappable,
   }
 
   // gpu_canvas_context.idl {{{
-  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+  bindings::OptimizedReturnProxy<V8UnionHTMLCanvasElementOrOffscreenCanvas>
+  getHTMLOrOffscreenCanvas(ScriptState*) const;
   void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
   GPUCanvasConfiguration* getConfiguration();

@@ -1192,18 +1192,18 @@ void HTMLElement::setContentEditable(const String& enabled,
   }
 }
 
-V8UnionBooleanOrStringOrUnrestrictedDouble* HTMLElement::hidden() const {
+V8UnionBooleanOrStringOrUnrestrictedDouble::Ret HTMLElement::hidden(
+    ScriptState* script_state) const {
   const AtomicString& attribute = FastGetAttribute(html_names::kHiddenAttr);
 
   if (attribute == g_null_atom) {
-    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
-        false);
+    return V8UnionBooleanOrStringOrUnrestrictedDouble::Ret(script_state, false);
   }
   if (EqualIgnoringAsciiCase(attribute, keywords::kUntilFound)) {
-    return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(
-        String(keywords::kUntilFound));
+    return V8UnionBooleanOrStringOrUnrestrictedDouble::Ret(
+        script_state, String(keywords::kUntilFound));
   }
-  return MakeGarbageCollected<V8UnionBooleanOrStringOrUnrestrictedDouble>(true);
+  return V8UnionBooleanOrStringOrUnrestrictedDouble::Ret(script_state, true);
 }
 
 void HTMLElement::setHidden(

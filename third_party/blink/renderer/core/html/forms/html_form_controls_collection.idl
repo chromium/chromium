@@ -24,7 +24,7 @@
 [Exposed=Window]
 interface HTMLFormControlsCollection : HTMLCollection {
     // inherits length and item()
-    [ImplementedAs=namedGetter] getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()
+    [ImplementedAs=namedGetter, CallWith=ScriptState] getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()
     // FIXME: This getter is not in the spec.
     [ImplementedAs=item] getter Node (unsigned long index);
 };

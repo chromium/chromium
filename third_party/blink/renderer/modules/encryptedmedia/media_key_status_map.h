@@ -9,13 +9,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_media_key_status_map.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediakeystatus_undefined.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class ScriptState;
-class V8UnionMediaKeyStatusOrUndefined;
 class WebData;
 
 // Represents a read-only map (to JavaScript) of key IDs and their current
@@ -45,7 +45,8 @@ class MediaKeyStatusMap final : public ScriptWrappable,
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
   bool has(const V8BufferSource* key_id);
-  V8UnionMediaKeyStatusOrUndefined* get(const V8BufferSource* key_id);
+  V8UnionMediaKeyStatusOrUndefined::Ret get(ScriptState*,
+                                            const V8BufferSource* key_id);
 
   void Trace(Visitor*) const override;
 

@@ -9,7 +9,7 @@
      Exposed=(Window,Worker)
 ] interface ImageBitmapRenderingContext {
     // back-reference to the canvas
-    [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
+    [ImplementedAs=getHTMLOrOffscreenCanvas, GetterCallWith=ScriptState] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
 
     [RaisesException] void transferFromImageBitmap(ImageBitmap? bitmap);
 };

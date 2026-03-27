@@ -9167,14 +9167,15 @@ void WebGLRenderingContextBase::RestoreUnpackParameters() {
     ContextGL()->PixelStorei(GL_UNPACK_ALIGNMENT, unpack_alignment_);
 }
 
-V8UnionHTMLCanvasElementOrOffscreenCanvas*
-WebGLRenderingContextBase::getHTMLOrOffscreenCanvas() const {
+V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret
+WebGLRenderingContextBase::getHTMLOrOffscreenCanvas(
+    ScriptState* script_state) const {
   if (canvas()) {
-    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-        static_cast<HTMLCanvasElement*>(Host()));
+    return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+        script_state, static_cast<HTMLCanvasElement*>(Host()));
   }
-  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-      static_cast<OffscreenCanvas*>(Host()));
+  return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+      script_state, static_cast<OffscreenCanvas*>(Host()));
 }
 
 void WebGLRenderingContextBase::addProgramCompletionQuery(WebGLProgram* program,

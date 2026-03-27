@@ -546,14 +546,15 @@ bool WebGLRenderingContextWebGPUBase::Initialize(
 // Start of WebGLRenderingContextBase's IDL methods
 // ****************************************************************************
 
-V8UnionHTMLCanvasElementOrOffscreenCanvas*
-WebGLRenderingContextWebGPUBase::getHTMLOrOffscreenCanvas() const {
+V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret
+WebGLRenderingContextWebGPUBase::getHTMLOrOffscreenCanvas(
+    ScriptState* script_state) const {
   if (canvas()) {
-    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-        static_cast<HTMLCanvasElement*>(Host()));
+    return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+        script_state, static_cast<HTMLCanvasElement*>(Host()));
   }
-  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-      static_cast<OffscreenCanvas*>(Host()));
+  return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+      script_state, static_cast<OffscreenCanvas*>(Host()));
 }
 
 int WebGLRenderingContextWebGPUBase::drawingBufferWidth() const {

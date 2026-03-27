@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_TEXTURE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_TEXTURE_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_gputextureviewdimension_undefined.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -17,7 +19,6 @@ class GPUTextureViewDescriptor;
 class StaticBitmapImage;
 class V8GPUTextureDimension;
 class V8GPUTextureFormat;
-class V8UnionGPUTextureViewDimensionOrUndefined;
 class WebGPUMailboxTexture;
 
 struct OwnedTextureViewDescriptor {
@@ -71,8 +72,8 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   uint32_t mipLevelCount() const;
   uint32_t sampleCount() const;
   V8GPUTextureDimension dimension() const;
-  V8UnionGPUTextureViewDimensionOrUndefined* textureBindingViewDimension()
-      const;
+  V8UnionGPUTextureViewDimensionOrUndefined::Ret textureBindingViewDimension(
+      ScriptState*) const;
   V8GPUTextureFormat format() const;
   uint32_t usage() const;
   // }}} End of WebIDL binding implementation.

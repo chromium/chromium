@@ -10,5 +10,5 @@
     RuntimeEnabled=CSSColorTypedOM
 ] interface CSSColorValue {
 
-  [RaisesException, NewObject, Exposed=Window, CallWith=ExecutionContext] static (CSSColorValue or CSSStyleValue) parse(USVString cssText);
+  [RaisesException, NewObject, Exposed=Window, CallWith=ScriptState] static (CSSColorValue or CSSStyleValue) parse(USVString cssText);
 };

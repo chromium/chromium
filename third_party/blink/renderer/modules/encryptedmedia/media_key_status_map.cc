@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/public/platform/web_data.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_mediakeystatus_undefined.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -129,15 +130,16 @@ bool MediaKeyStatusMap::has(
   return index < entries_.size();
 }
 
-V8UnionMediaKeyStatusOrUndefined* MediaKeyStatusMap::get(
+V8UnionMediaKeyStatusOrUndefined::Ret MediaKeyStatusMap::get(
+    ScriptState* script_state,
     const V8BufferSource* key_id) {
   uint32_t index = IndexOf(key_id);
   if (index >= entries_.size()) {
-    return MakeGarbageCollected<V8UnionMediaKeyStatusOrUndefined>(
-        ToV8UndefinedGenerator());
+    return V8UnionMediaKeyStatusOrUndefined::Ret(script_state,
+                                                 ToV8UndefinedGenerator());
   }
-  return MakeGarbageCollected<V8UnionMediaKeyStatusOrUndefined>(
-      at(index).Status());
+  return V8UnionMediaKeyStatusOrUndefined::Ret(script_state,
+                                               at(index).Status());
 }
 
 MediaKeyStatusMap::IterationSource* MediaKeyStatusMap::CreateIterationSource(

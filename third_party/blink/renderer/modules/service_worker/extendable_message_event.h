@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/service_worker/extendable_event.h"
+#include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -76,7 +77,8 @@ class MODULES_EXPORT ExtendableMessageEvent final : public ExtendableEvent {
   bool isDataDirty() const { return false; }
   String origin() const;
   const String& lastEventId() const { return last_event_id_; }
-  V8UnionClientOrMessagePortOrServiceWorker* source() const;
+  bindings::OptimizedReturnProxy<V8UnionClientOrMessagePortOrServiceWorker>
+  source(ScriptState*) const;
   MessagePortArray ports() const;
 
   const AtomicString& InterfaceName() const override;

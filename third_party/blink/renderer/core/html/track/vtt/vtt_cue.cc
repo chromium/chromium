@@ -215,12 +215,12 @@ bool VTTCue::LineIsAuto() const {
   return std::isnan(line_position_);
 }
 
-V8UnionAutoKeywordOrDouble* VTTCue::line() const {
+V8UnionAutoKeywordOrDouble::Ret VTTCue::line(ScriptState* script_state) const {
   if (LineIsAuto()) {
-    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
-        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+    return V8UnionAutoKeywordOrDouble::Ret(
+        script_state, V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
   }
-  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(line_position_);
+  return V8UnionAutoKeywordOrDouble::Ret(script_state, line_position_);
 }
 
 void VTTCue::setLine(const V8UnionAutoKeywordOrDouble* position) {
@@ -253,12 +253,13 @@ bool VTTCue::TextPositionIsAuto() const {
   return std::isnan(text_position_);
 }
 
-V8UnionAutoKeywordOrDouble* VTTCue::position() const {
+V8UnionAutoKeywordOrDouble::Ret VTTCue::position(
+    ScriptState* script_state) const {
   if (TextPositionIsAuto()) {
-    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
-        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+    return V8UnionAutoKeywordOrDouble::Ret(
+        script_state, V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
   }
-  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(text_position_);
+  return V8UnionAutoKeywordOrDouble::Ret(script_state, text_position_);
 }
 
 void VTTCue::setPosition(const V8UnionAutoKeywordOrDouble* position,

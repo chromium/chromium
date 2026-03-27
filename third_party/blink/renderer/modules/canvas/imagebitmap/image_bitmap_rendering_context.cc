@@ -38,14 +38,15 @@ ImageBitmapRenderingContext::ImageBitmapRenderingContext(
 
 ImageBitmapRenderingContext::~ImageBitmapRenderingContext() = default;
 
-V8UnionHTMLCanvasElementOrOffscreenCanvas*
-ImageBitmapRenderingContext::getHTMLOrOffscreenCanvas() const {
+V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret
+ImageBitmapRenderingContext::getHTMLOrOffscreenCanvas(
+    ScriptState* script_state) const {
   if (Host()->IsOffscreenCanvas()) {
-    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-        static_cast<OffscreenCanvas*>(Host()));
+    return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+        script_state, static_cast<OffscreenCanvas*>(Host()));
   }
-  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-      static_cast<HTMLCanvasElement*>(Host()));
+  return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+      script_state, static_cast<HTMLCanvasElement*>(Host()));
 }
 
 void ImageBitmapRenderingContext::Reset() {

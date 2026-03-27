@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/forms/radio_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/bindings/union_base.h"
 
 namespace blink {
 
@@ -52,7 +53,9 @@ class HTMLFormControlsCollection final : public HTMLCollection {
   }
 
   HTMLElement* namedItem(const AtomicString& name) const override;
-  V8UnionElementOrRadioNodeList* namedGetter(const AtomicString& name);
+  bindings::OptimizedReturnProxy<V8UnionElementOrRadioNodeList> namedGetter(
+      ScriptState*,
+      const AtomicString& name);
 
   void Trace(Visitor*) const override;
 

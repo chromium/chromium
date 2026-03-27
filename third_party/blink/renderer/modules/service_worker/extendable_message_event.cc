@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/url/dom_origin.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -80,19 +81,19 @@ ScriptValue ExtendableMessageEvent::data(ScriptState* script_state) const {
   return ScriptValue(script_state->GetIsolate(), value);
 }
 
-V8UnionClientOrMessagePortOrServiceWorker* ExtendableMessageEvent::source()
-    const {
+V8UnionClientOrMessagePortOrServiceWorker::Ret ExtendableMessageEvent::source(
+    ScriptState* script_state) const {
   if (source_as_client_) {
-    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
-        source_as_client_);
+    return V8UnionClientOrMessagePortOrServiceWorker::Ret(script_state,
+                                                          source_as_client_);
   } else if (source_as_service_worker_) {
-    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
-        source_as_service_worker_);
+    return V8UnionClientOrMessagePortOrServiceWorker::Ret(
+        script_state, source_as_service_worker_);
   } else if (source_as_message_port_) {
-    return MakeGarbageCollected<V8UnionClientOrMessagePortOrServiceWorker>(
-        source_as_message_port_);
+    return V8UnionClientOrMessagePortOrServiceWorker::Ret(
+        script_state, source_as_message_port_);
   }
-  return nullptr;
+  return {};
 }
 
 MessagePortArray ExtendableMessageEvent::ports() const {

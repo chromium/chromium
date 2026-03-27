@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
+#include "third_party/blink/renderer/platform/bindings/union_base.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -114,12 +115,13 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   bool snapToLines() const { return snap_to_lines_; }
   void setSnapToLines(bool);
 
-  V8UnionAutoKeywordOrDouble* line() const;
-  void setLine(const V8UnionAutoKeywordOrDouble* position);
+  bindings::OptimizedReturnProxy<V8UnionAutoKeywordOrDouble> line(
+      ScriptState*) const;
+  void setLine(const V8UnionAutoKeywordOrDouble*);
 
-  V8UnionAutoKeywordOrDouble* position() const;
-  void setPosition(const V8UnionAutoKeywordOrDouble* position,
-                   ExceptionState& exception_state);
+  bindings::OptimizedReturnProxy<V8UnionAutoKeywordOrDouble> position(
+      ScriptState*) const;
+  void setPosition(const V8UnionAutoKeywordOrDouble*, ExceptionState&);
 
   double size() const { return cue_size_; }
   void setSize(double, ExceptionState&);

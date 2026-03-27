@@ -45,7 +45,7 @@ typedef [PassAsSpan] ([AllowShared, BufferSourceTypeNoSizeLimit] Uint32Array or 
 
 interface mixin WebGLRenderingContextBase {
 
-    [ImplementedAs=getHTMLOrOffscreenCanvas] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
+    [ImplementedAs=getHTMLOrOffscreenCanvas, GetterCallWith=ScriptState] readonly attribute (HTMLCanvasElement or OffscreenCanvas) canvas;
 
     /* ClearBufferMask */
     const GLenum DEPTH_BUFFER_BIT               = 0x00000100;

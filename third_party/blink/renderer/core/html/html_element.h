@@ -266,7 +266,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void AdjustDirectionAutoAfterRecalcAssignedNodes();
   virtual bool CalculateAndAdjustAutoDirectionality();
 
-  V8UnionBooleanOrStringOrUnrestrictedDouble* hidden() const;
+  V8UnionBooleanOrStringOrUnrestrictedDouble::Ret hidden(ScriptState*) const;
   void setHidden(const V8UnionBooleanOrStringOrUnrestrictedDouble*);
 
   // https://html.spec.whatwg.org/C/#potentially-render-blocking

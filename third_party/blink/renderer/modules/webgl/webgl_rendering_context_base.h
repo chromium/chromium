@@ -40,6 +40,7 @@
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_uniform_location.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_vertex_array_object_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgl_image_conversion.h"
@@ -707,7 +709,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
-  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+  V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret getHTMLOrOffscreenCanvas(
+      ScriptState*) const;
 
   void drawingBufferStorage(GLenum sizedformat, GLsizei width, GLsizei height);
 

@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -385,14 +386,14 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
           std::move(release_callback)));
 }
 
-V8UnionHTMLCanvasElementOrOffscreenCanvas*
-GPUCanvasContext::getHTMLOrOffscreenCanvas() const {
+V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret
+GPUCanvasContext::getHTMLOrOffscreenCanvas(ScriptState* script_state) const {
   if (Host()->IsOffscreenCanvas()) {
-    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-        static_cast<OffscreenCanvas*>(Host()));
+    return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+        script_state, static_cast<OffscreenCanvas*>(Host()));
   }
-  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
-      static_cast<HTMLCanvasElement*>(Host()));
+  return V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret(
+      script_state, static_cast<HTMLCanvasElement*>(Host()));
 }
 
 void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,

@@ -11,9 +11,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_context_attributes.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object_support.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -74,7 +76,8 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // **************************************************************************
   // Start of WebGLRenderingContextBase's IDL methods
   // **************************************************************************
-  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
+  V8UnionHTMLCanvasElementOrOffscreenCanvas::Ret getHTMLOrOffscreenCanvas(
+      ScriptState*) const;
 
   int drawingBufferWidth() const;
   int drawingBufferHeight() const;
