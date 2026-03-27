@@ -676,15 +676,15 @@ dictionary Rect {
 };
 
 // Arguments for the find() and findAll() methods.
-dictionary FindParams {
-  [nocompile] RoleType role;
+[nocompile] dictionary FindParams {
+  RoleType role;
 
   // A map of $(ref:automation.StateType) to boolean, indicating for each
   // state whether it should be set or not. For example:
   // <code>{ StateType.disabled: false }</code> would only match if
   // <code>StateType.disabled</code> was <em>not</em> present in the node's
   // <code>state</code> object.
-  [nocompile] object state;
+  object state;
 
   // A map of attribute name to expected value, for example
   // <code>{ name: 'Root directory', checkbox_mixed: true }</code>.
@@ -699,70 +699,70 @@ dictionary FindParams {
   // <li>float</li>
   // <li>boolean</li>
   // </ul>
-  [nocompile] object attributes;
+  object attributes;
 };
 
 // Arguments for the setDocumentSelection() function.
-dictionary SetDocumentSelectionParams {
+[nocompile] dictionary SetDocumentSelectionParams {
   // The node where the selection begins.
-  [nocompile, instanceOf=AutomationNode] required object anchorObject;
+  [instanceOf=AutomationNode] required object anchorObject;
 
   // The offset in the anchor node where the selection begins.
-  [nocompile] required long anchorOffset;
+  required long anchorOffset;
 
   // The node where the selection ends.
-  [nocompile, instanceOf=AutomationNode] required object focusObject;
+  [instanceOf=AutomationNode] required object focusObject;
 
   // The offset within the focus node where the selection ends.
-  [nocompile] required long focusOffset;
+  required long focusOffset;
 };
 
-dictionary AutomationIntent {
+[nocompile] dictionary AutomationIntent {
   // A command associated with this AutomationIntent.
-  [nocompile] required IntentCommandType command;
+  required IntentCommandType command;
 
   // A text boundary associated with this AutomationIntent.
-  [nocompile] required IntentTextBoundaryType textBoundary;
+  required IntentTextBoundaryType textBoundary;
 
   // A move direction associated with this AutomationIntent.
-  [nocompile] IntentMoveDirectionType moveDirection;
+  IntentMoveDirectionType moveDirection;
 };
 
 callback StopPropagationCallback = undefined();
 
 // An event in the Automation tree.
-dictionary AutomationEvent {
+[nocompile] dictionary AutomationEvent {
   // The $(ref:automation.AutomationNode) to which the event was targeted.
-  [nocompile] required AutomationNode target;
+  required AutomationNode target;
 
   // The type of the event.
-  [nocompile] required EventType type;
+  required EventType type;
 
   // The source of this event.
-  [nocompile] required DOMString eventFrom;
+  required DOMString eventFrom;
 
   // Any mouse coordinates associated with this event.
-  [nocompile] required long mouseX;
-  [nocompile] required long mouseY;
+  required long mouseX;
+  required long mouseY;
 
   // A list of $(ref:automation.AutomationIntent)s associated with this event.
-  [nocompile] required sequence<AutomationIntent> intents;
+  required sequence<AutomationIntent> intents;
 
   // Stops this event from further processing except for any remaining
   // listeners on $(ref:automation.AutomationEvent.target).
-  [nocompile] required StopPropagationCallback stopPropagation;
+  required StopPropagationCallback stopPropagation;
 };
 
 // A listener for events on an <code>AutomationNode</code>.
 callback AutomationListener = undefined(AutomationEvent event);
 
 // A change to the Automation tree.
-dictionary TreeChange {
+[nocompile] dictionary TreeChange {
   // The $(ref:automation.AutomationNode) that changed.
-  [nocompile] required AutomationNode target;
+  required AutomationNode target;
 
   // The type of change.
-  [nocompile] required TreeChangeType type;
+  required TreeChangeType type;
 };
 
 // Possible tree changes to listen to using addTreeChangeObserver.
@@ -782,22 +782,22 @@ callback PerformActionCallback = undefined(boolean result);
 callback PerformActionCallbackWithNode = undefined(AutomationNode node);
 callback BoundsForRangeCallback = undefined(Rect bounds);
 
-dictionary CustomAction {
-  [nocompile] required long id;
-  [nocompile] required DOMString description;
+[nocompile] dictionary CustomAction {
+  required long id;
+  required DOMString description;
 };
 
 // A marker associated with an AutomationNode.
-dictionary Marker {
+[nocompile] dictionary Marker {
   // The start offset within the text of the associated node.
-  [nocompile] required long startOffset;
+  required long startOffset;
 
   // The end offset within the text of the associated node.
-  [nocompile] required long endOffset;
+  required long endOffset;
 
   // A mapping of MarkerType to true or undefined indicating the marker types
   // for this marker.
-  [nocompile] required object flags;
+  required object flags;
 };
 
 callback AutomationPositionIsNullPositionCallback = boolean();
@@ -872,108 +872,107 @@ callback AutomationPositionIsValidCallback = boolean();
 callback AutomationPositionGetTextCallback = DOMString();
 
 // A position in the automation tree.
-// See ui/accessibility/ax_position.h for documentation. All members need to
-// be kept in sync with
-// extensions/renderer/api/automation/automation_position.h.
+// See ui/accessibility/ax_position.h for documentation. All members need to be
+// kept in sync with extensions/renderer/api/automation/automation_position.h.
 // Some members there are kept private and not represented here.
-dictionary AutomationPosition {
-  [nocompile] AutomationNode node;
-  [nocompile] required long childIndex;
-  [nocompile] required long textOffset;
-  [nocompile] required DOMString affinity;
+[nocompile] dictionary AutomationPosition {
+  AutomationNode node;
+  required long childIndex;
+  required long textOffset;
+  required DOMString affinity;
 
-  [nocompile] required AutomationPositionIsNullPositionCallback isNullPosition;
-  [nocompile] required AutomationPositionIsTreePositionCallback isTreePosition;
-  [nocompile] required AutomationPositionIsTextPositionCallback isTextPosition;
-  [nocompile] required AutomationPositionIsLeafTextPositionCallback isLeafTextPosition;
-  [nocompile] required AutomationPositionAtStartOfAnchorCallback atStartOfAnchor;
-  [nocompile] required AutomationPositionAtEndOfAnchorCallback atEndOfAnchor;
-  [nocompile] required AutomationPositionAtStartOfWordCallback atStartOfWord;
-  [nocompile] required AutomationPositionAtEndOfWordCallback atEndOfWord;
-  [nocompile] required AutomationPositionAtStartOfLineCallback atStartOfLine;
-  [nocompile] required AutomationPositionAtEndOfLineCallback atEndOfLine;
-  [nocompile] required AutomationPositionAtStartOfParagraphCallback atStartOfParagraph;
-  [nocompile] required AutomationPositionAtEndOfParagraphCallback atEndOfParagraph;
-  [nocompile] required AutomationPositionAtStartOfPageCallback atStartOfPage;
-  [nocompile] required AutomationPositionAtEndOfPageCallback atEndOfPage;
-  [nocompile] required AutomationPositionAtStartOfFormatCallback atStartOfFormat;
-  [nocompile] required AutomationPositionAtEndOfFormatCallback atEndOfFormat;
-  [nocompile] required AutomationPositionAtStartOfDocumentCallback atStartOfDocument;
-  [nocompile] required AutomationPositionAtEndOfDocumentCallback atEndOfDocument;
-  [nocompile] required AutomationPositionAsTreePositionCallback asTreePosition;
-  [nocompile] required AutomationPositionAsTextPositionCallback asTextPosition;
-  [nocompile] required AutomationPositionAsLeafTextPositionCallback asLeafTextPosition;
-  [nocompile] required AutomationPositionMoveToPositionAtStartOfAnchorCallback
+  required AutomationPositionIsNullPositionCallback isNullPosition;
+  required AutomationPositionIsTreePositionCallback isTreePosition;
+  required AutomationPositionIsTextPositionCallback isTextPosition;
+  required AutomationPositionIsLeafTextPositionCallback isLeafTextPosition;
+  required AutomationPositionAtStartOfAnchorCallback atStartOfAnchor;
+  required AutomationPositionAtEndOfAnchorCallback atEndOfAnchor;
+  required AutomationPositionAtStartOfWordCallback atStartOfWord;
+  required AutomationPositionAtEndOfWordCallback atEndOfWord;
+  required AutomationPositionAtStartOfLineCallback atStartOfLine;
+  required AutomationPositionAtEndOfLineCallback atEndOfLine;
+  required AutomationPositionAtStartOfParagraphCallback atStartOfParagraph;
+  required AutomationPositionAtEndOfParagraphCallback atEndOfParagraph;
+  required AutomationPositionAtStartOfPageCallback atStartOfPage;
+  required AutomationPositionAtEndOfPageCallback atEndOfPage;
+  required AutomationPositionAtStartOfFormatCallback atStartOfFormat;
+  required AutomationPositionAtEndOfFormatCallback atEndOfFormat;
+  required AutomationPositionAtStartOfDocumentCallback atStartOfDocument;
+  required AutomationPositionAtEndOfDocumentCallback atEndOfDocument;
+  required AutomationPositionAsTreePositionCallback asTreePosition;
+  required AutomationPositionAsTextPositionCallback asTextPosition;
+  required AutomationPositionAsLeafTextPositionCallback asLeafTextPosition;
+  required AutomationPositionMoveToPositionAtStartOfAnchorCallback
       moveToPositionAtStartOfAnchor;
-  [nocompile] required AutomationPositionMoveToPositionAtEndOfAnchorCallback
+  required AutomationPositionMoveToPositionAtEndOfAnchorCallback
       moveToPositionAtEndOfAnchor;
-  [nocompile] required AutomationPositionMoveToPositionAtStartOfDocumentCallback
+  required AutomationPositionMoveToPositionAtStartOfDocumentCallback
       moveToPositionAtStartOfDocument;
-  [nocompile] required AutomationPositionMoveToPositionAtEndOfDocumentCallback
+  required AutomationPositionMoveToPositionAtEndOfDocumentCallback
       moveToPositionAtEndOfDocument;
-  [nocompile] required AutomationPositionMoveToParentPositionCallback moveToParentPosition;
-  [nocompile] required AutomationPositionMoveToNextLeafTreePositionCallback
+  required AutomationPositionMoveToParentPositionCallback moveToParentPosition;
+  required AutomationPositionMoveToNextLeafTreePositionCallback
       moveToNextLeafTreePosition;
-  [nocompile] required AutomationPositionMoveToPreviousLeafTreePositionCallback
+  required AutomationPositionMoveToPreviousLeafTreePositionCallback
       moveToPreviousLeafTreePosition;
-  [nocompile] required AutomationPositionMoveToNextLeafTextPositionCallback
+  required AutomationPositionMoveToNextLeafTextPositionCallback
       moveToNextLeafTextPosition;
-  [nocompile] required AutomationPositionMoveToPreviousLeafTextPositionCallback
+  required AutomationPositionMoveToPreviousLeafTextPositionCallback
       moveToPreviousLeafTextPosition;
-  [nocompile] required AutomationPositionMoveToNextCharacterPositionCallback
+  required AutomationPositionMoveToNextCharacterPositionCallback
       moveToNextCharacterPosition;
-  [nocompile] required AutomationPositionMoveToPreviousCharacterPositionCallback
+  required AutomationPositionMoveToPreviousCharacterPositionCallback
       moveToPreviousCharacterPosition;
-  [nocompile] required AutomationPositionMoveToNextWordStartPositionCallback
+  required AutomationPositionMoveToNextWordStartPositionCallback
       moveToNextWordStartPosition;
-  [nocompile] required AutomationPositionMoveToPreviousWordStartPositionCallback
+  required AutomationPositionMoveToPreviousWordStartPositionCallback
       moveToPreviousWordStartPosition;
-  [nocompile] required AutomationPositionMoveToNextWordEndPositionCallback
+  required AutomationPositionMoveToNextWordEndPositionCallback
       moveToNextWordEndPosition;
-  [nocompile] required AutomationPositionMoveToPreviousWordEndPositionCallback
+  required AutomationPositionMoveToPreviousWordEndPositionCallback
       moveToPreviousWordEndPosition;
-  [nocompile] required AutomationPositionMoveToNextLineStartPositionCallback
+  required AutomationPositionMoveToNextLineStartPositionCallback
       moveToNextLineStartPosition;
-  [nocompile] required AutomationPositionMoveToPreviousLineStartPositionCallback
+  required AutomationPositionMoveToPreviousLineStartPositionCallback
       moveToPreviousLineStartPosition;
-  [nocompile] required AutomationPositionMoveToNextLineEndPositionCallback
+  required AutomationPositionMoveToNextLineEndPositionCallback
       moveToNextLineEndPosition;
-  [nocompile] required AutomationPositionMoveToPreviousLineEndPositionCallback
+  required AutomationPositionMoveToPreviousLineEndPositionCallback
       moveToPreviousLineEndPosition;
-  [nocompile] required AutomationPositionMoveToNextFormatStartPositionCallback
+  required AutomationPositionMoveToNextFormatStartPositionCallback
       moveToNextFormatStartPosition;
-  [nocompile] required AutomationPositionMoveToPreviousFormatStartPositionCallback
+  required AutomationPositionMoveToPreviousFormatStartPositionCallback
       moveToPreviousFormatStartPosition;
-  [nocompile] required AutomationPositionMoveToNextFormatEndPositionCallback
+  required AutomationPositionMoveToNextFormatEndPositionCallback
       moveToNextFormatEndPosition;
-  [nocompile] required AutomationPositionMoveToPreviousFormatEndPositionCallback
+  required AutomationPositionMoveToPreviousFormatEndPositionCallback
       moveToPreviousFormatEndPosition;
-  [nocompile] required AutomationPositionMoveToNextParagraphStartPositionCallback
+  required AutomationPositionMoveToNextParagraphStartPositionCallback
       moveToNextParagraphStartPosition;
-  [nocompile] required AutomationPositionMoveToPreviousParagraphStartPositionCallback
+  required AutomationPositionMoveToPreviousParagraphStartPositionCallback
       moveToPreviousParagraphStartPosition;
-  [nocompile] required AutomationPositionMoveToNextParagraphEndPositionCallback
+  required AutomationPositionMoveToNextParagraphEndPositionCallback
       moveToNextParagraphEndPosition;
-  [nocompile] required AutomationPositionMoveToPreviousParagraphEndPositionCallback
+  required AutomationPositionMoveToPreviousParagraphEndPositionCallback
       moveToPreviousParagraphEndPosition;
-  [nocompile] required AutomationPositionMoveToNextPageStartPositionCallback
+  required AutomationPositionMoveToNextPageStartPositionCallback
       moveToNextPageStartPosition;
-  [nocompile] required AutomationPositionMoveToPreviousPageStartPositionCallback
+  required AutomationPositionMoveToPreviousPageStartPositionCallback
       moveToPreviousPageStartPosition;
-  [nocompile] required AutomationPositionMoveToNextPageEndPositionCallback
+  required AutomationPositionMoveToNextPageEndPositionCallback
       moveToNextPageEndPosition;
-  [nocompile] required AutomationPositionMoveToPreviousPageEndPositionCallback
+  required AutomationPositionMoveToPreviousPageEndPositionCallback
       moveToPreviousPageEndPosition;
-  [nocompile] required AutomationPositionMoveToNextAnchorPositionCallback
+  required AutomationPositionMoveToNextAnchorPositionCallback
       moveToNextAnchorPosition;
-  [nocompile] required AutomationPositionMoveToPreviousAnchorPositionCallback
+  required AutomationPositionMoveToPreviousAnchorPositionCallback
       moveToPreviousAnchorPosition;
-  [nocompile] required AutomationPositionMaxTextOffsetCallback maxTextOffset;
-  [nocompile] required AutomationPositionIsInLineBreakCallback isInLineBreak;
-  [nocompile] required AutomationPositionIsInTextObjectCallback isInTextObject;
-  [nocompile] required AutomationPositionIsInWhiteSpaceCallback isInWhiteSpace;
-  [nocompile] required AutomationPositionIsValidCallback isValid;
-  [nocompile] required AutomationPositionGetTextCallback getText;
+  required AutomationPositionMaxTextOffsetCallback maxTextOffset;
+  required AutomationPositionIsInLineBreakCallback isInLineBreak;
+  required AutomationPositionIsInTextObjectCallback isInTextObject;
+  required AutomationPositionIsInWhiteSpaceCallback isInWhiteSpace;
+  required AutomationPositionIsValidCallback isValid;
+  required AutomationPositionGetTextCallback getText;
 };
 
 callback AutomationNodeBoundsForRangeCallback =
@@ -1038,100 +1037,100 @@ callback AutomationNodeCreatePositionCallback = AutomationPosition?(
     PositionType type, long offset, optional boolean isUpstream);
 
 // A single node in an Automation tree.
-dictionary AutomationNode {
+[nocompile] dictionary AutomationNode {
   // The root node of the tree containing this AutomationNode.
-  [nocompile] AutomationNode root;
+  AutomationNode root;
 
   // Whether this AutomationNode is a root node.
-  [nocompile] required boolean isRootNode;
+  required boolean isRootNode;
 
   // The role of this node.
-  [nocompile] RoleType role;
+  RoleType role;
 
   // The $(ref:automation.StateType)s describing this node.
   // <jsexterns>@type {Object<chrome.automation.StateType, boolean>}
   // </jsexterns>
-  [nocompile] object state;
+  object state;
 
   // The rendered location (as a bounding box) of this node in global
   // screen coordinates.
-  [nocompile] required Rect location;
+  required Rect location;
 
   // Determines the location of the text within the node specified by
   // |startIndex| and |endIndex|, inclusively. Invokes |callback| with the
   // bounding rectangle, in screen coordinates. |callback| can be invoked
   // either synchronously or asynchronously. The bounds are clipped to
   // ancestors.
-  [nocompile] required AutomationNodeBoundsForRangeCallback boundsForRange;
+  required AutomationNodeBoundsForRangeCallback boundsForRange;
 
   // Determines the location of the text within the node specified by
   // |startIndex| and |endIndex|, inclusively. Invokes |callback| with the
   // bounding rectangle, in screen coordinates. |callback| can be invoked
   // either synchronously or asynchronously. The bounds are not clipped to
   // ancestors.
-  [nocompile] required AutomationNodeUnclippedBoundsForRangeCallback unclippedBoundsForRange;
+  required AutomationNodeUnclippedBoundsForRangeCallback unclippedBoundsForRange;
 
   // The location (as a bounding box) of this node in global screen
   // coordinates without applying any clipping from ancestors.
-  [nocompile] Rect unclippedLocation;
+  Rect unclippedLocation;
 
   // The purpose of the node, other than the role, if any.
-  [nocompile] DOMString description;
+  DOMString description;
 
   // Description of the state of the checkbox.
   // Used only when the node is checkable.
-  [nocompile] DOMString checkedStateDescription;
+  DOMString checkedStateDescription;
 
   // The placeholder for this text field, if any.
-  [nocompile] DOMString placeholder;
+  DOMString placeholder;
 
   // The role description for this node.
-  [nocompile] DOMString roleDescription;
+  DOMString roleDescription;
 
   // The accessible name for this node, via the
   // <a href="http://www.w3.org/TR/wai-aria/#namecalculation">
   // Accessible Name Calculation</a> process.
-  [nocompile] DOMString name;
+  DOMString name;
 
   // Explains what will happen when the doDefault action is performed.
-  [nocompile] DOMString doDefaultLabel;
+  DOMString doDefaultLabel;
 
   // Explains what will happen when the long click action is performed.
-  [nocompile] DOMString longClickLabel;
+  DOMString longClickLabel;
 
   // The tooltip of the node, if any.
-  [nocompile] DOMString tooltip;
+  DOMString tooltip;
 
   // The source of the name.
-  [nocompile] NameFromType nameFrom;
+  NameFromType nameFrom;
 
   // The image annotation for image nodes, which may be a human-readable
   // string that is the contextualized annotation or a status string related
   // to annotations.
-  [nocompile] DOMString imageAnnotation;
+  DOMString imageAnnotation;
 
   // The value for this node: for example the <code>value</code> attribute of
   // an <code>&lt;input&gt; element.
-  [nocompile] DOMString value;
+  DOMString value;
 
   // The HTML id for this element, if this node is an HTML element.
-  [nocompile] DOMString htmlId;
+  DOMString htmlId;
 
   // The HTML tag for this element, if this node is an HTML element.
-  [nocompile] DOMString htmlTag;
+  DOMString htmlTag;
 
   // The level of a heading or tree item.
-  [nocompile] long hierarchicalLevel;
+  long hierarchicalLevel;
 
   // The current caret bounds in screen coordinates.
-  [nocompile] Rect caretBounds;
+  Rect caretBounds;
 
   // The start and end index of each word in an inline text box.
-  [nocompile] sequence<long> wordStarts;
-  [nocompile] sequence<long> wordEnds;
+  sequence<long> wordStarts;
+  sequence<long> wordEnds;
 
   // The start indexes of each sentence within the node's name.
-  [nocompile] sequence<long> sentenceStarts;
+  sequence<long> sentenceStarts;
 
   // The end indexes of each sentence within the node's name. For most nodes,
   // the size of sentenceStarts array should be equal to the size of
@@ -1142,121 +1141,122 @@ dictionary AutomationNode {
   // node has one more end index. For example, <p><b>Hello</b> world.</p> has
   // two nodes. The first one has one start index (i.e., 0) but no end index.
   // The second node has one end index (i.e., 7) but no start index.
-  [nocompile] sequence<long> sentenceEnds;
+  sequence<long> sentenceEnds;
 
   // The start index of each word within the node's name. This is different
   // from wordStarts because it is not restricted to inline text boxes and can
   // be used for any type of element.
-  [nocompile] sequence<long> nonInlineTextWordStarts;
+  sequence<long> nonInlineTextWordStarts;
 
   // The end index of each word within the node's name. This is different
   // from wordEnds because it is not restricted to inline text boxes and can
   // be used for any type of element.
-  [nocompile] sequence<long> nonInlineTextWordEnds;
+  sequence<long> nonInlineTextWordEnds;
 
   // The nodes, if any, which this node is specified to control via
   // <a href="http://www.w3.org/TR/wai-aria/#aria-controls">
   // <code>aria-controls</code></a>.
-  [nocompile] sequence<AutomationNode> controls;
+  sequence<AutomationNode> controls;
 
   // The nodes, if any, which form a description for this node.
-  [nocompile] sequence<AutomationNode> describedBy;
+  sequence<AutomationNode> describedBy;
 
   // The nodes, if any, which may optionally be navigated to after this
   // one. See
   // <a href="http://www.w3.org/TR/wai-aria/#aria-flowto">
   // <code>aria-flowto</code></a>.
-  [nocompile] sequence<AutomationNode> flowTo;
+  sequence<AutomationNode> flowTo;
 
   // The nodes, if any, which form a label for this element. Generally, the
   // text from these elements will also be exposed as the element's accessible
   // name, via the $(ref:automation.AutomationNode.name) attribute.
-  [nocompile] sequence<AutomationNode> labelledBy;
+  sequence<AutomationNode> labelledBy;
 
   // The node referred to by <code>aria-activedescendant</code>, where
   // applicable
-  [nocompile] AutomationNode activeDescendant;
+  AutomationNode activeDescendant;
 
   // Reverse relationship for active descendant.
-  [nocompile] sequence<AutomationNode> activeDescendantFor;
+  sequence<AutomationNode> activeDescendantFor;
 
   // The target of an in-page link.
-  [nocompile] AutomationNode inPageLinkTarget;
+  AutomationNode inPageLinkTarget;
 
   // A node that provides more details about the current node.
-  [nocompile] sequence<AutomationNode> details;
+  sequence<AutomationNode> details;
 
   // The nodes, if any, that provide an error message for the current node.
-  [nocompile] sequence<AutomationNode> errorMessages;
+  sequence<AutomationNode> errorMessages;
 
   // Reverse relationship for details.
-  [nocompile] sequence<AutomationNode> detailsFor;
+  sequence<AutomationNode> detailsFor;
 
   // Reverse relationship for errorMessage.
-  [nocompile] sequence<AutomationNode> errorMessageFor;
+  sequence<AutomationNode> errorMessageFor;
 
   // Reverse relationship for controls.
-  [nocompile] sequence<AutomationNode> controlledBy;
+  sequence<AutomationNode> controlledBy;
 
   // Reverse relationship for describedBy.
-  [nocompile] sequence<AutomationNode> descriptionFor;
+  sequence<AutomationNode> descriptionFor;
 
   // Reverse relationship for flowTo.
-  [nocompile] sequence<AutomationNode> flowFrom;
+  sequence<AutomationNode> flowFrom;
 
   // Reverse relationship for labelledBy.
-  [nocompile] sequence<AutomationNode> labelFor;
+  sequence<AutomationNode> labelFor;
 
   // The column header nodes for a table cell.
-  [nocompile] sequence<AutomationNode> tableCellColumnHeaders;
+  sequence<AutomationNode> tableCellColumnHeaders;
 
   // The row header nodes for a table cell.
-  [nocompile] sequence<AutomationNode> tableCellRowHeaders;
+  sequence<AutomationNode> tableCellRowHeaders;
 
   // An array of standard actions available on this node.
-  [nocompile] sequence<ActionType> standardActions;
+  sequence<ActionType> standardActions;
 
   // An array of custom actions.
-  [nocompile] sequence<CustomAction> customActions;
+  sequence<CustomAction> customActions;
 
   // The action taken by calling <code>doDefault</code>.
-  [nocompile] DefaultActionVerb defaultActionVerb;
+  DefaultActionVerb defaultActionVerb;
 
   //
   // Link attributes.
   //
 
   // The URL that this link will navigate to.
-  [nocompile] DOMString url;
+  DOMString url;
 
   //
   // Document attributes.
   //
 
   // The URL of this document.
-  [nocompile] DOMString docUrl;
+  DOMString docUrl;
 
   // The title of this document.
-  [nocompile] DOMString docTitle;
+  DOMString docTitle;
 
   // Whether this document has finished loading.
-  [nocompile] boolean docLoaded;
+  boolean docLoaded;
 
   // The proportion (out of 1.0) that this doc has completed loading.
-  [nocompile] double docLoadingProgress;
+  double docLoadingProgress;
 
   //
   // Scrollable container attributes.
   //
-  [nocompile] long scrollX;
-  [nocompile] long scrollXMin;
-  [nocompile] long scrollXMax;
-  [nocompile] long scrollY;
-  [nocompile] long scrollYMin;
-  [nocompile] long scrollYMax;
+
+  long scrollX;
+  long scrollXMin;
+  long scrollXMax;
+  long scrollY;
+  long scrollYMin;
+  long scrollYMax;
 
   // Indicates whether this node is scrollable.
-  [nocompile] boolean scrollable;
+  boolean scrollable;
 
   //
   // Editable text field attributes.
@@ -1264,14 +1264,14 @@ dictionary AutomationNode {
 
   // The character index of the start of the selection within this editable
   // text element; -1 if no selection.
-  [nocompile] long textSelStart;
+  long textSelStart;
 
   // The character index of the end of the selection within this editable
   // text element; -1 if no selection.
-  [nocompile] long textSelEnd;
+  long textSelEnd;
 
   // An array of Marker objects for this node.
-  [nocompile] sequence<Marker> markers;
+  sequence<Marker> markers;
 
   //
   // Tree selection attributes (available on root nodes only)
@@ -1279,74 +1279,74 @@ dictionary AutomationNode {
 
   // If a selection is present, whether the anchor of the selection comes
   // after its focus in the accessibility tree.
-  [nocompile] boolean isSelectionBackward;
+  boolean isSelectionBackward;
   // The anchor node of the tree selection, if any.
-  [nocompile] AutomationNode anchorObject;
+  AutomationNode anchorObject;
   // The anchor offset of the tree selection, if any.
-  [nocompile] long anchorOffset;
+  long anchorOffset;
   // The affinity of the tree selection anchor, if any.
-  [nocompile] DOMString anchorAffinity;
+  DOMString anchorAffinity;
   // The focus node of the tree selection, if any.
-  [nocompile] AutomationNode focusObject;
+  AutomationNode focusObject;
   // The focus offset of the tree selection, if any.
-  [nocompile] long focusOffset;
+  long focusOffset;
   // The affinity of the tree selection focus, if any.
-  [nocompile] DOMString focusAffinity;
+  DOMString focusAffinity;
 
   // The selection start node of the tree selection, if any.
-  [nocompile] AutomationNode selectionStartObject;
+  AutomationNode selectionStartObject;
   // The selection start offset of the tree selection, if any.
-  [nocompile] long selectionStartOffset;
+  long selectionStartOffset;
   // The affinity of the tree selection start, if any.
-  [nocompile] DOMString selectionStartAffinity;
+  DOMString selectionStartAffinity;
   // The selection end node of the tree selection, if any.
-  [nocompile] AutomationNode selectionEndObject;
+  AutomationNode selectionEndObject;
   // The selection end offset of the tree selection, if any.
-  [nocompile] long selectionEndOffset;
+  long selectionEndOffset;
   // The affinity of the tree selection end, if any.
-  [nocompile] DOMString selectionEndAffinity;
+  DOMString selectionEndAffinity;
 
   // Indicates that the node is marked user-select:none
-  [nocompile] boolean notUserSelectableStyle;
+  boolean notUserSelectableStyle;
 
   //
   // Range attributes.
   //
 
   // The current value for this range.
-  [nocompile] double valueForRange;
+  double valueForRange;
 
   // The minimum possible value for this range.
-  [nocompile] double minValueForRange;
+  double minValueForRange;
 
   // The maximum possible value for this range.
-  [nocompile] double maxValueForRange;
+  double maxValueForRange;
 
   //
   // List attributes.
   //
 
   // The 1-based index of an item in a set.
-  [nocompile] long posInSet;
+  long posInSet;
 
   // The number of items in a set;
-  [nocompile] long setSize;
+  long setSize;
 
   //
   // Table attributes.
   //
 
   // The number of rows in this table as specified in the DOM.
-  [nocompile] long tableRowCount;
+  long tableRowCount;
 
   // The number of rows in this table as specified by the page author.
-  [nocompile] long ariaRowCount;
+  long ariaRowCount;
 
   // The number of columns in this table as specified in the DOM.
-  [nocompile] long tableColumnCount;
+  long tableColumnCount;
 
   // The number of columns in this table as specified by the page author.
-  [nocompile] long ariaColumnCount;
+  long ariaColumnCount;
 
   //
   // Table cell attributes.
@@ -1354,35 +1354,35 @@ dictionary AutomationNode {
 
   // The zero-based index of the column that this cell is in as specified in
   // the DOM.
-  [nocompile] long tableCellColumnIndex;
+  long tableCellColumnIndex;
 
   // The ARIA column index as specified by the page author.
-  [nocompile] long tableCellAriaColumnIndex;
+  long tableCellAriaColumnIndex;
 
   // The number of columns that this cell spans (default is 1).
-  [nocompile] long tableCellColumnSpan;
+  long tableCellColumnSpan;
 
   // The zero-based index of the row that this cell is in as specified in the
   // DOM.
-  [nocompile] long tableCellRowIndex;
+  long tableCellRowIndex;
 
   // The ARIA row index as specified by the page author.
-  [nocompile] long tableCellAriaRowIndex;
+  long tableCellAriaRowIndex;
 
   // The number of rows that this cell spans (default is 1).
-  [nocompile] long tableCellRowSpan;
+  long tableCellRowSpan;
 
   // The corresponding column header for this cell.
-  [nocompile] AutomationNode tableColumnHeader;
+  AutomationNode tableColumnHeader;
 
   // The corresponding row header for this cell.
-  [nocompile] AutomationNode tableRowHeader;
+  AutomationNode tableRowHeader;
 
   // The column index of this column node.
-  [nocompile] long tableColumnIndex;
+  long tableColumnIndex;
 
   // The row index of this row node.
-  [nocompile] long tableRowIndex;
+  long tableRowIndex;
 
   //
   // Live region attributes.
@@ -1390,170 +1390,171 @@ dictionary AutomationNode {
 
   // The type of region if this is the root of a live region.
   // Possible values are 'polite' and 'assertive'.
-  [nocompile] DOMString liveStatus;
+  DOMString liveStatus;
 
   // The value of aria-relevant for a live region.
-  [nocompile] DOMString liveRelevant;
+  DOMString liveRelevant;
 
   // The value of aria-atomic for a live region.
-  [nocompile] boolean liveAtomic;
+  boolean liveAtomic;
 
   // The value of aria-busy for a live region or any other element.
-  [nocompile] boolean busy;
+  boolean busy;
 
   // The type of live region if this node is inside a live region.
-  [nocompile] DOMString containerLiveStatus;
+  DOMString containerLiveStatus;
 
   // The value of aria-relevant if this node is inside a live region.
-  [nocompile] DOMString containerLiveRelevant;
+  DOMString containerLiveRelevant;
 
   // The value of aria-atomic if this node is inside a live region.
-  [nocompile] boolean containerLiveAtomic;
+  boolean containerLiveAtomic;
 
   // The value of aria-busy if this node is inside a live region.
-  [nocompile] boolean containerLiveBusy;
+  boolean containerLiveBusy;
 
   //
   // Miscellaneous attributes.
   //
 
   // Whether or not this node is a button.
-  [nocompile] required boolean isButton;
+  required boolean isButton;
 
   // Whether or not this node is a checkbox.
-  [nocompile] required boolean isCheckBox;
+  required boolean isCheckBox;
 
   // Whether or not this node is a combobox.
-  [nocompile] required boolean isComboBox;
+  required boolean isComboBox;
 
   // Whether or not this node is an image.
-  [nocompile] required boolean isImage;
+  required boolean isImage;
 
   // Whether the node contains hidden nodes.
-  [nocompile] required boolean hasHiddenOffscreenNodes;
+  required boolean hasHiddenOffscreenNodes;
 
   // Aria auto complete.
-  [nocompile] DOMString autoComplete;
+  DOMString autoComplete;
 
   // The name of the programmatic backing object.
-  [nocompile] DOMString className;
+  DOMString className;
 
   // Marks this subtree as modal.
-  [nocompile] boolean modal;
+  boolean modal;
 
   // The input type of a text field, such as "text" or "email".
-  [nocompile] DOMString inputType;
+  DOMString inputType;
 
   // The key that activates this widget.
-  [nocompile] DOMString accessKey;
+  DOMString accessKey;
 
   // The value of the aria-invalid attribute, indicating the error type.
-  [nocompile] DOMString ariaInvalidValue;
+  DOMString ariaInvalidValue;
 
   // The CSS display attribute for this node, if applicable.
-  [nocompile] DOMString display;
+  DOMString display;
 
   // A data url with the contents of this object's image or thumbnail.
-  [nocompile] DOMString imageDataUrl;
+  DOMString imageDataUrl;
 
   // The author-provided language code for this subtree.
-  [nocompile] DOMString language;
+  DOMString language;
 
   // The detected language code for this subtree.
-  [nocompile] DOMString detectedLanguage;
+  DOMString detectedLanguage;
 
   // Indicates the availability and type of an interactive popup element.
-  [nocompile] HasPopup hasPopup;
+  HasPopup hasPopup;
 
   // Input restriction, if any, such as readonly or disabled:
   // undefined - enabled control or other object that is not disabled
   // Restriction.DISABLED - disallows input in itself + any descendants
   // Restriction.READONLY - allow focus/selection but not input
-  [nocompile] DOMString restriction;
+  DOMString restriction;
 
   // Tri-state describing checkbox or radio button:
   // 'false' | 'true' | 'mixed'
-  [nocompile] DOMString checked;
+  DOMString checked;
 
   // The inner html of this element. Only populated for math content.
-  [nocompile] DOMString innerHtml;
+  DOMString innerHtml;
 
   // The RGBA foreground color of this subtree, as an integer.
-  [nocompile] long color;
+  long color;
 
   // The RGBA background color of this subtree, as an integer.
-  [nocompile] long backgroundColor;
+  long backgroundColor;
 
   // The RGBA color of an input element whose value is a color.
-  [nocompile] long colorValue;
+  long colorValue;
 
   // Indicates node text is subscript.
-  [nocompile] required boolean subscript;
+  required boolean subscript;
 
   // Indicates node text is superscript.
-  [nocompile] required boolean superscript;
+  required boolean superscript;
 
   // Indicates node text is bold.
-  [nocompile] required boolean bold;
+  required boolean bold;
 
   // Indicates node text is italic.
-  [nocompile] required boolean italic;
+  required boolean italic;
 
   // Indicates node text is underline.
-  [nocompile] required boolean underline;
+  required boolean underline;
 
   // Indicates node text is line through.
-  [nocompile] required boolean lineThrough;
+  required boolean lineThrough;
 
   // Indicates whether this node is selected, unselected, or neither.
-  [nocompile] boolean selected;
+  boolean selected;
 
   // Indicates the font size of this node.
-  [nocompile] long fontSize;
+  long fontSize;
 
   // Indicates the font family.
-  [nocompile] required DOMString fontFamily;
+  required DOMString fontFamily;
 
   // Indicates whether the object functions as a text field which exposes its
   // descendants. Use cases include the root of a content-editable region, an
   // ARIA textbox which isn't currently editable and which has interactive
   // descendants, and a <body> element that has "design-mode" set to "on".
-  [nocompile] required boolean nonAtomicTextFieldRoot;
+  required boolean nonAtomicTextFieldRoot;
 
   // Indicates aria-current state.
-  [nocompile] AriaCurrentState ariaCurrentState;
+  AriaCurrentState ariaCurrentState;
 
   // Indicates invalid-state.
-  [nocompile] InvalidState invalidState;
+  InvalidState invalidState;
 
   // The application id for a tree rooted at this node.
-  [nocompile] DOMString appId;
+  DOMString appId;
 
   //
   // Walking the tree.
   //
-  [nocompile] required sequence<AutomationNode> children;
-  [nocompile] AutomationNode parent;
-  [nocompile] AutomationNode firstChild;
-  [nocompile] AutomationNode lastChild;
-  [nocompile] AutomationNode previousSibling;
-  [nocompile] AutomationNode nextSibling;
-  [nocompile] AutomationNode previousOnLine;
-  [nocompile] AutomationNode nextOnLine;
-  [nocompile] AutomationNode previousFocus;
-  [nocompile] AutomationNode nextFocus;
-  [nocompile] AutomationNode previousWindowFocus;
-  [nocompile] AutomationNode nextWindowFocus;
+
+  required sequence<AutomationNode> children;
+  AutomationNode parent;
+  AutomationNode firstChild;
+  AutomationNode lastChild;
+  AutomationNode previousSibling;
+  AutomationNode nextSibling;
+  AutomationNode previousOnLine;
+  AutomationNode nextOnLine;
+  AutomationNode previousFocus;
+  AutomationNode nextFocus;
+  AutomationNode previousWindowFocus;
+  AutomationNode nextWindowFocus;
 
   // The index of this node in its parent node's list of children. If this is
   // the root node, this will be undefined.
-  [nocompile] long indexInParent;
+  long indexInParent;
 
   // The sort direction of this node.
-  [nocompile] required SortDirectionType sortDirection;
+  required SortDirectionType sortDirection;
 
   // Explicitly set to true when this node is clickable.
-  [nocompile] required boolean clickable;
+  required boolean clickable;
 
   //
   // Actions.
@@ -1563,118 +1564,118 @@ dictionary AutomationNode {
   // the same action that would result from clicking the node such as
   // expanding a treeitem, toggling a checkbox, selecting a radiobutton,
   // or activating a button.
-  [nocompile] required AutomationNodeDoDefaultCallback doDefault;
+  required AutomationNodeDoDefaultCallback doDefault;
 
   // Places focus on this node.
-  [nocompile] required AutomationNodeFocusCallback focus;
+  required AutomationNodeFocusCallback focus;
 
   // Request a data url for the contents of an image, optionally
   // resized.  Pass zero for maxWidth and/or maxHeight for the
   // original size.
-  [nocompile] required AutomationNodeGetImageDataCallback getImageData;
+  required AutomationNodeGetImageDataCallback getImageData;
 
   // Does a hit test of the given global screen coordinates, and fires
   // eventToFire on the resulting object.
-  [nocompile] required AutomationNodeHitTestCallback hitTest;
+  required AutomationNodeHitTestCallback hitTest;
 
   // Does a $(ref:automation.AutomationNode.hitTest), and receives a callback
   // with the resulting hit node.
-  [nocompile] required AutomationNodeHitTestWithReplyCallback hitTestWithReply;
+  required AutomationNodeHitTestWithReplyCallback hitTestWithReply;
 
   // Scrolls this node to make it visible.
-  [nocompile] required AutomationNodeMakeVisibleCallback makeVisible;
+  required AutomationNodeMakeVisibleCallback makeVisible;
 
   // Performs custom action.
-  [nocompile] required AutomationNodePerformCustomActionCallback performCustomAction;
+  required AutomationNodePerformCustomActionCallback performCustomAction;
 
   // Convenience method to perform a standard action supported by this node.
   // For actions requiring additional arguments, call the specific binding
   // e.g. <code>setSelection</code>.
-  [nocompile] required AutomationNodePerformStandardActionCallback performStandardAction;
+  required AutomationNodePerformStandardActionCallback performStandardAction;
 
   // Replaces the selected text within a text field.
-  [nocompile] required AutomationNodeReplaceSelectedTextCallback replaceSelectedText;
+  required AutomationNodeReplaceSelectedTextCallback replaceSelectedText;
 
   // Sets accessibility focus. Accessibility focus is the node on which an
   // extension tracks a user's focus. This may be conveyed through a focus
   // ring or or speech output by the extension. Automation will dispatch more
   // events to the accessibility focus such as location changes.
-  [nocompile] required AutomationNodeSetAccessibilityFocusCallback setAccessibilityFocus;
+  required AutomationNodeSetAccessibilityFocusCallback setAccessibilityFocus;
 
   // Sets selection within a text field.
-  [nocompile] required AutomationNodeSetSelectionCallback setSelection;
+  required AutomationNodeSetSelectionCallback setSelection;
 
   // Clears focus and sets this node as the starting point for the next
   // time the user presses Tab or Shift+Tab.
-  [nocompile] required AutomationNodeSetSequentialFocusNavigationStartingPointCallback
+  required AutomationNodeSetSequentialFocusNavigationStartingPointCallback
       setSequentialFocusNavigationStartingPoint;
 
   // Sets the value of a text field.
-  [nocompile] required AutomationNodeSetValueCallback setValue;
+  required AutomationNodeSetValueCallback setValue;
 
   // Show the context menu for this element, as if the user right-clicked.
-  [nocompile] required AutomationNodeShowContextMenuCallback showContextMenu;
+  required AutomationNodeShowContextMenuCallback showContextMenu;
 
   // Resume playing any media within this tree.
-  [nocompile] required AutomationNodeResumeMediaCallback resumeMedia;
+  required AutomationNodeResumeMediaCallback resumeMedia;
 
   // Start ducking any media within this tree.
-  [nocompile] required AutomationNodeStartDuckingMediaCallback startDuckingMedia;
+  required AutomationNodeStartDuckingMediaCallback startDuckingMedia;
 
   // Stop ducking any media within this tree.
-  [nocompile] required AutomationNodeStopDuckingMediaCallback stopDuckingMedia;
+  required AutomationNodeStopDuckingMediaCallback stopDuckingMedia;
 
   // Suspend any media playing within this tree.
-  [nocompile] required AutomationNodeSuspendMediaCallback suspendMedia;
+  required AutomationNodeSuspendMediaCallback suspendMedia;
 
   // Simulates long click on node.
-  [nocompile] required AutomationNodeLongClickCallback longClick;
+  required AutomationNodeLongClickCallback longClick;
 
   // Scrolls this scrollable container backward.
-  [nocompile] required AutomationNodeScrollBackwardCallback scrollBackward;
+  required AutomationNodeScrollBackwardCallback scrollBackward;
 
   // Scrolls this scrollable container forward.
-  [nocompile] required AutomationNodeScrollForwardCallback scrollForward;
+  required AutomationNodeScrollForwardCallback scrollForward;
 
   // Scrolls this scrollable container up.
-  [nocompile] required AutomationNodeScrollUpCallback scrollUp;
+  required AutomationNodeScrollUpCallback scrollUp;
 
   // Scrolls this scrollable container down.
-  [nocompile] required AutomationNodeScrollDownCallback scrollDown;
+  required AutomationNodeScrollDownCallback scrollDown;
 
   // Scrolls this scrollable container left.
-  [nocompile] required AutomationNodeScrollLeftCallback scrollLeft;
+  required AutomationNodeScrollLeftCallback scrollLeft;
 
   // Scrolls this scrollable container right.
-  [nocompile] required AutomationNodeScrollRightCallback scrollRight;
+  required AutomationNodeScrollRightCallback scrollRight;
 
   // Scrolls this scrollable container to the given point.
-  [nocompile] required AutomationNodeScrollToPointCallback scrollToPoint;
+  required AutomationNodeScrollToPointCallback scrollToPoint;
 
   // Sets this scrollable container's scroll offset.
-  [nocompile] required AutomationNodeSetScrollOffsetCallback setScrollOffset;
+  required AutomationNodeSetScrollOffsetCallback setScrollOffset;
 
   // Adds a listener for the given event type and event phase.
-  [nocompile] required AutomationNodeAddEventListenerCallback addEventListener;
+  required AutomationNodeAddEventListenerCallback addEventListener;
 
   // Removes a listener for the given event type and event phase.
-  [nocompile] required AutomationNodeRemoveEventListenerCallback removeEventListener;
+  required AutomationNodeRemoveEventListenerCallback removeEventListener;
 
   // Finds the first AutomationNode in this node's subtree which matches the
   // given search parameters.
-  [nocompile] required AutomationNodeFindCallback find;
+  required AutomationNodeFindCallback find;
 
   // Finds all the AutomationNodes in this node's subtree which matches the
   // given search parameters.
-  [nocompile] required AutomationNodeFindAllCallback findAll;
+  required AutomationNodeFindAllCallback findAll;
 
   // Returns whether this node matches the given $(ref:automation.FindParams).
-  [nocompile] required AutomationNodeMatchesCallback matches;
+  required AutomationNodeMatchesCallback matches;
 
-  [nocompile] required AutomationNodeGetNextTextMatchCallback getNextTextMatch;
+  required AutomationNodeGetNextTextMatchCallback getNextTextMatch;
 
   // Creates a position object backed by Chrome's accessibility position support.
-  [nocompile] required AutomationNodeCreatePositionCallback createPosition;
+  required AutomationNodeCreatePositionCallback createPosition;
 };
 
 // The <code>chrome.automation</code> API allows developers to access the
@@ -1716,8 +1717,7 @@ interface Automation {
 
   // Remove a tree change observer.
   [nocompile]
-  static undefined removeTreeChangeObserver(
-      TreeChangeObserver observer);
+  static undefined removeTreeChangeObserver(TreeChangeObserver observer);
 
   // Sets the selection in a tree. This creates a selection in a single
   // tree (anchorObject and focusObject must have the same root).
