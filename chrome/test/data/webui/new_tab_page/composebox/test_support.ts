@@ -62,6 +62,7 @@ export interface ComposeboxTestElement {
   metrics: MetricsTracker;
 }
 
+
 export function setupComposeboxTest(): ComposeboxTestElement {
   // We can't return the variables initialized in setup() directly because
   // setup() runs later. We can return an object that will be populated.

@@ -9,7 +9,6 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 
 import type {ComposeboxFile} from './common.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
-import {ToolMode as ComposeboxToolMode} from './composebox_query.mojom-webui.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -21,7 +20,6 @@ export const ComposeboxEmbedderMixin =
           ComposeboxEmbedderMixinInterface {
         static get properties() {
           return {
-            activeToolMode: {type: Number, reflect: true},
             addedTabsIds: {type: Object},
             errorMessage: {type: String},
             files: {type: Object},
@@ -31,8 +29,6 @@ export const ComposeboxEmbedderMixin =
           };
         }
 
-        accessor activeToolMode: ComposeboxToolMode =
-            ComposeboxToolMode.kUnspecified;
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor errorMessage: string = '';
         accessor files: Map<UnguessableToken, ComposeboxFile> = new Map();
@@ -50,7 +46,6 @@ export const ComposeboxEmbedderMixin =
     };
 
 export interface ComposeboxEmbedderMixinInterface {
-  activeToolMode: ComposeboxToolMode;
   addedTabsIds: Map<number, UnguessableToken>;
   errorMessage: string;
   files: Map<UnguessableToken, ComposeboxFile>;

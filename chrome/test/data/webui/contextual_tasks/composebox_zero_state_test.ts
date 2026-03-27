@@ -10,7 +10,7 @@ import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_brows
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-import {ContextUploadStatus, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadStatus, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -67,7 +67,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
   let windowProxy: TestMock<WindowProxy>;
   let mockTimer: MockTimer;
 
-  async function setActiveTool(tool: ComposeboxToolMode) {
+  async function setActiveTool(tool: ToolMode) {
     searchboxCallbackRouterRemote.onInputStateChanged({
       ...new MockInputState(),
       activeTool: tool,
@@ -732,25 +732,24 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
 
 
   interface ToolModeInfo {
-    toolMode: ComposeboxToolMode;
+    toolMode: ToolMode;
     text: string;
   }
 
   [{
-    toolMode: ComposeboxToolMode.kDeepSearch,
+    toolMode: ToolMode.kDeepSearch,
     text: 'Deep Search',
   },
    {
-     toolMode: ComposeboxToolMode.kImageGen,
+     toolMode: ToolMode.kImageGen,
      text: 'Create Images',
    },
    {
-     toolMode: ComposeboxToolMode.kCanvas,
+     toolMode: ToolMode.kCanvas,
      text: 'Canvas',
    }].forEach((toolModeInfo: ToolModeInfo) => {
     test(toolModeInfo.text + ': thread change resets input', async () => {
       await setActiveTool(toolModeInfo.toolMode);
-
 
       await composebox.updateComplete;
       await microtasksFinished();
