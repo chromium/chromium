@@ -1182,6 +1182,10 @@ void RenderViewContextMenu::InitMenu() {
     AppendSearchProvider();
   }
 
+  if (!params_.selection_text.empty()) {
+    MaybeAppendOpenGlicItem();
+  }
+
   if (!media_image &&
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT)) {
     AppendPrintItem();
@@ -2249,26 +2253,7 @@ void RenderViewContextMenu::AppendPageItems() {
   menu_model_.AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
   menu_model_.AddItemWithStringId(IDC_RELOAD, IDS_CONTENT_CONTEXT_RELOAD);
   menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  // Append an item for opening Glic
-  if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
-    std::string arm = features::kGlicContextMenuArm.Get();
-    bool show_summarize_page = (arm == "arm2");
-    menu_model_.AddItemWithStringIdAndIcon(
-        IDC_CONTENT_CONTEXT_GLIC,
-        show_summarize_page ? IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI
-                            : IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL,
-        ui::ImageModel::FromImageSkia(
-            gfx::ImageSkiaOperations::CreateResizedImage(
-                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                    IDR_GLIC_BUTTON_ALT_ICON),
-                skia::ImageOperations::RESIZE_BEST,
-                gfx::Size(kTabMenuIconSize, kTabMenuIconSize))));
-    menu_model_.SetIsNewFeatureAt(
-        menu_model_.GetItemCount() - 1,
-        UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
-                                                features::kGlicContextMenu));
-    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  }
+  MaybeAppendOpenGlicItem();
   menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
   menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
@@ -4830,6 +4815,29 @@ void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
       event_flags, WindowOpenDisposition::NEW_FOREGROUND_TAB);
   GURL url = chrome::GetSettingsUrl(chrome::kHandlerSettingsSubPage);
   OpenURL(url, GURL(), {}, disposition, ui::PAGE_TRANSITION_LINK);
+}
+
+void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
+  // Append an item for opening Glic
+  if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
+    std::string arm = features::kGlicContextMenuArm.Get();
+    bool show_summarize_page = (arm == "arm2");
+    menu_model_.AddItemWithStringIdAndIcon(
+        IDC_CONTENT_CONTEXT_GLIC,
+        show_summarize_page ? IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI
+                            : IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL,
+        ui::ImageModel::FromImageSkia(
+            gfx::ImageSkiaOperations::CreateResizedImage(
+                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                    IDR_GLIC_BUTTON_ALT_ICON),
+                skia::ImageOperations::RESIZE_BEST,
+                gfx::Size(kTabMenuIconSize, kTabMenuIconSize))));
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
+                                                features::kGlicContextMenu));
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+  }
 }
 
 void RenderViewContextMenu::ExecPictureInPicture() {
