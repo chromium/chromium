@@ -87,6 +87,8 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
                      features::IsWebUILocationBarEnabled());
   source->AddBoolean("enableBackForwardButtons",
                      features::IsWebUIBackForwardButtonEnabled());
+  source->AddBoolean("enablePinnedToolbarActions",
+                     features::IsWebUIPinnedToolbarActionsEnabled());
 
   BrowserWindowInterface* browser =
       webui::GetBrowserWindowInterface(web_ui->GetWebContents());

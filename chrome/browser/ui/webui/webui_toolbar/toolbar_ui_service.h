@@ -31,6 +31,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
         const gfx::RectF& bounds_in_css_pixels,
         ui::mojom::MenuSourceType source) = 0;
     virtual void OnPageInitialized() = 0;
+    virtual void InvokePinnedToolbarAction(
+        toolbar_ui_api::mojom::PinnedToolbarAction action_id) = 0;
   };
 
   ToolbarUIService(
@@ -57,6 +59,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
   void OnPageInitialized() override;
   void ShowContentSettingsBubble(::content_settings::mojom::ContentSettingsType
                                      content_settings_type) override;
+  void InvokePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
 
  private:
   mojo::Receiver<toolbar_ui_api::mojom::ToolbarUIService> service_;

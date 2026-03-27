@@ -127,6 +127,43 @@ struct OmniboxViewState {
   gfx.mojom.Range? selection;
 };
 
+// Enum of all supported pinned toolbar actions.
+enum PinnedToolbarAction {
+ kUnspecified, // Unused; triggers assert if used.
+ kNewIncognitoWindow,
+ kShowPasswordsBubbleOrPage,
+ kShowPaymentsBubbleOrPage,
+ kShowAddressesBubbleOrPage,
+ kSidePanelShowBookmarks,
+ kSidePanelShowReadingList,
+ kSidePanelShowHistoryCluster,
+ kShowDownloads,
+ kClearBrowsingData,
+ kPrint,
+ kSidePanelShowLensOverlayResults,
+ kShowTranslate,
+ kQrCodeGenerator,
+ kRouteMedia,
+ kSidePanelShowReadAnything,
+ kCopyUrl,
+ kSendTabToSelf,
+ kTaskManager,
+ kDevTools,
+ kTabSearch,
+};
+
+// The state of a pinned toolbar action button that should be displayed.
+struct PinnedToolbarActionState {
+  // The action to invoke upon click of this button.
+  PinnedToolbarAction action;
+
+  // Should this button appear highlighted?
+  bool highlighted;
+
+  // Should this button appear enabled?
+  bool enabled;
+};
+
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
@@ -134,6 +171,9 @@ struct NavigationControlsState {
   HomeControlState home_control_state;
   ContentSettingState content_setting_state;
   OmniboxViewState omnibox_view_state;
+  // List of pinned toolbar action button states. Order corresponds to order
+  // of the drawn buttons and duplicates imply duplicate buttons.
+  array<PinnedToolbarActionState> pinned_toolbar_actions_state;
   // This is incremented every time a settings change may change the layout
   // constants.
   int32 layout_constants_version = 0;

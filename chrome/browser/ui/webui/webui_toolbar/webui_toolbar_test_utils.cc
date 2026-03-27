@@ -44,6 +44,7 @@ CreateValidNavigationControlsState() {
       toolbar_ui_api::mojom::HomeControlState::New(),
       toolbar_ui_api::mojom::ContentSettingState::New(),
       toolbar_ui_api::mojom::OmniboxViewState::New(),
+      std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr>(),
       /*layout_constants_version=*/0);
 }
 

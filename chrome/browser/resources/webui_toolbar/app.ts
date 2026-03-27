@@ -7,6 +7,7 @@ import './reload_button.js';
 import './location_bar.js';
 import './split_tabs_button.js';
 import './home_button.js';
+import './pinned_toolbar_actions.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -51,6 +52,7 @@ export class ToolbarAppElement extends CrLitElement {
       isLocationBarEnabled_: {type: Boolean},
       navigationControlsState_: {type: Object},
       isBackForwardButtonEnabled_: {type: Boolean},
+      isPinnedToolbarActionsEnabled_: {type: Boolean},
     };
   }
 
@@ -64,6 +66,8 @@ export class ToolbarAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableLocationBar');
   protected accessor isBackForwardButtonEnabled_: boolean =
       loadTimeData.getBoolean('enableBackForwardButtons');
+  protected accessor isPinnedToolbarActionsEnabled_: boolean =
+      loadTimeData.getBoolean('enablePinnedToolbarActions');
   protected accessor navigationControlsState_: NavigationControlsState = {
     reloadControlState: {
       canShowMenu: false,
@@ -93,6 +97,7 @@ export class ToolbarAppElement extends CrLitElement {
     contentSettingState: {
       imageStates: [],
     },
+    pinnedToolbarActionsState: [],
   };
 
   private browserProxy_: BrowserProxy;

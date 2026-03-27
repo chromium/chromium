@@ -50,6 +50,10 @@ class MockToolbarUIServiceDelegate
                ui::mojom::MenuSourceType source),
               (override));
   MOCK_METHOD(void, OnPageInitialized, (), (override));
+  MOCK_METHOD(void,
+              InvokePinnedToolbarAction,
+              (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
+              (override));
 };
 
 class Observer : public mojom::ToolbarUIObserver {
@@ -241,6 +245,14 @@ TEST_F(ToolbarUIServiceSplitTabsTest, TestOnPageInitializedDelegates) {
   EXPECT_CALL(delegate(), OnPageInitialized()).Times(1);
 
   service().OnPageInitialized();
+}
+
+// Tests that calling InvokePinnedToolbarAction() calls the delegate.
+TEST_F(ToolbarUIServiceTest, TestInvokePinnedToolbarAction) {
+  EXPECT_CALL(delegate(),
+              InvokePinnedToolbarAction(mojom::PinnedToolbarAction::kPrint));
+
+  service().InvokePinnedToolbarAction(mojom::PinnedToolbarAction::kPrint);
 }
 
 }  // namespace

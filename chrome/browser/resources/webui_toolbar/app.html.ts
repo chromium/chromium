@@ -43,6 +43,11 @@ ${this.isBackForwardButtonEnabled_ ? html`
         .omniboxViewState="${this.navigationControlsState_.omniboxViewState}">
     </location-bar>
   ` : ''}
+  ${this.isPinnedToolbarActionsEnabled_ ? html`
+    <pinned-toolbar-actions id="pinnedToolbarActions"
+        .state="${this.navigationControlsState_.pinnedToolbarActionsState}">
+    </pinned-toolbar-actions>
+  ` : ''}
 <!--_html_template_end_-->`;
   // clang-format on
 }

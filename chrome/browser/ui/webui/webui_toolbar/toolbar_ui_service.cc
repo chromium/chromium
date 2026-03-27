@@ -86,4 +86,11 @@ void ToolbarUIService::ShowContentSettingsBubble(
   NOTIMPLEMENTED();
 }
 
+void ToolbarUIService::InvokePinnedToolbarAction(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
+  if (delegate_) {
+    delegate_->InvokePinnedToolbarAction(action_id);
+  }
+}
+
 }  // namespace toolbar_ui_api

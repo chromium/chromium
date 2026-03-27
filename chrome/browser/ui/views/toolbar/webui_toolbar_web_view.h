@@ -81,6 +81,8 @@ class WebUIToolbarWebView
                          const gfx::RectF& bounds_in_css_pixels,
                          ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
+  void InvokePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:
   void PermitLaunchUrl() override;
@@ -161,6 +163,8 @@ class WebUIToolbarWebView
       toolbar_ui_api::mojom::HomeControlStatePtr state);
   void OnOmniboxViewStateChanged(
       toolbar_ui_api::mojom::OmniboxViewStatePtr state);
+  void OnPinnedToolbarActionsStateChanged(
+      std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state);
 
   void OnTouchUiChanged();
   void PostPushNavigationState();

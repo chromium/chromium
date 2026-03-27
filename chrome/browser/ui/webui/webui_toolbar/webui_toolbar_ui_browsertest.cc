@@ -8,8 +8,10 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager_factory.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -104,16 +106,23 @@ class BrowserControlsDelegate
   void PermitLaunchUrl() override {}
 };
 
-class ToolbarUIDelegate
+class MockToolbarUIDelegate
     : public toolbar_ui_api::ToolbarUIService::ToolbarUIServiceDelegate {
  public:
-  ToolbarUIDelegate() = default;
-  ~ToolbarUIDelegate() override = default;
+  MockToolbarUIDelegate() = default;
+  ~MockToolbarUIDelegate() override = default;
 
-  void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,
-                         const gfx::RectF& bounds,
-                         ui::mojom::MenuSourceType source) override {}
-  void OnPageInitialized() override {}
+  MOCK_METHOD(void,
+              HandleContextMenu,
+              (toolbar_ui_api::mojom::ContextMenuType menu_type,
+               const gfx::RectF& bounds,
+               ui::mojom::MenuSourceType source),
+              (override));
+  MOCK_METHOD(void, OnPageInitialized, (), (override));
+  MOCK_METHOD(void,
+              InvokePinnedToolbarAction,
+              (toolbar_ui_api::mojom::PinnedToolbarAction action_id),
+              (override));
 };
 
 // Test fixture for WebUIToolbarUI. These tests test the connectivity between
@@ -127,7 +136,11 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
   WebUIToolbarUIBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kInitialWebUI, features::kWebUIReloadButton,
-         features::kWebUIInProcessResourceLoadingV2},
+         features::kWebUIInProcessResourceLoadingV2,
+         features::kWebUIPinnedToolbarActions,
+         // WebUIPinnedToolbarActions does not support toolbar tab search
+         // button. Requires tab strip tab search button.
+         tabs::kHorizontalTabStripComboButton},
         {});
   }
   ~WebUIToolbarUIBrowserTest() override = default;
@@ -177,14 +190,30 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
   WebUIToolbarUI* ui() { return ui_.get(); }
+  MockToolbarUIDelegate& toolbar_ui_delegate() { return toolbar_ui_delegate_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   BrowserControlsDelegate browser_controls_delegate_;
-  ToolbarUIDelegate toolbar_ui_delegate_;
+  testing::NiceMock<MockToolbarUIDelegate> toolbar_ui_delegate_;
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<WebUIToolbarUI> ui_;
 };
+
+// Tests that calling InvokePinnedToolbarAction from Mojo calls the delegate.
+IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, InvokePinnedToolbarAction) {
+  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
+  ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(toolbar_ui_delegate(),
+              InvokePinnedToolbarAction(
+                  toolbar_ui_api::mojom::PinnedToolbarAction::kPrint))
+      .Times(1);
+
+  service_remote->InvokePinnedToolbarAction(
+      toolbar_ui_api::mojom::PinnedToolbarAction::kPrint);
+  service_remote.FlushForTesting();
+}
 
 // Tests that OnNavigationControlsStateChanged calls the browser controls
 // observer with the correct parameters.

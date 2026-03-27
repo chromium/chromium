@@ -230,6 +230,10 @@ void WebUIToolbarWebView::AddedToWidget() {
     home_control_.Init();
   }
 
+  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+    pinned_toolbar_actions_.Init();
+  }
+
   // Do NOT call GetWebUIToolbarUI() here as it may be null.
   // The reload_control_ will be initialized once the WebUI is ready.
 }
@@ -315,6 +319,11 @@ void WebUIToolbarWebView::OnPageInitialized() {
   }
 
   InitialWebUIManager::From(browser_)->OnWebUIToolbarLoaded();
+}
+
+void WebUIToolbarWebView::InvokePinnedToolbarAction(
+    toolbar_ui_api::mojom::PinnedToolbarAction action_id) {
+  pinned_toolbar_actions_.Invoke(action_id);
 }
 
 ReloadControl* WebUIToolbarWebView::GetReloadControl() {
@@ -548,6 +557,14 @@ void WebUIToolbarWebView::OnOmniboxViewStateChanged(
     toolbar_ui_api::mojom::OmniboxViewStatePtr state) {
   if (*state != *last_queued_state_.omnibox_view_state) {
     last_queued_state_.omnibox_view_state = std::move(state);
+    PostPushNavigationState();
+  }
+}
+
+void WebUIToolbarWebView::OnPinnedToolbarActionsStateChanged(
+    std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> state) {
+  if (!mojo::Equals(state, last_queued_state_.pinned_toolbar_actions_state)) {
+    last_queued_state_.pinned_toolbar_actions_state = std::move(state);
     PostPushNavigationState();
   }
 }
