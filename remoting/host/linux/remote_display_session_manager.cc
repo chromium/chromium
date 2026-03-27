@@ -202,37 +202,6 @@ void RemoteDisplaySessionManager::QuerySessionInfo(
                      display_path));
 }
 
-void RemoteDisplaySessionManager::PopulateSessionEnvironment(
-    const std::string& display_name,
-    const RemoteDisplayInfo& display_info,
-    RemoteDisplaySession& session,
-    mojom::LoginSessionInfoPtr session_reporter_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(session.session_info.has_value());
-  const LoginSessionManager::SessionInfo& session_info = *session.session_info;
-  base::EnvironmentMap& env_vars = session.environment_variables;
-  DCHECK(env_vars.empty());
-  DCHECK_EQ(session_info.session_id, session_reporter_info->session_id);
-  env_vars["XDG_CURRENT_DESKTOP"] = session_reporter_info->xdg_current_desktop;
-  env_vars["DBUS_SESSION_BUS_ADDRESS"] =
-      session_reporter_info->dbus_session_bus_address;
-  env_vars["DISPLAY"] = session_reporter_info->display;
-  env_vars["WAYLAND_DISPLAY"] = session_reporter_info->wayland_display;
-  env_vars["XDG_SESSION_CLASS"] = session_info.session_class;
-  env_vars["XDG_SESSION_TYPE"] = session_info.session_type;
-  env_vars["USER"] = session_info.username;
-  env_vars["LOGNAME"] = session_info.username;
-  // This is the path of XDG_RUNTIME_DIR for all modern Linux systems using
-  // systemd.
-  env_vars["XDG_RUNTIME_DIR"] =
-      base::StringPrintf("/run/user/%d", session_info.uid);
-  if (session.user_info.has_value()) {
-    env_vars["HOME"] = session.user_info->home_dir.value();
-  }
-  delegate_->OnRemoteDisplayChanged(display_name, display_info);
-}
-
 void RemoteDisplaySessionManager::HandleSessionInfoQueriesBlockingStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -276,7 +245,6 @@ void RemoteDisplaySessionManager::OnGdmRemoteDisplayManagerStarted(
     return;
   }
 
-  login_session_reporter_server_.StartServer();
   login_session_server_.StartServer();
   for (const auto& [display_path, remote_display] :
        remote_display_manager_.remote_displays()) {
@@ -380,36 +348,6 @@ void RemoteDisplaySessionManager::OnRemoteDisplayChanged(
   }
 
   QuerySessionInfo(display_name, display_path, display.session_id);
-}
-
-void RemoteDisplaySessionManager::OnLoginSessionCreated(
-    mojom::LoginSessionInfoPtr session_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::string display_name;
-  const RemoteDisplayInfo* display_info = nullptr;
-  RemoteDisplaySession* session = nullptr;
-  for (auto& [d_name, d_info] : remote_displays_) {
-    for (auto& [display_path, s] : d_info.sessions) {
-      if (s.session_info.has_value() &&
-          s.session_info->session_id == session_info->session_id) {
-        display_name = d_name;
-        display_info = &d_info;
-        session = &s;
-        break;
-      }
-    }
-  }
-  if (!session) {
-    HOST_LOG << "Received session info from the login session reporter before "
-             << "LoginSessionManager returns its session info. Session ID: "
-             << session_info->session_id;
-    pending_session_reporter_info_[session_info->session_id] =
-        std::move(session_info);
-    return;
-  }
-  PopulateSessionEnvironment(display_name, *display_info, *session,
-                             std::move(session_info));
 }
 
 void RemoteDisplaySessionManager::IsRunningInCrdSession(
@@ -542,28 +480,8 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
     LOG(ERROR) << user_info_expected.error();
   }
 
-  base::Version gdm_version(remote_display_manager_.version());
-  if (session.session_info->session_class == "user" ||
-      (gdm_version.IsValid() && gdm_version >= base::Version("49"))) {
-    FetchSystemdEnvironmentVariables(display_name, display_path,
-                                     session.session_info->username);
-  } else {
-    // TODO: crbug.com/488713023 - remove this branch once we no longer need
-    // this for development (everyone is on GDM 49+).
-    auto pending_session_reporter_info_it =
-        pending_session_reporter_info_.find(session.session_info->session_id);
-    if (pending_session_reporter_info_it !=
-        pending_session_reporter_info_.end()) {
-      mojom::LoginSessionInfoPtr session_reporter_info =
-          std::move(pending_session_reporter_info_it->second);
-      pending_session_reporter_info_.erase(pending_session_reporter_info_it);
-      PopulateSessionEnvironment(display_name, remote_display_info, session,
-                                 std::move(session_reporter_info));
-    }
-
-    session_info_queries_blocking_startup_.erase(display_path);
-    HandleSessionInfoQueriesBlockingStartup();
-  }
+  FetchSystemdEnvironmentVariables(display_name, display_path,
+                                   session.session_info->username);
 }
 
 void RemoteDisplaySessionManager::FetchSystemdEnvironmentVariables(

@@ -48,15 +48,6 @@ if (enable_me2me_host) {
     outputs = [ "$root_build_dir/remoting/setup-url-forwarder" ]
   }
 
-  executable("login_session_reporter") {
-    sources = [ "login_session_reporter_entry_point.cc" ]
-
-    deps = [
-      ":login_session_reporter_main_headers",
-      "//remoting/host:remoting_core",
-    ]
-  }
-
   executable("remote_session_info") {
     sources = [ "remote_session_info_entry_point.cc" ]
 
@@ -68,7 +59,6 @@ if (enable_me2me_host) {
 
   group("remoting_dev_me2me_host") {
     deps = [
-      ":login_session_reporter",
       ":remote_session_info",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_libremoting_core",
@@ -114,11 +104,6 @@ source_set("utils") {
     "//ui/base",
   ]
   configs += [ "//build/linux:gio_config" ]
-}
-
-source_set("login_session_reporter_main_headers") {
-  sources = [ "login_session_reporter_main.h" ]
-  deps = [ "//remoting/host:host_main_headers" ]
 }
 
 source_set("remote_session_info_main_headers") {
@@ -195,9 +180,6 @@ source_set("platform_impls") {
     "linux_process_launcher_delegate.h",
     "login_session_manager.cc",
     "login_session_manager.h",
-    "login_session_reporter_main.cc",
-    "login_session_reporter_server.cc",
-    "login_session_reporter_server.h",
     "login_session_server.cc",
     "login_session_server.h",
     "passwd_utils.cc",
@@ -237,7 +219,6 @@ source_set("platform_impls") {
   ]
   deps = [
     ":gvariant",
-    ":login_session_reporter_main_headers",
     ":remote_session_info_main_headers",
     ":utils",
     ":x11",

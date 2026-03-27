@@ -203,29 +203,6 @@ def root_main(out_dir, user_home, keep_sessions=False):
             print("ACLs updated but permissions still failing.",
                   file=sys.stderr)
 
-    # Add an autostart entry for the login session reporter.
-    # TODO: crbug.com/488713023 - remove this once we no longer need this for
-    # development (everyone is on GDM 49+).
-    if is_gdm_version_ge_49():
-        print("GDM version is 49 or higher. Skipping login session reporter "
-              "autostart.")
-    else:
-        login_reporter_desktop_path = "/usr/share/gdm/greeter/autostart/"\
-            "crd-login-session-reporter.desktop"
-        if not os.path.exists(login_reporter_desktop_path):
-            print(f"Creating {login_reporter_desktop_path}...")
-            desktop_content = f"""[Desktop Entry]
-Type=Application
-Name=CRD Login Session Reporter
-Exec={abs_out_dir}/login_session_reporter
-NoDisplay=true
-"""
-            os.makedirs(os.path.dirname(login_reporter_desktop_path),
-                        exist_ok=True)
-            with open(login_reporter_desktop_path, "w", encoding='utf-8') as f:
-                f.write(desktop_content)
-            print(f"{login_reporter_desktop_path} created.")
-
     daemon_command = [remoting_host_path, "--type=daemon"]
     print(f"Starting CRD host daemon: {' '.join(daemon_command)}")
 

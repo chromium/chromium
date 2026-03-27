@@ -20,12 +20,9 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "remoting/host/linux/gdm_remote_display_manager.h"
-#include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
-#include "remoting/host/linux/login_session_reporter_server.h"
 #include "remoting/host/linux/login_session_server.h"
 #include "remoting/host/linux/passwd_utils.h"
-#include "remoting/host/mojom/login_session.mojom-forward.h"
 
 namespace remoting {
 
@@ -39,7 +36,6 @@ namespace remoting {
 //
 // This class requires current process to be run as root.
 class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
-                                    public mojom::LoginSessionObserver,
                                     public LoginSessionServer::Delegate {
  public:
   using Callback = base::OnceCallback<void(base::expected<void, Loggable>)>;
@@ -148,11 +144,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   void QuerySessionInfo(const std::string& display_name,
                         const gvariant::ObjectPath& display_path,
                         const std::string& session_id);
-  void PopulateSessionEnvironment(
-      const std::string& display_name,
-      const RemoteDisplayInfo& display_info,
-      RemoteDisplaySession& session,
-      mojom::LoginSessionInfoPtr session_reporter_info);
 
   // If `start_state_` is `STARTING` and there are no more session info queries
   // blocking startup, then transition to `STARTED` and run the init callback.
@@ -174,9 +165,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   void OnRemoteDisplayChanged(
       const gvariant::ObjectPath& display_path,
       const GdmRemoteDisplayManager::RemoteDisplay& display) override;
-
-  // mojom::LoginSessionObserver:
-  void OnLoginSessionCreated(mojom::LoginSessionInfoPtr session_info) override;
 
   // LoginSessionServer::Delegate:
   void IsRunningInCrdSession(
@@ -221,19 +209,10 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<LoginSessionManager> login_session_manager_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  LoginSessionReporterServer login_session_reporter_server_
-      GUARDED_BY_CONTEXT(sequence_checker_){this};
   LoginSessionServer login_session_server_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
   GDBusConnectionRef connection_ GUARDED_BY_CONTEXT(sequence_checker_);
   RemoteDisplayMap remote_displays_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Stores information from the session reporter process if received before the
-  // information from the systemd D-BUS call.
-  // TODO: crbug.com/488713023 - remove this when we poll systemd user
-  // environments for GNOME 49.
-  base::flat_map<std::string /*session_id*/, mojom::LoginSessionInfoPtr>
-      pending_session_reporter_info_;
 
   // Tracks remote display sessions awaiting systemd session info which blocks
   // the startup process.
@@ -242,8 +221,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   // these sessions have been populated. This allows the caller to terminate all
   // CRD-managed remote displays that were leaked from the previous CRD host
   // incarnation.
-  // TODO: crbug.com/488713023 - remove this when we poll systemd user
-  // environments for GNOME 49.
   base::flat_set<gvariant::ObjectPath /*display_path*/>
       session_info_queries_blocking_startup_
           GUARDED_BY_CONTEXT(sequence_checker_);
