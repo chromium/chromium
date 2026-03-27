@@ -141,6 +141,12 @@ class WallpaperPrefManagerTestBase : public testing::Test {
         local_state_.get(), std::move(profile_helper));
   }
 
+  void TearDown() override {
+    profile_helper_ = nullptr;
+    pref_manager_.reset();
+    local_state_.reset();
+  }
+
   PrefService* GetLocalPrefService() { return local_state_.get(); }
 
   void SimulateUserLogin(const AccountId& id) {
@@ -157,7 +163,7 @@ class WallpaperPrefManagerTestBase : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  raw_ptr<TestProfileHelper, DanglingUntriaged> profile_helper_;
+  raw_ptr<TestProfileHelper> profile_helper_;
 
   TestWallpaperControllerClient client_;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
