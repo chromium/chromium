@@ -5,8 +5,8 @@
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.models as models
 import chromium_src.tools.metrics.common.model_shared as model_shared
+import chromium_src.tools.metrics.common.models as models
 
 
 _ENUMERATION_TYPE = models.ObjectNodeType(
