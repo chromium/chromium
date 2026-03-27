@@ -57,6 +57,10 @@
 class SkColorSpace;
 class SkData;
 
+namespace SkCodecs {
+class ICCProfileChromium;
+}
+
 namespace blink {
 
 #if SK_B32_SHIFT
@@ -118,8 +122,7 @@ class PLATFORM_EXPORT ColorProfile final {
   USING_FAST_MALLOC(ColorProfile);
 
  public:
-  ColorProfile(const skcms_ICCProfile&,
-               base::HeapArray<uint8_t> = base::HeapArray<uint8_t>());
+  explicit ColorProfile(const skcms_ICCProfile&);
   ColorProfile(const ColorProfile&) = delete;
   ColorProfile& operator=(const ColorProfile&) = delete;
   static std::unique_ptr<ColorProfile> Create(base::span<const uint8_t> buffer);
@@ -129,7 +132,8 @@ class PLATFORM_EXPORT ColorProfile final {
 
  private:
   skcms_ICCProfile profile_;
-  base::HeapArray<uint8_t> buffer_;
+  // Retains the parsed profile data so that pointers in profile_ remain valid.
+  std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile_;
 };
 
 class PLATFORM_EXPORT ColorProfileTransform final {

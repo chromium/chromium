@@ -47,8 +47,10 @@
 #include "third_party/blink/renderer/platform/image-decoders/webp/webp_image_decoder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkExif.h"
+#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/skia_span_util.h"
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #include "third_party/blink/renderer/platform/image-decoders/avif/avif_image_decoder.h"
@@ -1039,22 +1041,21 @@ wtf_size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
   return row_bytes_[static_cast<wtf_size_t>(index)];
 }
 
-ColorProfile::ColorProfile(const skcms_ICCProfile& profile,
-                           base::HeapArray<uint8_t> buffer)
-    : profile_(profile), buffer_(std::move(buffer)) {}
+ColorProfile::ColorProfile(const skcms_ICCProfile& profile)
+    : profile_(profile) {}
 
 ColorProfile::~ColorProfile() = default;
 
 std::unique_ptr<ColorProfile> ColorProfile::Create(
     base::span<const uint8_t> buffer) {
-  // After skcms_Parse, profile will have pointers into the passed buffer,
-  // so we need to copy first, then parse.
-  auto owned_buffer = base::HeapArray<uint8_t>::CopiedFrom(buffer);
-  skcms_ICCProfile profile;
-  if (skcms_Parse(owned_buffer.data(), owned_buffer.size(), &profile)) {
-    return std::make_unique<ColorProfile>(profile, std::move(owned_buffer));
+  auto owned_data = gfx::MakeSkDataFromSpanWithCopy(buffer);
+  auto skia_profile = SkCodecs::ICCProfileChromium::Make(std::move(owned_data));
+  if (!skia_profile) {
+    return nullptr;
   }
-  return nullptr;
+  auto result = std::make_unique<ColorProfile>(skia_profile->GetProfile());
+  result->skia_profile_ = std::move(skia_profile);
+  return result;
 }
 
 ColorProfileTransform::ColorProfileTransform(

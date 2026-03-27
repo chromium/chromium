@@ -112,6 +112,10 @@ version = "0.4"
 # when debug asserts are off, which is when DCHECK_IS_ON() is false.
 features = ["std", "release_max_level_info"]
 
+[dependencies.moxcms]
+version = "0.8.1"
+default-features = false
+
 # Temporarily inform our cargo tooling that we care about
 # the new version of serde_json_lenient. We are in the midst
 # of CLs that move from the older to the newer.

@@ -184,6 +184,7 @@ dependencies = [
  "llguidance",
  "log",
  "minijinja",
+ "moxcms",
  "num-traits",
  "ordered-float",
  "png",

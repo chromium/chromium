@@ -165,6 +165,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
+#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
@@ -797,6 +798,14 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
   RenderThreadImpl::RegisterSchemes();
 
   RenderMediaClient::Initialize();
+
+  // Configure the ICC profile parser kill-switch early, before any image
+  // decoding occurs. When the feature is enabled, this forces skcms to be
+  // used instead of the Rust-based ICC parser.
+  // TODO(crbug.com/463653726): Remove this once the feature is validated in
+  // Stable.
+  SkCodecs::ICCProfileChromium::ForceSkcms(
+      base::FeatureList::IsEnabled(blink::features::kForceSkcmsICCParsing));
 
   // Hook up blink's codecs so skia can call them. Since only the renderer
   // processes should be doing image decoding, this is not done in the common

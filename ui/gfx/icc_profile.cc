@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/encode/SkICC.h"
+#include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/gfx/skia_color_space_util.h"
 
@@ -54,11 +55,13 @@ void ICCProfile::Internals::Initialize() {
     return;
 
   // Parse the profile.
-  skcms_ICCProfile profile;
-  if (!skcms_Parse(data_.data(), data_.size(), &profile)) {
+  auto parsed = SkCodecs::ICCProfileChromium::Make(
+      SkData::MakeWithoutCopy(data_.data(), data_.size()));
+  if (!parsed) {
     DLOG(ERROR) << "Failed to parse ICC profile.";
     return;
   }
+  skcms_ICCProfile profile = parsed->GetProfile();
 
   // We have seen many users with profiles that don't have a D50 white point.
   // Windows appears to detect these profiles, and not use them for OS drawing.
