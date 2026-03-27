@@ -24,6 +24,7 @@ class BrowsingTopicsInternalsUIConfig
   BrowsingTopicsInternalsUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUIBrowsingTopicsInternalsHost) {}
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // WebUI which handles serving the chrome://topics-internals page.

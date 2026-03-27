@@ -77,6 +77,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationTest,
+                       TopicsInternalsWebUINull) {
+  GURL kUrl("chrome://topics-internals");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_TRUE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_EQ(web_contents->GetWebUI(), nullptr);
+}
+
 class PrivacySandboxAdPrivacyDeprecationDisabledTest
     : public InProcessBrowserTest {
  public:
@@ -128,6 +139,17 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(web_contents->GetLastCommittedURL(), url);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdPrivacyDeprecationDisabledTest,
+                       TopicsInternalsWebUINotNull) {
+  GURL kUrl("chrome://topics-internals");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_FALSE(web_contents->GetPrimaryMainFrame()->IsErrorDocument());
+  EXPECT_NE(web_contents->GetWebUI(), nullptr);
 }
 
 }  // namespace privacy_sandbox

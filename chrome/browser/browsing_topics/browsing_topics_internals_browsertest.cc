@@ -353,6 +353,7 @@ class BrowsingTopicsDisabledInternalsBrowserTest
             network::features::kBrowsingTopics,
             blink::features::kBrowsingTopicsParameters,
             features::kPrivacySandboxAdsAPIsOverride,
+            privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation,
         });
   }
 
@@ -432,7 +433,8 @@ class BrowsingTopicsInternalsBrowserTest
          {features::kPrivacySandboxAdsAPIsOverride, {}},
          {privacy_sandbox::kPrivacySandboxSettings4,
           {{"consent-required", "true"}}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation});
   }
 
   // BrowserTestBase::SetUpInProcessBrowserTestFixture

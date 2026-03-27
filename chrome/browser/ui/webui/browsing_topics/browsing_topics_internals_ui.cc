@@ -13,6 +13,7 @@
 #include "chrome/grit/browsing_topics_internals_resources.h"
 #include "chrome/grit/browsing_topics_internals_resources_map.h"
 #include "components/browsing_topics/mojom/browsing_topics_internals.mojom.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -115,4 +116,10 @@ void BrowsingTopicsInternalsUI::BindInterface(
       Profile::FromBrowserContext(
           web_ui()->GetWebContents()->GetBrowserContext()),
       std::move(receiver));
+}
+
+bool BrowsingTopicsInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return !base::FeatureList::IsEnabled(
+      privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
 }
