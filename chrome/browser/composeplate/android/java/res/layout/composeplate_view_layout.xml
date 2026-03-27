@@ -39,7 +39,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/composeplate_view_icon_size"
             android:src="@drawable/search_spark_white_24dp"
             android:tint="?attr/colorOnSurface"
-            tools:ignore="ContentDescription"/>
+            android:importantForAccessibility="no"/>
 
         <TextView
             android:id="@+id/composeplate_button_text"
@@ -71,7 +71,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/composeplate_view_icon_size"
             android:src="@drawable/ic_incognito"
             android:tint="?attr/colorOnSurface"
-            tools:ignore="ContentDescription"/>
+            android:importantForAccessibility="no"/>
 
         <TextView
             android:id="@+id/incognito_button_text"

@@ -503,8 +503,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         boolean shouldApplyWhiteBackgroundOnSearchBox =
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox();
 
-        ViewStub composeplateViewStub =
-                mNewTabPageLayout.findViewById(R.id.composeplate_view_v2_stub);
+        ViewStub composeplateViewStub = mNewTabPageLayout.findViewById(R.id.composeplate_view_stub);
         ViewGroup composeplateView = (ViewGroup) composeplateViewStub.inflate();
         mComposeplateCoordinator = new ComposeplateCoordinator(composeplateView, mProfile);
         mComposeplateCoordinator.setIncognitoClickListener(this::onIncognitoButtonClicked);

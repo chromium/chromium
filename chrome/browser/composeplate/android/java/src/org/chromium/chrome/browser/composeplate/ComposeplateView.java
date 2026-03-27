@@ -69,15 +69,9 @@ public class ComposeplateView extends LinearLayout {
                     colorStateList);
         }
 
-        // TODO (https://crbug.com/421944848): Cleans up this class when cleaning up
-        //  composeplate_view_layout(_V2).xml.
         if (mIncognitoButton != null) {
-            if (mIncognitoButton instanceof ImageView incognitoButtonImageView) {
-                incognitoButtonImageView.setImageTintList(colorStateList);
-            } else {
-                setColorStateList(
-                        mIncognitoButton.findViewById(R.id.incognito_button_icon), colorStateList);
-            }
+            setColorStateList(
+                    mIncognitoButton.findViewById(R.id.incognito_button_icon), colorStateList);
         }
     }
 

@@ -65,7 +65,7 @@ public class ComposeplateViewBinderUnitTest {
         mView =
                 (ComposeplateView)
                         LayoutInflater.from(mContext)
-                                .inflate(R.layout.composeplate_view_layout_v2, null);
+                                .inflate(R.layout.composeplate_view_layout, null);
         mView.setLayoutParams(new ViewGroup.MarginLayoutParams(120, 120));
 
         mPropertyModel = new PropertyModel.Builder(ComposeplateProperties.ALL_KEYS).build();
