@@ -586,17 +586,39 @@ constexpr int kMemoryDumpProviderIndices[] = {1, -1};
 constexpr MessageInfo kMemoryDumpProvider = {kMemoryDumpProviderIndices,
                                              nullptr};
 
+// Proto Message: ChromeAccessibilityWinNotifyWinEvent
+constexpr int kChromeAccessibilityWinNotifyWinEventIndices[] = {1, -1};
+constexpr MessageInfo kChromeAccessibilityWinNotifyWinEvent = {
+    kChromeAccessibilityWinNotifyWinEventIndices, nullptr};
+
+// Proto Message: ResultInterval
+constexpr int kResultIntervalIndices[] = {1, 2, -1};
+constexpr MessageInfo kResultInterval = {kResultIntervalIndices, nullptr};
+
+// Proto Message: Result
+constexpr int kResultIndices[] = {1, 2, -1};
+constexpr MessageInfo const* kResultComplexMessages[] = {nullptr,
+                                                         &kResultInterval};
+constexpr MessageInfo kResult = {kResultIndices, kResultComplexMessages};
+
+// Proto Message: FrameIntervalDecider
+constexpr int kFrameIntervalDeciderIndices[] = {1, 2, -1};
+constexpr MessageInfo const* kFrameIntervalDeciderComplexMessages[] = {&kResult,
+                                                                       nullptr};
+constexpr MessageInfo kFrameIntervalDecider = {
+    kFrameIntervalDeciderIndices, kFrameIntervalDeciderComplexMessages};
+
 // Proto Message: TrackEvent
 constexpr int kTrackEventIndices[] = {
-    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,
-    22,   23,   24,   25,   26,   27,   28,   30,   31,   32,   33,
-    34,   35,   36,   38,   39,   40,   41,   42,   43,   44,   47,
-    48,   1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010,
-    1011, 1012, 1013, 1014, 1015, 1016, 1017, 1018, 1019, 1020, 1021,
-    1022, 1023, 1024, 1025, 1028, 1031, 1032, 1033, 1034, 1036, 1038,
-    1039, 1040, 1041, 1042, 1046, 1047, 1048, 1049, 1050, 1051, 1052,
-    1053, 1054, 1055, 1056, 1057, 1058, 1059, 1060, 1061, 1064, 1065,
-    1066, 1067, 1068, 1069, 1071, 1075, 1076, 1077, 1078, 1079, -1};
+    1,    2,    3,    5,    6,    9,    10,   11,   12,   16,   17,   22,
+    23,   24,   25,   26,   27,   28,   30,   31,   32,   33,   34,   35,
+    36,   38,   39,   40,   41,   42,   43,   44,   47,   48,   1001, 1002,
+    1003, 1004, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
+    1015, 1016, 1017, 1018, 1019, 1020, 1021, 1022, 1023, 1024, 1025, 1028,
+    1031, 1032, 1033, 1034, 1036, 1038, 1039, 1040, 1041, 1042, 1046, 1047,
+    1048, 1049, 1050, 1051, 1052, 1053, 1054, 1055, 1056, 1057, 1058, 1059,
+    1060, 1061, 1064, 1065, 1066, 1067, 1068, 1069, 1071, 1075, 1076, 1077,
+    1078, 1079, 1080, 1081, -1};
 constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     nullptr,
     nullptr,
@@ -695,7 +717,9 @@ constexpr MessageInfo const* kTrackEventComplexMessages[] = {
     &kInputTransferHandler,
     &kResponseInfo,
     &kScrollJankV4Result,
-    &kMemoryDumpProvider};
+    &kMemoryDumpProvider,
+    &kChromeAccessibilityWinNotifyWinEvent,
+    &kFrameIntervalDecider};
 constexpr MessageInfo kTrackEvent = {kTrackEventIndices,
                                      kTrackEventComplexMessages};
 
