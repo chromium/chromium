@@ -1281,7 +1281,8 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, BookmarkShortcutWithFindBarFocus) {
       WaitForShow(kBookmarkNameFieldId));
 }
 
-IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, CopyBlockedByPolicy) {
+// TODO(crbug.com/496762907): Deflake and reenable it.
+IN_PROC_BROWSER_TEST_P(FindBarViewsUiTest, DISABLED_CopyBlockedByPolicy) {
   const bool clipboard_restricted_by_policy = GetParam();
   if (clipboard_restricted_by_policy) {
     data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
