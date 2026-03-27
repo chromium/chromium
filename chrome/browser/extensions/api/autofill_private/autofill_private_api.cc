@@ -1157,6 +1157,9 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
         {"Add or update entity instance - ", kErrorAutofillAiUnavailable})));
   }
 
+  // Wallet passes are strictly read-only from the client's perspective in
+  // settings. Therefore, we only ever "Save" them. Any downstream "Update"
+  // attempts are inapplicable.
   if (IsMaskedStorageSupported(entity_instance->type(),
                                entity_instance->record_type())) {
     // If the request is successfully started, the callback will handle the
@@ -1172,7 +1175,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
   }
 
   // Handles the following scenarios:
-  // 1. Save entity locally.
+  // 1. Save/Update entity locally.
   // 2. Save entity to Wallet via Chrome sync.
   entity_data_manager->AddOrUpdateEntityInstance(entity_instance.value());
   if (private_api_entity_instance.stored_in_wallet.value_or(false) &&
