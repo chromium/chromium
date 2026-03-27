@@ -62,7 +62,7 @@ class InstallAppFromVerifiedManifestCommandTest : public WebAppBrowserTestBase {
   }
 
   std::string GetIconUrl() {
-    return https_server()->GetURL("/web_apps/blue-192.png").spec();
+    return embedded_https_test_server().GetURL("/web_apps/blue-192.png").spec();
   }
 
   // Returns a basic, installable manifest with "/" as the start URL and 1 icon.
@@ -272,9 +272,9 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate,
-      {https_server()->GetURL("/banners/96x96-red.png").spec(),
-       https_server()->GetURL("/banners/192x192-green.png").spec(),
-       https_server()->GetURL("/web_apps/blue-192.png").spec()
+      {embedded_https_test_server().GetURL("/banners/96x96-red.png").spec(),
+       embedded_https_test_server().GetURL("/banners/192x192-green.png").spec(),
+       embedded_https_test_server().GetURL("/web_apps/blue-192.png").spec()
 
       },
       nullptr);
@@ -461,8 +461,8 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
   })json";
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate,
-      {https_server()->GetURL("/404").spec(),
-       https_server()->GetURL("/nocontent").spec()},
+      {embedded_https_test_server().GetURL("/404").spec(),
+       embedded_https_test_server().GetURL("/nocontent").spec()},
       nullptr);
 
   auto [result_id, result_code] =
@@ -505,13 +505,15 @@ IN_PROC_BROWSER_TEST_F(InstallAppFromVerifiedManifestCommandTest,
 
   std::string manifest = base::ReplaceStringPlaceholders(
       kManifestTemplate,
-      {https_server()
-           ->GetURL("fonts.gstatic.com", "/banners/96x96-red.png")
+      {embedded_https_test_server()
+           .GetURL("fonts.gstatic.com", "/banners/96x96-red.png")
            .spec(),
-       https_server()
-           ->GetURL("lh3.googleusercontent.com", "/banners/192x192-green.png")
+       embedded_https_test_server()
+           .GetURL("lh3.googleusercontent.com", "/banners/192x192-green.png")
            .spec(),
-       https_server()->GetURL("youtube.com", "/web_apps/blue-192.png").spec()},
+       embedded_https_test_server()
+           .GetURL("youtube.com", "/web_apps/blue-192.png")
+           .spec()},
       nullptr);
   webapps::AppId expected_id =
       GenerateAppId(/*manifest_id=*/std::nullopt, kDocumentUrl);

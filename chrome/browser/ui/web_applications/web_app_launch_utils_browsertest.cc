@@ -45,10 +45,10 @@ class ReparentWebContentsTest
   ReparentingUrl GetReparentingUrlType() { return GetParam(); }
 
   GURL GetNonInstalledUrl() {
-    return https_server()->GetURL("/web_apps/no_manifest.html");
+    return embedded_https_test_server().GetURL("/web_apps/no_manifest.html");
   }
   GURL GetInstalledUrl() {
-    return https_server()->GetURL("/web_apps/simple/index.html");
+    return embedded_https_test_server().GetURL("/web_apps/simple/index.html");
   }
   GURL GetReparentingUrl() {
     return GetReparentingUrlType() == ReparentingUrl::kNonAppUrl

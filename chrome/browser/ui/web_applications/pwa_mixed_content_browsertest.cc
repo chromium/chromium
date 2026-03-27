@@ -73,19 +73,19 @@ namespace web_app {
 class PWAMixedContentBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL GetMixedContentAppURL() {
-    return https_server()->GetURL("app.com",
-                                  "/ssl/page_displays_insecure_content.html");
+    return embedded_https_test_server().GetURL(
+        "app.com", "/ssl/page_displays_insecure_content.html");
   }
 
   // This URL is on app.com, and the page contains a secure iframe that points
   // to foo.com/simple.html.
   GURL GetSecureIFrameAppURL() {
     net::HostPortPair host_port_pair = net::HostPortPair::FromURL(
-        https_server()->GetURL("foo.com", "/simple.html"));
+        embedded_https_test_server().GetURL("foo.com", "/simple.html"));
     const std::string path = GetPathWithHostAndPortReplaced(
         "/ssl/page_with_cross_site_frame.html", host_port_pair);
 
-    return https_server()->GetURL("app.com", path);
+    return embedded_https_test_server().GetURL("app.com", path);
   }
 };
 

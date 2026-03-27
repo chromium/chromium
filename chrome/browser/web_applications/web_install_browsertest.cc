@@ -110,9 +110,9 @@ class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
   // Tests start on an about:blank page. We need to navigate to any valid URL
   // before we can execute `navigator.install()`
   void NavigateToValidUrl() {
-    VLOG(0) << https_server()->GetURL("/simple.html").spec();
+    VLOG(0) << embedded_https_test_server().GetURL("/simple.html").spec();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), https_server()->GetURL("/simple.html")));
+        browser(), embedded_https_test_server().GetURL("/simple.html")));
   }
 
   content::WebContents* web_contents() {
@@ -158,8 +158,8 @@ class WebInstallCurrentDocumentBrowserTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
 
   const std::string manifest_id =
@@ -250,8 +250,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest, Install_NoParams) {
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        UserDeclinesInstallDialog) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
 
   // Simulate the user declining the install dialog.
@@ -284,8 +284,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        UserAcceptsOpenDialog) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
   const std::string manifest_id =
       GenerateManifestId("some_id", current_doc_url).spec();
 
@@ -339,8 +339,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        UserCancelsOpenDialog) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
   const std::string manifest_id =
       GenerateManifestId("some_id", current_doc_url).spec();
 
@@ -383,8 +383,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        IntentPickerAfterTabSwitching) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
 
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
@@ -453,7 +453,7 @@ using WebInstallNotSupportedDialogBrowserTest =
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_CurrentDocument) {
   // Open incognito window and navigate to a valid URL.
-  GURL test_url = https_server()->GetURL("/simple.html");
+  GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), test_url);
 
@@ -509,12 +509,12 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogInIncognito_BackgroundDocument) {
   // Open incognito window and navigate to a valid URL.
-  GURL test_url = https_server()->GetURL("/simple.html");
+  GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), test_url);
 
-  const GURL background_doc_install_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const GURL background_doc_install_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
@@ -587,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebInstallNotSupportedDialogBrowserTest,
                        NotSupportedDialogAfterTabSwitching) {
   // Open incognito window and navigate to a valid URL.
-  GURL test_url = https_server()->GetURL("/simple.html");
+  GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   Browser* incognito_browser =
       OpenURLOffTheRecord(browser()->profile(), test_url);
 
@@ -664,7 +664,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
 
   // Navigate to a valid URL in the guest browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      guest_browser, https_server()->GetURL("/simple.html")));
+      guest_browser, embedded_https_test_server().GetURL("/simple.html")));
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
@@ -727,15 +727,15 @@ IN_PROC_BROWSER_TEST_F(WebInstallGuestModeTest,
 
   // Navigate to a valid URL in the guest browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      guest_browser, https_server()->GetURL("/simple.html")));
+      guest_browser, embedded_https_test_server().GetURL("/simple.html")));
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
   content::WebContents* guest_web_contents =
       guest_browser->tab_strip_model()->GetActiveWebContents();
 
-  const GURL background_doc_install_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  const GURL background_doc_install_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
 
   base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -838,7 +838,7 @@ IN_PROC_BROWSER_TEST_F(WebInstallPolicyDisabledTest,
 
   // Navigate to a valid URL in the browser.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/simple.html")));
+      browser(), embedded_https_test_server().GetURL("/simple.html")));
 
   views::NamedWidgetShownWaiter widget_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppInstallNotSupportedDialog");
@@ -895,8 +895,8 @@ using WebInstallCurrentDocumentBrowserTestManifestErrors =
 
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
                        NoManifest) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/no_manifest_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/no_manifest_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
 
   base::HistogramTester histograms;
@@ -955,8 +955,8 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
 // be cleaned up gracefully.
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTestManifestErrors,
                        WebContentsClosedDuringManifestRetrieval) {
-  GURL current_doc_url =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
+  GURL current_doc_url = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), current_doc_url));
 
   // Execute the install async so we can close the tab while it's in progress.
@@ -1322,7 +1322,7 @@ IN_PROC_BROWSER_TEST_P(WebInstallOriginTrialBrowserTest, WithOriginTrialToken) {
 IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
                        DISABLED_SpamInstallWithDynamicManifest) {
   // Start on a page without a manifest.
-  GURL test_url = https_server()->GetURL("/simple.html");
+  GURL test_url = embedded_https_test_server().GetURL("/simple.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   auto auto_accept_pwa_install_confirmation =
@@ -1383,9 +1383,10 @@ IN_PROC_BROWSER_TEST_F(WebInstallCurrentDocumentBrowserTest,
   const int kNavigateToNoManifestAfterCalls = 5;
   const int kNavigateBackToManifestAfterCalls = 10;
 
-  GURL page_with_manifest =
-      https_server()->GetURL("/banners/manifest_with_id_test_page.html");
-  GURL page_without_manifest = https_server()->GetURL("/simple.html");
+  GURL page_with_manifest = embedded_https_test_server().GetURL(
+      "/banners/manifest_with_id_test_page.html");
+  GURL page_without_manifest =
+      embedded_https_test_server().GetURL("/simple.html");
 
   // Start on page with manifest.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page_with_manifest));

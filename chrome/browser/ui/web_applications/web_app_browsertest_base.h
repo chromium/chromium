@@ -128,7 +128,6 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
 
   content::WebContents* OpenApplication(const webapps::AppId&);
 
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
 
   virtual void OnWillCreateBrowserContextServices(
       content::BrowserContext* context) {}
@@ -161,7 +160,6 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   base::TimeTicks start_time_ = base::TimeTicks::Now();
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  net::EmbeddedTestServer https_server_;
   base::CallbackListSubscription create_services_subscription_;
 
   // Similar to net::MockCertVerifier, but also updates the CertVerifier

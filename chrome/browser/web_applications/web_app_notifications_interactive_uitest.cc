@@ -134,7 +134,7 @@ using WebAppNotificationsBrowserTest_IconAndTitleEnabled =
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleEnabled,
                        PersistentNotificationIconAndTitle) {
   const GURL app_url =
-      https_server()->GetURL("/web_app_notifications/index.html");
+      embedded_https_test_server().GetURL("/web_app_notifications/index.html");
 
   const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   // The installation opens a new Browser window: |user_display_mode| is
@@ -215,7 +215,7 @@ using WebAppNotificationsBrowserTest_IconAndTitleDisabled =
 IN_PROC_BROWSER_TEST_F(WebAppNotificationsBrowserTest_IconAndTitleDisabled,
                        PersistentNotificationIconAndTitle) {
   const GURL app_url =
-      https_server()->GetURL("/web_app_notifications/index.html");
+      embedded_https_test_server().GetURL("/web_app_notifications/index.html");
 
   const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   // The installation opens a new Browser window: |user_display_mode| is
@@ -285,8 +285,8 @@ class WebAppNotificationsBrowserTest_MacPermissions
   void SetUpOnMainThread() override {
     WebAppNotificationsBrowserTest::SetUpOnMainThread();
 
-    const GURL app_url =
-        https_server()->GetURL("/web_app_notifications/index.html");
+    const GURL app_url = embedded_https_test_server().GetURL(
+        "/web_app_notifications/index.html");
 
     const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
     // The installation opens a new Browser window: |user_display_mode| is

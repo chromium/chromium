@@ -134,7 +134,7 @@ class SubAppsServiceImplBrowserTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   GURL GetURLFromPath(const std::string& path) {
-    return https_server()->GetURL(kDomain, path);
+    return embedded_https_test_server().GetURL(kDomain, path);
   }
 
   GURL GetURLFromPath(const std::string& path,

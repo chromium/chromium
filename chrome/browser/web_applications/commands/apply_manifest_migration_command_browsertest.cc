@@ -81,11 +81,12 @@ class ApplyManifestMigrationCommandBrowserTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
                        MigrateFromSuggestedLaunchSuccess) {
   Browser* app_browser = InstallWebAppFromPageGetBrowser(
-      browser(), https_server()->GetURL(kMigrateFromInstallUrl));
+      browser(), embedded_https_test_server().GetURL(kMigrateFromInstallUrl));
 
   // This should register the migration:
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kMigrateToWithSuggestMigrationUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kMigrateToWithSuggestMigrationUrl)));
   test::WaitForLoadCompleteAndMaybeManifestSeen(
       *browser()->tab_strip_model()->GetActiveWebContents());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -101,16 +102,16 @@ IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
 
   EXPECT_TRUE(AppBrowserController::IsWebApp(new_app_browser));
 
-  webapps::ManifestId migrate_to_manifest_id =
-      webapps::ManifestId(https_server()->GetURL(kMigrateToManifestId));
+  webapps::ManifestId migrate_to_manifest_id = webapps::ManifestId(
+      embedded_https_test_server().GetURL(kMigrateToManifestId));
 
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       GenerateAppIdFromManifestId(migrate_to_manifest_id),
       WebAppFilter::InstalledInOperatingSystemForTesting()));
 
   // Old app should be uninstalled.
-  webapps::ManifestId migrate_from_manifest_id =
-      webapps::ManifestId(https_server()->GetURL(kMigrateFromManifestId));
+  webapps::ManifestId migrate_from_manifest_id = webapps::ManifestId(
+      embedded_https_test_server().GetURL(kMigrateFromManifestId));
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       GenerateAppIdFromManifestId(migrate_from_manifest_id),
       WebAppFilter::InstalledInOperatingSystemForTesting()));

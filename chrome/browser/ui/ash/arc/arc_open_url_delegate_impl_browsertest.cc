@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
   // Enabling link capturing to ensure it doesn't interfere.
   ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), test_web_app_id()),
             base::ok());
-  const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
+  const GURL app_url = embedded_https_test_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
   const char* key =
       arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
 
@@ -116,14 +116,13 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
 
 IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
                        OpenAppWithIntent) {
-  ASSERT_TRUE(https_server().Start());
-  const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
+  const GURL app_url = embedded_https_test_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
 
   // InstallTestWebApp() but with a ShareTarget definition added.
   auto web_app_info =
       web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(app_url);
   web_app_info->scope =
-      https_server().GetURL(GetAppUrlHost(), GetAppScopePath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetAppScopePath());
   web_app_info->title = base::UTF8ToUTF16(GetAppName());
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
@@ -165,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
     // Calling OpenAppWithIntent for an installed web app URL should open the
     // intent in an app window.
     GURL launch_url =
-        https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+        embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
     arc::mojom::LaunchIntentPtr intent = arc::mojom::LaunchIntent::New();
     intent->action = arc::kIntentActionView;
     intent->data = launch_url;

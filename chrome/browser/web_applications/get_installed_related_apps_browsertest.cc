@@ -32,11 +32,10 @@ class GetInstalledRelatedAppsBrowserTest : public WebAppBrowserTestBase {
   }
 
   void SetUpOnMainThread() override {
-    WebAppBrowserTestBase::SetUpOnMainThread();
     embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&GetInstalledRelatedAppsBrowserTest::RequestHandler,
                             base::Unretained(this)));
-    ASSERT_TRUE(embedded_https_test_server().Start());
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(

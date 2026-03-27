@@ -163,8 +163,8 @@ class IntentChipButtonBrowserTest
     const char* app_host = GetAppUrlHost();
     auto web_app_info =
         web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-            https_server().GetURL(app_host, "/"));
-    web_app_info->scope = https_server().GetURL(app_host, "/");
+            embedded_https_test_server().GetURL(app_host, "/"));
+    web_app_info->scope = embedded_https_test_server().GetURL(app_host, "/");
     web_app_info->title = base::UTF8ToUTF16(GetAppName());
     web_app_info->description = u"Test description";
     web_app_info->user_display_mode =
@@ -186,7 +186,7 @@ class IntentChipButtonBrowserTest
 IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
                        NavigationToInScopeLinkShowsIntentChip) {
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   }));
@@ -214,8 +214,8 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
                        NavigationToOutOfScopeLinkDoesNotShowsIntentChip) {
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), out_of_scope_url));
   EXPECT_FALSE(GetIntentChip(browser())->GetVisible());
 }
@@ -226,9 +226,9 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest,
             base::ok());
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
 
   const views::Button* intent_chip = GetIntentChip(browser());
   // First three visits will always show as expanded.
@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(IntentChipButtonBrowserTest, OpensAppForPreferredApp) {
   apps_util::SetSupportedLinksPreferenceAndWait(profile(), test_web_app_id());
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   EXPECT_TRUE(DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   }));

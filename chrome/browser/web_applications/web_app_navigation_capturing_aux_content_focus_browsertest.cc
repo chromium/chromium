@@ -27,7 +27,8 @@ class WebAppNavigationCapturingAuxContentFocusBrowserTest
       public testing::WithParamInterface<ManifestLaunchHandler_ClientMode> {
  protected:
   GURL GetAppUrl() {
-    return https_server()->GetURL("/web_apps/aux_content_no_focus/index.html");
+    return embedded_https_test_server().GetURL(
+        "/web_apps/aux_content_no_focus/index.html");
   }
 };
 

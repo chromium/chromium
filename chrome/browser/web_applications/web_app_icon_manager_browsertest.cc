@@ -45,32 +45,23 @@ class WebAppIconManagerBrowserTest : public WebAppBrowserTestBase {
 
   ~WebAppIconManagerBrowserTest() override = default;
 
- protected:
-  net::EmbeddedTestServer* https_server() { return &https_server_; }
-
   void SetUpOnMainThread() override {
     Profile* profile = browser()->profile();
     app_service_test_.SetUp(profile);
     web_app::test::WaitUntilReady(WebAppProvider::GetForTest(profile));
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
 
-  // WebAppBrowserTestBase:
-  void SetUp() override {
-    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    WebAppBrowserTestBase::SetUp();
-  }
-
+ protected:
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
  private:
-  net::EmbeddedTestServer https_server_;
   apps::AppServiceTest app_service_test_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
-  ASSERT_TRUE(https_server()->Start());
   const GURL start_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
 
   webapps::AppId app_id;
   {

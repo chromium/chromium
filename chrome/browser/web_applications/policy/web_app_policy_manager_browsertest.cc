@@ -91,11 +91,10 @@ class WebAppPolicyManagerBrowserTest : public WebAppBrowserTestBase {
   WebAppPolicyManagerBrowserTest() = default;
 
   void SetUpOnMainThread() override {
-    WebAppBrowserTestBase::SetUpOnMainThread();
     embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&WebAppPolicyManagerBrowserTest::RedirectInstallUrl,
                             base::Unretained(this)));
-    ASSERT_TRUE(embedded_https_test_server().Start());
+    WebAppBrowserTestBase::SetUpOnMainThread();
   }
   Profile* profile() { return browser()->profile(); }
 
@@ -247,13 +246,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
   WebAppProvider& provider = *WebAppProvider::GetForTest(profile());
 
-  const GURL start_url = https_server()->GetURL("/web_apps/basic.html");
+  const GURL start_url =
+      embedded_https_test_server().GetURL("/web_apps/basic.html");
   const webapps::AppId app_id = GenerateAppIdFromManifestId(
       GenerateManifestIdFromStartUrlOnly(start_url));
   web_app::WebAppTestInstallObserver observer(profile());
   observer.BeginListening({});
-  const GURL install_url =
-      https_server()->GetURL("/web_apps/get_manifest.html?no_manifest_id.json");
+  const GURL install_url = embedded_https_test_server().GetURL(
+      "/web_apps/get_manifest.html?no_manifest_id.json");
   profile()->GetPrefs()->SetList(prefs::kWebAppInstallForceList,
                                  base::ListValue().Append(base::DictValue().Set(
                                      kUrlKey, install_url.spec())));

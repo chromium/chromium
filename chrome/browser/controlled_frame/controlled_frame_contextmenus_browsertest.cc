@@ -37,8 +37,9 @@ class ControlledFrameContextMenusTest : public ControlledFrameTestBase {
             /*flag_setting=*/FlagSetting::CONTROLLED_FRAME) {}
 
   void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
     ControlledFrameTestBase::SetUpOnMainThread();
-    StartContentServer("web_apps/simple_isolated_app");
   }
 
   const extensions::MenuItem::Id CreateMenuItemId(

@@ -51,11 +51,11 @@ class InstallFromSyncCommandTest : public WebAppBrowserTestBase {
   ~InstallFromSyncCommandTest() override = default;
 
   GURL GetManifestIcon() {
-    return https_server()->GetURL("/banners/launcher-icon-2x.png");
+    return embedded_https_test_server().GetURL("/banners/launcher-icon-2x.png");
   }
 
   GURL GetTrustedIcon() {
-    return https_server()->GetURL("/banners/image-512px.png");
+    return embedded_https_test_server().GetURL("/banners/image-512px.png");
   }
 
   base::FilePath LoadImageFile() {
@@ -98,7 +98,7 @@ class InstallFromSyncCommandTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
-  GURL test_url = https_server()->GetURL(
+  GURL test_url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   webapps::AppId id = GenerateAppId(std::nullopt, test_url);
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
   InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
       id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
       "Test Title",
-      /*scope=*/https_server()->GetURL("/banners/"),
+      /*scope=*/embedded_https_test_server().GetURL("/banners/"),
       /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
       {apps::IconInfo(GetManifestIcon(), kIconSize)},
       {apps::IconInfo(GetTrustedIcon(), kIconSize)},
@@ -134,11 +134,11 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, SimpleInstall) {
 }
 
 IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
-  GURL test_url = https_server()->GetURL(
+  GURL test_url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   webapps::AppId id = GenerateAppId(std::nullopt, test_url);
-  GURL other_test_url = https_server()->GetURL(
+  GURL other_test_url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_no_service_worker.html");
   webapps::AppId other_id = GenerateAppId(std::nullopt, other_test_url);
@@ -150,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
         id, GenerateManifestIdFromStartUrlOnly(test_url),
         /*start_url=*/test_url, "Test Title",
-        /*scope=*/https_server()->GetURL("/banners/"),
+        /*scope=*/embedded_https_test_server().GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(GetManifestIcon(), kIconSize)},
         {apps::IconInfo(GetTrustedIcon(), kIconSize)},
@@ -168,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
     InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
         other_id, GenerateManifestIdFromStartUrlOnly(other_test_url),
         /*start_url=*/other_test_url, "Test Title",
-        /*scope=*/https_server()->GetURL("/banners/"),
+        /*scope=*/embedded_https_test_server().GetURL("/banners/"),
         /*theme_color=*/std::nullopt, mojom::UserDisplayMode::kStandalone,
         {apps::IconInfo(GetManifestIcon(), other_icon_size)},
         {apps::IconInfo(GetTrustedIcon(), other_icon_size)},

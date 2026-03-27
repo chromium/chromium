@@ -42,18 +42,18 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
     : public WebAppNavigationCapturingBrowserTestBase {
  protected:
   GURL GetAppUrl() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/index.html");
   }
 
   GURL GetAppUrlWithQuery() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html?q=fake_query_to_check_navigation");
   }
 
   GURL GetAppUrlWithWCO() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/index_wco.html");
   }
 };
@@ -334,12 +334,12 @@ class IsolatedWebAppNavigationCapturingIntentPickerBrowserTest
   }
 
   GURL GetAppUrl() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/index.html");
   }
 
   GURL GetAppUrlWithQuery() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html?q=fake_query_to_check_navigation");
   }

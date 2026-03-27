@@ -157,7 +157,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
 
   // Navigate to a page with <install> elements.
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
@@ -179,8 +180,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install) {
             u"Web app install element test app with id");
 
   // Verify the app is installed.
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL("/some_id")));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(
+      webapps::ManifestId(embedded_https_test_server().GetURL("/some_id")));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
   // Check use counter.
@@ -209,7 +210,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
 
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
@@ -218,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
 
   // Dynamically set the installurl attribute.
   // Since we're installing by URL only, the manifest must contain an id.
-  const GURL install_url = https_server()->GetURL(kCustomIdPageInstallUrl);
+  const GURL install_url =
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(install_url));
 
   // Click the install element and wait for the app to open.
@@ -236,8 +239,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl) {
   EXPECT_EQ(app_controller->GetTitle(), u"Simple web app with a custom id");
 
   // Verify the app is installed.
-  webapps::AppId app_id = GenerateAppIdFromManifestId(
-      webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
+      embedded_https_test_server().GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
   // Check use counter.
@@ -283,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
 
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
@@ -291,9 +295,11 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Dynamically set the installurl and manifestid attributes.
-  const GURL install_url = https_server()->GetURL(kNoCustomIdPageInstallUrl);
+  const GURL install_url =
+      embedded_https_test_server().GetURL(kNoCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(install_url));
-  const GURL manifest_id = https_server()->GetURL(kNoCustomIdPageId);
+  const GURL manifest_id =
+      embedded_https_test_server().GetURL(kNoCustomIdPageId);
   ASSERT_TRUE(SetButtonManifestId(manifest_id));
 
   // Click the install element and wait for the app to open.
@@ -351,7 +357,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrlAndId) {
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Simulate the user declining the install prompt.
   auto auto_decline_pwa_install_confirmation =
@@ -361,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
 
   // Dynamically set the installurl attribute.
   // Since we're installing by URL only, the manifest must contain an id.
-  const GURL install_url = https_server()->GetURL(kCustomIdPageInstallUrl);
+  const GURL install_url =
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(install_url));
 
   // Click the install element.
@@ -371,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
   WaitForDismissEvent(kInstallElementId);
 
   // Verify the app is not installed.
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
+      embedded_https_test_server().GetURL(kCustomIdPageId)));
   EXPECT_FALSE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
   histograms.ExpectBucketCount(
@@ -410,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InstallWithUrl_UserDenies) {
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
   // Navigate to a page with <install> elements.
   const GURL current_document_url =
-      https_server()->GetURL(kInstallElementPageStartUrl);
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), current_document_url));
 
   auto auto_accept_pwa_install_confirmation =
@@ -436,8 +444,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, Install_DenyPermission) {
             u"Web app install element test app with id");
 
   // Verify the app is installed.
-  webapps::AppId app_id = GenerateAppIdFromManifestId(
-      webapps::ManifestId(https_server()->GetURL(kInstallElementPageId)));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
+      embedded_https_test_server().GetURL(kInstallElementPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
   histograms.ExpectBucketCount(kInstallResultUma,
@@ -458,14 +466,16 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
                        InstallWithUrl_IgnoresDeniedPermission) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Setup test listeners and dialog auto-accepts.
   auto auto_accept_pwa_install_confirmation =
       SetAutoAcceptPWAInstallConfirmationForTesting();
 
   // Dynamically set the installurl attribute to a background document URL.
-  const GURL install_url = https_server()->GetURL(kCustomIdPageInstallUrl);
+  const GURL install_url =
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(install_url));
   base::HistogramTester histograms;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -488,8 +498,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
   EXPECT_EQ(app_controller->GetTitle(), u"Simple web app with a custom id");
 
   // Verify the app is installed.
-  webapps::AppId app_id =
-      GenerateAppIdFromManifestId(webapps::ManifestId(https_server()->GetURL(kCustomIdPageId)));
+  webapps::AppId app_id = GenerateAppIdFromManifestId(webapps::ManifestId(
+      embedded_https_test_server().GetURL(kCustomIdPageId)));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
 
@@ -534,14 +544,14 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   // Install a background document and close the app window.
   const GURL background_doc_install_url =
-      https_server()->GetURL(kCustomIdPageInstallUrl);
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   webapps::AppId installed_app_id =
       web_app::InstallWebAppFromPageAndCloseAppBrowser(
           browser(), background_doc_install_url);
 
   // Generate the app id from the manifest id and verify it matches the app just
   // installed.
-  const GURL manifest_id = https_server()->GetURL(kCustomIdPageId);
+  const GURL manifest_id = embedded_https_test_server().GetURL(kCustomIdPageId);
   webapps::AppId generated_app_id = GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_EQ(installed_app_id, generated_app_id);
 
@@ -553,7 +563,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   // Now navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Dynamically set the installurl attribute to the background document just
   // installed.
@@ -596,8 +607,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
                        InstallWithUrl_AlreadyInstalledThenUninstalled) {
   // Step 1: Preinstall a background document.
   const GURL background_doc_install_url =
-      https_server()->GetURL(kCustomIdPageInstallUrl);
-  const GURL manifest_id = https_server()->GetURL(kCustomIdPageId);
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
+  const GURL manifest_id = embedded_https_test_server().GetURL(kCustomIdPageId);
 
   webapps::AppId app_id = web_app::InstallWebAppFromPageAndCloseAppBrowser(
       browser(), background_doc_install_url);
@@ -609,7 +620,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 
   // Step 2: Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Dynamically set the installurl attribute to the installed app.
   ASSERT_TRUE(SetButtonInstallUrl(background_doc_install_url));
@@ -652,7 +664,8 @@ IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest,
 IN_PROC_BROWSER_TEST_F(InstallElementBrowserTest, InvalidInstallUrl) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   // Dynamically set an invalid installurl attribute.
   const GURL invalid_url = GURL("https://invalid.url");
@@ -696,13 +709,14 @@ IN_PROC_BROWSER_TEST_F(InstallElementAndApiInteractionBrowserTest,
                        InstallApiRespectsPermissionsAfterElementInstall) {
   // Navigate to a page with <install> elements.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL(kInstallElementPageStartUrl)));
+      browser(),
+      embedded_https_test_server().GetURL(kInstallElementPageStartUrl)));
 
   auto auto_accept = SetAutoAcceptPWAInstallConfirmationForTesting();
 
   // Set the <install> element's installurl to a another test page.
   const GURL element_install_url =
-      https_server()->GetURL(kCustomIdPageInstallUrl);
+      embedded_https_test_server().GetURL(kCustomIdPageInstallUrl);
   ASSERT_TRUE(SetButtonInstallUrl(element_install_url));
 
   // Step 1: Click the <install> element. This calls InstallFromElement() on the
@@ -721,8 +735,9 @@ IN_PROC_BROWSER_TEST_F(InstallElementAndApiInteractionBrowserTest,
   // method, NOT InstallFromElement(). The permission check should NOT be
   // bypassed by the sticky triggered_from_element_ flag from step 1.
   const GURL api_install_url =
-      https_server()->GetURL(kNoCustomIdPageInstallUrl);
-  const GURL api_manifest_id = https_server()->GetURL(kNoCustomIdPageId);
+      embedded_https_test_server().GetURL(kNoCustomIdPageInstallUrl);
+  const GURL api_manifest_id =
+      embedded_https_test_server().GetURL(kNoCustomIdPageId);
 
   // Block the WEB_APP_INSTALLATION permission so that if the logic to prompt
   // for permission is correctly reached, it will be denied. With the sticky

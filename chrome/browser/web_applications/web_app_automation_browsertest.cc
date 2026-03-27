@@ -32,7 +32,9 @@ class WebAppAutomationBrowserTest : public WebAppBrowserTestBase {
   WebAppAutomationBrowserTest() = default;
   ~WebAppAutomationBrowserTest() override = default;
 
-  GURL test_url() { return https_server()->GetURL("/web_apps/basic.html"); }
+  GURL test_url() {
+    return embedded_https_test_server().GetURL("/web_apps/basic.html");
+  }
 
   WebAppProvider* provider() { return WebAppProvider::GetForTest(profile()); }
 

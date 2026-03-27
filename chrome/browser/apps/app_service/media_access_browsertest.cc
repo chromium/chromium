@@ -380,11 +380,12 @@ class MediaAccessWebAppsTest : public web_app::WebAppBrowserTestBase {
   }
 
   GURL GetUrl1() {
-    return https_server()->GetURL("app.com", "/ssl/google.html");
+    return embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
   }
 
   GURL GetUrl2() {
-    return https_server()->GetURL("app.com", "/google/google.html");
+    return embedded_https_test_server().GetURL("app.com",
+                                               "/google/google.html");
   }
 
   content::WebContents* GetWebContents() {

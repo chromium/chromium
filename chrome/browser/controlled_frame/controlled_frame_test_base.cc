@@ -86,13 +86,6 @@ void ControlledFrameTestBase::ConfigureEnvironment() {
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
 
-void ControlledFrameTestBase::StartContentServer(
-    std::string_view chrome_test_data_relative_dir) {
-  embedded_https_test_server().ServeFilesFromSourceDirectory(
-      GetChromeTestDataDir().AppendASCII(chrome_test_data_relative_dir));
-  ASSERT_TRUE(embedded_https_test_server().Start());
-}
-
 web_app::IsolatedWebAppUrlInfo
 ControlledFrameTestBase::CreateAndInstallEmptyApp(
     const web_app::ManifestBuilder& manifest_builder) {

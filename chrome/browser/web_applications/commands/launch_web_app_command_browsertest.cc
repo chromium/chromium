@@ -100,8 +100,8 @@ class LaunchWebAppWithFirstRunServiceBrowserTest
 IN_PROC_BROWSER_TEST_P(
     LaunchWebAppWithFirstRunServiceBrowserTest,
     LaunchInWindowWithFirstRunServiceRequiredSetupSuccessful) {
-  webapps::AppId app_id =
-      InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
+  webapps::AppId app_id = InstallWebApp(
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html"));
 
   ASSERT_TRUE(GetProvider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -112,8 +112,8 @@ IN_PROC_BROWSER_TEST_P(
 
 IN_PROC_BROWSER_TEST_P(LaunchWebAppWithFirstRunServiceBrowserTest,
                        LaunchInTabWithFirstRunServiceRequiredSetupSuccessful) {
-  webapps::AppId app_id =
-      InstallWebApp(https_server()->GetURL("/banners/manifest_test_page.html"));
+  webapps::AppId app_id = InstallWebApp(
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html"));
 
   ASSERT_TRUE(GetProvider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::InstalledInOperatingSystemForTesting()));
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, StandaloneLaunchAppConfig) {
 
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
   const GURL kStartUrl =
-      https_server()->GetURL("/banners/manifest_test_page.html");
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
   web_app_info->scope = kStartUrl.GetWithoutFilename();
@@ -299,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest, AppLaunchNoIntegration) {
 IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
                        NoAppLaunchForMigrationSuggestedApps) {
   const GURL kStartUrl =
-      https_server()->GetURL("/banners/manifest_test_page.html");
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(kStartUrl);
   web_app_info->scope = kStartUrl.GetWithoutFilename();

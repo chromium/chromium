@@ -23,10 +23,8 @@ namespace web_app {
 class IsolatedWebAppCspBrowserTest : public IsolatedWebAppBrowserTestHarness {
  public:
   void SetUpOnMainThread() override {
-    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-
     embedded_https_test_server().ServeFilesFromDirectory(resource_path());
-    ASSERT_TRUE(embedded_https_test_server().Start());
+    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
 
     embedded_test_server()->ServeFilesFromDirectory(resource_path());
     ASSERT_TRUE(embedded_test_server()->Start());

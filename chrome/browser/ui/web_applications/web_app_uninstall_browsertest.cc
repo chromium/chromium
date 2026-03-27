@@ -39,7 +39,7 @@ namespace web_app {
 class WebAppUninstallBrowserTest : public WebAppBrowserTestBase {
  public:
   GURL GetSecureAppURL() {
-    return https_server()->GetURL("app.com", "/ssl/google.html");
+    return embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
   }
 
   void UninstallWebApp(const webapps::AppId& app_id) {

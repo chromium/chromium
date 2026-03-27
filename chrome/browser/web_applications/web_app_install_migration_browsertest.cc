@@ -53,13 +53,13 @@ class WebAppInstallMigrationBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
                        SameOriginMigration_TriggersPendingMigration) {
-  GURL source_url = https_server()->GetURL(
+  GURL source_url = embedded_https_test_server().GetURL(
       "www.example.com",
       "/web_apps/migration/source_to_www_example_com/index.html");
   webapps::AppId source_app_id = InstallWebAppFromPage(browser(), source_url);
   EXPECT_FALSE(source_app_id.empty());
 
-  GURL target_url = https_server()->GetURL(
+  GURL target_url = embedded_https_test_server().GetURL(
       "www.example.com", "/web_apps/migration/target_from_source/index.html");
   webapps::AppId target_app_id = InstallWebAppFromPage(browser(), target_url);
   EXPECT_FALSE(target_app_id.empty());
@@ -83,13 +83,13 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
                        CrossOriginSameSiteMigration_TriggersPendingMigration) {
-  GURL source_url = https_server()->GetURL(
+  GURL source_url = embedded_https_test_server().GetURL(
       "www.example.com",
       "/web_apps/migration/source_to_foo_example_com/index.html");
   webapps::AppId source_app_id = InstallWebAppFromPage(browser(), source_url);
   EXPECT_FALSE(source_app_id.empty());
 
-  GURL target_url = https_server()->GetURL(
+  GURL target_url = embedded_https_test_server().GetURL(
       "foo.example.com", "/web_apps/migration/target_from_source/index.html");
   webapps::AppId target_app_id = InstallWebAppFromPage(browser(), target_url);
   EXPECT_FALSE(target_app_id.empty());
@@ -113,13 +113,13 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallMigrationBrowserTest,
                        CrossSiteMigration_DoesNotTriggerPendingMigration) {
-  GURL source_url = https_server()->GetURL(
+  GURL source_url = embedded_https_test_server().GetURL(
       "www.example.com",
       "/web_apps/migration/source_to_www_example_org/index.html");
   webapps::AppId source_app_id = InstallWebAppFromPage(browser(), source_url);
   EXPECT_FALSE(source_app_id.empty());
 
-  GURL target_url = https_server()->GetURL(
+  GURL target_url = embedded_https_test_server().GetURL(
       "www.example.org", "/web_apps/migration/target_from_source/index.html");
   webapps::AppId target_app_id = InstallWebAppFromPage(browser(), target_url);
   EXPECT_FALSE(target_app_id.empty());

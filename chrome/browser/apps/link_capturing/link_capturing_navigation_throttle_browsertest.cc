@@ -136,11 +136,11 @@ class LinkCapturingNavigationThrottleBrowserTest
     web_app::WebAppNavigationCapturingBrowserTestBase::SetUpOnMainThread();
 
     // Set up web app as link capturing target.
-    start_url_ = https_server()->GetURL("/web_apps/basic.html");
+    start_url_ = embedded_https_test_server().GetURL("/web_apps/basic.html");
     // Set up simple page browser tab with a "fill-page" CSS class available for
     // tests to use. This class makes elements fill the page making it easy to
     // click on.
-    simple_url_ = https_server()->GetURL("/simple.html");
+    simple_url_ = embedded_https_test_server().GetURL("/simple.html");
     ASSERT_TRUE(content::NavigateToURL(GetBrowserTab(), simple_url_));
     ASSERT_TRUE(content::ExecJs(GetBrowserTab(), R"(
       const style = document.createElement('style');
@@ -157,7 +157,7 @@ class LinkCapturingNavigationThrottleBrowserTest
     )"));
 
     // Set up web app as link capturing target.
-    start_url_ = https_server()->GetURL("/web_apps/basic.html");
+    start_url_ = embedded_https_test_server().GetURL("/web_apps/basic.html");
     switch (GetParam()) {
       case NavCaptureAppType::kPwa:
         app_id_ = InstallPwa();
@@ -277,8 +277,8 @@ IN_PROC_BROWSER_TEST_P(LinkCapturingNavigationThrottleBrowserTest,
         link.href = '%s';
         document.body.append(link);
       )",
-      https_server()
-          ->GetURL("/server-redirect?" + start_url_.spec())
+      embedded_https_test_server()
+          .GetURL("/server-redirect?" + start_url_.spec())
           .spec()
           .c_str());
   ASSERT_TRUE(content::ExecJs(GetBrowserTab(), script));
@@ -297,8 +297,8 @@ IN_PROC_BROWSER_TEST_P(LinkCapturingNavigationThrottleBrowserTest,
         link.target = '_blank';
         document.body.append(link);
       )",
-      https_server()
-          ->GetURL("/server-redirect?" + start_url_.spec())
+      embedded_https_test_server()
+          .GetURL("/server-redirect?" + start_url_.spec())
           .spec()
           .c_str());
   ASSERT_TRUE(content::ExecJs(GetBrowserTab(), script));

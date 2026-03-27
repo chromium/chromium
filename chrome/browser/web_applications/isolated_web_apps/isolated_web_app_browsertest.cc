@@ -270,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, AppsPartitioned) {
                        app2->Install(profile()));
 
   auto* non_app_frame = ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/simple.html"));
+      browser(), embedded_https_test_server().GetURL("/simple.html"));
   EXPECT_TRUE(non_app_frame);
   EXPECT_EQ(default_storage_partition(), non_app_frame->GetStoragePartition());
 
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, CrossOriginWindowOpen) {
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
 
   // Test that always opens a non-auxiliary context.
-  GURL expected_url = https_server()->GetURL("/simple.html");
+  GURL expected_url = embedded_https_test_server().GetURL("/simple.html");
   {
     content::TestNavigationObserver navigation_observer(expected_url);
     navigation_observer.StartWatchingNewWebContents();
@@ -554,8 +554,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, WebCannotLoadIwaResources) {
   ASSERT_OK_AND_ASSIGN(IsolatedWebAppUrlInfo url_info, app->Install(profile()));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(content::NavigateToURL(web_contents,
-                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, embedded_https_test_server().GetURL("/simple.html")));
 
   EXPECT_THAT(
       EvalJs(web_contents, content::JsReplace(R"(
@@ -957,7 +957,7 @@ class IsolatedWebAppBrowserCookieTest : public IsolatedWebAppBrowserTest {
   using CookieHeaders = std::vector<std::string>;
 
   void SetUpOnMainThread() override {
-    https_server()->RegisterRequestMonitor(
+    embedded_https_test_server().RegisterRequestMonitor(
         base::BindRepeating(&IsolatedWebAppBrowserCookieTest::MonitorRequest,
                             base::Unretained(this)));
 
@@ -1017,7 +1017,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
   GURL app_url = url_info.origin().GetURL().Resolve("/cookie.html");
   GURL app_proxy_url =
       isolated_web_app_dev_server().GetURL("localhost", "/cookie.html");
-  GURL non_app_url = https_server()->GetURL(
+  GURL non_app_url = embedded_https_test_server().GetURL(
       kNonAppHost, "/web_apps/simple_isolated_app/cookie.html");
   CookieSettingsFactory::GetForProfile(browser()->profile())
       ->SetCookieSetting(non_app_url, CONTENT_SETTING_ALLOW);

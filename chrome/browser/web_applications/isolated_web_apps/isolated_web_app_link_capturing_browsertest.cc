@@ -167,13 +167,13 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
 
  protected:
   GURL GetCapturableUrlWithQuery() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html?q=fake_query_to_check_navigation");
   }
 
   GURL GetCapturableUrl() {
-    return https_server()->GetURL(
+    return embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html");
   }
@@ -330,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server()->GetURL("/simple.html")));
+      browser(), embedded_https_test_server().GetURL("/simple.html")));
 
   GURL destination_url = GetCapturableUrlWithQuery();
   std::string script;
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
       break;
 
     case OpenScriptWay::kServerRedirect:
-      GURL redirect_url =
-          https_server()->GetURL("/server-redirect?" + destination_url.spec());
+      GURL redirect_url = embedded_https_test_server().GetURL(
+          "/server-redirect?" + destination_url.spec());
       script = base::StringPrintf(
           R"(
             const link = document.createElement('a');

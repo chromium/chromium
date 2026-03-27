@@ -98,9 +98,8 @@ class WebAppLinkCapturingBrowserTest
 
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
-    ASSERT_TRUE(https_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
-    out_of_scope_ = https_server().GetURL("/");
+    out_of_scope_ = embedded_https_test_server().GetURL("/");
   }
 
   // Returns [app_id, in_scope_1, in_scope_2, scope]

@@ -69,7 +69,7 @@ class ExternalAppResolutionCommandBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        BasicInstallCommand) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -96,7 +96,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        ExternalInstallWindowMode) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -124,7 +124,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        ExternalInstallBrowserMode) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        InstallAppFromPolicy) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
 
@@ -179,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        InstallFailsWithInvalidManifest) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "invalid_manifest_test_page.html");
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandBrowserTest,
     DISABLED_ExternalInstallSourceReinstallOverrideManifestData) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
 
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Now install the same web_app with a different manifest (with updated file
   // handler information) and a different install_url.
-  const GURL kWebAppUrlDifferentManifest = https_server()->GetURL(
+  const GURL kWebAppUrlDifferentManifest = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_with_file_handlers.json");
   EXPECT_TRUE(
@@ -279,14 +279,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(2u, handlers.size());
 
   // Verify the first file handler matches.
-  EXPECT_EQ(https_server()->GetURL("/open-foo"), handlers[0].action);
+  EXPECT_EQ(embedded_https_test_server().GetURL("/open-foo"),
+            handlers[0].action);
   EXPECT_EQ(
       GetAcceptEntriesForFileHandler(
           {{"application/foo", {".foo"}}, {"application/foobar", {".foobar"}}}),
       handlers[0].accept);
 
   // Verify the second file handler matches.
-  EXPECT_EQ(https_server()->GetURL("/open-bar"), handlers[1].action);
+  EXPECT_EQ(embedded_https_test_server().GetURL("/open-bar"),
+            handlers[1].action);
   EXPECT_EQ(
       GetAcceptEntriesForFileHandler({{"application/bar", {".bar", ".baz"}}}),
       handlers[1].accept);
@@ -294,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        UserInstallReinstallOverrideManifestData) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html");
   EXPECT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), kWebAppUrl));
@@ -317,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
   // Mock installation of the same web_app but with a different install URL
   // and updated manifest values.
-  const GURL kWebAppUrlDifferentManifest = https_server()->GetURL(
+  const GURL kWebAppUrlDifferentManifest = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_with_file_handlers.json");
   EXPECT_TRUE(
@@ -357,14 +359,16 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
   EXPECT_EQ(2u, handlers.size());
 
   // Verify the first file handler matches.
-  EXPECT_EQ(https_server()->GetURL("/open-foo"), handlers[0].action);
+  EXPECT_EQ(embedded_https_test_server().GetURL("/open-foo"),
+            handlers[0].action);
   EXPECT_EQ(
       GetAcceptEntriesForFileHandler(
           {{"application/foo", {".foo"}}, {"application/foobar", {".foobar"}}}),
       handlers[0].accept);
 
   // Verify the second file handler matches.
-  EXPECT_EQ(https_server()->GetURL("/open-bar"), handlers[1].action);
+  EXPECT_EQ(embedded_https_test_server().GetURL("/open-bar"),
+            handlers[1].action);
   EXPECT_EQ(
       GetAcceptEntriesForFileHandler({{"application/bar", {".bar", ".baz"}}}),
       handlers[1].accept);
@@ -372,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
                        PlaceholderInstallWithCustomIconLoadSuccessful) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page1.html");
 
@@ -382,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
-  install_options.override_icon_url = https_server()->GetURL(
+  install_options.override_icon_url = embedded_https_test_server().GetURL(
       "/banners/"
       "128x128-green.png");
 
@@ -410,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandBrowserTest,
     PlaceholderInstallWithCustomIconLoadFailedStillSuccessful) {
-  const GURL kWebAppUrl = https_server()->GetURL(
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page1.html");
 
@@ -420,7 +424,7 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
-  install_options.override_icon_url = https_server()->GetURL(
+  install_options.override_icon_url = embedded_https_test_server().GetURL(
       "/banners/"
       "non-existing-icon.png");
 
@@ -455,9 +459,11 @@ class ExternalAppResolutionCommandCspBrowserTest
   };
 
   void SetUp() override {
-    https_server()->RegisterRequestHandler(base::BindLambdaForTesting(
-        [&](const net::test_server::HttpRequest& request)
-            -> std::unique_ptr<net::test_server::HttpResponse> {
+    embedded_https_test_server().RegisterRequestHandler(
+        base::BindLambdaForTesting([&](const net::test_server::HttpRequest&
+                                           request)
+                                       -> std::unique_ptr<
+                                           net::test_server::HttpResponse> {
           std::unique_ptr<net::test_server::BasicHttpResponse> response =
               std::make_unique<net::test_server::BasicHttpResponse>();
           if (request.relative_url == "/manifest_test_page.html") {
@@ -520,7 +526,8 @@ class ExternalAppResolutionCommandCspBrowserTest
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandCspBrowserTest,
     PlaceholderInstallAfterRedirectWithCustomIconLoadSuccessful) {
-  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+  const GURL kWebAppUrl =
+      embedded_https_test_server().GetURL("/manifest_test_page.html");
 
   std::queue<net::HttpStatusCode> manifest_response_codes(
       {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
@@ -538,7 +545,8 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
-  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+  install_options.override_icon_url =
+      embedded_https_test_server().GetURL("/icon.png");
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
@@ -565,7 +573,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandCspBrowserTest,
     PlaceholderInstallAfterRedirectWithCustomIconLoadNavigationFailsAndRetriesSuccessful) {
-  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+  const GURL kWebAppUrl =
+      embedded_https_test_server().GetURL("/manifest_test_page.html");
 
   std::queue<net::HttpStatusCode> manifest_response_codes(
       {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
@@ -585,7 +594,8 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
-  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+  install_options.override_icon_url =
+      embedded_https_test_server().GetURL("/icon.png");
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
@@ -612,7 +622,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandCspBrowserTest,
     PlaceholderInstallAfterRedirectWithCustomIconLoadFailsAndRetriesSuccessful) {
-  const GURL kWebAppUrl = https_server()->GetURL("/manifest_test_page.html");
+  const GURL kWebAppUrl =
+      embedded_https_test_server().GetURL("/manifest_test_page.html");
 
   std::queue<net::HttpStatusCode> manifest_response_codes(
       {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
@@ -634,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
-  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+  install_options.override_icon_url =
+      embedded_https_test_server().GetURL("/icon.png");
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(
@@ -661,8 +673,8 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ExternalAppResolutionCommandCspBrowserTest,
     PlaceholderInstallCustomIconLoadWithStrictCspSuccessful) {
-  const GURL kWebAppUrl =
-      https_server()->GetURL("/manifest_test_page_with_strict_csp.html");
+  const GURL kWebAppUrl = embedded_https_test_server().GetURL(
+      "/manifest_test_page_with_strict_csp.html");
 
   std::queue<net::HttpStatusCode> manifest_response_codes(
       {net::HttpStatusCode::HTTP_PERMANENT_REDIRECT});
@@ -682,7 +694,8 @@ IN_PROC_BROWSER_TEST_F(
   // Set a custom icon. This URL is blocked by the manifest test page csp
   // (manifest_test_page_with_strict_csp.html). We expect the custom icon load
   // to still work correctly.
-  install_options.override_icon_url = https_server()->GetURL("/icon.png");
+  install_options.override_icon_url =
+      embedded_https_test_server().GetURL("/icon.png");
 
   base::test::TestFuture<ExternallyManagedAppManager::InstallResult> future;
   provider().scheduler().InstallExternallyManagedApp(

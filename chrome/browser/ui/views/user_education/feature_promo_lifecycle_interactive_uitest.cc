@@ -556,9 +556,9 @@ class FeaturePromoLifecycleAppUiTest : public FeaturePromoLifecycleUiTest {
   static constexpr char kAppPath[] = "/web_apps/no_manifest.html";
 
   void SetUpOnMainThread() override {
-    FeaturePromoLifecycleUiTest::SetUpOnMainThread();
     embedded_https_test_server().SetCertHostnames({kApp1Host, kApp2Host});
-    CHECK(embedded_https_test_server().Start());
+
+    FeaturePromoLifecycleUiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     app1_id_ =
         InstallPWA(embedded_https_test_server().GetURL(kApp1Host, kAppPath));

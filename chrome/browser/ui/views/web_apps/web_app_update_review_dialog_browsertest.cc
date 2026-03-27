@@ -327,7 +327,7 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
   const webapps::AppId InstallAppAndTriggerAppUpdateDialog() {
     // Install the app and trigger a navigation.
     const GURL app_url =
-        https_server()->GetURL("/web_apps/updating/index.html");
+        embedded_https_test_server().GetURL("/web_apps/updating/index.html");
     const webapps::AppId app_id =
         InstallWebAppFromPageAndCloseAppBrowser(browser(), app_url);
     Browser* app_browser = LaunchWebAppBrowser(app_id);
@@ -341,8 +341,8 @@ class WebAppUpdateDialogBrowserTests : public WebAppBrowserTestBase {
     provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
     // Trigger an update, verify pending update info stored.
-    const GURL update_url =
-        https_server()->GetURL("/web_apps/updating/new_icon_page_masking.html");
+    const GURL update_url = embedded_https_test_server().GetURL(
+        "/web_apps/updating/new_icon_page_masking.html");
     {
       UpdateAwaiter awaiter(provider().install_manager());
       EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser, update_url));
@@ -615,8 +615,8 @@ IN_PROC_BROWSER_TEST_F(WebAppUpdateDialogBrowserTests,
   // menu button is now in the expanded state with the label. The first update
   // was from index.html to new_icon_page_masking.html. Now, trigger an update
   // to new_icon_page.html.
-  const GURL update_url2 =
-      https_server()->GetURL("/web_apps/updating/new_icon_page.html");
+  const GURL update_url2 = embedded_https_test_server().GetURL(
+      "/web_apps/updating/new_icon_page.html");
   {
     base::test::TestFuture<void> update_future;
     UpdateAwaiter awaiter(provider().install_manager());

@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForTab) {
   EXPECT_EQ(1U, tracked_tags().size());
 
   const GURL start_url =
-      https_server()->GetURL("app.com", "/google/google.html");
+      embedded_https_test_server().GetURL("app.com", "/google/google.html");
   const webapps::AppId app_id = InstallPWA(start_url);
 
   MockWebContentsTaskManager task_manager;
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, WebAppTaskCreatedForStandalone) {
   EXPECT_EQ(1U, tracked_tags().size());
 
   const GURL start_url =
-      https_server()->GetURL("app.com", "/google/google.html");
+      embedded_https_test_server().GetURL("app.com", "/google/google.html");
   const webapps::AppId app_id = InstallPWA(start_url);
 
   MockWebContentsTaskManager task_manager;
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
   EXPECT_EQ(1U, tracked_tags().size());
 
   const GURL start_url =
-      https_server()->GetURL("app.com", "/google/google.html");
+      embedded_https_test_server().GetURL("app.com", "/google/google.html");
   const webapps::AppId app_id = InstallPWA(start_url);
 
   MockWebContentsTaskManager task_manager;
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTagWebAppTest, TabNavigatedAwayNotWebAppTask) {
               Contains(Pointee(Property(&Task::title, u"App: Google"))));
 
   const GURL not_app_url =
-      https_server()->GetURL("notapp.com", "/google/google.html");
+      embedded_https_test_server().GetURL("notapp.com", "/google/google.html");
 
   NavigateToUrlAndWait(browser, not_app_url);
 

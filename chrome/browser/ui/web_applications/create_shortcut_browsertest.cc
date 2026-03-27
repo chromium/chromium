@@ -89,11 +89,12 @@ class CreateShortcutBrowserTest : public WebAppBrowserTestBase {
 
   // Start URL points to `PageWithDifferentStartUrlManifestStartUrl`.
   GURL PageWithDifferentStartUrl() {
-    return https_server()->GetURL("/web_apps/different_start_url.html");
+    return embedded_https_test_server().GetURL(
+        "/web_apps/different_start_url.html");
   }
 
   GURL PageWithDifferentStartUrlManifestStartUrl() {
-    return https_server()->GetURL("/web_apps/basic.html");
+    return embedded_https_test_server().GetURL("/web_apps/basic.html");
   }
 
   WebAppRegistrar& registrar() {
@@ -324,7 +325,8 @@ IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest,
 // scheme.
 IN_PROC_BROWSER_TEST_F(CreateShortcutBrowserTest, UseHostWhenTitleIsUrl) {
   NavigateViaLinkClickToURLAndWait(
-      browser(), https_server()->GetURL("example.com", "/empty.html"));
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/empty.html"));
   webapps::AppId app_id = InstallDiyAppForCurrentUrl();
 
   base::test::TestFuture<IconMetadataFromDisk> future;

@@ -30,7 +30,7 @@ class WebAppTitleBrowserTest : public WebAppBrowserTestBase {
 // Test app title with valid app title.
 IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
   const GURL app_url =
-      https_server()->GetURL("/web_apps/page_with_app_title.html");
+      embedded_https_test_server().GetURL("/web_apps/page_with_app_title.html");
   const std::u16string app_title = u"A Web App";
   WebFeatureHistogramTester histogram_tester;
 
@@ -55,8 +55,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, WithoutAppTitle) {
-  const GURL app_url =
-      https_server()->GetURL("/web_apps/page_without_app_title.html");
+  const GURL app_url = embedded_https_test_server().GetURL(
+      "/web_apps/page_without_app_title.html");
   const std::u16string app_title = u"A Web App";
   base::HistogramTester histogram_tester;
 
@@ -81,8 +81,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, WithoutAppTitle) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
-  const GURL app_url =
-      https_server()->GetURL("/web_apps/page_without_app_title.html");
+  const GURL app_url = embedded_https_test_server().GetURL(
+      "/web_apps/page_without_app_title.html");
   const std::u16string app_title = u"A Web App";
   base::HistogramTester histogram_tester;
 
@@ -148,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, DynamicAppTitle) {
 // Navigate to page with and without app title to validate app title is updated.
 IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
   const GURL app_url =
-      https_server()->GetURL("/web_apps/page_with_app_title.html");
+      embedded_https_test_server().GetURL("/web_apps/page_with_app_title.html");
   const std::u16string app_title = u"A Web App";
   WebFeatureHistogramTester histogram_tester;
 
@@ -167,8 +167,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
             app_browser->GetWindowTitleForCurrentTab(false));
 
   // Navigate to page without app title.
-  const GURL page_without_url =
-      https_server()->GetURL("/web_apps/page_without_app_title.html");
+  const GURL page_without_url = embedded_https_test_server().GetURL(
+      "/web_apps/page_without_app_title.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser, page_without_url));
   EXPECT_EQ(u"A Web App", app_browser->GetWindowTitleForCurrentTab(false));
 
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleNavigation) {
 // Test app title with empty app title.
 IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, AppTitleIsEmpty) {
   const GURL app_url =
-      https_server()->GetURL("/web_apps/page_with_app_title.html");
+      embedded_https_test_server().GetURL("/web_apps/page_with_app_title.html");
   const std::u16string app_title = u"A Web App";
   WebFeatureHistogramTester histogram_tester;
 

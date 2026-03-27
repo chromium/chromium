@@ -75,19 +75,22 @@ class WebAppFileHandlingTestBase : public WebAppBrowserTestBase {
   WebAppRegistrar& registrar() { return provider()->registrar_unsafe(); }
 
   GURL GetSecureAppURL() {
-    return https_server()->GetURL("app.com", "/ssl/google.html");
+    return embedded_https_test_server().GetURL("app.com", "/ssl/google.html");
   }
 
   GURL GetTextFileHandlerActionURL() {
-    return https_server()->GetURL("app.com", "/ssl/blank_page.html");
+    return embedded_https_test_server().GetURL("app.com",
+                                               "/ssl/blank_page.html");
   }
 
   GURL GetCSVFileHandlerActionURL() {
-    return https_server()->GetURL("app.com", "/ssl/page_with_refs.html");
+    return embedded_https_test_server().GetURL("app.com",
+                                               "/ssl/page_with_refs.html");
   }
 
   GURL GetHTMLFileHandlerActionURL() {
-    return https_server()->GetURL("app.com", "/ssl/page_with_frame.html");
+    return embedded_https_test_server().GetURL("app.com",
+                                               "/ssl/page_with_frame.html");
   }
 
   void InstallFileHandlingPWA() {
@@ -164,7 +167,8 @@ void AttachTestConsumer(content::WebContents* web_contents) {
 
 class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
  public:
-  WebAppFileHandlingBrowserTest() : redirect_handle_(*https_server()) {}
+  WebAppFileHandlingBrowserTest()
+      : redirect_handle_(embedded_https_test_server()) {}
 
   void LaunchWithFiles(const std::string& app_id,
                        const GURL& expected_launch_url,
@@ -218,8 +222,8 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 
   webapps::AppId InstallFileHandlingWebApp(const std::u16string& title,
                                            const GURL& handler_url) {
-    GURL start_url =
-        https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+    GURL start_url = embedded_https_test_server().GetURL(
+        "app.com", "/web_app_file_handling/index.html");
     auto web_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
     web_app_info->scope = web_app_info->start_url().GetWithoutFilename();
@@ -344,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 // Regression test for crbug.com/1126091
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
-  GURL handler_url = https_server()->GetURL(
+  GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files_with_redirect.html");
   webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
@@ -354,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   {
     auto redirect_scope = redirect_handle_.Redirect({
         .redirect_url = handler_url,
-        .target_url = https_server()->GetURL(
+        .target_url = embedded_https_test_server().GetURL(
             "app.com", "/web_app_file_handling/handle_files.html"),
         .origin = "app.com",
     });
@@ -371,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnCrossOriginRedirect) {
   // Install an app where the file handling action page redirects to a page on a
   // different origin.
-  GURL handler_url = https_server()->GetURL(
+  GURL handler_url = embedded_https_test_server().GetURL(
       "app.com",
       "/web_app_file_handling/handle_files_with_redirect_to_other_origin.html");
   webapps::AppId app_id =
@@ -381,7 +385,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   {
     auto redirect_scope = redirect_handle_.Redirect({
         .redirect_url = handler_url,
-        .target_url = https_server()->GetURL(
+        .target_url = embedded_https_test_server().GetURL(
             "example.com", "/web_app_file_handling/handle_files.html"),
         .origin = "app.com",
     });
@@ -395,10 +399,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnNavigate) {
-  GURL handler_url = https_server()->GetURL(
+  GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
-  GURL start_url =
-      https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
+  GURL start_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/index.html");
   webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be navigated", handler_url);
 
@@ -435,7 +439,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   EXPECT_EQ(3u, association_count);
 
   // Installing a different app should have no impact.
-  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
+  GURL second_app_url =
+      embedded_https_test_server().GetURL("app.com", "/pwa/app2.html");
   InstallAnotherFileHandlingPwa(second_app_url);
   EXPECT_EQ(ApiApprovalState::kAllowed,
             registrar().GetAppById(app_id())->file_handler_approval_state());
@@ -529,7 +534,7 @@ class WebAppFileHandlingLaunchQueueBrowserTest
 
 IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
                        LaunchQueueSetOnReload) {
-  GURL handler_url = https_server()->GetURL(
+  GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
   webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);
@@ -557,7 +562,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(WebAppFileHandlingLaunchQueueBrowserTest,
                        LaunchQueueSetOnReloadAfterPushState) {
-  GURL handler_url = https_server()->GetURL(
+  GURL handler_url = embedded_https_test_server().GetURL(
       "app.com", "/web_app_file_handling/handle_files.html");
   webapps::AppId app_id =
       InstallFileHandlingWebApp(u"An app that will be reloaded", handler_url);

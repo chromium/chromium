@@ -34,7 +34,7 @@ namespace web_app {
 class FetchManifestAndUpdateCommandTest : public WebAppBrowserTestBase {
  public:
   void SetUp() override {
-    ASSERT_TRUE(embedded_https_test_server().Start());
+
     WebAppBrowserTestBase::SetUp();
   }
 };

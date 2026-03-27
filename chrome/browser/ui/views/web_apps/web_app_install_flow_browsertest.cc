@@ -70,7 +70,7 @@ class WebAppInstallFlowBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {
   const GURL app_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
 
   // Wait for the omnibox icon to become visible.
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, SimpleInstallFlow) {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
   // Detailed install flow is triggered when screenshots are available.
-  GURL app_url = https_server()->GetURL(
+  GURL app_url = embedded_https_test_server().GetURL(
       "/banners/"
       "manifest_test_page.html?manifest=manifest_with_screenshots.json");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
@@ -127,7 +127,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DetailedInstallFlow) {
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallFlowBrowserTest, DiyInstallFlow) {
   // Navigate to a page that is not installable.
-  GURL app_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
+  GURL app_url = embedded_https_test_server().GetURL(
+      "/banners/no_manifest_test_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},

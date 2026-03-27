@@ -62,8 +62,6 @@ class ControlledFrameTestBase
   std::string ConfigToString();
 
  protected:
-  void StartContentServer(std::string_view chrome_test_data_relative_dir);
-
   web_app::IsolatedWebAppUrlInfo CreateAndInstallEmptyApp(
       const web_app::ManifestBuilder& manifest_builder);
 

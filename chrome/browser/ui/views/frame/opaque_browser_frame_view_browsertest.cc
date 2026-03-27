@@ -80,7 +80,6 @@ class WebAppOpaqueBrowserFrameViewTest : public web_app::WebAppBrowserTestBase {
 
   void SetUpOnMainThread() override {
     web_app::WebAppBrowserTestBase::SetUpOnMainThread();
-    CHECK(embedded_https_test_server().Start());
     SetThemeMode(ThemeMode::kDefault);
 #if BUILDFLAG(IS_LINUX)
     ui::LinuxUiGetter::set_instance(nullptr);

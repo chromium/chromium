@@ -65,8 +65,7 @@ WebAppBrowserTestBase::WebAppBrowserTestBase(
     // during test installs, an app is installed from the manifest so that the
     // identity update dialog is not triggered after navigation. This will
     // ensure removal of update_dialog_scope_.
-    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
-      update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
+    : update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
   scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 }
@@ -191,7 +190,7 @@ WebAppBrowserTestBase::os_integration_override() {
 }
 
 void WebAppBrowserTestBase::RegisterPortReplacementHandler() {
-  https_server()->RegisterRequestHandler(base::BindRepeating(
+  embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
       &WebAppBrowserTestBase::HandlePortReplacement, base::Unretained(this)));
 }
 
@@ -218,8 +217,9 @@ WebAppBrowserTestBase::HandlePortReplacement(
       static_cast<net::test_server::BasicHttpResponse&>(*default_response);
 
   std::string content(basic_response.content());
-  base::ReplaceSubstringsAfterOffset(&content, 0, "$PORT",
-                                     base::ToString(https_server()->port()));
+  base::ReplaceSubstringsAfterOffset(
+      &content, 0, "$PORT",
+      base::ToString(embedded_https_test_server().port()));
   basic_response.set_content(content);
 
   return default_response;
@@ -229,7 +229,7 @@ void WebAppBrowserTestBase::RegisterAssociatedOriginWellKnownHandler(
     const std::string& source_host,
     const std::string& target_manifest_id_template,
     const std::string& allowed_scope) {
-  https_server()->RegisterRequestHandler(base::BindRepeating(
+  embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
       [](const std::string& expected_host,
          const std::string& manifest_id_template,
          const std::string& allowed_scope,
@@ -302,14 +302,16 @@ content::WebContents* WebAppBrowserTestBase::OpenApplication(
 }
 
 GURL WebAppBrowserTestBase::GetInstallableAppURL() {
-  return https_server()->GetURL("/banners/manifest_test_page.html");
+  return embedded_https_test_server().GetURL(
+      "/banners/manifest_test_page.html");
 }
 
 GURL WebAppBrowserTestBase::GetAppURLWithManifest(
     const std::string& manifest_url) {
   GURL url = GetInstallableAppURL();
-  return net::AppendQueryParameter(url, "manifest",
-                                   https_server()->GetURL(manifest_url).spec());
+  return net::AppendQueryParameter(
+      url, "manifest",
+      embedded_https_test_server().GetURL(manifest_url).spec());
 }
 
 // static
@@ -318,7 +320,9 @@ const char* WebAppBrowserTestBase::GetInstallableAppName() {
 }
 
 void WebAppBrowserTestBase::SetUp() {
-  https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+  if (!embedded_https_test_server().Started()) {
+    embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
+  }
   webapps::TestAppBannerManagerDesktop::SetUp();
   WebAppBrowserTestBaseParent::SetUp();
 }
@@ -369,7 +373,9 @@ void WebAppBrowserTestBase::SetUpOnMainThread() {
   WebAppBrowserTestBaseParent::SetUpOnMainThread();
 
   host_resolver()->AddRule("*", "127.0.0.1");
-  ASSERT_TRUE(https_server()->Start());
+  if (!embedded_https_test_server().Started()) {
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
 
   // By default, all SSL cert checks are valid. Can be overridden in tests.
   cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);

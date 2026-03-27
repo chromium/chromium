@@ -112,7 +112,7 @@ class ReplaceMigrationSuggestedAppBrowserTest
 IN_PROC_BROWSER_TEST_P(ReplaceMigrationSuggestedAppBrowserTest,
                        PerInstallFlow) {
   const GURL start_url =
-      https_server()->GetURL("/banners/manifest_test_page.html");
+      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   const webapps::AppId app_id = InstallSuggestedFromMigrationApp(start_url);
 
   // Verify initial state.

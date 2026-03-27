@@ -1965,6 +1965,7 @@ class PreinstalledWebAppManagerSimpleBrowserTest
   }
 
   void SetUp() override {
+    embedded_https_test_server().AddDefaultHandlers(GetChromeTestDataDir());
     embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &PreinstalledWebAppManagerSimpleBrowserTest::SetRedirectHandler,
         base::Unretained(this)));

@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameWptBrowserTest, Run) {
                        app->Install(profile()));
 
   std::string test_params = "?test=" + GetParam() + "&https_origin=" +
-                            https_server()->base_url().spec();
+                            embedded_https_test_server().base_url().spec();
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id(), test_params);
   ScopedTestDriverProxy scoped_test_driver_proxy(app_frame);
 

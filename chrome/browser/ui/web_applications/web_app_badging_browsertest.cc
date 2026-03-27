@@ -46,12 +46,13 @@ class WebAppBadgingBrowserTest : public WebAppBrowserTestBase {
     cross_site_app_id_ = InstallPWA(cross_site_frame_url);
 
     // Note: The url for the cross site frame is embedded in the query string.
-    GURL start_url = https_server()->GetURL(
+    GURL start_url = embedded_https_test_server().GetURL(
         "/web_app_badging/badging_with_frames_and_workers.html?url=" +
         cross_site_frame_url.spec());
     main_app_id_ = InstallPWA(start_url);
 
-    GURL sub_start_url = https_server()->GetURL("/web_app_badging/blank.html");
+    GURL sub_start_url =
+        embedded_https_test_server().GetURL("/web_app_badging/blank.html");
     auto sub_app_info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(sub_start_url);
     sub_app_info->scope = sub_start_url;

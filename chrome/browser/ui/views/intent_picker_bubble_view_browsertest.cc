@@ -197,8 +197,8 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
                        NavigationToOutOfScopeLinkDoesNotShowIntentPicker) {
   InstallTestWebApp();
 
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
   NavigateToLaunchingPage(browser());
   ASSERT_TRUE(ExpectLinkClickNotCapturedIntoAppBrowser(
       browser(), out_of_scope_url, rel()));
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   InstallTestWebApp();
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   auto* tab_helper = IntentPickerTabHelper::FromWebContents(GetWebContents());
   NavigateToLaunchingPage(browser());
 
@@ -239,9 +239,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   InstallTestWebApp();
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
 
   // OpenNewTab opens a new tab and focus on the new tab.
   OpenNewTab(in_scope_url, /*rel=*/rel());
@@ -263,9 +263,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   InstallTestWebApp();
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
 
   views::Button* intent_picker_icon = GetIntentChip(browser());
 
@@ -291,10 +291,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
                        DoesNotShowIntentPickerWhenRedirectedOutOfScope) {
   InstallTestWebApp(GetOtherAppUrlHost(), /*app_scope=*/"/");
 
-  const GURL out_of_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-  const GURL in_scope_url = https_server().GetURL(GetOtherAppUrlHost(), "/");
-  const GURL redirect_url = https_server().GetURL(
+  const GURL out_of_scope_url = embedded_https_test_server().GetURL(
+      GetAppUrlHost(), GetOutOfScopeUrlPath());
+  const GURL in_scope_url =
+      embedded_https_test_server().GetURL(GetOtherAppUrlHost(), "/");
+  const GURL redirect_url = embedded_https_test_server().GetURL(
       GetOtherAppUrlHost(), CreateServerRedirect(out_of_scope_url));
 
   views::Button* intent_picker_icon = GetIntentChip(browser());
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   InstallTestWebApp();
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
   GURL chrome_pages_url("chrome://version");
   std::string app_name = "test_name";
 
@@ -346,7 +347,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, DoNotShowIconOnErrorPages) {
   InstallTestWebApp("www.google.com", "/");
 
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
   views::Button* intent_picker_view = GetIntentChip(browser());
   ASSERT_TRUE(intent_picker_view);
@@ -376,7 +377,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
   // Note: The test page is served from embedded_test_server() as https_server()
   // always returns empty responses.
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(https_server().Start());
 
   const GURL test_url =
       embedded_test_server()->GetURL("/intent_picker/push_state_test.html");
@@ -401,16 +401,15 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest, PushStateURLChangeTest) {
 
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
                        NavigationToScopeExtensionShowsIntentPicker) {
-  ASSERT_TRUE(https_server().Start());
-
   // Install a web app with a scope extension.
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-      https_server().GetURL(GetAppUrlHost(), "/"));
+      embedded_https_test_server().GetURL(GetAppUrlHost(), "/"));
   web_app_info->scope = web_app_info->start_url();
   web_app_info->title = u"Test app";
   web_app_info->user_display_mode =
       web_app::mojom::UserDisplayMode::kStandalone;
-  const GURL extension_url = https_server().GetURL("app.org", "/");
+  const GURL extension_url =
+      embedded_https_test_server().GetURL("app.org", "/");
   web_app_info->scope_extensions = {
       web_app::ScopeExtensionInfo::CreateForOrigin(
           url::Origin::Create(extension_url))};
@@ -491,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
                        IntentChipOpensBubble) {
   InstallTestWebApp();
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
   OpenNewTab(in_scope_url);
   ASSERT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
@@ -509,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest, RememberOpenWebApp) {
 
   InstallTestWebApp();
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
   OpenNewTab(in_scope_url);
   ASSERT_TRUE(web_app::ClickIntentPickerAndWaitForBubble(browser()));
@@ -552,7 +551,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserBubbleTest,
                        DISABLED_IntentChipLaunchesAppDirectly) {
   InstallTestWebApp();
   const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+      embedded_https_test_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
 
   views::Button* intent_picker_icon = GetIntentChip(browser());
 
@@ -633,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
   InstallTestWebApp();
 
   const GURL initial_url =
-      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+      embedded_https_test_server().GetURL(GetAppUrlHost(), "/empty.html");
   OpenNewTab(initial_url);
 
   views::Button* intent_picker_icon = GetIntentChip(browser());
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
 
   // Load a prerender page and prerendering should not try to show the
   // intent picker.
-  const GURL prerender_url = https_server().GetURL(
+  const GURL prerender_url = embedded_https_test_server().GetURL(
       GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
   content::PrerenderHostId host_id =
       prerender_test_helper().AddPrerender(prerender_url);
@@ -706,11 +705,11 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconFencedFrameBrowserTest,
   views::Button* intent_picker_icon = GetIntentChip(browser());
 
   const GURL initial_url =
-      https_server().GetURL(GetAppUrlHost(), "/empty.html");
+      embedded_https_test_server().GetURL(GetAppUrlHost(), "/empty.html");
   OpenNewTab(initial_url);
   EXPECT_FALSE(intent_picker_icon->GetVisible());
 
-  const GURL fenced_frame_url = https_server().GetURL(
+  const GURL fenced_frame_url = embedded_https_test_server().GetURL(
       GetAppUrlHost(), std::string(GetAppScopePath()) + "index1.html");
   // Create a fenced frame.
   ASSERT_TRUE(fenced_frame_test_helper().CreateFencedFrame(

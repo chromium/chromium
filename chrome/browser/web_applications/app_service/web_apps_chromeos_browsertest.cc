@@ -91,7 +91,7 @@ using WebAppsChromeOsBrowserTest = web_app::WebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
   const GURL app_url =
-      https_server()->GetURL("/web_app_shortcuts/shortcuts.html");
+      embedded_https_test_server().GetURL("/web_app_shortcuts/shortcuts.html");
   const webapps::AppId app_id =
       web_app::InstallWebAppFromPage(browser(), app_url);
   LaunchWebAppBrowser(app_id);
@@ -139,7 +139,8 @@ IN_PROC_BROWSER_TEST_F(WebAppsChromeOsBrowserTest, ShortcutIcons) {
 
   const int command_id = ash::LAUNCH_APP_SHORTCUT_FIRST + 3;
   ui_test_utils::UrlLoadObserver url_observer(
-      https_server()->GetURL("/web_app_shortcuts/shortcuts.html#four"));
+      embedded_https_test_server().GetURL(
+          "/web_app_shortcuts/shortcuts.html#four"));
   menu_model->ActivatedAt(menu_model->GetIndexOfCommandId(command_id).value(),
                           ui::EF_LEFT_MOUSE_BUTTON);
   url_observer.Wait();

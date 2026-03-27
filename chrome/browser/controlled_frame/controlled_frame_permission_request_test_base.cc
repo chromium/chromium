@@ -198,8 +198,9 @@ GetDefaultDisabledPermissionTestParams() {
 }
 
 void ControlledFramePermissionRequestTestBase::SetUpOnMainThread() {
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
   ControlledFrameTestBase::SetUpOnMainThread();
-  StartContentServer("web_apps/simple_isolated_app");
 }
 
 void ControlledFramePermissionRequestTestBase::SetUpCommandLine(

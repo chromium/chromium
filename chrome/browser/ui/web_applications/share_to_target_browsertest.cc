@@ -63,7 +63,8 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
   }
 
   std::string ExecuteShare(const std::string& script) {
-    const GURL url = https_server()->GetURL("/webshare/index.html");
+    const GURL url =
+        embedded_https_test_server().GetURL("/webshare/index.html");
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     content::WebContents* const contents =
         browser()->tab_strip_model()->GetActiveWebContents();
@@ -119,7 +120,8 @@ class ShareToTargetBrowserTest : public WebAppBrowserTestBase,
 };
 
 IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPosterWebApp) {
-  const GURL app_url = https_server()->GetURL("/web_share_target/poster.html");
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/web_share_target/poster.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
 
@@ -135,7 +137,8 @@ IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPosterWebApp) {
 }
 
 IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToChartsWebApp) {
-  const GURL app_url = https_server()->GetURL("/web_share_target/charts.html");
+  const GURL app_url =
+      embedded_https_test_server().GetURL("/web_share_target/charts.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
 
@@ -148,7 +151,7 @@ IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToChartsWebApp) {
 
 IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareImage) {
   const GURL app_url =
-      https_server()->GetURL("/web_share_target/multimedia.html");
+      embedded_https_test_server().GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
 
@@ -159,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareImage) {
 
 IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareMultimedia) {
   const GURL app_url =
-      https_server()->GetURL("/web_share_target/multimedia.html");
+      embedded_https_test_server().GetURL("/web_share_target/multimedia.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
 
@@ -173,8 +176,8 @@ IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareMultimedia) {
 }
 
 IN_PROC_BROWSER_TEST_P(ShareToTargetBrowserTest, ShareToPartialWild) {
-  const GURL app_url =
-      https_server()->GetURL("/web_share_target/partial-wild.html");
+  const GURL app_url = embedded_https_test_server().GetURL(
+      "/web_share_target/partial-wild.html");
   InstallWebAppFromManifest(app_url);
   ScopedSharesheetAppSelection selection(app_id());
 

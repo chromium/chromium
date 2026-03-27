@@ -156,8 +156,9 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
 
  public:
   void SetUpOnMainThread() override {
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
     ControlledFrameTestBase::SetUpOnMainThread();
-    StartContentServer("web_apps/simple_isolated_app");
   }
 
   // Tests WebRequest.SecurityInfo.
@@ -1332,6 +1333,15 @@ INSTANTIATE_TEST_SUITE_P(
 
 class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
  public:
+  void SetUpOnMainThread() override {
+    embedded_https_test_server().RegisterRequestMonitor(
+        base::BindRepeating(&ControlledFrameRequestHeaderTest::MonitorRequest,
+                            base::Unretained(this)));
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
+    ControlledFrameTestBase::SetUpOnMainThread();
+  }
+
   [[nodiscard]] bool SetUserAgentAndAwaitReload(content::RenderFrameHost* frame,
                                                 const std::string& user_agent) {
     const std::string kRemoveUserAgentAndReload = R"(
@@ -1396,12 +1406,6 @@ new Promise((resolve, reject) => {
 // Sec-CH-UA includes "ControlledFrame" brand.
 IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
                        HasDefaultCHUABrandWithUAOverride) {
-  embedded_https_test_server().RegisterRequestMonitor(
-      base::BindRepeating(&ControlledFrameRequestHeaderTest::MonitorRequest,
-                          base::Unretained(this)));
-
-  StartContentServer("web_apps/simple_isolated_app");
-
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
@@ -1425,12 +1429,6 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
 // default or Controlled Frame default.
 IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
                        SetClientHintsUABrandEnabled) {
-  embedded_https_test_server().RegisterRequestMonitor(
-      base::BindRepeating(&ControlledFrameRequestHeaderTest::MonitorRequest,
-                          base::Unretained(this)));
-
-  StartContentServer("web_apps/simple_isolated_app");
-
   web_app::IsolatedWebAppUrlInfo url_info =
       CreateAndInstallEmptyApp(web_app::ManifestBuilder());
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());

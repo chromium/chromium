@@ -82,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
 
 IN_PROC_BROWSER_TEST_F(NavigateAndTriggerInstallDialogCommandTest,
                        DoesNotTriggerDialogIfNotWebApp) {
-  GURL test_url = https_server()->GetURL("/banners/no_manifest_test_page.html");
+  GURL test_url = embedded_https_test_server().GetURL(
+      "/banners/no_manifest_test_page.html");
   ASSERT_TRUE(test_url.SchemeIs(url::kHttpsScheme));
   ASSERT_FALSE(NavigateAndAwaitInstallabilityCheck(browser(), test_url));
 

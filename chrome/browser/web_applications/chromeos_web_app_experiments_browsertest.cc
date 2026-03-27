@@ -267,7 +267,7 @@ class ChromeOsWebAppExperimentsNavigationBrowserTest
   }
 
   std::string GetFormBasedRedirectorCode(const GURL& target_url) const {
-    const GURL redirector_url = https_server().GetURL(
+    const GURL redirector_url = embedded_https_test_server().GetURL(
         "redirector-host", CreateServerRedirect(target_url));
     return base::StringPrintf(
         R"(
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // in launching that app - if it's marked as "open supported links".
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OutOfScopeFormAndRedirectToPreferred) {
-  ASSERT_TRUE(https_server().Start());
+
   // Start from a blank page - the form below will be added to it.
   EXPECT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -447,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // not marked as "open supported links".
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        OutOfScopeFormAndRedirectToNotPreferred) {
-  ASSERT_TRUE(https_server().Start());
+
   // The link capturing is turned on by default; simulate the user opt-out here.
   apps_util::RemoveSupportedLinksPreferenceAndWait(profile(), app_id_);
   // Start from a blank page - the form below will be added to it.
@@ -475,12 +475,11 @@ IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
 // out-of-scope URL results in opening a browser tab.
 IN_PROC_BROWSER_TEST_P(ChromeOsWebAppExperimentsNavigationBrowserTest,
                        NoopenerNoreferrerBlankLinkToOutOfScope) {
-  ASSERT_TRUE(https_server().Start());
   Browser* app_browser = LaunchWebAppBrowserAndWait(app_id_);
   content::WebContents* app_web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
-  const GURL target_url = https_server().GetURL("/empty.html");
+  const GURL target_url = embedded_https_test_server().GetURL("/empty.html");
   ActiveBrowserWindowNavigationObserver observer(target_url);
   ClickLink(app_web_contents, target_url, LinkTarget::BLANK,
             /*rel=*/"noreferrer noopener");
