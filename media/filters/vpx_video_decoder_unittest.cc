@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "media/filters/vpx_video_decoder.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/byte_conversions.h"
@@ -315,9 +311,10 @@ TEST_F(VpxVideoDecoderTest, FrameValidAfterPoolDestruction) {
 
   // Write to the Y plane. The memory tools should detect a
   // use-after-free if the storage was actually removed by pool destruction.
-  memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
-         output_frames_.front()->rows(VideoFrame::Plane::kY) *
-             output_frames_.front()->stride(VideoFrame::Plane::kY));
+  UNSAFE_TODO(
+      memset(output_frames_.front()->writable_data(VideoFrame::Plane::kY), 0xff,
+             output_frames_.front()->rows(VideoFrame::Plane::kY) *
+                 output_frames_.front()->stride(VideoFrame::Plane::kY)));
 }
 
 // The test stream uses profile 2, which needs high bit depth support in libvpx.
@@ -365,8 +362,8 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
   Destroy();
 
   // ASAN will be very unhappy with this line if the above is incorrect.
-  memset(last_frame->writable_data(VideoFrame::Plane::kY), 0,
-         last_frame->row_bytes(VideoFrame::Plane::kY));
+  UNSAFE_TODO(memset(last_frame->writable_data(VideoFrame::Plane::kY), 0,
+                     last_frame->row_bytes(VideoFrame::Plane::kY)));
 }
 #endif  // !defined(LIBVPX_NO_HIGH_BIT_DEPTH) && !defined(ARCH_CPU_ARM_FAMILY)
 

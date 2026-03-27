@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/filters/ffmpeg_aac_bitstream_converter.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "media/ffmpeg/ffmpeg_common.h"
 
@@ -35,8 +31,8 @@ bool GenerateAdtsHeader(int codec,
                         uint8_t* hdr) {
   DCHECK_EQ(codec, AV_CODEC_ID_AAC);
 
-  memset(reinterpret_cast<void *>(hdr), 0,
-         FFmpegAACBitstreamConverter::kAdtsHeaderSize);
+  UNSAFE_TODO(memset(reinterpret_cast<void*>(hdr), 0,
+                     FFmpegAACBitstreamConverter::kAdtsHeaderSize));
   // Ref: http://wiki.multimedia.cx/index.php?title=ADTS
   // ADTS header structure is the following
   // AAAAAAAA  AAAABCCD  EEFFFFGH  HHIJKLMM  MMMMMMMM  MMMOOOOO  OOOOOOPP
@@ -60,12 +56,12 @@ bool GenerateAdtsHeader(int codec,
 
   // Syncword
   hdr[0] = 0xFF;
-  hdr[1] = 0xF0;
+  UNSAFE_TODO(hdr[1]) = 0xF0;
 
   // Layer is always 0. No further action required.
 
   // Protection absent (no CRC) is always 1.
-  hdr[1] |= 1;
+  UNSAFE_TODO(hdr[1]) |= 1;
 
   switch (audio_profile) {
     case AV_PROFILE_AAC_MAIN:
@@ -73,13 +69,13 @@ bool GenerateAdtsHeader(int codec,
     case AV_PROFILE_AAC_HE:
     case AV_PROFILE_AAC_HE_V2:
     case AV_PROFILE_AAC_LOW:
-      hdr[2] |= (1 << 6);
+      UNSAFE_TODO(hdr[2]) |= (1 << 6);
       break;
     case AV_PROFILE_AAC_SSR:
-      hdr[2] |= (2 << 6);
+      UNSAFE_TODO(hdr[2]) |= (2 << 6);
       break;
     case AV_PROFILE_AAC_LTP:
-      hdr[2] |= (3 << 6);
+      UNSAFE_TODO(hdr[2]) |= (3 << 6);
       break;
     default:
       DLOG(ERROR) << "[" << __func__ << "] "
@@ -87,44 +83,44 @@ bool GenerateAdtsHeader(int codec,
       return false;
   }
 
-  hdr[2] |= ((sample_rate_index & 0xf) << 2);
+  UNSAFE_TODO(hdr[2]) |= ((sample_rate_index & 0xf) << 2);
 
   if (private_stream)
-    hdr[2] |= (1 << 1);
+    UNSAFE_TODO(hdr[2]) |= (1 << 1);
 
   switch (channel_configuration) {
     case 1:
       // front-center
-      hdr[3] |= (1 << 6);
+      UNSAFE_TODO(hdr[3]) |= (1 << 6);
       break;
     case 2:
       // front-left, front-right
-      hdr[3] |= (2 << 6);
+      UNSAFE_TODO(hdr[3]) |= (2 << 6);
       break;
     case 3:
       // front-center, front-left, front-right
-      hdr[3] |= (3 << 6);
+      UNSAFE_TODO(hdr[3]) |= (3 << 6);
       break;
     case 4:
       // front-center, front-left, front-right, back-center
-      hdr[2] |= 1;
+      UNSAFE_TODO(hdr[2]) |= 1;
       break;
     case 5:
       // front-center, front-left, front-right, back-left, back-right
-      hdr[2] |= 1;
-      hdr[3] |= (1 << 6);
+      UNSAFE_TODO(hdr[2]) |= 1;
+      UNSAFE_TODO(hdr[3]) |= (1 << 6);
       break;
     case 6:
       // front-center, front-left, front-right, back-left, back-right,
       // LFE-channel
-      hdr[2] |= 1;
-      hdr[3] |= (2 << 6);
+      UNSAFE_TODO(hdr[2]) |= 1;
+      UNSAFE_TODO(hdr[3]) |= (2 << 6);
       break;
     case 8:
       // front-center, front-left, front-right, side-left, side-right,
       // back-left, back-right, LFE-channel
-      hdr[2] |= 1;
-      hdr[3] |= (3 << 6);
+      UNSAFE_TODO(hdr[2]) |= 1;
+      UNSAFE_TODO(hdr[3]) |= (3 << 6);
       break;
     default:
       DLOG(ERROR) << "[" << __func__ << "] "
@@ -134,27 +130,27 @@ bool GenerateAdtsHeader(int codec,
   }
 
   if (originality)
-    hdr[3] |= (1 << 5);
+    UNSAFE_TODO(hdr[3]) |= (1 << 5);
 
   if (home)
-    hdr[3] |= (1 << 4);
+    UNSAFE_TODO(hdr[3]) |= (1 << 4);
 
   if (copyrighted_stream)
-    hdr[3] |= (1 << 3);
+    UNSAFE_TODO(hdr[3]) |= (1 << 3);
 
   if (copyright_start)
-    hdr[3] |= (1 << 2);
+    UNSAFE_TODO(hdr[3]) |= (1 << 2);
 
   // frame length
-  hdr[3] |= (frame_length >> 11) & 0x03;
-  hdr[4] = (frame_length >> 3) & 0xFF;
-  hdr[5] |= (frame_length & 7) << 5;
+  UNSAFE_TODO(hdr[3]) |= (frame_length >> 11) & 0x03;
+  UNSAFE_TODO(hdr[4]) = (frame_length >> 3) & 0xFF;
+  UNSAFE_TODO(hdr[5]) |= (frame_length & 7) << 5;
 
   // buffer fullness
-  hdr[5] |= (buffer_fullness >> 6) & 0x1F;
-  hdr[6] |= (buffer_fullness & 0x3F) << 2;
+  UNSAFE_TODO(hdr[5]) |= (buffer_fullness >> 6) & 0x1F;
+  UNSAFE_TODO(hdr[6]) |= (buffer_fullness & 0x3F) << 2;
 
-  hdr[6] |= number_of_frames_minus_one & 0x3;
+  UNSAFE_TODO(hdr[6]) |= number_of_frames_minus_one & 0x3;
 
   return true;
 }
@@ -192,7 +188,7 @@ bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
   }
   int sample_rate_index =
       ((stream_codec_parameters_->extradata[0] & 0x07) << 1) |
-      ((stream_codec_parameters_->extradata[1] & 0x80) >> 7);
+      ((UNSAFE_TODO(stream_codec_parameters_->extradata[1]) & 0x80) >> 7);
   if (sample_rate_index > 12) {
     sample_rate_index = 4;
   }
@@ -233,9 +229,10 @@ bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
   if (av_new_packet(&dest_packet, header_plus_packet_size) != 0)
     return false;  // Memory allocation failure.
 
-  memcpy(dest_packet.data, hdr_, kAdtsHeaderSize);
-  memcpy(reinterpret_cast<void*>(dest_packet.data + kAdtsHeaderSize),
-         reinterpret_cast<void*>(packet->data), packet->size);
+  UNSAFE_TODO(memcpy(dest_packet.data, hdr_, kAdtsHeaderSize));
+  UNSAFE_TODO(
+      memcpy(reinterpret_cast<void*>(dest_packet.data + kAdtsHeaderSize),
+             reinterpret_cast<void*>(packet->data), packet->size));
 
   // This is a bit tricky: since the interface does not allow us to replace
   // the pointer of the old packet with a new one, we will initially copy the
@@ -246,7 +243,7 @@ bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
   av_packet_unref(packet);
 
   // Finally, replace the values in the input packet.
-  memcpy(packet, &dest_packet, sizeof(*packet));
+  UNSAFE_TODO(memcpy(packet, &dest_packet, sizeof(*packet)));
   return true;
 }
 

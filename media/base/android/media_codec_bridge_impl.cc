@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/android/media_codec_bridge_impl.h"
 
@@ -18,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -106,15 +103,15 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       const uint8_t* current_pos = extra_data;
       // Calculate the length of the first 2 headers.
       for (int i = 0; i < 2; ++i) {
-        header_length[i] = 0;
+        UNSAFE_TODO(header_length[i]) = 0;
         while (total_length < extra_data_size) {
-          size_t size = *(++current_pos);
+          size_t size = *UNSAFE_TODO(++current_pos);
           total_length += 1 + size;
           if (total_length > 0x80000000) {
             LOG(ERROR) << "Vorbis header size too large";
             return false;
           }
-          header_length[i] += size;
+          UNSAFE_TODO(header_length[i]) += size;
           if (size < 0xFF) {
             break;
           }
@@ -124,14 +121,15 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
           return false;
         }
       }
-      current_pos++;
+      UNSAFE_TODO(current_pos++);
 
       // The first header is the identification header.
-      output_csd0->assign(current_pos, current_pos + header_length[0]);
+      output_csd0->assign(current_pos,
+                          UNSAFE_TODO(current_pos + header_length[0]));
 
       // The last header is the codec header.
-      output_csd1->assign(extra_data + total_length,
-                          extra_data + extra_data_size);
+      output_csd1->assign(UNSAFE_TODO(extra_data + total_length),
+                          UNSAFE_TODO(extra_data + extra_data_size));
       break;
     }
     case AudioCodec::kFLAC: {
@@ -185,13 +183,13 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
       const uint8_t* codec_delay_ns_ptr =
           reinterpret_cast<const uint8_t*>(&codec_delay_ns);
       output_csd1->assign(codec_delay_ns_ptr,
-                          codec_delay_ns_ptr + sizeof(int64_t));
+                          UNSAFE_TODO(codec_delay_ns_ptr + sizeof(int64_t)));
 
       // csd2 - Seek Preroll
       const uint8_t* seek_preroll_ns_ptr =
           reinterpret_cast<const uint8_t*>(&seek_preroll_ns);
       output_csd2->assign(seek_preroll_ns_ptr,
-                          seek_preroll_ns_ptr + sizeof(int64_t));
+                          UNSAFE_TODO(seek_preroll_ns_ptr + sizeof(int64_t)));
       break;
     }
     default:
