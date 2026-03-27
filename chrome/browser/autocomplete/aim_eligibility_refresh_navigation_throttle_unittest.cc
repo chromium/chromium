@@ -21,6 +21,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
+#include "content/public/test/test_renderer_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +35,20 @@ std::unique_ptr<KeyedService> BuildMockAimEligibilityService(
       *profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile),
       /*url_loader_factory=*/nullptr, /*identity_manager=*/nullptr);
 }
+
+// This variation of the MockNavigationHandle only exists to easily mock
+// situations where the handle doesn't represent the outermost frame since this
+// is otherwise quite challenging to accomplish.
+class MockNavigationHandleForOutermostFrame
+    : public content::MockNavigationHandle {
+ public:
+  MockNavigationHandleForOutermostFrame(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host)
+      : content::MockNavigationHandle(url, render_frame_host) {}
+  ~MockNavigationHandleForOutermostFrame() override = default;
+  bool IsInOutermostMainFrame() const override { return false; }
+};
 
 }  // namespace
 
@@ -96,10 +111,9 @@ class AimEligibilityRefreshNavigationThrottleTest
 };
 
 TEST_F(AimEligibilityRefreshNavigationThrottleTest,
-       NotCreatedForNonPrimaryMainFrame) {
+       NotCreatedForNonOutermostMainFrame) {
   const GURL url("https://www.google.com/search?udm=50&q=query");
-  content::MockNavigationHandle handle(url, main_rfh());
-  handle.set_is_in_primary_main_frame(false);
+  MockNavigationHandleForOutermostFrame handle(url, main_rfh());
 
   content::MockNavigationThrottleRegistry registry(
       &handle,

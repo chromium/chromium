@@ -110,8 +110,8 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
 // static
 void ContextualTasksNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  // Ignore navigations that aren't in the main frame.
-  if (!registry.GetNavigationHandle().IsInPrimaryMainFrame()) {
+  // Ignore navigations that aren't in the outermost main frame.
+  if (!registry.GetNavigationHandle().IsInOutermostMainFrame()) {
     return;
   }
 
