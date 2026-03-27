@@ -99,7 +99,7 @@ class BaseGridMediatorTest
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     if (GetParam() == TEST_INCOGNITO_MEDIATOR) {
       mediator_ =
           [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];

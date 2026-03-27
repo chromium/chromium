@@ -24,7 +24,7 @@ class IncognitoGridMediatorTest : public GridMediatorTestClass {
 
   void SetUp() override {
     GridMediatorTestClass::SetUp();
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     mediator_ = [[IncognitoGridMediator alloc] initWithModeHolder:mode_holder_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();

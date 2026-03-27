@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -175,6 +176,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Top and bottom toolbar background views.
   TabGridToolbarBackgroundView* _topToolbarBackground;
   TabGridToolbarBackgroundView* _bottomToolbarBackground;
+
+  // The constraints for the bottom anchor of the bottom toolbar.
+  NSLayoutConstraint* _bottomToolbarBottomConstraint;
 }
 
 - (instancetype)initWithPageConfiguration:
@@ -219,6 +223,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
+  if (IsChromeNextIaEnabled() &&
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom) {
+    UIView* appBar =
+        [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+    CGFloat appBarHeight = appBar.bounds.size.height;
+    _bottomToolbarBottomConstraint.constant = -appBarHeight;
+  } else {
+    _bottomToolbarBottomConstraint.constant = 0;
+  }
+
   // Modify Incognito and Regular Tabs Insets.
   [self setInsetForGridViews];
 }
@@ -841,16 +855,16 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   if (IsChromeNextIaEnabled()) {
     [self.view addSubview:bottomToolbar];
-    // TODO(crbug.com/483992386): Make sure the bottom toolbar is taking into
-    // account the AppBar.
+
+    _bottomToolbarBottomConstraint = [bottomToolbar.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor];
 
     [NSLayoutConstraint activateConstraints:@[
       [bottomToolbar.leadingAnchor
           constraintEqualToAnchor:self.view.leadingAnchor],
       [bottomToolbar.trailingAnchor
           constraintEqualToAnchor:self.view.trailingAnchor],
-      [bottomToolbar.bottomAnchor
-          constraintEqualToAnchor:self.view.bottomAnchor],
+      _bottomToolbarBottomConstraint,
     ]];
   } else {
     [self.view addSubview:bottomToolbar];
@@ -1083,8 +1097,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.scrimView.alpha = 0.0f;
   self.scrimView.hidden = NO;
   if (!self.scrimView.superview) {
-    [self.scrollView addSubview:self.scrimView];
-    AddSameConstraints(self.scrimView, self.view.superview);
+    [self.view addSubview:self.scrimView];
+    AddSameConstraints(self.scrimView, self.view);
     [self.view layoutIfNeeded];
   }
   self.currentPageViewController.accessibilityElementsHidden = YES;
@@ -1445,12 +1459,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // area and toolbar.
 - (UIEdgeInsets)calculateInsetsForGridView {
   CGFloat bottomInset = 0;
-  if (!IsChromeNextIaEnabled()) {
+  if (IsChromeNextIaEnabled() &&
+      AppBarPositionForView(self.view) == AppBarPosition::kBottom) {
+    UIView* appBar =
+        [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+    CGFloat appBarHeight = appBar.bounds.size.height;
+    bottomInset = appBarHeight + self.bottomToolbar.intrinsicContentSize.height;
+  } else {
     // The content inset of the tab grids must be modified so that the toolbars
     // do not obscure the tabs. This may change depending on orientation.
     bottomInset = self.configuration == TabGridConfigurationBottomToolbar
                       ? self.bottomToolbar.intrinsicContentSize.height
                       : 0;
+    bottomInset += self.scrollView.safeAreaInsets.bottom;
   }
 
   CGFloat topInset = self.topToolbar.intrinsicContentSize.height;
@@ -1458,7 +1479,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   inset.left = self.scrollView.safeAreaInsets.left;
   inset.right = self.scrollView.safeAreaInsets.right;
   inset.top += self.scrollView.safeAreaInsets.top;
-  inset.bottom += self.scrollView.safeAreaInsets.bottom;
 
   return inset;
 }

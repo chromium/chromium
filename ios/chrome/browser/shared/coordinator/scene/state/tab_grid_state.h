@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
 class TabGroup;
+@class TabGridState;
 
 // Protocol for observers of the tab grid state.
 @protocol TabGridStateObserver <NSObject>
@@ -31,10 +32,17 @@ class TabGroup;
 // Called right before a group is hidden.
 - (void)willHideTabGroup;
 
+// Called when the tab grid mode changes.
+- (void)tabGridStateModeDidChange:(TabGridState*)tabGridState;
+
 @end
 
 // Object containing the state of the tab grid.
 @interface TabGridState : NSObject
+
+// The mode of the TabGrid. Updating this property only notifies the observers.
+// It doesn't impact the state of the TabGrid.
+@property(nonatomic, assign) TabGridMode mode;
 
 // The page currently displayed on the TabGrid. Updating this property only
 // notify the observers. It doesn't impact the state of the TabGrid.

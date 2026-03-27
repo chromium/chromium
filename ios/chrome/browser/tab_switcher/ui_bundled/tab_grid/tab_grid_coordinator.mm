@@ -956,7 +956,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _modeHolder = [[TabGridModeHolder alloc] init];
+  _modeHolder = [[TabGridModeHolder alloc]
+      initWithTabGridState:_regularBrowser->GetSceneState().tabGridState];
 
   [_regularBrowser->GetCommandDispatcher()
       startDispatchingToTarget:self

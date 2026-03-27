@@ -162,7 +162,7 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     tab_group_service_ = std::make_unique<TabGroupService>(
         profile_.get(), &tab_group_sync_service_);
     share_kit_service_ = std::make_unique<TestShareKitService>(

@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "app_container_view.h",
+    "app_container_view.mm",
     "scene_view.h",
     "scene_view.mm",
     "scene_view_controller.h",

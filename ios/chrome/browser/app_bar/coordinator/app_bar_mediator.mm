@@ -351,6 +351,16 @@
   [self updateForTabGridPage:_tabGridState.currentPage];
 }
 
+- (void)tabGridStateModeDidChange:(TabGridState*)tabGridState {
+  CHECK_EQ(tabGridState, _tabGridState);
+  if (tabGridState.mode == TabGridMode::kSelection ||
+      tabGridState.mode == TabGridMode::kSearch) {
+    [self.consumer setButtonsEnabled:NO];
+  } else {
+    [self updateButtonsForCurrentTabGridPage];
+  }
+}
+
 #pragma mark - AuthenticationServiceObserving
 
 - (void)onServiceStatusChanged {

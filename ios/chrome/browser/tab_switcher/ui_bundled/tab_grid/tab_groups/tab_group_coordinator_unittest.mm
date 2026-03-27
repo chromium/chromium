@@ -130,7 +130,7 @@ class TabGroupCoordinatorTest : public PlatformTest {
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
                           tabGroup:group];
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     coordinator_.modeHolder = mode_holder_;
   }
 

@@ -50,7 +50,8 @@
                        (id<ComposeboxTabPickerConsumer>)tabPickerConsumer
               tabsAttachmentDelegate:
                   (id<ComposeboxTabsAttachmentDelegate>)tabsAttachmentDelegate {
-  TabGridModeHolder* modeHolder = [[TabGridModeHolder alloc] init];
+  TabGridModeHolder* modeHolder =
+      [[TabGridModeHolder alloc] initWithTabGridState:nil];
   modeHolder.mode = TabGridMode::kSelection;
   self = [super initWithModeHolder:modeHolder];
 

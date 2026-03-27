@@ -25,6 +25,14 @@
   return self;
 }
 
+- (void)setMode:(TabGridMode)mode {
+  if (_mode == mode) {
+    return;
+  }
+  _mode = mode;
+  [_observers tabGridStateModeDidChange:self];
+}
+
 - (void)setTabGridVisible:(BOOL)tabGridVisible {
   if (tabGridVisible == _tabGridVisible) {
     return;

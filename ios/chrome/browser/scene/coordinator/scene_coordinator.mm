@@ -250,8 +250,14 @@ void OnListFamilyMembersResponse(
     UIViewController* tabGridViewController =
         _tabGridCoordinator.viewController;
     [_viewController addChildViewController:tabGridViewController];
-    [_viewController.appContainer addSubview:tabGridViewController.view];
-    tabGridViewController.view.frame = _viewController.appContainer.bounds;
+    if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+      [_viewController.view addSubview:tabGridViewController.view];
+      [tabGridViewController.view addSubview:_viewController.appContainer];
+      tabGridViewController.view.frame = _viewController.view.bounds;
+    } else {
+      [_viewController.appContainer addSubview:tabGridViewController.view];
+      tabGridViewController.view.frame = _viewController.appContainer.bounds;
+    }
     [tabGridViewController didMoveToParentViewController:_viewController];
     self.sceneState.window.rootViewController = _viewController;
 

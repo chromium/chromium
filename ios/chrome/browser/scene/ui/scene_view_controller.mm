@@ -6,6 +6,8 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_utils.h"
+#import "ios/chrome/browser/scene/ui/app_container_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/scene/ui/scene_view_delegate.h"
@@ -47,7 +49,7 @@
   CHECK(self.layoutGuideCenter);
   [super viewDidLoad];
   UIView* view = self.view;
-  _appContentView = [[UIView alloc] init];
+  _appContentView = [[AppContainerView alloc] init];
   if (IsFullscreenRefactoringEnabled()) {
     _appContentView.translatesAutoresizingMaskIntoConstraints = NO;
   } else {
@@ -145,8 +147,8 @@
 #pragma mark - FullscreenUIElement
 
 - (void)updateForFullscreenProgress:(CGFloat)progress {
-  UIInterfaceOrientation orientation = [self currentOrientation];
-  if (orientation != UIInterfaceOrientationPortrait) {
+  AppBarPosition position = AppBarPositionForView(self.view);
+  if (position != AppBarPosition::kBottom) {
     return;
   }
   _fullscreenProgress = progress;
@@ -169,33 +171,31 @@
 
 #pragma mark - Private
 
-// Returns the current orientation of the scene.
-- (UIInterfaceOrientation)currentOrientation {
-  return self.view.window.windowScene.effectiveGeometry.interfaceOrientation;
-}
 
 // Updates the layout to adapt to screen changes.
 - (void)updateLayoutForAppBar {
-  UIWindowScene* windowScene = self.view.window.windowScene;
-  if (!windowScene || !_appBar) {
+  if (!_appBar) {
     return;
   }
 
-  UIInterfaceOrientation orientation = [self currentOrientation];
+  AppBarPosition position = AppBarPositionForView(self.view);
+  if (position == AppBarPosition::kNone) {
+    return;
+  }
 
   if (!IsFullscreenRefactoringEnabled()) {
     CGRect frame = self.view.bounds;
     UIEdgeInsets insets = UIEdgeInsetsZero;
-    switch (orientation) {
-      case UIInterfaceOrientationLandscapeLeft:
+    switch (position) {
+      case AppBarPosition::kLeft:
         insets = UIEdgeInsetsMake(0, kAppBarHeight, 0, 0);
         break;
 
-      case UIInterfaceOrientationLandscapeRight:
+      case AppBarPosition::kRight:
         insets = UIEdgeInsetsMake(0, 0, 0, kAppBarHeight);
         break;
 
-      case UIInterfaceOrientationPortrait: {
+      case AppBarPosition::kBottom: {
         CGFloat appBarHeight =
             kAppBarHeightFullscreen -
             _fullscreenProgress * (kAppBarHeightFullscreen - kAppBarHeight);
@@ -214,16 +214,16 @@
   [NSLayoutConstraint deactivateConstraints:_landscapeLeftConstraints];
   [NSLayoutConstraint deactivateConstraints:_landscapeRightConstraints];
 
-  switch (orientation) {
-    case UIInterfaceOrientationLandscapeLeft:
+  switch (position) {
+    case AppBarPosition::kLeft:
       [NSLayoutConstraint activateConstraints:_landscapeLeftConstraints];
       break;
 
-    case UIInterfaceOrientationLandscapeRight:
+    case AppBarPosition::kRight:
       [NSLayoutConstraint activateConstraints:_landscapeRightConstraints];
       break;
 
-    case UIInterfaceOrientationPortrait:
+    case AppBarPosition::kBottom:
       [NSLayoutConstraint activateConstraints:_portraitConstraints];
       break;
 

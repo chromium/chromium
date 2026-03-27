@@ -92,7 +92,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     ASSERT_TRUE(builder_->BuildWebStateListFromDescription(
         "| f [ 1 a* b c ] d e ", browser_->GetProfile()));
 
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     tab_group_ = web_state_list->GetGroupOfWebStateAt(1);
     tab_group_consumer_ = OCMProtocolMock(@protocol(TabGroupConsumer));
     share_kit_service_ = std::make_unique<TestShareKitService>(

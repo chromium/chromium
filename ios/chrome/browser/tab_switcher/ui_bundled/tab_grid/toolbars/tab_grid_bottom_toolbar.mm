@@ -120,6 +120,11 @@ CGFloat CompactButtonHorizontalPadding() {
   if (!_largeNewTabButton.hidden) {
     return CGSizeZero;
   }
+  if (IsChromeNextIaEnabled()) {
+    if (self.mode != TabGridMode::kSelection) {
+      return CGSizeZero;
+    }
+  }
   return _containerToolbar.intrinsicContentSize;
 }
 

@@ -205,17 +205,28 @@ enum class TabGridTransitionType {
 - (void)prepareTabGridToBrowserTransition {
   UIViewController* tabGrid = _params->tab_grid_view_controller;
   UIViewController* browserLayout = _params->browser_layout_view_controller;
+  UIView* appContentGuide = _params->app_content_view;
+
   if (IsChromeNextIaEnabled()) {
     // Remove from superview to ensure all constraints are gone.
     [browserLayout.view removeFromSuperview];
 
-    UIView* appContentGuide = _params->app_content_view;
-    browserLayout.view.frame = [tabGrid.view convertRect:appContentGuide.bounds
-                                                fromView:appContentGuide];
-    [tabGrid.view addSubview:browserLayout.view];
-    AddSameConstraints(browserLayout.view, appContentGuide);
+    if (IsFullscreenRefactoringEnabled()) {
+      browserLayout.view.frame =
+          [tabGrid.view convertRect:appContentGuide.bounds
+                           fromView:appContentGuide];
+    } else {
+      browserLayout.view.frame = appContentGuide.bounds;
+    }
+    // TODO(crbug.com/496645014): Remove this part.
+    [tabGrid addChildViewController:browserLayout];
+    [appContentGuide addSubview:browserLayout.view];
+    if (IsFullscreenRefactoringEnabled()) {
+      AddSameConstraints(browserLayout.view, appContentGuide);
+    }
   } else {
     browserLayout.view.frame = tabGrid.view.bounds;
+    [tabGrid addChildViewController:browserLayout];
     [tabGrid.view addSubview:browserLayout.view];
     if (IsFullscreenRefactoringEnabled()) {
       AddSameConstraints(browserLayout.view, tabGrid.view);
@@ -227,8 +238,20 @@ enum class TabGridTransitionType {
   // fixes some transition issues.
   [self takeToolbarSnapshots];
 
-  [tabGrid addChildViewController:browserLayout];
-  [tabGrid.view addSubview:browserLayout.view];
+  if (IsChromeNextIaEnabled()) {
+    [tabGrid addChildViewController:browserLayout];
+    [appContentGuide addSubview:browserLayout.view];
+    if (IsFullscreenRefactoringEnabled()) {
+      AddSameConstraints(browserLayout.view, appContentGuide);
+    }
+  } else {
+    [tabGrid addChildViewController:browserLayout];
+    [tabGrid.view addSubview:browserLayout.view];
+    if (IsFullscreenRefactoringEnabled()) {
+      AddSameConstraints(browserLayout.view, tabGrid.view);
+    }
+  }
+
   // `didMoveToParentViewController` is called in
   // `finalizeTabGridToBrowserTransition`, no need to call here.
   browserLayout.view.accessibilityViewIsModal = YES;

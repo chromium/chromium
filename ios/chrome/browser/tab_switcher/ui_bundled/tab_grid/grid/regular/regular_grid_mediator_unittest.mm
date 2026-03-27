@@ -84,7 +84,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
         /*disable_features=*/{});
 
     GridMediatorTestClass::SetUp();
-    mode_holder_ = [[TabGridModeHolder alloc] init];
+    mode_holder_ = [[TabGridModeHolder alloc] initWithTabGridState:nil];
     share_kit_service_ = std::make_unique<TestShareKitService>(
         nullptr, nullptr, nullptr, tab_group_service_);
 

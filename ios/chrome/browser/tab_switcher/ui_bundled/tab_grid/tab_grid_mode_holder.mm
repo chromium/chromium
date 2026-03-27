@@ -4,15 +4,18 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_holder.h"
 
+#import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mode_observing.h"
 
 @implementation TabGridModeHolder {
   NSHashTable<id<TabGridModeObserving>>* _observers;
+  TabGridState* _tabGridState;
 }
 
-- (instancetype)init {
+- (instancetype)initWithTabGridState:(TabGridState*)tabGridState {
   self = [super init];
   if (self) {
+    _tabGridState = tabGridState;
     _observers = [NSHashTable weakObjectsHashTable];
   }
   return self;
@@ -23,6 +26,8 @@
     return;
   }
   _mode = mode;
+
+  _tabGridState.mode = mode;
 
   for (id<TabGridModeObserving> observer in _observers) {
     [observer tabGridModeDidChange:self];

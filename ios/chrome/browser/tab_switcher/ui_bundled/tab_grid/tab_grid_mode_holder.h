@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 
+@class TabGridState;
 @protocol TabGridModeObserving;
 
 // Holder for the TabGrid mode.
@@ -16,6 +17,11 @@
 
 // The current mode of the TabGrid.
 @property(nonatomic, assign) TabGridMode mode;
+
+// The TabGridState to be notified when the mode changes.
+- (instancetype)initWithTabGridState:(TabGridState*)tabGridState
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Adding/removing observers.
 - (void)addObserver:(id<TabGridModeObserving>)observer;
