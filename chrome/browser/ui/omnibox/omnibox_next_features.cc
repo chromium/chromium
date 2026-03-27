@@ -302,7 +302,7 @@ const base::FeatureParam<bool> kShowContextMenu(
 const base::FeatureParam<bool> kShowContextMenuDescription(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuDescription",
-    true);
+    false);
 const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowContextMenuTabPreviews",
