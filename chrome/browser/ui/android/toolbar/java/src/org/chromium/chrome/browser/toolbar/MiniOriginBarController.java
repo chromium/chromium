@@ -349,6 +349,7 @@ public class MiniOriginBarController implements Observer {
         mIsKeyboardAccessorySheetShowing.removeObserver(mAccessorySheetShowingObserver);
         mBrowserControlsSizer.removeObserver(this);
         mInsetObserver.removeWindowInsetsAnimationListener(mWindowInsetsAnimationListener);
+        mWindowInsetsAnimationListener.destroy();
     }
 
     @Override
@@ -529,6 +530,10 @@ public class MiniOriginBarController implements Observer {
             mCancelRunnable = this::cancel;
         }
 
+        void destroy() {
+            mHandler.removeCallbacksAndMessages(null);
+        }
+
         @Override
         public void onPrepare(WindowInsetsAnimationCompat animation) {
             if (!mWaitingForAnimation.getAsBoolean()
@@ -622,7 +627,7 @@ public class MiniOriginBarController implements Observer {
             mAnimation = null;
         }
 
-        private void cancel() {
+        void cancel() {
             if (mAnimation == null) return;
             onEnd(mAnimation);
         }
