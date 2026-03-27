@@ -317,10 +317,10 @@ void ProfileOAuth2TokenServiceDelegate::UpdateCredentials(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
     SourceForRefreshTokenOperation source,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const signin::TokenBindingInfo& token_binding_info) {
   base::AutoReset<SourceForRefreshTokenOperation> auto_reset(
       &update_refresh_token_source_, source);
-  UpdateCredentialsInternal(account_id, refresh_token, wrapped_binding_key);
+  UpdateCredentialsInternal(account_id, refresh_token, token_binding_info);
 }
 
 bool ProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {

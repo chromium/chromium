@@ -1971,7 +1971,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
   EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
             kFakeWrappedBindingKey);
@@ -1981,7 +1981,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       account_id, "refresh_token2",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey2);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey2));
   EXPECT_TRUE(oauth2_service_delegate_->IsRefreshTokenBound(account_id));
   EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
             kFakeWrappedBindingKey2);
@@ -2006,11 +2006,11 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
   oauth2_service_delegate_->UpdateCredentials(
       account_id2, "refresh_token2",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey2);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey2));
 
   oauth2_service_delegate_->RevokeCredentials(account_id);
   EXPECT_TRUE(
@@ -2033,7 +2033,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       kAccountId, "bound_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
   oauth2_service_delegate_->UpdateCredentials(kAccountId2, "non_bound_token");
 
   // Re-initialize the delegate and re-load tokens from disk.
@@ -2074,15 +2074,15 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       kAccountId, "bound_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
   oauth2_service_delegate_->UpdateCredentials(
       kAccountId2, "bound_token_2",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
   oauth2_service_delegate_->UpdateCredentials(
       kAccountId3, "bound_token_3",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
 
   // Re-initialize the delegate and re-load tokens from disk.
   ShutdownOAuth2ServiceDelegate();
@@ -2168,7 +2168,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       kAccountId, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
 
   base::test::TestFuture<std::string> future;
   oauth2_service_delegate_
@@ -2205,7 +2205,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
   oauth2_service_delegate_->UpdateCredentials(
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
 
   // Verify that the binding key is added to the destination service.
   EXPECT_CALL(dest_uks,
@@ -2231,7 +2231,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
   oauth2_service_delegate_->UpdateCredentials(
       account_id, "refresh_token",
       signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      kFakeWrappedBindingKey);
+      signin::TokenBindingInfo(kFakeWrappedBindingKey));
 
   AddSuccessfulIssueTokenResponse();
 
@@ -2295,7 +2295,7 @@ class MutableProfileOAuth2TokenServiceDelegateExtractCredentialsParamTest
         SourceForRefreshTokenOperation::kDiceResponseHandler_Signin;
     delegate.UpdateCredentials(CoreAccountId::FromGaiaId(account.gaia_id),
                                account.refresh_token, kSigninSource,
-                               account.binding_key);
+                               signin::TokenBindingInfo(account.binding_key));
   }
 };
 

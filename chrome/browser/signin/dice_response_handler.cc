@@ -503,7 +503,7 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       token_fetcher->delegate()->GetAccessPoint(),
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin,
-      wrapped_binding_key);
+      signin::TokenBindingInfo(wrapped_binding_key));
   about_signin_internals_->OnRefreshTokenReceived(
       base::StringPrintf("Successful (%s)", account_id.ToString().c_str()));
   token_fetcher->delegate()->HandleTokenExchangeSuccess(account_id,

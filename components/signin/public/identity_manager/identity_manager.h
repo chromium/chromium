@@ -569,7 +569,7 @@ class IdentityManager : public KeyedService,
       IdentityManager* identity_manager,
       const CoreAccountId& account_id,
       const std::string& token_value,
-      const std::vector<uint8_t>& wrapped_binding_key);
+      const TokenBindingInfo& token_binding_info);
   friend void SetInvalidRefreshTokenForAccount(
       IdentityManager* identity_manager,
       const CoreAccountId& account_id,

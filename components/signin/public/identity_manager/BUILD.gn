@@ -49,6 +49,8 @@ source_set("identity_manager") {
     "primary_account_mutator.h",
     "set_accounts_in_cookie_result.h",
     "signin_constants.h",
+    "token_binding_info.cc",
+    "token_binding_info.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

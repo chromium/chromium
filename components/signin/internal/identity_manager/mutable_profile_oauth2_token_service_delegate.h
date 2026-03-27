@@ -254,7 +254,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   void UpdateCredentialsInternal(
       const CoreAccountId& account_id,
       const std::string& refresh_token,
-      const std::vector<uint8_t>& wrapped_binding_key) override;
+      const signin::TokenBindingInfo& token_binding_info) override;
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;
   void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
@@ -273,7 +273,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   void UpdateCredentialsInMemory(
       const CoreAccountId& account_id,
       const std::string& refresh_token,
-      const std::vector<uint8_t>& wrapped_binding_key,
+      const signin::TokenBindingInfo& token_binding_info,
       base::optional_ref<const GoogleServiceAuthError> error_for_invalid_token =
           std::nullopt);
 
@@ -285,7 +285,7 @@ class MutableProfileOAuth2TokenServiceDelegate
   // testing purposes, or other cases, when accessing the DB is not desired.
   void PersistCredentials(const CoreAccountId& account_id,
                           const std::string& refresh_token,
-                          const std::vector<uint8_t>& wrapped_binding_key);
+                          const signin::TokenBindingInfo& token_binding_info);
 
   // Clears credentials that have failed to load into memory but are still
   // persisted in the DB.

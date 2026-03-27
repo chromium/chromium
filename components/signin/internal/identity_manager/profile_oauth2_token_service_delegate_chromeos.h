@@ -80,7 +80,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
   void UpdateCredentialsInternal(
       const CoreAccountId& account_id,
       const std::string& refresh_token,
-      const std::vector<uint8_t>& wrapped_binding_key) override;
+      const signin::TokenBindingInfo& token_binding_info) override;
   void RevokeCredentialsInternal(const CoreAccountId& account_id) override;
   void RevokeAllCredentialsInternal(
       signin_metrics::SourceForRefreshTokenOperation source) override;

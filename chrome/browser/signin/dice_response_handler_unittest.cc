@@ -611,7 +611,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   identity_test_env_.MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
-          .WithRefreshTokenBindingKey(kWrappedKey)
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(kWrappedKey))
           .Build("other@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
@@ -651,7 +651,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
   identity_test_env_.MakeAccountAvailable("nonbound@gmail.com");
   identity_test_env_.MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
-          .WithRefreshTokenBindingKey(kWrappedKey)
+          .WithRefreshTokenBindingInfo(signin::TokenBindingInfo(kWrappedKey))
           .Build("bound@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);

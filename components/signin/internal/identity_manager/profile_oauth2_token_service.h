@@ -20,6 +20,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/token_binding_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
@@ -216,7 +217,7 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
       const std::string& refresh_token,
       signin_metrics::SourceForRefreshTokenOperation source =
           signin_metrics::SourceForRefreshTokenOperation::kUnknown,
-      const std::vector<uint8_t>& wrapped_binding_key = std::vector<uint8_t>());
+      const signin::TokenBindingInfo& token_binding_info = {});
 
   void RevokeCredentials(
       const CoreAccountId& account_id,

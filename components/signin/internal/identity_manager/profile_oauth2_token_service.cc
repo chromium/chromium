@@ -278,9 +278,9 @@ void ProfileOAuth2TokenService::UpdateCredentials(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
     signin_metrics::SourceForRefreshTokenOperation source,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const signin::TokenBindingInfo& token_binding_info) {
   GetDelegate()->UpdateCredentials(account_id, refresh_token, source,
-                                   wrapped_binding_key);
+                                   token_binding_info);
 }
 
 void ProfileOAuth2TokenService::RevokeCredentials(

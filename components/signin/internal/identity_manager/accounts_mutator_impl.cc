@@ -44,7 +44,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     bool is_under_advanced_protection,
     std::optional<signin_metrics::AccessPoint> access_point,
     signin_metrics::SourceForRefreshTokenOperation source,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const signin::TokenBindingInfo& token_binding_info) {
 #if BUILDFLAG(IS_CHROMEOS)
   NOTREACHED();
 #else
@@ -59,7 +59,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
   account_tracker_service_->CommitPendingAccountChanges();
 
   token_service_->UpdateCredentials(account_id, refresh_token, source,
-                                    wrapped_binding_key);
+                                    token_binding_info);
 
   return account_id;
 #endif

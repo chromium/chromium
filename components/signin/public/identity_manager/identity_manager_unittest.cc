@@ -1183,7 +1183,8 @@ TEST_F(IdentityManagerTest,
   SetRefreshTokenForAccount(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(ConsentLevel::kSignin),
-      "refresh_token_1", primary_account_wrapped_binding_key);
+      "refresh_token_1",
+      signin::TokenBindingInfo(primary_account_wrapped_binding_key));
   // Add a secondary account and set a refresh token for it.
   account_tracker()->SeedAccountInfo(kTestGaiaId2, kTestEmail2);
   // NOTE: This should NOT happen in production as all accounts are supposed to
@@ -1192,7 +1193,8 @@ TEST_F(IdentityManagerTest,
   SetRefreshTokenForAccount(
       identity_manager(),
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
-      "refresh_token_2", secondary_account_wrapped_binding_key);
+      "refresh_token_2",
+      signin::TokenBindingInfo(secondary_account_wrapped_binding_key));
 
   EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
             primary_account_wrapped_binding_key);
@@ -1211,7 +1213,8 @@ TEST_F(IdentityManagerTest,
   SetRefreshTokenForAccount(
       identity_manager(),
       account_tracker()->FindAccountInfoByGaiaId(kTestGaiaId2).account_id,
-      "refresh_token_2", secondary_account_wrapped_binding_key);
+      "refresh_token_2",
+      signin::TokenBindingInfo(secondary_account_wrapped_binding_key));
 
   EXPECT_EQ(identity_manager()->GetWrappedBindingKey(),
             secondary_account_wrapped_binding_key);

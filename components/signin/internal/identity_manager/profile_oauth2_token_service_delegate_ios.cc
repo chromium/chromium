@@ -249,7 +249,7 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
 void ProfileOAuth2TokenServiceIOSDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const signin::TokenBindingInfo& token_binding_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   NOTREACHED() << "Unexpected call to UpdateCredentials when using shared "
                   "authentication.";

@@ -165,14 +165,14 @@ void FakeProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(
 void FakeProfileOAuth2TokenServiceDelegate::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token,
-    const std::vector<uint8_t>& wrapped_binding_key) {
-  IssueRefreshTokenForUser(account_id, refresh_token, wrapped_binding_key);
+    const signin::TokenBindingInfo& token_binding_info) {
+  IssueRefreshTokenForUser(account_id, refresh_token, token_binding_info);
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     const CoreAccountId& account_id,
     const std::string& token,
-    const std::vector<uint8_t>& wrapped_binding_key) {
+    const signin::TokenBindingInfo& token_binding_info) {
   if (token.empty()) {
     std::erase(account_ids_, account_id);
     refresh_tokens_.erase(account_id);
@@ -185,7 +185,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
       account_ids_.push_back(account_id);
     }
     refresh_tokens_[account_id] = token;
-    wrapped_binding_keys_[account_id] = wrapped_binding_key;
+    wrapped_binding_keys_[account_id] = token_binding_info.wrapped_binding_key;
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from
@@ -209,7 +209,8 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
 
 void FakeProfileOAuth2TokenServiceDelegate::RevokeCredentialsInternal(
     const CoreAccountId& account_id) {
-  IssueRefreshTokenForUser(account_id, std::string(), std::vector<uint8_t>());
+  IssueRefreshTokenForUser(account_id, std::string(),
+                           signin::TokenBindingInfo());
 }
 
 void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(

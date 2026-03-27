@@ -83,7 +83,7 @@ class ProfileOAuth2TokenServiceIOSDelegate
   void UpdateCredentialsInternal(
       const CoreAccountId& account_id,
       const std::string& refresh_token,
-      const std::vector<uint8_t>& wrapped_binding_key) override;
+      const signin::TokenBindingInfo& token_binding_info) override;
   // Removes all credentials from this instance of |ProfileOAuth2TokenService|,
   // however, it does not revoke the identities from the device.
   // Subsequent calls to |RefreshTokenIsAvailable| will return |false|.
