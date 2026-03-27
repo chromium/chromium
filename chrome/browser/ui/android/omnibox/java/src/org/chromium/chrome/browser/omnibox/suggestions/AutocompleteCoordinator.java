@@ -424,8 +424,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     }
 
     /** Notify the Autocomplete about Omnibox text change. */
-    public void onTextChanged(String textWithoutAutocomplete) {
-        mMediator.onTextChanged(textWithoutAutocomplete, false);
+    public void onInputChanged() {
+        mMediator.onInputChanged(false);
     }
 
     /** Trigger autocomplete for the given query. */

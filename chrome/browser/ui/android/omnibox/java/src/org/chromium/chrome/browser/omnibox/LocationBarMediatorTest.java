@@ -492,6 +492,24 @@ public class LocationBarMediatorTest {
         verify(mUrlCoordinator).setAutocompleteText("text", null, null, null);
     }
 
+    @Test
+    public void testOnUrlTextChanged_updatesShouldAutocomplete() {
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+        mMediator.onUrlFocusChange(true);
+
+        var state = getSession();
+        var input = state.getAutocompleteInput();
+
+        doReturn(true).when(mUrlCoordinator).shouldAutocomplete();
+        mMediator.onUrlTextChanged("test");
+        assertTrue(input.shouldAllowUserTextAutocompletion());
+
+        doReturn(false).when(mUrlCoordinator).shouldAutocomplete();
+        mMediator.onUrlTextChanged("test2");
+        assertFalse(input.shouldAllowUserTextAutocompletion());
+    }
+
     public void testLoadUrl_base() {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
