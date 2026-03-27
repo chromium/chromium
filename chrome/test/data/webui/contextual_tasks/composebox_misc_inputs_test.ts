@@ -974,7 +974,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         0, composebox.getRemainingFilesToUpload().size,
         '0 tabs should be uploading due to expired status');
     assertEquals(
-        0, composebox.getFilesForTesting().length,
+        0, composebox.files.size,
         '0 files should be in the composebox after upload expired');
   });
 
@@ -1058,7 +1058,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         0, composebox.getRemainingFilesToUpload().size,
         '0 tabs should be uploading due to expired status');
     assertEquals(
-        0, composebox.getFilesForTesting().length,
+        0, composebox.files.size,
         '0 files should be in the composebox after upload failed');
   });
 });

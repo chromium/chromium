@@ -626,10 +626,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.clearAutocompleteMatches();
   }
 
-  getSmartComposeForTesting() {
-    return this.smartComposeInlineHint;
-  }
-
   getMatchesElement(): ComposeboxDropdownElement {
     return this.$.matches;
   }
@@ -658,10 +654,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   isExpanded(): boolean {
     return this.expanding_;
-  }
-
-  getSelectedMatchIndexForTesting() {
-    return this.selectedMatchIndex;
   }
 
   protected async updateState_(state: ComposeboxState) {
@@ -1715,14 +1707,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.selectedMatch = this.result?.matches[this.selectedMatchIndex] || null;
   }
 
-  getFilesForTesting(): ComposeboxFile[] {
-    return [...this.files.values()];
-  }
-
-  getResultForTesting(): AutocompleteResult|null {
-    return this.result;
-  }
-
   /**
    * Clears the autocomplete result on the page and on the autocomplete backend.
    */
@@ -1924,10 +1908,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.input = '';
     this.lastQueriedInput_ = '';
     this.$.matches.unselect();
-  }
-
-  getNumOfFilesForTesting(): number {
-    return this.files.size;
   }
 
   private selectFirstMatch() {

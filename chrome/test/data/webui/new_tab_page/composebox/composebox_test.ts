@@ -107,7 +107,7 @@ suite('NewTabPageComposeboxTest', () => {
     const activeTool =
         await testProxy.searchboxHandler.whenCalled('setActiveToolMode');
     assertEquals(ToolMode.kDeepSearch, activeTool);
-    assertEquals(1, composebox.getNumOfFilesForTesting());
+    assertEquals(1, composebox.files.size);
     const activeModel =
         await testProxy.searchboxHandler.whenCalled('setActiveModelMode');
     assertEquals(ModelMode.kGeminiRegular, activeModel);

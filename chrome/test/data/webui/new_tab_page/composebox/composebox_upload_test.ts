@@ -1084,9 +1084,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     await testProxy.element.updateComplete;
     await microtasksFinished();
 
-    assertTrue(
-        testProxy.element.getNumOfFilesForTesting() === 1,
-        'Tab should be added');
+    assertEquals(1, testProxy.element.files.size, 'Tab should be added');
 
     const bad_token = testSupport.FAKE_TOKEN_STRING_2;
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
@@ -1096,9 +1094,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     );
     await testProxy.element.updateComplete;
     await microtasksFinished();
-    assertTrue(
-        testProxy.element.getNumOfFilesForTesting() === 2,
-        'Ghost file should be added');
+    assertEquals(2, testProxy.element.files.size, 'Ghost file should be added');
   });
 
   test('does not add tab context of ghost file', async () => {
@@ -1110,9 +1106,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     await microtasksFinished();
 
 
-    assertTrue(
-        testProxy.element.getNumOfFilesForTesting() === 1,
-        'Tab should be added');
+    assertEquals(1, testProxy.element.files.size, 'Tab should be added');
     const bad_token = testSupport.FAKE_TOKEN_STRING_2;
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         bad_token,
@@ -1121,9 +1115,8 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
     );
     await testProxy.element.updateComplete;
     await microtasksFinished();
-    assertTrue(
-        testProxy.element.getNumOfFilesForTesting() === 1,
-        'Ghost file should not be added');
+    assertEquals(
+        1, testProxy.element.files.size, 'Ghost file should not be added');
   });
 
   test(
@@ -1133,8 +1126,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         testSupport.createComposeboxElement(testProxy);
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
-            'Should be 0 starting test');
+            testProxy.element.files.size, 0, 'Should be 0 starting test');
         const tab = {
           tabId: 1,
           title: 'Tab 1',
@@ -1159,7 +1151,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 1,
+            testProxy.element.files.size, 1,
             'Attached files should be 1 after adding first tab.');
 
         testProxy.element.clearAllInputs(
@@ -1170,8 +1162,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
-            'Should be 0 after clearing all.');
+            testProxy.element.files.size, 0, 'Should be 0 after clearing all.');
 
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_TAB_CONTEXT_FN);
@@ -1184,7 +1175,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 1,
+            testProxy.element.files.size, 1,
             'Attached files should be 1 after adding a second auto ' +
                 'chip, and having cleared the first one.');
       });
@@ -1195,7 +1186,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         testSupport.createComposeboxElement(testProxy);
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
+            testProxy.element.files.size, 0,
             'Attached files should be 0 at start.');
 
         const tab = {
@@ -1223,7 +1214,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
+            testProxy.element.files.size, 0,
             'Attached files should be 0 after failed callback' +
                 'does not return for an auto chip.');
 
@@ -1246,7 +1237,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
+            testProxy.element.files.size, 0,
             'Attached files should still be 0 since the first' +
                 'callback corrupted, but the same auto chip' +
                 'context is added again.');
@@ -1275,7 +1266,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
 
         // New auto chip added since is different from tab 1.
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 1,
+            testProxy.element.files.size, 1,
             'Attached files should be 1 after adding a second auto ' +
                 'chip, and having the first one be corrupted.');
       });
@@ -1287,8 +1278,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         testSupport.createComposeboxElement(testProxy);
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
-            'Should be 0 starting test');
+            testProxy.element.files.size, 0, 'Should be 0 starting test');
         const tab = {
           tabId: 1,
           title: 'Tab 1',
@@ -1313,7 +1303,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
+            testProxy.element.files.size, 0,
             'First tab should not be added since callback fails');
 
         testProxy.element.clearAllInputs(
@@ -1324,8 +1314,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 0,
-            'Should be 0 after clearing all.');
+            testProxy.element.files.size, 0, 'Should be 0 after clearing all.');
 
         testProxy.searchboxHandler.resetResolver(
             testSupport.ADD_TAB_CONTEXT_FN);
@@ -1340,7 +1329,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         assertEquals(
-            testProxy.element.getNumOfFilesForTesting(), 1,
+            testProxy.element.files.size, 1,
             'Same tab should be added back after clearing all.');
       });
 
@@ -1527,7 +1516,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await testProxy.element.updateComplete;
         await microtasksFinished();
 
-        assertEquals(testProxy.element.getNumOfFilesForTesting(), 1);
+        assertEquals(testProxy.element.files.size, 1);
 
         // Update InputState to disallow images and tabs.
         const newInputState = {
@@ -1541,7 +1530,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
         await microtasksFinished();
 
         // Ensure the file is deleted.
-        assertEquals(testProxy.element.getNumOfFilesForTesting(), 0);
+        assertEquals(testProxy.element.files.size, 0);
         assertEquals(
             testProxy.searchboxHandler.getCallCount('deleteContext'), 1);
       });

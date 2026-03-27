@@ -766,9 +766,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       assertFalse(!!composebox.input, 'Input value should be cleared');
       assertTrue(
           composebox.fileUploadsComplete, 'File uploads should be complete');
-      assertFalse(
-          !!composebox.getResultForTesting(),
-          'Autocomplete result should be cleared');
+      assertFalse(!!composebox.result, 'Autocomplete result should be cleared');
     });
   });
 

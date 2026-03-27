@@ -518,9 +518,7 @@ suite('ContextualTasksComposeboxTest', () => {
         'Index should be 0');
     assertEquals(
         'match 1', inputElement.value, 'Input value should be match 1');
-    assertEquals(
-        0, composebox.getSelectedMatchIndexForTesting(),
-        'Parent index should be 0');
+    assertEquals(0, composebox.selectedMatchIndex, 'Parent index should be 0');
   });
 
   test('TooltipVisibilityUpdatesOnResize', () => {

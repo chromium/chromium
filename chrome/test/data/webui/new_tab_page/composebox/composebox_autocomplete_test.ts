@@ -823,7 +823,7 @@ suite('NewTabPageComposeboxAutocompleteSmartComposeTest', () => {
         }));
     await microtasksFinished();
 
-    assertEquals('compose', testProxy.element.getSmartComposeForTesting());
+    assertEquals('compose', testProxy.element.smartComposeInlineHint);
   });
 
   test('tab adds smart compose to input', async () => {
