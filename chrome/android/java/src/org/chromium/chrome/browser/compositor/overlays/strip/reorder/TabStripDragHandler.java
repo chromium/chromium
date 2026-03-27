@@ -469,7 +469,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     destWindowId,
                     Collections.singletonList(tabBeingDragged),
                     getTabModelSelector().getModel(tabBeingDragged.isIncognito()).getCount(),
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* bringToFront= */ true);
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab at drop index and merge to group on destination if needed.
@@ -480,7 +481,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     destWindowId,
                     Collections.singletonList(tabBeingDragged),
                     tabIndex,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* bringToFront= */ true);
             helper.maybeMergeToGroupOnDrop(
                     Collections.singletonList(tabBeingDragged.getId()),
                     tabIndex,
@@ -514,7 +516,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     getTabModelSelector()
                             .getModel(tabsBeingDragged.get(0).isIncognito())
                             .getCount(),
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* bringToFront= */ true);
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tabs at drop index.
@@ -525,7 +528,8 @@ public class TabStripDragHandler extends TabDragHandlerBase {
                     destWindowId,
                     tabsBeingDragged,
                     tabIndex,
-                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                    /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                    /* bringToFront= */ true);
             List<Integer> tabsBeingDraggedIds = new ArrayList<>();
             for (Tab tab : tabsBeingDragged) {
                 tabsBeingDraggedIds.add(tab.getId());
@@ -564,14 +568,15 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
                     windowId,
                     tabGroupMetadata,
-                    getTabModelSelector().getModel(tabGroupMetadata.isIncognito).getCount());
+                    getTabModelSelector().getModel(tabGroupMetadata.isIncognito).getCount(),
+                    /* bringToFront= */ true);
             showDroppedDifferentModelToast(getActivity());
         } else {
             // Reparent tab group at drop index.
             int tabIndex =
                     helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, /* isPinned= */ false);
             mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                    windowId, tabGroupMetadata, tabIndex);
+                    windowId, tabGroupMetadata, tabIndex, /* bringToFront= */ true);
         }
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_TAB_STRIP,

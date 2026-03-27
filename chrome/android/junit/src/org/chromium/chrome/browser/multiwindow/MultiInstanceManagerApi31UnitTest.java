@@ -1605,12 +1605,15 @@ public class MultiInstanceManagerApi31UnitTest {
         // Act.
         int destTabIndex = 0;
         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                /* destWindowId= */ 1, mTabGroupMetadata, destTabIndex);
+                /* destWindowId= */ 1, mTabGroupMetadata, destTabIndex, /* bringToFront= */ true);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabGroupToExistingWindow(
-                        eq(mTabbedActivityTask63), eq(mTabGroupMetadata), eq(destTabIndex));
+                        eq(mTabbedActivityTask63),
+                        eq(mTabGroupMetadata),
+                        eq(destTabIndex),
+                        eq(true));
     }
 
     @Test
@@ -1620,7 +1623,10 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Act.
         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                NONEXISTENT_INSTANCE_ID, mTabGroupMetadata, /* destTabIndex= */ 0);
+                NONEXISTENT_INSTANCE_ID,
+                mTabGroupMetadata,
+                /* destTabIndex= */ 0,
+                /* bringToFront= */ true);
 
         // Verify.
         verify(mTabReparentingDelegate)

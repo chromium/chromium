@@ -1174,7 +1174,8 @@ public class ChromeTabbedActivityTest {
                                 activity2.getWindowId(),
                                 List.of(tab1),
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
+                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                /* bringToFront= */ true));
 
         // 4. Verify tab1 is in activity2.
         CriteriaHelper.pollUiThread(
@@ -1191,7 +1192,8 @@ public class ChromeTabbedActivityTest {
                                 activity2.getWindowId(),
                                 List.of(tab2),
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                /* destGroupTabId= */ tab1.getId()));
+                                /* destGroupTabId= */ tab1.getId(),
+                                /* bringToFront= */ true));
 
         // 6. Verify tab2 is in activity2 and merged with tab1.
         CriteriaHelper.pollUiThread(

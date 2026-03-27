@@ -252,9 +252,13 @@ public abstract class MultiInstanceManager {
      * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
      * @param destTabIndex The tab index in the destination window where the tab group will be
      *     positioned. To use the default tab index, set this to {@code TabList.INVALID_TAB_INDEX}.
+     * @param bringToFront Whether the destination window should be brought to the front.
      */
     public void moveTabGroupToWindowByIdChecked(
-            int destWindowId, TabGroupMetadata tabGroupMetadata, int destTabIndex) {
+            int destWindowId,
+            TabGroupMetadata tabGroupMetadata,
+            int destTabIndex,
+            boolean bringToFront) {
         // Not implemented
     }
 

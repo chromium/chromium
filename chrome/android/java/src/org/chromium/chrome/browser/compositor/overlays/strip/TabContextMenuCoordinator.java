@@ -697,7 +697,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                     windowId,
                                     tabs,
                                     /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                    /* destGroupTabId= */ firstTabInGroupTabId);
+                                    /* destGroupTabId= */ firstTabInGroupTabId,
+                                    /* bringToFront= */ true);
                         }
                     };
             result.add(
@@ -810,7 +811,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                                 instanceInfo.instanceId,
                                 tabs,
                                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
+                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                /* bringToFront= */ true));
     }
 
     private List<ListItem> createReorderItems(AnchorInfo anchorInfo, boolean isIncognito) {

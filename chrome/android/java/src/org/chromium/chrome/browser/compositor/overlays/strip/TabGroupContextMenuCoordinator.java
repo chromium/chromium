@@ -557,7 +557,8 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
                                 instanceInfo.instanceId,
                                 tabGroupMetadata,
-                                TabList.INVALID_TAB_INDEX));
+                                TabList.INVALID_TAB_INDEX,
+                                /* bringToFront= */ true));
     }
 
     @Override

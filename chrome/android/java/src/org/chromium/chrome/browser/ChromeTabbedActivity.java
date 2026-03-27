@@ -2971,7 +2971,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         mWindowId,
                         Collections.singletonList(tab),
                         /* destTabIndex= */ 0,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ true);
 
         if (isTabInGroup) RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_DRAGGED_TAB_OPENED_NEW_WINDOW, true);
@@ -3006,7 +3007,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         mWindowId,
                         tabs,
                         /* destTabIndex= */ 0,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ true);
 
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
@@ -3027,7 +3029,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         // The metadata was attached as part of a drag and drop operation, so detach the target
         // group and reparent them to this instance now.
         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                mWindowId, tabGroupMetadata, /* destTabIndex= */ 0);
+                mWindowId, tabGroupMetadata, /* destTabIndex= */ 0, /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 /* isTabGroup= */ true,

@@ -1428,7 +1428,8 @@ public class TabContextMenuCoordinatorUnitTest {
                         INSTANCE_ID_2,
                         Collections.singletonList(mTabOutsideOfGroup),
                         /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ true);
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 

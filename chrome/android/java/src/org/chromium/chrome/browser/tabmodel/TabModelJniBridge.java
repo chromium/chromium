@@ -639,6 +639,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         moveTabToWindow(tab, activity, newIndex);
     }
 
+    // TODO(https://crbug.com/495795228): add `bringToFront` parameter to indicate
+    // if the destination activity should be activated. See MultiInstanceOrchestrator.
     protected abstract void moveTabToWindow(
             @JniType("TabAndroid*") Tab tab, Activity activity, int newIndex);
 
@@ -649,6 +651,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         moveTabGroupToWindow(tabGroupId, activity, newIndex);
     }
 
+    // TODO(https://crbug.com/495795228): add `bringToFront` parameter to indicate
+    // if the destination activity should be activated. See MultiInstanceOrchestrator.
     protected abstract void moveTabGroupToWindow(
             @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
 

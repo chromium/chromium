@@ -698,7 +698,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 .moveTabGroupToWindowByIdChecked(
                         eq(INSTANCE_ID_2),
                         any(TabGroupMetadata.class),
-                        eq(TabList.INVALID_TAB_INDEX));
+                        eq(TabList.INVALID_TAB_INDEX),
+                        eq(true));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
     }
 

@@ -58,9 +58,14 @@ public interface MultiInstanceOrchestrator {
      *     end of the destination tab group. A tab with this id must exist in the destination
      *     window, otherwise this operation will fail. If there is no tab group to move the
      *     specified tabs to, set this to {@code TabList.INVALID_TAB_INDEX}.
+     * @param bringToFront Whether the destination window should be brought to the front.
      */
     void moveTabsToWindowByIdChecked(
-            int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId);
+            int destWindowId,
+            List<Tab> tabs,
+            int destTabIndex,
+            int destGroupTabId,
+            boolean bringToFront);
 
     /**
      * Opens a URL in an existing window or a new window.

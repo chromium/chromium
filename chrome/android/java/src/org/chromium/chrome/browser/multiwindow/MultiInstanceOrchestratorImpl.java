@@ -90,7 +90,11 @@ import java.util.Set;
 
     @Override
     public void moveTabsToWindowByIdChecked(
-            int destWindowId, List<Tab> tabs, int destTabIndex, int destGroupTabId) {
+            int destWindowId,
+            List<Tab> tabs,
+            int destTabIndex,
+            int destGroupTabId,
+            boolean bringToFront) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (tabs.isEmpty()) return;
         assert destTabIndex == TabList.INVALID_TAB_INDEX
@@ -112,7 +116,11 @@ import java.util.Set;
         // tabs into.
         if (destActivity != null) {
             mTabReparentingDelegate.reparentTabsToExistingWindow(
-                    (ChromeTabbedActivity) destActivity, tabs, destTabIndex, destGroupTabId);
+                    (ChromeTabbedActivity) destActivity,
+                    tabs,
+                    destTabIndex,
+                    destGroupTabId,
+                    bringToFront);
         } else {
             Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
             boolean openAdjacently =

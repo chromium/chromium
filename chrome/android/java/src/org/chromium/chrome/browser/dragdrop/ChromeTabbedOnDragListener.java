@@ -173,7 +173,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mMultiInstanceManager.getCurrentInstanceId(),
                         Collections.singletonList(draggedTab),
                         destIndex,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT,
                 /* isTabGroup= */ false,
@@ -210,7 +211,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mMultiInstanceManager.getCurrentInstanceId(),
                         draggedTabs,
                         destIndex,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT, /* isTabGroup= */ false, /* isMultiTab= */ true);
         return true;
@@ -243,7 +245,10 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
         // Reparent the dragged tab group to destination window.
         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                mMultiInstanceManager.getCurrentInstanceId(), tabGroupMetadata, destIndex);
+                mMultiInstanceManager.getCurrentInstanceId(),
+                tabGroupMetadata,
+                destIndex,
+                /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT, /* isTabGroup= */ true, /* isMultiTab= */ false);
         return true;

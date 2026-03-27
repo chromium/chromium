@@ -227,7 +227,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
                                 /* destWindowId= */ NONEXISTENT_INSTANCE_ID,
                                 tabs,
                                 /* destTabIndex= */ 2,
-                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX));
+                                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                                /* bringToFront= */ true));
 
         // destTabIndex and destGroupTabId should not both be specified when moving tabs to an
         // existing window.
@@ -238,7 +239,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
                                 DEST_WINDOW_ID,
                                 tabs,
                                 /* destTabIndex= */ 1,
-                                /* destGroupTabId= */ 2));
+                                /* destGroupTabId= */ 2,
+                                /* bringToFront= */ true));
     }
 
     @Test
@@ -252,12 +254,13 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 destTabIndex,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* bringToFront= */ true);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToExistingWindow(
-                        eq(mTabbedActivity2), eq(tabs), eq(destTabIndex), eq(-1));
+                        eq(mTabbedActivity2), eq(tabs), eq(destTabIndex), eq(-1), eq(true));
     }
 
     @Test
@@ -272,11 +275,13 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                /* destGroupTabId= */ 3);
+                /* destGroupTabId= */ 3,
+                /* bringToFront= */ true);
 
         // Verify.
         verify(mTabReparentingDelegate)
-                .reparentTabsToExistingWindow(eq(mTabbedActivity2), eq(tabs), eq(-1), eq(3));
+                .reparentTabsToExistingWindow(
+                        eq(mTabbedActivity2), eq(tabs), eq(-1), eq(3), eq(true));
     }
 
     @Test
@@ -290,7 +295,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 DEST_WINDOW_ID,
                 tabs,
                 /* destTabIndex= */ 0,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* bringToFront= */ true);
 
         // Verify.
         verify(mTabReparentingDelegate)

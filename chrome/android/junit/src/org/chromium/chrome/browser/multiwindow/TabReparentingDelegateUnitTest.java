@@ -176,7 +176,8 @@ public class TabReparentingDelegateUnitTest {
                 mDestActivity,
                 tabs,
                 /* destTabIndex= */ 2,
-                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                /* bringToFront= */ true);
 
         // Verify that the reparenting task is initiated.
         var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -205,7 +206,8 @@ public class TabReparentingDelegateUnitTest {
                 mDestActivity,
                 tabs,
                 /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                /* destGroupTabId= */ 3);
+                /* destGroupTabId= */ 3,
+                /* bringToFront= */ true);
 
         // Verify that the reparenting task is initiated.
         var setupIntentCaptor = ArgumentCaptor.forClass(Intent.class);
@@ -233,7 +235,8 @@ public class TabReparentingDelegateUnitTest {
                                 mDestActivity,
                                 List.of(mTab1, mTab2),
                                 /* destTabIndex= */ 2,
-                                /* destGroupTabId= */ 3));
+                                /* destGroupTabId= */ 3,
+                                /* bringToFront= */ true));
     }
 
     @Test
@@ -348,7 +351,7 @@ public class TabReparentingDelegateUnitTest {
 
         // Act.
         mDelegate.reparentTabGroupToExistingWindow(
-                mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3);
+                mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
 
         if (pauseResumeTabGroupSyncService) {
             // Verify that we pause the TabGroupSyncService to stop observing local changes.

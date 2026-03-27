@@ -64,7 +64,8 @@ import java.util.List;
             ChromeTabbedActivity targetActivity,
             List<Tab> tabs,
             int destTabIndex,
-            int destGroupTabId) {
+            int destGroupTabId,
+            boolean bringToFront) {
         if (tabs.isEmpty()) return;
         Context context = tabs.get(0).getContext();
         Intent intent =
@@ -73,7 +74,9 @@ import java.util.List;
         ReparentingTabsTask.from(tabs).setupIntent(intent, /* finalizeCallback= */ null);
 
         targetActivity.onNewIntent(intent);
-        ApiCompatibilityUtils.moveTaskToFront(targetActivity, targetActivity.getTaskId(), 0);
+        if (bringToFront) {
+            ApiCompatibilityUtils.moveTaskToFront(targetActivity, targetActivity.getTaskId(), 0);
+        }
     }
 
     /* package */ void reparentTabGroupToNewWindow(
@@ -122,7 +125,8 @@ import java.util.List;
     /* package */ void reparentTabGroupToExistingWindow(
             ChromeTabbedActivity targetActivity,
             TabGroupMetadata tabGroupMetadata,
-            int destTabIndex) {
+            int destTabIndex,
+            boolean bringToFront) {
         long startTime = SystemClock.elapsedRealtime();
 
         Activity sourceActivity = MultiWindowUtils.getActivityById(tabGroupMetadata.sourceWindowId);
@@ -156,15 +160,20 @@ import java.util.List;
             tabPersistentStore.resumeSaveTabList(
                     () -> {
                         targetActivity.onNewIntent(intent);
-                        ApiCompatibilityUtils.moveTaskToFront(
-                                targetActivity, targetActivity.getTaskId(), 0);
+                        if (bringToFront) {
+                            ApiCompatibilityUtils.moveTaskToFront(
+                                    targetActivity, targetActivity.getTaskId(), 0);
+                        }
                         // Re-enable sync service observation after re-parenting is completed to
                         // resume normal sync behavior.
                         resumeSyncService(tabGroupMetadata);
                     });
         } else {
             targetActivity.onNewIntent(intent);
-            ApiCompatibilityUtils.moveTaskToFront(targetActivity, targetActivity.getTaskId(), 0);
+            if (bringToFront) {
+                ApiCompatibilityUtils.moveTaskToFront(
+                        targetActivity, targetActivity.getTaskId(), 0);
+            }
         }
     }
 

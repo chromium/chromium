@@ -361,7 +361,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         destWindowId,
                         Collections.singletonList(tab),
                         newIndex,
-                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                        /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                        /* bringToFront= */ false);
     }
 
     @Override
@@ -396,7 +397,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         assert mMultiInstanceManager != null;
         int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
         mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                destWindowId, tabGroupMetadata, newIndex);
+                destWindowId, tabGroupMetadata, newIndex, /* bringToFront= */ false);
     }
 
     /**

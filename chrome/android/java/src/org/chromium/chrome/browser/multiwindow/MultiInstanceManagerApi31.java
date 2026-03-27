@@ -257,7 +257,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                             instanceInfo.instanceId,
                             tabs,
                             /* destTabIndex= */ TabList.INVALID_TAB_INDEX,
-                            /* destGroupTabId= */ TabList.INVALID_TAB_INDEX);
+                            /* destGroupTabId= */ TabList.INVALID_TAB_INDEX,
+                            /* bringToFront= */ true);
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
@@ -1217,11 +1218,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
 
     @Override
     public void moveTabGroupToWindowByIdChecked(
-            int destWindowId, TabGroupMetadata tabGroupMetadata, int destTabIndex) {
+            int destWindowId,
+            TabGroupMetadata tabGroupMetadata,
+            int destTabIndex,
+            boolean bringToFront) {
         Activity destActivity = MultiWindowUtils.getActivityById(destWindowId);
         if (destActivity != null) {
             mTabReparentingDelegate.reparentTabGroupToExistingWindow(
-                    (ChromeTabbedActivity) destActivity, tabGroupMetadata, destTabIndex);
+                    (ChromeTabbedActivity) destActivity,
+                    tabGroupMetadata,
+                    destTabIndex,
+                    bringToFront);
         } else {
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
                     tabGroupMetadata,
@@ -1252,7 +1259,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         showTargetSelectorDialog(
                 (instanceInfo) -> {
                     moveTabGroupToWindowByIdChecked(
-                            instanceInfo.instanceId, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
+                            instanceInfo.instanceId,
+                            tabGroupMetadata,
+                            TabList.INVALID_TAB_INDEX,
+                            /* bringToFront= */ true);
 
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
