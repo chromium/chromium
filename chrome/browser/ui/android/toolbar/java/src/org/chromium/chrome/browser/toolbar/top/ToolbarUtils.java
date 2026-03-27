@@ -45,6 +45,7 @@ public class ToolbarUtils {
                 ToolbarComponentId.FORWARD,
                 ToolbarComponentId.HOME,
                 ToolbarComponentId.EXTENSIONS_MENU_BUTTON,
+                ToolbarComponentId.EXTENSIONS_REQUEST_ACCESS_BUTTON,
                 ToolbarComponentId.EXTENSION_ACTION_LIST,
                 ToolbarComponentId.OMNIBOX_BOOKMARK,
                 ToolbarComponentId.OMNIBOX_CHIP_COLLAPSED,
@@ -83,6 +84,7 @@ public class ToolbarUtils {
         ToolbarComponentId.INCOGNITO_INDICATOR,
         ToolbarComponentId.POPPED_EXTENSION_ACTION,
         ToolbarComponentId.EXTENSIONS_MENU_BUTTON,
+        ToolbarComponentId.EXTENSIONS_REQUEST_ACCESS_BUTTON,
         ToolbarComponentId.EXTENSION_ACTION_LIST,
         ToolbarComponentId.TAB_SWITCHER,
         ToolbarComponentId.MENU,
@@ -113,7 +115,8 @@ public class ToolbarUtils {
         int MENU = 18;
         int PADDING = 19;
         int SIGNIN_BUTTON = 20;
-        int COUNT = 21;
+        int EXTENSIONS_REQUEST_ACCESS_BUTTON = 21;
+        int COUNT = 22;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/toolbar/java/res/layout/toolbar_tablet.xml:toolbar_tablet_components|//chrome/browser/ui/android/omnibox/java/res/layout/url_action_container.xml:toolbar_tablet_components)

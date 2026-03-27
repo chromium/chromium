@@ -449,6 +449,8 @@ public class ToolbarTablet extends ToolbarLayout {
                 mExtensionToolbarCoordinator.getPoppedOutActionWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.EXTENSIONS_MENU_BUTTON] =
                 mExtensionToolbarCoordinator.getMenuButtonWidthConsumer();
+        mToolbarWidthConsumers[ToolbarComponentId.EXTENSIONS_REQUEST_ACCESS_BUTTON] =
+                mExtensionToolbarCoordinator.getRequestAccessButtonWidthConsumer();
         mToolbarWidthConsumers[ToolbarComponentId.EXTENSION_ACTION_LIST] =
                 mExtensionToolbarCoordinator.getActionListWidthConsumer();
     }

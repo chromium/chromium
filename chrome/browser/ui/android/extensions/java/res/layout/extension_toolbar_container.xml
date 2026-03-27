@@ -6,41 +6,43 @@ found in the LICENSE file.
 -->
 
 <LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
     android:layout_height="?attr/toolbarButtonHeight"
     android:layout_marginVertical="?attr/toolbarButtonMarginVertical"
-    android:orientation="horizontal">
+    android:layout_width="wrap_content"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <org.chromium.chrome.browser.toolbar.extensions.ExtensionActionListRecyclerView
         android:id="@+id/extension_action_list"
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
+        android:layout_gravity="end"
         android:layout_height="match_parent"
-        android:layout_gravity="end"/>
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"/>
 
-    <org.chromium.ui.widget.ButtonCompat
+    <TextView
+        android:background="@drawable/extension_request_access_button_bg"
+        android:gravity="center"
         android:id="@+id/extensions_request_access_button"
-        style="@style/ToolbarHoverableButton"
-        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:layout_marginEnd="@dimen/extensions_request_access_button_margin_end"
+        android:layout_width="wrap_content"
+        android:paddingEnd="@dimen/extensions_request_access_button_padding"
+        android:paddingStart="@dimen/extensions_request_access_button_padding"
+        android:textAppearance="@style/TextAppearance.ExtensionsRequestAccessButton"
+        android:visibility="gone"
+        tools:text="Allow 1?" />
 
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/extensions_menu_button"
-        style="@style/ToolbarHoverableButton"
+        android:layout_height="match_parent"
+        android:layout_width="@dimen/toolbar_button_width"
         android:src="@drawable/chrome_extension"
+        android:tooltipText="@string/accessibility_btn_extensions"
         app:menuVerticalOverlapAnchor="false"
         app:tint="@color/default_icon_color_tint_list"
-        android:tooltipText="@string/accessibility_btn_extensions"
-        android:layout_height="match_parent"
+        style="@style/ToolbarButton"
         />
-
-    <com.google.android.material.divider.MaterialDivider
-        android:id="@+id/extensions_divider"
-        android:layout_width="@dimen/toolbar_divider_width"
-        android:layout_height="@dimen/toolbar_divider_height"
-        android:layout_gravity="center_vertical"/>
 
 </LinearLayout>

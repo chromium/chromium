@@ -85,7 +85,8 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
-            ExtensionsToolbarBridge extensionsToolbarBridge) {
+            ExtensionsToolbarBridge extensionsToolbarBridge,
+            PropertyModel model) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mProfile = profile;
@@ -149,7 +150,8 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mThemeColorProvider.addTintObserver(mTintObserver);
         mExtensionsToolbarBridge.addObserver(this);
 
-        mPropertyModel = createMenuPropertyModel();
+        mPropertyModel = model;
+        setupMenuPropertyModel();
 
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(
@@ -219,47 +221,46 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
         mExtensionsMenuButton.setBackgroundResource(backgroundResource);
     }
 
-    private PropertyModel createMenuPropertyModel() {
-        return new PropertyModel.Builder(ExtensionsMenuProperties.ALL_KEYS)
-                .with(
-                        ExtensionsMenuProperties.CLOSE_CLICK_LISTENER,
-                        (view) -> mExtensionsMenuButton.dismiss())
-                .with(
-                        ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER,
-                        (view) -> openUrlFromMenu(UrlConstants.CHROME_WEBSTORE_URL))
-                .with(
-                        ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER,
-                        (view) -> openUrlFromMenu(UrlConstants.CHROME_EXTENSIONS_URL))
-                .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true)
-                .with(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true)
-                .with(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "")
-                .with(
-                        ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
-                        org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes
-                                .OptionalSectionType.NONE)
-                .with(ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new java.util.ArrayList<>())
-                .with(
-                        ExtensionsMenuProperties.ALLOW_EXTENSION_CLICK_LISTENER,
-                        (extensionId) -> {
-                            if (mMediator != null) {
-                                mMediator.onAllowExtensionClicked(extensionId);
-                            }
-                        })
-                .with(
-                        ExtensionsMenuProperties.DISMISS_EXTENSION_CLICK_LISTENER,
-                        (extensionId) -> {
-                            if (mMediator != null) {
-                                mMediator.onDismissExtensionClicked(extensionId);
-                            }
-                        })
-                .with(
-                        ExtensionsMenuProperties.RELOAD_CLICK_LISTENER,
-                        (view) -> {
-                            if (mMediator != null) {
-                                mMediator.onReloadPageButtonClicked();
-                            }
-                        })
-                .build();
+    private void setupMenuPropertyModel() {
+        mPropertyModel.set(
+                ExtensionsMenuProperties.CLOSE_CLICK_LISTENER,
+                (view) -> mExtensionsMenuButton.dismiss());
+        mPropertyModel.set(
+                ExtensionsMenuProperties.DISCOVER_EXTENSIONS_CLICK_LISTENER,
+                (view) -> openUrlFromMenu(UrlConstants.CHROME_WEBSTORE_URL));
+        mPropertyModel.set(
+                ExtensionsMenuProperties.MANAGE_EXTENSIONS_CLICK_LISTENER,
+                (view) -> openUrlFromMenu(UrlConstants.CHROME_EXTENSIONS_URL));
+        mPropertyModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
+        mPropertyModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
+        mPropertyModel.set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "");
+        mPropertyModel.set(
+                ExtensionsMenuProperties.OPTIONAL_SECTION_TYPE,
+                org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes.OptionalSectionType
+                        .NONE);
+        mPropertyModel.set(
+                ExtensionsMenuProperties.HOST_ACCESS_REQUESTS, new java.util.ArrayList<>());
+        mPropertyModel.set(
+                ExtensionsMenuProperties.ALLOW_EXTENSION_CLICK_LISTENER,
+                (extensionId) -> {
+                    if (mMediator != null) {
+                        mMediator.onAllowExtensionClicked(extensionId);
+                    }
+                });
+        mPropertyModel.set(
+                ExtensionsMenuProperties.DISMISS_EXTENSION_CLICK_LISTENER,
+                (extensionId) -> {
+                    if (mMediator != null) {
+                        mMediator.onDismissExtensionClicked(extensionId);
+                    }
+                });
+        mPropertyModel.set(
+                ExtensionsMenuProperties.RELOAD_CLICK_LISTENER,
+                (view) -> {
+                    if (mMediator != null) {
+                        mMediator.onReloadPageButtonClicked();
+                    }
+                });
     }
 
     private static void setUpExtensionsRecyclerView(

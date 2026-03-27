@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import android.view.View;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for ExtensionAccessControlButtonMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,7 +36,6 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
-    @Mock private View mRequestAccessButton;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
@@ -44,6 +44,7 @@ public class ExtensionAccessControlButtonMediatorTest {
     @Captor private ArgumentCaptor<ExtensionsToolbarBridge.Observer> mToolbarObserverCaptor;
 
     private ExtensionAccessControlButtonMediator mMediator;
+    private PropertyModel mModel;
 
     @Before
     public void setUp() {
@@ -53,12 +54,17 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
                 .thenReturn(new RequestAccessButtonParams(new String[0], ""));
 
+        mModel =
+                new PropertyModel.Builder(
+                                PropertyModel.concatKeys(
+                                        ExtensionsMenuProperties.ALL_KEYS,
+                                        ExtensionsToolbarProperties.ALL_KEYS))
+                        .build();
+
         mMediator =
                 new ExtensionAccessControlButtonMediator(
-                        mCurrentTabSupplier, mExtensionsToolbarBridge, mRequestAccessButton);
+                        mModel, mCurrentTabSupplier, mExtensionsToolbarBridge, (v) -> {});
         verify(mExtensionsToolbarBridge).addObserver(mToolbarObserverCaptor.capture());
-
-        clearInvocations(mRequestAccessButton);
     }
 
     @Test
@@ -74,7 +80,7 @@ public class ExtensionAccessControlButtonMediatorTest {
                 .thenReturn(paramsNoRequests);
 
         observer.onRequestAccessButtonParamsChanged();
-        verify(mRequestAccessButton).setVisibility(View.GONE);
+        assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
 
         // Has requests.
         String tooltip = "Some tooltip";
@@ -84,7 +90,38 @@ public class ExtensionAccessControlButtonMediatorTest {
                 .thenReturn(paramsWithRequests);
 
         observer.onRequestAccessButtonParamsChanged();
-        verify(mRequestAccessButton).setVisibility(View.VISIBLE);
-        verify(mRequestAccessButton).setContentDescription(tooltip);
+        assertTrue(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+        assertEquals(
+                tooltip,
+                mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
+        assertEquals(1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT));
+    }
+
+    @Test
+    public void testRequestAccessButtonVisibility_withWebContents() {
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+
+        // No requests.
+        RequestAccessButtonParams paramsNoRequests =
+                new RequestAccessButtonParams(new String[0], "");
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
+                .thenReturn(paramsNoRequests);
+
+        observer.onActiveWebContentsChanged(mWebContents);
+        assertFalse(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+
+        // Has requests.
+        String tooltip = "Some tooltip";
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, tooltip);
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
+                .thenReturn(paramsWithRequests);
+
+        observer.onActiveWebContentsChanged(mWebContents);
+        assertTrue(mModel.get(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE));
+        assertEquals(
+                tooltip,
+                mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
+        assertEquals(1, mModel.get(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT));
     }
 }

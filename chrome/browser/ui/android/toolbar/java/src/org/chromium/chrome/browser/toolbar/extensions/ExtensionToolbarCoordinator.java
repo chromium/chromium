@@ -123,6 +123,9 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
     /** Returns the {@link ToolbarWidthConsumer} for the extensions menu icon. */
     ToolbarWidthConsumer getMenuButtonWidthConsumer();
 
+    /** Returns the {@link ToolbarWidthConsumer} for the request access button. */
+    ToolbarWidthConsumer getRequestAccessButtonWidthConsumer();
+
     /** Returns the {@link ToolbarWidthConsumer} for the action list container. */
     ToolbarWidthConsumer getActionListWidthConsumer();
 }

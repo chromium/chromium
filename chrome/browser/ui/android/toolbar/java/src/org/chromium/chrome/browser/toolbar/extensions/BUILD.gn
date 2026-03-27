@@ -18,6 +18,7 @@ android_library("java") {
   sources = [
     "ExtensionAccessControlButtonCoordinator.java",
     "ExtensionAccessControlButtonMediator.java",
+    "ExtensionAccessControlButtonViewBinder.java",
     "ExtensionActionButtonProperties.java",
     "ExtensionActionButtonViewBinder.java",
     "ExtensionActionContextMenuUtils.java",
@@ -29,6 +30,7 @@ android_library("java") {
     "ExtensionActionListRecyclerView.java",
     "ExtensionActionPopup.java",
     "ExtensionToolbarCoordinatorImpl.java",
+    "ExtensionsMenuButtonViewBinder.java",
     "ExtensionsMenuCoordinator.java",
     "ExtensionsMenuItemProperties.java",
     "ExtensionsMenuItemViewBinder.java",
@@ -36,6 +38,7 @@ android_library("java") {
     "ExtensionsMenuProperties.java",
     "ExtensionsMenuViewBinder.java",
     "ExtensionsToolbarDragTouchHandler.java",
+    "ExtensionsToolbarProperties.java",
   ]
   deps = [
     "//base:base_java",

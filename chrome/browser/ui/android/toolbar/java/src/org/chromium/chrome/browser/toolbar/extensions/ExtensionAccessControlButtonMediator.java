@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.extensions;
 
-import android.view.View;
-
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -15,6 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Mediator for the request access button. This class is responsible for listening to changes in the
@@ -25,17 +24,20 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
     private final ExtensionsToolbarBridge.Observer mToolbarObserver = new ToolbarObserver();
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
-    private final View mRequestAccessButton;
+    private final PropertyModel mModel;
+    private final Callback<Boolean> mVisibilityObserver;
     private final Callback<@Nullable Tab> mTabSupplierObserver =
             (tab) -> refreshRequestAccessButton();
 
     public ExtensionAccessControlButtonMediator(
+            PropertyModel model,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionsToolbarBridge extensionsToolbarBridge,
-            View requestAccessButton) {
+            Callback<Boolean> visibilityObserver) {
         mCurrentTabSupplier = currentTabSupplier;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
-        mRequestAccessButton = requestAccessButton;
+        mModel = model;
+        mVisibilityObserver = visibilityObserver;
 
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
         mCurrentTabSupplier.addSyncObserverAndPostIfNonNull(mTabSupplierObserver);
@@ -48,7 +50,8 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         // We should handle this at the extensions toolbar level.
         WebContents webContents = currentTab != null ? currentTab.getWebContents() : null;
         if (webContents == null) {
-            mRequestAccessButton.setVisibility(View.GONE);
+            mModel.set(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE, false);
+            mVisibilityObserver.onResult(false);
             return;
         }
 
@@ -59,10 +62,17 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
         RequestAccessButtonParams params =
                 mExtensionsToolbarBridge.getRequestAccessButtonParams(webContents);
         if (params.getExtensionIds().length > 0) {
-            mRequestAccessButton.setVisibility(View.VISIBLE);
-            mRequestAccessButton.setContentDescription(params.getTooltipText());
+            mModel.set(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE, true);
+            mModel.set(
+                    ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION,
+                    params.getTooltipText());
+
+            int count = params.getExtensionIds().length;
+            mModel.set(ExtensionsToolbarProperties.REQUEST_ACCESS_BUTTON_TEXT, count);
+            mVisibilityObserver.onResult(true);
         } else {
-            mRequestAccessButton.setVisibility(View.GONE);
+            mModel.set(ExtensionsToolbarProperties.IS_REQUEST_ACCESS_BUTTON_VISIBLE, false);
+            mVisibilityObserver.onResult(false);
         }
     }
 
