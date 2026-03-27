@@ -44,7 +44,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -208,7 +207,8 @@ public class NewTabPageSigninPromoTest {
                 + ":seamless-signin-promo-type/twoButtons"
                 + "/seamless-signin-string-type/signinButton"
     })
-    @DisabledTest(message = "crbug.com/483438567")
+    // TODO(crbug.com/483438567): Test is flaky on desktop bots.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
     public void testSeamlessSigninFlow_WithFinalSnackbarUndoSignin() {
         mSigninTestRule.addAccount(TestAccounts.AADC_ADULT_ACCOUNT);
         openNewTabPage();
