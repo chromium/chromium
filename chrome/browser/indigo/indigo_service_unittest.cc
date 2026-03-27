@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -65,7 +66,8 @@ class IndigoServiceTest : public testing::Test {
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   TestingPrefServiceSimple prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -109,6 +111,18 @@ TEST_F(IndigoServiceTest, PolicyChangeTriggersUpdate) {
 
   SetPolicySettings(prefs::Policy::kDisallowed);
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kDisabledByPolicy));
+}
+
+TEST_F(IndigoServiceTest, AnchoredMessageTrigger) {
+  CreateService();
+
+  EXPECT_TRUE(service_->CanShowAnchoredMessage());
+  service_->AnchoredMessageShown();
+  EXPECT_FALSE(service_->CanShowAnchoredMessage());
+
+  task_environment_.FastForwardBy(
+      features::kIndigoAnchoredMessageResetDuration.Get());
+  EXPECT_TRUE(service_->CanShowAnchoredMessage());
 }
 
 }  // namespace indigo

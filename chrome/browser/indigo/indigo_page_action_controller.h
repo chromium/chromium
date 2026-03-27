@@ -33,6 +33,7 @@ class TabInterface;
 namespace indigo {
 
 class IndigoOnboardingDialog;
+class IndigoService;
 
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
@@ -88,6 +89,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // Owned by the profile, which outlives this object.
   const raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_;
+
+  // Owned by the profile, which outlives this object.
+  const raw_ptr<IndigoService> indigo_service_;
 
   // The optimization guide's opinion about whether this page is eligible for
   // Indigo (or kUnknown if not determined).

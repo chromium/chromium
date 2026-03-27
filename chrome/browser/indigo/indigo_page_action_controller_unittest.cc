@@ -170,11 +170,10 @@ class IndigoPageActionControllerTest : public testing::Test {
 TEST_F(IndigoPageActionControllerTest, ShowsWhenOptimizationGuideReturnsTrue) {
   CreateController();
 
-  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
-
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+  EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       url, tab_interface_->GetContents());
@@ -189,7 +188,6 @@ TEST_F(IndigoPageActionControllerTest, HidesWhenOptimizationGuideReturnsFalse) {
   ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
 
   EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
 
   auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
       url1, tab_interface_->GetContents());
@@ -214,7 +212,6 @@ TEST_F(IndigoPageActionControllerTest, UpdatesOnSameDocumentNavigation) {
   ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
 
   EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
 
   auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
       url1, tab_interface_->GetContents());
@@ -239,7 +236,6 @@ TEST_F(IndigoPageActionControllerTest, IgnoresFragmentOnlyNavigation) {
   ExpectOptimizationGuideDecision(url1, OptimizationGuideDecision::kTrue);
 
   EXPECT_CALL(*page_action_controller_, Show(kActionIndigo));
-  EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
 
   auto navigation1 = content::NavigationSimulator::CreateBrowserInitiated(
       url1, tab_interface_->GetContents());
@@ -378,6 +374,37 @@ TEST_F(IndigoPageActionControllerTest, UpdatesWhenAccountChanges) {
   identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
       "user2@example.com", signin::ConsentLevel::kSignin);
   SetModelExecutionCapability(true);
+}
+
+TEST_F(IndigoPageActionControllerTest, ShowsAnchoredMessageThenSuggestionChip) {
+  CreateController();
+
+  // First navigation: show an anchored message.
+  {
+    GURL url("https://example.com/1");
+    ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(kActionIndigo));
+    EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(_, _)).Times(0);
+
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        url, tab_interface_->GetContents());
+    navigation->Commit();
+  }
+
+  // Second navigation (soon after): show a suggestion chip instead of an
+  // anchored message.
+  {
+    GURL url("https://example.com/2");
+    ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+
+    EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_)).Times(0);
+    EXPECT_CALL(*page_action_controller_, ShowSuggestionChip(kActionIndigo, _));
+
+    auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+        url, tab_interface_->GetContents());
+    navigation->Commit();
+  }
 }
 
 }  // namespace

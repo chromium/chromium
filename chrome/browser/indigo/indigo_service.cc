@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -58,6 +59,16 @@ base::CallbackListSubscription
 IndigoService::RegisterLocalEligibilityChangedCallback(
     LocalEligibilityChangedCallback callback) {
   return local_eligibility_callback_list_.Add(std::move(callback));
+}
+
+bool IndigoService::CanShowAnchoredMessage() const {
+  return base::TimeTicks::Now() >= anchored_message_not_before_;
+}
+
+void IndigoService::AnchoredMessageShown() {
+  anchored_message_not_before_ =
+      base::TimeTicks::Now() +
+      features::kIndigoAnchoredMessageResetDuration.Get();
 }
 
 LocalEligibility IndigoService::ComputeLocalEligibility() const {

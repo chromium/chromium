@@ -24,12 +24,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -51,6 +53,9 @@ IndigoPageActionController::IndigoPageActionController(
       optimization_guide_(OptimizationGuideKeyedServiceFactory::GetForProfile(
           Profile::FromBrowserContext(
               tab_interface.GetContents()->GetBrowserContext()))),
+      indigo_service_(
+          IndigoServiceFactory::GetForProfile(Profile::FromBrowserContext(
+              tab_interface.GetContents()->GetBrowserContext()))),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
@@ -59,13 +64,12 @@ IndigoPageActionController::IndigoPageActionController(
         {optimization_guide::proto::OptimizationType::INDIGO});
   }
 
-  Profile* profile = Profile::FromBrowserContext(
-      tab_interface.GetContents()->GetBrowserContext());
-  if (IndigoService* service = IndigoServiceFactory::GetForProfile(profile)) {
+  if (indigo_service_) {
     indigo_service_subscription_ =
-        service->RegisterLocalEligibilityChangedCallback(base::BindRepeating(
-            &IndigoPageActionController::OnLocalEligibilityChanged,
-            base::Unretained(this)));
+        indigo_service_->RegisterLocalEligibilityChangedCallback(
+            base::BindRepeating(
+                &IndigoPageActionController::OnLocalEligibilityChanged,
+                base::Unretained(this)));
   }
 
   UpdateEntryPointsState();
@@ -211,23 +215,33 @@ void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
 void IndigoPageActionController::UpdateEntryPointsState() {
   CHECK(base::FeatureList::IsEnabled(features::kIndigo));
 
-  Profile* profile =
-      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
-  IndigoService* service = IndigoServiceFactory::GetForProfile(profile);
+  if (!indigo_service_) {
+    return;
+  }
 
-  const bool should_show =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch) ||
-      (optimization_guide_decision_ ==
-           optimization_guide::OptimizationGuideDecision::kTrue &&
-       service && service->IsLocallyEligible());
+  const bool forced =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kForceIndigoSwitch);
+  const bool eligible =
+      optimization_guide_decision_ ==
+          optimization_guide::OptimizationGuideDecision::kTrue &&
+      indigo_service_->IsLocallyEligible();
+
+  const bool should_show = forced || eligible;
   if (should_show == is_shown_) {
     return;
   }
 
   if (should_show) {
     page_action_controller_->Show(kActionIndigo);
-    page_action_controller_->ShowSuggestionChip(kActionIndigo);
-    base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
+    if (indigo_service_->CanShowAnchoredMessage()) {
+      page_action_controller_->SetAnchoredMessageText(
+          kActionIndigo, l10n_util::GetStringUTF16(
+                             IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
+      page_action_controller_->ShowAnchoredMessage(kActionIndigo);
+      indigo_service_->AnchoredMessageShown();
+    } else {
+      page_action_controller_->ShowSuggestionChip(kActionIndigo);
+    }
   } else {
     page_action_controller_->Hide(kActionIndigo);
   }

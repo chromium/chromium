@@ -3266,6 +3266,9 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_INDIGO_ENTRYPOINT_CHIP_TOOLTIP_TEXT" desc="The tooltip text of the Indigo entry point chip in the omnibox in the hover state." translateable="false">
         Indigo tooltip text
       </message>
+      <message name="IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT" desc="The text shown in the anchored message bubble for the Indigo page action." translateable="false">
+        Indigo is available for this page
+      </message>
     </messages>
   </release>
 </grit>

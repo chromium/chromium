@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -54,6 +55,12 @@ class IndigoService : public KeyedService,
   base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
       LocalEligibilityChangedCallback callback);
 
+  // Anchored messages are rate-limited to reduce user fatigue. Clients should
+  // use `CanShowAnchoredMessage` to check eligibility before displaying an
+  // anchored message, and call `AnchoredMessageShown` when they do.
+  bool CanShowAnchoredMessage() const;
+  void AnchoredMessageShown();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -78,6 +85,9 @@ class IndigoService : public KeyedService,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  // The earliest time the anchored message can be shown again.
+  base::TimeTicks anchored_message_not_before_;
 };
 
 }  // namespace indigo
