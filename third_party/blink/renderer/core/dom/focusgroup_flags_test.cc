@@ -134,7 +134,9 @@ TEST_F(FocusgroupFlagsTest, RedundantInlineBlockGeneratesWarning) {
       ParseFocusgroup(element, AtomicString("radiogroup inline block"));
 
   EXPECT_EQ(result.behavior, FocusgroupBehavior::kRadiogroup);
-  EXPECT_EQ(result.flags, FocusgroupFlags::kInline | FocusgroupFlags::kBlock);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                              FocusgroupFlags::kWrapInline |
+                              FocusgroupFlags::kWrapBlock);
   auto messages = CopyConsoleMessages();
   ASSERT_GE(messages.size(), 1u);
   EXPECT_TRUE(messages[0].contains("redundant"));
@@ -358,30 +360,32 @@ TEST_F(FocusgroupFlagsTest, MenubarDefaults) {
             FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock);
 }
 
-TEST_F(FocusgroupFlagsTest, RadiogroupNoDefaults) {
+TEST_F(FocusgroupFlagsTest, RadiogroupDefaultsWrap) {
   ScopedFocusgroupForTest focusgroup_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);
 
-  // Radiogroup has no defaults; both axes, no wrap.
+  // Radiogroup defaults to wrap (both axes, wrap in both).
   ClearConsoleMessages();
   FocusgroupData result = ParseFocusgroup(element, AtomicString("radiogroup"));
   EXPECT_EQ(result.behavior, FocusgroupBehavior::kRadiogroup);
-  EXPECT_EQ(result.flags, FocusgroupFlags::kInline | FocusgroupFlags::kBlock);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kInline | FocusgroupFlags::kBlock |
+                              FocusgroupFlags::kWrapInline |
+                              FocusgroupFlags::kWrapBlock);
 }
 
-TEST_F(FocusgroupFlagsTest, ListboxNoDefaults) {
+TEST_F(FocusgroupFlagsTest, ListboxDefaultsBlock) {
   ScopedFocusgroupForTest focusgroup_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   GetDocument().body()->appendChild(element);
 
-  // Listbox has no defaults; both axes, no wrap.
+  // Listbox defaults to block axis only, no wrap.
   ClearConsoleMessages();
   FocusgroupData result = ParseFocusgroup(element, AtomicString("listbox"));
   EXPECT_EQ(result.behavior, FocusgroupBehavior::kListbox);
-  EXPECT_EQ(result.flags, FocusgroupFlags::kInline | FocusgroupFlags::kBlock);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kBlock);
 }
 
 TEST_F(FocusgroupFlagsTest, ValidTokenListStringIncludesNowrap) {
