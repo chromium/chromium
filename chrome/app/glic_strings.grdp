@@ -315,6 +315,9 @@
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_TITLE" desc="Title for the sites and accounts section on the Gemini web login permissions page.">
     Sites and accounts
   </message>
+  <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_OFFLINE_WARNING" desc="Warning message shown at the top of the Gemini web login permissions page when the user is offline.">
+    You’re offline. Check your internet connection to manage sites Gemini can sign you in to.
+  </message>
   <message name="IDS_SETTINGS_GLIC_LOGIN_PERMISSIONS_PAGE_DESCRIPTION" desc="Description for the sites and accounts section on the Gemini web login permissions page.">
     You've allowed Gemini to automatically sign you in to these sites and apps using your accounts
   </message>

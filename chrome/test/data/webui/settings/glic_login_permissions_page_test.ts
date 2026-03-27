@@ -6,9 +6,9 @@ import 'chrome://settings/settings.js';
 
 import type {SettingsGlicLoginPermissionsPageElement} from 'chrome://settings/lazy_load.js';
 import {GlicBrowserProxyImpl} from 'chrome://settings/settings.js';
-import {assertEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 
@@ -99,5 +99,27 @@ suite('GlicLoginPermissionsPage', function() {
     await whenClose;
     assertNull(
         page.shadowRoot!.querySelector('settings-simple-confirmation-dialog'));
+  });
+
+  test('offline warning is shown', async () => {
+    // Online by default.
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+
+    const whenOffline = eventToPromise('offline', window);
+    window.dispatchEvent(new Event('offline'));
+    await whenOffline;
+
+    assertTrue(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+
+    const whenOnline = eventToPromise('online', window);
+    window.dispatchEvent(new Event('online'));
+    await whenOnline;
+
+    assertFalse(isVisible(page.shadowRoot!.querySelector('#offlineWarning')));
+    const loginPermissionsList =
+        page.shadowRoot!.querySelector('#actorLoginPermissionsList');
+    assertTrue(!!loginPermissionsList);
+    assertEquals(
+        1, page.shadowRoot!.querySelectorAll('.permission-item').length);
   });
 });

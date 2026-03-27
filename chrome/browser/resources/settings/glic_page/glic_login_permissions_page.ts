@@ -41,6 +41,11 @@ export class SettingsGlicLoginPermissionsPageElement extends
         value: () => [],
       },
 
+      isOnline_: {
+        type: Boolean,
+        value: () => navigator.onLine,
+      },
+
       selectedPermissionToRemove_: {
         type: Object,
         value: null,
@@ -51,6 +56,9 @@ export class SettingsGlicLoginPermissionsPageElement extends
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
   declare private actorLoginPermissions_: LoginPermission[];
   declare private selectedPermissionToRemove_: LoginPermission|null;
+  declare private isOnline_: boolean;
+  private boundOnOnline_ = () => this.isOnline_ = true;
+  private boundOnOffline_ = () => this.isOnline_ = false;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -59,9 +67,18 @@ export class SettingsGlicLoginPermissionsPageElement extends
           this.actorLoginPermissions_ = permissions;
         });
 
+    window.addEventListener('online', this.boundOnOnline_);
+    window.addEventListener('offline', this.boundOnOffline_);
+
     this.browserProxy_.getActorLoginPermissions().then(permissions => {
       this.actorLoginPermissions_ = permissions;
     });
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('online', this.boundOnOnline_);
+    window.removeEventListener('offline', this.boundOnOffline_);
   }
 
   private onRemoveActorLoginPermissionClick_(

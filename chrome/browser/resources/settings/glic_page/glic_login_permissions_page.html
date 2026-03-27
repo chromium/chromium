@@ -70,26 +70,33 @@
     </div>
   </div>
   <div id="actorLoginPermissionsList" class="section">
-    <div class="no-sites cr-secondary-text"
-        hidden="[[actorLoginPermissions_.length]]">
-      $i18n{glicLoginPermissionsNoSites}
-    </div>
-    <template is="dom-repeat" items="[[actorLoginPermissions_]]">
-      <div class="flex-centered">
-        <site-favicon class="favicon" url="[[item.signonRealm]]">
-        </site-favicon>
-        <div class="permission-item">
-          <div class="url-column">[[item.displayName]]</div>
-          <div class="username-column">[[item.username]]</div>
-          <cr-icon-button
-              class="icon-clear"
-              on-click="onRemoveActorLoginPermissionClick_"
-              title="$i18n{remove}"
-              aria-label="[[i18n('glicRevokeActorLoginPermissionAriaLabel',
-                      item.displayName)]]">
-          </cr-icon-button>
-        </div>
+    <template is="dom-if" if="[[!isOnline_]]">
+      <div id="offlineWarning" class="no-sites cr-secondary-text">
+        $i18n{glicLoginPermissionsOfflineWarning}
       </div>
+    </template>
+    <template is="dom-if" if="[[isOnline_]]">
+      <div class="no-sites cr-secondary-text"
+          hidden="[[actorLoginPermissions_.length]]">
+        $i18n{glicLoginPermissionsNoSites}
+      </div>
+      <template is="dom-repeat" items="[[actorLoginPermissions_]]">
+        <div class="flex-centered">
+          <site-favicon class="favicon" url="[[item.signonRealm]]">
+          </site-favicon>
+          <div class="permission-item">
+            <div class="url-column">[[item.displayName]]</div>
+            <div class="username-column">[[item.username]]</div>
+            <cr-icon-button
+                class="icon-clear"
+                on-click="onRemoveActorLoginPermissionClick_"
+                title="$i18n{remove}"
+                aria-label="[[i18n('glicRevokeActorLoginPermissionAriaLabel',
+                        item.displayName)]]">
+            </cr-icon-button>
+          </div>
+        </div>
+      </template>
     </template>
   </div>
 </settings-subpage>
