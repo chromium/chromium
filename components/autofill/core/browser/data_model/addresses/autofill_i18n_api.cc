@@ -276,6 +276,7 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
     case MAX_VALID_FIELD_TYPE:
       return nullptr;
   }

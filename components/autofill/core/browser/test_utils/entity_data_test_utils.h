@@ -193,7 +193,8 @@ struct OrderOptionsT {
   std::string_view app_locale = "en-US";
   base::Time date_modified = kJune2017;
   base::Time use_date = kJune2017;
-  EntityInstance::RecordType record_type = EntityInstance::RecordType::kLocal;
+  EntityInstance::RecordType record_type =
+      EntityInstance::RecordType::kAccessibilityAnnotator;
   EntityInstance::AreAttributesReadOnly are_attributes_read_only =
       EntityInstance::AreAttributesReadOnly(false);
   int use_count = 0;
@@ -201,6 +202,28 @@ struct OrderOptionsT {
 using OrderOptions = OrderOptionsT<>;
 
 EntityInstance GetOrderEntityInstance(OrderOptions options = {});
+
+template <typename = void>
+struct ShipmentOptionsT {
+  const char16_t* tracking_number = u"12345";
+  const char16_t* delivery_zip_code = u"12345";
+  const char16_t* carrier_name = u"Carrier";
+  const char16_t* carrier_domain = u"carrier.com";
+  const char16_t* estimated_delivery_date = u"2025-12-01";
+  std::string_view guid = "00000000-0000-4000-8000-700000000000";
+  std::string_view nickname = "Shipment";
+  std::string_view app_locale = "en-US";
+  base::Time date_modified = kJune2017;
+  base::Time use_date = kJune2017;
+  EntityInstance::RecordType record_type =
+      EntityInstance::RecordType::kAccessibilityAnnotator;
+  EntityInstance::AreAttributesReadOnly are_attributes_read_only =
+      EntityInstance::AreAttributesReadOnly(false);
+  int use_count = 0;
+};
+using ShipmentOptions = ShipmentOptionsT<>;
+
+EntityInstance GetShipmentEntityInstance(ShipmentOptions options = {});
 
 template <typename = void>
 struct EntityOptionsT {

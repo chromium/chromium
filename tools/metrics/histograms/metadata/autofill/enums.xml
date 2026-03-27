@@ -263,6 +263,7 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Redress Number"/>
   <int value="6" label="Flight Reservation"/>
   <int value="7" label="Order"/>
+  <int value="8" label="Shipment"/>
 </enum>
 
 <enum name="AutofillAiModelExecutionStatus">
@@ -589,6 +590,8 @@ Called by update_autofill_enums.py.-->
   <int value="853" label="ORDER_ACCOUNT: Failure"/>
   <int value="856" label="ORDER_GRAND_TOTAL: Success"/>
   <int value="857" label="ORDER_GRAND_TOTAL: Failure"/>
+  <int value="860" label="SHIPMENT_TRACKING_NUMBER: Success"/>
+  <int value="861" label="SHIPMENT_TRACKING_NUMBER: Failure"/>
 </enum>
 
 <enum name="AutofillAlternativeNameFieldValueCharacterSet">
@@ -1383,6 +1386,11 @@ Called by update_autofill_enums.py.-->
   <int value="13440"
       label="ORDER_MERCHANT_NAME: Not autofilled or autofilled value edited"/>
   <int value="13441" label="ORDER_MERCHANT_NAME: Autofilled value accepted"/>
+  <int value="13760"
+      label="SHIPMENT_TRACKING_NUMBER: Not autofilled or autofilled value
+             edited"/>
+  <int value="13761"
+      label="SHIPMENT_TRACKING_NUMBER: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofilledFieldUserEditingStatus">
@@ -1682,6 +1690,8 @@ Called by update_autofill_enums.py.-->
   <int value="3345" label="ORDER_DATE: accepted"/>
   <int value="3360" label="ORDER_MERCHANT_NAME: edited"/>
   <int value="3361" label="ORDER_MERCHANT_NAME: accepted"/>
+  <int value="3440" label="SHIPMENT_TRACKING_NUMBER: edited"/>
+  <int value="3441" label="SHIPMENT_TRACKING_NUMBER: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2575,6 +2585,7 @@ Called by update_autofill_enums.py.-->
   <int value="208" label="ORDER_ID"/>
   <int value="209" label="ORDER_DATE"/>
   <int value="210" label="ORDER_MERCHANT_NAME"/>
+  <int value="215" label="SHIPMENT_TRACKING_NUMBER"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3804,6 +3815,11 @@ Called by update_autofill_enums.py.-->
   <int value="3426" label="ORDER_GRAND_TOTAL: kHeuristics"/>
   <int value="3427" label="ORDER_GRAND_TOTAL: kAutocomplete"/>
   <int value="3428" label="ORDER_GRAND_TOTAL: kRationalization"/>
+  <int value="3440" label="SHIPMENT_TRACKING_NUMBER: kServerCrowdsourcing"/>
+  <int value="3441" label="SHIPMENT_TRACKING_NUMBER: kServerOverride"/>
+  <int value="3442" label="SHIPMENT_TRACKING_NUMBER: kHeuristics"/>
+  <int value="3443" label="SHIPMENT_TRACKING_NUMBER: kAutocomplete"/>
+  <int value="3444" label="SHIPMENT_TRACKING_NUMBER: kRationalization"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -5062,6 +5078,8 @@ Called by update_autofill_enums.py.-->
   <int value="837" label="ORDER_DATE: Accepted"/>
   <int value="840" label="ORDER_MERCHANT_NAME: Ignored"/>
   <int value="841" label="ORDER_MERCHANT_NAME: Accepted"/>
+  <int value="860" label="SHIPMENT_TRACKING_NUMBER: Ignored"/>
+  <int value="861" label="SHIPMENT_TRACKING_NUMBER: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

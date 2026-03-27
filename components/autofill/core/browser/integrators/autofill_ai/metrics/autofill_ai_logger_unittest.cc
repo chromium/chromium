@@ -86,7 +86,8 @@ class BaseAutofillAiTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillAiWithDataSchema,
                               features::kAutofillAiWalletFlightReservation,
-                              features::kAutofillUseAccessibilityAnnotator},
+                              features::kAutofillAiOrder,
+                              features::kAutofillAiShipment},
         /*disabled_features=*/{});
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
@@ -193,6 +194,14 @@ class BaseAutofillAiTest : public testing::Test {
         std::move(url));
   }
 
+  [[nodiscard]] std::unique_ptr<FormStructure> CreateShipmentForm(
+      std::string url = std::string(kDefaultUrl)) {
+    return CreateFormStructure(
+        {UNKNOWN_TYPE, UNKNOWN_TYPE, SHIPMENT_TRACKING_NUMBER, UNKNOWN_TYPE,
+         UNKNOWN_TYPE, UNKNOWN_TYPE, UNKNOWN_TYPE},
+        std::move(url));
+  }
+
   [[nodiscard]] std::unique_ptr<FormStructure> CreateMergedForm(
       const std::vector<const FormStructure*>& forms,
       std::string url = std::string(kDefaultUrl)) {
@@ -236,6 +245,8 @@ class BaseAutofillAiTest : public testing::Test {
         return CreateFlightReservationForm();
       case EntityTypeName::kOrder:
         return CreateOrderForm();
+      case EntityTypeName::kShipment:
+        return CreateShipmentForm();
     }
     NOTREACHED();
   }
@@ -265,6 +276,8 @@ class BaseAutofillAiTest : public testing::Test {
               {.record_type = record_type});
         case EntityTypeName::kOrder:
           return test::GetOrderEntityInstance({.record_type = record_type});
+        case EntityTypeName::kShipment:
+          return test::GetShipmentEntityInstance({.record_type = record_type});
       }
       NOTREACHED();
     }();

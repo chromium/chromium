@@ -159,6 +159,7 @@ static constexpr auto kTypeNameToFieldType =
          {"ORDER_ID", ORDER_ID},
          {"ORDER_DATE", ORDER_DATE},
          {"ORDER_MERCHANT_NAME", ORDER_MERCHANT_NAME},
+         {"SHIPMENT_TRACKING_NUMBER", SHIPMENT_TRACKING_NUMBER},
          {"LOYALTY_MEMBERSHIP_PROGRAM", LOYALTY_MEMBERSHIP_PROGRAM},
          {"LOYALTY_MEMBERSHIP_PROVIDER", LOYALTY_MEMBERSHIP_PROVIDER},
          {"LOYALTY_MEMBERSHIP_ID", LOYALTY_MEMBERSHIP_ID},
@@ -329,6 +330,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return true;
 
     // Autofill AI types that are not fillable.
@@ -435,6 +437,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return "";
     case NUMERIC_QUANTITY:
       return "Numeric quantity";

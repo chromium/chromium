@@ -160,13 +160,16 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kPassport:
     case EntityTypeName::kDriversLicense:
-    case EntityTypeName::kOrder:
       return prefs.GetBoolean(prefs::kAutofillAiIdentityEntitiesEnabled);
     case EntityTypeName::kVehicle:
     case EntityTypeName::kFlightReservation:
     case EntityTypeName::kRedressNumber:
     case EntityTypeName::kKnownTravelerNumber:
       return prefs.GetBoolean(prefs::kAutofillAiTravelEntitiesEnabled);
+    case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
+      // TODO(crbug.com/484094746): Add prefs for orders and shipments.
+      return false;
   }
   NOTREACHED();
 }
@@ -227,6 +230,7 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
         return is_enabled(features::kAutofillAiWalletPrivatePasses);
       case EntityTypeName::kFlightReservation:
       case EntityTypeName::kOrder:
+      case EntityTypeName::kShipment:
         return false;
     }
     NOTREACHED();

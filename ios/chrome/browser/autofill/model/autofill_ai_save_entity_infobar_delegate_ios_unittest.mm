@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_infobar_delegate_ios.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/notimplemented.h"
 #import "base/test/task_environment.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
@@ -46,6 +47,8 @@ class AutofillAiSaveEntityInfoBarDelegateIOSTest
         return test::GetOrderEntityInstance();
       case EntityTypeName::kFlightReservation:
         return test::GetFlightReservationEntityInstance();
+      case EntityTypeName::kShipment:
+        NOTIMPLEMENTED();
     }
     NOTREACHED();
   }

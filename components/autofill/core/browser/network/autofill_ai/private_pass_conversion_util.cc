@@ -204,6 +204,7 @@ PrivatePass EntityInstanceToPrivatePass(const EntityInstance& entity) {
     case EntityTypeName::kVehicle:
     case EntityTypeName::kFlightReservation:
     case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
       NOTREACHED();
   }
   return pass;

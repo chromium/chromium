@@ -317,6 +317,17 @@ aa::QueryIntentType AttributeTypeToEntryType(AttributeType type) {
     ATTRIBUTE_TO_ENTRY(kVehicleMake);
     ATTRIBUTE_TO_ENTRY(kVehicleModel);
     ATTRIBUTE_TO_ENTRY(kVehicleYear);
+    // TODO(b/484094746): Add the shipment entities to AA.
+    case AttributeTypeName::kShipmentCarrierName:
+    case AttributeTypeName::kShipmentCarrierDomain:
+    case AttributeTypeName::kShipmentTrackingNumber:
+    case AttributeTypeName::kShipmentDeliveryZipCode:
+    case AttributeTypeName::kShipmentOrderIds:
+    case AttributeTypeName::kShipmentOrderDates:
+    case AttributeTypeName::kShipmentMerchantName:
+    case AttributeTypeName::kShipmentProductNames:
+    case AttributeTypeName::kShipmentEstimatedDeliveryDate:
+      return aa::QueryIntentType::kUnknown;
   }
 #undef ATTRIBUTE_TO_ENTRY
   return aa::QueryIntentType::kUnknown;

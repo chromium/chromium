@@ -146,6 +146,7 @@ bool IsPassTypeEnabled(EntityTypeName entity_name) {
     case EntityTypeName::kRedressNumber:
       return IsSyncWalletPrivatePassesEnabled();
     case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
       return false;
   }
 }

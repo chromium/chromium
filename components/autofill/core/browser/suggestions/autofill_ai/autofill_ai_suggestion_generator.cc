@@ -19,6 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -381,6 +382,9 @@ Suggestion::Icon GetSuggestionIcon(EntityType trigger_entity_type) {
       return Suggestion::Icon::kPersonCheck;
     case EntityTypeName::kVehicle:
       return Suggestion::Icon::kVehicle;
+    case EntityTypeName::kShipment:
+      NOTIMPLEMENTED();
+      return Suggestion::Icon::kNoIcon;
   }
   NOTREACHED();
 }
@@ -396,6 +400,7 @@ bool IsTravelType(EntityType trigger_entity_type) {
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kOrder:
     case EntityTypeName::kPassport:
+    case EntityTypeName::kShipment:
       return false;
   }
   NOTREACHED();
@@ -412,6 +417,7 @@ bool IsIdentityDocsType(EntityType trigger_entity_type) {
     case EntityTypeName::kOrder:
     case EntityTypeName::kRedressNumber:
     case EntityTypeName::kVehicle:
+    case EntityTypeName::kShipment:
       return false;
   }
   NOTREACHED();

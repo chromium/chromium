@@ -159,6 +159,7 @@ declare global {
         ORDER_ID,
         ORDER_DATE,
         ORDER_MERCHANT_NAME,
+        SHIPMENT_TRACKING_NUMBER,
       }
 
       export enum AddressRecordType {

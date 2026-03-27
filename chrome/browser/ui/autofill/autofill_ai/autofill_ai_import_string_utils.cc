@@ -40,6 +40,8 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
         NOTREACHED() << "Entity is read only and doesn't support save prompts.";
       case EntityTypeName::kOrder:
         NOTREACHED() << "Entity is read only and doesn't support save prompts.";
+      case EntityTypeName::kShipment:
+        NOTREACHED() << "Entity is read only and doesn't support save prompts.";
     }
   } else {
     switch (type_name) {
@@ -65,6 +67,9 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
         NOTREACHED()
             << "Entity is read only and doesn't support update prompts.";
       case EntityTypeName::kOrder:
+        NOTREACHED()
+            << "Entity is read only and doesn't support update prompts.";
+      case EntityTypeName::kShipment:
         NOTREACHED()
             << "Entity is read only and doesn't support update prompts.";
     }
@@ -97,6 +102,8 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
         NOTREACHED() << "Entity is read only and doesn't support save prompts.";
       case EntityTypeName::kOrder:
         NOTREACHED() << "Entity is read only and doesn't support save prompts.";
+      case EntityTypeName::kShipment:
+        NOTREACHED() << "Entity is read only and doesn't support save prompts.";
     }
   } else {
     switch (type_name) {
@@ -125,6 +132,9 @@ std::u16string GetPromptTitle(EntityTypeName type_name, bool is_save_prompt) {
         NOTREACHED()
             << "Entity is read only and doesn't support update prompts.";
       case EntityTypeName::kOrder:
+        NOTREACHED()
+            << "Entity is read only and doesn't support update prompts.";
+      case EntityTypeName::kShipment:
         NOTREACHED()
             << "Entity is read only and doesn't support update prompts.";
     }

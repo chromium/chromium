@@ -81,6 +81,8 @@ chromium-metrics-reviews@google.com.
       summary="Emitted for passport forms or entities only."/>
   <variant name=".RedressNumber"
       summary="Emitted for redress number forms or entities only."/>
+  <variant name=".Shipment"
+      summary="Emitted for shipment forms or entities only."/>
   <variant name=".Vehicle"
       summary="Emitted for vehicle information forms or entities only."/>
 </variants>
@@ -604,6 +606,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PROBABLY_NEW_PASSWORD"/>
   <variant name="REDRESS_NUMBER"/>
   <variant name="SEARCH_TERM"/>
+  <variant name="SHIPMENT_TRACKING_NUMBER"/>
   <variant name="SINGLE_USERNAME"/>
   <variant name="SINGLE_USERNAME_FORGOT_PASSWORD"/>
   <variant name="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>

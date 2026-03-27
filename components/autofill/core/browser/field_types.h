@@ -570,6 +570,16 @@ enum FieldType {
   // ORDER_ACCOUNT = 213,
   // ORDER_GRAND_TOTAL = 214,
 
+  // Types corresponding to the "Shipment" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  // Only SHIPMENT_TRACKING_NUMBER is filled and the other numeric values may be
+  // recycled:
+  // SHIPMENT_ASSOCIATED_ORDER_ID = 215,
+  // SHIPMENT_CARRIER_NAME = 216,
+  // SHIPMENT_CARRIER_DOMAIN = 217,
+  SHIPMENT_TRACKING_NUMBER = 218,
+  // SHIPMENT_DELIVERY_ADDRESS = 219,
+
   // No new types can be added without a corresponding change to the Autofill
   // server.
   // This enum must be kept in sync with FieldType from
@@ -580,7 +590,7 @@ enum FieldType {
   // If the newly added type is a storable type of AutofillProfile, update
   // AutofillProfile.StorableTypes in
   // tools/metrics/histograms/metadata/autofill/histograms.xml.
-  MAX_VALID_FIELD_TYPE = 215,
+  MAX_VALID_FIELD_TYPE = 220,
 };
 // LINT.ThenChange(//chrome/common/extensions/api/autofill_private.idl)
 
@@ -719,7 +729,8 @@ constexpr std::optional<FieldType> ToSafeFieldType(
            // Unused Forms AI types: These types were never predicted by the
            // Autofill server and never used. They may be recycled in the
            // future.
-           (204 <= t && t <= 205) || (211 <= t && t <= 214);
+           (204 <= t && t <= 205) || (211 <= t && t <= 214) ||
+           (215 <= t && t <= 217) || t == 219;
   };
   if (is_invalid(raw_value)) {
     return std::nullopt;
@@ -868,6 +879,7 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return FieldTypeGroup::kAutofillAi;
 
     case PASSWORD:

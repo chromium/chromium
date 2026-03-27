@@ -121,7 +121,21 @@
     "merge constraints": [],
     "strike keys": [],
     "disambiguation order": [ "Merchant name", "Date", "Grand total" ],
-    "experiment feature": "AutofillUseAccessibilityAnnotator",
+    "experiment feature": "AutofillAiOrder",
+    "read only": true
+  },
+  {
+    "name": "Shipment",
+    "attributes": [ "Tracking number", "Delivery zip code", "Carrier name", "Carrier domain", "Estimated delivery date", "Order ids", "Order dates", "Merchant name", "Product names"],
+    "obfuscated attributes": [],
+    "required fields": [
+      [ "Tracking number" ]
+    ],
+    "import constraints": [],
+    "merge constraints": [],
+    "strike keys": [],
+    "disambiguation order": [ "Merchant name", "Product names", "Order dates" ],
+    "experiment feature": "AutofillAiShipment",
     "read only": true
   }
 ]

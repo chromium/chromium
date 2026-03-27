@@ -504,6 +504,7 @@ AddressUIComponentIconType GetAddressUIComponentIconTypeForFieldType(
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return AddressUIComponentIconType::kNoIcon;
   }
 }

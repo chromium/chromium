@@ -183,6 +183,7 @@ bool IsDateFieldType(FieldType field_type) {
     case ADDRESS_HOME_ZIP_AND_CITY:
     case ORDER_ID:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return false;
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
@@ -332,6 +333,7 @@ bool IsAffixFormatStringEnabledForType(FieldType type) {
     case ORDER_ID:
     case ORDER_DATE:
     case ORDER_MERCHANT_NAME:
+    case SHIPMENT_TRACKING_NUMBER:
       return false;
     case PASSPORT_NUMBER:
     case VEHICLE_VIN:

@@ -33,9 +33,10 @@ std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_ADD_VEHICLE_ENTITY);
     case EntityTypeName::kFlightReservation:
       // Flight reservations are read-only and do not use this string.
-      return "";
     case EntityTypeName::kOrder:
       // Orders are read-only and do not use this string.
+    case EntityTypeName::kShipment:
+      // Shipments are read-only and do not use this string.
       return "";
   }
   NOTREACHED();
@@ -61,9 +62,10 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY);
     case EntityTypeName::kFlightReservation:
       // Flight reservations are read-only and do not use this string.
-      return "";
     case EntityTypeName::kOrder:
       // Orders are read-only and do not use this string.
+    case EntityTypeName::kShipment:
+      // Shipments are read-only and do not use this string.
       return "";
   }
   NOTREACHED();
@@ -89,9 +91,10 @@ std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
       return l10n_util::GetStringUTF8(IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY);
     case EntityTypeName::kFlightReservation:
       // Flight reservations are read-only and do not use this string.
-      return "";
     case EntityTypeName::kOrder:
       // Orders are read-only and do not use this string.
+    case EntityTypeName::kShipment:
+      // Shipments are read-only and do not use this string.
       return "";
   }
   NOTREACHED();

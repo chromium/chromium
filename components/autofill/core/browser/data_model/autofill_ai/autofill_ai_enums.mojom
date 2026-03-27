@@ -17,4 +17,5 @@ enum EntityTypeName {
   kRedressNumber = 5,
   kFlightReservation = 6,
   kOrder = 7,
+  kShipment = 8,
 };

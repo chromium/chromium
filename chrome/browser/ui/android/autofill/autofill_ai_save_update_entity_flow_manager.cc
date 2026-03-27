@@ -74,6 +74,8 @@ int GetMessageIconResourceId(const EntityInstance& entity) {
       NOTREACHED() << "Entity is read only and doesn't support save prompts.";
     case EntityTypeName::kOrder:
       NOTREACHED() << "Entity is read only and doesn't support save prompts.";
+    case EntityTypeName::kShipment:
+      NOTREACHED() << "Entity is read only and doesn't support save prompts.";
   }
   NOTREACHED();
 }

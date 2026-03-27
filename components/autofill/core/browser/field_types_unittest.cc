@@ -160,8 +160,9 @@ TEST(FieldTypesTest, IsValidFieldType) {
       ORDER_ID,
       ORDER_DATE,
       ORDER_MERCHANT_NAME,
+      SHIPMENT_TRACKING_NUMBER,
   };
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 215,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 220,
                 "New field type needs to be added to kValidFieldTypes.");
   FieldType kInvalidValue = static_cast<FieldType>(123456);
   ASSERT_FALSE(kValidFieldTypes.count(kInvalidValue));

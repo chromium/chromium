@@ -450,6 +450,7 @@ int GetFieldTypeGroupPredictionQualityMetric(FieldType field_type,
         case ORDER_ID:
         case ORDER_DATE:
         case ORDER_MERCHANT_NAME:
+        case SHIPMENT_TRACKING_NUMBER:
           NOTREACHED() << field_type << " type is not in that group.";
       }
       break;

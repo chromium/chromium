@@ -276,6 +276,7 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::ORDER_ID:
     case autofill::ORDER_DATE:
     case autofill::ORDER_MERCHANT_NAME:
+    case autofill::SHIPMENT_TRACKING_NUMBER:
       return AutofillFieldRedactionReason::kNoRedactionNeeded;
 
     // These cases are not produced by field classification, but have to be

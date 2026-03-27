@@ -176,6 +176,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kOrderDate:
     case AttributeTypeName::kPassportExpirationDate:
     case AttributeTypeName::kPassportIssueDate:
+    case AttributeTypeName::kShipmentEstimatedDeliveryDate:
       return DataType::kDate;
     case AttributeTypeName::kDriversLicenseState:
     case AttributeTypeName::kVehiclePlateState:
@@ -196,6 +197,14 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kRedressNumberNumber:
+    case AttributeTypeName::kShipmentCarrierName:
+    case AttributeTypeName::kShipmentCarrierDomain:
+    case AttributeTypeName::kShipmentTrackingNumber:
+    case AttributeTypeName::kShipmentDeliveryZipCode:
+    case AttributeTypeName::kShipmentOrderIds:
+    case AttributeTypeName::kShipmentOrderDates:
+    case AttributeTypeName::kShipmentMerchantName:
+    case AttributeTypeName::kShipmentProductNames:
     case AttributeTypeName::kVehiclePlateNumber:
     case AttributeTypeName::kVehicleVin:
     case AttributeTypeName::kVehicleMake:
@@ -282,6 +291,25 @@ constexpr std::optional<FieldType> AttributeType::field_type() const {
       return REDRESS_NUMBER;
     case AttributeTypeName::kRedressNumberName:
       return NAME_FULL;
+
+    case AttributeTypeName::kShipmentCarrierName:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentCarrierDomain:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentTrackingNumber:
+      return SHIPMENT_TRACKING_NUMBER;
+    case AttributeTypeName::kShipmentDeliveryZipCode:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentEstimatedDeliveryDate:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentOrderIds:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentOrderDates:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentMerchantName:
+      return std::nullopt;
+    case AttributeTypeName::kShipmentProductNames:
+      return std::nullopt;
 
     case AttributeTypeName::kVehicleOwner:
       return NAME_FULL;

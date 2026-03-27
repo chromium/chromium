@@ -51,6 +51,8 @@ optimization_guide::proto::AutofillAiEntityType GetEntityType(
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
     case EntityTypeName::kRedressNumber:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_REDRESS_NUMBER;
+    case EntityTypeName::kShipment:
+      return ProtoType::AUTOFILL_AI_ENTITY_TYPE_SHIPMENT;
     case EntityTypeName::kVehicle:
       return ProtoType::AUTOFILL_AI_ENTITY_TYPE_VEHICLE;
   }

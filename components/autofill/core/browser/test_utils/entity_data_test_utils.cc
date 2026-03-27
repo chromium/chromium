@@ -401,6 +401,46 @@ EntityInstance GetOrderEntityInstance(OrderOptions options) {
   return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
 }
 
+EntityInstance GetShipmentEntityInstance(ShipmentOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.tracking_number) {
+    attributes.emplace_back(AttributeType(kShipmentTrackingNumber));
+    attributes.back().SetInfo(SHIPMENT_TRACKING_NUMBER, options.tracking_number,
+                              std::string(options.app_locale),
+                              /*format_string=*/std::nullopt,
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.delivery_zip_code) {
+    attributes.emplace_back(AttributeType(kShipmentDeliveryZipCode));
+    attributes.back().SetInfo(UNKNOWN_TYPE, options.delivery_zip_code,
+                              std::string(options.app_locale),
+                              /*format_string=*/std::nullopt,
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.carrier_name) {
+    attributes.emplace_back(AttributeType(kShipmentCarrierName));
+    attributes.back().SetInfo(
+        UNKNOWN_TYPE, options.carrier_name, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
+  if (options.carrier_domain) {
+    attributes.emplace_back(AttributeType(kShipmentCarrierDomain));
+    attributes.back().SetInfo(
+        UNKNOWN_TYPE, options.carrier_domain, std::string(options.app_locale),
+        /*format_string=*/std::nullopt, VerificationStatus::kNoStatus);
+  }
+  if (options.estimated_delivery_date) {
+    attributes.emplace_back(AttributeType(kShipmentEstimatedDeliveryDate));
+    attributes.back().SetInfo(
+        UNKNOWN_TYPE, options.estimated_delivery_date,
+        std::string(options.app_locale),
+        AutofillFormatString(u"YYYY-MM-DD", FormatString_Type_DATE),
+        VerificationStatus::kNoStatus);
+  }
+  return GetEntityInstance(std::move(attributes), ToEntityOptions(options));
+}
+
 EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                                  EntityOptions options) {
   CHECK(!attributes.empty()) << "Attributes must be non-empty.";

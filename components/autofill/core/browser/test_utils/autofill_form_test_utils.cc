@@ -369,6 +369,7 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::ORDER_ID:
     case FieldType::ORDER_DATE:
     case FieldType::ORDER_MERCHANT_NAME:
+    case FieldType::SHIPMENT_TRACKING_NUMBER:
     case FieldType::MAX_VALID_FIELD_TYPE:
       LOG(ERROR) << "The field created by " << __func__ << "("
                  << FieldTypeToStringView(role)
@@ -516,6 +517,7 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::ORDER_ID:
     case FieldType::ORDER_DATE:
     case FieldType::ORDER_MERCHANT_NAME:
+    case FieldType::SHIPMENT_TRACKING_NUMBER:
     case FieldType::MAX_VALID_FIELD_TYPE:
       LOG(ERROR) << "The field created by " << __func__ << "("
                  << FieldTypeToStringView(role)

@@ -263,6 +263,7 @@ bool CanTriggerAutofillAiFillingSurveyForEntityType(EntityType type) {
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
       return false;
   }
   NOTREACHED();
@@ -279,6 +280,7 @@ bool CanTriggerAutofillAiSavePromptSurveyForEntityType(EntityType type) {
     case EntityTypeName::kNationalIdCard:
     case EntityTypeName::kDriversLicense:
     case EntityTypeName::kOrder:
+    case EntityTypeName::kShipment:
       return false;
   }
   NOTREACHED();
