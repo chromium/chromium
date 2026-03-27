@@ -122,12 +122,12 @@ enum class ManagePasswordsReferrer {
   kPasswordChangeInfoBubble = 29,
 
   // Corresponds to the Autofill and passwords settings page on Android.
-  kChromeSettingsHomeOfTransactions = 30,
+  kChromeSettingsAutofillAndPasswords = 30,
 
   // NOTE: When adding a new value to this enum that applies or could apply to
   // Android, make sure it is correctly handled by the internal credential
   // manager launcher java implementation.
-  kMaxValue = kChromeSettingsHomeOfTransactions,
+  kMaxValue = kChromeSettingsAutofillAndPasswords,
 };
 
 }  // namespace password_manager
