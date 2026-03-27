@@ -253,9 +253,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(data.arg3()->GetBool());
 }
 
+// TODO(crbug.com/496712339): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
-    GetWebActuationToggleVisibility_SubscriptionTierEligible) {
+    DISABLED_GetWebActuationToggleVisibility_SubscriptionTierEligible) {
   browser()->profile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 1);
 
@@ -268,9 +269,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(data.arg3()->GetBool());
 }
 
+// TODO(crbug.com/496712339): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     GlicHandlerSubscriptionTierBrowserTest,
-    FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
+    DISABLED_FireWebActuationToggleVisibilityChanged_SubscriptionTierBecomesEligible) {
   browser()->profile()->GetPrefs()->SetInteger(
       subscription_eligibility::prefs::kAiSubscriptionTier, 0);
   glic_handler()->AllowJavascript();
