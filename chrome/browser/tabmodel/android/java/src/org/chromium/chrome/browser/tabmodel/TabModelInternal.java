@@ -13,7 +13,7 @@ import org.chromium.chrome.browser.tab.Tab;
 /** Package private internal methods for {@link TabModel}. */
 @NullMarked
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public interface TabModelInternal extends Destroyable, TabModel {
+public interface TabModelInternal extends Destroyable, TabGroupModelFilterInternal, TabModel {
     /**
      * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
      * ways to close tabs. The public API for this is {@link TabRemover}.

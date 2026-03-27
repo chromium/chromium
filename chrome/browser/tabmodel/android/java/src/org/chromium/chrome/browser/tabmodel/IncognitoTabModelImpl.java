@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -49,6 +51,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final IncognitoTabModelDelegate mDelegate;
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
+            new ObserverList<>();
+    private final ObserverList<TabGroupModelFilterObserver> mTabGroupObservers =
             new ObserverList<>();
     private final ObserverList<Callback<TabModelInternal>> mDelegateModelObservers =
             new ObserverList<>();
@@ -126,6 +130,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
                 .addSyncObserverAndPostIfNonNull(mDelegateModelTabCountSupplierObserver);
         for (TabModelObserver observer : mObservers) {
             mDelegateModel.addObserver(observer);
+        }
+        for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
+            mDelegateModel.addTabGroupObserver(observer);
         }
         for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
             delegateModelObserver.onResult(mDelegateModel);
@@ -486,5 +493,255 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public boolean isClosingAllTabs() {
         return mDelegateModel.isClosingAllTabs();
+    }
+
+    @Override
+    public void addTabGroupObserver(TabGroupModelFilterObserver observer) {
+        mTabGroupObservers.addObserver(observer);
+        mDelegateModel.addTabGroupObserver(observer);
+    }
+
+    @Override
+    public void removeTabGroupObserver(TabGroupModelFilterObserver observer) {
+        mTabGroupObservers.removeObserver(observer);
+        mDelegateModel.removeTabGroupObserver(observer);
+    }
+
+    @Override
+    public TabModel getTabModel() {
+        return this;
+    }
+
+    @Override
+    public List<Tab> getRepresentativeTabList() {
+        return mDelegateModel.getRepresentativeTabList();
+    }
+
+    @Override
+    public int getIndividualTabAndGroupCount() {
+        return mDelegateModel.getIndividualTabAndGroupCount();
+    }
+
+    @Override
+    public int getCurrentRepresentativeTabIndex() {
+        return mDelegateModel.getCurrentRepresentativeTabIndex();
+    }
+
+    @Override
+    public @Nullable Tab getCurrentRepresentativeTab() {
+        return mDelegateModel.getCurrentRepresentativeTab();
+    }
+
+    @Override
+    public @Nullable Tab getRepresentativeTabAt(int index) {
+        return mDelegateModel.getRepresentativeTabAt(index);
+    }
+
+    @Override
+    public int representativeIndexOf(@Nullable Tab tab) {
+        return mDelegateModel.representativeIndexOf(tab);
+    }
+
+    @Override
+    public int getTabGroupCount() {
+        return mDelegateModel.getTabGroupCount();
+    }
+
+    @Override
+    public int getTabCountForGroup(@Nullable Token tabGroupId) {
+        return mDelegateModel.getTabCountForGroup(tabGroupId);
+    }
+
+    @Override
+    public boolean tabGroupExists(@Nullable Token tabGroupId) {
+        return mDelegateModel.tabGroupExists(tabGroupId);
+    }
+
+    @Override
+    public List<Tab> getRelatedTabList(int tabId) {
+        return mDelegateModel.getRelatedTabList(tabId);
+    }
+
+    @Override
+    public List<Tab> getTabsInGroup(@Nullable Token tabGroupId) {
+        return mDelegateModel.getTabsInGroup(tabGroupId);
+    }
+
+    @Override
+    public boolean isTabInTabGroup(Tab tab) {
+        return mDelegateModel.isTabInTabGroup(tab);
+    }
+
+    @Override
+    public int getIndexOfTabInGroup(Tab tab) {
+        return mDelegateModel.getIndexOfTabInGroup(tab);
+    }
+
+    @Override
+    public int getGroupLastShownTabId(@Nullable Token tabGroupId) {
+        return mDelegateModel.getGroupLastShownTabId(tabGroupId);
+    }
+
+    @Override
+    public void moveRelatedTabs(int id, int newIndex) {
+        mDelegateModel.moveRelatedTabs(id, newIndex);
+    }
+
+    @Override
+    public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
+        return mDelegateModel.willMergingCreateNewGroup(tabsToMerge);
+    }
+
+    @Override
+    public void createSingleTabGroup(Tab tab) {
+        mDelegateModel.createSingleTabGroup(tab);
+    }
+
+    @Override
+    public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
+        mDelegateModel.createTabGroupForTabGroupSync(tabs, tabGroupId);
+    }
+
+    @Override
+    public void mergeTabsToGroup(
+            int sourceTabId, int destinationTabId, boolean skipUpdateTabModel) {
+        mDelegateModel.mergeTabsToGroup(sourceTabId, destinationTabId, skipUpdateTabModel);
+    }
+
+    @Override
+    public void mergeListOfTabsToGroup(
+            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, int notify) {
+        mDelegateModel.mergeListOfTabsToGroup(tabs, destinationTab, indexInGroup, notify);
+    }
+
+    @Override
+    public TabUngrouper getTabUngrouper() {
+        return new TabUngrouper() {
+            @Override
+            public void ungroupTabs(
+                    List<Tab> tabs,
+                    boolean trailing,
+                    boolean allowDialog,
+                    @Nullable TabModelActionListener listener) {
+                mDelegateModel.getTabUngrouper().ungroupTabs(tabs, trailing, allowDialog, listener);
+            }
+
+            @Override
+            public void ungroupTabGroup(
+                    Token tabGroupId,
+                    boolean trailing,
+                    boolean allowDialog,
+                    @Nullable TabModelActionListener listener) {
+                mDelegateModel
+                        .getTabUngrouper()
+                        .ungroupTabGroup(tabGroupId, trailing, allowDialog, listener);
+            }
+        };
+    }
+
+    @Override
+    public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
+        mDelegateModel.performUndoGroupOperation(undoGroupMetadata);
+    }
+
+    @Override
+    public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {
+        mDelegateModel.undoGroupOperationExpired(undoGroupMetadata);
+    }
+
+    @Override
+    public Set<Token> getAllTabGroupIds() {
+        return mDelegateModel.getAllTabGroupIds();
+    }
+
+    @Override
+    public int getValidPosition(Tab tab, int proposedPosition) {
+        return mDelegateModel.getValidPosition(tab, proposedPosition);
+    }
+
+    @Override
+    public boolean isTabModelRestored() {
+        return mDelegateModel.isTabModelRestored();
+    }
+
+    @Override
+    public boolean isTabGroupHiding(@Nullable Token tabGroupId) {
+        return mDelegateModel.isTabGroupHiding(tabGroupId);
+    }
+
+    @Override
+    public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
+            List<Tab> tabsToExclude, boolean includePendingClosures) {
+        return mDelegateModel.getLazyAllTabGroupIds(tabsToExclude, includePendingClosures);
+    }
+
+    @Override
+    public String getTabGroupTitle(Token tabGroupId) {
+        return mDelegateModel.getTabGroupTitle(tabGroupId);
+    }
+
+    @Override
+    public String getTabGroupTitle(Tab groupedTab) {
+        return mDelegateModel.getTabGroupTitle(groupedTab);
+    }
+
+    @Override
+    public void setTabGroupTitle(Token tabGroupId, String title) {
+        mDelegateModel.setTabGroupTitle(tabGroupId, title);
+    }
+
+    @Override
+    public void deleteTabGroupTitle(Token tabGroupId) {
+        mDelegateModel.deleteTabGroupTitle(tabGroupId);
+    }
+
+    @Override
+    public int getTabGroupColor(Token tabGroupId) {
+        return mDelegateModel.getTabGroupColor(tabGroupId);
+    }
+
+    @Override
+    public int getTabGroupColorWithFallback(Token tabGroupId) {
+        return mDelegateModel.getTabGroupColorWithFallback(tabGroupId);
+    }
+
+    @Override
+    public int getTabGroupColorWithFallback(Tab groupedTab) {
+        return mDelegateModel.getTabGroupColorWithFallback(groupedTab);
+    }
+
+    @Override
+    public void setTabGroupColor(Token tabGroupId, int color) {
+        mDelegateModel.setTabGroupColor(tabGroupId, color);
+    }
+
+    @Override
+    public void deleteTabGroupColor(Token tabGroupId) {
+        mDelegateModel.deleteTabGroupColor(tabGroupId);
+    }
+
+    @Override
+    public boolean getTabGroupCollapsed(Token tabGroupId) {
+        return mDelegateModel.getTabGroupCollapsed(tabGroupId);
+    }
+
+    @Override
+    public void setTabGroupCollapsed(Token tabGroupId, boolean isCollapsed, boolean animate) {
+        mDelegateModel.setTabGroupCollapsed(tabGroupId, isCollapsed, animate);
+    }
+
+    @Override
+    public void deleteTabGroupCollapsed(Token tabGroupId) {
+        mDelegateModel.deleteTabGroupCollapsed(tabGroupId);
+    }
+
+    @Override
+    public void markTabStateInitialized() {
+        mDelegateModel.markTabStateInitialized();
+    }
+
+    @Override
+    public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
+        mDelegateModel.moveTabOutOfGroupInDirection(sourceTabId, trailing);
     }
 }

@@ -31,7 +31,7 @@ import java.util.Set;
  * tabs are kept in different TabModels.
  */
 @NullMarked
-public interface TabModel extends SupportsTabModelObserver, TabList {
+public interface TabModel extends TabGroupModelFilter, TabList {
     static final long INVALID_TIMESTAMP = -1L;
     Map<Integer, Long> sTabPinTimestampMap = new HashMap<>();
 

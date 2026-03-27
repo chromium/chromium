@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.createBatch;
 
 import org.chromium.base.Holder;
@@ -94,7 +93,7 @@ public class TabModelHolderFactory {
     /** Creates an empty {@link IncognitoTabModelHolder}. */
     public static IncognitoTabModelHolder createEmptyIncognitoTabModelHolder() {
         EmptyTabModel model = EmptyTabModel.getInstance(/* isIncognito= */ true);
-        return new IncognitoTabModelHolder(model, new IncognitoTabGroupModelFilterImpl(model));
+        return new IncognitoTabModelHolder(model, model);
     }
 
     private static TabModelHolder createCollectionTabModelHolder(
@@ -166,10 +165,8 @@ public class TabModelHolderFactory {
                         tabUngrouperFactory);
         IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
 
-        return new IncognitoTabModelHolder(
-                incognitoTabModel, new IncognitoTabGroupModelFilterImpl(incognitoTabModel));
+        return new IncognitoTabModelHolder(incognitoTabModel, incognitoTabModel);
     }
-
 
     /**
      * Creates a {@link TabModelHolder} for testing. The {@link TabGroupModelFilter} mostly no-ops.
@@ -177,8 +174,7 @@ public class TabModelHolderFactory {
      * about tab groups.
      */
     public static TabModelHolder createTabModelHolderForTesting(TabModelInternal tabModelInternal) {
-        return new TabModelHolder(
-                tabModelInternal, createStubTabGroupModelFilterForTesting(tabModelInternal));
+        return new TabModelHolder(tabModelInternal, tabModelInternal);
     }
 
     /**
@@ -188,19 +184,6 @@ public class TabModelHolderFactory {
      */
     public static IncognitoTabModelHolder createIncognitoTabModelHolderForTesting(
             IncognitoTabModelInternal incognitoTabModelInternal) {
-        return new IncognitoTabModelHolder(
-                incognitoTabModelInternal,
-                createStubTabGroupModelFilterForTesting(incognitoTabModelInternal));
-    }
-
-    private static TabGroupModelFilterInternal createStubTabGroupModelFilterForTesting(
-            TabModelInternal tabModel) {
-        Holder<@Nullable TabGroupModelFilter> filterHolder = new Holder<>(null);
-        TabUngrouper tabUngrouper =
-                new PassthroughTabUngrouper(() -> assumeNonNull(filterHolder.get()));
-        TabGroupModelFilterInternal filter =
-                new StubTabGroupModelFilterImpl(tabModel, tabUngrouper);
-        filterHolder.value = filter;
-        return filter;
+        return new IncognitoTabModelHolder(incognitoTabModelInternal, incognitoTabModelInternal);
     }
 }

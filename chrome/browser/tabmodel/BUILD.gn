@@ -20,7 +20,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabRemover.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabUngrouper.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoStateProvider.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImpl.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHost.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostRegistry.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabHostUtils.java",
@@ -38,7 +37,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/ReadOnlyIterator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/RecordingTabCreator.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/RecordingTabCreatorManager.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/StubTabGroupModelFilterImpl.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/SupportedProfileType.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/SupportsTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabCloseType.java",
@@ -122,7 +120,6 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/AccumulatingTabCreatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountTrackerUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ReadOnlyIteratorUnitTest.java",

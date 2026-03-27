@@ -571,15 +571,18 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     protected abstract @JniType("std::vector<base::Token>") List<Token> listTabGroups();
 
+    @Override
     @CalledByNative
-    protected abstract @JniType("std::u16string") String getTabGroupTitle(
+    public abstract @JniType("std::u16string") String getTabGroupTitle(
             @JniType("base::Token") Token tabGroupId);
 
+    @Override
     @CalledByNative
-    protected abstract int getTabGroupColor(@JniType("base::Token") Token tabGroupId);
+    public abstract int getTabGroupColor(@JniType("base::Token") Token tabGroupId);
 
+    @Override
     @CalledByNative
-    protected abstract boolean getTabGroupCollapsed(@JniType("base::Token") Token tabGroupId);
+    public abstract boolean getTabGroupCollapsed(@JniType("base::Token") Token tabGroupId);
 
     /**
      * Returns two integers representing a range of tab indices. The range is non-inclusive and
@@ -605,8 +608,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected abstract @JniType("std::optional<base::Token>") @Nullable Token addTabsToGroup(
             @JniType("std::optional<base::Token>") @Nullable Token tabGroupId,
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs);
-
-    protected abstract TabUngrouper getTabUngrouper();
 
     @CalledByNative
     protected void ungroup(@JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
