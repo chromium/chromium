@@ -64,6 +64,23 @@ class OhttpKeyService : public KeyedService {
     kMaxValue = kKeyRotatedHeader
   };
 
+  // The outcome of a key fetch.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FetchOutcome {
+    // The key fetch was successful and the key parsed successfully.
+    kSuccess = 0,
+    // The key fetch failed due to a network error.
+    kNetworkError = 1,
+    // The key fetch succeeded at the network level, but was empty.
+    kEmptyResponse = 2,
+    // The key fetch succeeded at the network level, but failed to parse.
+    kInvalidResponse = 3,
+    // The key fetch succeeded at the network level, but there were no keys.
+    kNoKeys = 4,
+    kMaxValue = kNoKeys,
+  };
+
   OhttpKeyService(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,

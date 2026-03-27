@@ -371,6 +371,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Blocked for unfamiliar sites"/>
 </enum>
 
+<enum name="SafeBrowsingKeyFetchOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Empty response"/>
+  <int value="3" label="Invalid response"/>
+  <int value="4" label="No keys"/>
+</enum>
+
 <enum name="SafeBrowsingOhttpFetchKeyTriggerReason">
   <int value="0" label="DuringHashRealTimeLookup"/>
   <int value="1" label="AsyncFetch"/>

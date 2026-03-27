@@ -298,6 +298,17 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsKeyFetchUrl{
     "SafeBrowsingHashPrefixRealTimeLookupsKeyFetchUrl",
     /*default_value=*/
     "https://safebrowsingohttpgateway.googleapis.com/v1/ohttp/hpkekeyconfig"};
+constexpr base::FeatureParam<std::string>
+    kHashPrefixRealTimeLookupsKeyFetchKeyTypeHeader{
+        &kHashPrefixRealTimeLookups,
+        "SafeBrowsingHashPrefixRealTimeLookupsKeyFetchKeyTypeHeader",
+        /*default_value=*/
+        "X-OhttpPublickey-Fst"};
+constexpr base::FeatureParam<std::string>
+    kHashPrefixRealTimeLookupsKeyFetchCustomHeader{
+        &kHashPrefixRealTimeLookups,
+        "SafeBrowsingHashPrefixRealTimeLookupsKeyFetchCustomHeader",
+        /*default_value=*/""};
 
 BASE_FEATURE(kHashPrefixRealTimeLookupsSamplePing,
              "SafeBrowsingHashPrefixRealTimeLookupsSamplePing",

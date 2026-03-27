@@ -299,6 +299,12 @@ extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
 // key that will be used to encrypt the lookup requests.
 extern const base::FeatureParam<std::string>
     kHashPrefixRealTimeLookupsKeyFetchUrl;
+// This parameter controls the header used to request a given HPKE key type.
+extern const base::FeatureParam<std::string>
+    kHashPrefixRealTimeLookupsKeyFetchKeyTypeHeader;
+// This parameter allows adding a custom header to the HPKE key fetch request.
+extern const base::FeatureParam<std::string>
+    kHashPrefixRealTimeLookupsKeyFetchCustomHeader;
 
 // Send sample hash-prefix real-time lookups for real-time lookups to catch
 // "false positives" where real-time lookup says safe but hash-prefix lookup
