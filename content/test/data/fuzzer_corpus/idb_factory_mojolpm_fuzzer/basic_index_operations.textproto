@@ -370,6 +370,7 @@ actions {
     }
   }
 }
+
 sequences {
   action_indexes: 0
   action_indexes: 4
@@ -391,6 +392,10 @@ sequences {
   action_indexes: 12
   action_indexes: 1
   action_indexes: 3
+  action_indexes: 1
+  action_indexes: 1
+  action_indexes: 1
+  action_indexes: 1
   action_indexes: 1
   action_indexes: 2
 }

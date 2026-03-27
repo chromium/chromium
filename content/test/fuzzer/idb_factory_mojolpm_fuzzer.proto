@@ -64,4 +64,5 @@ message Testcase {
   repeated uint32 sequence_indexes = 3 [packed = true];
   required bool in_memory = 4;
   required bool use_sqlite = 5;
+  optional bool use_default_bucket = 6;
 }

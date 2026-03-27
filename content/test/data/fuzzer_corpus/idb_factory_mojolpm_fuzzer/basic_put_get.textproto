@@ -157,6 +157,7 @@ actions {
     }
   }
 }
+
 sequences {
   action_indexes: 0
   action_indexes: 1
@@ -165,6 +166,10 @@ sequences {
   action_indexes: 4
   action_indexes: 3
   action_indexes: 4
+  action_indexes: 4
+  action_indexes: 4
+  action_indexes: 4
+  action_indexes: 4
   action_indexes: 5
   action_indexes: 4
   action_indexes: 6
@@ -172,6 +177,10 @@ sequences {
   action_indexes: 7
   action_indexes: 4
   action_indexes: 3
+  action_indexes: 4
+  action_indexes: 4
+  action_indexes: 4
+  action_indexes: 4
   action_indexes: 4
   action_indexes: 8
 }

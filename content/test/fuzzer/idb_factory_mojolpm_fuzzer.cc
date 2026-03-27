@@ -28,6 +28,8 @@
 #include "content/test/fuzzer/mojolpm_fuzzer_support.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-mojolpm.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -43,10 +45,26 @@ using url::Origin;
 
 const char* const kCmdline[] = {"idb_factory_mojolpm_fuzzer", nullptr};
 
-content::mojolpm::FuzzerEnvironment& GetEnvironment() {
-  static base::NoDestructor<
-      content::mojolpm::FuzzerEnvironmentWithTaskEnvironment>
-      environment(1, kCmdline);
+// Custom environment that uses mock time so the fuzzer can exercise
+// time-dependent code paths (e.g. idle tasks, grace period close) that would
+// otherwise never/rarely be executed within the per-action timeout.
+class IdbFuzzerEnvironment : public content::mojolpm::FuzzerEnvironment {
+ public:
+  IdbFuzzerEnvironment(int argc, const char* const* argv)
+      : FuzzerEnvironment(argc, argv),
+        task_environment_(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            base::test::TaskEnvironment::MainThreadType::DEFAULT,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
+            base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+};
+
+IdbFuzzerEnvironment& GetEnvironment() {
+  static base::NoDestructor<IdbFuzzerEnvironment> environment(1, kCmdline);
   return *environment;
 }
 
@@ -125,11 +143,11 @@ class IdbFactoryTestcase
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   const bool in_memory_;
-  const bool use_sqlite_;
   const base::AutoReset<std::optional<bool>> sqlite_override_;
-  const storage::BucketLocator bucket_locator_;
+  const bool use_default_bucket_;
 
-  // These are set up on the UI thread.
+  // These are set up (and used) on the UI thread.
+  storage::BucketLocator bucket_locator_;
   std::unique_ptr<content::TestBrowserContext> browser_context_;
   mojo::Remote<storage::mojom::IndexedDBControlTest> indexed_db_control_test_;
 
@@ -143,13 +161,10 @@ IdbFactoryTestcase::IdbFactoryTestcase(
     const content::fuzzing::idb_factory::proto::Testcase& testcase)
     : Testcase<ProtoTestcase, ProtoAction>(testcase),
       in_memory_(testcase.in_memory()),
-      use_sqlite_(testcase.use_sqlite()),
       sqlite_override_(
           content::indexed_db::BucketContext::OverrideShouldUseSqliteForTesting(
-              use_sqlite_)),
-      bucket_locator_(storage::BucketLocator::ForDefaultBucket(
-          blink::StorageKey::CreateFirstParty(
-              Origin::Create(GURL("https://example.com"))))) {
+              testcase.use_sqlite())),
+      use_default_bucket_(testcase.use_default_bucket()) {
   // IdbFactoryTestcase is created on the main thread, but the actions that
   // we want to validate the sequencing of take place on the fuzzer sequence.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -170,10 +185,36 @@ void IdbFactoryTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
       ->GetIndexedDBControl()
       .BindTestInterfaceForTesting(
           indexed_db_control_test_.BindNewPipeAndPassReceiver());
-  GetFuzzerTaskRunner()->PostTask(
-      FROM_HERE,
+
+  auto continue_setup = base::BindPostTask(
+      GetFuzzerTaskRunner(),
       base::BindOnce(&IdbFactoryTestcase::SetUpOnFuzzerThread,
                      base::Unretained(this), std::move(done_closure)));
+
+  const blink::StorageKey kStorageKey = blink::StorageKey::CreateFirstParty(
+      Origin::Create(GURL("https://example.com")));
+  if (use_default_bucket_) {
+    // `IndexedDBContextImpl` will create the bucket when binding the factory.
+    bucket_locator_ = storage::BucketLocator::ForDefaultBucket(kStorageKey);
+    std::move(continue_setup).Run();
+  } else {
+    // The bucket needs to be created beforehand.
+    browser_context_->GetDefaultStoragePartition()
+        ->GetQuotaManager()
+        ->proxy()
+        ->UpdateOrCreateBucket(
+            storage::BucketInitParams(kStorageKey, "custom_bucket"),
+            content::GetUIThreadTaskRunner({}),
+            base::BindOnce(
+                [](storage::BucketLocator& bucket_locator,
+                   base::OnceClosure continue_setup,
+                   storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
+                  CHECK(bucket_info.has_value());
+                  bucket_locator = bucket_info->ToBucketLocator();
+                  std::move(continue_setup).Run();
+                },
+                std::ref(bucket_locator_), std::move(continue_setup)));
+  }
 }
 
 void IdbFactoryTestcase::SetUpOnFuzzerThread(base::OnceClosure done_closure) {
@@ -306,7 +347,6 @@ void IdbFactoryTestcase::BindIndexedDB(
 void IdbFactoryTestcase::CreateAndAddIdbFactory(
     uint32_t id,
     base::OnceClosure done_closure) {
-  // TODO(crbug.com/448235811): Expand to diverse bucket types and clients.
   storage::BucketClientInfo client_info;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
