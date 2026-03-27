@@ -42,7 +42,11 @@ void MockRemotee::OnRemotingSinkReady(
   remoting_sink_.Bind(std::move(remoting_sink));
 }
 
-void MockRemotee::SendMessageToSource(const std::vector<uint8_t>& message) {}
+void MockRemotee::SendMessageToSource(const std::vector<uint8_t>& message) {
+  if (send_message_to_source_cb_) {
+    send_message_to_source_cb_.Run(message);
+  }
+}
 
 void MockRemotee::StartDataStreams(
     mojo::PendingRemote<mojom::RemotingDataStreamReceiver> audio_stream,
@@ -101,17 +105,12 @@ MockReceiverController* MockReceiverController::GetInstance() {
 }
 
 MockReceiverController::MockReceiverController()
-    : mock_remotee_(new MockRemotee()) {
-  // Overwrites |rpc_messenger_|.
-  rpc_messenger_.set_send_message_cb_for_testing(
-      [this](std::vector<uint8_t> message) { OnSendRpc(message); });
+    : mock_remotee_(std::make_unique<MockRemotee>()) {
+  mock_remotee_->set_send_message_to_source_cb(base::BindRepeating(
+      &MockReceiverController::OnMessageFromSource, base::Unretained(this)));
 }
 
 MockReceiverController::~MockReceiverController() = default;
-
-void MockReceiverController::OnSendRpc(std::vector<uint8_t> message) {
-  ReceiverController::OnMessageFromSource(message);
-}
 
 }  // namespace remoting
 }  // namespace media

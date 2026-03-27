@@ -165,7 +165,7 @@ class CourierRendererTest : public testing::Test {
 
   // Use this function to mimic receiver to handle RPC message for renderer
   // initialization,
-  void RpcMessageResponseBot(std::vector<uint8_t> message) {
+  void RpcMessageResponseBot(base::span<const uint8_t> message) {
     openscreen::cast::RpcMessage rpc;
     ASSERT_TRUE(rpc.ParseFromArray(message.data(), message.size()));
     switch (rpc.proc()) {
@@ -302,17 +302,15 @@ class CourierRendererTest : public testing::Test {
   }
 
   // Callback from RpcMessenger when sending message to remote sink.
-  void OnSendMessageToSink(std::vector<uint8_t> message) {
+  void OnSendMessageToSink(base::span<const uint8_t> message) {
     openscreen::cast::RpcMessage rpc;
     ASSERT_TRUE(rpc.ParseFromArray(message.data(), message.size()));
     received_rpc_.push_back(std::move(rpc));
   }
 
   void RewireSendMessageCallbackToSink() {
-    controller_->GetRpcMessenger()->set_send_message_cb_for_testing(
-        [this](std::vector<uint8_t> message) {
-          this->OnSendMessageToSink(message);
-        });
+    current_rpc_cb_ = base::BindRepeating(
+        &CourierRendererTest::OnSendMessageToSink, base::Unretained(this));
   }
 
  protected:
@@ -323,10 +321,8 @@ class CourierRendererTest : public testing::Test {
     EXPECT_CALL(*render_client_, OnPipelineStatus(_)).Times(1);
     DCHECK(renderer_);
     // Redirect RPC message for simulate receiver scenario
-    controller_->GetRpcMessenger()->set_send_message_cb_for_testing(
-        [this](std::vector<uint8_t> message) {
-          this->RpcMessageResponseBot(message);
-        });
+    current_rpc_cb_ = base::BindRepeating(
+        &CourierRendererTest::RpcMessageResponseBot, base::Unretained(this));
     RunPendingTasks();
     renderer_->Initialize(
         media_resource_.get(), render_client_.get(),
@@ -358,7 +354,9 @@ class CourierRendererTest : public testing::Test {
   }
 
   void SetUp() override {
-    controller_ = FakeRemoterFactory::CreateController(false);
+    controller_ = FakeRemoterFactory::CreateController(
+        false, base::BindRepeating(&CourierRendererTest::OnSendRpc,
+                                   base::Unretained(this)));
     controller_->OnMetadataChanged(DefaultMetadata());
 
     RewireSendMessageCallbackToSink();
@@ -369,6 +367,12 @@ class CourierRendererTest : public testing::Test {
     clock_.Advance(base::Seconds(1));
 
     RunPendingTasks();
+  }
+
+  void OnSendRpc(base::span<const uint8_t> message) {
+    if (current_rpc_cb_) {
+      current_rpc_cb_.Run(message);
+    }
   }
 
   CourierRenderer::State state() const { return renderer_->state_; }
@@ -496,6 +500,8 @@ class CourierRendererTest : public testing::Test {
 
   // Stores RPC messages that have been sent to the remote sink.
   std::vector<openscreen::cast::RpcMessage> received_rpc_;
+
+  base::RepeatingCallback<void(base::span<const uint8_t>)> current_rpc_cb_;
 };
 
 TEST_F(CourierRendererTest, Initialize) {
@@ -555,10 +561,8 @@ TEST_F(CourierRendererTest, Flush) {
 
   // Flush Renderer.
   // Redirect RPC message for simulate receiver scenario
-  controller_->GetRpcMessenger()->set_send_message_cb_for_testing(
-      [this](std::vector<uint8_t> message) {
-        this->RpcMessageResponseBot(message);
-      });
+  current_rpc_cb_ = base::BindRepeating(
+      &CourierRendererTest::RpcMessageResponseBot, base::Unretained(this));
   RunPendingTasks();
   EXPECT_CALL(*render_client_, OnFlushCallback()).Times(1);
   renderer_->Flush(base::BindOnce(&RendererClientImpl::OnFlushCallback,

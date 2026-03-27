@@ -38,13 +38,13 @@ class MockMessagePort : public cast_api_bindings::MessagePort {
   MOCK_CONST_METHOD0(CanPostMessage, bool());
 };
 
-class MockTlsConnectionClient : public openscreen::TlsConnection::Client {
+class MockConnectionClient : public openscreen::Connection::Client {
  public:
-  ~MockTlsConnectionClient() override = default;
+  ~MockConnectionClient() override = default;
 
-  MOCK_METHOD2(OnRead, void(openscreen::TlsConnection*, std::vector<uint8_t>));
+  MOCK_METHOD2(OnRead, void(openscreen::Connection*, std::vector<uint8_t>));
   MOCK_METHOD2(OnError,
-               void(openscreen::TlsConnection*, const openscreen::Error&));
+               void(openscreen::Connection*, const openscreen::Error&));
 };
 
 class MockTaskRunner : public openscreen::TaskRunner {
@@ -94,7 +94,7 @@ class MessagePortTlsConnectionTest : public testing::Test {
   raw_ptr<cast_api_bindings::MessagePort::Receiver> connection_as_receiver_;
 
   raw_ptr<MockMessagePort> message_port_;
-  StrictMock<MockTlsConnectionClient> client_;
+  StrictMock<MockConnectionClient> client_;
   StrictMock<MockTaskRunner> task_runner_;
 };
 

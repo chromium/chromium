@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/openscreen/src/platform/api/connection.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -24,6 +25,7 @@ using ::testing::StrictMock;
 
 namespace openscreen_platform {
 
+using openscreen::Connection;
 using openscreen::Error;
 using openscreen::TlsConnection;
 
@@ -129,10 +131,10 @@ class FakeSocketStreams {
   std::vector<uint8_t> outbound_data_;
 };
 
-class MockTlsConnectionClient : public TlsConnection::Client {
+class MockConnectionClient : public Connection::Client {
  public:
-  MOCK_METHOD(void, OnError, (TlsConnection*, const Error&), (override));
-  MOCK_METHOD(void, OnRead, (TlsConnection*, std::vector<uint8_t>), (override));
+  MOCK_METHOD(void, OnError, (Connection*, const Error&), (override));
+  MOCK_METHOD(void, OnRead, (Connection*, std::vector<uint8_t>), (override));
 };
 
 }  // namespace
@@ -143,7 +145,7 @@ class TlsClientConnectionTest : public ::testing::Test {
   ~TlsClientConnectionTest() override = default;
 
   void SetUp() override {
-    client_ = std::make_unique<StrictMock<MockTlsConnectionClient>>();
+    client_ = std::make_unique<StrictMock<MockConnectionClient>>();
     socket_streams_ = std::make_unique<FakeSocketStreams>();
     connection_ = std::make_unique<TlsClientConnection>(
         kValidEndpointOne, kValidEndpointTwo,
@@ -159,13 +161,13 @@ class TlsClientConnectionTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  StrictMock<MockTlsConnectionClient>* client() const { return client_.get(); }
+  StrictMock<MockConnectionClient>* client() const { return client_.get(); }
   FakeSocketStreams* socket_streams() const { return socket_streams_.get(); }
   TlsClientConnection* connection() const { return connection_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<StrictMock<MockTlsConnectionClient>> client_;
+  std::unique_ptr<StrictMock<MockConnectionClient>> client_;
   std::unique_ptr<FakeSocketStreams> socket_streams_;
   std::unique_ptr<TlsClientConnection> connection_;
 };

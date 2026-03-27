@@ -53,6 +53,11 @@ class MockRemotee : public mojom::Remotee {
   uint32_t flush_audio_count() { return flush_audio_count_; }
   uint32_t flush_video_count() { return flush_video_count_; }
 
+  void set_send_message_to_source_cb(
+      base::RepeatingCallback<void(const std::vector<uint8_t>&)> cb) {
+    send_message_to_source_cb_ = std::move(cb);
+  }
+
   mojo::PendingRemote<mojom::Remotee> BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
@@ -71,6 +76,9 @@ class MockRemotee : public mojom::Remotee {
 
   mojo::Remote<mojom::RemotingSink> remoting_sink_;
   mojo::Receiver<mojom::Remotee> receiver_{this};
+
+  base::RepeatingCallback<void(const std::vector<uint8_t>&)>
+      send_message_to_source_cb_;
 };
 
 class MockReceiverController : public ReceiverController {
@@ -86,8 +94,6 @@ class MockReceiverController : public ReceiverController {
 
   MockReceiverController();
   ~MockReceiverController() override;
-
-  void OnSendRpc(std::vector<uint8_t> message);
 
   std::unique_ptr<MockRemotee> mock_remotee_;
 };

@@ -134,9 +134,14 @@ void FakeRemotingDataStreamSender::CancelInFlightData() {
   ++cancel_in_flight_count_;
 }
 
-FakeRemoter::FakeRemoter(mojo::PendingRemote<mojom::RemotingSource> source,
-                         bool start_will_fail)
-    : source_(std::move(source)), start_will_fail_(start_will_fail) {}
+FakeRemoter::FakeRemoter(
+    mojo::PendingRemote<mojom::RemotingSource> source,
+    bool start_will_fail,
+    base::RepeatingCallback<void(base::span<const uint8_t>)>
+        send_message_to_sink_cb)
+    : source_(std::move(source)),
+      start_will_fail_(start_will_fail),
+      send_message_to_sink_cb_(std::move(send_message_to_sink_cb)) {}
 
 FakeRemoter::~FakeRemoter() = default;
 
@@ -180,7 +185,11 @@ void FakeRemoter::Stop(mojom::RemotingStopReason reason) {
                                 weak_factory_.GetWeakPtr(), reason));
 }
 
-void FakeRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {}
+void FakeRemoter::SendMessageToSink(const std::vector<uint8_t>& message) {
+  if (send_message_to_sink_cb_) {
+    send_message_to_sink_cb_.Run(message);
+  }
+}
 
 void FakeRemoter::EstimateTransmissionCapacity(
     mojom::Remoter::EstimateTransmissionCapacityCallback callback) {
@@ -199,8 +208,12 @@ void FakeRemoter::Stopped(mojom::RemotingStopReason reason) {
   source_->OnStopped(reason);
 }
 
-FakeRemoterFactory::FakeRemoterFactory(bool start_will_fail)
-    : start_will_fail_(start_will_fail) {}
+FakeRemoterFactory::FakeRemoterFactory(
+    bool start_will_fail,
+    base::RepeatingCallback<void(base::span<const uint8_t>)>
+        send_message_to_sink_cb)
+    : start_will_fail_(start_will_fail),
+      send_message_to_sink_cb_(std::move(send_message_to_sink_cb)) {}
 
 FakeRemoterFactory::~FakeRemoterFactory() = default;
 
@@ -208,18 +221,22 @@ void FakeRemoterFactory::Create(
     mojo::PendingRemote<mojom::RemotingSource> source,
     mojo::PendingReceiver<mojom::Remoter> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<FakeRemoter>(std::move(source), start_will_fail_),
+      std::make_unique<FakeRemoter>(std::move(source), start_will_fail_,
+                                    send_message_to_sink_cb_),
       std::move(receiver));
 }
 
 // static
 std::unique_ptr<RendererController> FakeRemoterFactory::CreateController(
-    bool start_will_fail) {
+    bool start_will_fail,
+    base::RepeatingCallback<void(base::span<const uint8_t>)>
+        send_message_to_sink_cb) {
   mojo::PendingRemote<mojom::RemotingSource> remoting_source;
   auto remoting_source_receiver =
       remoting_source.InitWithNewPipeAndPassReceiver();
   mojo::PendingRemote<mojom::Remoter> remoter;
-  FakeRemoterFactory remoter_factory(start_will_fail);
+  FakeRemoterFactory remoter_factory(start_will_fail,
+                                     std::move(send_message_to_sink_cb));
   remoter_factory.Create(std::move(remoting_source),
                          remoter.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RendererController>(
