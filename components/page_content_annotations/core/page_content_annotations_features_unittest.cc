@@ -41,7 +41,23 @@ TEST(PageContentAnnotationsFeaturesTest, ValidPageContentRAPPORMetrics) {
 }
 
 TEST(PageContentAnnotationsFeaturesTest,
-     ShouldExecutePageVisibilityModelOnPageContent) {
+     ShouldExecutePageVisibilityModelOnPageContentDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndDisableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+}
+
+TEST(PageContentAnnotationsFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentEmptyAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPageVisibilityPageContentAnnotations);
+
   // These are default enabled values.
   EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en"));
   EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-AU"));
@@ -65,6 +81,20 @@ TEST(PageContentAnnotationsFeaturesTest, RemotePageMetadataEnabledDefaults) {
   EXPECT_TRUE(features::RemotePageMetadataEnabled("", ""));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("en-US", "badcountry"));
   EXPECT_TRUE(features::RemotePageMetadataEnabled("badlocale", "US"));
+}
+
+TEST(PageContentAnnotationsFeaturesTest,
+     ShouldExecutePageVisibilityModelOnPageContentWithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPageVisibilityPageContentAnnotations,
+      {{"supported_locales", "en,zh-TW"}});
+
+  EXPECT_TRUE(features::ShouldExecutePageVisibilityModelOnPageContent("en-US"));
+  EXPECT_FALSE(features::ShouldExecutePageVisibilityModelOnPageContent(""));
+  EXPECT_FALSE(
+      features::ShouldExecutePageVisibilityModelOnPageContent("zh-CN"));
 }
 
 TEST(PageContentAnnotationsFeaturesTest,

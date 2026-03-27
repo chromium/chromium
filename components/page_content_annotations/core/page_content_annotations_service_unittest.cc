@@ -164,7 +164,8 @@ class PageContentAnnotationsServiceTest : public testing::Test {
               {"pca_service_wait_for_title_delay_in_milliseconds",
                base::NumberToString(kWaitForTitleDelay.InMilliseconds())},
               {"annotate_visit_batch_size", "1"},
-          }}},
+          }},
+         {features::kPageVisibilityPageContentAnnotations, {}}},
         /*disabled_features=*/{
             optimization_guide::features::kPreventLongRunningPredictionModels});
   }
