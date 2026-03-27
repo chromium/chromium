@@ -5176,6 +5176,7 @@ enum WebFeature {
   kNoscriptMarkupWithScriptingDisabledXHR = 5859,
   kNoscriptMarkupWithScriptingDisabledDOMParser = 5860,
   kNoscriptMarkupWithScriptingDisabledNoBrowsingContext = 5861,
+  kSingleAxisScroller = 5862,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

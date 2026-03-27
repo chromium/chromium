@@ -636,9 +636,12 @@ void StyleAdjuster::AdjustStyleForHTMLElement(ComputedStyleBuilder& builder,
 }
 
 void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
-                                   Element* element) {
+                                   Element* element,
+                                   Document& document) {
   DCHECK(builder.OverflowX() != EOverflow::kVisible ||
          builder.OverflowY() != EOverflow::kVisible);
+
+  bool single_axis_scroller = false;
 
   bool overflow_is_clip_or_visible =
       IsOverflowClipOrVisible(builder.OverflowY()) &&
@@ -668,26 +671,33 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
     // 'visible.' If they aren't, 'clip' and 'visible' is reset.
     if (builder.OverflowX() == EOverflow::kVisible) {
       builder.SetOverflowX(EOverflow::kAuto);
-    } else if (!RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled() &&
-               builder.OverflowX() == EOverflow::kClip) {
-      builder.SetOverflowX(EOverflow::kHidden);
+    } else if (builder.OverflowX() == EOverflow::kClip) {
+      single_axis_scroller = true;
+      if (!RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled()) {
+        builder.SetOverflowX(EOverflow::kHidden);
+      }
     }
   } else if (!IsOverflowClipOrVisible(builder.OverflowX())) {
     // Values of 'clip' and 'visible' can only be used with 'clip' and
     // 'visible.' If they aren't, 'clip' and 'visible' is reset.
     if (builder.OverflowY() == EOverflow::kVisible) {
       builder.SetOverflowY(EOverflow::kAuto);
-    } else if (!RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled() &&
-               builder.OverflowY() == EOverflow::kClip) {
-      builder.SetOverflowY(EOverflow::kHidden);
+    } else if (builder.OverflowY() == EOverflow::kClip) {
+      single_axis_scroller = true;
+      if (!RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled()) {
+        builder.SetOverflowY(EOverflow::kHidden);
+      }
     }
+  }
+
+  if (single_axis_scroller) {
+    UseCounter::Count(document, WebFeature::kSingleAxisScroller);
   }
 
   if (element && !element->IsPseudoElement() &&
       (builder.OverflowX() == EOverflow::kClip ||
        builder.OverflowY() == EOverflow::kClip)) {
-    UseCounter::Count(element->GetDocument(),
-                      WebFeature::kOverflowClipAlongEitherAxis);
+    UseCounter::Count(document, WebFeature::kOverflowClipAlongEitherAxis);
   }
 
   // overlay is a legacy alias of auto.
@@ -1251,7 +1261,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   if (builder.OverflowX() != EOverflow::kVisible ||
       builder.OverflowY() != EOverflow::kVisible) {
-    AdjustOverflow(builder, element ? element : state.GetPseudoElement());
+    AdjustOverflow(builder, element ? element : state.GetPseudoElement(),
+                   state.GetDocument());
   }
 
   // Highlight pseudos propagate decorations with inheritance only.

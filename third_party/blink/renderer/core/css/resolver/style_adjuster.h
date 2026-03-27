@@ -64,7 +64,9 @@ class StyleAdjuster {
                                          const ComputedStyle& parent_style,
                                          Element* element,
                                          bool is_svg_root);
-  static void AdjustOverflow(ComputedStyleBuilder&, Element* element);
+  static void AdjustOverflow(ComputedStyleBuilder&,
+                             Element* element,
+                             Document&);
   static void AdjustForForcedColorsMode(ComputedStyleBuilder&, Document&);
   static void AdjustForSVGTextElement(ComputedStyleBuilder&);
 };
