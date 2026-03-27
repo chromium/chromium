@@ -342,6 +342,33 @@ TEST_F(QuicEndToEndTest, EnableMLKEM) {
             SSL_GROUP_X25519_MLKEM768);
 }
 
+TEST_F(QuicEndToEndTest, CryptoHandshakeCompleteMetrics) {
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  base::HistogramTester histograms;
+  TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                   transaction_factory_.get());
+  consumer.Start(&request_, NetLogWithSource());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+  // The Net.QuicSession.HandshakeConfirmedTime metric should be logged.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime", 1);
+
+  // MTC variants of that metric (and related MTC metrics) should not be
+  // present.
+  histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.MTC.NewConnection", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.HandshakeConfirmedTime.MTC.Resumption", 0);
+  histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC2", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.TLSHandshakeBytes.MTC2.NewConnection", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 0);
+}
+
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 class QuicEndToEndMTCTest : public QuicEndToEndTest {
  public:
@@ -547,6 +574,64 @@ TEST_P(QuicEndToEndMTCResumptionTest, MTCResultResumptionRejected) {
   // be logged because we received a cert (an MTC cert) from the server.
   histograms.ExpectUniqueSample("Net.QuicSession.MTCResult2",
                                 MTCResult::kValidMTC, 1);
+}
+
+TEST_P(QuicEndToEndMTCResumptionTest, HandshakeBytesAndConfirmedTime) {
+  AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
+
+  // First request (full handshake).
+  {
+    base::HistogramTester histograms;
+
+    TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                     transaction_factory_.get());
+    consumer.Start(&request_, NetLogWithSource());
+    ASSERT_NO_FATAL_FAILURE(
+        CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+    // HandshakeConfirmedTime and TLSHandshakeBytes should be recorded (and with
+    // the NewConnection variant).
+    histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC",
+                                1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.HandshakeConfirmedTime.MTC.NewConnection", 1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.HandshakeConfirmedTime.MTC.Resumption", 0);
+    histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC2", 1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.TLSHandshakeBytes.MTC2.NewConnection", 1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 0);
+  }
+
+  // Force a second QUIC connection.
+  transaction_factory_->GetSession()->quic_session_pool()->CloseAllSessions(
+      ERR_FAILED, quic::QUIC_NO_ERROR);
+
+  // Second request (resumption).
+  {
+    base::HistogramTester histograms;
+
+    TestTransactionConsumer consumer(DEFAULT_PRIORITY,
+                                     transaction_factory_.get());
+    consumer.Start(&request_, NetLogWithSource());
+    ASSERT_NO_FATAL_FAILURE(
+        CheckResponse(consumer, "HTTP/1.1 200", kResponseBody));
+
+    // HandshakeConfirmedTime and TLSHandshakeBytes should be recorded again
+    // (this time with the Resumption variant).
+    histograms.ExpectTotalCount("Net.QuicSession.HandshakeConfirmedTime.MTC",
+                                1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.HandshakeConfirmedTime.MTC.NewConnection", 0);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.HandshakeConfirmedTime.MTC.Resumption", 1);
+    histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC2", 1);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.TLSHandshakeBytes.MTC2.NewConnection", 0);
+    histograms.ExpectTotalCount(
+        "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 1);
+  }
 }
 
 TEST_F(QuicEndToEndMTCTest, MTCResultZeroRttRejectedResumptionAccepted) {
