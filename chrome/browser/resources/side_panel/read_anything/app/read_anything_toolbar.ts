@@ -174,7 +174,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor settingsPrefs: SettingsPrefs = DEFAULT_SETTINGS;
-  accessor selectedVoice: SpeechSynthesisVoice|undefined;
+  accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor pageLanguage: string = '';
   accessor isImmersiveMode: boolean = false;
   accessor lineFocusStyle: LineFocusStyle|null = null;

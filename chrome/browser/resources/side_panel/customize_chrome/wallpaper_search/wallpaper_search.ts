@@ -193,9 +193,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private accessor resultsDescriptors_: ResultDescriptors|null = null;
   private resultsPromises_: Array<Promise<WallpaperSearchResponse>> = [];
   private selectedDefaultColor_: string|undefined;
-  protected accessor selectedDescriptorA_: string|null = null;
-  protected accessor selectedDescriptorB_: string|null = null;
-  protected accessor selectedDescriptorC_: string|null = null;
+  protected accessor selectedDescriptorA_: string|undefined;
+  protected accessor selectedDescriptorB_: string|undefined;
+  protected accessor selectedDescriptorC_: string|undefined;
   private accessor selectedDescriptorD_: DescriptorDValue|null = null;
   protected accessor selectedFeedbackOption_: CrFeedbackOption =
       CrFeedbackOption.UNSPECIFIED;
@@ -448,12 +448,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     const groupDescriptorColor = groupDescriptors.color?.name !== undefined ?
         descriptorDNameToHex(groupDescriptors.color.name) :
         undefined;
-    return (groupDescriptors.subject?.key || null) ===
-                this.selectedDescriptorA_ &&
-            (groupDescriptors.style?.key || null) ===
-                this.selectedDescriptorB_ &&
-            (groupDescriptors.mood?.key || null) ===
-                this.selectedDescriptorC_ &&
+    return (groupDescriptors.subject?.key) === this.selectedDescriptorA_ &&
+            (groupDescriptors.style?.key) === this.selectedDescriptorB_ &&
+            (groupDescriptors.mood?.key) === this.selectedDescriptorC_ &&
             groupDescriptorColor === this.selectedDefaultColor_ ?
         'true' :
         'false';
@@ -778,9 +775,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private selectDescriptorsFromInspirationGroup_(group: InspirationGroup) {
     const announcer = getAnnouncerInstance();
     const groupDescriptors = group.descriptors;
-    this.selectedDescriptorA_ = groupDescriptors.subject?.key || null;
-    this.selectedDescriptorB_ = groupDescriptors.style?.key || null;
-    this.selectedDescriptorC_ = groupDescriptors.mood?.key || null;
+    this.selectedDescriptorA_ = groupDescriptors.subject?.key;
+    this.selectedDescriptorB_ = groupDescriptors.style?.key;
+    this.selectedDescriptorC_ = groupDescriptors.mood?.key;
 
     if (groupDescriptors.color?.name !== undefined) {
       const hex = descriptorDNameToHex(groupDescriptors.color.name);

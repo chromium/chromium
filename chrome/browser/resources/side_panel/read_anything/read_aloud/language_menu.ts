@@ -174,7 +174,7 @@ export class LanguageMenuElement extends LanguageMenuElementBase implements
       return [];
     }
 
-    const selectedLangLowerCase = this.selectedLang?.toLowerCase();
+    const selectedLangLowerCase = this.selectedLang.toLowerCase();
 
     const availableLangs: string[] = [...new Set([
       ...this.localesOfLangPackVoices,

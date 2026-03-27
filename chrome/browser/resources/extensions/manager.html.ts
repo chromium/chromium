@@ -63,12 +63,12 @@ ${this.showDrawer_ ? html`
             ?from-activity-log="${this.fromActivityLog_}"
             ?show-activity-log="${this.showActivityLog}"
             ?incognito-available="${this.incognitoAvailable_}"
-            .data="${this.detailViewItem_}">
+            .data="${this.detailViewItem_!}">
         </extensions-detail-view>`}">
     </cr-lazy-render-lit>
     <cr-lazy-render-lit id="activity-log" .template="${() => html`
         <extensions-activity-log .delegate="${this.delegate}" slot="view"
-            .extensionInfo="${this.activityLogItem_}">
+            .extensionInfo="${this.activityLogItem_!}">
         </extensions-activity-log>`}">
     </cr-lazy-render-lit>
     <cr-lazy-render-lit id="site-permissions" .template="${() => html`
@@ -106,7 +106,7 @@ ${this.showLoadErrorDialog_ ? html`
 ${this.showInstallWarningsDialog_ ? html`
   <extensions-install-warnings-dialog
       @close="${this.onInstallWarningsDialogClose_}"
-      .installWarnings="${this.installWarnings_}">
+      .installWarnings="${this.installWarnings_!}">
   </extensions-install-warnings-dialog>` : ''}
 <cr-toast-manager></cr-toast-manager>
 <!--_html_template_end_-->`;

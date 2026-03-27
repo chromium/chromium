@@ -96,7 +96,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     };
   }
 
-  accessor selectedVoice: SpeechSynthesisVoice|undefined;
+  accessor selectedVoice: SpeechSynthesisVoice|null = null;
   accessor localeToDisplayName: {[lang: string]: string} = {};
   accessor previewVoicePlaying: SpeechSynthesisVoice|null = null;
   accessor enabledLangs: string[] = [];

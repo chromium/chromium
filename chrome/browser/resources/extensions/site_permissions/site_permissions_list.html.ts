@@ -52,7 +52,7 @@ ${this.showEditSiteUrlDialog_ ? html`
 
 ${this.showEditSitePermissionsDialog_ ? html`
   <site-permissions-edit-permissions-dialog .delegate="${this.delegate}"
-      .extensions="${this.extensions}" .site="${this.siteToEdit_}"
+      .extensions="${this.extensions}" .site="${this.siteToEdit_ || ''}"
       .originalSiteSet="${this.siteSet}"
       @close="${this.onEditSitePermissionsDialogClose_}">
   </site-permissions-edit-permissions-dialog>` : ''}

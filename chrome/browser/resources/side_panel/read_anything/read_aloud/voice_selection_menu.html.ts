@@ -87,7 +87,7 @@ ${this.showLanguageMenuDialog_
   <language-menu id="languageMenu"
       .enabledLangs="${this.enabledLangs}"
       .localeToDisplayName="${this.localeToDisplayName}"
-      .selectedLang="${this.selectedVoice?.lang}"
+      .selectedLang="${this.selectedVoice?.lang || ''}"
       .availableVoices="${this.availableVoices}"
       @close="${this.onLanguageMenuClose_}">
   </language-menu>

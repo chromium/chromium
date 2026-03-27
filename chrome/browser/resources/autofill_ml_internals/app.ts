@@ -34,7 +34,7 @@ export class AppElement extends CrLitElement {
   }
 
   protected accessor logEntries_: MlPredictionLog[] = [];
-  protected accessor selectedLog_: MlPredictionLog|null = null;
+  protected accessor selectedLog_: MlPredictionLog|undefined;
 
   private browserProxy_: AutofillMlInternalsBrowserProxy =
       AutofillMlInternalsBrowserProxy.getInstance();

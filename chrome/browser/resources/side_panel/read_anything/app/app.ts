@@ -145,7 +145,7 @@ export class AppElement extends AppElementBase implements SpeechListener,
   protected accessor isSpeechActive_: boolean = false;
   protected accessor isAudioCurrentlyPlaying_: boolean = false;
 
-  protected accessor presentationState_: number|undefined = undefined;
+  protected accessor presentationState_: number = 0;
 
   isImmersiveMode(): boolean {
     return this.presentationState_ ===

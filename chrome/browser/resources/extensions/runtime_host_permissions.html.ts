@@ -5,6 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ExtensionsRuntimeHostPermissionsElement} from './runtime_host_permissions.js';
+import type {ServiceInterface} from './service.js';
 
 export function getHtml(this: ExtensionsRuntimeHostPermissionsElement) {
   // clang-format off
@@ -133,7 +134,8 @@ ${this.showSpecificSites_() ? html`
   </button>
 </cr-action-menu>
 ${this.showHostDialog_ ? html`
-  <extensions-runtime-hosts-dialog .delegate="${this.delegate}"
+  <extensions-runtime-hosts-dialog
+      .delegate="${this.delegate as ServiceInterface}"
       .itemId="${this.itemId}"
       .enableEnhancedSiteControls="${this.enableEnhancedSiteControls}"
       .currentSite="${this.hostDialogModel_}"

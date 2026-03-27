@@ -50,7 +50,7 @@ ${this.getSortedHosts_().map(item => html`
 
 ${this.showMatchingRestrictedSitesDialog_ ? html`
   <extensions-restricted-sites-dialog
-      .firstRestrictedSite="${this.matchingRestrictedSites_[0]}"
+      .firstRestrictedSite="${this.matchingRestrictedSites_[0]!}"
       @close="${this.onMatchingRestrictedSitesDialogClose_}">
   </extensions-restricted-sites-dialog>` : ''}
 <!--_html_template_end_-->`;

@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {asyncMap} from './async_map_directive.js';
 import type {ExtensionsItemListElement} from './item_list.js';
+import type {ServiceInterface} from './service.js';
 
 export function getHtml(this: ExtensionsItemListElement) {
   // clang-format off
@@ -16,7 +17,7 @@ export function getHtml(this: ExtensionsItemListElement) {
     ${this.showSafetyCheckReviewPanel_ ? html`
       <div class="items-container panel">
         <extensions-review-panel .extensions="${this.unsafeExtensions_}"
-            .delegate="${this.delegate}">
+            .delegate="${this.delegate as ServiceInterface}">
         </extensions-review-panel>
       </div>` : ''}
 
@@ -24,7 +25,7 @@ export function getHtml(this: ExtensionsItemListElement) {
       <div class="items-container panel">
         <extensions-mv2-deprecation-panel
             .extensions="${this.mv2DeprecatedExtensions_}"
-            .delegate="${this.delegate}"
+            .delegate="${this.delegate as ServiceInterface}"
             .mv2ExperimentStage="${this.mv2ExperimentStage_}"
             ?show-title="${this.showSafetyCheckReviewPanel_}">
         </extensions-mv2-deprecation-panel>
@@ -56,7 +57,8 @@ export function getHtml(this: ExtensionsItemListElement) {
           <extensions-item id="${item.id}" .data="${item}"
               ?safety-check-showing="${
                   this.hasSafetyCheckTriggeringExtension_()}"
-              .delegate="${this.delegate}" ?in-dev-mode="${this.inDevMode}"
+              .delegate="${this.delegate as ServiceInterface}"
+              ?in-dev-mode="${this.inDevMode}"
               .mv2ExperimentStage="${this.mv2ExperimentStage_}">
           </extensions-item>`, 6)}
       </div>
@@ -69,7 +71,8 @@ export function getHtml(this: ExtensionsItemListElement) {
       <div class="items-container">
         ${asyncMap(this.filteredApps_, item => html`
           <extensions-item id="${item.id}" .data="${item}"
-              .delegate="${this.delegate}" ?in-dev-mode="${this.inDevMode}">
+              .delegate="${this.delegate as ServiceInterface}"
+              ?in-dev-mode="${this.inDevMode}">
           </extensions-item>`, 6)}
       </div>
     </div>

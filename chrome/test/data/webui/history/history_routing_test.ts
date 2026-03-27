@@ -398,6 +398,6 @@ suite(`routing-test-with-history-embeddings-enabled`, () => {
 
     navigateTo('/?q=test', app);
     await microtasksFinished();
-    assertEquals(null, filterChips.timeRangeStart);
+    assertEquals(undefined, filterChips.timeRangeStart);
   });
 });

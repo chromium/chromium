@@ -4,6 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ServiceInterface} from './service.js';
 import type {ToolbarElement} from './toolbar.js';
 
 export function getHtml(this: ToolbarElement) {
@@ -34,7 +35,7 @@ export function getHtml(this: ToolbarElement) {
   </if>
 </cr-toolbar>
 ${this.showPackDialog_ ? html`
-  <extensions-pack-dialog .delegate="${this.delegate}"
+  <extensions-pack-dialog .delegate="${this.delegate as ServiceInterface}"
       @close="${this.onPackDialogClose_}">
   </extensions-pack-dialog>` : ''}
 <div id="devDrawer" ?expanded="${this.expanded_}">

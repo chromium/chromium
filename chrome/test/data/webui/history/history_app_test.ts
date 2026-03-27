@@ -247,7 +247,7 @@ suite('HistoryAppTest', function() {
       },
     }));
     await microtasksFinished();
-    assertEquals(null, historyEmbeddings.timeRangeStart);
+    assertEquals(undefined, historyEmbeddings.timeRangeStart);
   });
 
   test('UsesMinWordCount', async () => {

@@ -4,6 +4,8 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
+import type {ServiceInterface} from '../service.js';
+
 import type {ExtensionsSitePermissionsBySiteElement} from './site_permissions_by_site.js';
 
 export function getHtml(this: ExtensionsSitePermissionsBySiteElement) {
@@ -20,7 +22,8 @@ export function getHtml(this: ExtensionsSitePermissionsBySiteElement) {
     <div id="site-groups">
       ${this.siteGroups_.map((item, index) => html`
         <site-permissions-site-group .data="${item}"
-            .delegate="${this.delegate}" .extensions="${this.extensions}"
+            .delegate="${this.delegate as ServiceInterface}"
+            .extensions="${this.extensions}"
             list-index="${index}">
         </site-permissions-site-group>`)}
     </div>

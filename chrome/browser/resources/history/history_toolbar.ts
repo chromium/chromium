@@ -87,7 +87,7 @@ export class HistoryToolbarElement extends CrLitElement {
   accessor hasDrawer: boolean = false;
   accessor hasMoreResults: boolean = false;
   accessor querying: boolean = false;
-  accessor queryInfo: HistoryQuery|undefined;
+  accessor queryInfo: HistoryQuery|null = null;
   accessor spinnerActive: boolean = false;
   accessor showMenuPromo: boolean = false;
   protected accessor itemsSelected_: boolean = false;

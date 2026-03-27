@@ -2154,7 +2154,8 @@ suite('WallpaperSearchTest', () => {
 
       assertEquals(
           'key bar', wallpaperSearchElement.$.descriptorComboboxA.value);
-      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals(
+          undefined, wallpaperSearchElement.$.descriptorComboboxB.value);
       assertEquals(
           'key baz', wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
@@ -2262,8 +2263,10 @@ suite('WallpaperSearchTest', () => {
 
       assertEquals(
           'key bar', wallpaperSearchElement.$.descriptorComboboxA.value);
-      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxB.value);
-      assertEquals(null, wallpaperSearchElement.$.descriptorComboboxC.value);
+      assertEquals(
+          undefined, wallpaperSearchElement.$.descriptorComboboxB.value);
+      assertEquals(
+          undefined, wallpaperSearchElement.$.descriptorComboboxC.value);
       assertFalse(
           !!$$(wallpaperSearchElement, '#descriptorMenuD button [checked]'));
       loadingEvent = await loadingEventPromise;
