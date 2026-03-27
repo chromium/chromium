@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] body marginwidth vs body leftmargin
+  assert_equals: marginTop expected "20px" but got "10px"
+[FAIL] iframe marginwidth vs child body leftmargin
+  assert_equals: marginTop expected "20px" but got "10px"
+[FAIL] iframe marginwidth vs child body marginwidth
+  assert_equals: marginTop expected "20px" but got "10px"
+Harness: the test ran to completion.
+

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test that body's rightmargin and bottommargin attributes are ignored in standards mode
-  assert_equals: expected "8px" but got "100px"
-Harness: the test ran to completion.
-
