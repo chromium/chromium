@@ -155,9 +155,6 @@
       Search <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> or type URL
     </message>
     <if expr="is_android or enable_vr">
-      <message name="IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME_FOR_AI_MODE" desc="The text displayed in the omnibox when it is empty. Includes Default Search Engine name." formatter_data="android_java">
-        Ask <ph name="ENGINE_NAME">$1<ex>Yahoo</ex></ph> anything
-      </message>
       <message name="IDS_OMNIBOX_NAVATTACH_GALLERY" desc="The text displayed in the omnibox attachments popup. When clicked - opens image gallery." formatter_data="android_java">
         Gallery
       </message>
@@ -682,7 +679,8 @@
   <message name="IDS_OMNIBOX_PAGE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the @page starter pack match without further text input." translateable="false">
     Enter a question
   </message>
-  <message name="IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the AI Mode starter pack without further text input.">
+  <message name="IDS_OMNIBOX_AI_MODE_SCOPE_PLACEHOLDER_TEXT" desc="The string displayed in the omnibox as placeholder text when the user has selected the AI Mode starter pack without further text input."
+    formatter_data="android_java">
     Ask anything
   </message>
 

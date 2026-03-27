@@ -554,7 +554,7 @@ public class SearchEngineUtilsUnitTest {
         configureSearchEngine("google", "Google");
         SearchEngineUtils searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         String searchEngineHint = "Search Google or type URL";
-        String aiModeHint = "Ask Google anything";
+        String aiModeHint = "Ask anything";
         String imageGenHint = "Image Gen Tool Hint";
         String deepSearchHint = "Deep Search Tool Hint";
         String canvasHint = "Canvas Tool Hint";
