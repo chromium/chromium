@@ -22,6 +22,7 @@ import public "components/optimization_guide/proto/features/scam_detection.proto
 import public "components/optimization_guide/proto/features/summarize.proto";
 import public "components/optimization_guide/proto/features/tab_organization.proto";
 import public "components/optimization_guide/proto/features/writing_assistance_api.proto";
+import public "components/optimization_guide/proto/features/classify_api.proto";
 
 // Extra LoggingData message for using the Test capability on-device.
 message TestLoggingData {
@@ -51,4 +52,5 @@ message OnDeviceFeatureProtoRegistry {
   optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
   ExampleForTestingData j = 10;
   optimization_guide.proto.ProofreaderApiLoggingData l = 12;
+  optimization_guide.proto.ClassifyApiLoggingData m = 13;
 }
