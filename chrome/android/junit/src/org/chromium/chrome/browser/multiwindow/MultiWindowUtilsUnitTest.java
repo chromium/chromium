@@ -86,7 +86,6 @@ import java.util.List;
 /** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = 31)
-@EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 public class MultiWindowUtilsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 

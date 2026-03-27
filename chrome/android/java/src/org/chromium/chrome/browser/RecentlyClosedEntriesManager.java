@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowA
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
-import org.chromium.chrome.browser.multiwindow.UiUtils;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
 import org.chromium.chrome.browser.ntp.RecentlyClosedTab;
@@ -55,8 +54,7 @@ import java.util.concurrent.TimeUnit;
 // TODO:(crbug.com/466442723): Try move RecentTabs related file to a separate package.
 @NullMarked
 public class RecentlyClosedEntriesManager {
-    public static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW = 25;
-    private static final int RECENTLY_CLOSED_MAX_ENTRY_COUNT = 5;
+    public static final int MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS = 25;
     private static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
     private static @Nullable RecentlyClosedTabManager sRecentlyClosedTabManagerForTests;
     private static @Nullable Integer sMaxEntriesForTests;
@@ -195,12 +193,6 @@ public class RecentlyClosedEntriesManager {
             int instanceId,
             @JniType("base::OnceCallback<void(const jni_zero::JavaRef<jobject>&)>&&")
                     JniOnceCallback<@Nullable RecentlyClosedWindowMetadata> callback) {
-        // This function requires the kRecentlyClosedTabsAndWindows feature.
-        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            callback.onResult(null);
-            return;
-        }
-
         Set<RecentlyClosedEntriesManager> managers =
                 RecentlyClosedEntriesManagerTrackerImpl.getInstance().getManagers();
         if (managers.size() == 0) {
@@ -289,12 +281,7 @@ public class RecentlyClosedEntriesManager {
                 assumeNonNull(
                         mRecentlyClosedTabManager.getRecentlyClosedEntries(
                                 getRecentlyClosedMaxEntry()));
-
-        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            mRecentlyClosedEntries = sessionRecentlyClosedEntries;
-        } else {
-            getRecentlyClosedTabsAndWindows(sessionRecentlyClosedEntries);
-        }
+        getRecentlyClosedTabsAndWindows(sessionRecentlyClosedEntries);
 
         if (mEntriesUpdatedCallback != null) {
             mEntriesUpdatedCallback.onResult(mRecentlyClosedEntries);
@@ -343,11 +330,6 @@ public class RecentlyClosedEntriesManager {
      *     restoration, used for metrics.
      */
     public void openMostRecentlyClosedEntry(@NewWindowAppSource int newWindowSource) {
-        if (!UiUtils.isRecentlyClosedTabsAndWindowsEnabled()) {
-            mRegularTabModel.openMostRecentlyClosedEntry();
-            return;
-        }
-
         RecentlyClosedEntriesManagerTrackerImpl tracker =
                 RecentlyClosedEntriesManagerTrackerImpl.getInstance();
         if (tracker.shouldOpenMostRecentTabEntryNext()) {
@@ -420,9 +402,7 @@ public class RecentlyClosedEntriesManager {
         if (sMaxEntriesForTests != null) {
             return sMaxEntriesForTests;
         }
-        return UiUtils.isRecentlyClosedTabsAndWindowsEnabled()
-                ? RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW
-                : RECENTLY_CLOSED_MAX_ENTRY_COUNT;
+        return MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS;
     }
 
     /**
@@ -447,11 +427,11 @@ public class RecentlyClosedEntriesManager {
         }
 
         // Remove the excess entries from the list, and clean up the storage.
-        if (mRecentlyClosedEntries.size() > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
+        if (mRecentlyClosedEntries.size() > MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS) {
             List<Integer> excessInstanceIds = new ArrayList<>();
             int excessSessionEntriesCount = 0;
 
-            while (mRecentlyClosedEntries.size() > RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW) {
+            while (mRecentlyClosedEntries.size() > MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS) {
                 RecentlyClosedEntry excessEntry =
                         mRecentlyClosedEntries.remove(mRecentlyClosedEntries.size() - 1);
                 if (excessEntry instanceof SessionRecentlyClosedEntry) {
@@ -470,7 +450,7 @@ public class RecentlyClosedEntriesManager {
                         excessInstanceIds, CloseWindowAppSource.RECENTLY_CLOSED_LIMIT_EXCEEDED);
             }
 
-            assert mRecentlyClosedEntries.size() <= RECENTLY_CLOSED_MAX_ENTRY_COUNT_WITH_WINDOW;
+            assert mRecentlyClosedEntries.size() <= MAX_RECENTLY_CLOSED_TABS_AND_WINDOWS;
         }
 
         if (mEntriesUpdatedCallback != null) {

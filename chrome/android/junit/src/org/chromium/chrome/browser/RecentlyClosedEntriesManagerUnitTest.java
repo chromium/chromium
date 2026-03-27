@@ -41,14 +41,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerImpl;
 import org.chromium.chrome.browser.RecentlyClosedWindowMetadata;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
@@ -78,7 +75,6 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link RecentlyClosedEntriesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 public class RecentlyClosedEntriesManagerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
@@ -455,15 +451,6 @@ public class RecentlyClosedEntriesManagerUnitTest {
         // Verify the excess session entries are cleaned up.
         verify(mRecentlyClosedTabManager)
                 .clearLeastRecentlyUsedClosedEntries(eq(numSessionEntries));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
-    public void testOpenMostRecentlyClosedEntry_FeatureDisabled() {
-        when(mTabModel.getMostRecentClosureTime()).thenReturn(-1L);
-        mRecentlyClosedEntriesManager.openMostRecentlyClosedEntry(
-                NewWindowAppSource.KEYBOARD_SHORTCUT);
-        verify(mTabModel).openMostRecentlyClosedEntry();
     }
 
     @Test

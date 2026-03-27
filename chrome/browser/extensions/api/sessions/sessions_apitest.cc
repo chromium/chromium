@@ -254,13 +254,9 @@ class ExtensionSessionsTest : public ExtensionBrowserTest {
 
 ExtensionSessionsTest::ExtensionSessionsTest() {
 #if BUILDFLAG(IS_ANDROID)
-  // kRecentlyClosedTabsAndWindows is required for Java-side window restore.
   // kLoadAllTabsAtStartup is required to force WebContents for tabs not to be
   // null, see browser_extension_window_controller.cc.
-  feature_list_.InitWithFeatures(
-      {chrome::android::kRecentlyClosedTabsAndWindows,
-       chrome::android::kLoadAllTabsAtStartup},
-      {});
+  feature_list_.InitWithFeatures({chrome::android::kLoadAllTabsAtStartup}, {});
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

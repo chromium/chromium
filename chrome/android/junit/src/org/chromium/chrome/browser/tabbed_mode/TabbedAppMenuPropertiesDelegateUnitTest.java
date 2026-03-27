@@ -179,7 +179,6 @@ import java.util.List;
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
-    ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS,
     ChromeFeatureList.ANDROID_PAGE_INFO_AS_APP_MENU_ITEM
 })
 public class TabbedAppMenuPropertiesDelegateUnitTest {

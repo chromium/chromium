@@ -27,7 +27,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -76,16 +75,6 @@ public class UiUtils {
                         : getTintedIcon(R.drawable.ic_incognito_fill_24dp);
         mGlobeFavicon = getTintedIcon(R.drawable.ic_globe_24dp);
         mIconGenerator = FaviconUtils.createRoundedRectangleIconGenerator(context);
-    }
-
-    /**
-     * Checks whether the Recently Closed Tabs and Windows feature is enabled.
-     *
-     * @return {@code true} if the Recently Closed Tabs and Windows feature is enabled, {@code
-     *     false} otherwise.
-     */
-    public static boolean isRecentlyClosedTabsAndWindowsEnabled() {
-        return ChromeFeatureList.sRecentlyClosedTabsAndWindows.isEnabled();
     }
 
     /**

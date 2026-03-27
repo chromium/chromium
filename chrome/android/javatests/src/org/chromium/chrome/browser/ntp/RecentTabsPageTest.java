@@ -57,11 +57,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -523,7 +521,6 @@ public class RecentTabsPageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     @Feature({"RecentTabsPage", "RenderTest"})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
@@ -587,7 +584,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     public void testRecentlyClosedWindows_reachInstanceLimit_showInstanceCreationLimitMessage()
             throws Exception {
         // Simulate reaching the instance limit.
@@ -633,7 +629,6 @@ public class RecentTabsPageTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
     @Feature({"RecentTabsPage", "RenderTest"})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))

@@ -12473,13 +12473,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfobarRefreshDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kInfobarRefresh)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"recently-closed-tabs-and-windows",
-     flag_descriptions::kRecentlyClosedTabsAndWindowsName,
-     flag_descriptions::kRecentlyClosedTabsAndWindowsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRecentlyClosedTabsAndWindows)},
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     {"read-anything-immersive-reading-mode",

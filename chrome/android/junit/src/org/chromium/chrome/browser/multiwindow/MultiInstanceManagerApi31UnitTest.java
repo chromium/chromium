@@ -137,7 +137,6 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.RECENTLY_CLOSED_TABS_AND_WINDOWS)
 @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
