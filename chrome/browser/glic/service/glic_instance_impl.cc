@@ -1278,7 +1278,8 @@ void GlicInstanceImpl::OnTabPinningStatusEvent(tabs::TabInterface* tab,
 void GlicInstanceImpl::NotifyPanelWillOpen(
     mojom::InvocationSource invocation_source,
     std::optional<std::string> prompt_suggestion,
-    bool auto_send) {
+    bool auto_send,
+    mojom::FreOverride fre_override) {
   Host::PanelWillOpenOptions options;
   options.conversation_info = GetConversationInfo();
   if (coordinator_delegate_) {
@@ -1288,6 +1289,7 @@ void GlicInstanceImpl::NotifyPanelWillOpen(
   }
   options.prompt_suggestion = prompt_suggestion;
   options.auto_send = auto_send;
+  options.fre_override = fre_override;
   host_.PanelWillOpen(invocation_source, std::move(options));
 }
 

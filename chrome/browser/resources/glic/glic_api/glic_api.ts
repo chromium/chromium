@@ -1384,6 +1384,11 @@ export declare interface PanelOpeningData {
    */
   recentlyActiveConversations?: ConversationInfo[];
   /**
+   * Overrides the First Run Experience. If set, the panel will act as if the
+   * user was or wasn't in a specific FRE state.
+   */
+  freOverride?: FreOverride;
+  /**
    * Information about the conversation being opened.
    *
    * - The web client will load the requested `conversationInfo.conversationId`.
@@ -2634,6 +2639,19 @@ export enum PanelStateKind {
   DETACHED = 1,
   // The panel is a side panel, attached to a browser window.
   ATTACHED = 2,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Represents an override of the First Run Experience (FRE).
+export enum FreOverride {
+  UNSPECIFIED = 0,
+  // Variation that requires text input from the user to unlock full client.
+  TRUST_FIRST_TEXT = 1,
+  // Variation that requires mouse click from the user to unlock full client.
+  TRUST_FIRST_CLICK = 2,
+  // Variation that starts with full client unlocked and shows inline consent.
+  TRUST_FIRST_INLINE = 3,
 }
 
 ///////////////////////////////////////////////

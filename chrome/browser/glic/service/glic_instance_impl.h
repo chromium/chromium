@@ -337,9 +337,11 @@ class GlicInstanceImpl : public GlicInstance,
   // For any pinned tab not already bound to a conversation bind it to this one.
   void OnTabPinningStatusEvent(tabs::TabInterface* tab,
                                GlicPinningStatusEvent event);
-  void NotifyPanelWillOpen(mojom::InvocationSource invocation_source,
-                           std::optional<std::string> prompt_suggestion,
-                           bool auto_send);
+  void NotifyPanelWillOpen(
+      mojom::InvocationSource invocation_source,
+      std::optional<std::string> prompt_suggestion,
+      bool auto_send,
+      mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
 
   void MaybeShowShortcutToastPromo();
 

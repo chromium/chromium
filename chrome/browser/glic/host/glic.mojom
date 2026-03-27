@@ -255,7 +255,6 @@ interface PageHandler {
   SetGuestUrlPresets(
       url.mojom.Url autopush, url.mojom.Url preprod, url.mojom.Url prod);
 };
-
 // @generate glic_api
 // Reason for failure while acting.
 [Stable, Extensible]
@@ -614,7 +613,6 @@ enum SkillSource {
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:SkillSource, //components/sync/protocol/skill_specifics.proto:SkillSource)
 // clang-format on
-
 // LINT.IfChange(Skill)
 // A single skill preview.
 struct SkillPreview {
@@ -643,7 +641,6 @@ struct Skill {
 // clang-format off
 // LINT.ThenChange(//components/skills/public/skill.mojom:Skill, //components/skills/public/skill.h:Skill, //chrome/browser/resources/glic/glic_api/glic_api.ts:Skill)
 // clang-format on
-
 // Request to create a skill.
 struct CreateSkillRequest {
   // The unique identifier of the skill which is an UUID.
@@ -665,6 +662,7 @@ struct UpdateSkillRequest {
   // The unique identifier of the skill to be updated.
   string id;
 };
+
 
 // A list of suggestions for the currently focused tab.
 struct ZeroStateSuggestions {
@@ -1255,6 +1253,9 @@ struct PanelOpeningData {
   //   `registerConversation` or `switchConversation` calls.
   //
   ConversationInfo conversation_info;
+
+  // The FRE override, if any.
+  FreOverride fre_override = kUnspecified;
 };
 
 // @generate glic_api
@@ -1273,6 +1274,19 @@ struct PanelState {
   PanelStateKind kind;
   // Present when attached, indicates to which window the panel is attached.
   int32? window_id;
+};
+
+// @generate glic_api
+// Represents an override of the First Run Experience (FRE).
+[Stable, Extensible]
+enum FreOverride {
+  [Default] kUnspecified = 0,
+  // Variation that requires text input from the user to unlock full client.
+  kTrustFirstText = 1,
+  // Variation that requires mouse click from the user to unlock full client.
+  kTrustFirstClick = 2,
+  // Variation that starts with full client unlocked and shows inline consent.
+  kTrustFirstInline = 3,
 };
 
 // @generate glic_api
