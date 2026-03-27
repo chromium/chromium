@@ -53,7 +53,11 @@ namespace {
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   explicit MockContextualTasksUiService(ContextualTasksService* controller)
-      : ContextualTasksUiService(nullptr, controller, nullptr, nullptr) {}
+      : ContextualTasksUiService(nullptr,
+                                 nullptr,
+                                 controller,
+                                 nullptr,
+                                 nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(GURL,

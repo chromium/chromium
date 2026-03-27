@@ -27,6 +27,7 @@ source_set("contextual_tasks") {
     "contextual_tasks_tab_visit_tracker.cc",
     "contextual_tasks_tab_visit_tracker.h",
     "contextual_tasks_ui_interface.h",
+    "contextual_tasks_ui_service_delegate.h",
     "contextual_tasks_utils.h",
     "task_info_delegate.h",
   ]
@@ -82,6 +83,15 @@ source_set("impl") {
     sources += [
       "android/contextual_tasks_bridge.cc",
       "android/contextual_tasks_bridge.h",
+      "contextual_tasks_ui_service_delegate_android.cc",
+      "contextual_tasks_ui_service_delegate_android.h",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "contextual_tasks_ui_service_delegate_desktop.cc",
+      "contextual_tasks_ui_service_delegate_desktop.h",
     ]
   }
 
@@ -240,6 +250,7 @@ source_set("ui_impl") {
   }
 
   deps = [
+    ":impl",
     ":ui",
     "//base",
     "//chrome/browser:browser_process",

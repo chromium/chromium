@@ -1,0 +1,34 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
+
+#include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/grit/branded_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
+
+namespace contextual_tasks {
+
+ContextualTasksUiServiceDelegateDesktop::
+    ContextualTasksUiServiceDelegateDesktop(Profile* profile)
+    : ContextualTasksUiServiceDelegate(profile) {}
+
+ContextualTasksUiServiceDelegateDesktop::
+    ~ContextualTasksUiServiceDelegateDesktop() = default;
+
+void ContextualTasksUiServiceDelegateDesktop::OpenHelpUi(
+    BrowserWindowInterface* browser,
+    const GURL& page_url) {
+  chrome::ShowFeedbackPage(page_url, profile(), feedback::kFeedbackSourceAI,
+                           /*description_template=*/std::string(),
+                           /*description_placeholder_text=*/
+                           l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK),
+                           /*category_tag=*/"cobrowse",
+                           /*extra_diagnostics=*/std::string());
+}
+
+}  // namespace contextual_tasks

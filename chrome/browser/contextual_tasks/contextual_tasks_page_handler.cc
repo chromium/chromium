@@ -279,24 +279,19 @@ void ContextualTasksPageHandler::OpenHelpUi() {
   if (skip_feedback_ui_for_testing_) {
     return;
   }
+  BrowserWindowInterface* browser = web_ui_controller_->GetBrowser();
+  if (!browser) {
+    return;
+  }
   GURL page_url =
       web_ui_controller_->GetWebUIWebContents()->GetLastCommittedURL();
-  if (auto* browser = web_ui_controller_->GetBrowser()) {
-    if (auto* tab_list = TabListInterface::From(browser)) {
-      if (auto* active_tab = tab_list->GetActiveTab()) {
-        page_url = active_tab->GetContents()->GetLastCommittedURL();
-      }
+  if (auto* tab_list = TabListInterface::From(browser)) {
+    if (auto* active_tab = tab_list->GetActiveTab()) {
+      page_url = active_tab->GetContents()->GetLastCommittedURL();
     }
   }
-#if !BUILDFLAG(IS_ANDROID)
-  chrome::ShowFeedbackPage(page_url, web_ui_controller_->GetProfile(),
-                           feedback::kFeedbackSourceAI,
-                           /*description_template=*/std::string(),
-                           /*description_placeholder_text=*/
-                           l10n_util::GetStringUTF8(IDS_LENS_SEND_FEEDBACK),
-                           /*category_tag=*/"cobrowse",
-                           /*extra_diagnostics=*/std::string());
-#endif
+
+  ui_service_->OpenHelpUi(browser, page_url);
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {

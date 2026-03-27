@@ -52,6 +52,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
               (override));
   MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
   MOCK_METHOD(bool, IsPendingErrorPage, (const base::Uuid&), (override));
+  MOCK_METHOD(void,
+              OpenHelpUi,
+              (BrowserWindowInterface*, const GURL&),
+              (override));
 };
 
 }  // namespace contextual_tasks

@@ -174,10 +174,12 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 
 ContextualTasksUiService::ContextualTasksUiService(
     Profile* profile,
+    std::unique_ptr<ContextualTasksUiServiceDelegate> delegate,
     ContextualTasksService* contextual_tasks_service,
     signin::IdentityManager* identity_manager,
     AimEligibilityService* aim_eligibility_service)
     : profile_(profile),
+      delegate_(std::move(delegate)),
       contextual_tasks_service_(contextual_tasks_service),
       identity_manager_(identity_manager),
       aim_eligibility_service_(aim_eligibility_service),
@@ -1056,7 +1058,10 @@ ContextualTasksUiService::GetInitialEntryPointForTask(
   }
   return omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
 }
-
+void ContextualTasksUiService::OpenHelpUi(BrowserWindowInterface* browser,
+                                          const GURL& page_url) {
+  delegate_->OpenHelpUi(browser, page_url);
+}
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {
   GURL url(chrome::kChromeUIContextualTasksURL);

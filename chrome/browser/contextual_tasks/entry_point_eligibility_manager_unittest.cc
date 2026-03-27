@@ -49,9 +49,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                                ContextualTasksService* contextual_tasks_service,
                                signin::IdentityManager* identity_manager)
       : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
                                  contextual_tasks_service,
                                  identity_manager,
-                                 nullptr) {}
+                                 /*aim_eligibility_service=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));

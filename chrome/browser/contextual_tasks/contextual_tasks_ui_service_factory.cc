@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -12,6 +13,12 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_android.h"
+#else
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
+#endif
 
 namespace contextual_tasks {
 
@@ -57,8 +64,16 @@ ContextualTasksUiServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_ANDROID)
+  auto delegate =
+      std::make_unique<ContextualTasksUiServiceDelegateAndroid>(profile);
+#else
+  auto delegate =
+      std::make_unique<ContextualTasksUiServiceDelegateDesktop>(profile);
+#endif
   return std::make_unique<ContextualTasksUiService>(
-      profile, ContextualTasksServiceFactory::GetForProfile(profile),
+      profile, std::move(delegate),
+      ContextualTasksServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       AimEligibilityServiceFactory::GetForProfile(profile));
 }

@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -67,6 +68,7 @@ class ContextualTasksUiService : public KeyedService {
 
   ContextualTasksUiService(
       Profile* profile,
+      std::unique_ptr<ContextualTasksUiServiceDelegate> delegate,
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       signin::IdentityManager* identity_manager,
       AimEligibilityService* aim_eligibility_service);
@@ -252,6 +254,12 @@ class ContextualTasksUiService : public KeyedService {
   omnibox::ChromeAimEntryPoint GetInitialEntryPointForTask(
       const base::Uuid& task_id);
 
+  // Opens the help UI.
+  // TODO(crbug.com/493911541): Ensure that the mojom (contextual_tasks.mojom)
+  // is also using the same method.
+  virtual void OpenHelpUi(BrowserWindowInterface* browser,
+                          const GURL& page_url);
+
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -323,6 +331,9 @@ class ContextualTasksUiService : public KeyedService {
   base::ObserverList<Observer> observers_;
 
   const raw_ptr<Profile> profile_;
+
+  // The delegate to perform platform specific tasks.
+  std::unique_ptr<ContextualTasksUiServiceDelegate> delegate_;
 
   const raw_ptr<contextual_tasks::ContextualTasksService>
       contextual_tasks_service_;

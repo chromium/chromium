@@ -88,6 +88,7 @@ class TestingContextualTasksUiService
       signin::IdentityManager* identity_manager,
       AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
                                  contextual_tasks_service,
                                  identity_manager,
                                  aim_eligibility_service) {}

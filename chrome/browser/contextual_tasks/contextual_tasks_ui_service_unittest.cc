@@ -73,8 +73,9 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(profile,
+                                 /*delegate=*/nullptr,
                                  contextual_tasks_service,
-                                 nullptr,
+                                 /*identity_manager=*/nullptr,
                                  aim_eligibility_service) {}
   ~MockUiServiceForUrlIntercept() override = default;
 
@@ -181,7 +182,7 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
     // Create a real service for testing non-mocked methods like GetAccessToken.
     // We pass the IdentityManager from the test environment.
     real_service_ = std::make_unique<ContextualTasksUiService>(
-        profile_.get(), contextual_tasks_service_.get(),
+        profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
         identity_test_env_->identity_manager(), aim_eligibility_service_.get());
 
     ON_CALL(*contextual_tasks_service_, GetFeatureEligibility)
@@ -890,8 +891,10 @@ TEST_F(ContextualTasksUiServiceTest,
 }
 
 TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
-  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
-                                   nullptr, aim_eligibility_service_.get());
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -926,8 +929,10 @@ TEST_F(ContextualTasksUiServiceTest, OnNavigationToAiPageIntercepted_SameTab) {
 
 TEST_F(ContextualTasksUiServiceTest,
        GetContextualTaskUrlForTask_WithEntryPoint) {
-  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
-                                   nullptr, aim_eligibility_service_.get());
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get());
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   omnibox::ChromeAimEntryPoint entry_point =
       omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON;
@@ -1109,8 +1114,10 @@ TEST_F(ContextualTasksUiServiceTest, LensQuery_Intercepted) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, GetInitialUrlForTask_HasSourceId) {
-  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
-                                   nullptr, aim_eligibility_service_.get());
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get());
   GURL intercepted_url("https://google.com/search?udm=50&q=test+query");
 
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
@@ -1147,8 +1154,10 @@ TEST_F(ContextualTasksUiServiceTest, GetInitialUrlForTask_HasSourceId) {
 }
 
 TEST_F(ContextualTasksUiServiceTest, GetDefaultAiPageUrl_HasSourceId) {
-  ContextualTasksUiService service(nullptr, contextual_tasks_service_.get(),
-                                   nullptr, aim_eligibility_service_.get());
+  ContextualTasksUiService service(/*profile=*/nullptr, /*delegate=*/nullptr,
+                                   contextual_tasks_service_.get(),
+                                   /*identity_manager=*/nullptr,
+                                   aim_eligibility_service_.get());
   GURL url = service.GetDefaultAiPageUrl();
 
   std::string sourceid;
