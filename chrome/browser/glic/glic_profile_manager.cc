@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "url/gurl.h"
 
@@ -382,6 +384,10 @@ void GlicProfileManager::CanPreloadForProfile(Profile* profile,
   }
   if (!enablement.IsEnabled()) {
     return produce_result(GlicPrewarmingChecksResult::kProfileNotEnabledOther);
+  }
+
+  if (!profile->GetPrefs()->GetBoolean(prefs::kGlicPinnedToTabstrip)) {
+    return produce_result(GlicPrewarmingChecksResult::kNotPinnedToTabstrip);
   }
 
   if (last_active_glic_ && last_active_glic_->profile() == profile) {

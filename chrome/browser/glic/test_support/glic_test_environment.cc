@@ -405,7 +405,10 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
         "glic-test@example.com",
         signin::GetTestGaiaIdForEmail("glic-test@example.com").ToString());
 #endif
-    SigninWithPrimaryAccount(profile);
+    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      SigninWithPrimaryAccount(profile);
+    }
     SetModelExecutionCapability(true);
   }
 }

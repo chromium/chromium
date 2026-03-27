@@ -245,6 +245,10 @@ GlicKeyedService::GlicKeyedService(
   // This is only used by automation for tests.
   glic_profile_manager->MaybeAutoOpenGlicPanel();
 
+  if (base::FeatureList::IsEnabled(features::kGlicWarming)) {
+    TryPreload();
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&GlicKeyedService::InitializeAfterConstruction,
                                 GetWeakPtr()));

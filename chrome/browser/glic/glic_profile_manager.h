@@ -194,7 +194,9 @@ enum class GlicPrewarmingChecksResult {
   // production code.
   kPrewarmingDisabledForTesting = 16,
 
-  kMaxValue = kPrewarmingDisabledForTesting,
+  kNotPinnedToTabstrip = 17,
+
+  kMaxValue = kNotPinnedToTabstrip,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingChecksResult)
 

@@ -79,9 +79,6 @@ void GlicButtonController::UpdateButton() {
   tab_strip_glic_controller_delegate_->SetGlicShowState(true);
   toolbar_glic_controller_delegate_->SetGlicShowState(true);
 
-  // Try preloading since we know the button is visible.
-  glic_keyed_service_->TryPreload();
-
   bool is_glic_panel_open =
       glic_keyed_service_->IsFreShowing() ||
       glic_keyed_service_->IsPanelShowingForBrowser(*browser_);
