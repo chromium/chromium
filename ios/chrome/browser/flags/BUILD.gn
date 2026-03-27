@@ -34,6 +34,7 @@ source_set("flags") {
     "//components/feature_engagement/public",
     "//components/feed:feature_list",
     "//components/history/core/browser",
+    "//components/lens:features",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
     "//components/omnibox/common",
