@@ -783,42 +783,6 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_source = AutofillPredictionSource::kHeuristics},
         AutofillPredictionPreferenceTestParams{
             .html_field_type = HtmlFieldType::kUnspecified,
-            .server_type = NAME_LAST_CORE,
-            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
-            .expected_result = ALTERNATIVE_FAMILY_NAME,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kAdditionalName,
-            .server_type = NAME_LAST_PREFIX,
-            .heuristic_type = NAME_LAST_PREFIX,
-            .expected_result = NAME_LAST_PREFIX,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kAdditionalNameInitial,
-            .server_type = NAME_LAST_PREFIX,
-            .heuristic_type = NAME_LAST_PREFIX,
-            .expected_result = NAME_LAST_PREFIX,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kFamilyName,
-            .server_type = NAME_LAST_CORE,
-            .heuristic_type = NAME_LAST_CORE,
-            .expected_result = NAME_LAST_CORE,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kUnspecified,
-            .server_type = NAME_MIDDLE,
-            .heuristic_type = NAME_LAST_PREFIX,
-            .expected_result = NAME_LAST_PREFIX,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kUnspecified,
-            .server_type = NAME_LAST,
-            .heuristic_type = NAME_LAST_CORE,
-            .expected_result = NAME_LAST_CORE,
-            .expected_source = AutofillPredictionSource::kHeuristics},
-        AutofillPredictionPreferenceTestParams{
-            .html_field_type = HtmlFieldType::kUnspecified,
             .server_type = NAME_FULL,
             .heuristic_type = NAME_FIRST,
             .expected_result = NAME_FULL,

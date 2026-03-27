@@ -61,7 +61,6 @@ class FirstTwoLastNamesField : public NameFieldParser {
   std::optional<FieldAndMatchInfo> honorific_prefix_;
   std::optional<FieldAndMatchInfo> first_name_;
   std::optional<FieldAndMatchInfo> middle_name_;
-  std::optional<FieldAndMatchInfo> last_name_prefix_;
   std::optional<FieldAndMatchInfo> first_last_name_;
   std::optional<FieldAndMatchInfo> second_last_name_;
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
@@ -114,7 +113,6 @@ class FirstLastNameField : public NameFieldParser {
   std::optional<FieldAndMatchInfo> honorific_prefix_;
   std::optional<FieldAndMatchInfo> first_name_;
   std::optional<FieldAndMatchInfo> middle_name_;
-  std::optional<FieldAndMatchInfo> last_name_prefix_;
   std::optional<FieldAndMatchInfo> last_name_;
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
@@ -230,16 +228,6 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/386916943) Remove check once feature is launched or
-    // removed.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillSupportLastNamePrefix) &&
-        !v->last_name_prefix_ &&
-        ParseField(context, scanner, "LAST_NAME_PREFIX",
-                   &v->last_name_prefix_)) {
-      continue;
-    }
-
     if (!v->first_last_name_ &&
         ParseField(context, scanner, "LAST_NAME_FIRST", &v->first_last_name_)) {
       continue;
@@ -269,8 +257,6 @@ void FirstTwoLastNamesField::AddClassifications(
   AddClassification(honorific_prefix_, NAME_HONORIFIC_PREFIX,
                     kBaseNameParserScore, field_candidates);
   AddClassification(first_name_, NAME_FIRST, kBaseNameParserScore,
-                    field_candidates);
-  AddClassification(last_name_prefix_, NAME_LAST_PREFIX, kBaseNameParserScore,
                     field_candidates);
   AddClassification(first_last_name_, NAME_LAST_FIRST, kBaseNameParserScore,
                     field_candidates);
@@ -303,12 +289,6 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
   if (ParseField(context, scanner, "NAME_GENERIC", &v->first_name_)) {
     // Check for an optional middle name field.
     ParseField(context, scanner, "MIDDLE_NAME", &v->middle_name_);
-    // TODO(crbug.com/386916943) Remove check once feature is launched or
-    // removed.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillSupportLastNamePrefix)) {
-      ParseField(context, scanner, "LAST_NAME_PREFIX", &v->last_name_prefix_);
-    }
     if (ParseField(context, scanner, "LAST_NAME", &v->last_name_)) {
       return v;
     }
@@ -472,16 +452,6 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
       continue;
     }
 
-    // TODO(crbug.com/386916943) Remove check once feature is launched or
-    // removed.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillSupportLastNamePrefix) &&
-        !v->last_name_prefix_ &&
-        ParseField(context, scanner, "LAST_NAME_PREFIX",
-                   &v->last_name_prefix_)) {
-      continue;
-    }
-
     if (!v->last_name_ &&
         ParseField(context, scanner, "LAST_NAME", &v->last_name_)) {
       continue;
@@ -528,10 +498,8 @@ void FirstLastNameField::AddClassifications(
                     kBaseNameParserScore, field_candidates);
   AddClassification(first_name_, NAME_FIRST, kBaseNameParserScore,
                     field_candidates);
-  AddClassification(last_name_prefix_, NAME_LAST_PREFIX, kBaseNameParserScore,
+  AddClassification(last_name_, NAME_LAST, kBaseNameParserScore,
                     field_candidates);
-  AddClassification(last_name_, last_name_prefix_ ? NAME_LAST_CORE : NAME_LAST,
-                    kBaseNameParserScore, field_candidates);
   const FieldType type = middle_initial_ ? NAME_MIDDLE_INITIAL : NAME_MIDDLE;
   AddClassification(middle_name_, type, kBaseNameParserScore, field_candidates);
 }

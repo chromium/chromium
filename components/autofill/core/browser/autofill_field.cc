@@ -169,13 +169,8 @@ static constexpr auto kPreferredHeuristicTypesOverHtmlTypes =
                                         ADDRESS_HOME_HOUSE_NUMBER}},
          {.losing_html_type = HtmlFieldType::kOrganization,
           .winning_type = ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK},
-         {.losing_html_type = HtmlFieldType::kAdditionalName,
-          .winning_type = NAME_LAST_PREFIX},
-         {.losing_html_type = HtmlFieldType::kAdditionalNameInitial,
-          .winning_type = NAME_LAST_PREFIX},
          {.losing_html_type = HtmlFieldType::kFamilyName,
-          .winning_types =
-              FieldTypeSet{NAME_LAST_CORE, ALTERNATIVE_FAMILY_NAME}},
+          .winning_type = ALTERNATIVE_FAMILY_NAME},
          {.losing_html_type = HtmlFieldType::kGivenName,
           .winning_type = ALTERNATIVE_GIVEN_NAME},
          {.losing_html_type = HtmlFieldType::kName,
@@ -226,11 +221,8 @@ static constexpr auto kPreferredHeuristicTypesOverServerTypes = std::to_array<
      // the feature is rolled out.
      {.losing_type = NAME_FULL, .winning_type = ALTERNATIVE_FULL_NAME},
      {.losing_type = NAME_FIRST, .winning_type = ALTERNATIVE_GIVEN_NAME},
-     {.losing_type = NAME_MIDDLE, .winning_type = NAME_LAST_PREFIX},
-     {.losing_type = NAME_LAST,
-      .winning_types = FieldTypeSet{ALTERNATIVE_FAMILY_NAME, NAME_LAST_CORE}},
+     {.losing_type = NAME_LAST, .winning_type = ALTERNATIVE_FAMILY_NAME},
      {.losing_type = NAME_LAST_SECOND, .winning_type = ALTERNATIVE_FAMILY_NAME},
-     {.losing_type = NAME_LAST_CORE, .winning_type = ALTERNATIVE_FAMILY_NAME},
 
      // Sometimes the server and heuristics disagree on whether a name field
      // should be associated with an address or a credit card. There was a
