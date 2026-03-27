@@ -1118,7 +1118,7 @@
         Sign In
       </message>
     </if>
-    <message name="IDS_FRE_CREATE_ACCOUNT_DESCRIPTION" translateable="false" desc="Text informing users they can create an account in the next step(s).">
+    <message name="IDS_FRE_CREATE_ACCOUNT_DESCRIPTION" desc="Text displayed on the sign-in screen (close to the sign-in button) in the first run experience (very first time Chrome is launched), informing users they can either sign in with an existing Google account or create a new one in the next step(s).">
       Use your Google account or create a new one
     </message>
     <message name="IDS_FRE_SIGN_IN_CELEBRATION_WELCOME_TITLE" desc="Title for the sign in celebration screen (FRE).">
@@ -1130,10 +1130,10 @@
     <message name="IDS_FRE_MANAGED_BY_DESCRIPTION" desc="The disclaimer explaining to the users that their device is managed by an administrator">
       Your device is managed by <ph name="DOMAIN">$1<ex>example.com</ex></ph>. Administrators can access the data in any profile on this device.
     </message>
-    <message name="IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL" translateable="false" desc="A label for a button on the native toolbar to decline a prompt to sign in">
+    <message name="IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL" desc="A label for a button on the native toolbar to decline a prompt to sign in. Once clicked, the sign-in flow will be cancelled.">
       Don't sign in
     </message>
-    <message name="IDS_FRE_NEXT_BUTTON_TITLE" translateable="false" desc="A title for a button that advances a user to the next step (sign in screen) in the first run experience flow.">
+    <message name="IDS_FRE_NEXT_BUTTON_TITLE" desc="A title for a button that advances a user to the next step (sign in screen) in the first run experience flow.">
       Next
     </message>
 
