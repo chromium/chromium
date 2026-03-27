@@ -87,9 +87,16 @@ bool GlicPanelHotkeyDelegate::AcceleratorPressed(
   }
 
   switch (hotkey) {
-    case LocalHotkeyManager::Hotkey::kClose:
+    case LocalHotkeyManager::Hotkey::kClose: {
+#if !BUILDFLAG(IS_ANDROID)
+      if (panel_->HasSelectionOverlay()) {
+        panel_->CloseSelectionOverlay();
+        return true;
+      }
+#endif
       panel_->Close(CloseOptions());
       return true;
+    }
     case glic::LocalHotkeyManager::Hotkey::kFocusToggle:
       if (panel_->ActivateBrowser()) {
         base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));

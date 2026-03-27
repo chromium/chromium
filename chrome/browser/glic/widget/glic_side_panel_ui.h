@@ -86,6 +86,8 @@ class GlicSidePanelUi
   bool ActivateBrowser() override;
   void Zoom(mojom::ZoomAction zoom_action) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
+  bool HasSelectionOverlay() override;
+  void CloseSelectionOverlay() override;
   base::WeakPtr<views::View> GetView() override;
 
   // web_modal::WebContentsModalDialogManagerDelegate:

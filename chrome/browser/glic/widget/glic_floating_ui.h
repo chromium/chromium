@@ -103,6 +103,8 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void Zoom(mojom::ZoomAction zoom_action) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
 #if !BUILDFLAG(IS_ANDROID)
+  bool HasSelectionOverlay() override;
+  void CloseSelectionOverlay() override;
   base::WeakPtr<views::View> GetView() override;
 #endif
 

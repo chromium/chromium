@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/common/glic_panel_hotkey_delegate.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
@@ -295,6 +296,25 @@ void GlicSidePanelUi::Zoom(mojom::ZoomAction zoom_action) {
 
 void GlicSidePanelUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
   // This is floaty-specific. It doesn't make sense in side panel.
+}
+
+bool GlicSidePanelUi::HasSelectionOverlay() {
+  if (!tab_ || !tab_->IsActivated()) {
+    return false;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(tab_->GetContents());
+  return selection_overlay_controller->state() ==
+         SelectionOverlayController::State::kOverlay;
+}
+
+void GlicSidePanelUi::CloseSelectionOverlay() {
+  if (!tab_ || !tab_->IsActivated()) {
+    return;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(tab_->GetContents());
+  selection_overlay_controller->Close();
 }
 
 base::WeakPtr<views::View> GlicSidePanelUi::GetView() {

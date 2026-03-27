@@ -32,6 +32,10 @@
 #include "ui/views/win/hwnd_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#endif
+
 namespace glic {
 
 namespace {
@@ -202,6 +206,33 @@ void GlicFloatingUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
                                              event_loc);
 #endif  // BUILDFLAG(IS_WIN)
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool GlicFloatingUi::HasSelectionOverlay() {
+  tabs::TabInterface* focused_tab =
+      delegate_->host().sharing_manager().GetFocusedTabData().focus();
+  if (!focused_tab || focused_tab->IsActivated()) {
+    return false;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(
+          focused_tab->GetContents());
+  return selection_overlay_controller->state() ==
+         SelectionOverlayController::State::kOverlay;
+}
+
+void GlicFloatingUi::CloseSelectionOverlay() {
+  tabs::TabInterface* focused_tab =
+      delegate_->host().sharing_manager().GetFocusedTabData().focus();
+  if (!focused_tab || focused_tab->IsActivated()) {
+    return;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(
+          focused_tab->GetContents());
+  selection_overlay_controller->Close();
+}
+#endif
 
 void GlicFloatingUi::EnableDragResize(bool enabled) {
   user_resizable_ = enabled;

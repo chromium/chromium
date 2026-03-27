@@ -178,6 +178,8 @@ class GlicWindowControllerImpl
   bool ActivateBrowser() override;
   void Zoom(mojom::ZoomAction zoom_action) override;
   void ShowTitleBarContextMenuAt(gfx::Point event_loc) override;
+  bool HasSelectionOverlay() override;
+  void CloseSelectionOverlay() override;
 
   HostManager& host_manager() override;
   std::vector<GlicInstance*> GetInstances() override;

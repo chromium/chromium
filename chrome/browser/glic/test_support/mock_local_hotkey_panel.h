@@ -28,6 +28,8 @@ class MockLocalHotkeyPanel
   MOCK_METHOD(void, Zoom, (mojom::ZoomAction action), (override));
   MOCK_METHOD(void, ShowTitleBarContextMenuAt, (gfx::Point), (override));
 #if !BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(bool, HasSelectionOverlay, (), (override));
+  MOCK_METHOD(void, CloseSelectionOverlay, (), (override));
   MOCK_METHOD(base::WeakPtr<views::View>, GetView, (), (override));
 #endif
 

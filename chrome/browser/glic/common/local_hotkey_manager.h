@@ -63,6 +63,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual void Zoom(mojom::ZoomAction action) = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) = 0;
 #if !BUILDFLAG(IS_ANDROID)
+    virtual bool HasSelectionOverlay() = 0;
+    virtual void CloseSelectionOverlay() = 0;
     virtual base::WeakPtr<views::View> GetView() = 0;
 #endif
   };

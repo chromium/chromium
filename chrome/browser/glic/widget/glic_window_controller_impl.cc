@@ -25,11 +25,13 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
+#include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
@@ -1080,6 +1082,31 @@ void GlicWindowControllerImpl::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
                                              event_loc);
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+bool GlicWindowControllerImpl::HasSelectionOverlay() {
+  tabs::TabInterface* focused_tab =
+      host_.sharing_manager().GetFocusedTabData().focus();
+  if (!focused_tab || focused_tab->IsActivated()) {
+    return false;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(
+          focused_tab->GetContents());
+  return selection_overlay_controller->state() ==
+         SelectionOverlayController::State::kOverlay;
+}
+
+void GlicWindowControllerImpl::CloseSelectionOverlay() {
+  tabs::TabInterface* focused_tab =
+      host_.sharing_manager().GetFocusedTabData().focus();
+  if (!focused_tab || focused_tab->IsActivated()) {
+    return;
+  }
+  auto* selection_overlay_controller =
+      SelectionOverlayController::FromTabWebContents(
+          focused_tab->GetContents());
+  selection_overlay_controller->Close();
 }
 
 mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
