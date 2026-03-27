@@ -23,7 +23,10 @@ suite('NodeStore', () => {
 
   function getReadAloudNode(axNodeId: number): ReadAloudNode {
     const domNode = nodeStore.getDomNode(axNodeId);
-    return ReadAloudNode.create(domNode!, nodeStore)!;
+    if (!domNode) {
+      return undefined as unknown as ReadAloudNode;
+    }
+    return ReadAloudNode.create(domNode, nodeStore)!;
   }
 
   function setDomNodes(axNodeIds: number[]) {
@@ -38,6 +41,7 @@ suite('NodeStore', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     readingMode = new FakeReadingMode();
+    readingMode.isTsTextSegmentationEnabled = true;
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     now = 0;
     Date.now = () => now;
@@ -123,17 +127,8 @@ suite('NodeStore', () => {
     assertEquals(replacer, children.item(0));
   });
 
-  test('hideImageNode', () => {
-    const id = 216;
-    nodeStore.hideImageNode(id);
-    assertFalse(areNodesAllHidden([id]));
-
-    setDomNodes([id]);
-    nodeStore.hideImageNode(id);
-    assertTrue(areNodesAllHidden([id]));
-  });
-
   test('areNodesAllHidden', () => {
+    readingMode.activeDistillationMethod = readingMode.distillationTypeScreen2x;
     const id1 = 216;
     const id2 = 218;
     const id3 = 219;
@@ -144,6 +139,27 @@ suite('NodeStore', () => {
     assertFalse(areNodesAllHidden([id1, id2, id3]));
     assertTrue(areNodesAllHidden([id1, id2]));
     assertFalse(areNodesAllHidden([id1, id3]));
+  });
+
+  test('areNodesAllHidden with Readability', () => {
+    readingMode.activeDistillationMethod =
+        readingMode.distillationTypeReadability;
+
+    const element = document.createElement('p');
+    element.innerText = 'Some text';
+    document.body.appendChild(element);
+    const readAloudNode = ReadAloudNode.create(element, nodeStore)!;
+
+    // Initially not hidden.
+    assertFalse(nodeStore.areNodesAllHidden([readAloudNode]));
+
+    // Hide the element.
+    element.style.display = 'none';
+    assertTrue(nodeStore.areNodesAllHidden([readAloudNode]));
+
+    // Show it again.
+    element.style.display = 'block';
+    assertFalse(nodeStore.areNodesAllHidden([readAloudNode]));
   });
 
   test('hasAnyNode', () => {

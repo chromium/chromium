@@ -240,13 +240,22 @@ export class NodeStore {
     this.hiddenImageNodesIds_.add(nodeId);
   }
 
-  // TODO: crbug.com/440400392- Handle hidden image node ids for read aloud
-  // when non-AXNode-based read aloud nodes are used.
   areNodesAllHidden(nodes: ReadAloudNode[]): boolean {
     return nodes.every(node => {
       const domNode = node && node.domNode();
       const id = domNode && this.getAxId(domNode);
-      return !!id && this.hiddenImageNodesIds_.has(id);
+      if (id !== undefined && this.hiddenImageNodesIds_.has(id)) {
+        return true;
+      }
+
+      // Handle hidden images for Readability or other non-AX-based methods.
+      if (isDistilledByReadability() && domNode) {
+        const element =
+            (domNode instanceof Element) ? domNode : domNode.parentElement;
+        return !!element && !element.checkVisibility();
+      }
+
+      return false;
     });
   }
 
