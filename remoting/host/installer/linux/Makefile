@@ -62,6 +62,8 @@ install:
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
 	install "$(SRC_DIR)/remoting/host/installer/linux/is-remoting-session" \
 	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/installer/linux/setup-session-environment" \
+	  "$(INSTALL_DIR)"
 	install "$(SRC_DIR)/remoting/host/installer/linux/Xsession" \
 	  "$(INSTALL_DIR)"
 	install "$(SRC_DIR)/remoting/host/linux/configure_url_forwarder.py" \

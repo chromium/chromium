@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+"""A script to manage systemd user environment variables for CRD sessions."""
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+
+
+def start():
+  """Sets environment variables for a new session."""
+  # Locate the remote-session-info tool in the same directory as this script.
+  script_dir = os.path.dirname(os.path.realpath(__file__))
+  remote_session_info_path = os.path.join(script_dir, 'remote-session-info')
+  if not os.path.exists(remote_session_info_path):
+    return
+  try:
+    # Execute remote-session-info and parse its JSON output.
+    output = subprocess.check_output(
+        [remote_session_info_path], universal_newlines=True
+    )
+    session_info = json.loads(output)
+  except (
+      subprocess.CalledProcessError,
+      json.JSONDecodeError,
+      FileNotFoundError,
+  ) as e:
+    print(f'Failed to get session info: {e}', file=sys.stderr)
+    return
+
+  # If this is a CRD session, set the relevant environment variables.
+  if session_info.get('isCrdSession'):
+    try:
+      subprocess.run([
+          'systemctl',
+          '--user',
+          'set-environment',
+          'CHROME_REMOTE_DESKTOP_SESSION=1',
+      ])
+      ssh_auth_sock = session_info.get('sshAuthSock')
+      if ssh_auth_sock:
+        subprocess.run([
+            'systemctl',
+            '--user',
+            'set-environment',
+            f'SSH_AUTH_SOCK={ssh_auth_sock}',
+        ])
+    except subprocess.CalledProcessError as e:
+      print(f'Failed to set environment variables: {e}', file=sys.stderr)
+
+
+def stop():
+  """Unsets environment variables when session ends."""
+  # Check the current systemd user environment to see if it was set by CRD.
+  env_output = subprocess.check_output(
+      ['systemctl', '--user', 'show-environment'], universal_newlines=True
+  )
+  # Check if CHROME_REMOTE_DESKTOP_SESSION is present in the environment.
+  if any(
+      line.startswith('CHROME_REMOTE_DESKTOP_SESSION=')
+      for line in env_output.splitlines()
+  ):
+    try:
+      subprocess.run([
+          'systemctl',
+          '--user',
+          'unset-environment',
+          'CHROME_REMOTE_DESKTOP_SESSION',
+          'SSH_AUTH_SOCK',
+      ])
+    except subprocess.CalledProcessError as e:
+      print(f'Failed to unset environment variables: {e}', file=sys.stderr)
+
+
+def main():
+  parser = argparse.ArgumentParser(
+      description=(
+          'Inject or cleanup systemd environment variables for Chrome Remote'
+          ' Desktop sessions.'
+      )
+  )
+  group = parser.add_mutually_exclusive_group(required=True)
+  group.add_argument(
+      '--start',
+      action='store_true',
+      help='Set environment variables for a new session.',
+  )
+  group.add_argument(
+      '--stop',
+      action='store_true',
+      help='Unset environment variables when session ends.',
+  )
+  args = parser.parse_args()
+
+  if args.start:
+    start()
+  elif args.stop:
+    stop()
+
+
+if __name__ == '__main__':
+  main()

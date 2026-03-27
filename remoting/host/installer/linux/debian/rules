@@ -22,5 +22,8 @@ override_dh_builddeb:
 # The single-process chrome-remote-desktop@ service is templated, so Debhelper
 # will not try to auto-enable/start/disable/stop it, and we don't need to
 # override its behavior.
+# In compat 11, dh_installsystemduser is not in the dh sequence, so we need to
+# piggyback on override_dh_installsystemd.
 override_dh_installsystemd:
 	dh_installsystemd --no-enable --no-stop-on-upgrade --name=chrome-remote-desktop
+	dh_installsystemduser --name=chrome-remote-desktop-environment

@@ -1,0 +1,18 @@
+[Unit]
+Description=Service to inject systemd environment variables for Chrome Remote Desktop Sessions.
+# This ensures it runs after systemd knows the display variables, but before
+# the graphical session actually starts.
+After=dbus.socket
+Before=graphical-session-pre.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/opt/google/chrome-remote-desktop/setup-session-environment --start
+
+# Clean up when the session tears down
+ExecStop=/opt/google/chrome-remote-desktop/setup-session-environment --stop
+
+[Install]
+WantedBy=gnome-session.target plasma-workspace.target

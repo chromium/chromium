@@ -54,6 +54,7 @@ action("remoting_me2me_host_deb_installer") {
   inputs = [
     build_deb_script,
     "Makefile",
+    "debian/chrome-remote-desktop-environment.user.service",
     "debian/chrome-remote-desktop.pam",
     "debian/compat",
     "debian/control",
@@ -69,6 +70,7 @@ action("remoting_me2me_host_deb_installer") {
     # Files to be packaged into the deb.
     "//remoting/host/installer/linux/Xsession",
     "//remoting/host/installer/linux/is-remoting-session",
+    "//remoting/host/installer/linux/setup-session-environment",
     "//remoting/host/linux/configure_url_forwarder.py",
     "//remoting/host/linux/linux_me2me_host.py",
     "//remoting/host/linux/pipewire.conf.template",
