@@ -896,8 +896,14 @@ void NativeDesktopMediaList::Refresh(bool update_thumbnails) {
   DCHECK(can_refresh());
 
 #if defined(USE_AURA)
-  DCHECK_EQ(pending_aura_capture_requests_, 0);
-  DCHECK(!pending_native_thumbnail_capture_);
+  if (pending_aura_capture_requests_ > 0 || pending_native_thumbnail_capture_) {
+    // If there's still a pending capture, just bail out; we can't refresh until
+    // the capture is actually finished. This can happen if the worker thread is
+    // slow to finish its native captures or the update rate for refreshes is
+    // very fast (or the timing is just unlucky).
+    return;
+  }
+
   new_aura_thumbnail_hashes_.clear();
 #endif
 
