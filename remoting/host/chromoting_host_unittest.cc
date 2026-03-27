@@ -47,6 +47,7 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/session_config.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -114,7 +115,7 @@ class ChromotingHostTest : public testing::Test {
     session_config1_ = SessionConfig::ForTest();
     session_jid1_ = "user@domain/rest-of-jid";
     session_config2_ = SessionConfig::ForTest();
-    session_jid2_ = "user2@domain/rest-of-jid";
+    session_jid2_ = "user@domain/rest-of-jid-2";
     session_unowned_jid1_ = "user3@doman/rest-of-jid";
     session_unowned_jid2_ = "user4@doman/rest-of-jid";
 
@@ -168,7 +169,9 @@ class ChromotingHostTest : public testing::Test {
     get_client(connection_index) = client_ptr;
 
     // |host| is responsible for deleting |client| from now on.
-    host_->clients_.push_back(std::move(client));
+    std::string client_id;
+    SplitSignalingIdResource(client_ptr->client_jid(), &client_id, nullptr);
+    host_->clients_.emplace(client_id, std::move(client));
 
     if (authenticate) {
       if (reject) {
@@ -399,7 +402,9 @@ TEST_F(ChromotingHostTest, Reconnect) {
   client2->OnConnectionClosed(ErrorCode::OK);
 }
 
-TEST_F(ChromotingHostTest, ConnectWhenAnotherClientIsConnected) {
+TEST_F(
+    ChromotingHostTest,
+    ConnectWhenAnotherClientWithSameIdIsConnected_DisconnectsExistingConnection) {
   StartHost();
 
   // Connect first client.
@@ -417,6 +422,32 @@ TEST_F(ChromotingHostTest, ConnectWhenAnotherClientIsConnected) {
   future->Get();
 
   // Disconnect second client.
+  ClientSession* client2 = ExpectClientDisconnected(1);
+  client2->OnConnectionClosed(ErrorCode::OK);
+}
+
+TEST_F(
+    ChromotingHostTest,
+    ConnectWhenAnotherClientWithDifferentIdIsConnected_ConcurrentConnection) {
+  session_jid2_ = "user2@domain/rest-of-jid";
+  EXPECT_CALL(*session2_, jid()).WillRepeatedly(ReturnRef(session_jid2_));
+  StartHost();
+
+  // Connect first client.
+  auto future1 = ExpectClientConnected(0);
+  SimulateClientConnection(0, true, false);
+  future1->Get();
+
+  // Connect second client with different ID. Both should stay connected.
+  auto future2 = ExpectClientConnected(1);
+  SimulateClientConnection(1, true, false);
+  future2->Get();
+
+  EXPECT_EQ(host_->client_sessions_for_tests().size(), 2U);
+
+  // Disconnect both.
+  ClientSession* client1 = ExpectClientDisconnected(0);
+  client1->OnConnectionClosed(ErrorCode::OK);
   ClientSession* client2 = ExpectClientDisconnected(1);
   client2->OnConnectionClosed(ErrorCode::OK);
 }
@@ -509,7 +540,7 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
     // OnSessionAuthenticated is never called, the host should only allow
     // kNumFailuresIgnored + 1 connections before beginning the backoff.
     host_->OnSessionAuthenticating(
-        host_->client_sessions_for_tests().front().get());
+        host_->client_sessions_for_tests().begin()->second.get());
   }
 
   // As this is connection kNumFailuresIgnored + 2, it should be rejected.
@@ -554,13 +585,13 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
     EXPECT_EQ(nullptr, rejection_location.program_counter());
     // Begin authentication; this will increase the backoff count
     host_->OnSessionAuthenticating(
-        host_->client_sessions_for_tests().front().get());
+        host_->client_sessions_for_tests().begin()->second.get());
   }
 
   // Simulate successful authentication for one of the previous connections.
   // This should reset the backoff and disconnect all the other connections.
   host_->OnSessionAuthenticated(
-      host_->client_sessions_for_tests().front().get());
+      host_->client_sessions_for_tests().begin()->second.get());
   EXPECT_EQ(host_->client_sessions_for_tests().size(), 1U);
 
   // This is connection kNumFailuresIgnored + 2, but since we now have a

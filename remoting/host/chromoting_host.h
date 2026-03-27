@@ -5,6 +5,7 @@
 #ifndef REMOTING_HOST_CHROMOTING_HOST_H_
 #define REMOTING_HOST_CHROMOTING_HOST_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -78,7 +79,15 @@ class DesktopEnvironmentFactory;
 class ChromotingHost : public ClientSession::EventHandler,
                        public mojom::ChromotingHostServices {
  public:
-  using ClientSessions = std::vector<std::unique_ptr<ClientSession>>;
+  // This is a multimap to allow for multiple unauthenticated sessions. For each
+  // client ID, there can be up to one authenticated session and multiple
+  // unauthenticated sessions. Once an unauthenticated session becomes
+  // authenticated, any existing authenticated session will be disconnected.
+  // There can be concurrent authenticated sessions as long as they have
+  // different client IDs.
+  // TODO: yuweih - Limit the number of unauthenticated sessions per client ID.
+  using ClientSessions =
+      std::multimap<std::string /*client_id*/, std::unique_ptr<ClientSession>>;
 
   // Callback for validating session policies. The return value will be nullopt
   // if the session policies are valid; otherwise the session will be closed

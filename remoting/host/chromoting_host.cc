@@ -38,6 +38,7 @@
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_connection_to_client.h"
+#include "remoting/signaling/signaling_id_util.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -110,8 +111,8 @@ ChromotingHost::~ChromotingHost() {
 
   // Disconnect all of the clients.
   while (!clients_.empty()) {
-    clients_.front()->DisconnectSession(ErrorCode::OK, /* error_details= */ {},
-                                        FROM_HERE);
+    clients_.begin()->second->DisconnectSession(
+        ErrorCode::OK, /* error_details= */ {}, FROM_HERE);
   }
 
   // Destroy the session manager(s) to unregister their SignalStrategy listeners
@@ -201,23 +202,33 @@ void ChromotingHost::OnSessionAuthenticated(ClientSession* client) {
 
   login_backoff_.Reset();
 
-  // Disconnect all clients, except |client|.
-  base::WeakPtr<ChromotingHost> self = weak_factory_.GetWeakPtr();
-  while (clients_.size() > 1) {
-    clients_[(clients_.front().get() == client) ? 1 : 0]->DisconnectSession(
-        ErrorCode::OK,
-        "Disconnecting session because a new session has been authenticated.",
-        FROM_HERE);
+  std::string client_id;
+  SplitSignalingIdResource(client->client_jid(), &client_id, nullptr);
 
-    // Quit if the host was destroyed.
-    if (!self) {
-      return;
+  // Disconnect all clients with the same client ID, except |client|.
+  base::WeakPtr<ChromotingHost> self = weak_factory_.GetWeakPtr();
+  auto [it, end] = clients_.equal_range(client_id);
+  while (it != end) {
+    if (it->second.get() != client) {
+      // DisconnectSession() may synchronously call OnSessionClosed(), which
+      // will remove the session from `clients_` and invalidate `it` (but not
+      // other iterators, per multimap's spec). So we increment `it` before the
+      // call. Note that `session_to_disconnect` is before the increment.
+      ClientSession* session_to_disconnect = (it++)->second.get();
+      session_to_disconnect->DisconnectSession(
+          ErrorCode::OK,
+          "Disconnecting session because a new session has been authenticated "
+          "with the same client ID.",
+          FROM_HERE);
+
+      // Quit if the host was destroyed.
+      if (!self) {
+        return;
+      }
+    } else {
+      it++;
     }
   }
-
-  // Disconnects above must have destroyed all other clients.
-  DCHECK_EQ(clients_.size(), 1U);
-  DCHECK(clients_.front().get() == client);
 
   // Notify observers that there is at least one authenticated client.
   for (auto& observer : status_monitor_->observers()) {
@@ -246,8 +257,9 @@ void ChromotingHost::OnSessionAuthenticationFailed(ClientSession* client) {
 void ChromotingHost::OnSessionClosed(ClientSession* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it =
-      std::ranges::find(clients_, client, &std::unique_ptr<ClientSession>::get);
+  auto it = std::ranges::find_if(clients_, [client](const auto& pair) {
+    return pair.second.get() == client;
+  });
   CHECK(it != clients_.end());
 
   bool was_authenticated = client->is_authenticated();
@@ -348,18 +360,25 @@ void ChromotingHost::OnIncomingSession(
   for (const auto& extension : extensions_) {
     extension_ptrs.push_back(extension.get());
   }
-  clients_.push_back(std::make_unique<ClientSession>(
-      this, std::move(connection), desktop_environment_factory_,
-      desktop_environment_options_, pairing_registry_, extension_ptrs,
-      local_session_policies_provider_));
+
+  std::string client_id;
+  SplitSignalingIdResource(session->jid(), &client_id, nullptr);
+  clients_.emplace(
+      client_id, std::make_unique<ClientSession>(
+                     this, std::move(connection), desktop_environment_factory_,
+                     desktop_environment_options_, pairing_registry_,
+                     extension_ptrs, local_session_policies_provider_));
 }
 
 ClientSession* ChromotingHost::GetConnectedClientSession() const {
   ClientSession* connected_client = nullptr;
-  for (auto& client : clients_) {
+  for (auto& [id, client] : clients_) {
     if (client->channels_connected()) {
       if (connected_client) {
-        LOG(DFATAL) << "More than one connected client is found.";
+        // TODO: crbug.com/492619234 - support concurrent connections of
+        // ChromotingHostServices for multiple client IDs.
+        LOG(WARNING) << "Multiple connected clients found. Remote services "
+                        "cannot be bound.";
         return nullptr;
       }
       connected_client = client.get();
