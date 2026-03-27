@@ -1,44 +1,89 @@
-# Clang Gardening
+# Clang and Rust Gardening
 
-Chromium bundles its own pre-built version of [Clang](clang.md) and
-[Rust](rust.md). This is done so that Chromium developers have access to the
-latest and greatest developer tools provided by Clang and LLVM (ASan, CFI,
-coverage, etc). In order to [update the compiler](updating_clang.md)
-(roll clang), it has to be tested so that we can be confident that it works
-in the configurations that Chromium cares about.
+Chromium is built using a pre-built version of [Clang](clang.md) and
+[Rust](rust.md), which are downloaded from a Google Cloud bucket by depot_tools
+as part of `gclient sync`. This is done so that Chromium developers have access
+to the latest and greatest developer tools, fixes and optimizations provided by
+Clang and LLVM (ASan, CFI, coverage, etc). It also means the build is entirely
+self-contained ("hermetic"), which is fantastic for debugging and support -- we
+only have to support one version of a single compiler at a time. As clang
+gardeners, we're responsible for putting together new versions of the toolchain
+package that developers download from the cloud (referred to as
+["rolling clang"](updating_clang.md)).
 
-The Clang gardener is responsible for monitoring the health of the latest
-versions of Clang + Rust, and how they work with the latest version of
-Chromium; raise any issues by filing bugs; address those issues or find someone
-to do so; and ultimately attempt to update the compiler by performing [a Clang
-roll](updating_clang.md).
+Both clang and rust are actively developed, receiving hundreds of commits per
+day. This means that things break frequently. Since Chromium is one of the
+largest open-source codebases, it's common for us to be the first to discover
+issues and corner cases that evaded the upstream CI. The
+[primary activity](#gardening-process) of gardening is to monitor our
+infrastructure to detect new issues. When you notice an issue, file a bug, then dig into it (or find someone else to do so).
+
+Should you find yourself in a position where there aren't any outstanding
+issues, you've got a roll candidate! Try out the current revision of the
+compiler on the CQ, and if it passes you can land a CL that will make that
+package the default for all developers going forward.
+[Full instructions here](updating_clang.md).
+
+## Infrastructure
 
 There are two main sources of information about the state of the build:
 
-1. Buildbots on the [tip-of-tree clang
-   waterfall](https://ci.chromium.org/p/chromium/g/chromium.clang/console)
-   continuously build the latest version of Clang and use that to build and
-   test Chromium in various build configurations. These provide the fastest
-   signal about problems such as the compiler crashing, new warnings causing
-   build failures, miscompiles causing test failures, etc. Unlike production
-   buildbots, these build Clang with assertions enabled to detect as many
-   problems as possible. (Clicking 'Log in' in the top right corner with a
-   Google account will reveal a few more bots.)
+### Dry Runs
 
-1. Automatically generated [Clang roll
-   CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
-   ("dry run CLs"). These are generated every few hours by a Cron job and
-   attempt to package the latest version of Clang and Rust. That process can
-   fail for many reasons, especially due to failures in the compilers' test
-   suites. The cron job runs on a team member's workstation. If the CLs stop
-   coming and that team member is out, anyone else can run the script; search
-   for [`clang_packaging_cron.sh`](http://cs/clang_packaging_cron.sh) internally.
-   The script essentially just runs [`upload_revision.py`](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/upload_revision.py).
+New toolchain packages are generally created by running special trybots like
+`linux_upload_clang`, `mac_upload_rust`, etc. These bots can be run from gerrit
+using the "Choose Tryjobs" button. Unlike regular trybots, which just test for
+success or failure, the upload bots have side effects: they attempt to construct
+ a new package, and if they succeed, they upload the package to a Google Cloud
+ bucket called the _staging bucket_.
 
-Although both of these pull & build the latest version of clang, things may go
-wrong in one place but not the other, so it's important to keep an eye on both.
-In particular, the ToT buildbots don't run the entire clang test suite, and the
-dry run CLs don't build chromium, just clang and rust.
+Since anyone can run upload jobs, the staging bucket is untrusted. During a
+clang roll, you'll run a script that copies the packages you specify from the
+staging bucket to a production bucket, allowing them to be downloaded by
+depot_tools.
+
+The package they construct is determined by the CLANG_REVISION variable in
+[tools/clang/scripts/update.py](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/update.py;l=42;drc=6f920cff25ae8852f16c3bb71007b7a9aaebc497),
+and RUST_REVISION in
+[tools/rust/update_rust.py](https://source.chromium.org/chromium/chromium/src/+/main:tools/rust/update_rust.py;drc=8758f776da008edac978399f0d0e703ffd5e33b7).
+The upload bots pull that revision from github; the SUB_REVISION field is
+appended to the package name, to distinguish between different builds at the
+same revision (perhaps with different settings).
+
+Usually you won't have to run the upload bots yourself; instead, we have
+several automatically generated
+[Clang roll CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py)
+("dry run CLs"). These are generated every few hours by a Cron job and attempt
+to package the latest version of Clang and Rust. The cron job runs on a team
+member's workstation. If the CLs stop coming and that team member is out, anyone else can run the script; search for
+[`clang_packaging_cron.sh`](https://cs/clang_packaging_cron.sh) internally.
+The script essentially just runs
+[`upload_revision.py`](https://source.chromium.org/chromium/chromium/src/+/main:tools/clang/scripts/upload_revision.py).
+
+### Tip-of-tree Waterfall
+
+Buildbots on the
+[tip-of-tree clang waterfall](https://ci.chromium.org/p/chromium/g/chromium.clang/console)
+continuously build the latest version of Clang or Rust and use that to build and
+test Chromium in various build configurations. These provide the fastest
+signal about problems such as the compiler crashing, new warnings causing
+build failures, miscompiles causing test failures, etc. Unlike production
+buildbots, these build Clang with assertions enabled to detect as many
+problems as possible. (Clicking 'Log in' in the top right corner with a
+Google account will reveal a few more bots.)
+
+For alternate views of the waterfall, you can try using
+[Sheriff-o-matic](https://sheriff-o-matic.appspot.com/chromium.clang) or
+[LUCI monitoring view](https://ci.chromium.org/ui/monitoring/chromium.clang),
+though YMMV as to whether they're better experiences than clicking on red
+bots manually.
+
+## Gardening Process
+
+As gardener, you should keep an eye on both the dry run CLs and the waterfall.
+Both of them are building the latest version of clang, but they run different
+tests. The dry runs don't build chromium, and the ToT buildbots don't run the
+entire clang/rust test suites.
 
 Issues should be filed in the [Chromium > Tools >
 LLVM](https://g-issues.chromium.org/issues?q=status:open%20componentid:1457173)
@@ -52,26 +97,30 @@ logged as a child issue of our [long-term tracking bug](https://g-issues.chromiu
 
 Here is a suggested set of steps to iterate over while gardening:
 
-* If there is no bug for tracking the next toolchain update, file one.
+1. If there is no bug for tracking the next toolchain update, file one.
 
-* Go over the blockers of the toolchain update tracking bug. Close obsolete
+1. Go over the blockers of the toolchain update tracking bug. Close obsolete
   ones, try to fix or find someone to fix the remaining ones.
 
-* Check the [tip-of-tree clang
+1. Check the [dry run
+  CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py).
+  File a bug if any upload bots are red. File a bug if the CLs stop being produced.
+    1. Protip: since the upload bots take a while to run, it's often easiest to look at the _second_-most-recent CL in the list, which has already finished.
+
+1. Check the [tip-of-tree clang
   waterfall](https://ci.chromium.org/p/chromium/g/chromium.clang/console) and
   file bugs for any issues.
+    1. Make sure to check the [long-term tracking bug](https://g-issues.chromium.org/issues/417753763) to see if an issue has been around for a while. If so, you can try to follow up on it if you have spare time, it's not a roll blocker.
 
-* Check the automatic [Clang roll
-  CLs](https://chromium-review.googlesource.com/q/path:tools/clang/scripts/update.py).
-  File a bug for any packaging issues. File a bug if the CLs stop being produced.
-
-* When packaging succeeds on a roll CL, and the ToT waterfall is reasonably
-  green, attempt a clang roll by following the instructions in [update the
+1. When packaging succeeds on a roll CL, and the ToT waterfall is reasonably
+  green, attempt a clang roll by following the instructions to [update the
   compiler](updating_clang.md). This will push the packages from the roll CL to
   production and begin a commit queue dry run. File a bug for any issues that
   come up.
 
-* If the commit queue dry run was successful, review and land the CL.
+1. If the commit queue dry run was successful, review and land the CL.
+
+## Tips and Tricks
 
 The key to success is to detect as many problems as early as possible. Rather
 than stopping to dig deeply into the first problem encountered, it's better to
@@ -96,7 +145,7 @@ test failed. The most common test failures we see are Mac and Windows-specific
 tests since upstream LLVM is mostly Linux-focused. There are public bots that
 also run LLVM tests, mostly accessible from https://lab.llvm.org/buildbot.
 There are also some Apple bots running at
-http://green.lab.llvm.org/job/llvm.org/ which mirror test failures we see on
+https://green.lab.llvm.org/job/llvm.org/ which mirror test failures we see on
 Mac. Reverting the culprit change upstream with a pointer to a public bot
 showing the test failure is encouraged.
 
@@ -187,7 +236,7 @@ things:
    ninja -j900 clang || exit 125 # skip revisions that don't compile
    ./t-8f292b.sh || exit 1  # exit 0 if good, 1 if bad
    ```
-1. File an upstream bug like http://llvm.org/PR43016. Usually the unminimized repro
+1. File an upstream bug like https://llvm.org/PR43016. Usually the unminimized repro
    is too large for LLVM's bugzilla, so attach it to a (public) crbug and link
    to that from the LLVM bug. Then revert with a commit message like
    "Revert r368987, it caused PR43016."
@@ -282,7 +331,7 @@ To use `ld.lld`'s `--reproduce` flag, follow these steps:
    address, you won't be able to make a world-shareable link to it, so upload
    it in a Window where you're signed in with your @chromium account.
 
-1. File an LLVM bug linking to the file. Example: http://llvm.org/PR43241
+1. File an LLVM bug linking to the file. Example: https://llvm.org/PR43241
 
 TODO: Describe object file bisection, identify obj with symbol that no longer
 has the section.
