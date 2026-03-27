@@ -152,7 +152,8 @@ public class IdentityCredentialsHelper {
     }
 
     // Dispatches a Report request.
-    public void handleReportRequest(PublicKeyCredentialReportOptions options, String origin) {
+    public void handleReportRequest(
+            PublicKeyCredentialReportOptions options, @Nullable String origin) {
         log(TAG, "handleReportRequest");
         try {
             IdentityCredentialClient client =
@@ -174,7 +175,7 @@ public class IdentityCredentialsHelper {
 
     @VisibleForTesting
     public SignalCredentialStateRequest buildSignalCredentialStateRequest(
-            PublicKeyCredentialReportOptions options, String origin) {
+            PublicKeyCredentialReportOptions options, @Nullable String origin) {
         String type;
         if (options.unknownCredentialId != null) {
             type = CRED_MAN_PREFIX + "SIGNAL_UNKNOWN_CREDENTIAL_STATE_REQUEST_TYPE";
