@@ -9,6 +9,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.containsString;
 
+import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.transit.ViewElement.unscopedOption;
 
 import android.view.View;
@@ -30,6 +31,7 @@ import org.chromium.chrome.test.transit.ChromeActivityTabModelBoundStation;
 import org.chromium.chrome.test.transit.SoftKeyboardFacility;
 import org.chromium.chrome.test.transit.layouts.LayoutTypeVisibleCondition;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.DeviceInput;
 
 /** The base station for Hub, with several panes and a toolbar. */
 public abstract class HubBaseStation
@@ -145,8 +147,11 @@ public abstract class HubBaseStation
         }
 
         TripBuilder tripBuilder = selectPaneTo(PaneId.HISTORY, HistoryPaneStation.class);
+        boolean hasHardwareKeyboard =
+                runOnUiThreadBlocking(() -> DeviceInput.supportsKeyboard(getActivity()));
 
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getActivity())) {
+        if (hasHardwareKeyboard
+                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getActivity())) {
             Trip trip = tripBuilder.enterFacilityAnd(new SoftKeyboardFacility()).complete();
             trip.get(SoftKeyboardFacility.class).close();
             return trip.get(HistoryPaneStation.class);

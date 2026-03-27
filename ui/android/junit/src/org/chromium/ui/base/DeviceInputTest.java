@@ -13,6 +13,8 @@ import static android.view.InputDevice.SOURCE_TOUCHPAD;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.content.Context;
+import android.content.res.Configuration;
 import android.util.SparseArray;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -29,6 +31,7 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 import org.robolectric.shadow.api.Shadow;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -182,6 +185,35 @@ public class DeviceInputTest {
                 .setKeyboardType(KEYBOARD_TYPE_ALPHABETIC)
                 .setSources(SOURCE_KEYBOARD);
         Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+    }
+
+    @Test
+    @SmallTest
+    public void testSupportsKeyboard() {
+        Context context = ContextUtils.getApplicationContext();
+        Configuration config = context.getResources().getConfiguration();
+
+        // Detach physical keyboard
+        config.keyboard = Configuration.KEYBOARD_NOKEYS;
+        config.hardKeyboardHidden = Configuration.HARDKEYBOARDHIDDEN_YES;
+        Assert.assertFalse("Should be false when NO_KEYS", DeviceInput.supportsKeyboard(context));
+
+        // Attach a virtual/hidden alphabetical keyboard
+        config.keyboard = Configuration.KEYBOARD_QWERTY;
+        config.hardKeyboardHidden = Configuration.HARDKEYBOARDHIDDEN_YES;
+        Assert.assertFalse(
+                "Should be false when keyboard is present but hidden",
+                DeviceInput.supportsKeyboard(context));
+
+        // Attach a physical alphabetical keyboard
+        config.hardKeyboardHidden = Configuration.HARDKEYBOARDHIDDEN_NO;
+        Assert.assertTrue(
+                "Should be true when QWERTY is visible", DeviceInput.supportsKeyboard(context));
+
+        // Attach a numerical keyboard
+        config.keyboard = Configuration.KEYBOARD_12KEY;
+        Assert.assertTrue(
+                "Should be true when 12KEY is visible", DeviceInput.supportsKeyboard(context));
     }
 
     @Test

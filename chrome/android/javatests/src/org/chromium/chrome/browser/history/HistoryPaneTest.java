@@ -70,7 +70,7 @@ public class HistoryPaneTest {
         runOnUiThreadBlocking(
                 () -> {
                     clearHistory(cta.getProfileProviderSupplier().get().getOriginalProfile());
-                    supportsKeyboard.set(DeviceInput.supportsKeyboard());
+                    supportsKeyboard.set(DeviceInput.supportsKeyboard(cta));
                     isTablet.set(DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta));
                 });
         mIsLLFDevice = supportsKeyboard.get() && isTablet.get();
