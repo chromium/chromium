@@ -4294,7 +4294,7 @@ chromium-metrics-reviews@google.com.
   <owner>zmin@chromium.org</owner>
   <summary>
     Whether the machine is joined to an AD domain. This check is performed once
-    at start-up on Windows.
+    at start-up on Windows and Mac.
   </summary>
 </histogram>
 
@@ -4395,16 +4395,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     On the Mac: Whether the current user has an enterprise identity in Open
     Directory. This check is performed once at start-up.
-  </summary>
-</histogram>
-
-<histogram name="EnterpriseCheck.Mac.IsDeviceDomainJoined" enum="Boolean"
-    expires_after="2026-12-01">
-  <owner>pastarmovj@chromium.org</owner>
-  <owner>zmin@chromium.org</owner>
-  <summary>
-    On the Mac: Whether the machine is joined to a domain. This check is
-    performed once at start-up.
   </summary>
 </histogram>
 
