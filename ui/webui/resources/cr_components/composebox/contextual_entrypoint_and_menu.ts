@@ -58,7 +58,6 @@ export class ContextualEntrypointAndMenuElement extends
       tabSuggestions: {type: Array},
       inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
-      inCreateImageMode: {type: Boolean},
       searchboxLayoutMode: {type: String},
       uploadButtonDisabled: {type: Boolean},
 
@@ -84,9 +83,6 @@ export class ContextualEntrypointAndMenuElement extends
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
 
-  // TODO(crbug.com/476467436): Remove these properties once the
-  // `cr-composebox-context-menu-entrypoint` is removed.
-  accessor inCreateImageMode: boolean = false;
   accessor hasImageFiles: boolean = false;
   accessor searchboxLayoutMode: string = '';
 
