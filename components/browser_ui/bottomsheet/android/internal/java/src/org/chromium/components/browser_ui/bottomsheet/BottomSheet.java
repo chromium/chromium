@@ -146,6 +146,9 @@ class BottomSheet extends FrameLayout
     /** A handle to the FrameLayout that holds the content of the bottom sheet. */
     private TouchRestrictingFrameLayout mBottomSheetContentContainer;
 
+    /** A handle to the FrameLayout that holds the snackbar of the bottom sheet. */
+    private @Nullable FrameLayout mSnackbarContainer;
+
     /**
      * The last offset ratio sent to observers of onSheetOffsetChanged(). This is used to ensure the
      * min and max values are provided at least once (0 and 1).
@@ -338,6 +341,9 @@ class BottomSheet extends FrameLayout
 
         mBottomSheetContentContainer = findViewById(R.id.bottom_sheet_content);
         mBottomSheetContentContainer.setBottomSheet(this);
+
+        mSnackbarContainer = findViewById(R.id.bottom_sheet_snackbar_container);
+        assert mSnackbarContainer != null;
 
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
@@ -763,6 +769,11 @@ class BottomSheet extends FrameLayout
         if (isSheetOpen() && MathUtils.areFloatsEqual(translationY, getTranslationY())) return;
 
         setTranslationY(translationY);
+        // The snackbar is anchored to the bottom of the BottomSheet, so it needs to be translated
+        // to the inverse of the BottomSheet's translation so it remains visible onscreen.
+        if (mSnackbarContainer != null) {
+            mSnackbarContainer.setTranslationY(-translationY);
+        }
 
         if (reportOpenClosed) {
             // Do open/close computation based on the minimum allowed state by the sheet's content.

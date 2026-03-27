@@ -25,11 +25,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -93,6 +95,42 @@ public class BottomSheetTest {
         mHighPriorityContent.setPeekHeight(HeightMode.DISABLED);
         mHighPriorityContent.setHalfHeightRatio(0.5f);
         mHighPriorityContent.setSkipHalfStateScrollingDown(false);
+    }
+
+    @Test
+    @MediumTest
+    public void testSnackbarContainerPosition() {
+        showContent(mHighPriorityContent, SheetState.HALF);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    View snackbarContainer =
+                            mTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.bottom_sheet_snackbar_container);
+                    View bottomSheet = (View) snackbarContainer.getParent();
+
+                    assertEquals(
+                            -bottomSheet.getTranslationY(),
+                            snackbarContainer.getTranslationY(),
+                            MathUtils.EPSILON);
+                });
+
+        showContent(mHighPriorityContent, SheetState.FULL);
+
+        runOnUiThreadBlocking(
+                () -> {
+                    View snackbarContainer =
+                            mTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.bottom_sheet_snackbar_container);
+                    View bottomSheet = (View) snackbarContainer.getParent();
+
+                    assertEquals(
+                            -bottomSheet.getTranslationY(),
+                            snackbarContainer.getTranslationY(),
+                            MathUtils.EPSILON);
+                });
     }
 
     @Test
