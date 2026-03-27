@@ -787,6 +787,9 @@ inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
 // A boolean specifying whether the bwg consent form has been accepted.
 inline constexpr char kIOSBwgConsent[] = "ios.bwg.consent";
 
+// A boolean specifying whether the Gemini Live consent form has been accepted.
+inline constexpr char kIOSGeminiLiveConsent[] = "ios.bwg.live_consent";
+
 // A boolean specifying whether the BWG precise location setting is enabled.
 inline constexpr char kIOSBWGPreciseLocationSetting[] =
     "ios.bwg.precise.location.setting";

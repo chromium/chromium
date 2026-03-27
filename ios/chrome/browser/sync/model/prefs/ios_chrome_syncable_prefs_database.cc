@@ -38,7 +38,8 @@ enum {
   kSearchSuggestEnabled = 200008,
   kTrackPricesOnTabsEnabled = 200009,
   kVoiceSearchLocale = 200010,
-  kIOSBwgConsent = 200011
+  kIOSBwgConsent = 200011,
+  kIOSGeminiLiveConsent = 200012
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -91,6 +92,10 @@ constexpr auto kIOSChromeSyncablePrefsAllowlist =
           sync_preferences::MergeBehavior::kNone}},
         {prefs::kIOSBwgConsent,
          {syncable_prefs_ids::kIOSBwgConsent, syncer::PREFERENCES,
+          sync_preferences::PrefSensitivity::kNone,
+          sync_preferences::MergeBehavior::kNone}},
+        {prefs::kIOSGeminiLiveConsent,
+         {syncable_prefs_ids::kIOSGeminiLiveConsent, syncer::PREFERENCES,
           sync_preferences::PrefSensitivity::kNone,
           sync_preferences::MergeBehavior::kNone}},
     });

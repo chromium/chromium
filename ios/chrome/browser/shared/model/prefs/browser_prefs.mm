@@ -934,6 +934,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kIOSBwgConsent, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kIOSGeminiLiveConsent, false,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(prefs::kIOSBWGPreciseLocationSetting, false);
   registry->RegisterBooleanPref(prefs::kIOSBWGPageContentSetting, true);
   registry->RegisterIntegerPref(prefs::kIOSBWGPromoImpressionCount, 0);
