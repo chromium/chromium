@@ -44,6 +44,7 @@ public class AppRatingPromoControllerTest {
 
     @Mock private Profile mProfile;
     @Mock private SegmentationPlatformService mSegmentationService;
+    @Mock private AppRatingManager mAppRatingManager;
     @Captor private ArgumentCaptor<Callback<ClassificationResult>> mCallbackCapturer;
 
     private Activity mActivity;
@@ -53,6 +54,7 @@ public class AppRatingPromoControllerTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         SegmentationPlatformServiceFactory.setForTests(mSegmentationService);
+        AppRatingManagerFactory.setInstanceForTesting(mAppRatingManager);
         mController = new AppRatingPromoController(mProfile, mActivity);
     }
 
@@ -61,6 +63,7 @@ public class AppRatingPromoControllerTest {
     public void testMaybeShowPromo_FeatureDisabled() {
         mController.maybeShowPromo();
         verify(mSegmentationService, never()).getClassificationResult(any(), any(), any(), any());
+        verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
     }
 
     @Test
@@ -88,8 +91,10 @@ public class AppRatingPromoControllerTest {
                         new String[] {SegmentationPlatformConstants.SEARCH_USER_MODEL_LABEL_HIGH},
                         0L);
 
-        // This should not crash and should proceed to trigger the (currently logged) success path.
         mCallbackCapturer.getValue().onResult(result);
+
+        // Verify the review flow is triggered for high engagement users.
+        verify(mAppRatingManager).requestAndShowReviewFlow(eq(mActivity), any());
     }
 
     @Test
@@ -106,6 +111,9 @@ public class AppRatingPromoControllerTest {
                         0L);
 
         mCallbackCapturer.getValue().onResult(result);
+
+        // Verify the review flow is NOT triggered for low engagement users.
+        verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
     }
 
     @Test
@@ -123,7 +131,9 @@ public class AppRatingPromoControllerTest {
                         new String[] {SegmentationPlatformConstants.SEARCH_USER_MODEL_LABEL_HIGH},
                         0L);
 
-        // Callback should abort safely because activity is finishing.
         mCallbackCapturer.getValue().onResult(result);
+
+        // Verify the review flow is NOT triggered if activity is finishing.
+        verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
     }
 }

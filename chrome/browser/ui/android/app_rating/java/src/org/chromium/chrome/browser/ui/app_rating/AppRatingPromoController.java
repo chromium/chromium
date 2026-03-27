@@ -72,6 +72,9 @@ public class AppRatingPromoController {
         }
 
         // Verify that the user meets the high engagement "power user" criteria.
+        // The Segmentation Platform returns categorical labels in descending order of
+        // relevance. We only check index 0 as it represents the highest probability
+        // classification for the user.
         if (result.status != PredictionStatus.SUCCEEDED
                 || result.orderedLabels.isEmpty()
                 || !SegmentationPlatformConstants.SEARCH_USER_MODEL_LABEL_HIGH.equals(
@@ -79,6 +82,15 @@ public class AppRatingPromoController {
             return;
         }
 
-        // TODO(crbug.com/493342419): Trigger the Play Store Review flow using AppRatingManager.
+        triggerAppRatingReviewFlow(activity);
+    }
+
+    private void triggerAppRatingReviewFlow(Activity activity) {
+        AppRatingManager manager = AppRatingManagerFactory.create();
+        manager.requestAndShowReviewFlow(
+                activity,
+                () -> {
+                    // TODO(crbug.com/493340627): Log or update metrics */
+                });
     }
 }
