@@ -13,17 +13,13 @@ source_set("tabs_public") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/tab",
+    "//chrome/common:buildflags",
     "//components/sessions:session_id",
     "//components/split_tabs",
     "//components/tab_groups",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
-  ]
-
-  deps = [
-    "//chrome/browser/tab",
-    "//chrome/common:buildflags",
-    "//content/public/browser",
   ]
 }
 
@@ -32,7 +28,6 @@ source_set("tabs_impl") {
   # files.
   sources = [ "tab_features.cc" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":tabs_public",
     "//chrome/browser/actor",
