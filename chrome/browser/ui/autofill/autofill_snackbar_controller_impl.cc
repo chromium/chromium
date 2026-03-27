@@ -127,6 +127,9 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
       return l10n_util::GetStringFUTF16(
           IDS_AUTOFILL_BNPL_FILLED_CARD_SNACKBAR_MESSAGE_TEXT,
           filled_card_->CardNameForAutofillDisplay());
+    case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_WALLET_UPDATE_OR_MIGRATE_FAILURE_NOTIFICATION);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -152,6 +155,9 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kPlusAddressEmailOverride:
       return l10n_util::GetStringUTF16(
           IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_ANDROID);
+    case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_SAVE_OR_UPDATE_ENTITY_FAILED_WALLET_SAVE_DIALOG_CONFIRMATION_BUTTON_LABEL);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED();
   }
@@ -191,6 +197,8 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "CardInfoRetrievalEnrolled";
     case AutofillSnackbarType::kBnpl:
       return "BnplVirtualCard";
+    case AutofillSnackbarType::kAutofillAiSaveToWalletFailure:
+      return "AutofillAiSaveToWalletFailure";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

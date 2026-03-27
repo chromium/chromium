@@ -36,6 +36,9 @@ enum class AutofillSnackbarType {
 
   // Used when a BNPL virtual card is retrieved.
   kBnpl = 8,
+
+  // Used when an entity migration to Google Wallet fails.
+  kAutofillAiSaveToWalletFailure = 9,
 };
 
 }  // namespace autofill
