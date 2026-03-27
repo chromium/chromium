@@ -1962,10 +1962,9 @@ ScopedRasterTimer CanvasResourceProvider::CreateScopedRasterTimer() {
                            always_enable_raster_timers_for_testing_);
 }
 
-std::optional<cc::PaintRecord>
-CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
+void CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
   if (!recorder_->HasReleasableDrawOps()) {
-    return std::nullopt;
+    return;
   }
 
   cc::PaintRecord recording;
@@ -1974,8 +1973,6 @@ CanvasNon2DResourceProviderSharedImage::FlushCanvas() {
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   ReleaseLockedImages();
-
-  return recording;
 }
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(

@@ -735,7 +735,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
  private:
   bool IsCanvas2D() const override { return false; }
 
-  std::optional<cc::PaintRecord> FlushCanvas();
+  void FlushCanvas();
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
 };
