@@ -234,7 +234,12 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // The most recently list of search results.
   std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
       published_results_;
-  base::ObserverList<AppListModelUpdaterObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      AppListModelUpdaterObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
   bool search_engine_is_google_ = false;
 
   // Whether the model has reordered the position of an item in the current

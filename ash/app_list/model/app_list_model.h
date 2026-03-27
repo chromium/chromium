@@ -189,7 +189,13 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
 
   AppListModelStatus status_ = AppListModelStatus::kStatusNormal;
 
-  base::ObserverList<AppListModelObserver, true> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      AppListModelObserver,
+      /*check_empty=*/true,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
   base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
       item_list_scoped_observations_{this};
 };

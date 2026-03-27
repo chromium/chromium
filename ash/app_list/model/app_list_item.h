@@ -211,7 +211,13 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Whether this item currently has a notification badge that should be shown.
   bool has_notification_badge_ = false;
 
-  base::ObserverList<AppListItemObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      AppListItemObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 }  // namespace ash
