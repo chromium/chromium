@@ -67,7 +67,8 @@ inline constexpr char kAutofillAiTravelEntitiesEnabled[] =
     "autofill.autofill_ai.travel_entities_enabled";
 // Boolean that is true if BNPL on Autofill is enabled.
 inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
-// Boolean that is true if the user has ever seen a BNPL suggestion.
+// Boolean that is true if the user has ever seen a BNPL suggestion or the Pay
+// Later tab.
 inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
 // Boolean that is true if the Chrome user has seen the Amount Extraction AI
 // terms.

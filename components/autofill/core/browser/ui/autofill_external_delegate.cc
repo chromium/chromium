@@ -421,6 +421,12 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
 #endif
 
   const bool show_tabbed_popup = ShouldShowPayNowPayLaterTabs();
+  if (show_tabbed_popup) {
+    manager_->client()
+        .GetPersonalDataManager()
+        .payments_data_manager()
+        .SetAutofillHasSeenBnpl();
+  }
 
   AutofillClient::PopupOpenArgs open_args(
       should_use_caret_bounds ? gfx::RectF(caret_bounds_)

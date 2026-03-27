@@ -236,11 +236,18 @@ void BnplManager::NotifyOfSuggestionGeneration(
     return;
   }
 
+  autofill_suggestion_trigger_source_ = trigger_source;
+
+  // No need to insert BNPL suggestions if the Pay Later tab is enabled.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
+    return;
+  }
+
   update_suggestions_barrier_callback_ = base::BarrierCallback<
       std::variant<SuggestionsShownResponse, std::optional<int64_t>>>(
       2U, base::BindOnce(&BnplManager::MaybeUpdateDesktopSuggestionsWithBnpl,
                          weak_factory_.GetWeakPtr(), trigger_source));
-  autofill_suggestion_trigger_source_ = trigger_source;
 }
 
 void BnplManager::OnCreditCardSuggestionsShown(
@@ -249,7 +256,9 @@ void BnplManager::OnCreditCardSuggestionsShown(
   if (std::ranges::contains(suggestions, SuggestionType::kBnplEntry,
                             &Suggestion::type) &&
       base::FeatureList::IsEnabled(
-          features::kAutofillEnableAiBasedAmountExtraction)) {
+          features::kAutofillEnableAiBasedAmountExtraction) &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnablePayNowPayLaterTabs)) {
     payments_autofill_client()
         .GetPaymentsDataManager()
         .SetAutofillHasSeenBnpl();

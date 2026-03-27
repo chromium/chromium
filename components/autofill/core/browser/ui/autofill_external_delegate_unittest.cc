@@ -1146,6 +1146,41 @@ TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_IneligibleFieldType_Cvc) {
                         {Suggestion(SuggestionType::kCreditCardEntry)});
 }
 
+// Tests that has seen BNPL pref is updated when the main filling
+// product is a credit card and the field is a credit card number field.
+TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_PrefUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillEnableAmountExtraction,
+                            features::kAutofillEnableBuyNowPayLaterSyncing,
+                            features::kAutofillEnableBuyNowPayLater,
+                            features::kAutofillEnableAiBasedAmountExtraction,
+                            features::kAutofillEnablePayNowPayLaterTabs},
+      /*disabled_features=*/{});
+
+  TestPaymentsDataManager& paydm =
+      static_cast<TestPaymentsDataManager&>(pdm().payments_data_manager());
+  paydm.AddCreditCard(test::GetCreditCard());
+  paydm.AddBnplIssuer(test::GetTestLinkedBnplIssuer());
+
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(Return(true));
+
+  test::FormDescription form_description = {
+      .fields = {
+          {.role = CREDIT_CARD_NUMBER, .heuristic_type = CREDIT_CARD_NUMBER}}};
+  IssueOnQuery(form_description);
+
+  ASSERT_FALSE(paydm.IsAutofillHasSeenBnplPrefEnabled());
+
+  OnSuggestionsReturned(queried_field().global_id(),
+                        {Suggestion(SuggestionType::kCreditCardEntry)});
+
+  EXPECT_TRUE(paydm.IsAutofillHasSeenBnplPrefEnabled());
+}
+
 // Tests that `show_tabbed_popup` is not present when the flag
 // `kAutofillEnablePayNowPayLaterTabs` is disabled.
 TEST_F(AutofillExternalDelegateTest, ShowTabbedPopup_FeatureDisabled) {
