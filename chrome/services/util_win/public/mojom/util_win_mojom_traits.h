@@ -110,7 +110,7 @@ struct StructTraits<chrome::mojom::InspectionResultDataView,
       const ModuleInspectionResult& input);
   static const std::u16string& description(const ModuleInspectionResult& input);
   static const std::u16string& version(const ModuleInspectionResult& input);
-  static chrome::mojom::CertificateType certificate_type(
+  static CertificateInfo::Type certificate_type(
       const ModuleInspectionResult& input);
   static const base::FilePath& certificate_path(
       const ModuleInspectionResult& input);

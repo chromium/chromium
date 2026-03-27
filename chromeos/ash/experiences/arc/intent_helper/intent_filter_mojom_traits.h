@@ -90,10 +90,8 @@ struct StructTraits<arc::mojom::PatternMatcherDataView,
       const arc::IntentFilter::PatternMatcher& r) {
     return r.pattern();
   }
-  static arc::mojom::PatternType type(
-      const arc::IntentFilter::PatternMatcher& r) {
-    return EnumTraits<arc::mojom::PatternType, arc::PatternType>::ToMojom(
-        r.match_type());
+  static arc::PatternType type(const arc::IntentFilter::PatternMatcher& r) {
+    return r.match_type();
   }
 
   static bool Read(arc::mojom::PatternMatcherDataView data,

@@ -167,12 +167,10 @@ const std::u16string& StructTraits<
   return input.version;
 }
 // static
-chrome::mojom::CertificateType
+CertificateInfo::Type
 StructTraits<chrome::mojom::InspectionResultDataView, ModuleInspectionResult>::
     certificate_type(const ModuleInspectionResult& input) {
-  return EnumTraits<chrome::mojom::CertificateType,
-                    CertificateInfo::Type>::ToMojom(input.certificate_info
-                                                        .type);
+  return input.certificate_info.type;
 }
 // static
 const base::FilePath&
