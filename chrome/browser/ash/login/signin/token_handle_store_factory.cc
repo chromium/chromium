@@ -116,7 +116,8 @@ TokenHandleStore* TokenHandleStoreFactory::GetTokenHandleStore() {
     if (features::IsUseTokenHandleStoreEnabled()) {
       token_handle_store_ = CreateTokenHandleStoreImpl();
     } else {
-      token_handle_store_ = std::make_unique<TokenHandleUtil>();
+      token_handle_store_ =
+          std::make_unique<TokenHandleUtil>(g_browser_process->local_state());
     }
   }
 

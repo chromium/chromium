@@ -4,13 +4,14 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 
+#include <functional>
+
+#include "base/check_deref.h"
 #include "base/json/values_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -37,10 +38,11 @@ constexpr base::TimeDelta kCacheStatusTime = base::Hours(1);
 const char* g_invalid_token_for_testing = nullptr;
 
 bool MaybeReturnCachedStatus(
+    PrefService& local_state,
     const AccountId& account_id,
     const std::string& token,
     TokenHandleUtil::TokenValidationCallback* callback) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const std::string* saved_status =
       known_user.FindStringPath(account_id, kTokenHandleStatusPref);
   if (!saved_status)
@@ -76,13 +78,14 @@ bool IsReauthRequired(const TokenHandleUtil::Status& status,
   NOTREACHED();
 }
 
-void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
+void FinishWithStatus(PrefService& local_state,
+                      TokenHandleUtil::TokenValidationCallback callback,
                       const std::string& token,
                       const AccountId& account_id,
                       const TokenHandleUtil::Status& status,
                       std::optional<bool> user_has_gaia_password) {
   bool has_gaia_pass = user_has_gaia_password.value_or(true);
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   // Check that the token that was checked matches the latest known token.
   // This may happen if token check took too long, and user went through
   // online sign-in and obtained new token during that time.
@@ -110,8 +113,9 @@ void FinishWithStatus(TokenHandleUtil::TokenValidationCallback callback,
 }
 
 // Checks if token handle is explicitly marked as `kValid` for `account_id`.
-bool HasTokenStatusInvalid(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+bool HasTokenStatusInvalid(PrefService& local_state,
+                           const AccountId& account_id) {
+  user_manager::KnownUser known_user(&local_state);
   const std::string* status =
       known_user.FindStringPath(account_id, kTokenHandleStatusPref);
 
@@ -119,8 +123,9 @@ bool HasTokenStatusInvalid(const AccountId& account_id) {
 }
 
 // Checks if token handle is explicitly marked as `kStale` for `account_id`.
-bool HasTokenStatusStale(const AccountId& account_id) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+bool HasTokenStatusStale(PrefService& local_state,
+                         const AccountId& account_id) {
+  user_manager::KnownUser known_user(&local_state);
   const std::string* status =
       known_user.FindStringPath(account_id, kTokenHandleStatusPref);
 
@@ -147,22 +152,21 @@ std::optional<bool> DoesUserUseGaiaPassword(
 
 }  // namespace
 
-TokenHandleUtil::TokenHandleUtil()
-    : factor_editor_(UserDataAuthClient::Get()) {}
+TokenHandleUtil::TokenHandleUtil(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)),
+      factor_editor_(UserDataAuthClient::Get()) {}
 
 TokenHandleUtil::~TokenHandleUtil() = default;
 
-// static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) const {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
   return token && !token->empty();
 }
 
-// static
 bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) const {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const base::Value* value =
       known_user.FindPath(account_id, kTokenHandleLastCheckedPref);
   if (!value)
@@ -176,9 +180,9 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) const {
   return base::Time::Now() - last_checked.value() < kCacheStatusTime;
 }
 
-// static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) const {
-  return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
+  return !HasToken(account_id) ||
+         HasTokenStatusInvalid(local_state_.get(), account_id);
 }
 
 void TokenHandleUtil::IsReauthRequired(
@@ -195,7 +199,7 @@ void TokenHandleUtil::IsReauthRequired(
     return;
   }
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   const std::string* token =
       known_user.FindStringPath(account_id, kTokenHandlePref);
   if (!token) {
@@ -210,13 +214,15 @@ void TokenHandleUtil::IsReauthRequired(
   }
 
   if (IsRecentlyChecked(account_id) &&
-      MaybeReturnCachedStatus(account_id, *token, &callback)) {
+      MaybeReturnCachedStatus(local_state_.get(), account_id, *token,
+                              &callback)) {
     return;
   }
 
   // If token is explicitly marked as invalid, or stale, it does not make sense
   // to check it again.
-  if (HasTokenStatusInvalid(account_id) || HasTokenStatusStale(account_id)) {
+  if (HasTokenStatusInvalid(local_state_.get(), account_id) ||
+      HasTokenStatusStale(local_state_.get(), account_id)) {
     std::move(callback).Run(account_id, *token, /*reauth_required=*/true);
     return;
   }
@@ -229,10 +235,9 @@ void TokenHandleUtil::IsReauthRequired(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-// static
 void TokenHandleUtil::StoreTokenHandle(const AccountId& account_id,
                                        const std::string& handle) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
 
   known_user.SetStringPref(account_id, kTokenHandlePref, handle);
   known_user.SetStringPref(account_id, kTokenHandleStatusPref,
@@ -260,15 +265,13 @@ void TokenHandleUtil::DiagnoseTokenHandleMapping(
                << "implementation and should not be accessed";
 }
 
-// static
 void TokenHandleUtil::SetInvalidTokenForTesting(const char* token) {
   g_invalid_token_for_testing = token;
 }
 
-// static
 void TokenHandleUtil::SetLastCheckedPrefForTesting(const AccountId& account_id,
                                                    base::Time time) {
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetPath(account_id, kTokenHandleLastCheckedPref,
                      base::TimeToValue(time));
 }
@@ -281,15 +284,17 @@ void TokenHandleUtil::OnStatusChecked(TokenValidationCallback callback,
       user_manager::UserManager::Get()->FindUser(account_id);
   if (!user) {
     DUMP_WILL_BE_NOTREACHED() << "Invalid user";
-    FinishWithStatus(std::move(callback), token, account_id, status,
+    FinishWithStatus(local_state_.get(), std::move(callback), token, account_id,
+                     status,
                      /*user_has_gaia_password=*/true);
     return;
   }
   factor_editor_.GetAuthFactorsConfiguration(
       std::make_unique<UserContext>(*user),
       base::BindOnce(&DoesUserUseGaiaPassword)
-          .Then(base::BindOnce(&FinishWithStatus, std::move(callback), token,
-                               account_id, status)));
+          .Then(base::BindOnce(&FinishWithStatus, std::ref(local_state_.get()),
+                               std::move(callback), token, account_id,
+                               status)));
 }
 
 void TokenHandleUtil::OnValidationComplete(const std::string& token) {

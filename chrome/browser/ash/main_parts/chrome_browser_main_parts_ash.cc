@@ -1803,9 +1803,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   // TokenHandleStore needs to outlive the Profile, which
   // is destroyed inside ChromeBrowserMainPartsLinux::PostMainMessageLoopRun().
-  if (ash::features::IsUseTokenHandleStoreEnabled()) {
-    TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
-  }
+  TokenHandleStoreFactory::Get()->DestroyTokenHandleStore();
 
   magic_boost_controller_.reset();
 

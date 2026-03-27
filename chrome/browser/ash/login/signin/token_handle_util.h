@@ -10,6 +10,7 @@
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -18,6 +19,7 @@
 #include "google_apis/gaia/gaia_oauth_client.h"
 
 class AccountId;
+class PrefService;
 
 namespace ash {
 
@@ -27,7 +29,8 @@ namespace ash {
 // validity of corresponding refresh token in the insecure environment.
 class TokenHandleUtil : public TokenHandleStore {
  public:
-  TokenHandleUtil();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit TokenHandleUtil(PrefService* local_state);
 
   TokenHandleUtil(const TokenHandleUtil&) = delete;
   TokenHandleUtil& operator=(const TokenHandleUtil&) = delete;
@@ -127,6 +130,8 @@ class TokenHandleUtil : public TokenHandleStore {
                        const std::string& token,
                        const Status& status);
   void OnValidationComplete(const std::string& token);
+
+  const raw_ref<PrefService> local_state_;
 
   // Map of pending check operations.
   base::flat_map<std::string, std::unique_ptr<TokenDelegate>>
