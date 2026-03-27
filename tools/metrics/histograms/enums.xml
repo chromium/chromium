@@ -9684,6 +9684,7 @@ from previous Chrome versions.
   <int value="-1460598402"
       label="EnterpriseReportingApiKeychainRecreation:disabled"/>
   <int value="-1460561942" label="SystemEmojiPicker:disabled"/>
+  <int value="-1460465554" label="GestureUserEducationBackSwipe:disabled"/>
   <int value="-1460462432" label="disable-media-source"/>
   <int value="-1459907288" label="DesksTemplates:enabled"/>
   <int value="-1459246132" label="kWebSQLAccess:disabled"/>
@@ -10237,6 +10238,7 @@ from previous Chrome versions.
   <int value="-1276912933" label="enable-quick-unlock-pin"/>
   <int value="-1276579737" label="PictureInPictureAPI:disabled"/>
   <int value="-1276254276" label="GlicBindPinnedUnboundTab:enabled"/>
+  <int value="-1276204389" label="GestureUserEducationBackSwipe:enabled"/>
   <int value="-1275598905" label="Compose:disabled"/>
   <int value="-1275552094" label="SpectreVariant2Mitigation:disabled"/>
   <int value="-1275176920"

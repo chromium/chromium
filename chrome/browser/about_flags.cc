@@ -13129,6 +13129,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kApb144Patch9Description, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kApb144Patch9)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-gesture-user-education-back-swipe",
+     flag_descriptions::kGestureUserEducationBackSwipeName,
+     flag_descriptions::kGestureUserEducationBackSwipeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kGestureUserEducationBackSwipe)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

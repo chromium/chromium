@@ -3364,6 +3364,14 @@
     "owners": [ "hmare@google.com", "cbe-device-trust-eng@google.com"],
     "expiry_milestone": 137
   },
+    {
+    "name": "enable-gesture-user-education-back-swipe",
+    "owners": [
+      "jtanaristy@google.com",
+      "lazzzis@google.com"
+    ],
+    "expiry_milestone": 150
+  },
   {
     "name": "enable-global-vaapi-lock",
     "owners": [

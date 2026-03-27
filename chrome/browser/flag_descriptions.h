@@ -5655,6 +5655,11 @@ inline constexpr char kFullscreenVideoPictureInPictureName[] =
 inline constexpr char kFullscreenVideoPictureInPictureDescription[] =
     "Enables fullscreen video Picture-in-Picture on Android.";
 
+inline constexpr char kGestureUserEducationBackSwipeName[] =
+    "Gesture user education back swipe";
+inline constexpr char kGestureUserEducationBackSwipeDescription[] =
+    "Enables gesture user education for back swipe.";
+
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateName[] =
     "Grid tab switcher surface color update";
 inline constexpr char kGridTabSwitcherSurfaceColorUpdateDescription[] =
