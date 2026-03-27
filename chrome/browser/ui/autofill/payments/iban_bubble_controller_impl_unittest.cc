@@ -292,6 +292,25 @@ TEST_P(IbanBubbleControllerImplTest,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION));
 }
 
+TEST_P(IbanBubbleControllerImplTest, ReturnsApplicableWindowTitle) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableWalletBrandingV2};
+  ShowUploadSaveBubble(autofill::test::GetServerIban());
+  EXPECT_EQ(
+      controller()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE));
+}
+
+TEST_P(IbanBubbleControllerImplTest,
+       ReturnsApplicableWindowTitle_WalletBrandingV2Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kAutofillEnableWalletBrandingV2);
+  ShowUploadSaveBubble(autofill::test::GetServerIban());
+  EXPECT_EQ(
+      controller()->GetWindowTitle(),
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));
+}
+
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(IbanBubbleControllerImplTest);
 
 }  // namespace autofill

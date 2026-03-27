@@ -749,6 +749,9 @@
   <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER" desc="Title text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
     Save IBAN?
   </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE" desc="Title text for the Autofill save IBAN (International Bank Account Number) to the Google Wallet server prompt when a user submits a form with a valid IBAN.">
+    Save IBAN in Google Wallet
+  </message>
   <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
     To autofill this IBAN next time, save it in your Google Account
   </message>

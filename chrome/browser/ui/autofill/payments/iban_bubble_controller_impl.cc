@@ -176,7 +176,10 @@ std::u16string IbanBubbleControllerImpl::GetWindowTitle() const {
     case IbanBubbleType::kUploadSave:
     case IbanBubbleType::kUploadInProgress:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER);
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableWalletBrandingV2)
+              ? IDS_AUTOFILL_SAVE_IBAN_TO_WALLET_PROMPT_TITLE
+              : IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER);
     case IbanBubbleType::kManageSavedIban:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_IBAN_SAVED);
     case IbanBubbleType::kUploadCompleted:
