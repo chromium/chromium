@@ -50,6 +50,7 @@ class CalendarViewPixelTest : public AshTestBase {
   }
 
   void TearDown() override {
+    calendar_view_ = nullptr;
     Shell::Get()->calendar_controller()->RegisterClientForUser(account_id_,
                                                                nullptr);
 
@@ -98,7 +99,7 @@ class CalendarViewPixelTest : public AshTestBase {
  private:
   const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
   calendar_test_utils::CalendarClientTestImpl client_;
-  raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
+  raw_ptr<CalendarView> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };
 
