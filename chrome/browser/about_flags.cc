@@ -10030,6 +10030,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kChromeFindsVariations,
                                     "ChromeFinds")},
 
+    {"cross-device-task-handoff",
+     flag_descriptions::kCrossDeviceTaskHandoffName,
+     flag_descriptions::kCrossDeviceTaskHandoffDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCrossDeviceTaskHandoff)},
+
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHistoryPaneAndroid)},

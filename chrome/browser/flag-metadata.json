@@ -1964,6 +1964,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "cross-device-task-handoff",
+    "owners": [ "zheliooo@google.com", "clank-large-form-factors@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "crostini-container-install",
     "owners": [ "clumptini@google.com" ],
     "expiry_milestone": 150

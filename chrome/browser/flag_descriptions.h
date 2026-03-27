@@ -5506,6 +5506,12 @@ inline constexpr char
         "Management "
         "API to 3P password managers if 3P mode autofill is on.";
 
+inline constexpr char kCrossDeviceTaskHandoffName[] =
+    "Cross-device task handoff";
+inline constexpr char kCrossDeviceTaskHandoffDescription[] =
+    "Allows users to pick up where they left off in Chrome by transferring "
+    "tasks and states to nearby devices.";
+
 inline constexpr char kDefaultBrowserPromoEntryPointName[] =
     "DefaultBrowserPromoEntryPoint";
 inline constexpr char kDefaultBrowserPromoEntryPointDescription[] =

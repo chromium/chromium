@@ -11723,6 +11723,7 @@ from previous Chrome versions.
   <int value="-773238824" label="AutoplayWhitelistSettings:disabled"/>
   <int value="-772806796" label="AutofillUpstreamUpdatedUi:enabled"/>
   <int value="-772787642" label="MediaAppCustomColors:disabled"/>
+  <int value="-772735473" label="CrossDeviceTaskHandoff:enabled"/>
   <int value="-772679248" label="MojoVideoEncodeAccelerator:enabled"/>
   <int value="-772608284" label="MyFilesVolume:enabled"/>
   <int value="-772040705" label="ChromeWhatsNewInMainMenuNewBadge:disabled"/>
@@ -12552,6 +12553,7 @@ from previous Chrome versions.
   <int value="-502027435" label="AndroidUseCorrectDisplayWorkArea:enabled"/>
   <int value="-502004335" label="OobeHidDetectionRevamp:enabled"/>
   <int value="-501853726" label="MultiZoneRgbKeyboard:enabled"/>
+  <int value="-501679339" label="CrossDeviceTaskHandoff:disabled"/>
   <int value="-501461773" label="GlicActorUiOverlayMagicCursor:disabled"/>
   <int value="-500807692" label="Apb144Patch7:disabled"/>
   <int value="-500367371" label="CCTPageInsightsHubBetterScroll:enabled"/>

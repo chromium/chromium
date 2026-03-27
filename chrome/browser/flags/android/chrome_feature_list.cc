@@ -114,7 +114,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 // FEATURE_EXPORT_LIST_START
 // go/keep-sorted start
     &autofill::features::kAndroidAutofillSupportForHttpAuth,
-        &autofill::features::kAutofillAiAvailableByDefault,
+    &autofill::features::kAutofillAiAvailableByDefault,
     &autofill::features::kAutofillAiCreateEntityDataManager,
     &autofill::features::kAutofillAiReauthRequired,
     &autofill::features::kAutofillAiWithDataSchema,
@@ -334,6 +334,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchSuppressShortView,
     &kControlsVisibilityFromNavigations,
     &kCrossDeviceTabPaneAndroid,
+    &kCrossDeviceTaskHandoff,
     &kDefaultBrowserPromoAndroid2,
     &kDefaultBrowserPromoEntryPoint,
     &kDefaultBrowserPromoFre,
@@ -677,6 +678,7 @@ BASE_FEATURE(kContextualSearchDisableOnlineDetection, base::FEATURE_DISABLED_BY_
 BASE_FEATURE(kContextualSearchSuppressShortView, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kControlsVisibilityFromNavigations, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kCrossDeviceTabPaneAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCrossDeviceTaskHandoff, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoAndroid2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoEntryPoint, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kDefaultBrowserPromoFre, base::FEATURE_DISABLED_BY_DEFAULT);
