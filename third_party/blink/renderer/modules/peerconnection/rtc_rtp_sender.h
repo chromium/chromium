@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_set_parameter_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_script_transform.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -54,8 +55,9 @@ RTCRtpCodecParameters* ToRtpCodecParameters(
     const webrtc::RtpCodecParameters& codecs);
 
 // https://w3c.github.io/webrtc-pc/#rtcrtpsender-interface
-class RTCRtpSender final : public ScriptWrappable,
-                           public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT RTCRtpSender final
+    : public ScriptWrappable,
+      public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:

@@ -859,6 +859,7 @@ ScriptPromise<IDLUndefined> RTCRtpSender::setParameters(
       resolver->RejectWithDOMException(
           DOMExceptionCode::kInvalidModificationError,
           "encodingOptions size must match number of encodings.");
+      return promise;
     }
     for (wtf_size_t i = 0; i < encoding_options.size(); i++) {
       encodings[i].request_key_frame = encoding_options[i]->keyFrame();
