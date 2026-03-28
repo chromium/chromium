@@ -86,8 +86,6 @@ cargo_crate("lib") {
     "use_std",
   ]
 
-  testonly = true
-
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
 
