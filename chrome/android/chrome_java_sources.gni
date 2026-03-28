@@ -839,6 +839,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsOptInBottomSheetContent.java",
   "java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsOptInCoordinator.java",
   "java/src/org/chromium/chrome/browser/notifications/finds/ChromeFindsUtils.java",
+  "java/src/org/chromium/chrome/browser/notifications/finds/FindsOptInManager.java",
   "java/src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgent.java",
   "java/src/org/chromium/chrome/browser/notifications/scheduler/FindsAgent.java",
   "java/src/org/chromium/chrome/browser/notifications/scheduler/NotificationSchedulerTask.java",

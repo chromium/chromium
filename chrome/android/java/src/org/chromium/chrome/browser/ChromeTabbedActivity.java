@@ -137,6 +137,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feedback.OmniboxFeedbackSource;
+import org.chromium.chrome.browser.finds.FindsService;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -192,6 +193,7 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
+import org.chromium.chrome.browser.notifications.finds.FindsOptInManager;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
@@ -687,6 +689,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private TipsPromoCoordinator mTipsPromoCoordinator;
     private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
+    private FindsOptInManager mFindsOptInManager;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -1551,6 +1554,20 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
             if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
                 TipsUtils.registerTipsNotificationsModuleEnabledSettingsPref();
+            }
+
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_FINDS)) {
+                Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+                FindsService findsService = FindsService.getForProfile(profile);
+                if (findsService != null) {
+                    mFindsOptInManager =
+                            new FindsOptInManager(
+                                    this,
+                                    profile,
+                                    mRootUiCoordinator.getBottomSheetController(),
+                                    getSnackbarManager(),
+                                    findsService);
+                }
             }
         }
     }
@@ -4798,6 +4815,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (mAcceleratorManager != null) {
             mAcceleratorManager.destroy();
+        }
+
+        if (mFindsOptInManager != null) {
+            mFindsOptInManager.destroy();
+            mFindsOptInManager = null;
         }
 
         super.onDestroyInternal();

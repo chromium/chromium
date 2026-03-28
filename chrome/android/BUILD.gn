@@ -414,6 +414,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/feed/android:java",
       "//chrome/browser/feedback/android:factory_java",
       "//chrome/browser/feedback/android:java",
+      "//chrome/browser/finds/android:java",
       "//chrome/browser/first_run/android:java",
       "//chrome/browser/flags:java",
       "//chrome/browser/fullscreen/android:java",
