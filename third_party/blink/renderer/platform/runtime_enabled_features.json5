@@ -151,7 +151,7 @@
     },
 
     // Specify how the flag value is updated from the base::Feature value. This
-    // field is used only if base_feature is not empty.
+    // field works only if base_feature is not "none".
     //
     // * "enabled_or_overridden"
     // - If the base::Feature status is overridden to the enabled or disabled
@@ -171,9 +171,10 @@
     //
     //   This is useful for Blink origin trial features especially those
     //   implemented in both Chromium and Blink. As origin trial only controls
-    //   the Blink features, for now we require the base::Feature to be enabled
-    //   by default, but we don't want the default enabled status affect the
-    //   Blink feature. See also https://crbug.com/1048656#c10.
+    //   the Blink features, we require the base::Feature to be enabled
+    //   by default, but we don't want the default enabled status to affect the
+    //   Blink feature. See RuntimeEnabledFeatures.md for a detailed explanation
+    //   of how this works. See also https://crbug.com/1048656#c10.
     //   This can also be used for features that are enabled by default in
     //   Chromium but not in Blink on all platforms and we want to use the Blink
     //   status. However, we would prefer consistent Chromium and Blink status

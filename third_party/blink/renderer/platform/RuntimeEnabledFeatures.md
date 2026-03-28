@@ -107,6 +107,38 @@ rarely needed.
 **Note:** gradual Finch rollouts of developer-visible platform changes are discouraged.
 [Prefer waterfall rollout for platform changes.](/docs/flag_guarding_guidelines.md#Prefer-waterfall-rollout-for-platform-changes)
 
+### Origin Trial Features and base::Feature
+
+If your feature is controlled by an origin trial and you need to access its state from outside of Blink (e.g., in the browser process), you will need a corresponding `base::Feature`.
+
+By default, the `base::Feature` state is synced to the Blink feature. For origin trials, this is problematic: since the origin trial token only controls the Blink feature, the Chromium-side `base::Feature` must be enabled by default so that the browser process does not block the feature's execution. However, if the `base::Feature` is enabled by default, the Blink feature will also become enabled by default, completely bypassing the origin trial token check!
+
+To resolve this, use `base_feature_status: "enabled"` in combination with `copied_from_base_feature_if: "overridden"`.
+
+Example:
+```js
+{
+  name: "MyAmazingTrialFeature",
+  origin_trial_feature_name: "MyAmazingTrialFeature",
+  status: "experimental",
+  base_feature_status: "enabled",
+  copied_from_base_feature_if: "overridden",
+}
+```
+
+This configuration achieves the following:
+1. **Chromium (Browser Process):** The `base::Feature` is enabled by default, allowing browser-side logic to run (or depending on IPC from Blink).
+2. **Blink (Renderer Process):** Because `copied_from_base_feature_if` is set to `"overridden"`, the `"enabled"` default state of the `base::Feature` is **not** copied to the Blink feature. The Blink feature remains disabled by default, ensuring the origin trial token is strictly required to enable it on a page.
+3. **Kill Switch:** If a critical bug is found, the feature can still be completely disabled via Finch or the command line (`--disable-features=MyAmazingTrialFeature`). Since the `base::Feature` is explicitly overridden to the disabled state, the `"overridden"` condition is met, and the Blink feature will also be force-disabled, overriding the origin trial.
+
+#### Checking the Feature State
+
+Because the `base::Feature` is enabled by default, checking its state directly will almost always return true. You must be careful about how you check the feature's status:
+
+* **In Blink (Renderer):** Always use `RuntimeEnabledFeatures::MyAmazingTrialFeatureEnabled(execution_context)`. This correctly evaluates the kill switch, the global Blink flag, and the presence of a valid origin trial token for the given context. Do **not** use `base::FeatureList::IsEnabled()`.
+* **In Chromium (Browser Process):** `base::FeatureList::IsEnabled(blink::features::kMyAmazingTrialFeature)` will return `true` by default. It only tells you if the feature is *allowed* to run (i.e., not kill-switched). It does **not** tell you if the origin trial is active for a specific page. To check the per-page origin trial state in the browser process, you must use `browser_process_read_access: true` (which exposes the state via `RuntimeFeatureStateReadContext`) or rely on an explicit IPC from the renderer.
+* **Using `public: true`:** Adding `public: true` to your feature generates `WebRuntimeFeatures::IsMyAmazingTrialFeatureEnabledByRuntimeFlag()`. Note the `ByRuntimeFlag` suffix: this only checks the *global* Blink state (e.g., if it was forced on via command line). It does **not** evaluate per-page origin trial tokens. It is primarily used during process startup (e.g., in `content/child/runtime_features.cc`) to globally force a Blink feature off if a browser-side dependency is missing.
+
 ### Introducing dependencies among Runtime Enabled Features
 
 The parameters of `implied_by` and `depends_on` can be used to specify the relationship to other features.
