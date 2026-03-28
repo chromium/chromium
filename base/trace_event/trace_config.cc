@@ -660,9 +660,8 @@ void TraceConfig::SetEventFiltersFromConfigList(
         event_filter_dict.FindString(kFilterPredicateParam);
     CHECK(predicate_name) << "Invalid predicate name in category event filter.";
 
-    EventFilterConfig new_config(*predicate_name);
-    new_config.InitializeFromConfigDict(event_filter_dict);
-    event_filters_.push_back(new_config);
+    event_filters_.emplace_back(*predicate_name)
+        .InitializeFromConfigDict(event_filter_dict);
   }
 }
 

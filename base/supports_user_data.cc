@@ -59,7 +59,7 @@ std::unique_ptr<SupportsUserData::Data> SupportsUserData::TakeUserData(
   if (found != impl_->user_data_.end()) {
     std::unique_ptr<SupportsUserData::Data> deowned;
     deowned.swap(found->second);
-    impl_->user_data_.erase(key);
+    impl_->user_data_.erase(found);
     return deowned;
   }
   return nullptr;

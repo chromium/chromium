@@ -142,19 +142,17 @@ bool AssociateFieldTrialParamsFromString(
     }
     std::string trial = decode_data_func(group_parts[0]);
     std::string group = decode_data_func(group_parts[1]);
-    auto trial_group = std::make_pair(trial, group);
-    if (trial_groups.find(trial_group) != trial_groups.end()) {
+    auto [_, inserted] = trial_groups.emplace(trial, group);
+    if (!inserted) {
       DLOG(ERROR) << StringPrintf(
           "A (trial, group) pair listed more than once. (%s, %s)",
           trial.c_str(), group.c_str());
       return false;
     }
-    trial_groups.insert(trial_group);
     std::map<std::string, std::string> params;
     for (size_t i = 0; i < key_values.size(); i += 2) {
-      std::string key = decode_data_func(key_values[i]);
-      std::string value = decode_data_func(key_values[i + 1]);
-      params[key] = value;
+      params[decode_data_func(key_values[i])] =
+          decode_data_func(key_values[i + 1]);
     }
     bool result = AssociateFieldTrialParams(trial, group, params);
     if (!result) {

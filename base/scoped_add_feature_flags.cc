@@ -85,11 +85,8 @@ void ScopedAddFeatureFlags::AddFeatureIfNotSet(const Feature& feature,
       std::ranges::contains(disabled_features_, feature_name)) {
     return;
   }
-  if (enable) {
-    enabled_features_.emplace_back(feature_name);
-  } else {
-    disabled_features_.emplace_back(feature_name);
-  }
+  auto& features = enable ? enabled_features_ : disabled_features_;
+  features.emplace_back(std::move(feature_name));
 }
 
 }  // namespace base
