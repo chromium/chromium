@@ -2803,8 +2803,8 @@ crbug.com/494341371 [ Linux ] external/wpt/html/cross-origin-opener-policy/ifram
 crbug.com/438309773 external/wpt/service-workers/service-worker/fetch-request-xhr.https.html [ Crash Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/credential-management/credentialscontainer-get-basics.https.html [ Timeout ]
-[ Win ] external/wpt/wasm/jsapi/esm-integration/source-phase-string-constants.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
+crbug.com/497145619 external/wpt/credential-management/credentialscontainer-get-basics.https.html [ Timeout ]
+crbug.com/497148644 [ Win ] external/wpt/wasm/jsapi/esm-integration/source-phase-string-constants.tentative.https.any.shadowrealm-in-audioworklet.html [ Pass Timeout ]
 crbug.com/495814731 [ Mac ] external/wpt/css/css-text/letter-spacing/letter-spacing-ligatures-005.html [ Failure ]
 crbug.com/495814731 external/wpt/css/css-text/text-autospace/text-autospace-ideograph-numeric-001.html [ Failure ]
 crbug.com/494377597 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-iframe-background-mismatch-dynamic-cross-origin.sub.html [ Failure ]
