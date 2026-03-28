@@ -605,6 +605,10 @@ const GURL& ContextualTasksUI::GetInnerFrameUrl() const {
   return nav_observer_->web_contents()->GetLastCommittedURL();
 }
 
+content::WebContents* ContextualTasksUI::GetInnerWebContents() const {
+  return embedded_web_contents_.get();
+}
+
 bool ContextualTasksUI::IsShownInTab() {
   return tabs::TabInterface::MaybeGetFromContents(web_ui()->GetWebContents());
 }

@@ -177,6 +177,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'getUrlForTask',
       'isAiPage',
       'isPendingErrorPage',
+      'isEmbeddedPageErrorDocument',
       'isShownInTab',
       'isZeroState',
       'moveTaskUiToNewTab',
@@ -266,6 +267,11 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     const isPendingErrorPage =
         this.isPendingErrorPageMap_[taskId.value] ?? false;
     return Promise.resolve({isPendingErrorPage: isPendingErrorPage});
+  }
+
+  isEmbeddedPageErrorDocument() {
+    this.methodCalled('isEmbeddedPageErrorDocument');
+    return Promise.resolve({isErrorDocument: false});
   }
 
   openMyActivityUi() {

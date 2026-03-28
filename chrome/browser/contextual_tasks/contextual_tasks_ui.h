@@ -161,6 +161,7 @@ class ContextualTasksUI
       override;
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override;
   const GURL& GetInnerFrameUrl() const override;
+  content::WebContents* GetInnerWebContents() const override;
 
   // ContextualTaskService::Observer impl:
   void OnTaskUpdated(

@@ -22,6 +22,8 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
@@ -122,6 +124,7 @@ class TestContextualTasksUI : public ContextualTasksUI {
               (),
               (override));
   MOCK_METHOD(GURL, GetWebUiUrl, (), (override));
+  MOCK_METHOD(content::WebContents*, GetInnerWebContents, (), (const, override));
 };
 
 class ContextualTasksPageHandlerTest : public BrowserWithTestWindowTest {
@@ -208,6 +211,61 @@ TEST_F(ContextualTasksPageHandlerTest, IsPendingErrorPage_TaskNotPending) {
   page_handler_->IsPendingErrorPage(
       task_id, base::BindLambdaForTesting([&](bool is_pending_error_page) {
         EXPECT_FALSE(is_pending_error_page);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, IsEmbeddedPageErrorDocument_True) {
+  std::unique_ptr<content::WebContents> inner_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Navigate and fail to create an error document.
+  content::NavigationSimulator::NavigateAndFailFromBrowser(
+      inner_web_contents.get(), GURL("http://example.com"),
+      net::ERR_CONNECTION_RESET);
+
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillOnce(Return(inner_web_contents.get()));
+
+  base::RunLoop run_loop;
+  page_handler_->IsEmbeddedPageErrorDocument(
+      base::BindLambdaForTesting([&](bool is_error_document) {
+        EXPECT_TRUE(is_error_document);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, IsEmbeddedPageErrorDocument_False) {
+  std::unique_ptr<content::WebContents> inner_web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  // Normal successful navigation.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      inner_web_contents.get(), GURL("http://example.com"));
+
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillOnce(Return(inner_web_contents.get()));
+
+  base::RunLoop run_loop;
+  page_handler_->IsEmbeddedPageErrorDocument(
+      base::BindLambdaForTesting([&](bool is_error_document) {
+        EXPECT_FALSE(is_error_document);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       IsEmbeddedPageErrorDocument_NoInnerContents) {
+  EXPECT_CALL(*contextual_tasks_ui_, GetInnerWebContents())
+      .WillOnce(Return(nullptr));
+
+  base::RunLoop run_loop;
+  page_handler_->IsEmbeddedPageErrorDocument(
+      base::BindLambdaForTesting([&](bool is_error_document) {
+        EXPECT_FALSE(is_error_document);
         run_loop.Quit();
       }));
   run_loop.Run();

@@ -86,6 +86,9 @@ interface PageHandler {
   // error page to be shown. This is only called when the WebUI is first opened.
   IsPendingErrorPage(mojo_base.mojom.Uuid task_id) => (bool is_pending_error_page);
 
+  // Checks if the embedded web contents is showing an error document.
+  IsEmbeddedPageErrorDocument() => (bool is_error_document);
+
   // Set the title of the active thread.
   SetThreadTitle(string title);
 
