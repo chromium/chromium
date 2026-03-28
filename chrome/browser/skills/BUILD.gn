@@ -4,8 +4,6 @@
 
 import("//chrome/common/features.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos)
-
 source_set("skills") {
   sources = [
     "skills_glic_mojom_util.cc",
@@ -41,28 +39,36 @@ source_set("public") {
     "skills_dialog_launcher.h",
     "skills_ui_tab_controller_interface.cc",
     "skills_ui_tab_controller_interface.h",
-    "skills_ui_window_controller.h",
   ]
   deps = [
     "//base",
-    "//chrome/browser/ui/toasts",
-    "//chrome/browser/ui/toasts/api:toasts",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
     "//ui/base/unowned_user_data",
   ]
+  if (!is_android) {
+    sources += [ "skills_ui_window_controller.h" ]
+    deps += [
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+    ]
+  }
 }
 
 source_set("ui") {
   sources = [
     "skills_dialog_launcher.cc",
-    "skills_ui_tab_controller.cc",
-    "skills_ui_tab_controller.h",
-    "skills_ui_window_controller.cc",
     "skills_update_observer.cc",
     "skills_update_observer.h",
   ]
+  if (!is_android) {
+    sources += [
+      "skills_ui_tab_controller.cc",
+      "skills_ui_tab_controller.h",
+      "skills_ui_window_controller.cc",
+    ]
+  }
 
   public_deps = [
     ":public",
@@ -75,35 +81,43 @@ source_set("ui") {
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/toasts",
-    "//chrome/browser/ui/toasts/api:toasts",
-    "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui/skills",
-    "//components/constrained_window",
+    "//chrome/browser/ui/tabs:tabs_public",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/skills:features",
     "//components/skills/proto",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
-    "//components/web_modal",
     "//services/service_manager/public/cpp",
     "//ui/base/unowned_user_data",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/skills",
+      "//components/constrained_window",
+      "//components/web_modal",
+    ]
+  }
 }
 
 source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "skills_api_functional_browsertest.cc",
-    "skills_dialog_launcher_browsertest.cc",
-    "skills_functional_browsertest.cc",
-    "skills_functional_browsertest.h",
-    "skills_ui_tab_controller_browsertest.cc",
-    "skills_ui_window_controller_browsertest.cc",
-  ]
+  sources = []
+  if (!is_android) {
+    sources += [
+      "skills_api_functional_browsertest.cc",
+      "skills_dialog_launcher_browsertest.cc",
+      "skills_functional_browsertest.cc",
+      "skills_functional_browsertest.h",
+      "skills_ui_tab_controller_browsertest.cc",
+      "skills_ui_window_controller_browsertest.cc",
+    ]
+  }
   deps = [
     ":public",
     ":skills",
@@ -111,21 +125,28 @@ source_set("browser_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic/test_support",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/toasts",
-    "//chrome/browser/ui/toasts/api:toasts",
-    "//chrome/browser/ui/webui",
-    "//chrome/browser/ui/webui/skills",
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/public",
     "//components/skills/public:mojo_bindings",
   ]
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+      "//chrome/browser/ui/webui",
+      "//chrome/browser/ui/webui/skills",
+    ]
+  }
 }
 
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "skills_interactive_uitest.cc" ]
+  sources = []
+  if (!is_android) {
+    sources += [ "skills_interactive_uitest.cc" ]
+  }
   deps = [
     ":browser_tests",
     ":public",
@@ -135,9 +156,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/glic/test_support",
-    "//chrome/browser/ui/webui/skills",
     "//chrome/browser/sync:factories",
-    "//chrome/browser/ui:browser_list",
     "//chrome/test:test_support",
     "//components/skills:features",
     "//components/skills/internal",
@@ -145,15 +164,20 @@ source_set("interactive_ui_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/skills" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
     "skills_metrics_provider_unittest.cc",
-    "skills_ui_tab_controller_unittest.cc",
     "skills_update_observer_unittest.cc",
   ]
+  if (!is_android) {
+    sources += [ "skills_ui_tab_controller_unittest.cc" ]
+  }
 
   deps = [
     ":skills",

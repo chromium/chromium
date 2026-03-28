@@ -8,24 +8,20 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_dialog_launcher.h"
-#include "chrome/browser/skills/skills_update_observer.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/tabs/public/tab_interface.h"
-#include "ui/base/base_window.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/skills/skills_dialog_launcher.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_update_observer.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skills_service.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#include "components/tabs/public/tab_interface.h"
+#include "ui/base/base_window.h"
 
 namespace glic {
 
@@ -41,9 +37,6 @@ GlicSkillsManagerImpl::~GlicSkillsManagerImpl() = default;
 
 void GlicSkillsManagerImpl::UpdateSkillPreviews(
     std::optional<tabs::TabInterface*> updated_tab) {
-#if BUILDFLAG(IS_ANDROID)
-  return;
-#else
   if (!host_->IsReady()) {
     return;
   }
@@ -73,13 +66,9 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
     skill_previews.push_back(preview.Clone());
   }
   host_->NotifyContextualSkillsChanged(std::move(skill_previews));
-#endif
 }
 
 tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
-#if BUILDFLAG(IS_ANDROID)
-  return nullptr;
-#else
   const FocusedTabData& ftd = host_->sharing_manager().GetFocusedTabData();
   tabs::TabInterface* tab = ftd.focus() ? ftd.focus() : ftd.unfocused_tab();
 
@@ -92,18 +81,25 @@ tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
     return nullptr;
   }
 
-  Profile* profile =
-      Profile::FromBrowserContext(guest_contents->GetBrowserContext());
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  if (!displayer.browser()) {
+  Profile* profile = host_->profile();
+
+  BrowserWindowInterface* active_browser = nullptr;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&active_browser, profile](BrowserWindowInterface* browser) {
+        if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
+            browser->GetProfile() == profile) {
+          active_browser = browser;
+          return false;
+        }
+        return true;
+      });
+
+  if (!active_browser) {
     return nullptr;
   }
 
-  content::WebContents* contents = chrome::AddAndReturnTabAt(
-      displayer.browser(), GURL("chrome://newtab"), -1, true);
-
-  return tabs::TabInterface::MaybeGetFromContents(contents);
-#endif
+  return TabListInterface::From(active_browser)
+      ->OpenTab(GURL("chrome://newtab"), -1);
 }
 
 void GlicSkillsManagerImpl::LaunchSkillsDialog(
@@ -111,9 +107,6 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
     skills::Skill skill,
     skills::mojom::SkillsDialogType dialog_type,
     base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(IS_ANDROID)
-  return;
-#else
   tabs::TabInterface* target_tab = EnsureTabForSkills();
 
   if (!target_tab) {
@@ -123,29 +116,39 @@ void GlicSkillsManagerImpl::LaunchSkillsDialog(
   // Delegate the race-condition handling to the Skills launcher.
   skills::SkillsDialogLauncher::CreateForTab(target_tab, std::move(skill),
                                              dialog_type, std::move(callback));
-#endif
 }
 
 void GlicSkillsManagerImpl::ShowManageSkillsUi() {
-#if !BUILDFLAG(IS_ANDROID)
   const GURL skills_url = GURL(chrome::kChromeUISkillsURL)
                               .Resolve(chrome::kChromeUISkillsYourSkillsPath);
   bool existing_skills_tab_found = false;
 
   Profile* host_profile = host_->profile();
+  BrowserWindowInterface* most_recent_browser = nullptr;
+
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&skills_url, &existing_skills_tab_found,
+      [&skills_url, &existing_skills_tab_found, &most_recent_browser,
        host_profile](BrowserWindowInterface* browser) {
         if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL ||
             browser->GetProfile() != host_profile) {
           return true;
         }
-        TabStripModel* tab_strip = browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip->count(); ++i) {
-          content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
+
+        if (!most_recent_browser) {
+          most_recent_browser = browser;
+        }
+
+        TabListInterface* tab_list = TabListInterface::From(browser);
+        if (!tab_list) {
+          return true;
+        }
+        for (const auto& tab : tab_list->GetAllTabs()) {
+          content::WebContents* web_contents = tab->GetContents();
           if (web_contents && web_contents->GetURL() == skills_url) {
-            browser->GetWindow()->Activate();
-            tab_strip->ActivateTabAt(i);
+            if (browser->GetWindow()) {
+              browser->GetWindow()->Activate();
+            }
+            tab_list->ActivateTab(tab->GetHandle());
             existing_skills_tab_found = true;
             return false;
           }
@@ -154,12 +157,28 @@ void GlicSkillsManagerImpl::ShowManageSkillsUi() {
       });
 
   if (!existing_skills_tab_found) {
-    NavigateParams params(host_->profile(), skills_url,
-                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-    params.disposition = WindowOpenDisposition::SINGLETON_TAB;
-    Navigate(&params);
+    if (most_recent_browser) {
+      TabListInterface::From(most_recent_browser)
+          ->OpenTab(skills_url, /*index=*/-1);
+      return;
+    }
+
+    BrowserWindowCreateParams create_params(
+        BrowserWindowInterface::Type::TYPE_NORMAL, *host_->profile(),
+        /*from_user_gesture=*/true);
+
+    CreateBrowserWindow(
+        std::move(create_params),
+        base::BindOnce(
+            [](const GURL& url, BrowserWindowInterface* browser_window) {
+              if (browser_window) {
+                if (auto* tab_list = TabListInterface::From(browser_window)) {
+                  tab_list->OpenTab(url, /*index=*/-1);
+                }
+              }
+            },
+            skills_url));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void GlicSkillsManagerImpl::OnFocusedTabChanged(
