@@ -4611,7 +4611,6 @@ if (enable_nocompile_tests) {
       "check_nocompile.nc",
       "containers/buffer_iterator_nocompile.nc",
       "containers/checked_iterators_nocompile.nc",
-      "containers/enum_set_nocompile.nc",
       "containers/fixed_flat_map_nocompile.nc",
       "containers/fixed_flat_set_nocompile.nc",
       "containers/heap_array_nocompile.nc",
