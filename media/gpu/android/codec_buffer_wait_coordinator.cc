@@ -7,8 +7,8 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 
 namespace media {
 

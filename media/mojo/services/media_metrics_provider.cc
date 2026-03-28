@@ -10,7 +10,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/key_systems.h"
@@ -28,6 +27,7 @@
 
 #if BUILDFLAG(ENABLE_CAST_RECEIVER) && \
     (BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID))
+#include "base/time/time.h"
 #include "media/mojo/services/playback_events_recorder.h"
 #endif
 

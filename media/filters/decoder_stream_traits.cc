@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
