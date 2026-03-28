@@ -121,8 +121,13 @@ class CONTENT_EXPORT FileSystemAccessChangeSource {
   std::list<base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>>
       initialization_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  base::ObserverList<RawChangeObserver> observers_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      RawChangeObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<FileSystemAccessChangeSource> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

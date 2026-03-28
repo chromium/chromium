@@ -305,7 +305,8 @@ void FileSystemAccessWatcherManager::RemoveObserver(
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return source->scope().Contains(newly_unobserved_scope) &&
            std::ranges::none_of(
-               observation_groups_, [&source](const auto& observation) {
+               observation_groups_.GetReentrantRange(),
+               [&source](const auto& observation) {
                  return source->scope().Contains(observation.scope());
                });
   });

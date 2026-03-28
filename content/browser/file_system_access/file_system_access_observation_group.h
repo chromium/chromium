@@ -165,8 +165,12 @@ class CONTENT_EXPORT FileSystemAccessObservationGroup
 
   // Observations to which this instance will notify of changes within their
   // respective scope.
-  base::ObserverList<Observer> observations_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observations_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   OnUsageChangeCallback on_usage_change_callback_;
 
