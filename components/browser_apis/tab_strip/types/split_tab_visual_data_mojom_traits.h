@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_TRAITS_H_
-#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_TRAITS_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_MOJOM_TRAITS_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_MOJOM_TRAITS_H_
 
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -33,4 +33,4 @@ struct mojo::StructTraits<MojoSplitTabVisualDataView,
                    NativeSplitTabVisualData* out);
 };
 
-#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_TRAITS_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_SPLIT_TAB_VISUAL_DATA_MOJOM_TRAITS_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/browser_apis/tab_strip/types/image_traits.h"
+#include "components/browser_apis/tab_strip/types/image_mojom_traits.h"
 
 #include "base/base64.h"
 #include "base/containers/span.h"

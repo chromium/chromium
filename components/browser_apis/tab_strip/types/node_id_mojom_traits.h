@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_TRAITS_H_
-#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_TRAITS_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_MOJOM_TRAITS_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_MOJOM_TRAITS_H_
 
 #include "components/browser_apis/tab_strip/tab_strip_api_types.mojom.h"
 #include "components/browser_apis/tab_strip/types/node_id.h"
@@ -34,4 +34,4 @@ struct mojo::StructTraits<MojoNodeIdView, NativeNodeId> {
   static bool Read(MojoNodeIdView view, NativeNodeId* out);
 };
 
-#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_TRAITS_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_NODE_ID_MOJOM_TRAITS_H_

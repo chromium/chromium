@@ -27,7 +27,7 @@ source_set("unit_tests") {
     "node_id_unittest.cc",
     "path_unittest.cc",
     "position_unittest.cc",
-    "tab_strip_service_traits_unittest.cc",
+    "tab_strip_service_mojom_traits_unittest.cc",
   ]
 
   deps = [

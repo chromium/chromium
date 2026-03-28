@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
-#include "components/browser_apis/tab_strip/types/image_traits.h"
-#include "components/browser_apis/tab_strip/types/node_id_traits.h"
-#include "components/browser_apis/tab_strip/types/path_traits.h"
-#include "components/browser_apis/tab_strip/types/position_traits.h"
+#include "components/browser_apis/tab_strip/types/image_mojom_traits.h"
+#include "components/browser_apis/tab_strip/types/node_id_mojom_traits.h"
+#include "components/browser_apis/tab_strip/types/path_mojom_traits.h"
+#include "components/browser_apis/tab_strip/types/position_mojom_traits.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_TRAITS_H_
-#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_TRAITS_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_MOJOM_TRAITS_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_MOJOM_TRAITS_H_
 
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -19,4 +19,4 @@ struct mojo::StructTraits<MojoImageView, NativeImage> {
   static bool Read(MojoImageView view, NativeImage* out);
 };
 
-#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_TRAITS_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_IMAGE_MOJOM_TRAITS_H_

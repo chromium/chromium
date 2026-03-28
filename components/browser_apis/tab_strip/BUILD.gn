@@ -76,26 +76,26 @@ mojom("mojom") {
         },
       ]
       traits_headers = [
-        "types/image_traits.h",
+        "types/image_mojom_traits.h",
         "types/node_id.h",
-        "types/node_id_traits.h",
+        "types/node_id_mojom_traits.h",
         "types/path.h",
-        "types/path_traits.h",
+        "types/path_mojom_traits.h",
         "types/position.h",
-        "types/position_traits.h",
-        "types/tab_group_visual_data_traits.h",
-        "types/split_tab_visual_data_traits.h",
+        "types/position_mojom_traits.h",
+        "types/tab_group_visual_data_mojom_traits.h",
+        "types/split_tab_visual_data_mojom_traits.h",
         "//components/tab_groups/tab_group_visual_data.h",
         "//ui/gfx/image/image_skia.h",
         "//components/split_tabs/split_tab_visual_data.h",
       ]
       traits_sources = [
-        "types/image_traits.cc",
-        "types/node_id_traits.cc",
-        "types/path_traits.cc",
-        "types/position_traits.cc",
-        "types/split_tab_visual_data_traits.cc",
-        "types/tab_group_visual_data_traits.cc",
+        "types/image_mojom_traits.cc",
+        "types/node_id_mojom_traits.cc",
+        "types/path_mojom_traits.cc",
+        "types/position_mojom_traits.cc",
+        "types/split_tab_visual_data_mojom_traits.cc",
+        "types/tab_group_visual_data_mojom_traits.cc",
       ]
       traits_public_deps = [
         "types",

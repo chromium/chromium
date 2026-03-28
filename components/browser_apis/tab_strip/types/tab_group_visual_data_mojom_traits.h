@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_TRAITS_H_
-#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_TRAITS_H_
+#ifndef COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_MOJOM_TRAITS_H_
+#define COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_MOJOM_TRAITS_H_
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
@@ -28,4 +28,4 @@ struct mojo::StructTraits<MojoTabGroupVisualDataView,
                    NativeTabGroupVisualData* out);
 };
 
-#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_TRAITS_H_
+#endif  // COMPONENTS_BROWSER_APIS_TAB_STRIP_TYPES_TAB_GROUP_VISUAL_DATA_MOJOM_TRAITS_H_
