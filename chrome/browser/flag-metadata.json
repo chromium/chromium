@@ -5181,6 +5181,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "glic-horizontal-tab-toolbar-button",
+    "owners": [
+      "lugli@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "glic-live-mode-only-glow",
     "owners": [ "wry@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150

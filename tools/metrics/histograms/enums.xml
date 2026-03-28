@@ -7763,6 +7763,7 @@ from previous Chrome versions.
   <int value="-2091414992" label="DlcSettingsUi:disabled"/>
   <int value="-2091404586" label="TabStripKeyboardFocus:enabled"/>
   <int value="-2091355143" label="ShowCastPermissionRejectedError:enabled"/>
+  <int value="-2090966390" label="GlicHorizontalTabToolbarButton:disabled"/>
   <int value="-2090484194" label="ContextualSearchUrlActions:disabled"/>
   <int value="-2089469157" label="AccessibilityBounceKeys:enabled"/>
   <int value="-2088555929" label="EnableAppGridGhost:enabled"/>
@@ -18045,6 +18046,7 @@ from previous Chrome versions.
   <int value="1346018846"
       label="ForceSupervisedUserReauthenticationForBlockedSites:enabled"/>
   <int value="1346994602" label="SyncPseudoUSSDictionary:enabled"/>
+  <int value="1348378628" label="GlicHorizontalTabToolbarButton:enabled"/>
   <int value="1348575062" label="LayoutExtraction:enabled"/>
   <int value="1349100152"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:disabled"/>
