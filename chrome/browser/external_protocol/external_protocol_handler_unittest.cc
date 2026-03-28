@@ -360,9 +360,7 @@ TEST_F(ExternalProtocolHandlerTest, TestNoDialogWithoutManager) {
 class MockInterceptNavigationDelegate
     : public navigation_interception::InterceptNavigationDelegate {
  public:
-  MockInterceptNavigationDelegate()
-      : InterceptNavigationDelegate(base::android::AttachCurrentThread(),
-                                    nullptr) {}
+  MockInterceptNavigationDelegate() = default;
 
   MOCK_METHOD5(HandleSubframeExternalProtocol,
                void(const GURL&,

@@ -182,10 +182,19 @@ InterceptNavigationDelegate::InterceptNavigationDelegate(
     JNIEnv* env,
     const jni_zero::JavaRef<jobject>& jdelegate,
     bool escape_external_handler_value)
-    : weak_jdelegate_(env, jdelegate),
-      escape_external_handler_value_(escape_external_handler_value) {}
+    : escape_external_handler_value_(escape_external_handler_value) {
+  CHECK(!jdelegate.is_null());
+  Java_InterceptNavigationDelegate_associateNative(
+      env, jdelegate, reinterpret_cast<intptr_t>(this));
+}
 
-InterceptNavigationDelegate::~InterceptNavigationDelegate() = default;
+InterceptNavigationDelegate::InterceptNavigationDelegate() = default;
+
+InterceptNavigationDelegate::~InterceptNavigationDelegate() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_InterceptNavigationDelegate_destroyFromNative(
+      env, reinterpret_cast<intptr_t>(this));
+}
 
 void InterceptNavigationDelegate::ShouldIgnoreNavigation(
     content::NavigationHandle* navigation_handle,
@@ -208,7 +217,7 @@ void InterceptNavigationDelegate::ShouldIgnoreNavigation(
   }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
+  ScopedJavaLocalRef<jobject> jdelegate = GetJavaDelegate(env);
 
   if (jdelegate.is_null()) {
     std::move(result_callback).Run(false);
@@ -256,7 +265,7 @@ void InterceptNavigationDelegate::OnShouldIgnoreNavigationResult(
 
 void InterceptNavigationDelegate::RequestFinishPendingShouldIgnoreCheck() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
+  ScopedJavaLocalRef<jobject> jdelegate = GetJavaDelegate(env);
 
   if (jdelegate.is_null()) {
     OnShouldIgnoreNavigationResult(false);
@@ -273,7 +282,7 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
     const std::optional<url::Origin>& initiating_origin,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
+  ScopedJavaLocalRef<jobject> jdelegate = GetJavaDelegate(env);
 
   if (jdelegate.is_null()) {
     return;
@@ -352,7 +361,7 @@ void InterceptNavigationDelegate::MaybeHandleSubframeAction() {
 
 void InterceptNavigationDelegate::OnResourceRequestWithGesture() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jdelegate = weak_jdelegate_.get(env);
+  ScopedJavaLocalRef<jobject> jdelegate = GetJavaDelegate(env);
   if (jdelegate.is_null()) {
     return;
   }
@@ -369,6 +378,12 @@ void InterceptNavigationDelegate::OnSubframeAsyncActionTaken(
           ? nullptr
           : std::make_unique<GURL>(url::GURLAndroid::ToNativeGURL(env, j_gurl));
   MaybeHandleSubframeAction();
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+InterceptNavigationDelegate::GetJavaDelegate(JNIEnv* env) {
+  return Java_InterceptNavigationDelegate_get(env,
+                                              reinterpret_cast<intptr_t>(this));
 }
 
 static void JNI_InterceptNavigationDelegate_OnShouldIgnoreNavigationResult(

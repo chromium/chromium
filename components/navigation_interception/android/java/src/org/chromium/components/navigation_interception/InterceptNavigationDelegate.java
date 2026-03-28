@@ -17,9 +17,32 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+
 @JNINamespace("navigation_interception")
 @NullMarked
 public abstract class InterceptNavigationDelegate {
+    private static final Map<Long, WeakReference<InterceptNavigationDelegate>> sNativeMap =
+            new HashMap<>();
+
+    @CalledByNative
+    private static @Nullable InterceptNavigationDelegate get(long nativeDelegate) {
+        WeakReference<InterceptNavigationDelegate> delegateRef = sNativeMap.get(nativeDelegate);
+        return delegateRef != null ? delegateRef.get() : null;
+    }
+
+    @CalledByNative
+    private void associateNative(long nativeDelegate) {
+        sNativeMap.put(nativeDelegate, new WeakReference<>(this));
+    }
+
+    @CalledByNative
+    private static void destroyFromNative(long nativeDelegate) {
+        sNativeMap.remove(nativeDelegate);
+    }
+
     /**
      * This method is called for every top-level navigation within the associated WebContents. The
      * method allows the embedder to ignore navigations. This is used on Android to 'convert'
