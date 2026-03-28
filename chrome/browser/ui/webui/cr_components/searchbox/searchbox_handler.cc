@@ -419,15 +419,7 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
                                  u"aim&utm_campaign=aim_str"));
 
   DefineChromeRefreshRealboxIcons();
-  source->AddString(
-      "searchboxDefaultIcon",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxUseGoogleGIcon)
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-          ? kGoogleGIconResourceName
-#else
-          ? kSearchIconResourceName
-#endif
-          : kSearchIconResourceName);
+  source->AddString("searchboxDefaultIcon", kSearchIconResourceName);
 
   source->AddBoolean("searchboxVoiceSearch", enable_voice_search);
   source->AddBoolean("searchboxLensSearch", enable_lens_search);
