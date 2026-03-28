@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] navigator.credentials.get() with one unknown protocol with malformed data and one known protocol with proper data should skip the unknown one and not fail.
+  promise_rejects_dom: function "function() { throw e; }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'requests' property from 'DigitalCredentialRequestOptions': Failed to read the 'data' property from 'DigitalCredentialGetRequest': Failed to convert value to 'object'." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
+[FAIL] navigator.credentials.get() with good requests at the start and end should skip the bogus ones and not fail.
+  promise_rejects_dom: function "function() { throw e; }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'requests' property from 'DigitalCredentialRequestOptions': Failed to read the 'data' property from 'DigitalCredentialGetRequest': Failed to convert value to 'object'." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
+[FAIL] navigator.credentials.get() with bogus requests at both ends should skip them and not fail.
+  promise_rejects_dom: function "function() { throw e; }" threw object "TypeError: Failed to execute 'get' on 'CredentialsContainer': Failed to read the 'digital' property from 'CredentialRequestOptions': Failed to read the 'requests' property from 'DigitalCredentialRequestOptions': Failed to read the 'data' property from 'DigitalCredentialGetRequest': Failed to convert value to 'object'." that is not a DOMException AbortError: property "code" is equal to undefined, expected 20
+Harness: the test ran to completion.
+

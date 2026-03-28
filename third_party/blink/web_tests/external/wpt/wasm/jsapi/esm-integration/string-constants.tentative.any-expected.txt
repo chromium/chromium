@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] String constants from wasm:js/string-constants should be supported in ESM integration
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch dynamically imported module: http://web-platform.test:8001/wasm/jsapi/esm-integration/resources/js-string-constants.wasm"
+Harness: the test ran to completion.
+
