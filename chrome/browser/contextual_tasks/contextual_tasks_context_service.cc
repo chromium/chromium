@@ -179,6 +179,17 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     return;
   }
 
+  int64_t request_id = next_request_id_++;
+  pending_requests_[request_id] = std::move(callback);
+
+  if (options.tab_selection_timeout) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ContextualTasksContextService::OnRequestTimedOut,
+                       weak_ptr_factory_.GetWeakPtr(), request_id),
+        *options.tab_selection_timeout);
+  }
+
   // Force active tab embedding to be processed.
   page_embeddings_service_->ProcessEmbeddingsOnDemand();
 
@@ -189,7 +200,7 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
       passage_embeddings::PassagePriority::kUrgent, {query},
       base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
                      weak_ptr_factory_.GetWeakPtr(), query, options, now,
-                     explicit_urls, std::move(callback)));
+                     explicit_urls, request_id));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -209,13 +220,23 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
     const TabSelectionOptions& options,
     base::TimeTicks start_time,
     const std::vector<GURL>& explicit_urls,
-    base::OnceCallback<void(std::vector<content::WebContents*>)> callback,
+    int64_t request_id,
     std::vector<std::string> passages,
     std::vector<passage_embeddings::Embedding> embeddings,
     passage_embeddings::Embedder::TaskId task_id,
     passage_embeddings::ComputeEmbeddingsStatus status) {
   base::UmaHistogramTimes("ContextualTasks.Context.QueryEmbeddingLatency",
                           tick_clock_->NowTicks() - start_time);
+
+  auto request_it = pending_requests_.find(request_id);
+  if (request_it == pending_requests_.end()) {
+    // We had timed out already and the callback was already invoked.
+    return;
+  }
+
+  base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
+      std::move(request_it->second);
+  pending_requests_.erase(request_id);
 
   // Query embedding was not successfully generated.
   if (status != passage_embeddings::ComputeEmbeddingsStatus::kSuccess) {
@@ -291,6 +312,21 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   }
 
   std::move(callback).Run(std::move(relevant_tabs));
+}
+
+void ContextualTasksContextService::OnRequestTimedOut(int64_t request_id) {
+  auto request_it = pending_requests_.find(request_id);
+  if (request_it == pending_requests_.end()) {
+    // We had already completed the request and the callback was already
+    // invoked.
+    return;
+  }
+
+  base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
+      std::move(request_it->second);
+  pending_requests_.erase(request_id);
+  RecordContextDeterminationStatus(ContextDeterminationStatus::kTimedOut);
+  std::move(callback).Run({});
 }
 
 std::vector<content::WebContents*>

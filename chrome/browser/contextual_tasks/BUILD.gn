@@ -50,6 +50,7 @@ source_set("contextual_tasks") {
     "//components/page_content_annotations/content:page_embeddings",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//content/public/browser",
+    "//third_party/abseil-cpp:absl",
     "//third_party/omnibox_proto",
   ]
 }
