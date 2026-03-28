@@ -19,7 +19,6 @@ webrtc_public_deps = [
   ":init_webrtc",
   ":metrics",
   ":task_queue_factory",
-  "//third_party/webrtc/api:array_view",
   "//third_party/webrtc/api:async_dns_resolver",
   "//third_party/webrtc/api:candidate",
   "//third_party/webrtc/api:create_modular_peer_connection_factory",
@@ -374,7 +373,6 @@ source_set("bridge_ice_controller") {
   deps = [
     "//base",
     "//third_party/abseil-cpp:absl",
-    "//third_party/webrtc/api:array_view",
     "//third_party/webrtc/api:candidate",
     "//third_party/webrtc/api:ice_transport_interface",
     "//third_party/webrtc/api:make_ref_counted",

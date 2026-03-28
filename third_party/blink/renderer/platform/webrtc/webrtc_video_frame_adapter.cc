@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <span>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
@@ -560,7 +561,7 @@ WebRtcVideoFrameAdapter::ScaledBuffer::getMediaVideoFrame() const {
 
 webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::ScaledBuffer::GetMappedFrameBuffer(
-    webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {
+    std::span<webrtc::VideoFrameBuffer::Type> types) {
   auto frame_buffer = parent_->GetOrCreateFrameBufferForSize(size_);
   return std::ranges::contains(types, frame_buffer->type()) ? frame_buffer
                                                             : nullptr;
@@ -618,7 +619,7 @@ WebRtcVideoFrameAdapter::ToI420() {
 
 webrtc::scoped_refptr<webrtc::VideoFrameBuffer>
 WebRtcVideoFrameAdapter::GetMappedFrameBuffer(
-    webrtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) {
+    std::span<webrtc::VideoFrameBuffer::Type> types) {
   auto frame_buffer = GetOrCreateFrameBufferForSize(full_size_);
   return std::ranges::contains(types, frame_buffer->type()) ? frame_buffer
                                                             : nullptr;

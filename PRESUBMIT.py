@@ -971,6 +971,12 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',
             r'services/network/web_transport\.cc',
 
+            # Needed to implement WebRTC interfaces.
+            r'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.h',
+            r'third_party/blink/renderer/modules/peerconnection/rtc_transport/rtc_transport\.cc',
+            r'third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter\.cc',
+            r'third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter\.h',
+
             # Not an error in third_party folders.
             _THIRD_PARTY_EXCEPT_BLINK,
         ],
