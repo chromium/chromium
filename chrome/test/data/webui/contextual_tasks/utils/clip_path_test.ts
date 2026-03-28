@@ -11,7 +11,7 @@ function assertClipPathEquals(expected: string, actual: string) {
 
 suite('ClipPathTest', () => {
   test('returns empty string for null composebox bounds', () => {
-    const result = getNonOccludedClipPath(null, [], 0);
+    const result = getNonOccludedClipPath(null, [], 0, 1000, 1000);
     assertClipPathEquals('', result);
   });
 
@@ -24,12 +24,11 @@ suite('ClipPathTest', () => {
       width: 100,
       height: 100,
     };
-    const result = getNonOccludedClipPath(composebox, [], 0);
+    const result = getNonOccludedClipPath(composebox, [], 0, 1000, 1000);
 
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '50px 200px, 150px 200px, 150px 100px, 50px 100px, 50px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected =
+        'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z ' +
+        'M 150 100 H 50 V 200 H 150 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -42,7 +41,7 @@ suite('ClipPathTest', () => {
       width: 0,
       height: 0,
     };
-    const result = getNonOccludedClipPath(composebox, [], 0);
+    const result = getNonOccludedClipPath(composebox, [], 0, 1000, 1000);
     assertClipPathEquals('clip-path: none;', result);
   });
 
@@ -56,20 +55,10 @@ suite('ClipPathTest', () => {
       height: 100,
     };
     // Occluder covers top 50px (100 to 150)
-    const occluder = {
-      top: 100,
-      bottom: 150,
-      left: 0,
-      right: 100,
-      width: 100,
-      height: 50,
-    };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const occluders = [{top: 50, bottom: 150, left: 10, right: 200, width: 190, height: 100}];
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
 
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 100px 200px, 100px 150px, 0px 150px, 0px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 150 H 0 V 200 H 100 V 150 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -83,20 +72,10 @@ suite('ClipPathTest', () => {
       height: 100,
     };
     // Occluder covers bottom 50px (150 to 200)
-    const occluder = {
-      top: 150,
-      bottom: 200,
-      left: 0,
-      right: 100,
-      width: 100,
-      height: 50,
-    };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const occluders = [{top: 150, bottom: 250, left: 10, right: 200, width: 190, height: 100}];
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
 
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 150px, ' +
-        '0px 150px, 100px 150px, 100px 100px, 0px 100px, 0px 150px, ' +
-        '0px 150px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 100 H 0 V 150 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -109,15 +88,8 @@ suite('ClipPathTest', () => {
       width: 100,
       height: 100,
     };
-    const occluder = {
-      top: 100,
-      bottom: 200,
-      left: 0,
-      right: 100,
-      width: 100,
-      height: 100,
-    };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const occluders = [{top: 50, bottom: 250, left: 10, right: 200, width: 190, height: 200}];
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
     assertClipPathEquals('clip-path: none;', result);
   });
 
@@ -146,7 +118,7 @@ suite('ClipPathTest', () => {
       width: 100,
       height: 50,
     };
-    const result = getNonOccludedClipPath(composebox, [header, footer], 0);
+    const result = getNonOccludedClipPath(composebox, [header, footer], 0, 1000, 1000);
     assertClipPathEquals('clip-path: none;', result);
   });
 
@@ -175,12 +147,9 @@ suite('ClipPathTest', () => {
       width: 100,
       height: 50,
     };
-    const result = getNonOccludedClipPath(composebox, [above, below], 0);
+    const result = getNonOccludedClipPath(composebox, [above, below], 0, 1000, 1000);
 
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 100px 200px, 100px 100px, 0px 100px, 0px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 100 H 0 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -203,13 +172,10 @@ suite('ClipPathTest', () => {
       height: 50,
     };
     const padding = 10;
-    const result = getNonOccludedClipPath(composebox, [occluder], padding);
+    const result = getNonOccludedClipPath(composebox, [occluder], padding, 1000, 1000);
 
     // Should act as header clipping top to 150 + 10 = 160
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 100px 200px, 100px 160px, 0px 160px, 0px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 160 H 0 V 200 H 100 V 160 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -232,7 +198,7 @@ suite('ClipPathTest', () => {
       height: 90,
     };
     const padding = 10;
-    const result = getNonOccludedClipPath(composebox, [occluder], padding);
+    const result = getNonOccludedClipPath(composebox, [occluder], padding, 1000, 1000);
     assertClipPathEquals('clip-path: none;', result);
   });
 
@@ -254,12 +220,9 @@ suite('ClipPathTest', () => {
       width: 50,
       height: 100,
     };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const result = getNonOccludedClipPath(composebox, [occluder], 0, 1000, 1000);
 
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 100px 200px, 100px 100px, 0px 100px, 0px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 100 H 0 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -291,13 +254,10 @@ suite('ClipPathTest', () => {
       height: 60,
     };
     const result =
-        getNonOccludedClipPath(composebox, [occluder1, occluder2], 0);
+        getNonOccludedClipPath(composebox, [occluder1, occluder2], 0, 1000, 1000);
 
     // Expect only right segment (60-100)
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '60px 200px, 100px 200px, 100px 100px, 60px 100px, 60px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 100 H 60 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -319,13 +279,10 @@ suite('ClipPathTest', () => {
       width: 30,
       height: 60,
     };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const result = getNonOccludedClipPath(composebox, [occluder], 0, 1000, 1000);
 
     // Expect segment 30-100
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '30px 200px, 100px 200px, 100px 100px, 30px 100px, 30px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 100 100 H 30 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -347,13 +304,10 @@ suite('ClipPathTest', () => {
       width: 30,
       height: 60,
     };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const result = getNonOccludedClipPath(composebox, [occluder], 0, 1000, 1000);
 
     // Expect segment 0-70
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 70px 200px, 70px 100px, 0px 100px, 0px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 70 100 H 0 V 200 H 70 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -375,14 +329,10 @@ suite('ClipPathTest', () => {
       width: 20,
       height: 60,
     };
-    const result = getNonOccludedClipPath(composebox, [occluder], 0);
+    const result = getNonOccludedClipPath(composebox, [occluder], 0, 1000, 1000);
 
     // Expect segments 0-40 and 60-100
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 40px 200px, 40px 100px, 0px 100px, 0px 200px, ' +
-        '60px 200px, 100px 200px, 100px 100px, 60px 100px, 60px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 40 100 H 0 V 200 H 40 V 100 Z M 100 100 H 60 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -401,16 +351,10 @@ suite('ClipPathTest', () => {
       {top: 120, bottom: 180, left: 50, right: 60, width: 10, height: 60},
       {top: 120, bottom: 180, left: 80, right: 90, width: 10, height: 60},
     ];
-    const result = getNonOccludedClipPath(composebox, occluders, 0);
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
 
     // Expect segments: 0-20, 30-50, 60-80, 90-100
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 20px 200px, 20px 100px, 0px 100px, 0px 200px, ' +
-        '30px 200px, 50px 200px, 50px 100px, 30px 100px, 30px 200px, ' +
-        '60px 200px, 80px 200px, 80px 100px, 60px 100px, 60px 200px, ' +
-        '90px 200px, 100px 200px, 100px 100px, 90px 100px, 90px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 20 100 H 0 V 200 H 20 V 100 Z M 50 100 H 30 V 200 H 50 V 100 Z M 80 100 H 60 V 200 H 80 V 100 Z M 100 100 H 90 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -428,14 +372,10 @@ suite('ClipPathTest', () => {
       {top: 120, bottom: 180, left: 30, right: 50, width: 20, height: 60},
       {top: 120, bottom: 180, left: 40, right: 60, width: 20, height: 60},
     ];
-    const result = getNonOccludedClipPath(composebox, occluders, 0);
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
 
     // Expect segments: 0-30 and 60-100
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 30px 200px, 30px 100px, 0px 100px, 0px 200px, ' +
-        '60px 200px, 100px 200px, 100px 100px, 60px 100px, 60px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 30 100 H 0 V 200 H 30 V 100 Z M 100 100 H 60 V 200 H 100 V 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 
@@ -452,15 +392,25 @@ suite('ClipPathTest', () => {
       {top: 120, bottom: 180, left: 80, right: 90, width: 10, height: 60},
       {top: 120, bottom: 180, left: 10, right: 20, width: 10, height: 60},
     ];
-    const result = getNonOccludedClipPath(composebox, occluders, 0);
+    const result = getNonOccludedClipPath(composebox, occluders, 0, 1000, 1000);
 
     // Expect segments: 0-10, 20-80, 90-100
-    const expected = 'clip-path: polygon(' +
-        '0% 0%, 100% 0%, 100% 100%, 0% 100%, 0px 200px, ' +
-        '0px 200px, 10px 200px, 10px 100px, 0px 100px, 0px 200px, ' +
-        '20px 200px, 80px 200px, 80px 100px, 20px 100px, 20px 200px, ' +
-        '90px 200px, 100px 200px, 100px 100px, 90px 100px, 90px 200px, ' +
-        '0px 200px, 0% 100%);';
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 10 100 H 0 V 200 H 10 V 100 Z M 80 100 H 20 V 200 H 80 V 100 Z M 100 100 H 90 V 200 H 100 V 100 Z\');';
+    assertClipPathEquals(expected, result);
+  });
+
+  test('handles rounded corners for no occluders', () => {
+    const composebox = {
+      top: 100,
+      bottom: 200,
+      left: 50,
+      right: 150,
+      width: 100,
+      height: 100,
+    };
+    const result = getNonOccludedClipPath(composebox, [], 0, 1000, 1000, 24);
+
+    const expected = 'clip-path: path(\'M 0 0 H 1000 V 1000 H 0 Z M 126 100 H 74 A 24 24 0 0 0 50 124 V 176 A 24 24 0 0 0 74 200 H 126 A 24 24 0 0 0 150 176 V 124 A 24 24 0 0 0 126 100 Z\');';
     assertClipPathEquals(expected, result);
   });
 });
