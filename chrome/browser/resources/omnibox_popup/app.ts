@@ -301,6 +301,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     return this.searchboxLayoutMode_ === 'Compact';
   }
 
+  // TODO(crbug.com/493988206): Move to composebox/common.ts.
   protected hasAllowedInputs_(): boolean {
     if (!this.usePecApi_) {
       return true;

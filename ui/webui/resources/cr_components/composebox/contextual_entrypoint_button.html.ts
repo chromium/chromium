@@ -10,7 +10,6 @@ import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_bu
 export function getHtml(this: ContextualEntrypointButtonElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-${this.hasAllowedInputs_() ? html`
   <div id="${this.getWrapperId_()}" class="${this.getWrapperCssClass_()}">
     ${this.showContextMenuDescription && !this.windowWidthBelowThreshold_ ? html`
       <cr-button id="entrypoint" class="ai-mode-button" part="entrypoint-button"
@@ -41,8 +40,7 @@ ${this.hasAllowedInputs_() ? html`
           @animationend="${this.onAimBackgroundAnimationend_}">
       </div>
     ` : ''}
-  </div>`
-: ''}
+  </div>
 <!--_html_template_end_-->`;
   // clang-format off
 }

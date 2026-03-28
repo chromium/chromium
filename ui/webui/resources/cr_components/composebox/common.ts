@@ -7,7 +7,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ContextUploadErrorType, ContextUploadStatus, InputType} from './composebox_query.mojom-webui.js';
-import type {ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
+import type {InputState, ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 
 export const FILE_VALIDATION_ERRORS_MAP =
     new Map<ContextUploadErrorType, string>([
@@ -152,4 +152,15 @@ export function recordContextAdditionMethod(
   recordEnumerationValue(
       'ContextualSearch.ContextAdded.ContextAddedMethod.' + composeboxSource,
       additionMethod, ComposeboxContextAddedMethod.MAX_VALUE + 1);
+}
+
+export function hasAllowedInputs(
+    inputState: InputState|null, usePecApi: boolean): boolean {
+  if (!usePecApi) {
+    return true;
+  }
+  return !!inputState &&
+      (inputState.allowedModels.length > 0 ||
+       inputState.allowedTools.length > 0 ||
+       inputState.allowedInputTypes.length > 0);
 }

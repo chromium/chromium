@@ -15,7 +15,6 @@ import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
 import {GlifAnimationState, recordBoolean} from './common.js';
 import {getCss} from './contextual_entrypoint_button.css.js';
@@ -44,7 +43,6 @@ export class ContextualEntrypointButtonElement extends
       // Public properties
       // =========================================================================
       showContextMenuDescription: {type: Boolean},
-      inputState: {type: Object},
       glifAnimationState: {type: String, reflect: true},
       uploadButtonDisabled: {type: Boolean},
       hasPopupFocus: {type: Boolean, reflect: true},
@@ -53,7 +51,6 @@ export class ContextualEntrypointButtonElement extends
   }
 
   accessor showContextMenuDescription: boolean = false;
-  accessor inputState: InputState|null = null;
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
@@ -61,10 +58,6 @@ export class ContextualEntrypointButtonElement extends
   protected accessor windowWidthBelowThreshold_: boolean = false;
 
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
-  private usePecApi_: boolean =
-      loadTimeData.valueExists('contextualMenuUsePecApi') ?
-      loadTimeData.getBoolean('contextualMenuUsePecApi') :
-      false;
   private eventTracker_: EventTracker = new EventTracker();
 
   constructor() {
@@ -128,16 +121,6 @@ export class ContextualEntrypointButtonElement extends
     return this.glifAnimationState !== GlifAnimationState.INELIGIBLE ?
         'glow-container' :
         '';
-  }
-
-  protected hasAllowedInputs_(): boolean {
-    if (!this.usePecApi_) {
-      return true;
-    }
-    return !!this.inputState &&
-        (this.inputState.allowedModels.length > 0 ||
-         this.inputState.allowedTools.length > 0 ||
-         this.inputState.allowedInputTypes.length > 0);
   }
 }
 

@@ -337,6 +337,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.getBoolean('steadyComposeboxShowVoiceSearch');
   protected showVoiceSearchInExpandedComposebox_: boolean =
       loadTimeData.getBoolean('expandedComposeboxShowVoiceSearch');
+  // TODO(crbug.com/493988206): Rename to usePecApi_ and update all references.
   protected accessor showModelPicker_: boolean =
       loadTimeData.valueExists('contextualMenuUsePecApi') ?
       loadTimeData.getBoolean('contextualMenuUsePecApi') :

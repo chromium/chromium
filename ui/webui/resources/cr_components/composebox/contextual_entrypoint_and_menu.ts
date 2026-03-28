@@ -69,6 +69,9 @@ export class ContextualEntrypointAndMenuElement extends
         reflect: true,
         type: Boolean,
       },
+      usePecApi_: {
+        type: Boolean,
+      },
     };
   }
 
@@ -89,6 +92,10 @@ export class ContextualEntrypointAndMenuElement extends
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
+  protected accessor usePecApi_: boolean =
+      loadTimeData.valueExists('contextualMenuUsePecApi') ?
+      loadTimeData.getBoolean('contextualMenuUsePecApi') :
+      false;
 
   // TODO(crbug.com/491126593): Explore avoiding/removing this local property.
   private shouldOpenMenuForMultiSelection_: boolean = false;

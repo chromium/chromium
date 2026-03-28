@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_me
 
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -15,20 +16,25 @@ import {createValidInputState} from './composebox_test_utils.js';
 suite('ContextualEntrypointAndMenu', () => {
   let entrypointAndMenu: ContextualEntrypointAndMenuElement;
 
-  setup(async () => {
+  async function createComponent(
+      inputState: InputState|null = createValidInputState()) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    loadTimeData.overrideValues({
-      composeboxContextMenuEnableMultiTabSelection: true,
-    });
-
     entrypointAndMenu =
         document.createElement('cr-composebox-contextual-entrypoint-and-menu');
     Object.assign(entrypointAndMenu, {
-      inputState: createValidInputState(),
+      inputState,
       showModelPicker: true,
     });
     document.body.appendChild(entrypointAndMenu);
     await microtasksFinished();
+  }
+
+  setup(async () => {
+    loadTimeData.overrideValues({
+      composeboxContextMenuEnableMultiTabSelection: true,
+      contextualMenuUsePecApi: true,
+    });
+    await createComponent();
   });
 
   test('context menu shown on entrypoint click event', async () => {
@@ -39,6 +45,32 @@ suite('ContextualEntrypointAndMenu', () => {
 
     // Assert.
     assertTrue(entrypointAndMenu.$.menu.open);
+  });
+
+  test('entrypoint button is displayed when not using pec api', async () => {
+    loadTimeData.overrideValues({
+      contextualMenuUsePecApi: false,
+    });
+    await createComponent(/* inputState= */ null);
+
+    const entrypointButton = $$(entrypointAndMenu, '#entrypointButton');
+
+    assertTrue(!!entrypointButton);
+  });
+
+  test('entrypoint button is displayed with valid input state', () => {
+    const entrypoint = $$(entrypointAndMenu, '#entrypointButton');
+
+    assertTrue(!!entrypoint);
+  });
+
+  test('entrypoint button is hidden with invalid input state', async () => {
+    entrypointAndMenu.inputState = null;
+    await microtasksFinished();
+
+    const entrypoint = $$(entrypointAndMenu, '#entrypointButton');
+
+    assertFalse(!!entrypoint);
   });
 
   test('event fired on context menu open and close', async () => {
@@ -70,18 +102,10 @@ suite('ContextualEntrypointAndMenu', () => {
   test(
       'context menu does not open if multi-tab selection is disabled',
       async () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
           composeboxContextMenuEnableMultiTabSelection: false,
         });
-        entrypointAndMenu = document.createElement(
-            'cr-composebox-contextual-entrypoint-and-menu');
-        Object.assign(entrypointAndMenu, {
-          inputState: createValidInputState(),
-          showModelPicker: true,
-        });
-        document.body.appendChild(entrypointAndMenu);
-        await microtasksFinished();
+        await createComponent();
 
         entrypointAndMenu.openMenuForMultiSelection();
         await microtasksFinished();
