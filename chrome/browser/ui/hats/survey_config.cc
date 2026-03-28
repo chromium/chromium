@@ -336,7 +336,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/"XWXw3UM1k0ugnJ3q1cK0PKSCtgF3",
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
-      std::vector<std::string>{"Experiment ID"});
+      std::vector<std::string>{"Experiment ID",
+                               "ContextualTasksExpandButtonOptions",
+                               "ContextualTasksOpenSidePanelOnLinkClicked",
+                               "ContextualTasksEnableLensInContextualTasks",
+                               "ContextualTasksTabAutoSuggestionChipEnabled"});
 
   // History embeddings survey.
   survey_configs.emplace_back(
