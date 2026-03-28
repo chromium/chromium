@@ -234,14 +234,15 @@ class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
   MOCK_METHOD1(DeleteEntry, void(const std::string&));
   MOCK_METHOD1(DismissEntry, void(const std::string&));
 
-  send_tab_to_self::SendTabToSelfEntry* AddEntry(
+  const send_tab_to_self::SendTabToSelfEntry* AddEntry(
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,
-      const send_tab_to_self::PageContext& context) override {
+      const send_tab_to_self::PageContext& context,
+      send_tab_to_self::NavigationHistory navigation_history) override {
     auto entry = std::make_unique<send_tab_to_self::SendTabToSelfEntry>(
         kChromeSyncGuid, url, title, base::Time::Now(), kChromeSyncDeviceName,
-        target_device_cache_guid, context);
+        target_device_cache_guid, context, std::move(navigation_history));
 
     auto* result = entry.get();
 
@@ -486,7 +487,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     const std::string kTitle("Chrome Sync Title");
     const std::string kTargetDeviceSyncCacheGuid(kTargetDeviceCacheGuid);
     send_tab_to_self_model_->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                                      send_tab_to_self::PageContext());
+                                      send_tab_to_self::PageContext(),
+                                      send_tab_to_self::NavigationHistory());
   }
 
   void SimulateMediaMetadataInit() {

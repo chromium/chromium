@@ -311,7 +311,8 @@ void OpenManageDevicesTab(CommandDispatcher* dispatcher) {
   SendTabToSelfSyncServiceFactory::GetForProfile(self.profile)
       ->GetSendTabToSelfModel()
       ->AddEntry(self.url, base::SysNSStringToUTF8(self.title),
-                 base::SysNSStringToUTF8(cacheGUID), pageContext);
+                 base::SysNSStringToUTF8(cacheGUID), pageContext,
+                 send_tab_to_self::NavigationHistory());
 
   // ShowSendingMessage() opens UI, so wait for the dialog to be dismissed.
   __weak __typeof(self) weakSelf = self;

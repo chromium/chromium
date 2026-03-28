@@ -42,12 +42,15 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
 
   bool IsReady() override { return true; }
 
-  const SendTabToSelfEntry* AddEntry(const GURL& url,
-                                     const std::string& title,
-                                     const std::string& device_id,
-                                     const PageContext& context) override {
+  const SendTabToSelfEntry* AddEntry(
+      const GURL& url,
+      const std::string& title,
+      const std::string& device_id,
+      const send_tab_to_self::PageContext& context,
+      send_tab_to_self::NavigationHistory navigation_history) override {
     auto entry = std::make_unique<SendTabToSelfEntry>(
-        "guid", url, title, base::Time::Now(), "device", device_id, context);
+        "guid", url, title, base::Time::Now(), "device", device_id, context,
+        std::move(navigation_history));
     const SendTabToSelfEntry* entry_ptr = entry.get();
     entries_.push_back(std::move(entry));
 

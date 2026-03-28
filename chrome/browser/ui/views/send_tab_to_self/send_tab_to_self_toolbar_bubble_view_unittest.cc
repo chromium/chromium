@@ -142,7 +142,8 @@ class SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest
 TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
   GURL url("https://www.example.com");
   SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           "Example Device", "sync_guid", PageContext());
+                           "Example Device", "sync_guid", PageContext(),
+                           NavigationHistory());
 
   MockNavigateCallback mock_callback;
   EXPECT_CALL(mock_callback,
@@ -163,7 +164,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesWithScrollPosition) {
   PageContext page_context;
   page_context.scroll_position.text_fragment.text_start = "target text";
   SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           "Example Device", "sync_guid", page_context);
+                           "Example Device", "sync_guid", page_context,
+                           NavigationHistory());
 
   MockNavigateCallback mock_callback;
   EXPECT_CALL(mock_callback, Run(NavParamsScrollToTextMatch("target%20text")));
@@ -183,7 +185,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
   PageContext page_context;
   page_context.scroll_position.text_fragment.text_start = "target text";
   SendTabToSelfEntry entry("guid", url, "Example", base::Time::Now(),
-                           "Example Device", "sync_guid", page_context);
+                           "Example Device", "sync_guid", page_context,
+                           NavigationHistory());
 
   MockNavigateCallback mock_callback;
   EXPECT_CALL(mock_callback, Run(NavParamsScrollToTextMatch(std::nullopt)));

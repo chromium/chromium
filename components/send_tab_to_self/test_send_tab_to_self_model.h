@@ -25,10 +25,12 @@ class TestSendTabToSelfModel : public SendTabToSelfModel {
   std::vector<std::string> GetAllGuids() const override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
-  const SendTabToSelfEntry* AddEntry(const GURL& url,
-                                     const std::string& title,
-                                     const std::string& device_id,
-                                     const PageContext& context) override;
+  const SendTabToSelfEntry* AddEntry(
+      const GURL& url,
+      const std::string& title,
+      const std::string& device_id,
+      const PageContext& context,
+      NavigationHistory navigation_history) override;
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;
   void MarkEntryOpened(const std::string& guid) override;

@@ -7,21 +7,26 @@
 #include <map>
 #include <set>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -244,13 +249,13 @@ class SendTabToSelfBridgeTest : public testing::Test {
   void AddSampleEntries() {
     // Adds timer to avoid having two entries with the same shared timestamp.
     bridge_->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                      PageContext());
+                      PageContext(), NavigationHistory());
     bridge_->AddEntry(GURL("http://b.com"), "b", kLocalDeviceCacheGuid,
-                      PageContext());
+                      PageContext(), NavigationHistory());
     bridge_->AddEntry(GURL("http://c.com"), "c", kLocalDeviceCacheGuid,
-                      PageContext());
+                      PageContext(), NavigationHistory());
     bridge_->AddEntry(GURL("http://d.com"), "d", kLocalDeviceCacheGuid,
-                      PageContext());
+                      PageContext(), NavigationHistory());
   }
 
   void SetLocalDeviceCacheGuid(const std::string& cache_guid) {
@@ -323,7 +328,7 @@ TEST_F(SendTabToSelfBridgeTest, SyncAddOneEntry) {
 
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
                            AdvanceAndGetTime(), "device", kLocalDeviceCacheGuid,
-                           PageContext());
+                           PageContext(), NavigationHistory());
 
   remote_input.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
@@ -358,7 +363,7 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneAdd) {
 
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
                            AdvanceAndGetTime(), "device", kLocalDeviceCacheGuid,
-                           PageContext());
+                           PageContext(), NavigationHistory());
 
   syncer::EntityChangeList add_changes;
 
@@ -379,7 +384,7 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneDeletion) {
 
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
                            AdvanceAndGetTime(), "device", kLocalDeviceCacheGuid,
-                           PageContext());
+                           PageContext(), NavigationHistory());
 
   syncer::EntityChangeList add_changes;
 
@@ -403,17 +408,17 @@ TEST_F(SendTabToSelfBridgeTest, ApplyIncrementalSyncChangesOneDeletion) {
 // Tests that the send tab to self entry is correctly removed.
 TEST_F(SendTabToSelfBridgeTest, LocalHistoryDeletion) {
   InitializeBridge();
-  SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
-                            AdvanceAndGetTime(), "device",
-                            kLocalDeviceCacheGuid, PageContext());
+  SendTabToSelfEntry entry1(
+      "guid1", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
 
-  SendTabToSelfEntry entry2("guid2", GURL("http://www.example2.com/"), "title2",
-                            AdvanceAndGetTime(), "device2",
-                            kLocalDeviceCacheGuid, PageContext());
+  SendTabToSelfEntry entry2(
+      "guid2", GURL("http://www.example2.com/"), "title2", AdvanceAndGetTime(),
+      "device2", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
 
-  SendTabToSelfEntry entry3("guid3", GURL("http://www.example3.com/"), "title3",
-                            AdvanceAndGetTime(), "device3",
-                            kLocalDeviceCacheGuid, PageContext());
+  SendTabToSelfEntry entry3(
+      "guid3", GURL("http://www.example3.com/"), "title3", AdvanceAndGetTime(),
+      "device3", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
 
   syncer::EntityChangeList add_changes;
 
@@ -530,7 +535,7 @@ TEST_F(SendTabToSelfBridgeTest, MarkEntryOpenedInformsServer) {
 
   SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
                            AdvanceAndGetTime(), "remote", "remote",
-                           PageContext());
+                           PageContext(), NavigationHistory());
   syncer::EntityChangeList remote_data;
   remote_data.push_back(
       syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
@@ -550,7 +555,7 @@ TEST_F(SendTabToSelfBridgeTest, DismissEntryInformsServer) {
 
   SendTabToSelfEntry entry("guid", GURL("http://g.com/"), "title",
                            AdvanceAndGetTime(), "remote", "remote",
-                           PageContext());
+                           PageContext(), NavigationHistory());
   syncer::EntityChangeList remote_data;
   remote_data.push_back(
       syncer::EntityChange::CreateAdd("guid", MakeEntityData(entry)));
@@ -663,16 +668,19 @@ TEST_F(SendTabToSelfBridgeTest, AddInvalidEntries) {
   // Add Entry should succeed in this case.
   EXPECT_CALL(*processor(), Put(_, _, _));
   EXPECT_NE(nullptr, bridge()->AddEntry(GURL("http://www.example.com/"), "d",
-                                        kLocalDeviceCacheGuid, PageContext()));
+                                        kLocalDeviceCacheGuid, PageContext(),
+                                        NavigationHistory()));
 
   // Add Entry should fail on invalid URLs.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   EXPECT_EQ(nullptr, bridge()->AddEntry(GURL(), "d", kLocalDeviceCacheGuid,
-                                        PageContext()));
-  EXPECT_EQ(nullptr, bridge()->AddEntry(GURL("http://?k=v"), "d",
-                                        kLocalDeviceCacheGuid, PageContext()));
+                                        PageContext(), NavigationHistory()));
+  EXPECT_EQ(nullptr,
+            bridge()->AddEntry(GURL("http://?k=v"), "d", kLocalDeviceCacheGuid,
+                               PageContext(), NavigationHistory()));
   EXPECT_EQ(nullptr, bridge()->AddEntry(GURL("http//google.com"), "d",
-                                        kLocalDeviceCacheGuid, PageContext()));
+                                        kLocalDeviceCacheGuid, PageContext(),
+                                        NavigationHistory()));
 }
 
 TEST_F(SendTabToSelfBridgeTest, IsBridgeReady) {
@@ -692,9 +700,9 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
   // So they are intentionally different here.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
   bridge()->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                     PageContext());
+                     PageContext(), NavigationHistory());
   bridge()->AddEntry(GURL("http://a.com"), "b", kLocalDeviceCacheGuid,
-                     PageContext());
+                     PageContext(), NavigationHistory());
   EXPECT_EQ(1ul, bridge()->GetAllGuids().size());
 
   // Wait for more than the current dedupe time (5 seconds).
@@ -702,9 +710,9 @@ TEST_F(SendTabToSelfBridgeTest, AddDuplicateEntries) {
 
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(2);
   bridge()->AddEntry(GURL("http://a.com"), "a", kLocalDeviceCacheGuid,
-                     PageContext());
+                     PageContext(), NavigationHistory());
   bridge()->AddEntry(GURL("http://b.com"), "b", kLocalDeviceCacheGuid,
-                     PageContext());
+                     PageContext(), NavigationHistory());
   EXPECT_EQ(3ul, bridge()->GetAllGuids().size());
 }
 
@@ -714,12 +722,12 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryAdded) {
 
   // Add on entry targeting this device and another targeting another device.
   syncer::EntityChangeList remote_input;
-  SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
-                            AdvanceAndGetTime(), "device",
-                            kLocalDeviceCacheGuid, PageContext());
+  SendTabToSelfEntry entry1(
+      "guid1", GURL("http://www.example.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
   SendTabToSelfEntry entry2("guid2", GURL("http://www.example.com/"), "title",
                             AdvanceAndGetTime(), "device", kRemoteGuid,
-                            PageContext());
+                            PageContext(), NavigationHistory());
   remote_input.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
   remote_input.push_back(
@@ -948,10 +956,10 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
   syncer::EntityChangeList remote_input;
   SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
                             AdvanceAndGetTime(), "device", "Device1",
-                            PageContext());
+                            PageContext(), NavigationHistory());
   SendTabToSelfEntry entry2("guid2", GURL("http://www.example.com/"), "title",
                             AdvanceAndGetTime(), "device", "Device2",
-                            PageContext());
+                            PageContext(), NavigationHistory());
   remote_input.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
   remote_input.push_back(
@@ -981,10 +989,10 @@ TEST_F(SendTabToSelfBridgeTest, WriteToLastTabReceivedPref) {
   // Add two remote entries.
   SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
                            AdvanceAndGetTime(), "device", kLocalDeviceCacheGuid,
-                           PageContext());
-  SendTabToSelfEntry entry2("guid2", GURL("http://www.example2.com/"), "title",
-                            AdvanceAndGetTime(), "device",
-                            kLocalDeviceCacheGuid, PageContext());
+                           PageContext(), NavigationHistory());
+  SendTabToSelfEntry entry2(
+      "guid2", GURL("http://www.example2.com/"), "title", AdvanceAndGetTime(),
+      "device", kLocalDeviceCacheGuid, PageContext(), NavigationHistory());
   syncer::EntityChangeList add_changes;
   add_changes.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
@@ -1013,7 +1021,7 @@ TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
   syncer::EntityChangeList remote_input;
   SendTabToSelfEntry entry1("guid1", GURL("http://www.example.com/"), "title",
                             AdvanceAndGetTime(), "device", "Device1",
-                            PageContext());
+                            PageContext(), NavigationHistory());
   remote_input.push_back(
       syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry1)));
 
@@ -1042,12 +1050,13 @@ TEST_F(SendTabToSelfBridgeTest,
 TEST_F(SendTabToSelfBridgeTest, CollapseWhitespacesOfEntryTitle) {
   InitializeBridge();
 
-  const SendTabToSelfEntry* result = bridge()->AddEntry(
-      GURL("http://a.com"), " a  b ", kLocalDeviceCacheGuid, PageContext());
+  const SendTabToSelfEntry* result =
+      bridge()->AddEntry(GURL("http://a.com"), " a  b ", kLocalDeviceCacheGuid,
+                         PageContext(), NavigationHistory());
   EXPECT_EQ("a b", result->GetTitle());
 
   result = bridge()->AddEntry(GURL("http://b.com"), "입", kLocalDeviceCacheGuid,
-                              PageContext());
+                              PageContext(), NavigationHistory());
   EXPECT_EQ("입", result->GetTitle());
 }
 
@@ -1377,8 +1386,9 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_UsesFullName) {
   device_info_tracker()->Add(std::move(local_device));
   device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);
 
-  const SendTabToSelfEntry* result = bridge()->AddEntry(
-      GURL("http://www.example.com/"), "title", "target", PageContext());
+  const SendTabToSelfEntry* result =
+      bridge()->AddEntry(GURL("http://www.example.com/"), "title", "target",
+                         PageContext(), NavigationHistory());
 
   ASSERT_NE(nullptr, result);
   EXPECT_EQ(full_name, result->GetDeviceName());
@@ -1393,7 +1403,7 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize) {
   context.scroll_position.text_fragment.text_start = "fragment";
 
   bridge()->AddEntry(GURL("http://www.example.com/"), "title",
-                     kLocalDeviceCacheGuid, context);
+                     kLocalDeviceCacheGuid, context, NavigationHistory());
 
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.PageContextSize",
@@ -1413,13 +1423,49 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize_ExceedsLimit) {
       std::string(kLargeSize, 'a');
 
   bridge()->AddEntry(GURL("http://www.example.com/"), "title",
-                     kLocalDeviceCacheGuid, context);
+                     kLocalDeviceCacheGuid, context, NavigationHistory());
 
   size_t size = PageContextToProto(context).ByteSizeLong();
   ASSERT_GT(size, kMaxPageContextSizeBytes);
 
   histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.PageContextSize",
                                       size, 1);
+}
+
+TEST_F(SendTabToSelfBridgeTest, AddEntryWithHistory) {
+  base::test::ScopedFeatureList feature_list(
+      kSendTabToSelfPropagateNavigationHistory);
+  InitializeBridge();
+
+  const int kCurrentNavigationIndex = 1;
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  navigations.back().set_index(0);
+  navigations.push_back(
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  navigations.back().set_index(1);
+  navigations.back().set_virtual_url(GURL("https://example.com/2"));
+
+  syncer::EntityData uploaded_entity;
+  EXPECT_CALL(*processor(), Put(_, _, _))
+      .WillOnce(SaveArgPointeeMove<1>(&uploaded_entity));
+
+  const SendTabToSelfEntry* result = bridge()->AddEntry(
+      GURL("https://www.example.com/"), "title", kLocalDeviceCacheGuid,
+      PageContext(),
+      NavigationHistory(std::move(navigations), kCurrentNavigationIndex));
+
+  ASSERT_NE(nullptr, result);
+  EXPECT_EQ(2u, result->GetNavigationHistory().navigations.size());
+  EXPECT_EQ(kCurrentNavigationIndex,
+            result->GetNavigationHistory().current_navigation_index);
+
+  const sync_pb::SendTabToSelfSpecifics& specifics =
+      uploaded_entity.specifics.send_tab_to_self();
+  EXPECT_EQ(2, specifics.navigation_size());
+  EXPECT_EQ(kCurrentNavigationIndex, specifics.current_navigation_index());
+  EXPECT_EQ("https://example.com/2", specifics.navigation(1).virtual_url());
 }
 
 }  // namespace

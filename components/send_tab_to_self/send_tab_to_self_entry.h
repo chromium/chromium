@@ -5,10 +5,13 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTRY_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_ENTRY_H_
 
+#include <optional>
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "url/gurl.h"
 
 namespace sync_pb {
@@ -23,6 +26,33 @@ inline constexpr base::TimeDelta kExpiryTime = base::Days(10);
 // sensible threshold to avoid running into the per-entity size limit enforced
 // by Sync.
 inline constexpr size_t kMaxPageContextSizeBytes = 4096;  // 4 KB
+
+// Represents the captured back/forward navigation history of a shared tab.
+// This is used to reconstruct the navigation stack on the target device
+// when the kSendTabToSelfPropagateNavigationHistory feature is enabled.
+struct NavigationHistory {
+  NavigationHistory();
+
+  // Constructs a NavigationHistory from a full list of navigations.
+  // The list is automatically trimmed to include at most
+  // sessions::gMaxPersistNavigationCount entries both before and after
+  // the current_navigation_index to ensure the resulting sync entity
+  // stays within size limits.
+  NavigationHistory(
+      std::vector<sessions::SerializedNavigationEntry> navigations,
+      int current_navigation_index);
+
+  NavigationHistory(const NavigationHistory&);
+  NavigationHistory& operator=(const NavigationHistory&);
+  ~NavigationHistory();
+
+  // The subset of serialized navigation entries from the tab's history.
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+
+  // The index of the currently active navigation within the 'navigations'
+  // vector. Will be nullopt if the history is empty or invalid.
+  std::optional<int> current_navigation_index;
+};
 
 class SendTabToSelfLocal;
 // A tab that is being shared. The URL is a unique identifier for an entry, as
@@ -41,7 +71,8 @@ class SendTabToSelfEntry {
                      base::Time shared_time,
                      const std::string& device_name,
                      const std::string& target_device_sync_cache_guid,
-                     const PageContext& page_context);
+                     const PageContext& page_context,
+                     NavigationHistory navigation_history);
 
   SendTabToSelfEntry(const SendTabToSelfEntry&);
 
@@ -72,6 +103,9 @@ class SendTabToSelfEntry {
 
   // Returns the page context.
   const PageContext& GetPageContext() const;
+
+  // Returns the navigation history.
+  const NavigationHistory& GetNavigationHistory() const;
 
   // Returns a protobuf encoding the content of this SendTabToSelfEntry for
   // local storage.
@@ -110,6 +144,7 @@ class SendTabToSelfEntry {
   bool notification_dismissed_;
   bool opened_;
   PageContext page_context_;
+  NavigationHistory navigation_history_;
 };
 
 }  // namespace send_tab_to_self

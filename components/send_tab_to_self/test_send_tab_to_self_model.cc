@@ -21,7 +21,8 @@ const SendTabToSelfEntry* TestSendTabToSelfModel::AddEntry(
     const GURL& url,
     const std::string& title,
     const std::string& device_id,
-    const PageContext& context) {
+    const PageContext& context,
+    NavigationHistory navigation_history) {
   return nullptr;
 }
 

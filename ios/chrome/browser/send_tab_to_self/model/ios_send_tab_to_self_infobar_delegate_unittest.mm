@@ -124,7 +124,8 @@ TEST_F(IOSSendTabToSelfInfoBarDelegateTest, AcceptWithScrollPosition) {
   page_context.scroll_position.text_fragment.text_end = "end";
 
   SendTabToSelfEntry entry("test-guid", GURL("http://www.test.com"), "title",
-                           base::Time::Now(), "device", "target", page_context);
+                           base::Time::Now(), "device", "target", page_context,
+                           NavigationHistory());
 
   auto delegate = IOSSendTabToSelfInfoBarDelegate::Create(&entry, &model_);
   ConfirmInfoBarDelegate* delegate_ptr = delegate.get();

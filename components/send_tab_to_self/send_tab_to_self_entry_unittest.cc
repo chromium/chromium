@@ -6,12 +6,19 @@
 
 #include <array>
 #include <memory>
+#include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sessions/core/session_constants.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,13 +66,14 @@ MATCHER_P(MatchesPageContext, fields_matcher, "") {
       arg.form_field_info, result_listener);
 }
 
-MATCHER_P6(MatchesEntry,
+MATCHER_P7(MatchesEntry,
            guid,
            url,
            title,
            device_name,
            target_device_sync_cache_guid,
            page_context_matcher,
+           navigation_history_matcher,
            "") {
   return testing::ExplainMatchResult(
              Property("GUID", &SendTabToSelfEntry::GetGUID, guid), arg,
@@ -88,6 +96,30 @@ MATCHER_P6(MatchesEntry,
          testing::ExplainMatchResult(
              Property("PageContext", &SendTabToSelfEntry::GetPageContext,
                       page_context_matcher),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Property("NavigationHistory",
+                      &SendTabToSelfEntry::GetNavigationHistory,
+                      navigation_history_matcher),
+             arg, result_listener);
+}
+
+MATCHER_P(MatchesNavigation, url, "") {
+  return arg.virtual_url() == url;
+}
+
+MATCHER_P2(MatchesNavigationHistory,
+           navigations_matcher,
+           current_index_matcher,
+           "") {
+  return testing::ExplainMatchResult(
+             Field("navigations", &NavigationHistory::navigations,
+                   navigations_matcher),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             Field("current_navigation_index",
+                   &NavigationHistory::current_navigation_index,
+                   current_index_matcher),
              arg, result_listener);
 }
 
@@ -100,10 +132,17 @@ PageContext::FormField MakeFormField(std::u16string id_attribute,
   return field;
 }
 
+sessions::SerializedNavigationEntry CreateNavigation(const std::string& url) {
+  sessions::SerializedNavigationEntry nav =
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
+  nav.set_virtual_url(GURL(url));
+  return nav;
+}
+
 TEST(SendTabToSelfEntry, SharedTime) {
   const SendTabToSelfEntry e("1", GURL("http://example.com"), "bar",
                              base::Time::FromTimeT(10), "device", "device2",
-                             PageContext());
+                             PageContext(), NavigationHistory());
   EXPECT_EQ("bar", e.GetTitle());
   // Getters return Base::Time values.
   EXPECT_EQ(e.GetSharedTime(), base::Time::FromTimeT(10));
@@ -114,7 +153,7 @@ TEST(SendTabToSelfEntry, SharedTime) {
 TEST(SendTabToSelfEntry, AsProto) {
   const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
                                  base::Time::FromTimeT(10), "device", "device2",
-                                 PageContext());
+                                 PageContext(), NavigationHistory());
   const SendTabToSelfLocal pb_entry = entry.AsLocalProto();
   const sync_pb::SendTabToSelfSpecifics& specifics = pb_entry.specifics();
 
@@ -135,8 +174,10 @@ TEST(SendTabToSelfEntry, FromRequiredFields) {
   EXPECT_THAT(
       SendTabToSelfEntry::FromRequiredFields("1", GURL("http://example.com"),
                                              "target_device"),
-      Pointee(MatchesEntry("1", GURL("http://example.com"), "", "",
-                           "target_device", MatchesPageContext(IsEmpty()))));
+      Pointee(MatchesEntry(
+          "1", GURL("http://example.com"), "", "", "target_device",
+          MatchesPageContext(IsEmpty()),
+          MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
 }
 
 // Tests that the send tab to self entry is correctly parsed from
@@ -152,17 +193,18 @@ TEST(SendTabToSelfEntry, FromProto) {
 
   EXPECT_THAT(
       SendTabToSelfEntry::FromProto(pb_entry, base::Time::FromTimeT(10)),
-      Pointee(MatchesEntry(pb_entry.guid(), GURL(pb_entry.url()),
-                           pb_entry.title(), pb_entry.device_name(),
-                           pb_entry.target_device_sync_cache_guid(),
-                           MatchesPageContext(IsEmpty()))));
+      Pointee(MatchesEntry(
+          pb_entry.guid(), GURL(pb_entry.url()), pb_entry.title(),
+          pb_entry.device_name(), pb_entry.target_device_sync_cache_guid(),
+          MatchesPageContext(IsEmpty()),
+          MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
 }
 
 // Tests that the send tab to self entry expiry works as expected
 TEST(SendTabToSelfEntry, IsExpired) {
   const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
                                  base::Time::FromTimeT(10), "device1",
-                                 "device1", PageContext());
+                                 "device1", PageContext(), NavigationHistory());
 
   EXPECT_TRUE(entry.IsExpired(base::Time::FromTimeT(11) + base::Days(10)));
   EXPECT_FALSE(entry.IsExpired(base::Time::FromTimeT(11)));
@@ -174,27 +216,28 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
   std::string invalid_utf8;
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 
-  const SendTabToSelfEntry invalid1("1", GURL("http://example.com"),
-                                    invalid_utf8, base::Time::FromTimeT(10),
-                                    "device", "device", PageContext());
+  const SendTabToSelfEntry invalid1(
+      "1", GURL("http://example.com"), invalid_utf8, base::Time::FromTimeT(10),
+      "device", "device", PageContext(), NavigationHistory());
 
   EXPECT_EQ("1", invalid1.GetGUID());
 
   const SendTabToSelfEntry invalid2(invalid_utf8, GURL("http://example.com"),
                                     "title", base::Time::FromTimeT(10),
-                                    "device", "device", PageContext());
+                                    "device", "device", PageContext(),
+                                    NavigationHistory());
 
   EXPECT_EQ(invalid_utf8, invalid2.GetGUID());
 
-  const SendTabToSelfEntry invalid3("1", GURL("http://example.com"), "title",
-                                    base::Time::FromTimeT(10), invalid_utf8,
-                                    "device", PageContext());
+  const SendTabToSelfEntry invalid3(
+      "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
+      invalid_utf8, "device", PageContext(), NavigationHistory());
 
   EXPECT_EQ("1", invalid3.GetGUID());
 
-  const SendTabToSelfEntry invalid4("1", GURL("http://example.com"), "title",
-                                    base::Time::FromTimeT(10), "device",
-                                    invalid_utf8, PageContext());
+  const SendTabToSelfEntry invalid4(
+      "1", GURL("http://example.com"), "title", base::Time::FromTimeT(10),
+      "device", invalid_utf8, PageContext(), NavigationHistory());
 
   EXPECT_EQ("1", invalid4.GetGUID());
 
@@ -216,7 +259,7 @@ TEST(SendTabToSelfEntry, InvalidStrings) {
 TEST(SendTabToSelfEntry, MarkAsOpened) {
   SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
                            base::Time::FromTimeT(10), "device", "device2",
-                           PageContext());
+                           PageContext(), NavigationHistory());
   EXPECT_FALSE(entry.IsOpened());
   entry.MarkOpened();
   EXPECT_TRUE(entry.IsOpened());
@@ -241,16 +284,18 @@ TEST(SendTabToSelfEntry, PageContextRoundTrip) {
 
   const SendTabToSelfEntry entry("1", GURL("http://example.com"), "title",
                                  base::Time::FromTimeT(10), "device", "device2",
-                                 context);
+                                 context, NavigationHistory());
 
   const SendTabToSelfLocal local_proto = entry.AsLocalProto();
 
   EXPECT_THAT(
       SendTabToSelfEntry::FromProto(local_proto.specifics(),
                                     base::Time::FromTimeT(10)),
-      Pointee(MatchesEntry(_, _, _, _, _,
-                           MatchesPageContext(ElementsAre(
-                               MatchesFormField(u"id1", _, _, u"value1"))))));
+      Pointee(MatchesEntry(
+          _, _, _, _, _,
+          MatchesPageContext(
+              ElementsAre(MatchesFormField(u"id1", _, _, u"value1"))),
+          MatchesNavigationHistory(IsEmpty(), testing::Eq(std::nullopt)))));
 }
 
 TEST(SendTabToSelfEntry, PageContextSizeLimit) {
@@ -261,7 +306,7 @@ TEST(SendTabToSelfEntry, PageContextSizeLimit) {
 
   const SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
                                  base::Time::FromTimeT(10), "device", "device2",
-                                 context);
+                                 context, NavigationHistory());
 
   const SendTabToSelfLocal pb_entry = entry.AsLocalProto();
   // The page context should be cleared because it exceeds the limit.
@@ -280,7 +325,7 @@ TEST(SendTabToSelfEntry, TextFragment) {
 
   SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
                            base::Time::FromTimeT(10), "device", "device2",
-                           context);
+                           context, NavigationHistory());
 
   EXPECT_EQ(tf_data, entry.GetPageContext().scroll_position.text_fragment);
 
@@ -302,6 +347,162 @@ TEST(SendTabToSelfEntry, TextFragment) {
   EXPECT_EQ(tf_data, entry2->GetPageContext().scroll_position.text_fragment);
 }
 
-}  // namespace
+TEST(SendTabToSelfEntry, HistoryRoundTrip) {
+  base::test::ScopedFeatureList feature_list(
+      kSendTabToSelfPropagateNavigationHistory);
 
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  navigations.back().set_index(0);
+  navigations.back().set_virtual_url(GURL("https://example.com/1"));
+  navigations.push_back(
+      sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
+  navigations.back().set_index(1);
+  navigations.back().set_virtual_url(GURL("https://example.com/2"));
+
+  const SendTabToSelfEntry entry("1", GURL("https://example.com"), "title",
+                                 base::Time::FromTimeT(10), "device", "device2",
+                                 PageContext(),
+                                 NavigationHistory(std::move(navigations), 1));
+
+  EXPECT_THAT(entry.GetNavigationHistory(),
+              MatchesNavigationHistory(
+                  ElementsAre(MatchesNavigation("https://example.com/1"),
+                              MatchesNavigation("https://example.com/2")),
+                  Eq(1)));
+
+  const SendTabToSelfLocal local_proto = entry.AsLocalProto();
+  EXPECT_EQ(2, local_proto.specifics().navigation_size());
+  EXPECT_EQ(1, local_proto.specifics().current_navigation_index());
+
+  std::unique_ptr<SendTabToSelfEntry> entry2 = SendTabToSelfEntry::FromProto(
+      local_proto.specifics(), base::Time::FromTimeT(10));
+
+  EXPECT_THAT(entry2->GetNavigationHistory(),
+              MatchesNavigationHistory(
+                  ElementsAre(MatchesNavigation("https://example.com/1"),
+                              MatchesNavigation("https://example.com/2")),
+                  Eq(1)));
+}
+
+TEST(SendTabToSelfEntry, HistoryTruncation_Both) {
+  base::test::ScopedFeatureList feature_list(
+      kSendTabToSelfPropagateNavigationHistory);
+  const int kMaxCount = sessions::gMaxPersistNavigationCount;
+  ASSERT_EQ(6, kMaxCount);
+
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(CreateNavigation("https://example.com/0"));
+  navigations.push_back(CreateNavigation("https://example.com/1"));
+  navigations.push_back(CreateNavigation("https://example.com/2"));
+  navigations.push_back(CreateNavigation("https://example.com/3"));
+  navigations.push_back(CreateNavigation("https://example.com/4"));
+  navigations.push_back(CreateNavigation("https://example.com/5"));
+  navigations.push_back(CreateNavigation("https://example.com/6"));
+  navigations.push_back(CreateNavigation("https://example.com/7"));
+  navigations.push_back(CreateNavigation("https://example.com/8"));
+  navigations.push_back(CreateNavigation("https://example.com/9"));
+  navigations.push_back(CreateNavigation("https://example.com/10"));
+  navigations.push_back(CreateNavigation("https://example.com/11"));
+  navigations.push_back(CreateNavigation("https://example.com/12"));
+  navigations.push_back(CreateNavigation("https://example.com/13"));
+  navigations.push_back(CreateNavigation("https://example.com/14"));
+
+  // Current index in the middle.
+  const int kCurrentIndex = 7;
+  const SendTabToSelfEntry entry(
+      "1", GURL("https://example.com"), "title", base::Time::FromTimeT(10),
+      "device", "device2", PageContext(),
+      NavigationHistory(std::move(navigations), kCurrentIndex));
+
+  EXPECT_THAT(entry.GetNavigationHistory(),
+              MatchesNavigationHistory(
+                  ElementsAre(MatchesNavigation("https://example.com/1"),
+                              MatchesNavigation("https://example.com/2"),
+                              MatchesNavigation("https://example.com/3"),
+                              MatchesNavigation("https://example.com/4"),
+                              MatchesNavigation("https://example.com/5"),
+                              MatchesNavigation("https://example.com/6"),
+                              MatchesNavigation("https://example.com/7"),
+                              MatchesNavigation("https://example.com/8"),
+                              MatchesNavigation("https://example.com/9"),
+                              MatchesNavigation("https://example.com/10"),
+                              MatchesNavigation("https://example.com/11"),
+                              MatchesNavigation("https://example.com/12"),
+                              MatchesNavigation("https://example.com/13")),
+                  Eq(kMaxCount)));
+}
+
+TEST(SendTabToSelfEntry, HistoryTruncation_TooManyBack) {
+  base::test::ScopedFeatureList feature_list(
+      kSendTabToSelfPropagateNavigationHistory);
+  const int kMaxCount = sessions::gMaxPersistNavigationCount;
+  ASSERT_EQ(6, kMaxCount);
+
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(CreateNavigation("https://example.com/0"));
+  navigations.push_back(CreateNavigation("https://example.com/1"));
+  navigations.push_back(CreateNavigation("https://example.com/2"));
+  navigations.push_back(CreateNavigation("https://example.com/3"));
+  navigations.push_back(CreateNavigation("https://example.com/4"));
+  navigations.push_back(CreateNavigation("https://example.com/5"));
+  navigations.push_back(CreateNavigation("https://example.com/6"));
+  navigations.push_back(CreateNavigation("https://example.com/7"));
+
+  // Current index is at the very end.
+  const int kCurrentIndex = 7;
+  const SendTabToSelfEntry entry(
+      "1", GURL("https://example.com"), "title", base::Time::FromTimeT(10),
+      "device", "device2", PageContext(),
+      NavigationHistory(std::move(navigations), kCurrentIndex));
+
+  EXPECT_THAT(entry.GetNavigationHistory(),
+              MatchesNavigationHistory(
+                  ElementsAre(MatchesNavigation("https://example.com/1"),
+                              MatchesNavigation("https://example.com/2"),
+                              MatchesNavigation("https://example.com/3"),
+                              MatchesNavigation("https://example.com/4"),
+                              MatchesNavigation("https://example.com/5"),
+                              MatchesNavigation("https://example.com/6"),
+                              MatchesNavigation("https://example.com/7")),
+                  Eq(kMaxCount)));
+}
+
+TEST(SendTabToSelfEntry, HistoryTruncation_TooManyForward) {
+  base::test::ScopedFeatureList feature_list(
+      kSendTabToSelfPropagateNavigationHistory);
+  const int kMaxCount = sessions::gMaxPersistNavigationCount;
+  ASSERT_EQ(6, kMaxCount);
+
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(CreateNavigation("https://example.com/0"));
+  navigations.push_back(CreateNavigation("https://example.com/1"));
+  navigations.push_back(CreateNavigation("https://example.com/2"));
+  navigations.push_back(CreateNavigation("https://example.com/3"));
+  navigations.push_back(CreateNavigation("https://example.com/4"));
+  navigations.push_back(CreateNavigation("https://example.com/5"));
+  navigations.push_back(CreateNavigation("https://example.com/6"));
+  navigations.push_back(CreateNavigation("https://example.com/7"));
+
+  // Current index is at the very beginning.
+  const int kCurrentIndex = 0;
+  const SendTabToSelfEntry entry(
+      "1", GURL("https://example.com"), "title", base::Time::FromTimeT(10),
+      "device", "device2", PageContext(),
+      NavigationHistory(std::move(navigations), kCurrentIndex));
+
+  EXPECT_THAT(entry.GetNavigationHistory(),
+              MatchesNavigationHistory(
+                  ElementsAre(MatchesNavigation("https://example.com/0"),
+                              MatchesNavigation("https://example.com/1"),
+                              MatchesNavigation("https://example.com/2"),
+                              MatchesNavigation("https://example.com/3"),
+                              MatchesNavigation("https://example.com/4"),
+                              MatchesNavigation("https://example.com/5"),
+                              MatchesNavigation("https://example.com/6")),
+                  Eq(0)));
+}
+
+}  // namespace
 }  // namespace send_tab_to_self

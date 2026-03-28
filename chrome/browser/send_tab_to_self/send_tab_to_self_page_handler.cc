@@ -13,7 +13,11 @@
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/shared_highlighting/core/common/text_fragment.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -246,9 +250,22 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
     }
     return;
   }
+  NavigationHistory navigation_history;
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory)) {
+    content::NavigationController& controller = web_contents()->GetController();
+    std::vector<sessions::SerializedNavigationEntry> navigations;
+    for (int i = 0; i < controller.GetEntryCount(); ++i) {
+      navigations.push_back(
+          sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
+              i, controller.GetEntryAtIndex(i)));
+    }
+    navigation_history = NavigationHistory(std::move(navigations),
+                                           controller.GetCurrentEntryIndex());
+  }
 
   model->AddEntry(request.url, request.title, request.target_device_guid,
-                  std::move(request.page_context));
+                  std::move(request.page_context),
+                  std::move(navigation_history));
 
   if (request.result_callback) {
     std::move(request.result_callback).Run(SendTabToSelfResult::kSuccess);

@@ -73,7 +73,8 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
       new_entry_pending_notification->GetSharedTime(),
       new_entry_pending_notification->GetDeviceName(),
       new_entry_pending_notification->GetTargetDeviceSyncCacheGuid(),
-      new_entry_pending_notification->GetPageContext());
+      new_entry_pending_notification->GetPageContext(),
+      new_entry_pending_notification->GetNavigationHistory());
   // Prevent adding the observer several times. This might happen when the
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).

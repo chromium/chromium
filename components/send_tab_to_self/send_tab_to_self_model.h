@@ -45,7 +45,8 @@ class SendTabToSelfModel {
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,
-      const PageContext& context) = 0;
+      const PageContext& context,
+      NavigationHistory navigation_history) = 0;
 
   // Remove entry with |guid| from entries. Allows clients to modify the state
   // of the model as driven by user behaviors.

@@ -48,11 +48,11 @@ TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
 
   // Create 2 entries and simulated that they were both added remotely.
   SendTabToSelfEntry entry1("a", GURL("http://www.example-a.com"), "a site",
-                            base::Time(), "device a", "device b",
-                            PageContext());
+                            base::Time(), "device a", "device b", PageContext(),
+                            NavigationHistory());
   SendTabToSelfEntry entry2("b", GURL("http://www.example-b.com"), "b site",
-                            base::Time(), "device b", "device a",
-                            PageContext());
+                            base::Time(), "device b", "device a", PageContext(),
+                            NavigationHistory());
   client_service.EntriesAddedRemotely({&entry1, &entry2});
 
   EXPECT_EQ(2u, test_handler->number_displayed_entries());

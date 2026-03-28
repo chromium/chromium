@@ -43,7 +43,8 @@ class FakeSendTabToSelfModel : public send_tab_to_self::TestSendTabToSelfModel {
       const GURL& url,
       const std::string& title,
       const std::string& target_device_cache_guid,
-      const send_tab_to_self::PageContext& context) override {
+      const send_tab_to_self::PageContext& context,
+      send_tab_to_self::NavigationHistory navigation_history) override {
     last_entry_ = SendTabToSelfEntry::FromRequiredFields(
         "test-guid", url, target_device_cache_guid);
     return last_entry_.get();

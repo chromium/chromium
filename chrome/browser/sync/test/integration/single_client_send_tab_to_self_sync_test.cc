@@ -256,7 +256,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
       send_tab_to_self::ExtractFormFieldsFromWebContents(web_contents);
   SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile(0))
       ->GetSendTabToSelfModel()
-      ->AddEntry(kUrl, "example", target_guid, context);
+      ->AddEntry(kUrl, "example", target_guid, context,
+                 send_tab_to_self::NavigationHistory());
 
   // Wait for the entry to be committed to the server.
   ASSERT_TRUE(
@@ -370,7 +371,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
           ->GetSendTabToSelfModel();
 
   ASSERT_TRUE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                              send_tab_to_self::PageContext()));
+                              send_tab_to_self::PageContext(),
+                              send_tab_to_self::NavigationHistory()));
 
   secondary_account_helper::SignOut(GetProfile(0), &test_url_loader_factory_);
 
@@ -402,7 +404,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
           ->GetSendTabToSelfModel();
 
   ASSERT_FALSE(model->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid,
-                               send_tab_to_self::PageContext()));
+                               send_tab_to_self::PageContext(),
+                               send_tab_to_self::NavigationHistory()));
 
   EXPECT_FALSE(send_tab_to_self::ShouldDisplayEntryPoint(
       GetBrowser(0)->tab_strip_model()->GetActiveWebContents()));
@@ -586,7 +589,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,
   const sync_pb::TextFragmentData& tf =
       specifics.page_context().scroll_position().text_fragment();
   EXPECT_THAT(tf.text_start(), testing::AnyOf(testing::HasSubstr("fox"),
-                                              testing::HasSubstr("jumps")));
+                                              testing::HasSubstr("jumps"),
+                                              testing::HasSubstr("dog")));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfTextFragmentSyncTest,

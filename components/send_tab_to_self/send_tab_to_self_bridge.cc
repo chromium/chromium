@@ -337,7 +337,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
     const GURL& url,
     const std::string& title,
     const std::string& target_device_cache_guid,
-    const PageContext& context) {
+    const PageContext& context,
+    NavigationHistory navigation_history) {
   if (!change_processor()->IsTrackingMetadata()) {
     // TODO(crbug.com/40617641) handle failure case.
     return nullptr;
@@ -371,9 +372,10 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
         base::CollapseWhitespace(base::UTF8ToUTF16(title), false));
   }
 
-  auto entry = std::make_unique<SendTabToSelfEntry>(
-      guid, url, trimmed_title, shared_time, GetLocalFullName(),
-      target_device_cache_guid, context);
+  std::unique_ptr<SendTabToSelfEntry> entry =
+      std::make_unique<SendTabToSelfEntry>(
+          guid, url, trimmed_title, shared_time, GetLocalFullName(),
+          target_device_cache_guid, context, std::move(navigation_history));
 
   // The size is recorded before potential truncation (dropping) of the context
   // due to the per-entity size limit.
@@ -381,7 +383,8 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   // This entry is new. Add it to the store and model.
-  auto entity_data = CopyToEntityData(entry->AsLocalProto().specifics());
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CopyToEntityData(entry->AsLocalProto().specifics());
 
   change_processor()->Put(guid, std::move(entity_data),
                           batch->GetMetadataChangeList());

@@ -68,15 +68,17 @@ class FakeSendTabToSelfModel : public TestSendTabToSelfModel {
     return it != entries_.end() ? it->second.get() : nullptr;
   }
 
-  const SendTabToSelfEntry* AddEntry(const GURL& url,
-                                     const std::string& title,
-                                     const std::string& device_id,
-                                     const PageContext& context) override {
+  const SendTabToSelfEntry* AddEntry(
+      const GURL& url,
+      const std::string& title,
+      const std::string& device_id,
+      const PageContext& context,
+      NavigationHistory navigation_history) override {
     // For testing purposes, we hardcode the guid as "guid" so we can reference
     // it in the Navigate call.
     auto entry = std::make_unique<SendTabToSelfEntry>(
-        "guid", url, title, base::Time::Now(), device_id, "cache_guid",
-        context);
+        "guid", url, title, base::Time::Now(), device_id, "cache_guid", context,
+        std::move(navigation_history));
     const SendTabToSelfEntry* raw_ptr = entry.get();
     entries_[raw_ptr->GetGUID()] = std::move(entry);
     return raw_ptr;
@@ -150,7 +152,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   page_context.scroll_position.text_fragment =
       TextFragmentData("Some text", "", "", "");
 
-  model_fake_->AddEntry(test_url, "title", "device", page_context);
+  model_fake_->AddEntry(test_url, "title", "device", page_context,
+                        NavigationHistory());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -192,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfScrollObserverBrowserTest,
   // No scroll position in PageContext.
   PageContext page_context;
 
-  model_fake_->AddEntry(test_url, "title", "device", page_context);
+  model_fake_->AddEntry(test_url, "title", "device", page_context,
+                        NavigationHistory());
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
