@@ -4,11 +4,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -36,13 +36,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -53,11 +53,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -85,13 +85,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -104,12 +104,12 @@
         "args": [
           "--disable-field-trial-config",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -137,13 +137,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -156,11 +156,11 @@
         "args": [
           "--test-launcher-batch-limit=1",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -188,13 +188,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -205,11 +205,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -237,13 +237,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -255,9 +255,9 @@
         "args": [
           "-v",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -279,13 +279,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -297,11 +297,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -329,13 +329,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -346,11 +346,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -378,13 +378,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -395,11 +395,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -427,13 +427,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -444,11 +444,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -476,13 +476,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -494,11 +494,11 @@
         "args": [
           "--git-revision=${got_revision}",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -531,13 +531,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -548,11 +548,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -580,13 +580,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -598,11 +598,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -630,13 +630,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -647,11 +647,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -679,13 +679,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -697,11 +697,11 @@
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -729,13 +729,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -746,11 +746,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -778,13 +778,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -795,11 +795,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -827,13 +827,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -844,12 +844,12 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -878,13 +878,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -895,11 +895,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -927,13 +927,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -945,11 +945,11 @@
         "args": [
           "--git-revision=${got_revision}",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -982,13 +982,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1001,11 +1001,11 @@
         "args": [
           "--git-revision=${got_revision}",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1038,13 +1038,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1056,11 +1056,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1088,13 +1088,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1105,11 +1105,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1137,13 +1137,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1155,11 +1155,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1187,13 +1187,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1205,11 +1205,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1237,13 +1237,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1255,11 +1255,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1287,13 +1287,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -1305,11 +1305,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1337,13 +1337,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1354,11 +1354,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1386,13 +1386,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1403,11 +1403,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1435,13 +1435,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1452,11 +1452,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1484,13 +1484,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1501,12 +1501,12 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1534,13 +1534,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1551,11 +1551,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1583,13 +1583,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1600,11 +1600,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1632,13 +1632,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1649,11 +1649,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1681,13 +1681,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1698,11 +1698,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1730,13 +1730,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1747,11 +1747,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1779,13 +1779,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1797,11 +1797,11 @@
         "args": [
           "--use-cmd-decoder=validating",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1829,13 +1829,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1846,11 +1846,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1878,13 +1878,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1895,11 +1895,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1927,13 +1927,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1944,11 +1944,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -1976,13 +1976,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -1993,11 +1993,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2025,13 +2025,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2042,11 +2042,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2074,13 +2074,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2091,11 +2091,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2123,13 +2123,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2140,11 +2140,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2172,13 +2172,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2189,12 +2189,12 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2222,13 +2222,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2239,11 +2239,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2271,13 +2271,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2288,11 +2288,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2320,13 +2320,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2337,11 +2337,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2369,13 +2369,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2386,11 +2386,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2418,13 +2418,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2435,11 +2435,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2467,13 +2467,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2484,11 +2484,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2516,13 +2516,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2533,11 +2533,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2565,13 +2565,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2582,11 +2582,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2614,13 +2614,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -2632,11 +2632,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2664,13 +2664,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2681,11 +2681,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2713,13 +2713,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2730,11 +2730,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2762,13 +2762,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2779,11 +2779,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2811,13 +2811,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2828,11 +2828,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2860,13 +2860,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2877,11 +2877,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2909,13 +2909,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2926,11 +2926,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -2958,13 +2958,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -2975,11 +2975,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3007,13 +3007,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3024,11 +3024,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3056,13 +3056,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3073,11 +3073,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3105,13 +3105,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3122,11 +3122,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3154,13 +3154,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3171,11 +3171,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3203,13 +3203,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3220,11 +3220,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3252,13 +3252,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3270,11 +3270,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3302,13 +3302,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3319,11 +3319,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3351,13 +3351,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3368,11 +3368,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3400,13 +3400,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3418,11 +3418,11 @@
         "args": [
           "--webview-process-mode=multiple",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3450,13 +3450,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3468,11 +3468,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3500,13 +3500,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3518,11 +3518,11 @@
         "args": [
           "--disable-field-trial-config",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3550,13 +3550,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3567,11 +3567,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3599,13 +3599,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3616,11 +3616,11 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -3648,13 +3648,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3674,9 +3674,9 @@
           "crashtest",
           "print-reftest",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--verbose"
@@ -3702,13 +3702,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3724,10 +3724,10 @@
           "--test-type",
           "wdspec",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "experiment_percentage": 20,
         "merge": {
           "args": [
@@ -3754,13 +3754,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3774,10 +3774,10 @@
           "--skipped",
           "always",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "ci_only": true,
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "experiment_percentage": 100,
         "merge": {
           "args": [
@@ -3804,13 +3804,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -3823,9 +3823,9 @@
         "args": [
           "--gtest-benchmark-name=components_perftests",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "args": [
             "--smoke-test-mode"
@@ -3850,13 +3850,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3868,9 +3868,9 @@
         "args": [
           "--platform=android",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3893,13 +3893,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3910,9 +3910,9 @@
       {
         "args": [
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3934,13 +3934,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3956,9 +3956,9 @@
           "--passthrough",
           "--retry-limit=2",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -3980,13 +3980,13 @@
           },
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -3998,9 +3998,9 @@
         "args": [
           "--extra-browser-args=--enable-crashpad",
           "--emulator-debug-tags=all",
-          "--avd-config=../../tools/android/avd/proto/android_CinnamonBun_google_apis_ps16k_x64.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
-        "description": "Run with android_CinnamonBun_google_apis_ps16k_x64",
+        "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4023,13 +4023,13 @@
           "idempotent": false,
           "named_caches": [
             {
-              "name": "android_CinnamonBun_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_CinnamonBun_google_apis_ps16k_x64"
+              "name": "android_cinnamonbun_google_apis_ps16k_x64",
+              "path": ".android_emulator/android_cinnamonbun_google_apis_ps16k_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_CinnamonBun_google_apis_ps16k_x64"
+              "caches": "android_cinnamonbun_google_apis_ps16k_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
