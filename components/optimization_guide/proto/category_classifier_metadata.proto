@@ -15,4 +15,26 @@ message CategoryClassifierMetadata {
   // The version of the embedder model that this classifier model was trained
   // on.
   int64 required_embedder_version = 1;
+
+  // The strategy used to concatenate the passage embeddings.
+  //
+  // If not set or the max passages is set to 0, the model does not use passage
+  // embeddings and should only be used with the title and URL embedding with no
+  // concatenation.
+  CategoryClassifierPassageEmbeddingConcatenationStrategy
+      passage_embedding_concatenation_strategy = 2;
+}
+
+message CategoryClassifierPassageEmbeddingConcatenationStrategy {
+  // The maximum number of passages to take into account.
+  int32 max_passages = 1;
+
+  enum PoolingStrategy {
+    POOLING_STRATEGY_UNKNOWN = 0;
+    POOLING_STRATEGY_MAX = 1;
+    POOLING_STRATEGY_MEAN = 2;
+    POOLING_STRATEGY_MEAN_MAX = 3;
+  }
+  // The strategy used to pool the passage embeddings.
+  PoolingStrategy pooling_strategy = 2;
 }
