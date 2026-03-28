@@ -227,9 +227,7 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
   // Map the task ID to the intercepted url. This is done so the UI knows which
   // URL to load initially in the embedded frame.
-  GURL query_url = lens::AppendCommonSearchParametersToURL(
-      url, g_browser_process->GetApplicationLocale(), false);
-  task_id_to_creation_url_[task.GetTaskId()] = query_url;
+  task_id_to_creation_url_[task.GetTaskId()] = url;
 
   GURL ui_url = GetContextualTaskUrlForTask(task.GetTaskId());
 
@@ -714,8 +712,6 @@ void ContextualTasksUiService::OnSearchResultsNavigationInSidePanel(
       << "ContextualTasks navigation trace: "
          "OnSearchResultsNavigationInSidePanel called for URL: "
       << url_params.url;
-  url_params.url = lens::AppendCommonSearchParametersToURL(
-      url_params.url, g_browser_process->GetApplicationLocale(), false);
   web_ui_interface->TransferNavigationToEmbeddedPage(url_params);
 }
 
@@ -1142,10 +1138,7 @@ void ContextualTasksUiService::GetThreadUrlFromTaskId(
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrl() {
-  GURL url = lens::AppendCommonSearchParametersToURL(
-      GURL(GetContextualTasksAiPageUrl()),
-      g_browser_process->GetApplicationLocale(), false);
-  return url;
+  return GURL(GetContextualTasksAiPageUrl());
 }
 
 GURL ContextualTasksUiService::GetDefaultAiPageUrlForTask(

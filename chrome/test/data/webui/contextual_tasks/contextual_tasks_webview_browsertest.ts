@@ -15,7 +15,7 @@ import {fixtureUrl} from './test_utils.js';
 suite('ContextualTasksWebviewTest', function() {
 
 
-  test('webview removes gsc param when in tab', async () => {
+  test('webview does not add gsc param when in tab', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     proxy.handler.setIsShownInTab(true);
     BrowserProxyImpl.setInstance(proxy);
@@ -43,7 +43,39 @@ suite('ContextualTasksWebviewTest', function() {
           listener, {urls: ['<all_urls>']}, ['requestHeaders']);
     });
 
-    threadFrame.src = 'https://www.google.com/?gsc=2';
+    threadFrame.src = 'https://www.google.com/';
+    await completionPromise;
+  });
+
+  test('webview preserves gsc param if explicitly in url', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    proxy.handler.setIsShownInTab(true);
+    BrowserProxyImpl.setInstance(proxy);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    await microtasksFinished();
+
+    const threadFrame =
+        appElement.shadowRoot.querySelector<chrome.webviewTag.WebView>(
+            '#threadFrame');
+    assertTrue(!!threadFrame, 'Thread frame not found');
+
+    const completionPromise = new Promise<void>(resolve => {
+      const listener = (details: any) => {
+        threadFrame.request.onBeforeSendHeaders.removeListener(listener);
+        const url = new URL(details.url);
+        assertEquals(
+            '3', url.searchParams.get('gsc'), 'gsc param should be preserved');
+        resolve();
+        return {};
+      };
+
+      threadFrame.request.onBeforeSendHeaders.addListener(
+          listener, {urls: ['<all_urls>']}, ['requestHeaders']);
+    });
+
+    threadFrame.src = 'https://www.google.com/?gsc=3';
     await completionPromise;
   });
 

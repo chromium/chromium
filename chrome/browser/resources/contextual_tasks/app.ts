@@ -1020,6 +1020,12 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private addCommonSearchParams(url: URL): URL {
     for (const [key, value] of Object.entries(this.commonSearchParams_)) {
+      // If the url already has a key, skip it to avoid overriding it. `cs` is an
+      // exception since it will cause UI mismatch between native and embedded
+      // page.
+      if (key !== 'cs' && url.searchParams.has(key)) {
+        continue;
+      }
       if (value === '') {
         url.searchParams.delete(key);
       } else {

@@ -1366,4 +1366,37 @@ suite('ContextualTasksAppTest', function() {
         // Should exit basic mode because pendingBasicMode_ was false.
         assertFalse(appElement.hasAttribute('is-in-basic-mode_'));
       });
+
+  test('addCommonSearchParams overrides parameters except cs', async () => {
+    const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
+    BrowserProxyImpl.setInstance(proxy);
+
+    document.body.appendChild(document.createElement('contextual-tasks-app'));
+    await microtasksFinished();
+
+    const appElement: any = document.querySelector('contextual-tasks-app');
+
+    appElement.commonSearchParams_ = {
+      'cs': '1',
+      'hl': 'en',
+      'gsc': '2',
+    };
+
+    let url = new URL('https://example.com');
+    url = appElement.addCommonSearchParams(url);
+    assertEquals('1', url.searchParams.get('cs'));
+    assertEquals('en', url.searchParams.get('hl'));
+    assertEquals('2', url.searchParams.get('gsc'));
+
+    url = new URL('https://example.com?hl=override_hl&gsc=override_gsc');
+    url = appElement.addCommonSearchParams(url);
+    assertEquals('1', url.searchParams.get('cs'));
+    assertEquals('override_hl', url.searchParams.get('hl'));
+    assertEquals('override_gsc', url.searchParams.get('gsc'));
+
+    url = new URL('https://example.com?cs=0&hl=another');
+    url = appElement.addCommonSearchParams(url);
+    assertEquals('1', url.searchParams.get('cs'));
+    assertEquals('another', url.searchParams.get('hl'));
+  });
 });
