@@ -11,7 +11,7 @@ export function getHtml(this: CertificateProvisioningListElement) {
   return html`<!--_html_template_start_-->
 ${this.showProvisioningDetailsDialog_ ? html`
   <certificate-provisioning-details-dialog
-      .model="${this.provisioningDetailsDialogModel_}"
+      .model="${this.provisioningDetailsDialogModel_!}"
       @close="${this.onDialogClose_}">
   </certificate-provisioning-details-dialog>
 ` : ''}

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SubmitButtonIconType} from '//resources/cr_components/composebox/composebox.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OmniboxAimAppElement} from './aim_app.js';
@@ -11,7 +12,7 @@ export function getHtml(this: OmniboxAimAppElement) {
   return html`<!--_html_template_start_-->
 <div id="content">
   <cr-composebox id="composebox" searchbox-next-enabled
-      .submitButtonIconType="${'forward'}"
+      .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
       ?disable-composebox-animation="${this.disableComposeboxAnimation_}"

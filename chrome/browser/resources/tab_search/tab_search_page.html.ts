@@ -91,7 +91,7 @@ export function getHtml(this: TabSearchPageElement) {
             role="option" tabindex="0">
         </tab-search-group-item>`;
        default:
-        return '';
+        return html``;
       }
     }}">
     </selectable-lazy-list>

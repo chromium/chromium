@@ -9,7 +9,7 @@ import type {CrUrlListItemElement} from './cr_url_list_item.js';
 export function getHtml(this: CrUrlListItemElement) {
   // clang-format off
   return html`
-<a id="anchor" .href="${this.url}" ?hidden="${!this.asAnchor}"
+<a id="anchor" .href="${this.url || nothing}" ?hidden="${!this.asAnchor}"
     target="${this.asAnchorTarget}"
     aria-label="${this.getItemAriaLabel_()}"
     aria-description="${this.getItemAriaDescription_() || nothing}">

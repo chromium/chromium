@@ -8,6 +8,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {ComposeboxElement} from './composebox.js';
 import {getHtml as getContextMenuHtml} from './composebox_context_menu.html.js';
+import {ToolMode} from './composebox_query.mojom-webui.js';
 import {getHtml as getSubmitButtonHtml} from './composebox_submit_button.html.js';
 
 export function getHtml(this: ComposeboxElement) {
@@ -101,7 +102,7 @@ export function getHtml(this: ComposeboxElement) {
               .result="${this.result}"
               .selectedMatchIndex="${this.selectedMatchIndex}"
               .maxSuggestions="${this.maxSuggestions}"
-              .toolMode="${this.inputState?.activeTool}"
+              .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
               @match-focusin="${this.onMatchFocusin_}"
               @match-click="${this.onMatchClick_}"

@@ -1,3 +1,6 @@
+<!-- #html_wrapper_imports_start
+import {SubmitButtonIconType} from '//resources/cr_components/composebox/composebox.js';
+#html_wrapper_imports_end -->
 <div id="content"
   ?ntp-threads-rail-open="${this.showComposebox_ && this.enableThreadsRail_}">
   ${this.lazyRender_ && this.microsoftModuleEnabled_ ? html`
@@ -63,7 +66,7 @@
         <cr-composebox id="composebox"
             ?ntp-realbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
-            .submitButtonIconType="${this.ntpRealboxNextEnabled_ ? 'forward' : 'upward'}"
+            .submitButtonIconType="${this.ntpRealboxNextEnabled_ ? SubmitButtonIconType.FORWARD : SubmitButtonIconType.UPWARD}"
             ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
             .state="${this.composeboxState_}"
             @close-composebox="${this.onCloseComposebox_}"
