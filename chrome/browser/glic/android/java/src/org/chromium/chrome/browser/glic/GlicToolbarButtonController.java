@@ -6,10 +6,15 @@ package org.chromium.chrome.browser.glic;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import com.airbnb.lottie.LottieCompositionFactory;
+import com.airbnb.lottie.LottieDrawable;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -92,7 +97,34 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                         mDefaultSpec.hasErrorBadge());
 
         // TODO(haileywang): Handle other button states.
-        mWorkingSpec = mButtonData.getButtonSpec();
+        LottieDrawable lottieDrawable = new LottieDrawable();
+        LottieCompositionFactory.fromRawRes(context, R.raw.glic_spinner)
+                .addListener(
+                        composition -> {
+                            lottieDrawable.setComposition(composition);
+                            lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
+                            lottieDrawable.playAnimation();
+                        });
+        Drawable sparkIcon = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {lottieDrawable, sparkIcon});
+        float density = context.getResources().getDisplayMetrics().density;
+        // Adjust sizes of the spark and spinner.
+        int sparkInset = Math.round(2 * density);
+        int spinnerInset = Math.round(-10 * density);
+        layerDrawable.setLayerInset(0, spinnerInset, spinnerInset, spinnerInset, spinnerInset);
+        layerDrawable.setLayerInset(1, sparkInset, sparkInset, sparkInset, sparkInset);
+        mWorkingSpec =
+                new ButtonSpec(
+                        layerDrawable,
+                        this,
+                        mDefaultSpec.getOnLongClickListener(),
+                        mDefaultSpec.getContentDescription(),
+                        /* supportsTinting= */ true,
+                        mDefaultSpec.getIphCommandBuilder(),
+                        mDefaultSpec.getButtonVariant(),
+                        mDefaultSpec.getActionChipLabelResId(),
+                        mDefaultSpec.getHoverTooltipTextId(),
+                        mDefaultSpec.hasErrorBadge());
     }
 
     @Override

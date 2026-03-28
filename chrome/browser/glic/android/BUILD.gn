@@ -16,6 +16,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",
+    "java/res/raw/glic_spinner.json",
     "java/res/values/dimens.xml",
     "java/res/xml/glic_settings.xml",
   ]
@@ -58,6 +59,7 @@ android_library("java") {
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",

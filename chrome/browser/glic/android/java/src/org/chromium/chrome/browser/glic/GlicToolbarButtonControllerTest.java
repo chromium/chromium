@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.graphics.drawable.LayerDrawable;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -141,7 +142,7 @@ public class GlicToolbarButtonControllerTest {
         actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
 
         ButtonData buttonData = controller.get(mTab);
-        // Working state currently uses default spec in the implementation.
+        Assert.assertTrue(buttonData.getButtonSpec().getDrawable() instanceof LayerDrawable);
         Assert.assertEquals(0, buttonData.getButtonSpec().getActionChipLabelResId());
     }
 
