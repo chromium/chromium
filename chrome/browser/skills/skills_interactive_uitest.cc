@@ -18,6 +18,9 @@
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/common/channel_info.h"
@@ -48,6 +51,7 @@ DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<GURL>,
                                     kOpenedTabUrlState);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExists);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEnabled);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementOpen);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
@@ -148,6 +152,29 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
     element_enabled.where = element;
     element_enabled.test_function = "(el) => !el.disabled";
     return WaitForStateChange(contents_id, element_enabled);
+  }
+
+  ui::test::InteractiveTestApi::MultiStep WaitForElementOpen(
+      const ui::ElementIdentifier& contents_id,
+      const DeepQuery& element) {
+    StateChange element_visible;
+    element_visible.type = WebContentsInteractionTestUtil::StateChange::Type::
+        kExistsAndConditionTrue;
+    element_visible.event = kElementOpen;
+    element_visible.where = element;
+    element_visible.test_function = "(el) => el.open === true";
+    return WaitForStateChange(contents_id, element_visible);
+  }
+
+  ui::test::InteractiveTestApi::MultiStep CheckToastIsShowing(
+      ToastId toast_id) {
+    return PollUntil(
+        [this, toast_id]() {
+          auto* controller = browser()->GetFeatures().toast_controller();
+          return controller && controller->IsShowingToast() &&
+                 controller->GetCurrentToastId() == toast_id;
+        },
+        "polling until toast is showing");
   }
 
   void SetUpOnMainThread() override {
@@ -422,6 +449,10 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
   const DeepQuery kSaveButtonQuery{"skills-dialog-app", "cr-button#saveButton"};
   const DeepQuery kCancelButtonQuery{"skills-dialog-app",
                                      "cr-button#cancelButton"};
+
+  DeepQuery GetSkillCardQuery(const std::string& sub_element) {
+    return {"skills-app", "user-skills-page", "skill-card", sub_element};
+  }
 
  private:
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -760,4 +791,38 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, Invoke1PSkill) {
       WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
       WaitFor1PSkills(), InvokeSkillDirectly(&skill_id),
       VerifyInvocationInWebUI("1P Skill Prompt"));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
+                       DeleteAndUndoSkillUpdatesSkillPreviews) {
+  auto user_created_skill = GetMockSkill();
+
+  const DeepQuery kMenuButtonQuery =
+      GetSkillCardQuery("cr-icon-button#moreButton");
+  const DeepQuery kMenuDropdownQuery = GetSkillCardQuery("cr-action-menu#menu");
+  const DeepQuery kDeleteButtonQuery =
+      GetSkillCardQuery("cr-button#deleteButton");
+
+  RunTestSequence(
+      OpenGlicAcceptFreAndInstrument(),
+      AddUserOwnedSkill(glic::mojom::Skill::New(
+          skills::SkillToGlicMojomSkillPreview(&user_created_skill),
+          user_created_skill.prompt, /*source_skill_id=*/std::nullopt)),
+      WaitForSkillPreviewOrder({user_created_skill.name}),
+      // Navigate to the "Your Skills" page.
+      InstrumentTab(kFirstTabId),
+      NavigateWebContents(kFirstTabId,
+                          GURL(chrome::kChromeUISkillsURL)
+                              .Resolve(chrome::kChromeUISkillsYourSkillsPath)),
+      WaitForWebContentsReady(kFirstTabId),
+      // Delete the skill via the skill card.
+      WaitForElementExists(kFirstTabId, kMenuButtonQuery),
+      MoveMouseTo(kFirstTabId, kMenuButtonQuery), ClickMouse(),
+      WaitForElementOpen(kFirstTabId, kMenuDropdownQuery),
+      MoveMouseTo(kFirstTabId, kDeleteButtonQuery), ClickMouse(),
+      // Verify deletion and toast is showing.
+      WaitForSkillPreviewOrder({}), CheckToastIsShowing(ToastId::kSkillDeleted),
+      // Undo the deletion and verify that the skill is restored.
+      PressButton(toasts::ToastView::kToastActionButton),
+      WaitForSkillPreviewOrder({user_created_skill.name}));
 }
