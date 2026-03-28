@@ -77,6 +77,11 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSinkBundle(
     const viz::FrameSinkBundleId& bundle_id,
     mojo::PendingReceiver<viz::mojom::FrameSinkBundle> receiver,
     mojo::PendingRemote<viz::mojom::FrameSinkBundleClient> client) {
+  if (bundle_id.client_id() != renderer_client_id_) {
+    receivers_.ReportBadMessage("Invalid client ID");
+    return;
+  }
+
   host_frame_sink_manager_->CreateFrameSinkBundle(
       bundle_id, std::move(receiver), std::move(client));
 }
