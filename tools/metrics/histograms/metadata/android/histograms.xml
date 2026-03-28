@@ -2874,6 +2874,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputStream.LastGetByteArrayRegionTime" units="ms"
+    expires_after="2026-10-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Time spent on the final call to getByteArrayRegion when copying data from
+    the InputStream. Recorded when the InputStream is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputStream.TotalGetByteArrayRegionTime" units="ms"
+    expires_after="2026-10-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Time spent on all calls to getByteArrayRegion when copying data from the
+    InputStream. Recorded when the InputStream is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputStream.TotalJavaReadTime" units="ms"
+    expires_after="2026-10-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Total wall clock time spent reading from the Java InputStream into the
+    temporary buffer. Recorded when the InputStream is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Android.InputStream.TotalRead.SizeKB" units="KB"
     expires_after="2026-06-01">
   <owner>peconn@chromium.org</owner>
@@ -2881,6 +2911,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records how much data has been transferred through
     embedder_support::InputStream. Recorded when that object is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="Android.InputStream.TotalTransferTime" units="ms"
+    expires_after="2026-10-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Sum total of the wall clock time spent in all InputStream::Read calls.
+    Recorded when that object is destroyed.
   </summary>
 </histogram>
 

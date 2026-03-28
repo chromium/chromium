@@ -59,6 +59,22 @@ InputStream::InputStream(const JavaRef<jobject>& stream) : jobject_(stream) {
 InputStream::~InputStream() {
   base::UmaHistogramCounts10000("Android.InputStream.TotalRead.SizeKB",
                                 total_bytes_read_ / 1024);
+  if (!total_transfer_time_.is_zero()) {
+    base::UmaHistogramTimes("Android.InputStream.TotalTransferTime",
+                            total_transfer_time_);
+  }
+  if (!total_java_read_time_.is_zero()) {
+    base::UmaHistogramTimes("Android.InputStream.TotalJavaReadTime",
+                            total_java_read_time_);
+  }
+  if (!total_get_byte_array_region_time_.is_zero()) {
+    base::UmaHistogramTimes("Android.InputStream.TotalGetByteArrayRegionTime",
+                            total_get_byte_array_region_time_);
+  }
+  if (!last_get_byte_array_region_time_.is_zero()) {
+    base::UmaHistogramTimes("Android.InputStream.LastGetByteArrayRegionTime",
+                            last_get_byte_array_region_time_);
+  }
 
   JNIEnv* env = AttachCurrentThread();
   if (jobject_.obj())
@@ -100,11 +116,15 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
   char* dest_write_ptr = dest->data();
   *bytes_read = 0;
 
+  base::TimeTicks read_start = base::TimeTicks::Now();
+
   while (remaining_length > 0) {
     const int max_transfer_length =
         std::min(remaining_length, GetIntermediateBufferSize());
+    base::TimeTicks java_read_start = base::TimeTicks::Now();
     const int transfer_length = Java_InputStreamUtil_read(
         env, jobject_, buffer_, 0, max_transfer_length);
+    total_java_read_time_ += base::TimeTicks::Now() - java_read_start;
     if (transfer_length == kExceptionThrownStatusCode)
       return false;
 
@@ -127,8 +147,12 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
 
     // Copy the data over to the provided C++ IOBuffer.
     DCHECK_GE(remaining_length, transfer_length);
+    base::TimeTicks get_byte_array_start = base::TimeTicks::Now();
     env->GetByteArrayRegion(buffer_.obj(), 0, transfer_length,
                             reinterpret_cast<int8_t*>(dest_write_ptr));
+    last_get_byte_array_region_time_ =
+        base::TimeTicks::Now() - get_byte_array_start;
+    total_get_byte_array_region_time_ += last_get_byte_array_region_time_;
     if (ClearException(env))
       return false;
 
@@ -140,6 +164,7 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
   DCHECK_LE(remaining_length, length);
   *bytes_read = length - remaining_length;
   total_bytes_read_ += *bytes_read;
+  total_transfer_time_ += base::TimeTicks::Now() - read_start;
   return true;
 }
 

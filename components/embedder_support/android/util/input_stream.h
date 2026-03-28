@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "third_party/jni_zero/default_conversions.h"
 
 namespace net {
@@ -74,6 +75,13 @@ class InputStream {
   base::android::ScopedJavaGlobalRef<jbyteArray> buffer_;
 
   int total_bytes_read_ = 0;
+
+  // Timing metrics to determine the overhead of copying into and out of the
+  // temporary buffer.
+  base::TimeDelta total_transfer_time_;
+  base::TimeDelta total_java_read_time_;
+  base::TimeDelta total_get_byte_array_region_time_;
+  base::TimeDelta last_get_byte_array_region_time_;
 };
 
 }  // namespace embedder_support
