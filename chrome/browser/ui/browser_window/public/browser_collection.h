@@ -62,7 +62,11 @@ class BrowserCollection {
   BrowserCollection();
   virtual ~BrowserCollection();
 
-  base::ObserverList<BrowserCollectionObserver>& observers() {
+  base::ObserverList<
+      BrowserCollectionObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>&
+  observers() {
     return observers_;
   }
 
@@ -79,7 +83,12 @@ class BrowserCollection {
   friend base::ScopedObservationTraits<BrowserCollection,
                                        BrowserCollectionObserver>;
 
-  base::ObserverList<BrowserCollectionObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      BrowserCollectionObserver,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_COLLECTION_H_
