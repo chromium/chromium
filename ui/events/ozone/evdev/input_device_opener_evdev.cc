@@ -6,6 +6,8 @@
 
 #include <fcntl.h>
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -15,8 +17,8 @@
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
 #include "ui/events/ozone/evdev/gamepad_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/microphone_mute_switch_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/pen_tablet_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/stylus_button_event_converter_evdev.h"
-#include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
 #include "ui/events/ozone/evdev/touch_event_converter_evdev.h"
 
 #if defined(USE_EVDEV_GESTURES)
@@ -72,34 +74,32 @@ std::unique_ptr<EventConverterEvdev> CreateConverter(
 
   // Graphics tablet
   if (devinfo.HasTablet()) {
-    return base::WrapUnique<EventConverterEvdev>(new TabletEventConverterEvdev(
+    return std::make_unique<PenTabletEventConverterEvdev>(
         std::move(fd), params.path, params.id, params.cursor, devinfo,
-        params.dispatcher));
+        params.dispatcher);
   }
 
   if (devinfo.HasGamepad()) {
-    return base::WrapUnique<EventConverterEvdev>(new GamepadEventConverterEvdev(
-        std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+    return std::make_unique<GamepadEventConverterEvdev>(
+        std::move(fd), params.path, params.id, devinfo, params.dispatcher);
   }
 
   if (devinfo.IsStylusButtonDevice()) {
-    return base::WrapUnique<EventConverterEvdev>(
-        new StylusButtonEventConverterEvdev(
-            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+    return std::make_unique<StylusButtonEventConverterEvdev>(
+        std::move(fd), params.path, params.id, devinfo, params.dispatcher);
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableMicrophoneMuteSwitchDeviceSwitch) &&
       devinfo.IsMicrophoneMuteSwitchDevice()) {
-    return base::WrapUnique<EventConverterEvdev>(
-        new MicrophoneMuteSwitchEventConverterEvdev(
-            std::move(fd), params.path, params.id, devinfo, params.dispatcher));
+    return std::make_unique<MicrophoneMuteSwitchEventConverterEvdev>(
+        std::move(fd), params.path, params.id, devinfo, params.dispatcher);
   }
 
   // Everything else: use EventConverterEvdevImpl.
-  return base::WrapUnique<EventConverterEvdevImpl>(
-      new EventConverterEvdevImpl(std::move(fd), params.path, params.id,
-                                  devinfo, params.cursor, params.dispatcher));
+  return std::make_unique<EventConverterEvdevImpl>(
+      std::move(fd), params.path, params.id, devinfo, params.cursor,
+      params.dispatcher);
 }
 
 }  // namespace

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_EVDEV_TABLET_EVENT_CONVERTER_EVDEV_H_
-#define UI_EVENTS_OZONE_EVDEV_TABLET_EVENT_CONVERTER_EVDEV_H_
+#ifndef UI_EVENTS_OZONE_EVDEV_PEN_TABLET_EVENT_CONVERTER_EVDEV_H_
+#define UI_EVENTS_OZONE_EVDEV_PEN_TABLET_EVENT_CONVERTER_EVDEV_H_
 
 #include <ostream>
 
@@ -25,21 +25,21 @@ namespace ui {
 
 class DeviceEventDispatcherEvdev;
 
-class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
+class COMPONENT_EXPORT(EVDEV) PenTabletEventConverterEvdev
     : public EventConverterEvdev {
  public:
-  TabletEventConverterEvdev(base::ScopedFD fd,
-                            base::FilePath path,
-                            int id,
-                            CursorDelegateEvdev* cursor,
-                            const EventDeviceInfo& info,
-                            DeviceEventDispatcherEvdev* dispatcher);
+  PenTabletEventConverterEvdev(base::ScopedFD fd,
+                               base::FilePath path,
+                               int id,
+                               CursorDelegateEvdev* cursor,
+                               const EventDeviceInfo& info,
+                               DeviceEventDispatcherEvdev* dispatcher);
 
-  TabletEventConverterEvdev(const TabletEventConverterEvdev&) = delete;
-  TabletEventConverterEvdev& operator=(const TabletEventConverterEvdev&) =
+  PenTabletEventConverterEvdev(const PenTabletEventConverterEvdev&) = delete;
+  PenTabletEventConverterEvdev& operator=(const PenTabletEventConverterEvdev&) =
       delete;
 
-  ~TabletEventConverterEvdev() override;
+  ~PenTabletEventConverterEvdev() override;
 
   // EventConverterEvdev:
   void OnFileCanReadWithoutBlocking(int fd) override;
@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
   std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:
-  friend class MockTabletEventConverterEvdev;
+  friend class MockPenTabletEventConverterEvdev;
   void ConvertKeyEvent(const input_event& input);
   void ConvertAbsEvent(const input_event& input);
   void DispatchMouseButton(const input_event& input);
@@ -105,4 +105,4 @@ class COMPONENT_EXPORT(EVDEV) TabletEventConverterEvdev
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_EVDEV_TABLET_EVENT_CONVERTER_EVDEV_H_
+#endif  // UI_EVENTS_OZONE_EVDEV_PEN_TABLET_EVENT_CONVERTER_EVDEV_H_

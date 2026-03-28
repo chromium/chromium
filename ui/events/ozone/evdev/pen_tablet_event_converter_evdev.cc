@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/ozone/evdev/tablet_event_converter_evdev.h"
+#include "ui/events/ozone/evdev/pen_tablet_event_converter_evdev.h"
 
 #include <errno.h>
 #include <linux/input.h>
@@ -46,7 +46,7 @@ EventPointerType GetToolType(uint8_t tool_mask) {
 
 }  // namespace
 
-TabletEventConverterEvdev::TabletEventConverterEvdev(
+PenTabletEventConverterEvdev::PenTabletEventConverterEvdev(
     base::ScopedFD fd,
     base::FilePath path,
     int id,
@@ -76,30 +76,34 @@ TabletEventConverterEvdev::TabletEventConverterEvdev(
   tilt_y_range_ = info.GetAbsMaximum(ABS_TILT_Y) - tilt_y_min_ + 1;
   pressure_max_ = info.GetAbsMaximum(ABS_PRESSURE);
 
-  if (info.HasKeyEvent(BTN_STYLUS) && !info.HasKeyEvent(BTN_STYLUS2))
+  if (info.HasKeyEvent(BTN_STYLUS) && !info.HasKeyEvent(BTN_STYLUS2)) {
     one_side_btn_pen_ = true;
+  }
 }
 
-TabletEventConverterEvdev::~TabletEventConverterEvdev() = default;
+PenTabletEventConverterEvdev::~PenTabletEventConverterEvdev() = default;
 
-void TabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
+void PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
   TRACE_EVENT1("evdev",
-               "TabletEventConverterEvdev::OnFileCanReadWithoutBlocking", "fd",
-               fd);
+               "PenTabletEventConverterEvdev::OnFileCanReadWithoutBlocking",
+               "fd", fd);
 
   input_event inputs[4];
   ssize_t read_size = read(fd, inputs, sizeof(inputs));
   if (read_size < 0) {
-    if (errno == EINTR || errno == EAGAIN)
+    if (errno == EINTR || errno == EAGAIN) {
       return;
-    if (errno != ENODEV)
+    }
+    if (errno != ENODEV) {
       PLOG(ERROR) << "error reading device " << path_.value();
+    }
     Stop();
     return;
   }
 
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return;
+  }
 
   DCHECK_EQ(read_size % sizeof(inputs[0]), 0u);
   // SAFETY: `read_size` is the number of bytes read from the file descriptor.
@@ -108,13 +112,13 @@ void TabletEventConverterEvdev::OnFileCanReadWithoutBlocking(int fd) {
       UNSAFE_BUFFERS(base::span(inputs, read_size / sizeof(inputs[0]))));
 }
 
-bool TabletEventConverterEvdev::HasGraphicsTablet() const {
+bool PenTabletEventConverterEvdev::HasGraphicsTablet() const {
   return true;
 }
 
-std::ostream& TabletEventConverterEvdev::DescribeForLog(
+std::ostream& PenTabletEventConverterEvdev::DescribeForLog(
     std::ostream& os) const {
-  os << "class=ui::TabletEventConverterEvdev id=" << input_device_.id
+  os << "class=ui::PenTabletEventConverterEvdev id=" << input_device_.id
      << std::endl
      << " x_abs_min=" << x_abs_min_ << std::endl
      << " x_abs_range=" << x_abs_range_ << std::endl
@@ -129,7 +133,7 @@ std::ostream& TabletEventConverterEvdev::DescribeForLog(
   return EventConverterEvdev::DescribeForLog(os);
 }
 
-void TabletEventConverterEvdev::ProcessEvents(
+void PenTabletEventConverterEvdev::ProcessEvents(
     base::span<const input_event> inputs) {
   for (const input_event& input : inputs) {
     switch (input.type) {
@@ -146,17 +150,18 @@ void TabletEventConverterEvdev::ProcessEvents(
   }
 }
 
-void TabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
+void PenTabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
   // Only handle other events if we have a stylus in proximity
   if (input.code >= BTN_TOOL_PEN && input.code <= BTN_TOOL_LENS) {
     uint8_t tool_mask = ToolMaskFromButtonTool(input.code);
-    if (input.value == 1)
+    if (input.value == 1) {
       active_tools_ |= tool_mask;
-    else if (input.value == 0)
+    } else if (input.value == 0) {
       active_tools_ &= ~tool_mask;
-    else
+    } else {
       LOG(WARNING) << "Unexpected value: " << input.value
                    << " for code: " << input.code;
+    }
   }
 
   if (input.code >= BTN_TOUCH && input.code <= BTN_STYLUS2) {
@@ -180,9 +185,10 @@ void TabletEventConverterEvdev::ConvertKeyEvent(const input_event& input) {
 #endif
 }
 
-void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
-  if (!cursor_)
+void PenTabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
+  if (!cursor_) {
     return;
+  }
 
   switch (input.code) {
     case ABS_X:
@@ -208,7 +214,7 @@ void TabletEventConverterEvdev::ConvertAbsEvent(const input_event& input) {
   }
 }
 
-void TabletEventConverterEvdev::UpdateCursor() {
+void PenTabletEventConverterEvdev::UpdateCursor() {
   gfx::Rect confined_bounds = cursor_->GetCursorConfinedBounds();
 
   gfx::PointF point(
@@ -250,9 +256,11 @@ void TabletEventConverterEvdev::UpdateCursor() {
   cursor_->MoveCursorTo(transform.MapPoint(point));
 }
 
-void TabletEventConverterEvdev::DispatchMouseButton(const input_event& input) {
-  if (!cursor_)
+void PenTabletEventConverterEvdev::DispatchMouseButton(
+    const input_event& input) {
+  if (!cursor_) {
     return;
+  }
 
   unsigned int button;
   // These are the same as X11 behaviour
@@ -261,10 +269,11 @@ void TabletEventConverterEvdev::DispatchMouseButton(const input_event& input) {
   } else if (input.code == BTN_STYLUS2) {
     button = BTN_RIGHT;
   } else if (input.code == BTN_STYLUS) {
-    if (one_side_btn_pen_)
+    if (one_side_btn_pen_) {
       button = BTN_RIGHT;
-    else
+    } else {
       button = BTN_MIDDLE;
+    }
   } else {
     return;
   }
@@ -285,9 +294,10 @@ void TabletEventConverterEvdev::DispatchMouseButton(const input_event& input) {
       TimeTicksFromInputEvent(input)));
 }
 
-void TabletEventConverterEvdev::FlushEvents(const input_event& input) {
-  if (!cursor_)
+void PenTabletEventConverterEvdev::FlushEvents(const input_event& input) {
+  if (!cursor_) {
     return;
+  }
 
   // Prevent propagation of invalid data on stylus lift off
   if (active_tools_ == 0) {
@@ -295,8 +305,9 @@ void TabletEventConverterEvdev::FlushEvents(const input_event& input) {
     return;
   }
 
-  if (!abs_value_dirty_)
+  if (!abs_value_dirty_) {
     return;
+  }
 
   UpdateCursor();
 
