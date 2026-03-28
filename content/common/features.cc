@@ -96,7 +96,6 @@ BASE_FEATURE_ENUM_PARAM(
     AvoidUnnecessaryBeforeUnloadCheckSyncMode,
     kAvoidUnnecessaryBeforeUnloadCheckSyncMode,
     &kAvoidUnnecessaryBeforeUnloadCheckSync,
-    "AvoidUnnecessaryBeforeUnloadCheckSyncMode",
     AvoidUnnecessaryBeforeUnloadCheckSyncMode::kWithSendBeforeUnload,
     &kAvoidUnnecessaryBeforeUnloadCheckSyncModeOption);
 

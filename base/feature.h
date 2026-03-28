@@ -97,10 +97,27 @@ class FeatureList;
   extern constinit const base::FeatureParam<T> feature_object_name
 
 // Provides a definition for `feature_object_name` with `T`, `feature`, `name`
-// and `default_value`, with an internal parsed value cache, e.g.
+// and `default_value`, with an internal parsed value cache.
 //
-//   BASE_FEATURE_PARAM(int, kMyFeatureParam, &kMyFeature, "my_feature_param",
-//                      0);
+// This macro can be used in two ways:
+//
+// 1. With four arguments, to define a feature param whose string name is
+//    derived from its C++ identifier. This form is preferred, as it avoids
+//    repeating the param name and helps prevent typos.
+//
+//      BASE_FEATURE_PARAM(int, kMyFeatureParam, &kMyFeature, 0);
+//
+//    This is equivalent to:
+//
+//      BASE_FEATURE_PARAM(int, kMyFeatureParam, &kMyFeature,
+//                         "MyFeatureParam", 0);
+//
+// 2. With five arguments, to explicitly specify the string name of the
+//    parameter. This form should be used only if the parameter needs to have
+//    a string name that does not match the C++ identifier (should be rare).
+//
+//      BASE_FEATURE_PARAM(int, kMyFeatureParam, &kMyFeature,
+//                         "my_feature_param", 0);
 //
 // `T` is a parameter type, one of bool, int, size_t, double, std::string, and
 // base::TimeDelta. Enum types are not supported for now.
@@ -112,40 +129,18 @@ class FeatureList;
 // an invalid value (per the param type), then Get() will return the default
 // value passed to this C++ macro. In particular this will typically return the
 // default value regardless of the server-side config in control groups.
-#define BASE_FEATURE_PARAM(T, feature_object_name, feature, name,       \
-                           default_value)                               \
-  namespace field_trial_params_internal {                               \
-  T GetFeatureParamWithCacheFor##feature_object_name(                   \
-      const base::FeatureParam<T>* feature_param) {                     \
-    static const typename base::internal::FeatureParamTraits<           \
-        T>::CacheStorageType storage =                                  \
-        base::internal::FeatureParamTraits<T>::ToCacheStorageType(      \
-            feature_param->GetWithoutCache());                          \
-    return base::internal::FeatureParamTraits<T>::FromCacheStorageType( \
-        storage);                                                       \
-  }                                                                     \
-  } /* field_trial_params_internal */                                   \
-  constinit const base::FeatureParam<T> feature_object_name(            \
-      feature, name, default_value,                                     \
-      &field_trial_params_internal::                                    \
-          GetFeatureParamWithCacheFor##feature_object_name)
+#define BASE_FEATURE_PARAM(...)                        \
+  BASE_FEATURE_INTERNAL_GET_FEATURE_PARAM_MACRO(       \
+      __VA_ARGS__, BASE_FEATURE_PARAM_INTERNAL_5_ARGS, \
+      BASE_FEATURE_PARAM_INTERNAL_4_ARGS)(__VA_ARGS__)
 
 // Same as BASE_FEATURE_PARAM() but used for enum type parameters with on extra
 // argument, `options`. See base::FeatureParam<Enum> template declaration in
 // //base/metrics/field_trial_params.h for `options`' details.
-#define BASE_FEATURE_ENUM_PARAM(T, feature_object_name, feature, name, \
-                                default_value, options)                \
-  namespace field_trial_params_internal {                              \
-  T GetFeatureParamWithCacheFor##feature_object_name(                  \
-      const base::FeatureParam<T>* feature_param) {                    \
-    static const T param = feature_param->GetWithoutCache();           \
-    return param;                                                      \
-  }                                                                    \
-  } /* field_trial_params_internal */                                  \
-  constinit const base::FeatureParam<T> feature_object_name(           \
-      feature, name, default_value, options,                           \
-      &field_trial_params_internal::                                   \
-          GetFeatureParamWithCacheFor##feature_object_name)
+#define BASE_FEATURE_ENUM_PARAM(...)                        \
+  BASE_FEATURE_INTERNAL_GET_FEATURE_ENUM_PARAM_MACRO(       \
+      __VA_ARGS__, BASE_FEATURE_ENUM_PARAM_INTERNAL_6_ARGS, \
+      BASE_FEATURE_ENUM_PARAM_INTERNAL_5_ARGS)(__VA_ARGS__)
 
 // Specifies whether a given feature is enabled or disabled by default.
 // NOTE: The actual runtime state may be different, due to a field trial or a

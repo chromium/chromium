@@ -21,6 +21,7 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/strings/strcat.h"
@@ -47,6 +48,33 @@ BASE_FEATURE(kFeatureOffByDefault,
 // For testing the 2-argument BASE_FEATURE macro.
 BASE_FEATURE(kFeature2ArgsOn, FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFeature2ArgsOff, FEATURE_DISABLED_BY_DEFAULT);
+
+// For testing the 4-argument BASE_FEATURE_PARAM macro.
+BASE_FEATURE_PARAM(int, kParamShortFormInt, &kFeature2ArgsOn, 42);
+// For testing the 5-argument BASE_FEATURE_PARAM macro (original form).
+BASE_FEATURE_PARAM(bool,
+                   kParamLongFormBool,
+                   &kFeature2ArgsOn,
+                   "CustomParamName",
+                   true);
+
+// For testing the 5-argument BASE_FEATURE_ENUM_PARAM macro.
+enum class TestEnum { kFirst, kSecond };
+constexpr FeatureParam<TestEnum>::Option kTestEnumOptions[] = {
+    {TestEnum::kFirst, "first"},
+    {TestEnum::kSecond, "second"}};
+BASE_FEATURE_ENUM_PARAM(TestEnum,
+                        kEnumParamShortForm,
+                        &kFeature2ArgsOn,
+                        TestEnum::kFirst,
+                        &kTestEnumOptions);
+// For testing the 6-argument BASE_FEATURE_ENUM_PARAM macro (original form).
+BASE_FEATURE_ENUM_PARAM(TestEnum,
+                        kEnumParamLongForm,
+                        &kFeature2ArgsOn,
+                        "CustomEnumParamName",
+                        TestEnum::kSecond,
+                        &kTestEnumOptions);
 
 // Features for the HistogramLogging test.
 BASE_FEATURE(kEarlyFeature, FEATURE_DISABLED_BY_DEFAULT);
@@ -89,6 +117,30 @@ TEST_F(FeatureListTest, TwoArgMacro) {
   EXPECT_FALSE(FeatureList::IsEnabled(kFeature2ArgsOff));
   EXPECT_STREQ("Feature2ArgsOn", kFeature2ArgsOn.name);
   EXPECT_STREQ("Feature2ArgsOff", kFeature2ArgsOff.name);
+}
+
+// Testing the 4-argument BASE_FEATURE_PARAM macro (auto-derived name).
+TEST_F(FeatureListTest, FourArgFeatureParamMacro) {
+  EXPECT_STREQ("ParamShortFormInt", kParamShortFormInt.name);
+  EXPECT_EQ(42, kParamShortFormInt.default_value);
+}
+
+// Testing the 5-argument BASE_FEATURE_PARAM macro (explicit name).
+TEST_F(FeatureListTest, FiveArgFeatureParamMacro) {
+  EXPECT_STREQ("CustomParamName", kParamLongFormBool.name);
+  EXPECT_EQ(true, kParamLongFormBool.default_value);
+}
+
+// Testing the 5-argument BASE_FEATURE_ENUM_PARAM macro (auto-derived name).
+TEST_F(FeatureListTest, FiveArgFeatureEnumParamMacro) {
+  EXPECT_STREQ("EnumParamShortForm", kEnumParamShortForm.name);
+  EXPECT_EQ(TestEnum::kFirst, kEnumParamShortForm.default_value);
+}
+
+// Testing the 6-argument BASE_FEATURE_ENUM_PARAM macro (explicit name).
+TEST_F(FeatureListTest, SixArgFeatureEnumParamMacro) {
+  EXPECT_STREQ("CustomEnumParamName", kEnumParamLongForm.name);
+  EXPECT_EQ(TestEnum::kSecond, kEnumParamLongForm.default_value);
 }
 
 TEST_F(FeatureListTest, OutsideAnonymousNamespace) {
