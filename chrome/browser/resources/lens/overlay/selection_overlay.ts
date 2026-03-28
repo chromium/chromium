@@ -548,7 +548,6 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
 
   protected override setSidePanelOpened() {
     super.setSidePanelOpened();
-    this.$.textLayer.disableHighlights();
   }
 
   // Repositions the context menu to keep it inside the viewport.

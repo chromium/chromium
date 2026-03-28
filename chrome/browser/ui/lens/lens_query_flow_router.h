@@ -209,7 +209,9 @@ class LensQueryFlowRouter
       std::unique_ptr<CreateSearchUrlRequestInfo> request_info);
 
   // Opens the contextual tasks panel to a provided URL.
-  void OpenContextualTasksPanel(GURL url);
+  void OpenContextualTasksPanel(
+      std::optional<lens::LensOverlaySelectionType> lens_selection_type,
+      GURL url);
 
   // Opens the contextual tasks error page.
   void ShowContextualTasksErrorPage();

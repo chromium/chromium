@@ -102,10 +102,6 @@ export abstract class SelectionOverlayBaseLitElement extends
         type: Boolean,
         reflect: true,
       },
-      enableRegionContextMenu: {
-        type: Boolean,
-        reflect: true,
-      },
       activeRegionId: {
         type: String,
       },
@@ -144,8 +140,6 @@ export abstract class SelectionOverlayBaseLitElement extends
   protected accessor sidePanelOpened: boolean = false;
   // Whether the background image canvas should currently be shown.
   protected accessor hideBackgroundImageCanvas: boolean = false;
-  // Whether the region context menu is enabled.
-  protected accessor enableRegionContextMenu: boolean = true;
 
   protected accessor isPointerInside: boolean = false;
 
@@ -879,11 +873,6 @@ export abstract class SelectionOverlayBaseLitElement extends
     this.sidePanelOpened = true;
     this.isResized = true;
     this.isInitialSize = false;
-
-    // In the case of an overlay being shown with an already open side panel,
-    // the region context menu should not be shown. Disable text highlights
-    // as the text is not actionable anymore.
-    this.enableRegionContextMenu = false;
   }
 
   private async onOverlayReshown(screenshotBitmap: ImageBitmap) {
@@ -897,7 +886,6 @@ export abstract class SelectionOverlayBaseLitElement extends
     this.isClosing = false;
     this.sidePanelOpened = true;
     this.hideBackgroundImageCanvas = true;
-    this.enableRegionContextMenu = false;
 
     this.updateCanvasSize(window.innerWidth, window.innerHeight);
 
