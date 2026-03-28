@@ -5,6 +5,21 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_FEATURES_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_FEATURES_H_
 
+// Guidelines for adding new features:
+// 1. Don't add new features in this file. Put them somewhere near the thing
+//    they control or the interface they affect the behavior of.
+// 2. Features should be declared with a comment indicating what they are for
+//    and some reference that can be used to decide when they are no longer
+//    needed.
+//     a. Rollout gates should link a tracker bug for the rollout.
+//     b. Killswitches should link a playbook describing their usage scenarios.
+//     c. Speculative parameters and debugging flags should indicate that
+//        status, so they can be removed whenever they are inconvenient to keep.
+// 3. Parameters should not be added to existing features. In general, it's
+//    better to make an independent Feature for each parameter.
+// 4. See //docs/flag_guarding_guidelines.md and //docs/configuration.md for
+//    general best practices and advice for the Chromium repo.
+
 #include <map>
 #include <optional>
 #include <set>
