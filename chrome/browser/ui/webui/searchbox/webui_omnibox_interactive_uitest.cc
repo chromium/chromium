@@ -48,11 +48,12 @@ const DeepQuery kMatch = {"omnibox-popup-app", "cr-searchbox-dropdown",
 const DeepQuery kMatchText = {"omnibox-popup-app", "cr-searchbox-dropdown",
                               "cr-searchbox-match", "#suggestion"};
 
-const DeepQuery kAimInput = {"omnibox-aim-app", "cr-composebox", "#input"};
+const DeepQuery kAimInput = {"omnibox-aim-app", "cr-composebox",
+                             "cr-composebox-input", "#input"};
 const DeepQuery kVoiceSearch = {"omnibox-aim-app", "cr-composebox",
                                 "#voiceSearch"};
 const DeepQuery kCancelIcon = {"omnibox-aim-app", "cr-composebox",
-                               "#cancelIcon"};
+                               "cr-composebox-input", "#cancelIcon"};
 const DeepQuery kAimSubmit = {"omnibox-aim-app", "cr-composebox",
                               "#submitContainer"};
 }  // namespace

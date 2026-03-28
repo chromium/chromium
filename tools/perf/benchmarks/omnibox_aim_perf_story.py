@@ -23,6 +23,7 @@ AI_MODE_INPUT_ELEMENT_FUNCTION = '''
 (function() {
   return document.querySelector('omnibox-aim-app').shadowRoot
         .querySelector('cr-composebox').shadowRoot
+        .querySelector('cr-composebox-input').shadowRoot
         .querySelector('#input');
 })()
 '''

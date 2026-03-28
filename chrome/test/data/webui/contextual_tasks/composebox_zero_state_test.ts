@@ -445,7 +445,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         'Suggestions should be visible when dropdown is shown');
 
     // Simulate typing.
-    const inputElement = composebox.$.input;
+    const inputElement = composebox.getInputElement().$.input;
     simulateUserInput(inputElement, 'test');
 
     // Provide typed matches.
@@ -788,7 +788,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertEquals('Ask about these', innerComposebox.$.input.placeholder);
+    assertEquals(
+        'Ask about these',
+        innerComposebox.getInputElement().$.input.placeholder);
   });
 
   test('Single tab file updates zero state placeholder', async () => {
@@ -801,7 +803,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertEquals('Ask about this tab', innerComposebox.$.input.placeholder);
+    assertEquals(
+        'Ask about this tab',
+        innerComposebox.getInputElement().$.input.placeholder);
   });
 
   test('Single image file updates zero state placeholder', async () => {
@@ -814,7 +818,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
+    assertEquals(
+        'Ask about this image',
+        innerComposebox.getInputElement().$.input.placeholder);
   });
 
   test('Single pdf file updates zero state placeholder', async () => {
@@ -827,7 +833,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertEquals('Ask about this doc', innerComposebox.$.input.placeholder);
+    assertEquals(
+        'Ask about this doc',
+        innerComposebox.getInputElement().$.input.placeholder);
   });
 
   test('Single unknown file updates zero state placeholder', async () => {
@@ -840,7 +848,8 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await contextualComposebox.updateComplete;
     await innerComposebox.updateComplete;
 
-    assertFalse(innerComposebox.$.input.placeholder.includes('Ask about'));
+    assertFalse(innerComposebox.getInputElement().$.input.placeholder.includes(
+        'Ask about'));
   });
 
   test('Overlay hint text overridden by file hint', async () => {
@@ -859,7 +868,9 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await innerComposebox.updateComplete;
 
     // File hint should take precedence over overlay hint.
-    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
+    assertEquals(
+        'Ask about this image',
+        innerComposebox.getInputElement().$.input.placeholder);
   });
 
   test('Arrow in zero state is ignored in full tab', async () => {

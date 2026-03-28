@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_P(LensSidePanelComposeBoxPixelTest, Screenshots) {
   // DeepQuery needed to target elements with injected JS.
   const DeepQuery kComposebox = {"lens-side-panel-app", "#composebox"};
   const DeepQuery kComposeBoxInput = {"lens-side-panel-app", "#composebox",
-                                      "textarea"};
+                                      "cr-composebox-input", "textarea"};
 
   RunTestSequence(
       SetupWebUIEnvironment(kActiveTab,

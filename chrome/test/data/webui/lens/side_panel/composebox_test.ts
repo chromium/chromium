@@ -6,6 +6,7 @@ import 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 
 import type {LensSidePanelAppElement} from 'chrome-untrusted://lens/side_panel/side_panel_app.js';
 import {SidePanelBrowserProxyImpl} from 'chrome-untrusted://lens/side_panel/side_panel_browser_proxy.js';
+import type {ComposeboxElement} from 'chrome-untrusted://resources/cr_components/composebox/composebox.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome-untrusted://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome-untrusted://resources/cr_components/composebox/composebox_proxy.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome-untrusted://resources/cr_components/searchbox/searchbox_browser_proxy.js';
@@ -55,7 +56,7 @@ suite('Composebox', () => {
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
 
   // Returns the composebox element.
-  async function setupTest(): Promise<HTMLElement> {
+  async function setupTest(): Promise<ComposeboxElement> {
     testBrowserProxy = new TestLensSidePanelBrowserProxy();
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
@@ -76,7 +77,8 @@ suite('Composebox', () => {
 
     await waitAfterNextRender(lensSidePanelElement);
     const composebox =
-        lensSidePanelElement.shadowRoot!.querySelector('cr-composebox');
+        lensSidePanelElement.shadowRoot!.querySelector<ComposeboxElement>(
+            'cr-composebox');
     assertTrue(!!composebox);
 
     testBrowserProxy.page.setIsOverlayShowing(false);
@@ -106,9 +108,9 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const imageUploadButton =
-        composebox.shadowRoot!.querySelector('#imageUploadButton');
+        composebox.shadowRoot.querySelector('#imageUploadButton');
     const fileUploadButton =
-        composebox.shadowRoot!.querySelector('#fileUploadButton');
+        composebox.shadowRoot.querySelector('#fileUploadButton');
 
     // The hide-file-inputs_ attribute is added in side_panel_app.html, so
     // the file input buttons should not be visible.
@@ -122,19 +124,18 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const lensButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#lensIcon');
     assertTrue(!!lensButton);
 
     // The button should be visible.
     assertTrue(isTrulyVisible(lensButton));
 
     // Grab the input to focus it.
-    const input = composebox.shadowRoot!.querySelector<HTMLTextAreaElement>(
-        'textarea#input');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
 
     // Focusing the input should expand the composebox.
@@ -153,7 +154,7 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const lensButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#lensIcon');
     assertTrue(!!lensButton);
     assertFalse(isVisible(lensButton));
   });
@@ -163,14 +164,13 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
 
     const initialHeight = composebox.offsetHeight;
     assertTrue(initialHeight > 0);
 
-    const input = composebox.shadowRoot!.querySelector<HTMLTextAreaElement>(
-        'textarea#input');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Focusing the input should expand the composebox.
@@ -195,11 +195,10 @@ suite('Composebox', () => {
 
     // Grab the buttons to do visibility checks.
     const submitContainer =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitContainer');
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    const cancelButton = composebox.getInputElement().$.cancelIcon;
     assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
@@ -211,8 +210,7 @@ suite('Composebox', () => {
     assertFalse(isTrulyVisible(cancelButton));
 
     // Grab the input to focus it.
-    const input = composebox.shadowRoot!.querySelector<HTMLTextAreaElement>(
-        'textarea#input');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Focusing the input should expand the composebox.
@@ -278,16 +276,15 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
 
     // Focus input to expand composebox.
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -310,17 +307,16 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
 
 
     // Focus input to expand composebox.
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -343,16 +339,15 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Focus input to expand composebox and show dropdown.
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -378,16 +373,15 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Focus input to expand composebox.
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -410,15 +404,13 @@ suite('Composebox', () => {
   test('TabbingOrder', async () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     const submitContainer =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitContainer');
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    const cancelButton = composebox.getInputElement().$.cancelIcon;
     assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
@@ -427,7 +419,7 @@ suite('Composebox', () => {
       // This is a simplified focusable element query that is sufficient for
       // this test.
       return Array
-          .from(composebox.shadowRoot!.querySelectorAll<HTMLElement>(
+          .from(composebox.shadowRoot.querySelectorAll<HTMLElement>(
               'button, [href], input, select, textarea, [tabindex]'))
           .filter(el => {
             if (el.getAttribute('tabindex') === '-1' ||
@@ -441,7 +433,7 @@ suite('Composebox', () => {
     input.focus();
     // Wait for expansion.
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -479,20 +471,18 @@ suite('Composebox', () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
 
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
-    const cancelButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#cancelIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
+    const cancelButton = composebox.getInputElement().$.cancelIcon;
     assertTrue(!!submitButton);
     assertTrue(!!cancelButton);
 
     input.focus();
     // Wait for expansion.
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -548,9 +538,9 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const submitContainer =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitContainer');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitContainer');
     const submitButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#submitIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#submitIcon');
     assertTrue(!!submitContainer);
     assertTrue(!!submitButton);
 
@@ -573,14 +563,13 @@ suite('Composebox', () => {
       enableLensAimSuggestions: true,
     });
     const composebox = await setupTest();
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Focus input to expand composebox.
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -619,15 +608,14 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const lensButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#lensIcon');
     assertTrue(!!lensButton);
 
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
 
     // The button should be visible.
@@ -644,15 +632,14 @@ suite('Composebox', () => {
     const composebox = await setupTest();
 
     const lensButton =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#lensIcon');
+        composebox.shadowRoot.querySelector<HTMLElement>('#lensIcon');
     assertTrue(!!lensButton);
 
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
 
     // The button should be visible.
@@ -677,20 +664,19 @@ suite('Composebox', () => {
   test('FocusesComposeboxOnCallback', async () => {
     loadTimeData.overrideValues({enableAimSearchbox: true});
     const composebox = await setupTest();
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
 
     // Make sure input is not focused initially.
     input.blur();
-    assertNotEquals(input, composebox.shadowRoot!.activeElement);
+    assertNotEquals(input, composebox.shadowRoot.activeElement);
 
     // Trigger the mojom callback to focus the composebox.
     testBrowserProxy.page.focusSearchbox();
     await waitAfterNextRender(composebox);
 
     // Verify the input is now focused.
-    assertEquals(input, composebox.shadowRoot!.activeElement);
+    assertEquals(input, composebox.shadowRoot.activeElement);
   });
 
   test('MaxSuggestionsUpdatesOnResize', async () => {
@@ -732,7 +718,7 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
 
     // Set max suggestions to 1.
@@ -740,12 +726,11 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
 
     // Focus input to expand composebox.
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 
@@ -807,7 +792,7 @@ suite('Composebox', () => {
     });
     const composebox = await setupTest();
     const dropdown =
-        composebox.shadowRoot!.querySelector<HTMLElement>('[part=dropdown]');
+        composebox.shadowRoot.querySelector<HTMLElement>('[part=dropdown]');
     assertTrue(!!dropdown);
 
     // Set max suggestions to 1.
@@ -815,12 +800,11 @@ suite('Composebox', () => {
     await waitAfterNextRender(composebox);
 
     // Focus input to expand composebox.
-    const input =
-        composebox.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    const input = composebox.getInputElement().$.input;
     assertTrue(!!input);
     input.focus();
     const animatedElement =
-        composebox.shadowRoot!.querySelector<HTMLElement>('#composebox');
+        composebox.shadowRoot.querySelector<HTMLElement>('#composebox');
     assertTrue(!!animatedElement);
     await getTransitionEndPromise(animatedElement, 'max-height');
 

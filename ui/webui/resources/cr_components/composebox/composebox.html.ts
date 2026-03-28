@@ -39,51 +39,21 @@ export function getHtml(this: ComposeboxElement) {
         @drop="${this.dragAndDropHandler_.handleDrop}"
         @paste="${this.onPaste_}">
     <div id="inputContainer" part="input-container">
-      <div id="textContainer" part="text-container">
-        <div id="iconContainer" part="icon-container">
-          <div id="aimIcon"></div>
-        </div>
-        <div id="inputWrapper">
-          ${!this.disableCaretColorAnimation ? html`
-            <div id="mirror" part="mirror" aria-hidden="true"></div>
-            <div id="caret"></div>
-          ` : ''}
-          <textarea
-            aria-expanded="${this.showDropdown_}" aria-controls="matches"
-            role="combobox" autocomplete="off" id="input"
-            type="search" spellcheck="false"
-            placeholder="${this.inputPlaceholder}"
-            part="input"
-            .value="${this.input}"
-            @click="${this.onInputClick_}"
-            @keyup="${this.onInputKeyup_}"
-            @input="${this.onInputInput_}"
-            @focusin="${this.onInputFocusin_}"></textarea>
-          </textarea>
-          ${this.shouldShowSmartComposeInlineHint_() ? html`
-            <div id="smartCompose" part="smart-compose">
-              <!-- Comments in between spans to eliminate spacing between
-                   spans -->
-              <span id="invisibleText">${this.input}</span><!--
-              --><span id="ghostText">${this.smartComposeInlineHint_}</span><!--
-              --><span id="tabChip">${this.i18n('composeboxSmartComposeTabTitle')}</span>
-            </div>
-          `: ''}
-        </div>
-      </div>
-      <!-- A seperate container is needed for the submit button so the
-      expand/collapse animation can be applied without affecting the submit
-      button enabled/disabled state. -->
-      <div id="cancelContainer" class="icon-fade" part="cancel">
-        <cr-icon-button
-            class="action-icon icon-clear"
-            id="cancelIcon"
-            part="action-icon cancel-icon"
-            title="${this.computeCancelButtonTitle_()}"
-            @click="${this.onCancelClick_}"
-            ?disabled="${this.isCollapsible && !this.submitEnabled_}">
-        </cr-icon-button>
-      </div>
+      <cr-composebox-input id="composeboxInput"
+          exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
+          .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
+          .showDropdown="${this.showDropdown_}"
+          .inputPlaceholder="${this.inputPlaceholder}"
+          .input="${this.input}"
+          .smartComposeInlineHint="${this.smartComposeInlineHint_}"
+          .isCollapsible="${this.isCollapsible}"
+          .submitEnabled="${this.submitEnabled_}"
+          .entrypointName="${this.entrypointName}"
+          .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
+          @input-input="${this.onInputInput_}"
+          @input-focusin="${this.onInputFocusin_}"
+          @cancel-click="${this.onCancelClick_}">
+      </cr-composebox-input>
       <div id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">
         <cr-composebox-file-inputs id="fileInputs"

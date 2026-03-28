@@ -1331,11 +1331,11 @@ suite('NewTabPageAppTest', () => {
       const composebox = app.shadowRoot.querySelector('cr-composebox');
       assertTrue(!!composebox);
       // 1. Setup: Simulate input content.
-      composebox.$.input.value = 'test input';
-      composebox.$.input.dispatchEvent(new Event('input'));
+      composebox.getInputElement().$.input.value = 'test input';
+      composebox.getInputElement().$.input.dispatchEvent(new Event('input'));
       await microtasksFinished();
 
-      assertEquals('test input', composebox.$.input.value);
+      assertEquals('test input', composebox.getInputElement().$.input.value);
 
       // First ESC: Clear Input (Content present)
       const closePromise1 = eventToPromise('close-composebox', composebox);
@@ -1352,7 +1352,7 @@ suite('NewTabPageAppTest', () => {
           closedAfterFirstEsc,
           'First ESC should clear input, not close the box.');
       assertEquals(
-          '', composebox.$.input.value,
+          '', composebox.getInputElement().$.input.value,
           'Input must be cleared after first ESC.');
 
       // Second ESC: Close Box (Content empty)
@@ -1480,9 +1480,9 @@ suite('NewTabPageAppTest', () => {
 
             assertEquals(
                 'hello',
-                searchboxContainer!.shadowRoot.querySelector('#input')!
-                    .shadowRoot!.querySelector<HTMLInputElement>(
-                                    '#input')!.value);
+                searchboxContainer!.shadowRoot
+                    .querySelector('cr-searchbox-input')!.shadowRoot
+                    .querySelector<HTMLInputElement>('#input')!.value);
           });
     });
     suite('Close options disabled', () => {
@@ -2178,12 +2178,13 @@ suite('NewTabPageAppTest', () => {
           await microtasksFinished();
           const composebox = app.shadowRoot.querySelector('cr-composebox');
           assertTrue(!!composebox);
-          composebox.$.input.dispatchEvent(new FocusEvent('focus'));
+          composebox.getInputElement().$.input.dispatchEvent(
+              new FocusEvent('focus'));
           await microtasksFinished();
 
           assertFalse(scrim.hidden);
 
-          composebox.$.input.dispatchEvent(
+          composebox.getInputElement().$.input.dispatchEvent(
               new FocusEvent('focusout', {relatedTarget: scrim}));
           await microtasksFinished();
           scrim.click();
@@ -2267,10 +2268,8 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       const composebox = app.shadowRoot.querySelector('cr-composebox');
       assertTrue(!!composebox);
-      assertEquals(
-          'text',
-          composebox.shadowRoot.querySelector<HTMLInputElement>(
-                                   '#input')!.value);
+
+      assertEquals('text', composebox.getInputElement().$.input.value);
       assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
     });
 
@@ -2533,8 +2532,8 @@ suite('NewTabPageAppTest', () => {
               searchboxHandler.getArgs('addTabContext')[0];
           assertEquals(1, tabId);
           assertEquals(true, delayUpload);
-          assertTrue(!!composebox.$.input);
-          assertEquals(suggestion, composebox.$.input.value);
+          assertTrue(!!composebox.getInputElement().$.input);
+          assertEquals(suggestion, composebox.getInputElement().$.input.value);
         });
   });
 

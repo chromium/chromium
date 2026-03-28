@@ -676,7 +676,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertStyle(
         voiceSearchElement, 'display', 'none', 'Voice search should be hidden');
     assertStyle(composeboxDiv, 'display', 'flex', 'Composebox should be shown');
-    assertEquals(composebox.$.input.value, '', 'Input should be cleared');
+    assertEquals(
+        composebox.getInputElement().$.input.value, '',
+        'Input should be cleared');
 
     assertEquals(
         1,
@@ -747,8 +749,9 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
               composebox.shadowRoot.querySelector('cr-composebox-tool-chip');
 
           assertTrue(!!toolChip, toolModeInfo.text + ' chip should be present');
-          composebox.$.input.value = 'test';
-          composebox.$.input.dispatchEvent(new Event('input'));
+          composebox.getInputElement().$.input.value = 'test';
+          composebox.getInputElement().$.input.dispatchEvent(
+              new Event('input'));
           // Since we cannot create a fake AutocompleteResult easily (35+
           // fields), we populate the result in a different way. There is an
           // assert statement in cr-component composebox.ts that checks if
