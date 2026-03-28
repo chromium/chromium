@@ -101,6 +101,8 @@ suite('DefaultBrowserPageTest', function() {
     return browserProxy.whenCalled('requestUserValueStringsFeatureState');
   }
 
+  // TODO(crbug.com/459593729): Delete this test once the experiment is launched
+  // and the old behavior is no longer supported.
   test('default-browser-test-can-be-default-featureOff', async function() {
     browserProxy.setUserValueStringsFeatureState(false);
 
@@ -130,6 +132,8 @@ suite('DefaultBrowserPageTest', function() {
         loadTimeData.getString('defaultBrowserMakeDefault'));
   });
 
+  // TODO(crbug.com/459593729): Drop the featureOn suffix and remove
+  // the feature enablement once the experiment is launched.
   test('default-browser-test-can-be-default-featureOn', async function() {
     browserProxy.setUserValueStringsFeatureState(true);
 
@@ -159,33 +163,79 @@ suite('DefaultBrowserPageTest', function() {
         loadTimeData.getString('defaultBrowserMakeDefaultUserValue'));
   });
 
-  test('default-browser-test-can-be-default-and-pin', async function() {
-    browserProxy.setDefaultBrowserInfo({
-      canBeDefault: true,
-      canPin: true,
-      isDefault: false,
-      isDisabledByPolicy: false,
-      isUnknownError: false,
-    });
+  // TODO(crbug.com/459593729): Delete this test once the experiment is launched
+  // and the old behavior is no longer supported.
+  test(
+      'default-browser-test-can-be-default-and-pin-featureOff',
+      async function() {
+        browserProxy.setUserValueStringsFeatureState(false);
 
-    await initPage();
-    flush();
-    assertTrue(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#canBeDefaultBrowser'));
-    assertFalse(!!page.shadowRoot!.querySelector<HTMLElement>('#isDefault'));
-    assertFalse(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#isSecondaryInstall'));
-    // Verify that settings page offers to pin Chrome.
-    const makeDefault =
-        page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
-    assertTrue(!!makeDefault);
-    assertEquals(
-        makeDefault.textContent.trim(),
-        loadTimeData.getString('defaultBrowserMakeDefaultAndPin'));
-    assertFalse(
-        !!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));
-  });
+        browserProxy.setDefaultBrowserInfo({
+          canBeDefault: true,
+          canPin: true,
+          isDefault: false,
+          isDisabledByPolicy: false,
+          isUnknownError: false,
+        });
 
+        await initPage();
+        await navigateToDefaultBrowserPage();
+        flush();
+        assertTrue(!!page.shadowRoot!.querySelector<HTMLElement>(
+            '#canBeDefaultBrowser'));
+        assertFalse(
+            !!page.shadowRoot!.querySelector<HTMLElement>('#isDefault'));
+        assertFalse(!!page.shadowRoot!.querySelector<HTMLElement>(
+            '#isSecondaryInstall'));
+        // Verify that settings page offers to pin Chrome.
+        const makeDefault =
+            page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
+        assertTrue(!!makeDefault);
+        assertEquals(
+            makeDefault.textContent.trim(),
+            loadTimeData.getString('defaultBrowserMakeDefaultAndPin'));
+        assertFalse(
+            !!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));
+      });
+
+  // TODO(crbug.com/459593729): Drop the featureOn suffix and remove
+  // the feature enablement once the experiment is launched.
+  test(
+      'default-browser-test-can-be-default-and-pin-featureOn',
+      async function() {
+        browserProxy.setUserValueStringsFeatureState(true);
+
+        browserProxy.setDefaultBrowserInfo({
+          canBeDefault: true,
+          canPin: true,
+          isDefault: false,
+          isDisabledByPolicy: false,
+          isUnknownError: false,
+        });
+
+        await initPage();
+        await navigateToDefaultBrowserPage();
+        flush();
+        assertTrue(!!page.shadowRoot!.querySelector<HTMLElement>(
+            '#canBeDefaultBrowser'));
+        assertFalse(
+            !!page.shadowRoot!.querySelector<HTMLElement>('#isDefault'));
+        assertFalse(!!page.shadowRoot!.querySelector<HTMLElement>(
+            '#isSecondaryInstall'));
+        // Verify that settings page offers to pin Chrome with user value
+        // string.
+        const makeDefault =
+            page.shadowRoot!.querySelector<HTMLElement>('#makeDefaultLabel');
+        assertTrue(!!makeDefault);
+        assertEquals(
+            makeDefault.textContent.trim(),
+            loadTimeData.getString('defaultBrowserMakeDefaultAndPinUserValue'));
+        assertFalse(
+            !!page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError'));
+      });
+
+  // TODO(crbug.com/459593729): Delete this test once the experiment is launched
+  // and the old behavior is no longer supported.
   test('default-browser-test-is-default-featureOff', async function() {
     assertTrue(!!page);
 
@@ -224,6 +274,8 @@ suite('DefaultBrowserPageTest', function() {
         page.shadowRoot!.querySelector<HTMLElement>('#isUnknownError')!.hidden);
   });
 
+  // TODO(crbug.com/459593729): Drop the featureOn suffix and remove
+  // the feature enablement once the experiment is launched.
   test('default-browser-test-is-default-featureOn', async function() {
     assertTrue(!!page);
 

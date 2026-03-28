@@ -727,6 +727,8 @@ void AddDefaultBrowserStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_USER_VALUE},
       {"defaultBrowserMakeDefaultAndPin",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN},
+      {"defaultBrowserMakeDefaultAndPinUserValue",
+       IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN_USER_VALUE},
       {"defaultBrowserMakeDefaultButton",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_BUTTON},
       {"defaultBrowserError", IDS_SETTINGS_DEFAULT_BROWSER_ERROR},

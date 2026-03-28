@@ -103,7 +103,11 @@
     </message>
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN" desc="The text of the button to make Chrome the default browser and pin it to the taskbar.">
       Make Google Chrome the default browser and pin to the taskbar
-    </message>    <message name="IDS_SETTINGS_DEFAULT_BROWSER_ERROR" desc="The text displayed when Chrome cannot determine or set the default browser">
+    </message>
+    <message name="IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN_USER_VALUE" desc="The text of the button to make Chrome the default browser and pin it to the taskbar.">
+      You can use Chrome anytime you click links in messages, documents, and other apps. It will also be pinned to your taskbar.
+    </message>
+    <message name="IDS_SETTINGS_DEFAULT_BROWSER_ERROR" desc="The text displayed when Chrome cannot determine or set the default browser">
       Google Chrome cannot determine or set the default browser
     </message>
     <message name="IDS_SETTINGS_DEFAULT_BROWSER_SECONDARY" desc="The text displayed when Chrome is installed in side-by-side mode, which does not support setting as the default browser.">

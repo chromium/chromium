@@ -112,8 +112,15 @@ export class SettingsDefaultBrowserPageElement extends
   }
 
   private getMakeDefaultLabel(): string {
+    // When the UserValueDefaultBrowserStrings feature is enabled, show a
+    // more user-centric string.
+    // TODO(crbug.com/459593729): Clean up after launch by removing the old
+    // string and this conditional logic.
     if (this.canPin_) {
-      return loadTimeData.getString('defaultBrowserMakeDefaultAndPin');
+      return loadTimeData.getString(
+          this.userValueDefaultBrowserStringsEnabled_ ?
+              'defaultBrowserMakeDefaultAndPinUserValue' :
+              'defaultBrowserMakeDefaultAndPin');
     }
 
     // When the UserValueDefaultBrowserStrings feature is enabled, show a
