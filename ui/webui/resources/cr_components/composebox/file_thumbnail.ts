@@ -71,6 +71,11 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
 
   protected accessor isUploading_: boolean = false;
 
+  protected get usePdfIcon_(): boolean {
+    return !this.lensSendRawFileMediaTypesEnabled_ ||
+        this.file.type === 'pdf' || this.file.type === 'application/pdf';
+  }
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('file')) {

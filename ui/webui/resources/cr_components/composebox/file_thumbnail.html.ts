@@ -148,13 +148,13 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               </svg>
             ` : html`
               <cr-icon icon="${
-                  this.lensSendRawFileMediaTypesEnabled_ ?
-                      'thumbnail:document' :
-                      'thumbnail:pdf'}"
+                  this.usePdfIcon_ ?
+                      'thumbnail:pdf' :
+                      'thumbnail:document'}"
                   class="${
-                  this.lensSendRawFileMediaTypesEnabled_ ?
-                      'document-icon' :
-                      'pdf-icon'}"></cr-icon>
+                  this.usePdfIcon_ ?
+                      'pdf-icon' :
+                      'document-icon'}"></cr-icon>
             `}
           </div>
           <p class="title"
