@@ -519,10 +519,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         FAKE_TOKEN_STRING, ContextUploadStatus.kUploadReplaced, null);
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
 
     assertEquals(
         0, composebox.getRemainingFilesToUpload().size,
@@ -913,10 +910,9 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               even when disabled.');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         token, ContextUploadStatus.kUploadFailed, null);
-    await composebox.updateComplete;
-    await composebox.updateComplete;
 
-    await microtasksFinished();
+    await searchboxCallbackRouterRemote.$.flushForTesting();
+    await composebox.updateComplete;
     assertEquals(0, composebox.getRemainingFilesToUpload().size);
 
     assertTrue(
@@ -942,9 +938,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         token, ContextUploadStatus.kProcessing, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
 
@@ -971,7 +966,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await microtasksFinished();
     assertEquals(0, composebox.getRemainingFilesToUpload().size);
 
     assertTrue(
@@ -997,9 +991,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         token, ContextUploadStatus.kProcessing, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
 
     assertEquals(1, composebox.getRemainingFilesToUpload().size);
 
@@ -1023,9 +1016,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
               even when disabled.');
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         token, ContextUploadStatus.kUploadExpired, null);
+    await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
     assertEquals(0, composebox.getRemainingFilesToUpload().size);
 
     assertTrue(
@@ -1080,12 +1072,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
 
-    // Multiple calls needed to avoid flaking.
-    // TODO(crbug.com/490496860): Investigate removing.
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
 
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
@@ -1102,12 +1090,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
             FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
         composebox.input = 'test';
 
-        // Multiple calls needed to avoid flaking.
-        // TODO(crbug.com/490496860): Investigate removing.
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await composebox.updateComplete;
-        await composebox.updateComplete;
-        await microtasksFinished();
 
         const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
         assertTrue(!!submitButton, 'Submit button should exist');
@@ -1120,12 +1104,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING, ContextUploadStatus.kUploadSuccessful, null);
 
-    // Multiple calls needed to avoid flaking.
-    // TODO(crbug.com/490496860): Investigate removing.
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await composebox.updateComplete;
-    await microtasksFinished();
 
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
@@ -1146,12 +1126,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             FAKE_TOKEN_STRING_2, ContextUploadStatus.kUploadSuccessful, null);
 
-        // Multiple calls needed to avoid flaking.
-        // TODO(crbug.com/490496860): Investigate removing.
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await composebox.updateComplete;
-        await composebox.updateComplete;
-        await microtasksFinished();
 
         const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
         assertTrue(!!submitButton, 'Submit button should exist');

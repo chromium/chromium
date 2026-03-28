@@ -121,7 +121,6 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
     await customElements.whenDefined('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
 
-    await customElements.whenDefined('contextual-tasks-app');
     await contextualTasksApp.updateComplete;
     await microtasksFinished();
 
@@ -258,8 +257,6 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         assertTrue(
             !!firstMatch.$.textContainer,
             'First suggestion match should exist');
-
-        await microtasksFinished();
 
         assertStyle(
             firstMatch.$.textContainer, 'animation-duration', '2s',
@@ -699,8 +696,6 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        await microtasksFinished();
-        await composebox.updateComplete;
         const submitContainer: HTMLElement|null =
             getSubmitContainer(composebox);
         assertTrue(!!submitContainer, 'Submit container button should exist');

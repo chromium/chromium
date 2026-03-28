@@ -265,7 +265,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    await microtasksFinished();
 
     composebox.clearAllInputs(false);
 
@@ -310,7 +309,6 @@ suite('ContextualTasksComposeboxTest', () => {
         composebox.requestUpdate();
 
         await composebox.updateComplete;
-        await microtasksFinished();
 
         // Now file 1 is not deletable while file 2 is.
         const token2 = FAKE_TOKEN_STRING_2;
@@ -319,14 +317,11 @@ suite('ContextualTasksComposeboxTest', () => {
             composebox, mockSearchboxPageHandler, 1);
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             token1, ContextUploadStatus.kUploadSuccessful, null);
-        await searchboxCallbackRouterRemote.$.flushForTesting();
-
         searchboxCallbackRouterRemote.onContextualInputStatusChanged(
             token2, ContextUploadStatus.kUploadSuccessful, null);
         await searchboxCallbackRouterRemote.$.flushForTesting();
 
         await composebox.updateComplete;
-        await microtasksFinished();
 
         // Clear all inputs (only deletes file 2).
         composebox.clearAllInputs(false);
@@ -363,7 +358,6 @@ suite('ContextualTasksComposeboxTest', () => {
             token2, ContextUploadStatus.kUploadSuccessful, null);
         await searchboxCallbackRouterRemote.$.flushForTesting();
         await composebox.updateComplete;
-        await microtasksFinished();
 
         const currentFiles2 = composebox.files;
         currentFiles2.forEach((file: ComposeboxFile) => {
@@ -373,7 +367,6 @@ suite('ContextualTasksComposeboxTest', () => {
         composebox.requestUpdate();
 
         await composebox.updateComplete;
-        await microtasksFinished();
 
         // Clear all inputs (deletes no files).
         composebox.clearAllInputs(false);
@@ -694,7 +687,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // 4. Wait for the UI to clear the input after submission.
     await composebox.updateComplete;
-    await contextualTasksApp.updateComplete;
     assertEquals(
         '', inputElement.value, 'Input should be cleared after submit');
 
@@ -735,7 +727,6 @@ suite('ContextualTasksComposeboxTest', () => {
   test('Composebox upload disabled when uploading files', async () => {
     composebox.searchboxLayoutMode = '';
     composebox.contextMenuEnabled_ = true;
-    await composebox.updateComplete;
     await composebox.updateComplete;
     await microtasksFinished();
 
@@ -927,7 +918,6 @@ suite('ContextualTasksComposeboxTest', () => {
     testProxy.callbackRouterRemote.onZeroStateChange(true);
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await app.updateComplete;
-    await microtasksFinished();
 
     assertFalse(
         composeboxWrapper.hasAttribute('hidden'),
@@ -937,7 +927,6 @@ suite('ContextualTasksComposeboxTest', () => {
     testProxy.callbackRouterRemote.onZeroStateChange(false);
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await app.updateComplete;
-    await microtasksFinished();
 
     assertFalse(
         composeboxWrapper.hasAttribute('hidden'),
@@ -979,7 +968,6 @@ suite('ContextualTasksComposeboxTest', () => {
     // Mock `isZeroState_` updating value from parent.
     testProxy.callbackRouterRemote.onZeroStateChange(true);
     await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
 
     assertEquals(1, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
   });
@@ -1021,8 +1009,6 @@ suite('ContextualTasksComposeboxTest', () => {
 
         // Mock `isZeroState_` updating value from parent.
         testProxy.callbackRouterRemote.onZeroStateChange(false);
-
-        await microtasksFinished();
 
         assertEquals(
             0, mockSearchboxPageHandler.getCallCount('queryAutocomplete'));
@@ -1117,7 +1103,6 @@ suite('ContextualTasksComposeboxTest', () => {
           matches: matches,
         });
 
-    await microtasksFinished();
     await contextualComposebox.updateComplete;
 
     // Simulate Tab focus (match-focusin).
@@ -1127,7 +1112,6 @@ suite('ContextualTasksComposeboxTest', () => {
       composed: true,
     }));
 
-    await microtasksFinished();
     await innerComposebox.updateComplete;
 
     // Simulate pressing Enter to submit.
@@ -1144,7 +1128,6 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals('https://test.com', url);
 
     // After submission, verify the input is cleared by your component logic.
-    await microtasksFinished();
     await innerComposebox.updateComplete;
     assertEquals('', innerComposebox.getInputText());
   });
@@ -1165,7 +1148,6 @@ suite('ContextualTasksComposeboxTest', () => {
     loadStartEventOnline.url = fixtureUrl;
     threadFrame.dispatchEvent(loadStartEventOnline);
 
-    await microtasksFinished();
     await contextualTasksApp.updateComplete;
 
     assertFalse(
@@ -1193,7 +1175,6 @@ suite('ContextualTasksComposeboxTest', () => {
     loadStartEventOffline.url = fixtureUrl;
     threadFrame.dispatchEvent(loadStartEventOffline);
 
-    await microtasksFinished();
     await contextualTasksApp.updateComplete;
 
     assertTrue(
@@ -1224,7 +1205,6 @@ suite('ContextualTasksComposeboxTest', () => {
     loadStartEventBackOnline.url = fixtureUrl;
     threadFrame.dispatchEvent(loadStartEventBackOnline);
 
-    await microtasksFinished();
     await contextualTasksApp.updateComplete;
 
     assertFalse(
@@ -1232,8 +1212,6 @@ suite('ContextualTasksComposeboxTest', () => {
         'Should be online after reload');
     assertTrue(
         isVisible(composebox), 'Composebox should be visible after reload');
-
-    await microtasksFinished();
   });
 
   test('ClearInputAndFocusClearsMatchesOnSubmit', () => {
