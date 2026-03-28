@@ -52,7 +52,6 @@ import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.WebContents;
 
 /** Robolectric tests for {@link GeolocationHeader}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -101,7 +100,6 @@ public class GeolocationHeaderUnitTest {
 
     @Mock WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock Profile mProfileMock;
-    @Mock WebContents mWebContentsMock;
     @Mock TemplateUrlService mTemplateUrlServiceMock;
     @Mock FusedLocationProviderClient mLocationProviderClient;
     @Captor private ArgumentCaptor<LocationListener> mLocationListenerCaptor;
@@ -113,8 +111,7 @@ public class GeolocationHeaderUnitTest {
         GeolocationTracker.setLocationForTesting(null, null);
         GeolocationTracker.setLocationAgeForTesting(null);
         GeolocationHeader.setAppPermissionsForTesting(/* hasCoarse= */ true, /* hasFine= */ true);
-        // This is to reset `sCurrentLocationRequested`.
-        GeolocationHeader.stopListeningForLocationUpdates();
+        GeolocationHeader.resetStateForTesting();
         setSiteGeolocationPermissions(
                 /* approximate= */ ContentSetting.ALLOW, /* precise= */ ContentSetting.ALLOW);
         when(mWebsitePreferenceBridgeJniMock.isDSEOrigin(any(BrowserContextHandle.class), any()))

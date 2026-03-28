@@ -99,19 +99,14 @@ public class GeolocationHeader {
 
     private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpdate;
     private static boolean sGeolocationPrimed;
+    private static boolean sCurrentLocationRequested;
+
     private static boolean sHasCoarsePermissionForTesting;
     private static boolean sHasFinePermissionForTesting;
     private static boolean sUseFakePermissionForTesting;
-    private static boolean sCurrentLocationRequested;
     private static @Nullable Location sFusedLocation;
     private static @Nullable Runnable sPrimeLocationForGeoHeaderIfEnabledForTesting;
     private static @Nullable Runnable sStopListeningForLocationUpdatesForTesting;
-
-    public static void setPrimeLocationForGeoHeaderIfEnabledForTesting(
-            @Nullable Runnable runnable) {
-        sPrimeLocationForGeoHeaderIfEnabledForTesting = runnable;
-        ResettersForTesting.register(() -> sPrimeLocationForGeoHeaderIfEnabledForTesting = null);
-    }
 
     /**
      * Requests a location refresh so that a valid location will be available for constructing an
@@ -195,11 +190,6 @@ public class GeolocationHeader {
             sCurrentLocationRequested = false;
         }
         return sCurrentLocationRequested;
-    }
-
-    public static void setStopListeningForLocationUpdatesForTesting(@Nullable Runnable runnable) {
-        sStopListeningForLocationUpdatesForTesting = runnable;
-        ResettersForTesting.register(() -> sStopListeningForLocationUpdatesForTesting = null);
     }
 
     /** Stop requesting and listening for location updates from FusedLocationProvider. */
@@ -378,22 +368,6 @@ public class GeolocationHeader {
         }
     }
 
-    static void setAppPermissionsForTesting(boolean hasCoarse, boolean hasFine) {
-        sHasCoarsePermissionForTesting = hasCoarse;
-        sHasFinePermissionForTesting = hasFine;
-        sUseFakePermissionForTesting = true;
-        sGeolocationPrimed = false;
-        ResettersForTesting.register(
-                () -> {
-                    sUseFakePermissionForTesting = false;
-                    sGeolocationPrimed = false;
-                });
-    }
-
-    static boolean isGeolocationPrimedForTesting() {
-        return sGeolocationPrimed;
-    }
-
     @VisibleForTesting
     static @Nullable Location getLastKnownLocation(boolean hasFineSitePermission) {
         if (OmniboxFeatures.sUseFusedLocationProvider.isEnabled() && sFusedLocation != null) {
@@ -457,5 +431,37 @@ public class GeolocationHeader {
             PartnerLocationDescriptor.LocationDescriptor locationDescriptor) {
         return Base64.encodeToString(
                 locationDescriptor.toByteArray(), Base64.NO_WRAP | Base64.URL_SAFE);
+    }
+
+    public static void setPrimeLocationForGeoHeaderIfEnabledForTesting(
+            @Nullable Runnable runnable) {
+        sPrimeLocationForGeoHeaderIfEnabledForTesting = runnable;
+        ResettersForTesting.register(() -> sPrimeLocationForGeoHeaderIfEnabledForTesting = null);
+    }
+
+    public static void setStopListeningForLocationUpdatesForTesting(@Nullable Runnable runnable) {
+        sStopListeningForLocationUpdatesForTesting = runnable;
+        ResettersForTesting.register(() -> sStopListeningForLocationUpdatesForTesting = null);
+    }
+
+    /* package */ static void setAppPermissionsForTesting(boolean hasCoarse, boolean hasFine) {
+        sHasCoarsePermissionForTesting = hasCoarse;
+        sHasFinePermissionForTesting = hasFine;
+        sUseFakePermissionForTesting = true;
+        ResettersForTesting.register(
+                () -> {
+                    sHasCoarsePermissionForTesting = false;
+                    sHasFinePermissionForTesting = false;
+                    sUseFakePermissionForTesting = false;
+                });
+    }
+
+    /* package */ static boolean isGeolocationPrimedForTesting() {
+        return sGeolocationPrimed;
+    }
+
+    /* package */ static void resetStateForTesting() {
+        sGeolocationPrimed = false;
+        sCurrentLocationRequested = false;
     }
 }
