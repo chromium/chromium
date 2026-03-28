@@ -36,7 +36,7 @@ export const NO_SELECTION: number = -1;
 export const selectorNavigationKeys: readonly string[] =
     Object.freeze(['ArrowUp', 'ArrowDown', 'Home', 'End']);
 
-export class SelectableLazyListElement<T = object> extends CrLitElement {
+export class SelectableLazyListElement<T = any> extends CrLitElement {
   static get is() {
     return 'selectable-lazy-list';
   }

@@ -89,7 +89,7 @@ export class ReadingListAppElement extends ReadingListAppElementBase {
   protected accessor loadingContent_: boolean = true;
   protected accessor itemSize_: number = 48;
   protected accessor minViewportHeight_: number = 0;
-  protected accessor scrollTarget_: HTMLElement|null = null;
+  protected accessor scrollTarget_: HTMLElement = document.documentElement;
   private accessor unreadHeader_: string =
       loadTimeData.getString('unreadHeader');
   private accessor readHeader_: string = loadTimeData.getString('readHeader');

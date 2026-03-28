@@ -81,7 +81,7 @@ export class HistoryClustersAppElement extends CrLitElement {
   accessor query: string = '';
   protected accessor nonEmbeddingsResultClicked_: boolean = false;
   protected accessor numCharsTypedInSearch_: number = 0;
-  protected accessor scrollTarget_: HTMLElement|undefined;
+  protected accessor scrollTarget_: HTMLElement = document.documentElement;
   protected accessor searchIcon_: string|undefined;
 
   //============================================================================

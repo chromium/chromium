@@ -47,7 +47,7 @@ export interface CrLazyListElement {
   };
 }
 
-export class CrLazyListElement<T = object> extends CrLitElement {
+export class CrLazyListElement<T = any> extends CrLitElement {
   static get is() {
     return 'cr-lazy-list';
   }

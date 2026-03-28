@@ -99,7 +99,7 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   // </if>
   protected accessor lastFocused_: HTMLElement|null = null;
   protected accessor listBlurred_: boolean = false;
-  protected accessor listScrollTarget_: HTMLElement|null = null;
+  protected accessor listScrollTarget_: HTMLElement = document.documentElement;
 
   private announcerTimeout_: number|null = null;
   private mojoHandler_: PageHandlerInterface;
