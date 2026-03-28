@@ -2241,6 +2241,7 @@
 <translation id="2518024842978892609">Используйте сертификат клиента</translation>
 <translation id="2518620532958109495">Разрешено автоматически включать полноэкранный режим</translation>
 <translation id="2519250377986324805">Подробнее</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nЧтобы продолжить работу над ней, Gemini нужна ваша помощь.</translation>
 <translation id="2519517390894391510">Название сертификата</translation>
 <translation id="2520644704042891903">Ожидание доступного сокета...</translation>
 <translation id="2521427645491031107">Параметры синхронизации приложений задаются в системных настройках</translation>
@@ -4643,6 +4644,7 @@
 <translation id="4190492351494485814">Для начальной настройки необходимо подключиться к интернету, чтобы синхронизировать файлы с Chromebook.</translation>
 <translation id="4190828427319282529">Выделение объектов, выбранных с помощью клавиатуры</translation>
 <translation id="4191892134568599822">Принять с помощью функции "<ph name="FEATURE_NAME" />"?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini работает над вашей задачей и сообщит, если потребуется что-то ещё.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Только для <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Доверенные центры сертификации</translation>
@@ -5255,6 +5257,7 @@
 <translation id="4624054169152573743">Цветовая тема</translation>
 <translation id="4625078469366263107">Включить приложение</translation>
 <translation id="4625905218692741757">Серый цвет по умолчанию</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini больше не выполняет ваш запрос. Чтобы проверить задачу, вернитесь в Chrome.</translation>
 <translation id="4627107755957573804">Разрешить сайтам и приложениям переходить на ключи доступа в существующих аккаунтах</translation>
 <translation id="4627442949885028695">Продолжить на другом устройстве</translation>
 <translation id="4628762811416793313">Не удалось завершить настройку контейнера Linux. Повторите попытку.</translation>
@@ -5297,6 +5300,7 @@
 <translation id="4653116291358041820">Мелкая тень</translation>
 <translation id="4654236001025007561">Делитесь файлами с устройствами Chromebook и Android поблизости.</translation>
 <translation id="4654801841330730814">Все</translation>
+<translation id="4657724094180965385">Не интересует</translation>
 <translation id="4657810666108475055">Вкладка поиска</translation>
 <translation id="4657914796247705218">Скорость TrackPoint</translation>
 <translation id="4658285806588491142">Защитите данные на экране</translation>
@@ -8303,6 +8307,7 @@
 <translation id="6798420440063423019">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Сбросьте настройки электронного ключа.</translation>
 <translation id="679845623837196966">Показывать список для чтения</translation>
 <translation id="6798578729981748444">Чтобы завершить импорт, закройте все окна Firefox.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini выполнил ваш запрос. Результат можно посмотреть в Chrome.</translation>
 <translation id="6798780071646309401">клавиша Caps Lock нажата</translation>
 <translation id="679905836499387150">Скрытые кнопки на панели инструментов</translation>
 <translation id="6800893479155997609">Лучшие приложения для устройства <ph name="DEVICE_TYPE" /></translation>
@@ -9905,6 +9910,7 @@
 <translation id="7916364730877325865">Ваша организация запрещает включать синхронизацию для этого аккаунта.</translation>
 <translation id="791698251820376781">Ваша организация запретила вход в Chrome</translation>
 <translation id="7918257978052780342">Зарегистрироваться</translation>
+<translation id="7918928051723770926">Готово</translation>
 <translation id="7919123827536834358">Автоматически переводить страницы на этих языках</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> сек.</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> может просматривать файл "<ph name="FILENAME" />".</translation>
@@ -10394,6 +10400,7 @@
 <translation id="8244724656154470844">Не удалось проверить наличие обновлений.</translation>
 <translation id="8246776524656196770">Защитите электронный ключ при помощи PIN-кода.</translation>
 <translation id="824713170151383793">В инструментах разработчика</translation>
+<translation id="8247210755024677100">Вход…</translation>
 <translation id="8247795734638043885">Скачать небезопасный файл</translation>
 <translation id="8248050856337841185">&amp;Вставить</translation>
 <translation id="8248381369318572865">Доступ к микрофону и анализ речи</translation>
@@ -10837,6 +10844,7 @@
 <translation id="8557022314818157177">Продолжайте прикасаться к сканеру отпечатков пальцев на электронном ключе, пока отпечаток не будет сохранен.</translation>
 <translation id="8557100046150195444">Чтобы продолжить, используйте Touch ID</translation>
 <translation id="8557856025359704738">Следующее скачивание запланировано <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Настройка Google Beam</translation>
 <translation id="8559858985063901027">Ключи доступа</translation>
 <translation id="8559961053328923750">Chrome ограничивает общий объем данных, который сайты могут отправлять через браузер, чтобы оценивать эффективность рекламы.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Открыть все URL в &amp;новом окне}=1{Открыть URL в &amp;новом окне}one{Открыть все URL ({COUNT}) в &amp;новом окне}few{Открыть все URL ({COUNT}) в &amp;новом окне}many{Открыть все URL ({COUNT}) в &amp;новом окне}other{Открыть все URL ({COUNT}) в &amp;новом окне}}</translation>
@@ -11355,6 +11363,7 @@
 <translation id="8898786835233784856">Выбрать следующую вкладку</translation>
 <translation id="8898790559170352647">Добавьте аккаунт Microsoft</translation>
 <translation id="8898822736010347272">Отправлять в Google URL и контент некоторых посещенных страниц, а также определенную информацию о системе (это помогает обнаруживать новые угрозы и защищать всех пользователей интернета)</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini больше не выполняет ваш запрос.</translation>
 <translation id="8899851313684471736">Открыть ссылку в новом &amp;окне</translation>
 <translation id="8900413463156971200">Включить мобильную сеть</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня.}one{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> до истечения срока.}few{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> до истечения срока.}many{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> до истечения срока.}other{Согласно действующему правилу (источник правила: <ph name="MANAGER" />), вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> до истечения срока.}}</translation>

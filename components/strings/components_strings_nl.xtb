@@ -763,6 +763,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2188375229972301266">Meerdere perforaties onder</translation>
 <translation id="218940509700321686">Csv-bestanden</translation>
 <translation id="2190094353033916816">Dit beleid heeft verschillende waarden die zijn toegepast op machine- en gebruikersniveau. Het beleid werkt zoals bedoeld.</translation>
+<translation id="219061769324072544">Creditcard,Kaart,Pinpas</translation>
 <translation id="2191980191135734720">Ontgrendel je scherm in de volgende stap, meestal met je vingerafdruk. Je kunt ook <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2195729137168608510">E-mail beveiligen</translation>
@@ -1176,6 +1177,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2837891525090413132">Kan vragen om je toetsenbord te vergrendelen en te gebruiken</translation>
 <translation id="2839032553903800133">Meldingen geblokkeerd</translation>
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
+<translation id="2840680829170913626">Content van de betaalpagina wordt gedeeld met Google om deze opties aan te bieden. Betalingsplannen zijn afhankelijk van deelnamevereisten. Ga naar <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om opties voor later betalen te verbergen in Automatisch invullen.</translation>
 <translation id="2843623755398178332">Scrollen en zoomen op je gedeelde tabblad?</translation>
 <translation id="2851291081585704741">Je bent offline</translation>
 <translation id="2854163610915391726">Beheren welke Chrome-informatie je opslaat in je Google-account</translation>
@@ -1366,6 +1368,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3134859781443140237">Lokaal netwerk</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Zoeken in <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Geen}=1{inloggegevens voor één account}other{inloggegevens voor # accounts}}</translation>
+<translation id="3139503241401248626">Ga naar de instellingen voor services voor automatisch invullen om deze instellingen aan te zetten en gegevens uit je Google-account te gebruiken.</translation>
 <translation id="3140646734028448730">Zakelijke dienstverlening</translation>
 <translation id="3141093262818886744">Toch openen</translation>
 <translation id="3141337053413339205">Overschakelen naar dit tabblad.</translation>
@@ -1386,6 +1389,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3162070126914310576">Dit apparaat kan nu niet worden ingeschreven omdat je organisatie-eenheid de aanvankelijke inschrijvingslimiet heeft bereikt. Neem voor hulp contact op met de beheerder.</translation>
 <translation id="3162559335345991374">Het is mogelijk dat je de inlogpagina moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
 <translation id="316638481603975524">Kan vragen om web-apps te installeren</translation>
+<translation id="3166788340998560642">Chrome biedt je aan de informatie op te slaan in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> als je het de volgende keer gebruikt.</translation>
 <translation id="3168744840365648658">Radio-apparatuur</translation>
 <translation id="3168938241115725594">Oldtimers</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2294,6 +2298,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="4594403342090139922">&amp;Verwijderen ongedaan maken</translation>
 <translation id="4598556348158889687">Opslagbeheer</translation>
 <translation id="459914240367517409">Websiteontwerp en -ontwikkeling</translation>
+<translation id="4599572944836204718">Betaal sneller met Google Pay als je kaart is opgeslagen. Kaartgegevens worden versleuteld in Google Wallet.</translation>
 <translation id="4602465984861132303">Bowlen</translation>
 <translation id="4603727370377253901">Vluchtreserveringen</translation>
 <translation id="4607608436550361748">Chrome-tips bekijken</translation>
@@ -2583,6 +2588,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, druk op Tab voor meer snelkoppelingen voor zoekopdrachten die beschikbaar zijn na deze zoeksuggestie</translation>
 <translation id="5052488928733955073">Er is een probleem bij het invullen van je gegevens. Check je verbinding.</translation>
 <translation id="5052517576853118371">Actieve onderwerpen</translation>
+<translation id="5053116470141135293">Er wordt een virtueel kaartnummer ingevuld als u afrekent met deze kaart om uw daadwerkelijke gegevens te beschermen. Beheren in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Als je dit bestand wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}other{Als je deze bestanden wilt sturen met Dichtbij delen, moet je ruimte (<ph name="DISK_SPACE_SIZE" />) op je apparaat vrijmaken}}</translation>
 <translation id="5056587122125565772">Afbeelding maken</translation>
 <translation id="505757197798929356">Waarom wil je dit openen? (vereist)</translation>
@@ -3358,6 +3364,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6250932670816326647">Bad- en lichaamsproducten</translation>
 <translation id="6251906504834538140">{0,plural, =1{Bestand kan niet worden verplaatst}other{<ph name="FILE_COUNT" /> bestanden kunnen niet worden verplaatst}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om bestanden te beheren die je in Chrome hebt gedownload</translation>
+<translation id="6253380015872250643">Kaart opslaan in Google Wallet</translation>
 <translation id="6254436959401408446">Onvoldoende geheugen om deze pagina te openen</translation>
 <translation id="625463612687472648">Niet meer toestaan</translation>
 <translation id="6259156558325130047">&amp;Opnieuw volgorde wijzigen</translation>
@@ -4255,6 +4262,7 @@ Aanvullende informatie:
 <translation id="7615932826417658001">Identiteitskaart toevoegen</translation>
 <translation id="7616390733770379387">Deze worden in willekeurige volgorde getoond.</translation>
 <translation id="7616645509853975347">Je beheerder heeft Chrome Enterprise Connectors voor je browser ingesteld. Deze connectors hebben toegang tot sommige van je gegevens.</translation>
+<translation id="7616747402308801775">Deze kaart is opgeslagen in Google Wallet, zodat je deze in Google-services kunt gebruiken.</translation>
 <translation id="7617825962482469577">Envelop C7/C6</translation>
 <translation id="7618270539713451657">Vechtsporten</translation>
 <translation id="7619838219691048931">Eindblad</translation>
@@ -4577,6 +4585,7 @@ Aanvullende informatie:
 <translation id="8120720167840853945">Dit beleid bepaalt niet het standaardgedrag van andere beleidsregels.</translation>
 <translation id="8127301229239896662">'<ph name="SOFTWARE_NAME" />' is niet correct geïnstalleerd op je computer of netwerk. Neem contact op met je IT-beheerder om dit probleem op te lossen.</translation>
 <translation id="8130113808541743942">Verplaatsen naar...</translation>
+<translation id="813024282736408069">Een virtuele kaart aanzetten voor automatisch invullen</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8133495915926741232">Kies welke brede onderwerpcategorieën kunnen worden gebruikt om advertenties te personaliseren. Als je een bredere categorie uitzet, worden ook de gerelateerde onderwerpen van die categorie geblokkeerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Werving en selectie</translation>

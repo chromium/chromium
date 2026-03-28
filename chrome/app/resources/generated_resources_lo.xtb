@@ -2592,6 +2592,7 @@
 <translation id="2750020734439919571">ການຕັ້ງຄ່າ ແລະ ການອະນຸຍາດແອັບ Chrome ເພີ່ມເຕີມ</translation>
 <translation id="275010360476017464">ໃຊ້ໄມໂຄຣໂຟນຂອງທ່ານເພື່ອສົນທະນາກັບ Gemini. ເມື່ອທ່ານເວົ້າກັບ Gemini, ລະບົບຈະຈັດເກັບສຽງໄວ້ໃນການເຄື່ອນໄຫວແອັບ Gemini (ຫາກເປີດຢູ່).</translation>
 <translation id="2750602041558385535">ບລັອກການດາວໂຫຼດທີ່ບໍ່ໄດ້ຮັບການຢັ້ງຢືນແລ້ວ</translation>
+<translation id="2751320815618312249">ແລະ ອີກ <ph name="NUM" /> ລາຍການ</translation>
 <translation id="2751454300227269244">ຫຍັບປາກຂອງທ່ານໄປທາງຂວາ</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> ຕ້ອງການຮູ້ໝາຍເລກ ID ຂອງກະແຈຄວາມປອດໄພຂອງທ່ານ. ເວັບໄຊຈະຮູ້ກະແຈຄວາມປອດໄພທີ່ທ່ານກຳລັງໃຊ້ຢູ່.</translation>
 <translation id="275213133112113418">ບັນທຶກບັດຂອງທ່ານແລ້ວ</translation>
@@ -4554,6 +4555,7 @@
 <translation id="4107793386654579933">ເລືອກທາງລັດສໍາລັບຄຳສັ່ງ <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">ຍ້າຍໜ້າຕ່າງໄປຫາ <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> )</translation>
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
+<translation id="411052834366185695">ຕ້ອງມີຢ່າງໜ້ອຍ 1 ຕົວເລກ</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້}=1{ກວດສອບລະຫັດຜ່ານແລ້ວ 1 ລາຍການ}other{ກວດສອບລະຫັດຜ່ານແລ້ວ {COUNT} ລາຍການ}}</translation>
@@ -5043,6 +5045,7 @@
 <translation id="4461483878391246134">ເພີ່ມພາສາເພື່ອບໍ່ໃຫ້ມີຂໍ້ສະເໜີໃນການແປອີກ</translation>
 <translation id="4462159676511157176">ເຊີບເວີຊື່ກໍານົດເອງ</translation>
 <translation id="4465236939126352372">ຕັ້ງຄ່າຂີດຈຳກັດເວລາ <ph name="TIME" /> ສຳລັບ <ph name="APP_NAME" /> ແລ້ວ</translation>
+<translation id="4466922176191762830">ແລະ ອີກ <ph name="NUM" /> ລາຍການ</translation>
 <translation id="4467373268340082204">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="4469324811108161144">ບັນທຶກສາມາດຈັດເກັບໄດ້ສູງສຸດ <ph name="CHARACTER_LIMIT" /> ຕົວອັກສອນ.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> ສາມາດແກ້ໄຂໄຟລ໌ໃນ <ph name="FOLDERNAME" /> ໄດ້</translation>
@@ -5304,6 +5307,7 @@
 <translation id="4653116291358041820">ເງົາຂະໜາດນ້ອຍ</translation>
 <translation id="4654236001025007561">ແບ່ງປັນໄຟລ໌ກັບ Chromebook ແລະ ອຸປະກອຍ Android ໃນບໍລິເວນທ່ານ</translation>
 <translation id="4654801841330730814">ທັງໝົດ</translation>
+<translation id="4657724094180965385">ບໍ່ສົນໃຈ</translation>
 <translation id="4657810666108475055">ການຊອກຫາໃນແຖບ</translation>
 <translation id="4657914796247705218">ຄວາມໄວ TrackPoint</translation>
 <translation id="4658285806588491142">ຮັກສາຄວາມເປັນສ່ວນຕົວໃຫ້ໜ້າຈໍຂອງທ່ານ</translation>
@@ -5457,6 +5461,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{ກຳລັງກວດສອບກະແຈສາທາລະນະ ແລະ ບລັອກຄວາມສົມບູນແບບ... ຍັງເຫຼືອໜ້ອຍກວ່າ 1 ນາທີ}=1{ກຳລັງກວດສອບກະແຈສາທາລະນະ ແລະ ບລັອກຄວາມສົມບູນແບບ... ຍັງເຫຼືອ 1 ນາທີ}other{ກຳລັງກວດສອບກະແຈສາທາລະນະ ແລະ ບລັອກຄວາມສົມບູນແບບ... ຍັງເຫຼືອ # ນາທີ}}</translation>
 <translation id="4766598565665644999">ສ່ວນຂະຫຍາຍທັງໝົດສາມາດອ່ານ ແລະ ປ່ຽນແປງ <ph name="HOST" /> ໄດ້</translation>
 <translation id="4767427586072640478">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບສ່ວນຂະຫຍາຍທີ່ປິດການນຳໃຊ້ແລ້ວ.</translation>
+<translation id="4769359569327438364">ຕ້ອງມີຢ່າງໜ້ອຍ 4 ຕົວເລກ</translation>
 <translation id="4769632191812288342">ທ່ານກຳລັງໄດ້ຮັບການປົກປ້ອງແບບມາດຕະຖານ</translation>
 <translation id="4770119228883592393">ຂໍການອະນຸຍາດແລ້ວ, ກະລຸນາກົດ ⌘ + ຕົວເລືອກ + ລູກສອນລົງເພື່ອຕອບກັບ</translation>
 <translation id="4772914216048388646">ເປັນລະບຽບ</translation>
@@ -6140,6 +6145,7 @@
 <translation id="5240931875940563122">ເຂົ້າສູ່ລະບົບດ້ວຍໂທລະສັບ Android</translation>
 <translation id="5241689948221696942">ສໍາລັບບາງຜະລິດຕະພັນ, ຕາຕະລາງການປຽບທຽບສະຫຼຸບຄຳຕິຊົມຈາກທົ່ວເວັບ</translation>
 <translation id="5242724311594467048">ເປີດໃຊ້ງານ "<ph name="EXTENSION_NAME" />" ບໍ?</translation>
+<translation id="5243477050423867768">ຕ້ອງມີຢ່າງໜ້ອຍ 8 ຕົວເລກ ແລະ ຕ້ອງບໍ່ມີຕົວເລກທີ່ຊ້ຳກັນ ຫຼື ຮຽງຕາມລຳດັບ</translation>
 <translation id="5244234799035360187">ຕອນນີ້ OneDrive ຈະປາກົດໃນແອັບ Files</translation>
 <translation id="5244466461749935369">ເກັບໄວ້ກ່ອນ</translation>
 <translation id="5244474230056479698">ກຳລັງຊິ້ງຂໍ້ມູນກັບ <ph name="EMAIL" /></translation>
@@ -8052,6 +8058,7 @@
 <translation id="6619990499523117484">ຢືນຢັນ​ລະຫັດ PIN ຂອງທ່ານ</translation>
 <translation id="6621282332208609777">ຖາມ Google ຫຼື ພິມ URL</translation>
 <translation id="6621391692573306628">ເພື່ອສົ່ງແຖບນີ້ໄປຫາອຸປະກອນອື່ນ, ໃຫ້ເຂົ້າສູ່ລະບົບຫາ Chrome ຢູ່ທັງສອງອຸປະກອນ</translation>
+<translation id="6622212269189717101">ຕ້ອງມີຢ່າງໜ້ອຍ 6 ຕົວເລກ ແລະ ຕ້ອງບໍ່ມີຕົວເລກທີ່ຊ້ຳກັນ ຫຼື ຮຽງຕາມລຳດັບ</translation>
 <translation id="6622980291894852883">ສືບ​ຕໍ່​ບລັອກຮູບ​</translation>
 <translation id="6624036901798307345">ໃນໂໝດແທັບເລັດ, ໃຫ້ແຕະໃສ່ປຸ່ມແຖບເຄື່ອງມືຕົວນັບແຖບເພື່ອເປີດລາຍແຖບໃໝ່ທີ່ສະແດງຮູບຕົວຢ່າງຂອງແຕ່ລະແຖບ.</translation>
 <translation id="6624538059730609162">ປິດມຸມມອງທາງຂວາ</translation>

@@ -2589,6 +2589,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2750020734439919571">Още настройки и разрешения за приложението Chrome</translation>
 <translation id="275010360476017464">Използвайте микрофона си, за да разговаряте с Gemini. Когато говорите с Gemini, аудиото се съхранява в активността в приложенията Gemini (ако опцията е включена).</translation>
 <translation id="2750602041558385535">Непотвърденото изтегляне е блокирано</translation>
+<translation id="2751320815618312249">+ още <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Преместване на устните надясно</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> иска да научи идентификационния номер на ключа ви за сигурност. Сайтът ще знае точно кой ключ използвате.</translation>
 <translation id="275213133112113418">Картата ви е запазена</translation>
@@ -4552,6 +4553,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4107793386654579933">Изберете клавишна комбинация за действието „<ph name="ACTION_NAME" />“</translation>
 <translation id="4109135793348361820">Преместване на прозореца към <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Възстановяване на предупреждението</translation>
+<translation id="411052834366185695">Трябва да е поне 1 цифра</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4113743276555482284">Парола за файла</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Няма запазени пароли}=1{Проверена е 1 парола}other{Проверени са {COUNT} пароли}}</translation>
@@ -5041,6 +5043,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4461483878391246134">Добавяне на езици, за които никога да не се предлага превод</translation>
 <translation id="4462159676511157176">Специално зададени сървъри за имена</translation>
 <translation id="4465236939126352372">За <ph name="APP_NAME" /> е зададено ограничение от <ph name="TIME" /></translation>
+<translation id="4466922176191762830">+ още <ph name="NUM" /></translation>
 <translation id="4467373268340082204">Грешен ПИН код</translation>
 <translation id="4469324811108161144">Бележките могат да съдържат най-много <ph name="CHARACTER_LIMIT" /> знака.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да редактира файловете в(ъв) „<ph name="FOLDERNAME" />“</translation>
@@ -5302,6 +5305,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4653116291358041820">Малка сянка</translation>
 <translation id="4654236001025007561">Споделяйте файлове с устройства Chromebook и такива с Android в близост до вас</translation>
 <translation id="4654801841330730814">Всички</translation>
+<translation id="4657724094180965385">Не се интересувам</translation>
 <translation id="4657810666108475055">Търсене на раздели</translation>
 <translation id="4657914796247705218">Скорост на TrackPoint</translation>
 <translation id="4658285806588491142">Ограничаване на видимостта на екрана</translation>
@@ -5455,6 +5459,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4766551476047591055">{MINUTES,plural, =0{Извършва се проверка на публичния ключ и блока за цялост… Остава по-малко от 1 минута}=1{Извършва се проверка на публичния ключ и блока за цялост… Остава 1 минута}other{Извършва се проверка на публичния ключ и блока за цялост… Остават # минути}}</translation>
 <translation id="4766598565665644999">Всички разширения могат да четат и променят <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Научете повече за деактивираните разширения.</translation>
+<translation id="4769359569327438364">Трябва да е поне 4 цифри</translation>
 <translation id="4769632191812288342">Получавате стандартната защита</translation>
 <translation id="4770119228883592393">Изисква се разрешение. Натиснете ⌘ + Option + стрелката за надолу, за да отговорите</translation>
 <translation id="4772914216048388646">Приятно</translation>
@@ -6138,6 +6143,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5240931875940563122">Вход с телефон с Android</translation>
 <translation id="5241689948221696942">За някои продукти таблиците за сравнение обобщават отзиви от мрежата</translation>
 <translation id="5242724311594467048">Да се активира ли <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5243477050423867768">Трябва да е поне 8 цифри и не може да съдържа повтарящи се или поредни цифри</translation>
 <translation id="5244234799035360187">OneDrive вече ще се показва в приложението „Файлове“</translation>
 <translation id="5244466461749935369">Запазване засега</translation>
 <translation id="5244474230056479698">Синхронизира се със: <ph name="EMAIL" /></translation>
@@ -8052,6 +8058,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6619990499523117484">Потвърдете своя ПИН</translation>
 <translation id="6621282332208609777">Попитайте Google или въведете URL адрес</translation>
 <translation id="6621391692573306628">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome и на двете устройства</translation>
+<translation id="6622212269189717101">Трябва да е поне 6 цифри и не може да съдържа повтарящи се или поредни цифри</translation>
 <translation id="6622980291894852883">Блокирането на изображения да продължи</translation>
 <translation id="6624036901798307345">В режим на таблет докоснете бутона в лентата с инструменти за броя на разделите, за да отворите новата лента с раздели, показваща миниизображения за всеки от тях.</translation>
 <translation id="6624538059730609162">Затваряне на десния изглед</translation>
@@ -10967,6 +10974,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8651585100578802546">Принудително презареждане на тази страница</translation>
 <translation id="8651806635673244884">Можете да преместите разделите обратно в горната част, като кликнете с десния бутон върху някой от тях и изберете „Показване на разделите хоризонтално“</translation>
 <translation id="8652400352452647993">Грешка при пакетиране на разширението</translation>
+<translation id="8652412805227733853">Имейл адресът е потвърден автоматично</translation>
 <translation id="8654151524613148204">За съжаление файлът е твърде голям, за да се обработи от компютъра ви.</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Влизането не бе успешно, тъй като паролата ви не можа да се потвърди. Моля, свържете се с администратора си или опитайте отново.</translation>

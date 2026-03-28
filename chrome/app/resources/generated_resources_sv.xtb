@@ -2252,6 +2252,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2518024842978892609">Använda dina klientcertifikat</translation>
 <translation id="2518620532958109495">Får aktivera helskärm automatiskt</translation>
 <translation id="2519250377986324805">Se hur det går till</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini behöver din hjälp för att fortsätta arbeta med uppgiften.</translation>
 <translation id="2519517390894391510">Namn på certifikatprofil</translation>
 <translation id="2520644704042891903">Väntar på tillgänglig plats ...</translation>
 <translation id="2521427645491031107">Appsynkronisering ställs in i enhetsinställningarna</translation>
@@ -2593,6 +2594,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2750020734439919571">Fler inställningar och behörigheter för Chrome-appen</translation>
 <translation id="275010360476017464">Använd mikrofonen för att chatta med Gemini. När du pratar med Gemini lagras ljud i Gemini-appaktiviteten (om den är aktiverad).</translation>
 <translation id="2750602041558385535">Overifierad nedladdning har blockerats</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> till</translation>
 <translation id="2751454300227269244">Rör på munnen åt höger</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> vill få tillgång till id-numret på din säkerhetsnyckel. Webbplatsen får reda på exakt vilken säkerhetsnyckel du använder.</translation>
 <translation id="275213133112113418">Kortet har sparats</translation>
@@ -4555,6 +4557,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4107793386654579933">Välj ett kortkommando för åtgärden <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Flytta fönster till <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Återställ varning</translation>
+<translation id="411052834366185695">Måste innehålla minst en siffra</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Filens lösenord</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Inga sparade lösenord}=1{1 lösenord har kontrollerats}other{{COUNT} lösenord har kontrollerats}}</translation>
@@ -4652,6 +4655,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4190492351494485814">Under den första konfigureringen måste du ansluta till internet så att filerna kan synkroniseras med din Chromebook</translation>
 <translation id="4190828427319282529">Markera objekt med tangentbordsfokus</translation>
 <translation id="4191892134568599822">Vill du ta emot med <ph name="FEATURE_NAME" />?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini jobbar på din uppgift och meddelar dig om ytterligare åtgärder krävs.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Endast för <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Generativ AI är experimentell, under utveckling och har för närvarande begränsad tillgänglighet.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Betrodd certifikatutfärdare</translation>
@@ -5044,6 +5048,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4461483878391246134">Lägg till språk som översättning aldrig ska erbjudas för</translation>
 <translation id="4462159676511157176">Anpassade namnservrar</translation>
 <translation id="4465236939126352372">En tidsgräns på <ph name="TIME" /> har ställts in för <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> till</translation>
 <translation id="4467373268340082204">Fel pinkod</translation>
 <translation id="4469324811108161144">Ledtrådar kan innehålla upp till <ph name="CHARACTER_LIMIT" /> tecken.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> har redigeringsbehörighet för <ph name="FOLDERNAME" /></translation>
@@ -5263,6 +5268,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4624054169152573743">Färgtema</translation>
 <translation id="4625078469366263107">Aktivera appen</translation>
 <translation id="4625905218692741757">Grått standardtema</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini har pausat uppgiften. Återgå till Chrome för att granska den.</translation>
 <translation id="4627107755957573804">Tillåt att webbplatser och appar uppgraderar befintliga konton till att använda nycklar</translation>
 <translation id="4627442949885028695">Fortsätta på en annan enhet</translation>
 <translation id="4628762811416793313">Det gick inte att slutföra konfigureringen av Linux-behållaren. Försök igen.</translation>
@@ -5305,6 +5311,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4653116291358041820">Liten skugga</translation>
 <translation id="4654236001025007561">Dela filer med Chromebook- och Android-enheter i närheten</translation>
 <translation id="4654801841330730814">Alla</translation>
+<translation id="4657724094180965385">Inte intresserad</translation>
 <translation id="4657810666108475055">Sök bland flikar</translation>
 <translation id="4657914796247705218">Hastighet för TrackPoint</translation>
 <translation id="4658285806588491142">Håll skärmen privat</translation>
@@ -5458,6 +5465,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Kontrollerar offentlig nyckel och integritetsblock … Mindre än 1 minut kvar}=1{Kontrollerar offentlig nyckel och integritetsblock … 1 minut kvar}other{Kontrollerar offentlig nyckel och integritetsblock … # minuter kvar}}</translation>
 <translation id="4766598565665644999">Alla tillägg kan läsa och ändra <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Läs mer om inaktiverade tillägg.</translation>
+<translation id="4769359569327438364">Måste innehålla minst fyra siffror</translation>
 <translation id="4769632191812288342">Du har standardskydd</translation>
 <translation id="4770119228883592393">Behörighet har begärts, tryck på ⌘ + Alt + nedåtpil för att svara</translation>
 <translation id="4772914216048388646">Organiserad</translation>
@@ -6141,6 +6149,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5240931875940563122">Logga in med Android-telefon</translation>
 <translation id="5241689948221696942">För vissa produkter sammanfattas recensioner från webben i jämförelsetabeller</translation>
 <translation id="5242724311594467048">Vill du aktivera <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5243477050423867768">Måste bestå av minst åtta siffror och får inte innehålla upprepade eller ordnade sekvenser</translation>
 <translation id="5244234799035360187">OneDrive visas nu i appen Filer</translation>
 <translation id="5244466461749935369">Behåll tills vidare</translation>
 <translation id="5244474230056479698">Synkroniseras med <ph name="EMAIL" /></translation>
@@ -8054,6 +8063,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6619990499523117484">Bekräfta pinkoden</translation>
 <translation id="6621282332208609777">Fråga Google eller ange en webbadress</translation>
 <translation id="6621391692573306628">Om du vill skicka den här fliken till en annan enhet loggar du in i Chrome på båda enheterna</translation>
+<translation id="6622212269189717101">Måste bestå av minst sex siffror och får inte innehålla upprepade eller ordnade sekvenser</translation>
 <translation id="6622980291894852883">Fortsätt att blockera bilder</translation>
 <translation id="6624036901798307345">Öppna det nya flikhuvudet med miniatyrer av alla flikar genom att trycka på flikräknaren i verktygsfältet i surfplatteläge.</translation>
 <translation id="6624538059730609162">Stäng höger vy</translation>
@@ -8303,6 +8313,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6798420440063423019">Säkerhetsnyckeln har låsts eftersom du har angett fel pinkod för många gånger. Du måste återställa säkerhetsnyckeln.</translation>
 <translation id="679845623837196966">Visa läslista</translation>
 <translation id="6798578729981748444">Stäng alla fönster i Firefox så att importen kan slutföras.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini har slutfört din uppgift. Du kan se den i Chrome.</translation>
 <translation id="6798780071646309401">caps lock på</translation>
 <translation id="679905836499387150">Dolda knappar i verktygsfältet</translation>
 <translation id="6800893479155997609">Populära appar för din <ph name="DEVICE_TYPE" /></translation>
@@ -9906,6 +9917,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7916364730877325865">Organisationen tillåter inte att du aktiverar synkronisering med det här kontot</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
 <translation id="7918257978052780342">Registrera</translation>
+<translation id="7918928051723770926">Uppgiften har slutförts</translation>
 <translation id="7919123827536834358">Översätt dessa språk automatiskt</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> sek</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> har visningsbehörighet till <ph name="FILENAME" /></translation>
@@ -10395,6 +10407,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8244724656154470844">Det gick inte att söka efter uppdateringar.</translation>
 <translation id="8246776524656196770">Skydda säkerhetsnyckeln med en pinkod (personligt identifieringsnummer)</translation>
 <translation id="824713170151383793">med Verktyg för programmerare</translation>
+<translation id="8247210755024677100">Loggar in …</translation>
 <translation id="8247795734638043885">Ladda ned osäker fil</translation>
 <translation id="8248050856337841185">K&amp;listra in</translation>
 <translation id="8248381369318572865">Få åtkomst till telefonen och analysera ditt tal</translation>
@@ -10838,6 +10851,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8557022314818157177">Fortsätt att trycka på säkerhetsnyckeln tills fingeravtrycket registreras</translation>
 <translation id="8557100046150195444">Använd Touch ID för att fortsätta</translation>
 <translation id="8557856025359704738">Nästa nedladdning: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Konfigurera Google Beam</translation>
 <translation id="8559858985063901027">Nycklar</translation>
 <translation id="8559961053328923750">Chrome begränsar den totala mängden data som webbplatser kan dela via webbläsaren för att mäta annonsresultatet</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Öppna alla i ett &amp;nytt fönster}=1{Öppna i &amp;nytt fönster}other{Öppna alla ({COUNT}) i ett &amp;nytt fönster}}</translation>
@@ -11353,6 +11367,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8898786835233784856">Välj nästa flik</translation>
 <translation id="8898790559170352647">Lägg till ditt Microsoft-konto</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini har slutat arbeta med din uppgift.</translation>
 <translation id="8899851313684471736">Öppna länk i nytt f&amp;önster</translation>
 <translation id="8900413463156971200">Aktivera mobilnätverk</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> i dag.}other{<ph name="MANAGER" /> kräver att du säkerhetskopierar din data och returnerar denna <ph name="DEVICE_TYPE" /> före deadline.}}</translation>

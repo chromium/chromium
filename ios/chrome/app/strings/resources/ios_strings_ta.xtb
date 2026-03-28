@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">படித்ததாகக் குறி</translation>
 <translation id="428768789042547925">புதியவை</translation>
 <translation id="429074084062258019">{count,plural, =1{குழுவில் பக்கத்தைச் சேர்}other{குழுவில் பக்கங்களைச் சேர்}}</translation>
+<translation id="4300830875340617674">கார்டை ஸ்கேன் செய்து தானாக நிரப்பு</translation>
 <translation id="4302061870579014542">தோன்றும் இடத்தை அமை</translation>
 <translation id="4304713468139749426">கடவுச்சொல் நிர்வாகி</translation>
 <translation id="4306349443295056740">OCSP கையொப்பமிடல்</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">கேமராவை இயக்கு</translation>
 <translation id="5229315183665181733">தளத்தைத் திருத்து</translation>
+<translation id="5233111790346066304">உங்கள் ஃபைல்களை Google Driveவில் சேமித்து அவற்றை எப்போது வேண்டுமானாலும் அணுகலாம்.</translation>
 <translation id="5233638681132016545">புதிய தாவல்</translation>
 <translation id="5234094073825090254">{count,plural, =1{புக்மார்க் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டது.}other{புக்மார்க்குகள் உங்கள் Google கணக்கில் ({email}) சேமிக்கப்பட்டன.}}</translation>
 <translation id="5234764350956374838">நிராகரி</translation>

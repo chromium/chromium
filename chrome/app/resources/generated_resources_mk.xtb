@@ -2594,6 +2594,7 @@
 <translation id="2750020734439919571">Повеќе поставки и дозволи за апликацијата Chrome</translation>
 <translation id="275010360476017464">Користете го микрофонот за да разговарате со Gemini. Кога разговарате со Gemini, аудиото се складира во „Активноста во апликациите Gemini“ (ако е вклучена).</translation>
 <translation id="2750602041558385535">Непотврденото преземање е блокирано</translation>
+<translation id="2751320815618312249">и уште <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Помрднете ја устата надесно</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> сака да го дознае бројот на ID на вашиот безбедносен клуч. Сајтот ќе знае точно кој безбедносен клуч го користите.</translation>
 <translation id="275213133112113418">Вашата картичка е зачувана</translation>
@@ -4556,6 +4557,7 @@
 <translation id="4107793386654579933">Изберете кратенка за дејството <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Помести прозорец кај <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Врати ја опомената</translation>
+<translation id="411052834366185695">Мора да има најмалку 1 цифра</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлајн)</translation>
 <translation id="4113743276555482284">Лозинка на датотеката</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Нема зачувани лозинки}=1{Проверена е 1 лозинка}one{Проверени се {COUNT} лозинка}other{Проверени се {COUNT} лозинки}}</translation>
@@ -5045,6 +5047,7 @@
 <translation id="4461483878391246134">Додајте јазици за кои никогаш не треба да се нуди превод</translation>
 <translation id="4462159676511157176">Сервери со приспособено име</translation>
 <translation id="4465236939126352372">Поставено е временско ограничување од <ph name="TIME" /> за <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">и уште <ph name="NUM" /></translation>
 <translation id="4467373268340082204">Погрешен PIN</translation>
 <translation id="4469324811108161144">Белешките може да заштедат до <ph name="CHARACTER_LIMIT" /> знаци.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> може да изменува датотеки во <ph name="FOLDERNAME" /></translation>
@@ -5306,6 +5309,7 @@
 <translation id="4653116291358041820">Мала сенка</translation>
 <translation id="4654236001025007561">Споделувајте датотеки со уреди Chromebook и уреди со Android околу вас</translation>
 <translation id="4654801841330730814">Сите</translation>
+<translation id="4657724094180965385">Не ме интересира</translation>
 <translation id="4657810666108475055">Пребарување картички</translation>
 <translation id="4657914796247705218">Брзина на TrackPoint</translation>
 <translation id="4658285806588491142">Екранот нека ви биде приватен</translation>
@@ -5459,6 +5463,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Се проверуваат јавниот клуч и блокот на интегритет… Преостанува помалку од 1 минута}=1{Се проверуваат јавниот клуч и блокот на интегритет… Преостанува 1 минута}one{Се проверуваат јавниот клуч и блокот на интегритет… Преостануваат # минута}other{Се проверуваат јавниот клуч и блокот на интегритет… Преостануваат # минути}}</translation>
 <translation id="4766598565665644999">Сите екстензии можат да читаат и менуваат <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Дознајте повеќе за оневозможените екстензии.</translation>
+<translation id="4769359569327438364">Мора да има најмалку 4 цифри</translation>
 <translation id="4769632191812288342">Ќе добиете стандардна заштита</translation>
 <translation id="4770119228883592393">Побарана е дозвола. Притиснете ⌘ + „Опција“ + „Стрелка надолу“ за да одговорите</translation>
 <translation id="4772914216048388646">Педантно</translation>
@@ -6142,6 +6147,7 @@
 <translation id="5240931875940563122">Најавете се со телефон со Android</translation>
 <translation id="5241689948221696942">За некои производи, табелите за споредба ги резимираат рецензиите од интернет</translation>
 <translation id="5242724311594467048">Да се овозможи „<ph name="EXTENSION_NAME" />“?</translation>
+<translation id="5243477050423867768">Мора да има најмалку 8 цифри и не смее да содржи повторливи или редоследно подредени секвенци</translation>
 <translation id="5244234799035360187">Сега OneDrive ќе се појави во апликацијата „Датотеки“</translation>
 <translation id="5244466461749935369">Задржи засега</translation>
 <translation id="5244474230056479698">Синхронизирање со <ph name="EMAIL" /></translation>
@@ -8057,6 +8063,7 @@
 <translation id="6619990499523117484">Потврдете го вашиот PIN</translation>
 <translation id="6621282332208609777">Побарајте помош од Google или внесете URL-адреса</translation>
 <translation id="6621391692573306628">За да ја испратите картичкава на друг уред, најавете се на Chrome на двата уреда</translation>
+<translation id="6622212269189717101">Мора да има најмалку 6 цифри и не смее да содржи повторливи или редоследно подредени секвенци</translation>
 <translation id="6622980291894852883">Продолжи со блокирање слики…</translation>
 <translation id="6624036901798307345">Во режимот на таблет, допрете го копчето за алатник на бројачот на картички за да се отвори нова лента за картички која прикажува сликички за секоја картичка.</translation>
 <translation id="6624538059730609162">Затвори го приказот десно</translation>

@@ -2577,6 +2577,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2750020734439919571">Cilësime dhe leje të tjera të aplikacionit të Chrome</translation>
 <translation id="275010360476017464">Përdor mikrofonin për të biseduar me Gemini. Kur flet me Gemini, audioja ruhet në "Aktivitetin e aplikacioneve Gemini" (nëse është i aktivizuar).</translation>
 <translation id="2750602041558385535">Shkarkimi i paverifikuar u bllokua</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> të tjera</translation>
 <translation id="2751454300227269244">Lëviz gojën djathtas</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> dëshiron të mësojë numrin e identifikimit të çelësit tënd të sigurisë. Sajti do të dijë saktësisht se çfarë çelësi sigurie po përdor ti.</translation>
 <translation id="275213133112113418">Karta është ruajtur</translation>
@@ -4539,6 +4540,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4107793386654579933">Zgjidh një shkurtore për veprimin "<ph name="ACTION_NAME" />"</translation>
 <translation id="4109135793348361820">Lëvize dritaren te <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Rikthe paralajmërimin</translation>
+<translation id="411052834366185695">Duhet të ketë të paktën 1 shifër</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Fjalëkalimi i skedarit</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Nuk ka asnjë fjalëkalim të ruajtur}=1{1 fjalëkalim i zgjedhur}other{{COUNT} fjalëkalime të zgjedhura}}</translation>
@@ -5028,6 +5030,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4461483878391246134">Shto gjuhët për të cilat nuk do të ofrohet asnjëherë përkthim</translation>
 <translation id="4462159676511157176">Serverët e personalizuar të emrit</translation>
 <translation id="4465236939126352372">Kufiri kohor prej <ph name="TIME" /> është caktuar për <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> të tjera</translation>
 <translation id="4467373268340082204">Kod PIN i gabuar</translation>
 <translation id="4469324811108161144">Shënimet mund të ruajnë deri në <ph name="CHARACTER_LIMIT" /> karaktere.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> mund t'i modifikojë skedarët në <ph name="FOLDERNAME" /></translation>
@@ -5289,6 +5292,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4653116291358041820">Hije e vogël</translation>
 <translation id="4654236001025007561">Ndaji skedarët me pajisjet Chromebook dhe Android rrotull teje</translation>
 <translation id="4654801841330730814">Të gjitha</translation>
+<translation id="4657724094180965385">Nuk më intereson</translation>
 <translation id="4657810666108475055">Kërkimi në skeda</translation>
 <translation id="4657914796247705218">Shpejtësia e TrackPoint</translation>
 <translation id="4658285806588491142">Mbaje ekranin tënd privat</translation>
@@ -5442,6 +5446,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Po kontrollohet për çelësin publik dhe bllokun e integritetit... Më pak se 1 minutë e mbetur}=1{Po kontrollohet për çelësin publik dhe bllokun e integritetit... 1 minutë e mbetur}other{Po kontrollohet për çelësin publik dhe bllokun e integritetit... # minuta të mbetura}}</translation>
 <translation id="4766598565665644999">Të gjitha shtesat mund të lexojnë dhe të ndryshojnë <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Mëso më shumë rreth shtesave të çaktivizuara.</translation>
+<translation id="4769359569327438364">Duhet të ketë të paktën 4 shifra</translation>
 <translation id="4769632191812288342">Po merr mbrojtje standarde</translation>
 <translation id="4770119228883592393">Kërkohet leje, shtyp ⌘ + Option + Shigjetën poshtë për t'u përgjigjur</translation>
 <translation id="4772914216048388646">E rregullt</translation>
@@ -6124,6 +6129,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5240931875940563122">Identifikohu me telefonin Android</translation>
 <translation id="5241689948221696942">Për disa produkte, tabelat e krahasimit përmbledhin komentet nga i gjithë uebi</translation>
 <translation id="5242724311594467048">Të aktivizohet "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5243477050423867768">Duhet të ketë të paktën 8 shifra dhe nuk mund të përmbajë sekuenca të përsëritura ose të renditura</translation>
 <translation id="5244234799035360187">OneDrive tani do të shfaqet në aplikacionin Files</translation>
 <translation id="5244466461749935369">Mbaje për momentin</translation>
 <translation id="5244474230056479698">Sinkronizimi në <ph name="EMAIL" /></translation>
@@ -8036,6 +8042,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6619990499523117484">Konfirmo kodin tënd PIN</translation>
 <translation id="6621282332208609777">Pyet Google ose shkruaj një URL</translation>
 <translation id="6621391692573306628">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet</translation>
+<translation id="6622212269189717101">Duhet të jetë të paktën 6 shifra dhe nuk mund të përmbajë sekuenca të përsëritura ose të renditura</translation>
 <translation id="6622980291894852883">Vazhdo bllokimin e imazheve</translation>
 <translation id="6624036901798307345">Në modalitetin e tabletit, trokit në butonin e shiritit të veglave të numëruesit të skedave për të hapur një shirit të ri skedash që shfaq miniaturat e çdo skede.</translation>
 <translation id="6624538059730609162">Mbyll pamjen djathtas</translation>

@@ -2543,7 +2543,7 @@ Le système n'interroge les enregistrements AAAA que si un hôte IPv6 global pe
 <translation id="2661628029848851543">L'utilisation des comptes gérés n'est pas limitée</translation>
 <translation id="2664391398878045611">La page "Nouvel onglet" n'affichera pas l'annonce d'espace intermédiaire, même si elle est disponible</translation>
 <translation id="2664682171745499686">Supprimer les avertissements concernant des domaines similaires</translation>
-<translation id="2665129863304939984">Autoriser les utilisateurs à importer ou non les données de navigation existantes dans leur profil géré</translation>
+<translation id="2665129863304939984">Laisser les utilisateurs décider d'importer ou non les données de navigation existantes dans leur profil géré</translation>
 <translation id="2665422249821137126">Activer le grand curseur sur l'écran de connexion</translation>
 <translation id="2666177084759967497">
       Détermine si <ph name="PRODUCT_OS_NAME" /> conserve ou non les données locales des comptes après la déconnexion. Si cette règle est définie sur "True", <ph name="PRODUCT_OS_NAME" /> ne conserve aucune donnée de compte persistant, et toutes les données de la session utilisateur sont supprimées après la déconnexion. Si cette règle est définie sur "False" ou n'est pas configurée, l'appareil conserve les données utilisateur locales (chiffrées).
@@ -9002,7 +9002,7 @@ Cette règle a été supprimée dans M145. À partir de cette version, les exten
 
       Actuellement, les langues compatibles sont les suivantes : af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk et vi.</translation>
 <translation id="6926703471186170050">Activer l'impression recto verso bord long</translation>
-<translation id="6929639826067341257">Donner le choix aux utilisateurs d'importer ou non leurs données existantes dans le profil géré</translation>
+<translation id="6929639826067341257">Suggérer aux utilisateurs d'importer leurs données existantes dans le profil géré et leur donner le choix de ne pas le faire</translation>
 <translation id="6929746927224321095">Désactiver la saisie automatique</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
 <translation id="6931967294677760242">L'API Controlled Frame, disponible pour certains contextes isolés tels que les applications Web isolées (AWI), permet à une appli d'intégrer et de manipuler du contenu arbitraire.

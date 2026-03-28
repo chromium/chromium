@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">Төмөнкү жагын бир нече жолу тешүү</translation>
 <translation id="218940509700321686">Үтүр менен ажыратылган маанилер</translation>
 <translation id="2190094353033916816">Бул эреже машина жана колдонуучу деңгээлдеринде ар кандай мааниге ээ. Эреже талаптагыдай иштеп жатат.</translation>
+<translation id="219061769324072544">Насыя,Карта,Дебет</translation>
 <translation id="2191980191135734720">Кийинки кадамда экраныңыздын кулпусун манжа изиңиз менен ачыңыз. Ошондой эле <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Эске ала турган нерселер</translation>
 <translation id="2195729137168608510">Электрондук почтаны коргоо</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">Жергиликтүү тармак</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Издөө <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Бирөө да жок}=1{1 аккаунтка кирүү дайындары}other{# аккаунтка кирүү дайындары}}</translation>
+<translation id="3139503241401248626">Бул параметрлерди иштетип, Google аккаунтуңуздагы маалыматты колдонуу үчүн автотолтуруу кызматтарынын параметрлерине өтүңүз</translation>
 <translation id="3140646734028448730">Ишкердик кызматтары</translation>
 <translation id="3141093262818886744">Баары бир ачылсын</translation>
 <translation id="3141337053413339205">Бул өтмөккө которулуу.</translation>
@@ -2299,6 +2301,7 @@
 <translation id="4594403342090139922">Жок кылууну &amp;жасабоо</translation>
 <translation id="4598556348158889687">Сактагычты башкаруу</translation>
 <translation id="459914240367517409">Веб-дизайн жана иштеп чыгуу</translation>
+<translation id="4599572944836204718">Картаңыз сакталганда, Google Pay менен тезирээк төлөйсүз. Картанын чоо-жайы Google Капчыкта шифрленет.</translation>
 <translation id="4602465984861132303">Боулинг</translation>
 <translation id="4603727370377253901">Ээленген аба каттамдары</translation>
 <translation id="4607608436550361748">Chrome'дун кеңештерин көрүү</translation>
@@ -2588,6 +2591,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, бул издөө сунушунан кийин башка издөө ыкчам баскычтарын көрүү үчүн Tab баскычын басыңыз</translation>
 <translation id="5052488928733955073">Маалымат толтурулбай жатат. Байланышыңызды текшериңиз.</translation>
 <translation id="5052517576853118371">Жигердүү темалар</translation>
+<translation id="5053116470141135293">Чыныгы маалыматыңызды коргоо үчүн бул карта менен төлөгөнүңүздө виртуалдык картанын номери толтурулат. Параметрлерди Google Капчыктан өзгөртө аласыз. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Бул файлды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}other{Бул файлдарды Nearby Share функциясы аркылуу жөнөтүү үчүн түзмөгүңүздө орун (<ph name="DISK_SPACE_SIZE" />) бошотуңуз}}</translation>
 <translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="505757197798929356">Ачуунун себебин көрсөтүңүз (милдеттүү)</translation>
@@ -3364,6 +3368,7 @@
 <translation id="6250932670816326647">Ванна жана дене үчүн товарлар</translation>
 <translation id="6251906504834538140">{0,plural, =1{Файлды жылдыруу бөгөттөлдү}other{<ph name="FILE_COUNT" /> файлды жылдыруу бөгөттөлдү}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="6253380015872250643">Картаны Google Капчыкка сактаңыз</translation>
 <translation id="6254436959401408446">Бул баракчаны ачууга эстутум жетишсиз</translation>
 <translation id="625463612687472648">Төмөнкүнү колдонууга тыюу салуу:</translation>
 <translation id="6259156558325130047">Иреттештирүүнү &amp;кайталоо</translation>
@@ -4260,6 +4265,7 @@
 <translation id="7615932826417658001">Өздүгүн аныктоо картасын кошуу</translation>
 <translation id="7616390733770379387">Булар башаламан тартипте көрсөтүлгөн.</translation>
 <translation id="7616645509853975347">Администраторуңуз серепчиңизде Chrome Enterprise туташтыргычтарын иштетти. Бул туташтыргычтардын айрым маалыматыңызга кирүү мүмкүнчүлүктөрү бар.</translation>
+<translation id="7616747402308801775">Бул карта Google Капчыгыңызга сакталды. Эми аны бардык Google кызматтарында колдоно аласыз</translation>
 <translation id="7617825962482469577">Конверт C7/C6</translation>
 <translation id="7618270539713451657">Жекеме-жеке мушташуу өнөрлөрү</translation>
 <translation id="7619838219691048931">Акыркы барак</translation>
@@ -4582,6 +4588,7 @@
 <translation id="8120720167840853945">Бул эрежелер башка эрежелердин демейки жүрүм-турумун көзөмөлдөгөн жок.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" программасы компьютериңизге же тармагыңызга туура орнотулган эмес. Бул маселени чечүү үчүн IT администраторуңузга кайрылыңыз.</translation>
 <translation id="8130113808541743942">Төмөнкүгө жылдыруу...</translation>
+<translation id="813024282736408069">Автотолтурула турган виртуалдык картаны күйгүзүңүз</translation>
 <translation id="8131740175452115882">Ырастоо</translation>
 <translation id="8133495915926741232">Жарнамаларды жекелештирүүгө жардам берүү үчүн темалардын кеңири категорияларын тандаңыз. Кеңири категорияны өчүрсөңүз, ага тийиштүү темалар да бөгөттөлөт. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Жумушка алуу жана кадрлар менен камсыз кылуу</translation>

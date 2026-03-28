@@ -2579,6 +2579,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2750020734439919571">Máis opcións de configuración e permisos da aplicación Chrome</translation>
 <translation id="275010360476017464">Usa o micrófono para chatear con Gemini. Ao falar o audio almacénase na actividade das aplicacións Gemini (se a opción está activada).</translation>
 <translation id="2750602041558385535">Carga non verificada bloqueada</translation>
+<translation id="2751320815618312249">E <ph name="NUM" /> máis</translation>
 <translation id="2751454300227269244">Mover a boca cara á dereita</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> quere coñecer o número de identificación da túa chave de seguranza. O sitio saberá que chave de seguranza estás utilizando exactamente.</translation>
 <translation id="275213133112113418">Gardouse a tarxeta</translation>
@@ -4544,6 +4545,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4107793386654579933">Selecciona un atallo para a acción <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar advertencia</translation>
+<translation id="411052834366185695">Debe ter polo menos 1 díxito</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
 <translation id="4113743276555482284">Contrasinal do ficheiro</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Non hai contrasinais gardados}=1{1 contrasinal comprobado}other{Contrasinais comprobados: {COUNT}}}</translation>
@@ -5033,6 +5035,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4461483878391246134">Engadir idiomas para os que non ofrecer nunca unha tradución</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
 <translation id="4465236939126352372">Aplicouse un límite de tempo de <ph name="TIME" /> a <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">E <ph name="NUM" /> máis</translation>
 <translation id="4467373268340082204">O PIN é incorrecto</translation>
 <translation id="4469324811108161144">As notas poden conter <ph name="CHARACTER_LIMIT" /> caracteres como máximo.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> pode editar os ficheiros de <ph name="FOLDERNAME" /></translation>
@@ -5294,6 +5297,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4653116291358041820">Sombra pequena</translation>
 <translation id="4654236001025007561">Comparte ficheiros con Chromebooks e con dispositivos Android que estean preto de ti</translation>
 <translation id="4654801841330730814">Todo</translation>
+<translation id="4657724094180965385">Non me interesa</translation>
 <translation id="4657810666108475055">Busca de pestanas</translation>
 <translation id="4657914796247705218">Velocidade de TrackPoint</translation>
 <translation id="4658285806588491142">Mantén a privacidade da túa pantalla</translation>
@@ -5447,6 +5451,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Comprobando clave pública e bloqueo de integridade... Queda menos de 1 minuto}=1{Comprobando clave pública e bloqueo de integridade... Queda 1 minuto}other{Comprobando clave pública e bloqueo de integridade... Queda # minutos}}</translation>
 <translation id="4766598565665644999">Todas as extensións poden ler e cambiar <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Obtén máis información sobre as extensións desactivadas.</translation>
+<translation id="4769359569327438364">Debe ter polo menos 4 díxitos</translation>
 <translation id="4769632191812288342">Estás usando a protección estándar</translation>
 <translation id="4770119228883592393">Permiso solicitado; preme ⌘ + Option (Opción) + Down arrow (Frecha abaixo) para responder</translation>
 <translation id="4772914216048388646">Pulcro</translation>
@@ -6130,6 +6135,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5240931875940563122">Iniciar sesión cun teléfono Android</translation>
 <translation id="5241689948221696942">No caso dalgúns produtos, as táboas comparativas resumen recensións da Web</translation>
 <translation id="5242724311594467048">Queres activar <ph name="EXTENSION_NAME" />?</translation>
+<translation id="5243477050423867768">Debe ter polo menos 8 díxitos e non pode incluír secuencias repetidas nin ordenadas</translation>
 <translation id="5244234799035360187">OneDrive agora mostrarase na aplicación Ficheiros</translation>
 <translation id="5244466461749935369">Manter por agoara</translation>
 <translation id="5244474230056479698">Sincronizando en <ph name="EMAIL" /></translation>
@@ -8040,6 +8046,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6619990499523117484">Confirma o PIN</translation>
 <translation id="6621282332208609777">Pregúntalle a Google ou escribe un URL</translation>
 <translation id="6621391692573306628">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos</translation>
+<translation id="6622212269189717101">Debe ter polo menos 6 díxitos e non pode incluír secuencias repetidas nin ordenadas</translation>
 <translation id="6622980291894852883">Continuar bloqueando as imaxes</translation>
 <translation id="6624036901798307345">No modo de tableta, toca o botón do contador de pestanas que se atopa na barra de ferramentas para abrir a nova franxa de pestanas na que se mostra cadansúa miniatura.</translation>
 <translation id="6624538059730609162">Pechar vista dereita</translation>

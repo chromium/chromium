@@ -2594,6 +2594,7 @@
 <translation id="2750020734439919571">Chrome ऐप की ज़्यादा सेटिंग और अनुमतियां</translation>
 <translation id="275010360476017464">Gemini से बोलकर बातचीत करने के लिए, माइक्रोफ़ोन का इस्तेमाल करें. Gemini से बोलकर बातचीत करने पर, ऑडियो को Gemini Apps में की गई गतिविधि के डेटा में सेव किया जाता है (अगर यह सेटिंग चालू है).</translation>
 <translation id="2750602041558385535">बिना पुष्टि वाले डाउनलोड को ब्लॉक किया गया</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> और</translation>
 <translation id="2751454300227269244">अपना मुंह दाईं ओर घुमाएं</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> को आपकी सुरक्षा कुंजी का आईडी नंबर जानना है. इससे साइट को उस सुरक्षा कुंजी का पता चल जाएगा जिसका इस्तेमाल किया जा रहा है.</translation>
 <translation id="275213133112113418">आपका कार्ड सेव किया गया</translation>
@@ -4555,6 +4556,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> कार्रवाई के लिए कोई शॉर्टकट चुनें</translation>
 <translation id="4109135793348361820">विंडो को <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) पर ले जाएं</translation>
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
+<translation id="411052834366185695">पिन कम से कम एक अंक का होना चाहिए</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{कोई भी पासवर्ड सेव नहीं किया गया है}=1{1 पासवर्ड की जांच की गई}one{{COUNT} पासवर्ड की जांच की गई}other{{COUNT} पासवर्ड की जांच की गई}}</translation>
@@ -5044,6 +5046,7 @@
 <translation id="4461483878391246134">वे भाषाएं जोड़ें जिनके लिए आपको अनुवाद की सुविधा नहीं चाहिए</translation>
 <translation id="4462159676511157176">कस्टम नाम सर्वर</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> के लिए <ph name="TIME" /> की समयसीमा तय की गई</translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> और</translation>
 <translation id="4467373268340082204">गलत पिन</translation>
 <translation id="4469324811108161144">पासवर्ड के नोट में <ph name="CHARACTER_LIMIT" /> वर्ण तक सेव किए जा सकते हैं.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> में जाकर फ़ाइलों में बदलाव कर सकती है</translation>
@@ -5305,6 +5308,7 @@
 <translation id="4653116291358041820">छोटा शैडो</translation>
 <translation id="4654236001025007561">अपने आस-पास मौजूद Chromebook और Android डिवाइस के साथ फ़ाइलें शेयर करें</translation>
 <translation id="4654801841330730814">सभी पेज</translation>
+<translation id="4657724094180965385">पसंद नहीं है</translation>
 <translation id="4657810666108475055">टैब की खोज</translation>
 <translation id="4657914796247705218">TrackPoint की रफ़्तार</translation>
 <translation id="4658285806588491142">अपनी स्क्रीन को निजी रखें</translation>
@@ -5458,6 +5462,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{सार्वजनिक पासकोड और इंटेग्रिटी ब्लॉक सुविधा की जांच की जा रही है... 1 मिनट से कम समय बचा है}=1{सार्वजनिक पासकोड और इंटेग्रिटी ब्लॉक सुविधा की जांच की जा रही है... 1 मिनट बचा है}one{सार्वजनिक पासकोड और इंटेग्रिटी ब्लॉक सुविधा की जांच की जा रही है... # मिनट बचे हैं}other{सार्वजनिक पासकोड और इंटेग्रिटी ब्लॉक सुविधा की जांच की जा रही है... # मिनट बचे हैं}}</translation>
 <translation id="4766598565665644999">सभी एक्सटेंशन, <ph name="HOST" /> को पढ़ सकते हैं और उसमें बदलाव कर सकते हैं</translation>
 <translation id="4767427586072640478">बंद किए गए एक्सटेंशन के बारे में ज़्यादा जानें.</translation>
+<translation id="4769359569327438364">पिन कम से कम चार अंकों का होना चाहिए</translation>
 <translation id="4769632191812288342">आपके खाते के लिए स्टैंडर्ड सुरक्षा मोड को सेट किया गया है</translation>
 <translation id="4770119228883592393">अनुमति मांगी गई है, जवाब देने के लिए ⌘ + Option + डाउन ऐरो बटन दबाएं</translation>
 <translation id="4772914216048388646">व्यवस्थित</translation>
@@ -6140,6 +6145,7 @@
 <translation id="5240931875940563122">Android फ़ोन की मदद से साइन इन करें</translation>
 <translation id="5241689948221696942">कुछ प्रॉडक्ट के लिए तुलना वाली टेबल में, वेब पर मौजूद समीक्षाओं की खास जानकारी दी जाती है</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" को चालू करें?</translation>
+<translation id="5243477050423867768">पिन कम से कम आठ अंकों का होना चाहिए. साथ ही, इसमें दोहराए गए या क्रम में मौजूद अंक नहीं होने चाहिए</translation>
 <translation id="5244234799035360187">OneDrive अब Files ऐप्लिकेशन में दिखेगा</translation>
 <translation id="5244466461749935369">अभी रहने दें</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> से सिंक हो रहा है</translation>
@@ -8054,6 +8060,7 @@
 <translation id="6619990499523117484">अपने पिन की पुष्टि करें</translation>
 <translation id="6621282332208609777">Google से पूछें या कोई यूआरएल टाइप करें</translation>
 <translation id="6621391692573306628">इस टैब को किसी दूसरे डिवाइस पर भेजने के लिए, दोनों डिवाइसों पर Chrome में साइन इन करें</translation>
+<translation id="6622212269189717101">पिन कम से कम छह अंकों का होना चाहिए. साथ ही, इसमें दोहराए गए या क्रम से आने वाले अंक नहीं होने चाहिए</translation>
 <translation id="6622980291894852883">छवियों को अवरोधित करना जारी रखें</translation>
 <translation id="6624036901798307345">टैबलेट मोड में, हर टैब के थंबनेल दिखाने वाला नया टैब बार खोलने के लिए, टैब काउंटर टूलबार बटन पर टैप करें.</translation>
 <translation id="6624538059730609162">राइट व्यू को बंद करें</translation>

@@ -763,6 +763,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2188375229972301266">Vairāki caurumi apakšdaļā</translation>
 <translation id="218940509700321686">Komatatdalītas vērtības</translation>
 <translation id="2190094353033916816">Šai politikai ir atšķirīgas vērtības, kas tiek lietotas ierīces un lietotāja līmenī. Politika darbojas, kā paredzēts.</translation>
+<translation id="219061769324072544">Kredītkarte,karte,debetkarte</translation>
 <translation id="2191980191135734720">Nākamajā darbībā atbloķējiet ekrānu (parasti izmantojot pirksta nospiedumu). Varat arī <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Svarīgi apsvērumi</translation>
 <translation id="2195729137168608510">E-pasta aizsardzība</translation>
@@ -1366,6 +1367,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3134859781443140237">Lokālais tīkls</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> — meklēt šeit: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Nav}=1{1 konta pierakstīšanās dati}zero{# kontu pierakstīšanās dati}one{# konta pierakstīšanās dati}other{# kontu pierakstīšanās dati}}</translation>
+<translation id="3139503241401248626">Lai iespējotu šos iestatījumus un izmantotu informāciju no sava Google konta, pārejiet uz automātiskās aizpildes pakalpojumu iestatījumiem.</translation>
 <translation id="3140646734028448730">Pakalpojumi uzņēmumiem</translation>
 <translation id="3141093262818886744">Tomēr atvērt</translation>
 <translation id="3141337053413339205">Pāriet uz šo cilni.</translation>
@@ -2298,6 +2300,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4594403342090139922">&amp;Dzēšanas atsaukšana</translation>
 <translation id="4598556348158889687">Krātuves pārvaldība</translation>
 <translation id="459914240367517409">Tīmekļa dizains un izstrāde</translation>
+<translation id="4599572944836204718">Maksājiet ātrāk ar Google Pay, izmantojot saglabāto karti. Kartes informācija lietotnē Google maks tiek šifrēta.</translation>
 <translation id="4602465984861132303">Boulings</translation>
 <translation id="4603727370377253901">Lidojumu rezervācijas</translation>
 <translation id="4607608436550361748">Skatīt Chrome padomus</translation>
@@ -2587,6 +2590,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; nospiediet tabulēšanas taustiņu, lai skatītu citas meklēšanas saīsnes, kas pieejamas pēc šī meklēšanas ieteikuma.</translation>
 <translation id="5052488928733955073">Nevar aizpildīt jūsu informāciju. Pārbaudiet savienojumu.</translation>
 <translation id="5052517576853118371">Aktīvās tēmas</translation>
+<translation id="5053116470141135293">Kad norēķināsieties, izmantojot šo karti, tiks ievadīts virtuālās kartes numurs, lai aizsargātu jūsu faktiskās kartes informāciju. Pārvaldiet to lietotnē Google maks. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Lai nosūtītu šo failu, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}zero{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}one{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}other{Lai nosūtītu šos failus, izmantojot funkciju “Kopīgošana tuvumā”, atbrīvojiet vietu krātuvē (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">Izveidot attēlu</translation>
 <translation id="505757197798929356">Norādiet atvēršanas iemeslu (obligāti)</translation>
@@ -3363,6 +3367,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6250932670816326647">Ķermeņa kopšanas un vannas produkti</translation>
 <translation id="6251906504834538140">{0,plural, =1{Faila pārvietošana ir bloķēta}zero{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}one{<ph name="FILE_COUNT" /> faila pārvietošana ir bloķēta}other{<ph name="FILE_COUNT" /> failu pārvietošana ir bloķēta}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu pārlūkā Chrome lejupielādētos failus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
+<translation id="6253380015872250643">Kartes saglabāšana lietotnē Google maks</translation>
 <translation id="6254436959401408446">Nav pietiekami daudz vietas atmiņā, lai atvērtu šo lapu</translation>
 <translation id="625463612687472648">Atsaukt atļauju</translation>
 <translation id="6259156558325130047">&amp;Pārkārtošanas atsaukuma atcelšana</translation>
@@ -4260,6 +4265,7 @@ Papildu informācija:
 <translation id="7615932826417658001">Identifikācijas kartes pievienošana</translation>
 <translation id="7616390733770379387">Meklētājprogrammas tiek rādītas nejaušā secībā.</translation>
 <translation id="7616645509853975347">Administrators ir ieslēdzis savienotāju kolekciju Chrome Enterprise Connectors jūsu pārlūkā. Šie savienotāji var piekļūt daļai jūsu datu.</translation>
+<translation id="7616747402308801775">Šī karte ir saglabāta lietotnē Google maks, tādējādi varat to izmantot Google pakalpojumos.</translation>
 <translation id="7617825962482469577">Aploksne C7/C6</translation>
 <translation id="7618270539713451657">Cīņas māksla</translation>
 <translation id="7619838219691048931">Beigu lapa</translation>
@@ -4582,6 +4588,7 @@ Papildu informācija:
 <translation id="8120720167840853945">Šī politika nenosaka citu politiku noklusējuma darbību.</translation>
 <translation id="8127301229239896662">Programmatūra <ph name="SOFTWARE_NAME" /> netika pareizi instalēta datorā vai tīklā. Lūdziet IT administratoram atrisināt šo problēmu.</translation>
 <translation id="8130113808541743942">Pārvietot uz…</translation>
+<translation id="813024282736408069">Virtuālās kartes ieslēgšana automātiskajai aizpildei</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
 <translation id="8133495915926741232">Izvēlieties, kuras plašās tēmu kategorijas drīkst izmantot, lai personalizētu reklāmas. Izslēdzot plašāku kategoriju, tiks bloķētas arī ar to saistītās tēmas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8134058435519644366">Pieņemšana darbā un personāla komplektēšana</translation>

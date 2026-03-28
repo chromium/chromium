@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">Administrator wyłączył udostępnianie hasła.</translation>
 <translation id="4002066346123236978">Tytuł</translation>
 <translation id="4004204301268239848">Hasła są zapisywane na Twoim koncie Google, dzięki czemu możesz ich używać na dowolnym urządzeniu.</translation>
+<translation id="4007463141047732631">Edytuj grupę</translation>
 <translation id="4011489366247192265">Z języka</translation>
 <translation id="4017599800655151880">Miniatura</translation>
 <translation id="4018440314314549819">Automatycznie uzupełniaj zapisane hasła</translation>
@@ -905,6 +906,7 @@
 <translation id="4287172530684295552">Oznacz jako przeczytane</translation>
 <translation id="428768789042547925">Nowe funkcje</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj kartę do grupy}few{Dodaj karty do grupy}many{Dodaj karty do grupy}other{Dodaj karty do grupy}}</translation>
+<translation id="4300830875340617674">Zeskanuj kartę i wypełnij automatycznie</translation>
 <translation id="4302061870579014542">Ustaw pozycję</translation>
 <translation id="4304713468139749426">Menedżer haseł</translation>
 <translation id="4306349443295056740">Podpisywanie OCSP</translation>
@@ -1181,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Włącz kamerę</translation>
 <translation id="5229315183665181733">Edytuj witrynę</translation>
+<translation id="5233111790346066304">Zapisuj pliki na Dysku Google i uzyskuj do nich dostęp w dowolnym momencie.</translation>
 <translation id="5233638681132016545">Nowa karta</translation>
 <translation id="5234094073825090254">{count,plural, =1{Zakładka została zapisana na Twoim koncie Google {email}}few{Zakładki zostały zapisane na Twoim koncie Google {email}.}many{Zakładki zostały zapisane na Twoim koncie Google {email}.}other{Zakładki zostały zapisane na Twoim koncie Google {email}.}}</translation>
 <translation id="5234764350956374838">Zamknij</translation>

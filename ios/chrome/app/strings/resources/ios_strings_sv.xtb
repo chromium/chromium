@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">Lösenordsdelning har inaktiverats av administratören.</translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst.</translation>
+<translation id="4007463141047732631">Redigera grupp</translation>
 <translation id="4011489366247192265">Från</translation>
 <translation id="4017599800655151880">Miniatyr</translation>
 <translation id="4018440314314549819">Autofyll sparade lösenord</translation>
@@ -905,6 +906,7 @@
 <translation id="4287172530684295552">Markera som läst</translation>
 <translation id="428768789042547925">Nyheter</translation>
 <translation id="429074084062258019">{count,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
+<translation id="4300830875340617674">Skanna kortet och autofyll</translation>
 <translation id="4302061870579014542">Ange position</translation>
 <translation id="4304713468139749426">Lösenordshantering</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1181,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Slå på kameran</translation>
 <translation id="5229315183665181733">Redigera webbplats</translation>
+<translation id="5233111790346066304">Spara filer i Google Drive och få åtkomst till dem när du vill.</translation>
 <translation id="5233638681132016545">Ny flik</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bokmärket har sparats i Google-kontot {email}.}other{Bokmärkena har sparats i Google-kontot {email}.}}</translation>
 <translation id="5234764350956374838">Stäng</translation>

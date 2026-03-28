@@ -2580,6 +2580,7 @@
 <translation id="2750020734439919571">更多 Chrome 應用程式設定和權限</translation>
 <translation id="275010360476017464">使用麥克風與 Gemini 對話。與 Gemini 對話時，音訊內容會儲存到 Gemini 系列應用程式活動記錄 (如果已開啟這項設定)</translation>
 <translation id="2750602041558385535">已封鎖未經驗證的下載內容</translation>
+<translation id="2751320815618312249">和另外 <ph name="NUM" /> 個</translation>
 <translation id="2751454300227269244">將嘴角向右移</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> 想取得安全金鑰的 ID，該網站將可完全瞭解你正在使用的安全金鑰。</translation>
 <translation id="275213133112113418">卡片已儲存</translation>
@@ -4538,6 +4539,7 @@
 <translation id="4107793386654579933">選取「<ph name="ACTION_NAME" />」動作的快速鍵</translation>
 <translation id="4109135793348361820">將視窗傳送給 <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">取消忽略警告</translation>
+<translation id="411052834366185695">至少要有 1 個數字</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (離線)</translation>
 <translation id="4113743276555482284">檔案密碼</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{未儲存任何密碼}=1{已檢查 1 組密碼}other{已檢查 {COUNT} 組密碼}}</translation>
@@ -5027,6 +5029,7 @@
 <translation id="4461483878391246134">新增一律不翻譯的語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
 <translation id="4465236939126352372">已為「<ph name="APP_NAME" />」設定 <ph name="TIME" />的時間限制</translation>
+<translation id="4466922176191762830">和另外 <ph name="NUM" /> 個</translation>
 <translation id="4467373268340082204">PIN 碼錯誤</translation>
 <translation id="4469324811108161144">附註最多可以儲存 <ph name="CHARACTER_LIMIT" /> 個半形字元。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可以編輯「<ph name="FOLDERNAME" />」中的檔案</translation>
@@ -5285,6 +5288,7 @@
 <translation id="4653116291358041820">小型陰影</translation>
 <translation id="4654236001025007561">將檔案分享給附近的 Chromebook 和 Android 裝置</translation>
 <translation id="4654801841330730814">全部</translation>
+<translation id="4657724094180965385">不感興趣</translation>
 <translation id="4657810666108475055">分頁搜尋</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">避免螢幕內容外洩</translation>
@@ -5438,6 +5442,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{正在檢查公開金鑰和完整性區塊...還剩不到 1 分鐘}=1{正在檢查公開金鑰和完整性區塊...還剩 1 分鐘}other{正在檢查公開金鑰和完整性區塊...還剩 # 分鐘}}</translation>
 <translation id="4766598565665644999">所有擴充功能都可以讀取及變更 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">進一步瞭解已停用的擴充功能。</translation>
+<translation id="4769359569327438364">至少要有 4 個數字</translation>
 <translation id="4769632191812288342">目前採用標準防護機制</translation>
 <translation id="4770119228883592393">已要求權限，按下 ⌘ + Option + 向下鍵即可回覆</translation>
 <translation id="4772914216048388646">井然有序</translation>
@@ -6120,6 +6125,7 @@
 <translation id="5240931875940563122">使用 Android 手機登入</translation>
 <translation id="5241689948221696942">比較表會總結某些產品在網路上的評論重點</translation>
 <translation id="5242724311594467048">啟用「<ph name="EXTENSION_NAME" />」？</translation>
+<translation id="5243477050423867768">至少要有 8 個數字，且不得包含重複或連續數列</translation>
 <translation id="5244234799035360187">OneDrive 現在會顯示在「檔案」應用程式中</translation>
 <translation id="5244466461749935369">暫時保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -8028,6 +8034,7 @@
 <translation id="6619990499523117484">確認你的 PIN 碼</translation>
 <translation id="6621282332208609777">向 Google 提問或輸入網址</translation>
 <translation id="6621391692573306628">如要將這個分頁傳送到其他裝置，請在這兩部裝置上登入 Chrome</translation>
+<translation id="6622212269189717101">至少要有 6 個數字，且不得包含重複或連續數列</translation>
 <translation id="6622980291894852883">繼續封鎖圖片</translation>
 <translation id="6624036901798307345">在平板電腦模式中，輕觸分頁計數器的工具列按鈕即可開啟新的分頁列，當中會顯示各分頁的縮圖。</translation>
 <translation id="6624538059730609162">關閉右側畫面</translation>

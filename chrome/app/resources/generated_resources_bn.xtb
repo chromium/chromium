@@ -2594,6 +2594,7 @@
 <translation id="2750020734439919571">Chrome অ্যাপের আরও সেটিংস ও অনুমতি</translation>
 <translation id="275010360476017464">Gemini-এর সাথে চ্যাট করতে আপনার মাইক্রোফোন ব্যবহার করুন। Gemini-কে কিছু বললে, সেই অডিও Gemini অ্যাপ অ্যাক্টিভিটিতে (যদি চালু থাকে) সেভ হয়।</translation>
 <translation id="2750602041558385535">যাচাই না করা ডাউনলোড ব্লক করা হয়েছে</translation>
+<translation id="2751320815618312249">+ আরও <ph name="NUM" />টি</translation>
 <translation id="2751454300227269244">আপনার মুখ ডানদিকে সরান</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> আপনার নিরাপত্তা কী আইডি নম্বর জানতে চায়। সাইট নির্দিষ্টভাবে জানতে পারবে আপনি কোন নিরাপত্তা কী ব্যবহার করছেন।</translation>
 <translation id="275213133112113418">আপনার কার্ড সেভ করা হয়েছে</translation>
@@ -4555,6 +4556,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> অ্যাকশনের জন্য শর্টকাট বেছে নিন</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) এ উইন্ডো সরান</translation>
 <translation id="4110485659976215879">রিস্টোর করা সংক্রান্ত সতর্কতা</translation>
+<translation id="411052834366185695">অন্তত ১টি সংখ্যার হতে হবে</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (অফলাইন)</translation>
 <translation id="4113743276555482284">ফাইলের পাসওয়ার্ড</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{কোনও পাসওয়ার্ড সেভ করা নেই}=1{১টি পাসওয়ার্ড চেক করা হয়েছে}one{{COUNT}টি পাসওয়ার্ড চেক করা হয়েছে}other{{COUNT}টি পাসওয়ার্ড চেক করা হয়েছে}}</translation>
@@ -5045,6 +5047,7 @@
 <translation id="4461483878391246134">ভাষা যোগ করুন যাতে আর অনুবাদ করার প্রয়োজন না পড়ে</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-এর জন্য <ph name="TIME" /> টাইম লিমিট সেট করা হয়েছে</translation>
+<translation id="4466922176191762830">+ আরও <ph name="NUM" />টি</translation>
 <translation id="4467373268340082204">ভুল পিন লেখা হয়েছে</translation>
 <translation id="4469324811108161144">নোট সর্বাধিক <ph name="CHARACTER_LIMIT" />টি অক্ষর সেভ করতে পারে।</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-এর কাছে <ph name="FOLDERNAME" /> ফোল্ডারের ফাইল এডিট করার অনুমতি আছে</translation>
@@ -5306,6 +5309,7 @@
 <translation id="4653116291358041820">ছোট শ্যাডো</translation>
 <translation id="4654236001025007561">আপনার আশেপাশের Chromebooks ও Android ডিভাইসের সাথে ফাইল শেয়ার করুন</translation>
 <translation id="4654801841330730814">সব</translation>
+<translation id="4657724094180965385">আগ্রহী নন</translation>
 <translation id="4657810666108475055">ট্যাব সার্চ করার বিকল্প</translation>
 <translation id="4657914796247705218">TrackPoint-এর স্পিড</translation>
 <translation id="4658285806588491142">আপনার স্ক্রিনটি ব্যক্তিগত রাখুন</translation>
@@ -5459,6 +5463,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{সর্বজনীন কী ও ইন্টিগ্রিটি ব্লক চেক করা হচ্ছে... ১ মিনিটের চেয়েও কম সময় বাকি আছে}=1{সর্বজনীন কী ও ইন্টিগ্রিটি ব্লক চেক করা হচ্ছে... ১ মিনিট বাকি আছে}one{সর্বজনীন কী ও ইন্টিগ্রিটি ব্লক চেক করা হচ্ছে... # মিনিট বাকি আছে}other{সর্বজনীন কী ও ইন্টিগ্রিটি ব্লক চেক করা হচ্ছে... # মিনিট বাকি আছে}}</translation>
 <translation id="4766598565665644999">সব এক্সটেনশন <ph name="HOST" /> পড়তে ও পরিবর্তন করতে পারবে</translation>
 <translation id="4767427586072640478">এক্সটেনশন বন্ধ সম্পর্কে আরও জানুন।</translation>
+<translation id="4769359569327438364">অন্তত ৪ সংখ্যার হতে হবে</translation>
 <translation id="4769632191812288342">আপনি স্ট্যান্ডার্ড সুরক্ষা পাচ্ছেন</translation>
 <translation id="4770119228883592393">অনুমতি চাওয়া হয়েছে, উত্তর দিতে ⌘ + 'বিকল্প' বোতাম + 'নিম্নমুখী তীরচিহ্ন' বোতাম প্রেস করুন</translation>
 <translation id="4772914216048388646">অর্ডারলি</translation>
@@ -6142,6 +6147,7 @@
 <translation id="5240931875940563122">Android ফোন দিয়ে সাইন-ইন করুন</translation>
 <translation id="5241689948221696942">কিছু প্রোডাক্টের জন্য, তুলনার সারণী সম্পূর্ণ ওয়েবের বিভিন্ন জায়গা থেকে রিভিউয়ের সারসংক্ষেপ তৈরি করে</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />" সক্ষম করবেন?</translation>
+<translation id="5243477050423867768">অন্তত ৮ সংখ্যার হতে হবে এবং কোনও সংখ্যা বা ক্রম যেন রিপিট না হয়</translation>
 <translation id="5244234799035360187">এখন Files অ্যাপে OneDrive দেখা যাবে</translation>
 <translation id="5244466461749935369">এখনকার মতো রেখে দিন</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" /> এ সিঙ্ক হচ্ছে</translation>
@@ -8058,6 +8064,7 @@
 <translation id="6619990499523117484">আপনার পিন নিশ্চিত করুন</translation>
 <translation id="6621282332208609777">Google-কে জিজ্ঞাসা করুন অথবা URL টাইপ করুন</translation>
 <translation id="6621391692573306628">এই ট্যাবটিকে অন্য ডিভাইসে পাঠাতে, উভয় ডিভাইসেই Chrome-এ সাইন-ইন করুন</translation>
+<translation id="6622212269189717101">অন্তত ৬ সংখ্যার হতে হবে এবং কোনও সংখ্যা বা ক্রম যেন রিপিট না হয়</translation>
 <translation id="6622980291894852883">চিত্রগুলিকে ব্লক করা চালিয়ে যান</translation>
 <translation id="6624036901798307345">ট্যাবলেট মোডে প্রতিটি ট্যাবে থাম্বনেল দেখানো হয় এমন ট্যাব বার খোলার জন্য ট্যাব কাউন্টার টুলবার বোতামে ট্যাপ করুন।</translation>
 <translation id="6624538059730609162">ডানদিকের ভিউ বন্ধ করুন</translation>

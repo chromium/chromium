@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">パスワードの共有は管理者によって無効にされています。</translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
+<translation id="4007463141047732631">グループを編集</translation>
 <translation id="4011489366247192265">原文の言語</translation>
 <translation id="4017599800655151880">サムネイル</translation>
 <translation id="4018440314314549819">保存したパスワードを自動入力</translation>
@@ -2039,7 +2040,7 @@
 <translation id="8209237163365258530">Gemini <ph name="VERSION_NUMBER" /> モデル</translation>
 <translation id="8211030355252954494"><ph name="WEBSITE" /> のパスワードを受信しました</translation>
 <translation id="8211406090763984747">この接続は保護されています</translation>
-<translation id="8213190397436801658">ホーム</translation>
+<translation id="8213190397436801658">自宅</translation>
 <translation id="8214293972734702249">固定しました、<ph name="TAB_TITLE" /></translation>
 <translation id="8219424187226230983">オフライン版を新しいタブで表示</translation>
 <translation id="8221665793629393739">再訪問のリマインダー</translation>

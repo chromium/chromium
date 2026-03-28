@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">చదవబడినట్లుగా మార్క్ చేయండి</translation>
 <translation id="428768789042547925">కొత్తగా ఏం ఉన్నాయి</translation>
 <translation id="429074084062258019">{count,plural, =1{ట్యాబ్‌ను గ్రూప్‌నకు జోడించండి}other{ట్యాబ్‌లను గ్రూప్‌నకు జోడించండి}}</translation>
+<translation id="4300830875340617674">కార్డ్‌ను స్కాన్ చేసి, ఆటోఫిల్ చేయండి</translation>
 <translation id="4302061870579014542">పొజిషన్‌ను సెట్ చేయండి</translation>
 <translation id="4304713468139749426">పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="4306349443295056740">OCSP సైనింగ్</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">కెమెరాను ఆన్ చేయి</translation>
 <translation id="5229315183665181733">సైట్‌ను ఎడిట్ చేయండి</translation>
+<translation id="5233111790346066304">మీ Google Driveలో ఫైల్స్‌ను సేవ్ చేయండి, వాటిని ఎప్పుడైనా యాక్సెస్ చేయండి.</translation>
 <translation id="5233638681132016545">కొత్త‌ ట్యాబ్</translation>
 <translation id="5234094073825090254">{count,plural, =1{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్ సేవ్ అయింది.}other{మీ Google ఖాతా, {email}‌లో బుక్‌మార్క్‌లు సేవ్ అయ్యాయి.}}</translation>
 <translation id="5234764350956374838">తొలగించండి</translation>

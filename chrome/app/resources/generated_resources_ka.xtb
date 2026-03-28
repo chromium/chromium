@@ -2580,6 +2580,7 @@
 <translation id="2750020734439919571">Chrome-ის აპის მეტი პარამეტრი და ნებართვა</translation>
 <translation id="275010360476017464">გამოიყენეთ თქვენი მიკროფონი Gemini-სთან საუბრისთვის. როდესაც Gemini-სთან საუბრობთ, აუდიო ინახება Gemini აპებში აქტივობაში (თუ ის ჩართულია).</translation>
 <translation id="2750602041558385535">დაუდასტურებელი ჩამოტვირთვა დაიბლოკა</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> სხვა</translation>
 <translation id="2751454300227269244">გაამოძრავეთ მაუსი მარჯვნივ</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" />-ს აინტერესებს თქვენი უსაფრთხოების გასაღების ID ნომერი. საიტი შეიტყობს, უსაფრთხოების ზუსტად რომელ გასაღებს იყენებთ.</translation>
 <translation id="275213133112113418">თქვენი ბარათი შენახულია</translation>
@@ -4542,6 +4543,7 @@
 <translation id="4107793386654579933">აირჩიეთ მალსახმობი მოქმედებისთვის <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">ფანჯრის გადატანა <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">გაფრთხილების აღდგენა</translation>
+<translation id="411052834366185695">უნდა შეიცავდეს მინიმუმ 1 ციფრს</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ხაზგარეშე)</translation>
 <translation id="4113743276555482284">ფაილის პაროლი</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{შენახული პაროლები არ არის}=1{შემოწმებულია 1 პაროლი}other{შემოწმებულია {COUNT} პაროლი}}</translation>
@@ -5031,6 +5033,7 @@
 <translation id="4461483878391246134">დაამატეთ ენები, რომელთა თარგმნაც არასოდეს შემოგთავაზოთ</translation>
 <translation id="4462159676511157176">ინდივიდუალური სახელთა სერვერები</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-ისთვის დაყენებული დროის ლიმიტია <ph name="TIME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> სხვა</translation>
 <translation id="4467373268340082204">PIN-კოდი არასწორია</translation>
 <translation id="4469324811108161144">შესაძლებელია მაქსიმუმ <ph name="CHARACTER_LIMIT" /> სიმბოლოს ჩანიშვნა.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FOLDERNAME" />“-ში ფაილების რედაქტირება</translation>
@@ -5292,6 +5295,7 @@
 <translation id="4653116291358041820">პატარა ჩრდილი</translation>
 <translation id="4654236001025007561">გაუზიარეთ ფაილები ახლომდებარე Chromebook-ებსა და Android მოწყობილობებს</translation>
 <translation id="4654801841330730814">ყველა</translation>
+<translation id="4657724094180965385">არ მაინტერესებს</translation>
 <translation id="4657810666108475055">ჩანართებში ძიება</translation>
 <translation id="4657914796247705218">TrackPoint-ის სიჩქარე</translation>
 <translation id="4658285806588491142">შეინარჩუნეთ თქვენი ეკრანის კონფიდენციალურობა</translation>
@@ -5445,6 +5449,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{მოწმდება საჯარო გასაღები და მთლიანობის ბლოკი... დარჩენილია 1 წუთზე ნაკლები}=1{მოწმდება საჯარო გასაღები და მთლიანობის ბლოკი... დარჩენილია 1 წუთი}other{მოწმდება საჯარო გასაღები და მთლიანობის ბლოკი... დარჩენილია # წუთი}}</translation>
 <translation id="4766598565665644999">ყველა გაფართოებას შეუძლია <ph name="HOST" />-ის წაკითხვა და შეცვლა</translation>
 <translation id="4767427586072640478">შეიტყვეთ მეტი გათიშული გაფართოებების შესახებ.</translation>
+<translation id="4769359569327438364">უნდა შეიცავდეს მინიმუმ 4 ციფრს</translation>
 <translation id="4769632191812288342">თქვენ სტანდარტული დაცვით სარგებლობთ</translation>
 <translation id="4770119228883592393">მოთხოვნილია ნებართვა, გამოხმაურებისთვის დააჭირეთ კლავიშთა კომბინაციას ⌘ + Option + ქვემოთ მიმართული ისარი</translation>
 <translation id="4772914216048388646">მოწესრიგებული</translation>
@@ -6128,6 +6133,7 @@
 <translation id="5240931875940563122">შესვლა Android ტელეფონით</translation>
 <translation id="5241689948221696942">ზოგიერთი პროდუქტისთვის შედარების ცხრილები კრებს მიმოხილვებს ინტერნეტიდან</translation>
 <translation id="5242724311594467048">ჩავრთოთ "<ph name="EXTENSION_NAME" />"?</translation>
+<translation id="5243477050423867768">უნდა შედგებოდეს მინიმუმ 8 ციფრისგან და არ უნდა შეიცავდეს განმეორებად ან თანმიმდევრულ ციფრებს</translation>
 <translation id="5244234799035360187">OneDrive ახლა გამოჩნდება ფაილების აპში</translation>
 <translation id="5244466461749935369">ჯერ-ჯერობით შენარჩუნება</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />-თან სინქრონიზაცია</translation>
@@ -8041,6 +8047,7 @@
 <translation id="6619990499523117484">დაადასტურეთ თქვენი PIN-კოდი</translation>
 <translation id="6621282332208609777">ჰკითხეთ Google-ს ან აკრიფეთ URL</translation>
 <translation id="6621391692573306628">ეს ჩანართი სხვა მოწყობილობაზე რომ გაგზავნოთ, შედით Chrome-ში ორივე მოწყობილობიდან</translation>
+<translation id="6622212269189717101">უნდა შედგებოდეს მინიმუმ 6 ციფრისგან და არ უნდა შეიცავდეს განმეორებად ან თანმიმდევრულ ციფრებს</translation>
 <translation id="6622980291894852883">გააგრძელეთ გამოსახულებების დაბლოკვა</translation>
 <translation id="6624036901798307345">ტაბლეტის რეჟიმში ხელსაწყოთა ზოლზე ჩანართების მთვლელის ღილაკზე შეხებისას გაიხსნება ჩანართების ახალი ზოლი, რომელზეც ნაჩვენები იქნება თითოეული ჩანართის მინიატურული ვერსია.</translation>
 <translation id="6624538059730609162">მარჯვენა ხედის დახურვა</translation>

@@ -2252,6 +2252,7 @@
 <translation id="2518024842978892609">க்ளையன்ட் சான்றிதழ்களைப் பயன்படுத்தவும்</translation>
 <translation id="2518620532958109495">முழுத்திரைப் பயன்முறைக்குத் தானாக மாற அனுமதிக்கப்பட்டவை</translation>
 <translation id="2519250377986324805">எப்படி என்று பாருங்கள்</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nஉங்கள் பணியைத் தொடர Geminiக்கு உங்கள் உதவி தேவை.</translation>
 <translation id="2519517390894391510">சான்றிதழின் சுயவிவரப் பெயர்</translation>
 <translation id="2520644704042891903">சாக்கெட் கிடைப்பதற்காகக் காத்திருக்கிறது...</translation>
 <translation id="2521427645491031107">சாதன அமைப்புகளில் ஆப்ஸ் ஒத்திசைவு அமைக்கப்பட்டுள்ளது</translation>
@@ -4654,6 +4655,7 @@
 <translation id="4190492351494485814">ஆரம்பநிலை அமைவுக்கு, ஃபைல்கள் உங்கள் Chromebook உடன் ஒத்திசைக்கப்படுவதற்காக உங்களுக்கு இணைய இணைப்பு தேவை.</translation>
 <translation id="4190828427319282529">கீபோர்டு ஃபோக்கஸைத் தனிப்படுத்து</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> மூலம் பெறவா?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini உங்கள் பணியைச் செய்து கொண்டிருக்கிறது. கூடுதல் நடவடிக்கை தேவைப்பட்டால் உங்களுக்குத் தெரிவிக்கும்.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" />க்குப் பிரத்தியேகமானது.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, மேலும் தற்போது குறைவாகவே கிடைக்கிறது.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">நம்பகமான CA</translation>
@@ -5266,6 +5268,7 @@
 <translation id="4624054169152573743">கலர் தீம்</translation>
 <translation id="4625078469366263107">ஆப்ஸை இயக்கு</translation>
 <translation id="4625905218692741757">இயல்பு வண்ணம்: சாம்பல்</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini உங்கள் பணியை இடைநிறுத்தியுள்ளது. அதைப் பார்க்க Chromeமிற்குச் செல்லவும்.</translation>
 <translation id="4627107755957573804">கடவுச்சாவிகளைப் பயன்படுத்தும் வகையில் ஏற்கெனவே உள்ள கணக்குகளை மேம்படுத்த தளங்களையும் ஆப்ஸையும் அனுமதிக்கும்</translation>
 <translation id="4627442949885028695">மற்றொரு சாதனத்திலிருந்து பார்த்தவை</translation>
 <translation id="4628762811416793313">Linux கண்டெய்னர் அமைவு முடியவில்லை. மீண்டும் முயலவும்.</translation>
@@ -5308,6 +5311,7 @@
 <translation id="4653116291358041820">குறைந்த அளவில் கருமைச் சாயல்</translation>
 <translation id="4654236001025007561">உங்களுக்கு அருகிலுள்ள Chromebookகளிலும் Android சாதனங்களிலும் ஃபைல்களைப் பகிரலாம்</translation>
 <translation id="4654801841330730814">எல்லாம்</translation>
+<translation id="4657724094180965385">ஆர்வமில்லை</translation>
 <translation id="4657810666108475055">தாவல் தேடல்</translation>
 <translation id="4657914796247705218">TrackPoint வேகம்</translation>
 <translation id="4658285806588491142">உங்கள் திரையைத் தனிப்பட்டதாக வைத்திருங்கள்</translation>
@@ -8310,6 +8314,7 @@
 <translation id="6798420440063423019">தவறான பின் (PIN) பல முறை உள்ளிடப்பட்டதால் பாதுகாப்பு விசை பூட்டப்பட்டது. அதை மீட்டமைக்க வேண்டும்.</translation>
 <translation id="679845623837196966">வாசிப்புப் பட்டியலைக் காட்டு</translation>
 <translation id="6798578729981748444">இறக்குவதை முடிக்க, எல்லா Firefox சாளரங்களையும் மூடவும்.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini உங்கள் பணியை நிறைவுசெய்தது, Chromeமில் அதைப் பார்க்கலாம்.</translation>
 <translation id="6798780071646309401">கேப்ஸ்லாக் இயக்கப்பட்டுள்ளது</translation>
 <translation id="679905836499387150">மறைக்கப்பட்ட கருவிப்பட்டி பட்டன்கள்</translation>
 <translation id="6800893479155997609">உங்கள் <ph name="DEVICE_TYPE" />கிற்கான சிறந்த ஆப்ஸ்</translation>
@@ -9913,6 +9918,7 @@
 <translation id="7916364730877325865">இந்தக் கணக்கில் ஒத்திசைவை இயக்க உங்கள் நிறுவனம் அனுமதிக்கவில்லை</translation>
 <translation id="791698251820376781">நீங்கள் உள்நுழைய உங்கள் நிறுவனம் அனுமதிக்கவில்லை</translation>
 <translation id="7918257978052780342">பதிவுபெறுக</translation>
+<translation id="7918928051723770926">பணி முடிந்தது</translation>
 <translation id="7919123827536834358">தானாக மொழிபெயர்க்கப்படும் மொழிகள்</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />வி</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> தளத்தால் <ph name="FILENAME" /> ஃபைலைப் பார்க்க முடியும்</translation>
@@ -10402,6 +10408,7 @@
 <translation id="8244724656154470844">புதுப்பிப்புச் சரிபார்ப்பு தோல்வியடைந்தது.</translation>
 <translation id="8246776524656196770">பின் (தனிப்பட்ட அடையாள எண்) மூலம் உங்கள் பாதுகாப்பு விசையைப் பத்திரமாக வைத்திருக்கலாம்</translation>
 <translation id="824713170151383793">டெவெலப்பர் கருவிகள் மூலம்</translation>
+<translation id="8247210755024677100">உள்நுழைகிறீர்கள் ...</translation>
 <translation id="8247795734638043885">பாதுகாப்பற்ற ஃபைலைப் பதிவிறக்கு</translation>
 <translation id="8248050856337841185">&amp;ஒட்டு</translation>
 <translation id="8248381369318572865">எனது மைக்ரோஃபோனை அணுகி எனது பேச்சை ஆய்வு செய்</translation>
@@ -10845,6 +10852,7 @@
 <translation id="8557022314818157177">உங்கள் கைரேகையைப் பதிவுசெய்யும் வரை உங்கள் பாதுகாப்பு விசையைத் தொடர்ந்து அழுத்தவும்</translation>
 <translation id="8557100046150195444">தொடர Touch IDயை வழங்கவும்</translation>
 <translation id="8557856025359704738"><ph name="NEXT_DATE_DOWNLOAD" /> அன்று அடுத்த பதிவிறக்கம் நிகழும்.</translation>
+<translation id="8558063527625343224">Google Beamமை அமைத்தல்</translation>
 <translation id="8559858985063901027">கடவுக்குறியீடுகள்</translation>
 <translation id="8559961053328923750">விளம்பரச் செயல்திறனை அளவிட உலாவி மூலம் தளங்கள் பகிரக்கூடிய தரவின் மொத்த அளவை Chrome கட்டுப்படுத்துகிறது</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{எல்லாவற்றையும் &amp;புதிய சாளரத்தில் திற}=1{&amp;புதிய சாளரத்தில் திற}other{எல்லாவற்றையும் ({COUNT}) &amp;புதிய சாளரத்தில் திற}}</translation>
@@ -11360,6 +11368,7 @@
 <translation id="8898786835233784856">அடுத்த தாவலைத் தேர்ந்தெடு</translation>
 <translation id="8898790559170352647">உங்கள் Microsoft கணக்கைச் சேருங்கள்</translation>
 <translation id="8898822736010347272">இணையத்தில் புதிய அச்சுறுத்தல்களைக் கண்டறிவதற்காகவும் அனைத்துப் பயனர்களையும் பாதுகாப்பதற்காகவும், நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகள், வரையறுக்கப்பட்ட சிஸ்டம் தகவல்கள், சில பக்கங்களின் உள்ளடக்கம் ஆகியவற்றை Googleளுக்கு அனுப்பும்.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nஉங்கள் பணி தொடர்பாக Gemini செயல்படுவதை நிறுத்திவிட்டது.</translation>
 <translation id="8899851313684471736">புதிய &amp;சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="8900413463156971200">செல்லுலார் இணைப்பை இயக்கு</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" />ஐப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தை இன்றே திருப்பியளிக்க வேண்டும்.}other{<ph name="MANAGER" />ஐப் பயன்படுத்த, உங்கள் தரவைக் காப்புப் பிரதி எடுத்துவிட்டு இந்த <ph name="DEVICE_TYPE" /> சாதனத்தைக் காலக்கெடுவிற்கு முன் திருப்பியளிக்க வேண்டும்.}}</translation>

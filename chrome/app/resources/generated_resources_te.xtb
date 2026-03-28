@@ -2249,6 +2249,7 @@
 <translation id="2518024842978892609">మీ క్లయింట్ స‌ర్టిఫికెట్‌లను ఉపయోగించడానికి అనుమతి</translation>
 <translation id="2518620532958109495">ఫుల్ స్క్రీన్‌లోకి ఆటోమేటిక్‌గా ప్రవేశించడానికి అనుమతించబడుతుంది</translation>
 <translation id="2519250377986324805">ఎలా చేయాలో తెలుసుకోండి</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nమీ టాస్క్‌పై పని చేయడం కొనసాగించడానికి Geminiకి మీ సహాయం కావాలి.</translation>
 <translation id="2519517390894391510">సర్టిఫికెట్ ప్రొఫైల్ పేరు</translation>
 <translation id="2520644704042891903">అందుబాటులో ఉన్న సాకెట్ కోసం వేచి ఉంది...</translation>
 <translation id="2521427645491031107">పరికర సెట్టింగ్‌లలో యాప్‌ల సింక్ సెట్ చేసి ఉంది</translation>
@@ -4651,6 +4652,7 @@
 <translation id="4190492351494485814">ప్రారంభ సెటప్ కోసం, మీరు ఇంటర్నెట్‌కు కనెక్ట్ చేయాల్సి ఉంటుంది కాబట్టి ఫైళ్లు మీ Chromebookకు సింక్ చేయబడతాయి</translation>
 <translation id="4190828427319282529">కీబోర్డ్ ఫోకస్‌ను హైలైట్ చేయండి</translation>
 <translation id="4191892134568599822">మీరు ఫైల్స్‌ను పొందడానికి <ph name="FEATURE_NAME" />‌ను ఉపయోగించాలా?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini మీ టాస్క్‌పై పని చేస్తోంది, మరింత చర్య అవసరమైతే మీకు తెలియజేస్తుంది.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" />‌కు మాత్రమే ప్రత్యేకమైనది.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">విశ్వసనీయ CA</translation>
@@ -5263,6 +5265,7 @@
 <translation id="4624054169152573743">రంగు రూపం</translation>
 <translation id="4625078469366263107">యాప్‌ను ప్రారంభించండి</translation>
 <translation id="4625905218692741757">బూడిద ఆటోమేటిక్ సెట్టింగ్ రంగు</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini మీ టాస్క్‌ను పాజ్ చేసింది. దీన్ని రివ్యూ చేయడానికి Chromeకు తిరిగి వెళ్లండి.</translation>
 <translation id="4627107755957573804">పాస్-కీలను ఉపయోగించడానికి ఇప్పటికే ఉన్న ఖాతాలను అప్‌గ్రేడ్ చేయడానికి సైట్‌లు, యాప్‌లను అనుమతించండి</translation>
 <translation id="4627442949885028695">మరో పరికరం నుండి కొనసాగించండి</translation>
 <translation id="4628762811416793313">Linux కంటెయినర్ సెటప్ పూర్తి కాలేదు. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
@@ -5305,6 +5308,7 @@
 <translation id="4653116291358041820">చిన్న షాడో</translation>
 <translation id="4654236001025007561">మీ చుట్టూ ఉన్న Chromebookలు, అలాగే Android పరికరాలతో ఫైళ్లను షేర్ చేయండి</translation>
 <translation id="4654801841330730814">అన్నీ</translation>
+<translation id="4657724094180965385">ఆసక్తి లేదు</translation>
 <translation id="4657810666108475055">ట్యాబ్ సెర్చ్</translation>
 <translation id="4657914796247705218">TrackPoint వేగం</translation>
 <translation id="4658285806588491142">మీ స్క్రీన్‌ను ప్రైవేట్‌గా ఉంచుకోండి</translation>
@@ -8305,6 +8309,7 @@
 <translation id="6798420440063423019">చాలా ఎక్కువ సార్లు తప్పు పిన్‌ను ఎంటర్ చేసినందువలన సెక్యూరిటీ కీ లాక్ చేయబడింది. మీరు సెక్యూరిటీ కీని రీసెట్ చేయాల్సి ఉంటుంది.</translation>
 <translation id="679845623837196966">చదవాల్సిన లిస్ట్‌ను చూపించు</translation>
 <translation id="6798578729981748444">దిగుమతిని పూర్తి చేయాలంటే, అన్ని Firefox విండోలను మూసివేయండి.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini మీ టాస్క్‌ను పూర్తి చేసింది, మీరు దీన్ని Chromeలో చూడవచ్చు.</translation>
 <translation id="6798780071646309401">caps lock ఆన్‌లో ఉంది</translation>
 <translation id="679905836499387150">దాచిన టూల్‌బార్ బటన్‌లు</translation>
 <translation id="6800893479155997609">మీ <ph name="DEVICE_TYPE" /> కోసం టాప్ యాప్‌లు</translation>
@@ -9908,6 +9913,7 @@
 <translation id="7916364730877325865">ఈ ఖాతాతో సింక్‌ను ఆన్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు</translation>
 <translation id="791698251820376781">సైన్ ఇన్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు</translation>
 <translation id="7918257978052780342">నమోదు చేయి</translation>
+<translation id="7918928051723770926">టాస్క్ పూర్తయింది</translation>
 <translation id="7919123827536834358">ఈ భాషలను ఆటోమేటిక్‌గా అనువదించు</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />సె</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" />ను చూడగలదు</translation>
@@ -10394,6 +10400,7 @@
 <translation id="8244724656154470844">అప్‌డేట్ చెక్ విఫలమైంది.</translation>
 <translation id="8246776524656196770">మీ సెక్యూరిటీ కీని పిన్‌తో (వ్యక్తిగత గుర్తింపు సంఖ్య) సంరక్షించుకోండి</translation>
 <translation id="824713170151383793">DevToolsతో</translation>
+<translation id="8247210755024677100">సైన్ ఇన్ చేస్తోంది ...</translation>
 <translation id="8247795734638043885">సురక్షితం కాని ఫైల్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="8248050856337841185">&amp;అతికించు</translation>
 <translation id="8248381369318572865">మీ మైక్రోఫోన్‌ను యాక్సెస్ చేసి, మీ స్పీచ్‌ను విశ్లేషించండి</translation>
@@ -10837,6 +10844,7 @@
 <translation id="8557022314818157177">మీ వేలిముద్ర క్యాప్చర్ అయ్యేవరకు, మీ సెక్యూరిటీ కీని తాకుతూ ఉండండి</translation>
 <translation id="8557100046150195444">కొనసాగించడానికి టచ్ IDని ఉపయోగించండి</translation>
 <translation id="8557856025359704738">తర్వాతి డౌన్‌లోడ్ <ph name="NEXT_DATE_DOWNLOAD" />న జరుగుతుంది.</translation>
+<translation id="8558063527625343224">Google Beamను సెటప్ చేయండి</translation>
 <translation id="8559858985063901027">పాస్-కీలు</translation>
 <translation id="8559961053328923750">యాడ్ పనితీరును అంచనా వేయడానికి బ్రౌజర్ ద్వారా సైట్‌లు షేర్ చేయగల డేటా మొత్తాన్ని Chrome పరిమితం చేస్తుంది</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{అన్నింటినీ &amp;కొత్త విండోలో తెరువు}=1{&amp;కొత్త విండోలో తెరువు}other{అన్నింటినీ ({COUNT}) &amp;కొత్త విండోలో తెరువు}}</translation>
@@ -11352,6 +11360,7 @@
 <translation id="8898786835233784856">తదుపరి ట్యాబ్‌ను ఎంచుకో</translation>
 <translation id="8898790559170352647">మీ Microsoft ఖాతాను జోడించండి</translation>
 <translation id="8898822736010347272">కొత్త థ్రెట్స్‌ను గుర్తించడంలో, వెబ్‌లోని అందరు యూజర్‌లను రక్షించడంలో సహాయపడేందుకు మీరు సందర్శించే కొన్ని పేజీల URLలను, కొంత సిస్టమ్ సమాచారాన్ని, కొంత పేజీ కంటెంట్‌ను Googleకు పంపుతుంది.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini మీ టాస్క్‌పై పని చేయడం ఆపివేసింది.</translation>
 <translation id="8899851313684471736">కొత్త &amp;విండోలో లింక్‌ను తెరువు</translation>
 <translation id="8900413463156971200">సెల్యులార్‌ను ఎనేబుల్ చేయడం</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> కోసం మీ డేటాను బ్యాకప్ చేసి, ఈరోజే ఈ <ph name="DEVICE_TYPE" />ని రిటర్న్ చేయాల్సి ఉంటుంది.}other{<ph name="MANAGER" /> కోసం మీరు మీ డేటాను గడువు తేదీలోపు బ్యాకప్ చేసి, ఈ <ph name="DEVICE_TYPE" />ని రిటర్న్ చేయాల్సి ఉంటుంది.}}</translation>

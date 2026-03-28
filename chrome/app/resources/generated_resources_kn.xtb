@@ -2245,6 +2245,7 @@
 <translation id="2518024842978892609">ನಿಮ್ಮ ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="2518620532958109495">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2519250377986324805">ಹೇಗೆಂದು ನೋಡಿ</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nನಿಮ್ಮ ಕಾರ್ಯದ ವಿಚಾರವಾಗಿ ಕೆಲಸ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Gemini ಗೆ ನಿಮ್ಮ ಸಹಾಯ ಬೇಕು.</translation>
 <translation id="2519517390894391510">ಪ್ರಮಾಣಪತ್ರ ಪ್ರೊಫೈಲ್ ಹೆಸರು</translation>
 <translation id="2520644704042891903">ಲಭ್ಯವಿರುವ ಸಾಕೆಟ್‌ಗಾಗಿ ಕಾಯಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="2521427645491031107">ಆ್ಯಪ್‌ಗಳ ಸಿಂಕ್ ಅನ್ನು ಸಾಧನದ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸೆಟ್‌ ಮಾಡಲಾಗಿದೆ</translation>
@@ -4646,6 +4647,7 @@
 <translation id="4190492351494485814">ಆರಂಭಿಕ ಸೆಟಪ್‌ಗಾಗಿ, ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ ಆದ್ದರಿಂದ ಫೈಲ್‌ಗಳನ್ನು ನಿಮ್ಮ Chromebook ಗೆ ಸಿಂಕ್ ಮಾಡಬಹುದು</translation>
 <translation id="4190828427319282529">ಕೀಬೋರ್ಡ್ ಫೋಕಸ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> ಜೊತೆಗೆ ಸ್ವೀಕರಿಸಬೇಕೆ?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini ನಿಮ್ಮ ಕಾರ್ಯದ ವಿಚಾರವಾಗಿ ಕೆಲಸ ಮಾಡುತ್ತಿದೆ ಮತ್ತು ಹೆಚ್ಚಿನ ಕ್ರಮದ ಅಗತ್ಯವಿದ್ದರೆ ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> ಗಾಗಿ ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ, ಅಭಿವೃದ್ಧಿಯ ಆರಂಭಿಕ ಹಂತದಲ್ಲಿದೆ ಹಾಗೂ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">ವಿಶ್ವಾಸಾರ್ಹ CA</translation>
@@ -5258,6 +5260,7 @@
 <translation id="4624054169152573743">ಬಣ್ಣದ ಥೀಮ್‌</translation>
 <translation id="4625078469366263107">ಆ್ಯಪ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="4625905218692741757">ಬೂದು ಡಿಫಾಲ್ಟ್ ಬಣ್ಣ</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini ನಿಮ್ಮ ಕಾರ್ಯವನ್ನು ವಿರಾಮಗೊಳಿಸಿದೆ. ಅದನ್ನು ಪರಿಶೀಲಿಸಲು Chrome ಗೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="4627107755957573804">ಪಾಸ್‌ಕೀಗಳನ್ನು ಬಳಸುವುದಕ್ಕೆ ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಖಾತೆಗಳನ್ನು ಅಪ್‌ಗ್ರೇಡ್ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="4627442949885028695">ಬೇರೆ ಸಾಧನದಿಂದ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4628762811416793313">Linux ಕಂಟೇನರ್ ಸೆಟಪ್ ಪೂರ್ಣವಾಗಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -5300,6 +5303,7 @@
 <translation id="4653116291358041820">ಸಣ್ಣ ಶ್ಯಾಡೋ</translation>
 <translation id="4654236001025007561">ನಿಮ್ಮ ಸುತ್ತಲಿನ Chromebook ಗಳು ಮತ್ತು Android ಸಾಧನಗಳ ಜೊತೆಗೆ ಫೈಲ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4654801841330730814">ಎಲ್ಲಾ</translation>
+<translation id="4657724094180965385">ಆಸಕ್ತಿ ಇಲ್ಲ</translation>
 <translation id="4657810666108475055">ಟ್ಯಾಬ್ ಹುಡುಕಾಟ</translation>
 <translation id="4657914796247705218">TrackPoint ವೇಗ</translation>
 <translation id="4658285806588491142">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸಿ</translation>
@@ -8303,6 +8307,7 @@
 <translation id="6798420440063423019">ತಪ್ಪಾದ ಪಿನ್ ಸಂಖ್ಯೆಯನ್ನು ಹಲವಾರು ಬಾರಿ ನಮೂದಿಸಿರುವ ಕಾರಣ, ಭದ್ರತೆ ಕೀ ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಭದ್ರತೆ ಕೀ ಅನ್ನು ರೀಸೆಟ್ ಮಾಡಬೇಕಾಗುತ್ತದೆ.</translation>
 <translation id="679845623837196966">ಓದುವ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6798578729981748444">ಆಮದು ಮಾಡುವುದನ್ನು ಪೂರ್ತಿಗೊಳಿಸಲು, ಎಲ್ಲಾ Firefox ವಿಂಡೋಗಳನ್ನು ಮುಚ್ಚಿ.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini ನಿಮ್ಮ ಕಾರ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದೆ, ನೀವು ಅದನ್ನು Chrome ನಲ್ಲಿ ವೀಕ್ಷಿಸಬಹುದು.</translation>
 <translation id="6798780071646309401">caps lock ಆನ್</translation>
 <translation id="679905836499387150">ಮರೆಮಾಡಿದ ಟೂಲ್‌ಬಾರ್ ಬಟನ್‌ಗಳು</translation>
 <translation id="6800893479155997609">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗಾಗಿ ಟಾಪ್‌ ಆ್ಯಪ್‌ಗಳು</translation>
@@ -9906,6 +9911,7 @@
 <translation id="7916364730877325865">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಖಾತೆಯೊಂದಿಗೆ ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಲು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="791698251820376781">ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>
 <translation id="7918257978052780342">ನೋಂದಾಯಿಸಿ</translation>
+<translation id="7918928051723770926">ಕಾರ್ಯವು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="7919123827536834358">ಈ ಭಾಷೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ಸೆ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> ಅನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
@@ -10392,6 +10398,7 @@
 <translation id="8244724656154470844">ಅಪ್‌ಡೇಟ್ ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="8246776524656196770">ಪಿನ್ (ವೈಯಕ್ತಿಕ ಗುರುತಿಸುವಿಕೆ ಸಂಖ್ಯೆ) ಮೂಲಕ ನಿಮ್ಮ ಭದ್ರತೆ ಕೀ ಅನ್ನು ಸಂರಕ್ಷಿಸಿ</translation>
 <translation id="824713170151383793">DevTools ಮೂಲಕ</translation>
+<translation id="8247210755024677100">ಸೈನ್‌ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ ...</translation>
 <translation id="8247795734638043885">ಅಸುರಕ್ಷಿತ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8248050856337841185">&amp;ಅಂಟಿಸಿ</translation>
 <translation id="8248381369318572865">ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಪ್ರವೇಶಿಸಿ ಹಾಗೂ ನಿಮ್ಮ ಧ್ವನಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ</translation>
@@ -10835,6 +10842,7 @@
 <translation id="8557022314818157177">ನಿಮ್ಮ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡುವವರೆಗೆ ಸುರಕ್ಷತಾ ಕೀಯನ್ನು ಸ್ಪರ್ಶಿಸುತ್ತಾ ಇರಿ.</translation>
 <translation id="8557100046150195444">ಮುಂದುವರಿಸಲು ID ಸ್ಪರ್ಶಿಸಿ</translation>
 <translation id="8557856025359704738">ಮುಂದಿನ ಡೌನ್‌ಲೋಡ್ ದಿನಾಂಕ <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Google Beam ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="8559858985063901027">ಪಾಸ್‌ಕೀಗಳು</translation>
 <translation id="8559961053328923750">ಜಾಹೀರಾತು ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಅಳೆಯಲು ಬ್ರೌಸರ್ ಮೂಲಕ ಸೈಟ್ ಹಂಚಿಕೊಳ್ಳಬಹುದಾದ ಒಟ್ಟು ಡೇಟಾವನ್ನು Chrome ಮಿತಿಗೊಳಿಸುತ್ತದೆ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲವನ್ನೂ ತೆರೆಯಿರಿ}=1{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ತೆರೆಯಿರಿ}one{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}other{&amp;ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಎಲ್ಲಾ ({COUNT}) ಗಳನ್ನು ತೆರೆಯಿರಿ}}</translation>
@@ -11351,6 +11359,7 @@
 <translation id="8898786835233784856">ಮುಂದೆ ಟ್ಯಾಬ್ ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8898790559170352647">ನಿಮ್ಮ Microsoft ಖಾತೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8898822736010347272">ಹೊಸ ಅಪಾಯಗಳನ್ನು ಕಂಡುಹಿಡಿಯಲು ಮತ್ತು ವೆಬ್‌ನಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರನ್ನು ರಕ್ಷಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಕೆಲವು ಪುಟಗಳ URL ಗಳು, ಸೀಮಿತ ಸಿಸ್ಟಂ ಮಾಹಿತಿ ಮತ್ತು ಪುಟಗಳಲ್ಲಿನ ಕೆಲವು ಕಂಟೆಂಟ್ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini ನಿಮ್ಮ ಕಾರ್ಯದ ವಿಚಾರವಾಗಿ ಕೆಲಸ ಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿದೆ.</translation>
 <translation id="8899851313684471736">ಹೊಸ &amp;ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8900413463156971200">ಸೆಲ್ಯುಲರ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಇಂದೇ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ.}one{ಗಡುವಿನ ಮೊದಲು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಇಂದೇ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ.}other{ಗಡುವಿನ ಮೊದಲು ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಬೇಕೆಂದು ಮತ್ತು ಇಂದೇ ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಹಿಂತಿರುಗಿಸಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ.}}</translation>

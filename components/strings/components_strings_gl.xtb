@@ -763,6 +763,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2188375229972301266">Varias perforacións na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por comas</translation>
 <translation id="2190094353033916816">Esta política aplicou valores diferentes aos niveis de usuario e de máquina. Aínda así, funciona segundo o previsto.</translation>
+<translation id="219061769324072544">Crédito,Tarxeta,Débito</translation>
 <translation id="2191980191135734720">Desbloquea a pantalla no seguinte paso, normalmente coa túa impresión dixital. Tamén podes <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2195729137168608510">Protección de correo electrónico</translation>
@@ -1366,6 +1367,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3134859781443140237">Rede local</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" />: Busca <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Ningún}=1{datos de inicio de sesión para 1 conta}other{datos de inicio de sesión para # contas}}</translation>
+<translation id="3139503241401248626">Para activar estas opcións e usar a información da túa Conta de Google, visita a configuración dos servizos de autocompletar</translation>
 <translation id="3140646734028448730">Servizos para empresas</translation>
 <translation id="3141093262818886744">Abrir de todas formas</translation>
 <translation id="3141337053413339205">Cambiar a esta pestana.</translation>
@@ -2300,6 +2302,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4594403342090139922">&amp;Desfacer eliminación</translation>
 <translation id="4598556348158889687">Xestión do almacenamento</translation>
 <translation id="459914240367517409">Deseño e programación web</translation>
+<translation id="4599572944836204718">Cando o fagas poderás pagar máis rápido con Google Pay. Os seus detalles encríptanse en Google Wallet.</translation>
 <translation id="4602465984861132303">Birlos</translation>
 <translation id="4603727370377253901">Reservas de voos</translation>
 <translation id="4607608436550361748">Ver consellos de Chrome</translation>
@@ -2589,6 +2592,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />; preme Tabulador para consultar máis atallos de busca dispoñibles despois desta suxestión de busca</translation>
 <translation id="5052488928733955073">Produciuse un problema ao completar a túa información. Comproba a conexión.</translation>
 <translation id="5052517576853118371">Temas activos</translation>
+<translation id="5053116470141135293">Cando pagues con esta tarxeta, introducirase un número de tarxeta virtual para protexer os teus datos reais. Xestiona esta opción en Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}other{Para enviar estes ficheiros usando Compartir por Nearby, libera espazo (<ph name="DISK_SPACE_SIZE" />) no dispositivo}}</translation>
 <translation id="5056587122125565772">Crear imaxe</translation>
 <translation id="505757197798929356">Indica o motivo polo que queres abrir o ficheiro (obrigatorio)</translation>
@@ -3365,6 +3369,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6250932670816326647">Produtos para o baño e o corpo</translation>
 <translation id="6251906504834538140">{0,plural, =1{Bloqueouse a migración do ficheiro}other{Bloqueouse a migración de <ph name="FILE_COUNT" /> ficheiros}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para xestionar os ficheiros que descargaches en Chrome, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="6253380015872250643">Garda a tarxeta en Google Wallet</translation>
 <translation id="6254436959401408446">Non hai memoria suficiente para abrir esta páxina</translation>
 <translation id="625463612687472648">Deixar de permitir</translation>
 <translation id="6259156558325130047">&amp;Refacer o cambio de orde</translation>
@@ -4261,6 +4266,7 @@ Detalles adicionais:
 <translation id="7615932826417658001">Engadir tarxeta de identidade</translation>
 <translation id="7616390733770379387">Os buscadores móstranse en orde aleatoria.</translation>
 <translation id="7616645509853975347">O teu administrador activou Chrome Enterprise Connectors no teu navegador. Estes conectores teñen acceso a algúns dos teus datos.</translation>
+<translation id="7616747402308801775">Engadiuse a Google Wallet para que poidas usala nos servizos de Google.</translation>
 <translation id="7617825962482469577">Sobre C7/C6</translation>
 <translation id="7618270539713451657">Artes marciais</translation>
 <translation id="7619838219691048931">Folla final</translation>
@@ -4583,6 +4589,7 @@ Detalles adicionais:
 <translation id="8120720167840853945">Esta política non controla o comportamento predeterminado de ningunha outra política.</translation>
 <translation id="8127301229239896662"><ph name="SOFTWARE_NAME" /> non se instalou correctamente no teu ordenador ou na rede. Pídelle ao administrador de TI que solucione este problema.</translation>
 <translation id="8130113808541743942">Mover a...</translation>
+<translation id="813024282736408069">Activa unha tarxeta virtual para usala coa función de autocompletar</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133495915926741232">Selecciona as categorías amplas de temas que se poden usar para axudar a personalizar os anuncios. Se desactivas unha, bloquearanse os temas relacionados. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Contratación e persoal</translation>

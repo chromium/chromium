@@ -764,6 +764,7 @@
 <translation id="2188375229972301266">အောက်ခြေတွင် အများအပြားဖောက်ရန်</translation>
 <translation id="218940509700321686">ကော်မာဖြင့်ခြားထားသော တန်ဖိုးများ</translation>
 <translation id="2190094353033916816">ဤမူဝါဒတွင် စက်အဆင့်နှင့် အသုံးပြုသူအဆင့်တို့တွင် မတူညီသော တန်ဖိုးများ သတ်မှတ်ထားသည်။ မူဝါဒသည် ရည်ရွယ်ထားသည့်အတိုင်း လုပ်ဆောင်နေသည်။</translation>
+<translation id="219061769324072544">ခရက်ဒစ်၊ကတ်၊ဒက်ဘစ်</translation>
 <translation id="2191980191135734720">နောက်တစ်ဆင့်တွင် ပုံမှန်အားဖြင့် သင့်လက်ဗွေသုံးပြီး စခရင် လော့ခ်ဖွင့်နိုင်သည်။ သင်သည် <ph name="LINK_TEXT" /> နိုင်သေးသည်။</translation>
 <translation id="2194856509914051091">စဉ်းစားရန် အချက်များ</translation>
 <translation id="2195729137168608510">အီးမေးလ် ကာကွယ်မှု</translation>
@@ -1371,6 +1372,7 @@
 <translation id="3134859781443140237">အိမ်သုံးကွန်ရက်</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - <ph name="KEYWORD_SHORT_NAME" /> ရှာရန်</translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{တစ်ခုမျှမရှိပါ}=1{အကောင့် ၁ ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}other{အကောင့် # ခုအတွက် လက်မှတ်ထိုးဝင်ရန် ဒေတာ}}</translation>
+<translation id="3139503241401248626">ဤဆက်တင်များကို ဖွင့်ပြီး သင့် Google Account မှ အချက်အလက်သုံးရန်အတွက် အော်တိုဖြည့် ဝန်ဆောင်မှု ဆက်တင်များကို ဝင်ကြည့်ပါ</translation>
 <translation id="3140646734028448730">လုပ်ငန်း ဝန်ဆောင်မှု</translation>
 <translation id="3141093262818886744">မည်သို့ပင်ဖြစ်စေ ဖွင့်ရန်</translation>
 <translation id="3141337053413339205">ဤတဘ်သို့ ပြောင်းရန်။</translation>
@@ -2301,6 +2303,7 @@
 <translation id="4594403342090139922">&amp;ဖျက်မှုကို ပြန်လုပ်ရန်</translation>
 <translation id="4598556348158889687">သိုလှောင်ခန်းစီမံခန့်ခွဲမှု</translation>
 <translation id="459914240367517409">ဝဘ်ဒီဇိုင်း၊ ဝဘ်ဆိုက်ရေးခြင်း</translation>
+<translation id="4599572944836204718">သင့်ကတ်ကို သိမ်းထားပါက Google Pay ဖြင့် ပိုမိုလျင်မြန်စွာ ပေးချေနိုင်သည်။ ကတ်အသေးစိတ်များကို Google Wallet တွင် အသွင်ဝှက်ထားသည်။</translation>
 <translation id="4602465984861132303">ဘိုးလင်းပစ်ကစားခြင်း</translation>
 <translation id="4603727370377253901">လေယာဉ်ခရီးစဉ် ကြိုတင်မှာယူမှုများ</translation>
 <translation id="4607608436550361748">Chrome အကြံပြုချက်များ ကြည့်ရန်</translation>
@@ -2415,6 +2418,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ပေါ့ပ်အပ်ကို ပိတ်ထားသည်}other{ပေါ့ပ်အပ်ကို # ခုကို ပိတ်ထားသည်}}</translation>
 <translation id="4780320432697076749">ဓာတ်ပုံဆော့ဖ်ဝဲ</translation>
 <translation id="4780366598804516005">စာတိုက်ပုံး ၁</translation>
+<translation id="4785273477715803444">မှတ်တမ်းများ စစ်ထုတ်ရန်</translation>
 <translation id="4785376858512657294">Google Account စီမံရန်</translation>
 <translation id="4785689107224900852">ဤတဘ်သို့ ပြောင်းရန်</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" အတွက် ရှာနေသည်</translation>
@@ -2590,6 +2594,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />၊ ဤရှာဖွေမှု အကြံပြုချက်နောက်ပိုင်း ရနိုင်သော နောက်ထပ်ရှာဖွေစာလုံး ဖြတ်လမ်းများအတွက် တဘ်ကို နှိပ်ပါ</translation>
 <translation id="5052488928733955073">သင့်အချက်အလက်ကို ဖြည့်ရာတွင် ပြဿနာရှိနေသည်။ ချိတ်ဆက်မှုကို စစ်ဆေးပါ။</translation>
 <translation id="5052517576853118371">ဖွင့်ထားသည့် အကြောင်းအရာများ</translation>
+<translation id="5053116470141135293">သင့်အချက်အလက်အစစ်များကို ကာကွယ်ရန် ဤကတ်ဖြင့် ငွေရှင်းသောအခါ ပကတိအသွင်ကတ် နံပါတ်ကို ဖြည့်ပါမည်။ Google Wallet တွင် စီမံပါ။ <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်ကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}other{‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ သုံးပြီး ဤဖိုင်များကိုပို့ရန် သင်၏စက်တွင် နေရာလွတ် (<ph name="DISK_SPACE_SIZE" />) ပြုလုပ်ပါ}}</translation>
 <translation id="5056587122125565772">ပုံပြုလုပ်ရန်</translation>
 <translation id="505757197798929356">ဖွင့်ရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
@@ -3365,6 +3370,7 @@
 <translation id="6250932670816326647">ရေချိုးဆပ်ပြာ၊ ခန္ဓာကိုယ်ထိန်းသိမ်းရေးပစ္စည်း</translation>
 <translation id="6251906504834538140">{0,plural, =1{ဖိုင်ကို ရွှေ့ခွင့် ပိတ်ထားသည်}other{ဖိုင် <ph name="FILE_COUNT" /> ဖိုင်ကို ရွှေ့ခွင့် ပိတ်ထားသည်}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome တွင် သင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံရန် Enter ခလုတ် နှိပ်ပါ</translation>
+<translation id="6253380015872250643">Google Wallet တွင် ကတ်သိမ်းပါ</translation>
 <translation id="6254436959401408446">ဤစာမျက်နှာကို ဖွင့်ရန် မှတ်ဉာဏ် အလုံအလောက်မရှိပါ</translation>
 <translation id="625463612687472648">ခွင့်ပြုခြင်း ရပ်ရန်</translation>
 <translation id="6259156558325130047">&amp;ပြန်လည်မှာယူမှုကို ပြန်လုပ်ရန်</translation>
@@ -4262,6 +4268,7 @@
 <translation id="7615932826417658001">အထောက်အထားကတ် ထည့်ရန်</translation>
 <translation id="7616390733770379387">၎င်းတို့ကို ကျပန်းအစီအစဉ်ဖြင့် ပြထားသည်။</translation>
 <translation id="7616645509853975347">သင်၏စီမံခန့်ခွဲသူက သင့်ဘရောင်ဇာတွင် Chrome Enterprise Connectors ကို ဖွင့်ထားသည်။ ဤချိတ်ဆက်စနစ်များက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိသည်။</translation>
+<translation id="7616747402308801775">ဤကတ်ကို Google Wallet တွင် သိမ်းထားသဖြင့် Google ဝန်ဆောင်မှုများတွင် သုံးနိုင်သည်</translation>
 <translation id="7617825962482469577">C7/C6 စာအိတ်</translation>
 <translation id="7618270539713451657">ကိုယ်ခံပညာ</translation>
 <translation id="7619838219691048931">အဆုံးသတ် စာမျက်နှာ</translation>
@@ -4585,6 +4592,7 @@
 <translation id="8120720167840853945">ဤမူဝါဒများသည် အခြားမူဝါဒများ၏ မူရင်းလုပ်ဆောင်ပုံကို မထိန်းချုပ်ပါ။</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ကို သင်၏ ကွန်ပျူတာ သို့မဟုတ် ကွန်ရက်တွင် မှန်ကန်စွာ ထည့်သွင်းမထားပါ။ ဤပြဿနာကို ဖြေရှင်းရန် သင်၏ IT စီမံခန့်ခွဲသူကို မေးမြန်းပါ။</translation>
 <translation id="8130113808541743942">ရွှေ့မည့်နေရာ…</translation>
+<translation id="813024282736408069">အော်တိုဖြည့်အတွက် ပကတိအသွင်ကတ် ဖွင့်ပါ</translation>
 <translation id="8131740175452115882">အတည်ပြုရန်</translation>
 <translation id="8133495915926741232">ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးနိုင်သည့် ကျယ်ပြန့်သော အကြောင်းအရာအမျိုးအစားများကို ရွေးပါ။ ပိုမိုကျယ်ပြန့်သော အမျိုးအစားကို ပိတ်ခြင်းဖြင့် ၎င်းနှင့်ဆက်စပ်သော အကြောင်းအရာများကိုလည်း ပိတ်လိုက်ပါမည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">လူသစ်စုဆောင်းမှုနှင့် ဝန်ထမ်းခန့်အပ်မှု</translation>

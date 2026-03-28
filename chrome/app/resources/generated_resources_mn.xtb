@@ -2589,6 +2589,7 @@
 <translation id="2750020734439919571">Chrome аппын бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="275010360476017464">Gemini-тай чатлахын тулд микрофоноо ашиглаарай. Таныг Gemini-тай ярих үед аудиог Gemini-тай харилцдаг аппын үйл ажиллагаанд хадгалдаг (асаалттай бол).</translation>
 <translation id="2750602041558385535">Баталгаажуулаагүй таталтыг блоклосон</translation>
+<translation id="2751320815618312249">Өөр + <ph name="NUM" /></translation>
 <translation id="2751454300227269244">Амаа баруун тийш мушийлгана уу</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> таны аюулгүй байдлын түлхүүрийн ID дугаарыг мэдэхийг хүсэж байна. Тухайн сайт таныг яг ямар түлхүүр ашиглаж байгааг мэднэ.</translation>
 <translation id="275213133112113418">Таны картыг хадгалсан</translation>
@@ -4550,6 +4551,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> үйлдэлд товчлол сонгох</translation>
 <translation id="4109135793348361820">Цонхыг  <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> ) руу зөөх</translation>
 <translation id="4110485659976215879">Сануулгыг сэргээх</translation>
+<translation id="411052834366185695">Хамгийн багадаа 1 оронтой байх ёстой</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (офлайн)</translation>
 <translation id="4113743276555482284">Файлын нууц үг</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Хадгалсан ямар ч нууц үг байхгүй}=1{1 нууц үгийг шалгасан}other{{COUNT} нууц үгийг шалгасан}}</translation>
@@ -5039,6 +5041,7 @@
 <translation id="4461483878391246134">Хэзээ ч орчуулга санал болгохгүй хэл нэмнэ үү</translation>
 <translation id="4462159676511157176">Стандарт нэртэй серверүүд</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />-д <ph name="TIME" />-н цагийн хязгаар тохируулсан</translation>
+<translation id="4466922176191762830">Өөр + <ph name="NUM" /></translation>
 <translation id="4467373268340082204">ПИН буруу байна</translation>
 <translation id="4469324811108161144">Тэмдэглэл нь <ph name="CHARACTER_LIMIT" /> хүртэлх тэмдэгт хадгалах боломжтой.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> нь <ph name="FOLDERNAME" />-н файлыг засах боломжтой</translation>
@@ -5300,6 +5303,7 @@
 <translation id="4653116291358041820">Жижиг сүүдэр</translation>
 <translation id="4654236001025007561">Эргэн тойрныхоо Chromebook болон Android төхөөрөмжүүдтэй файл хуваалцаарай</translation>
 <translation id="4654801841330730814">Бүгд</translation>
+<translation id="4657724094180965385">Сонирхохгүй</translation>
 <translation id="4657810666108475055">Таб хайлт</translation>
 <translation id="4657914796247705218">TrackPoint-н хурд</translation>
 <translation id="4658285806588491142">Дэлгэцээ хувийн байлгаарай</translation>
@@ -5453,6 +5457,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{Нийтийн түлхүүр болон халдашгүй байдлын блокийг шалгаж байна... 1 минутаас бага хугацаа үлдсэн}=1{Нийтийн түлхүүр болон халдашгүй байдлын блокийг шалгаж байна... 1 минут үлдсэн}other{Нийтийн түлхүүр болон халдашгүй байдлын блокийг шалгаж байна... # минут үлдсэн}}</translation>
 <translation id="4766598565665644999">Бүх өргөтгөлүүд <ph name="HOST" />-г унших, өөрчлөх боломжтой</translation>
 <translation id="4767427586072640478">Идэвхгүй болгосон өргөтгөлийн талаар нэмэлт мэдээлэл авна уу.</translation>
+<translation id="4769359569327438364">Хамгийн багадаа 4 оронтой байх ёстой</translation>
 <translation id="4769632191812288342">Та стандарт хамгаалалтыг авч байна</translation>
 <translation id="4770119228883592393">Зөвшөөрлийн хүсэлт тавьсан. Хариу өгөхийн тулд ⌘ + Сонголт + Доош сумыг дарна уу</translation>
 <translation id="4772914216048388646">Эмх цэгцтэй</translation>
@@ -6136,6 +6141,7 @@
 <translation id="5240931875940563122">Android утсаар нэвтрэх</translation>
 <translation id="5241689948221696942">Зарим бүтээгдэхүүний хувьд харьцуулалтын хүснэгт нь вебийн эргэн тойрны шүүмжийг хураангуйлдаг</translation>
 <translation id="5242724311594467048">"<ph name="EXTENSION_NAME" />-ыг идэвхжүүлэх үү"?</translation>
+<translation id="5243477050423867768">Дор хаяж 8 оронтой байх ёстой бөгөөд давтагдсан, дараалсан дараалал агуулж болохгүй</translation>
 <translation id="5244234799035360187">OneDrive одоо Файлс аппад харагдана</translation>
 <translation id="5244466461749935369">Одоохондоо үлдээх</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />-д синк хийж байна</translation>
@@ -8049,6 +8055,7 @@
 <translation id="6619990499523117484">ПИН-ээ баталгаажуулна уу</translation>
 <translation id="6621282332208609777">Google-с асууна уу эсвэл URL бичнэ үү</translation>
 <translation id="6621391692573306628">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд аль аль төхөөрөмж дээр Chrome-д нэвтэрнэ үү</translation>
+<translation id="6622212269189717101">Дор хаяж 6 оронтой байх ёстой бөгөөд давтагдсан, дараалсан дараалалтай байж болохгүй</translation>
 <translation id="6622980291894852883">Зураг блоклохыг үргэлжлүүлэх</translation>
 <translation id="6624036901798307345">Таблетын горимд таб тус бүрийн өнгөц зургийг харуулсан шинэ таб зурвасыг нээхийн тулд таб тоологч самбарын товчлуур дээр товшино уу.</translation>
 <translation id="6624538059730609162">Баруун талын харагдах байдлыг хаах</translation>

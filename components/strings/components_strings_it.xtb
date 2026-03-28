@@ -763,6 +763,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2188375229972301266">Perforatura multipla in basso</translation>
 <translation id="218940509700321686">Valori separati da virgola</translation>
 <translation id="2190094353033916816">Questa policy ha valori differenti applicati a livello di macchina e utente. La policy funziona come previsto.</translation>
+<translation id="219061769324072544">Credito,Carta,Debito</translation>
 <translation id="2191980191135734720">Sblocca lo schermo nel passaggio successivo, in genere usando la tua impronta. Puoi anche <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Aspetti da considerare</translation>
 <translation id="2195729137168608510">Protezione email</translation>
@@ -1366,6 +1367,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3134859781443140237">Rete locale</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Cerca in <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Nessuno}=1{dati di accesso per 1 account}other{dati di accesso per # account}}</translation>
+<translation id="3139503241401248626">Per attivare queste impostazioni e utilizzare i dati di pagamento del tuo Account Google, visita le impostazioni dei servizi di compilazione automatica</translation>
 <translation id="3140646734028448730">Servizi per le aziende</translation>
 <translation id="3141093262818886744">Apri comunque</translation>
 <translation id="3141337053413339205">Passa a questa scheda.</translation>
@@ -2297,6 +2299,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4594403342090139922">&amp;Annulla eliminazione</translation>
 <translation id="4598556348158889687">Gestione dello spazio di archiviazione</translation>
 <translation id="459914240367517409">Web design e sviluppo di siti web</translation>
+<translation id="4599572944836204718">Salvare la carta ti consente di pagare più velocemente con Google Pay. I dati della carta sono criptati in Google Wallet.</translation>
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Prenotazioni di voli</translation>
 <translation id="4607608436550361748">Leggi i suggerimenti di Chrome</translation>
@@ -2586,6 +2589,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, premi Tab per altre scorciatoie per la ricerca disponibili dopo questo suggerimento di ricerca</translation>
 <translation id="5052488928733955073">Si è verificato un problema durante l'inserimento delle informazioni. Controlla la connessione.</translation>
 <translation id="5052517576853118371">Argomenti attivi</translation>
+<translation id="5053116470141135293">Quando effettui un pagamento con questa carta, verrà inserito un numero di carta virtuale per proteggere i tuoi dati effettivi. Gestisci in Google Wallet. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Per inviare questo file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}other{Per inviare questi file tramite Condivisione nelle vicinanze, libera spazio (<ph name="DISK_SPACE_SIZE" />) sul tuo dispositivo}}</translation>
 <translation id="5056587122125565772">Crea immagine</translation>
 <translation id="505757197798929356">Specifica il motivo dell'apertura (obbligatorio)</translation>
@@ -3361,6 +3365,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6250932670816326647">Prodotti per il corpo e per il bagno</translation>
 <translation id="6251906504834538140">{0,plural, =1{Spostamento del file bloccato}other{Spostamento di <ph name="FILE_COUNT" /> file bloccato}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per gestire i file che hai scaricato in Chrome</translation>
+<translation id="6253380015872250643">Salva la carta in Google Wallet</translation>
 <translation id="6254436959401408446">Impossibile aprire la pagina. Memoria insufficiente.</translation>
 <translation id="625463612687472648">Rimuovi l'autorizzazione</translation>
 <translation id="6259156558325130047">&amp;Ripeti ridisposizione</translation>
@@ -4258,6 +4263,7 @@ Ulteriori dettagli:
 <translation id="7615932826417658001">Aggiungi carta di identità</translation>
 <translation id="7616390733770379387">Questi sono mostrati in ordine casuale.</translation>
 <translation id="7616645509853975347">L'amministratore ha attivato Chrome Enterprise Connectors sul tuo browser. Questi connettori hanno accesso ad alcuni dei tuoi dati.</translation>
+<translation id="7616747402308801775">Questa carta è stata salvata in Google Wallet per consentirti di utilizzarla sui servizi Google.</translation>
 <translation id="7617825962482469577">Busta C7/C6</translation>
 <translation id="7618270539713451657">Arti marziali</translation>
 <translation id="7619838219691048931">Ultimo foglio</translation>
@@ -4580,6 +4586,7 @@ Ulteriori dettagli:
 <translation id="8120720167840853945">Questa policy non controlla il comportamento predefinito di altre policy.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" non è stato installato correttamente sul computer o sulla rete. Chiedi all'amministratore IT di risolvere il problema.</translation>
 <translation id="8130113808541743942">Sposta in…</translation>
+<translation id="813024282736408069">Attiva una carta virtuale per la compilazione automatica</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8133495915926741232">Scegli quali ampie categorie di argomenti possono essere utilizzate per personalizzare gli annunci. Se disattivi una categoria più ampia, verranno bloccati anche i suoi argomenti correlati. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Selezione e assunzione di personale</translation>

@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">Administrator parol paylaşımını deaktiv edib.</translation>
 <translation id="4002066346123236978">Başlıq</translation>
 <translation id="4004204301268239848">Parollar Google Hesabınızda yadda saxlanılıb. Onları istənilən cihazda istifadə edə bilərsiniz.</translation>
+<translation id="4007463141047732631">Qrupu redaktə edin</translation>
 <translation id="4011489366247192265">Bu dildən:</translation>
 <translation id="4017599800655151880">Miniatür</translation>
 <translation id="4018440314314549819">Saxlanılan parolları avtomatik doldurun</translation>
@@ -905,6 +906,7 @@
 <translation id="4287172530684295552">Oxunmuş olaraq qeyd edin</translation>
 <translation id="428768789042547925">Yeniliklər</translation>
 <translation id="429074084062258019">{count,plural, =1{Qrupa tab əlavə edin}other{Qrupa tablar əlavə edin}}</translation>
+<translation id="4300830875340617674">Kartı skanlayın və avtomatik doldurun</translation>
 <translation id="4302061870579014542">Mövqe ayarlayın</translation>
 <translation id="4304713468139749426">Parol Meneceri</translation>
 <translation id="4306349443295056740">OCSP-nin imzalanması</translation>
@@ -1181,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Kameranı aktiv edin</translation>
 <translation id="5229315183665181733">Sayta düzəliş edin</translation>
+<translation id="5233111790346066304">Faylları Google Diskinizdə yadda saxlayın və istənilən vaxt onlara daxil olun.</translation>
 <translation id="5233638681132016545">Yeni panel</translation>
 <translation id="5234094073825090254">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı.}other{Əlfəcinlər Google Hesabında ({email}) yadda saxlandı.}}</translation>
 <translation id="5234764350956374838">Kənarlaşdırın</translation>

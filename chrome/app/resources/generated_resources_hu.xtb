@@ -2591,6 +2591,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2750020734439919571">A Chrome alkalmazás további beállításai és engedélyei</translation>
 <translation id="275010360476017464">A mikrofon használatával cseveghet a Geminivel. Amikor a Geminivel beszél, a hanganyagot elmenti a rendszer a Gemini-appokban végzett tevékenységek közé (ha be van kapcsolva).</translation>
 <translation id="2750602041558385535">Nem ellenőrzött letöltés letiltva</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> további</translation>
 <translation id="2751454300227269244">Száj elhúzása jobbra</translation>
 <translation id="2751883373055093745">A(z) <ph name="WEBSITE" /> szeretné megtudni az Ön biztonsági kulcsának az azonosítószámát. A webhely pontosan tudja majd, hogy Ön melyik biztonsági kulcsot használja.</translation>
 <translation id="275213133112113418">Kártya elmentve</translation>
@@ -4552,6 +4553,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4107793386654579933">Válasszon billentyűparancsot a(z) <ph name="ACTION_NAME" /> művelethez</translation>
 <translation id="4109135793348361820">Az ablak áthelyezése <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) asztalára</translation>
 <translation id="4110485659976215879">Figyelmeztetés visszaállítása</translation>
+<translation id="411052834366185695">Legalább 1 számjegyből kell állnia</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Fájl jelszava</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Nincsenek mentett jelszavak}=1{1 jelszó ellenőrizve}other{{COUNT} jelszó ellenőrizve}}</translation>
@@ -5041,6 +5043,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4461483878391246134">Adjon hozzá nyelveket, amelyeken soha ne ajánljon fel fordítást a rendszer</translation>
 <translation id="4462159676511157176">Egyéni névszerverek</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> hosszúságú időkorlát beállítva a következőhöz: <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> további</translation>
 <translation id="4467373268340082204">Helytelen PIN-kód</translation>
 <translation id="4469324811108161144">A jegyzetek legfeljebb <ph name="CHARACTER_LIMIT" /> karakterből állhatnak.</translation>
 <translation id="4469762931504673593">A(z) <ph name="ORIGIN" /> szerkesztheti a(z) <ph name="FOLDERNAME" /> mappában lévő fájlokat</translation>
@@ -5302,6 +5305,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4653116291358041820">Kis árnyék</translation>
 <translation id="4654236001025007561">Megoszthat fájlokat az Ön közelében lévő Chromebookokkal és Android-eszközökkel</translation>
 <translation id="4654801841330730814">Mind</translation>
+<translation id="4657724094180965385">Nem érdekel</translation>
 <translation id="4657810666108475055">Keresés a lapok között</translation>
 <translation id="4657914796247705218">TrackPoint-sebesség</translation>
 <translation id="4658285806588491142">Képernyő privát jellegének megőrzése</translation>
@@ -5455,6 +5459,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4766551476047591055">{MINUTES,plural, =0{A nyilvános kulcs és az integritásblokk ellenőrzése… Kevesebb mint 1 perc van hátra}=1{A nyilvános kulcs és az integritásblokk ellenőrzése… 1 perc van hátra}other{A nyilvános kulcs és az integritásblokk ellenőrzése… # perc van hátra}}</translation>
 <translation id="4766598565665644999">Minden bővítmény olvashatja és módosíthatja a következőt: <ph name="HOST" /></translation>
 <translation id="4767427586072640478">További információ a letiltott bővítményekről.</translation>
+<translation id="4769359569327438364">Legalább 4 számjegyből kell állnia</translation>
 <translation id="4769632191812288342">A rendszer normál védelmet nyújt Önnek</translation>
 <translation id="4770119228883592393">Engedély kérelmezve, a válaszhoz nyomja le a ⌘ + Option + lefelé mutató nyíl billentyűkombinációt</translation>
 <translation id="4772914216048388646">Rendezett</translation>
@@ -6138,6 +6143,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5240931875940563122">Belépés androidos telefonnal</translation>
 <translation id="5241689948221696942">Egyes termékek esetén az összehasonlító táblázatok összefoglalják az interneten talált véleményeket</translation>
 <translation id="5242724311594467048">Engedélyezi a következőt: „<ph name="EXTENSION_NAME" />”?</translation>
+<translation id="5243477050423867768">Legalább 8 számjegyből kell állnia, és nem tartalmazhat ismétlődő vagy sorrendben következő számjegyeket</translation>
 <translation id="5244234799035360187">A OneDrive mostantól megjelenik a Fájlok alkalmazásban</translation>
 <translation id="5244466461749935369">Egyelőre megtartás</translation>
 <translation id="5244474230056479698">Szinkronizálás a következővel: <ph name="EMAIL" /></translation>
@@ -8052,6 +8058,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6619990499523117484">PIN-kód megerősítése</translation>
 <translation id="6621282332208609777">Kérdezzen a Google-tól, vagy írjon be egy URL-t</translation>
 <translation id="6621391692573306628">A lap másik eszközre való elküldéséhez jelentkezzen be a Chrome-ba mindkét eszközön</translation>
+<translation id="6622212269189717101">Legalább 6 számjegyből kell állnia, és nem tartalmazhat ismétlődő vagy sorrendben következő számjegyeket</translation>
 <translation id="6622980291894852883">Képek letiltásának fenntartása</translation>
 <translation id="6624036901798307345">Táblagép módban kattintson az eszköztár lapszámláló gombjára: ekkor az egyes lapok indexképeit megjelenítő új lapsor nyílik meg.</translation>
 <translation id="6624538059730609162">Jobb oldali nézet bezárása</translation>

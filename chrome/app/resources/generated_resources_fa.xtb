@@ -2590,6 +2590,7 @@
 <translation id="2750020734439919571">‏دیگر تنظیمات و اجازه‌های برنامه Chrome</translation>
 <translation id="275010360476017464">‏از میکروفون خود برای گپ زدن با Gemini استفاده کنید. وقتی با Gemini صحبت می‌کنید، صدا در «فعالیت برنامه‌های Gemini» (درصورت فعال بودن) ذخیره می‌شود.</translation>
 <translation id="2750602041558385535">بارگیری تأییدنشده مسدود است</translation>
+<translation id="2751320815618312249">‫+ <ph name="NUM" /> مورد دیگر</translation>
 <translation id="2751454300227269244">حرکت دادن دهان به‌سمت راست</translation>
 <translation id="2751883373055093745">‫<ph name="WEBSITE" /> می‌خواهد شماره شناسه کلید امنیتی‌تان را متوجه شود. سایت دقیقاً متوجه خواهد شد که از کدام کلید امنیتی استفاده می‌کنید.</translation>
 <translation id="275213133112113418">کارتتان ذخیره شد</translation>
@@ -4552,6 +4553,7 @@
 <translation id="4107793386654579933">انتخاب میان‌بر برای کنش <ph name="ACTION_NAME" /></translation>
 <translation id="4109135793348361820">انتقال پنجره به <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">بازیابی هشدار</translation>
+<translation id="411052834366185695">باید حداقل ۱ رقم باشد</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{گذرواژه‌ای ذخیره نشده است}=1{‫۱ گذرواژه بررسی شد}one{‫{COUNT} گذرواژه بررسی شد}other{‫{COUNT} گذرواژه بررسی شد}}</translation>
@@ -5041,6 +5043,7 @@
 <translation id="4461483878391246134">زبان‌های موردنظر را برای اینکه ترجمه برای آن‌ها پیشنهاد نشود اضافه کنید</translation>
 <translation id="4462159676511157176">سرورهای نام سفارشی</translation>
 <translation id="4465236939126352372"><ph name="TIME" /> محدودیت زمانی برای <ph name="APP_NAME" /> تنظیم شده است</translation>
+<translation id="4466922176191762830">‫+ <ph name="NUM" /> مورد دیگر</translation>
 <translation id="4467373268340082204">پین اشتباه است</translation>
 <translation id="4469324811108161144">یادداشت باید حداکثر <ph name="CHARACTER_LIMIT" /> نویسه داشته باشد.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> می‌تواند فایل‌های <ph name="FOLDERNAME" /> را ویرایش کند</translation>
@@ -5302,6 +5305,7 @@
 <translation id="4653116291358041820">سایه کوچک</translation>
 <translation id="4654236001025007561">‏هم‌رسانی فایل با دستگاه‌های Chromebook و Android در اطراف شما</translation>
 <translation id="4654801841330730814">همه</translation>
+<translation id="4657724094180965385">علاقه‌مند نیستم</translation>
 <translation id="4657810666108475055">جستجوی زبانه</translation>
 <translation id="4657914796247705218">‏سرعت TrackPoint</translation>
 <translation id="4658285806588491142">صفحه‌نمایشتان را خصوصی نگه دارید</translation>
@@ -5455,6 +5459,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{درحال بررسی کلید عمومی و مسدود کردن تمامیت... کمتر از ۱ دقیقه باقی مانده است}=1{درحال بررسی کلید عمومی و مسدود کردن تمامیت... ۱ دقیقه باقی مانده است}one{درحال بررسی کلید عمومی و مسدود کردن تمامیت... # دقیقه باقی مانده است}other{درحال بررسی کلید عمومی و مسدود کردن تمامیت... # دقیقه باقی مانده است}}</translation>
 <translation id="4766598565665644999">همه افزونه‌ها می‌توانند <ph name="HOST" /> را بخوانند و تغییر دهند</translation>
 <translation id="4767427586072640478">درباره افزونه‌های غیرفعال بیشتر بدانید.</translation>
+<translation id="4769359569327438364">باید حداقل ۴ رقم باشد</translation>
 <translation id="4769632191812288342">محافظت استاندارد را دریافت می‌کنید</translation>
 <translation id="4770119228883592393">درخواست اجازه ارائه شده است؛ برای پاسخ دادن، کلید «⌘ + گزینه + پیکان روبه‌پایین» را فشار دهید</translation>
 <translation id="4772914216048388646">منظم</translation>
@@ -6138,6 +6143,7 @@
 <translation id="5240931875940563122">‏ورود به سیستم با تلفن Android</translation>
 <translation id="5241689948221696942">برای برخی محصولات، نظرات جمع‌آوری‌شده از سراسر وب به‌صورت خلاصه در جدول‌های مقایسه نمایش داده می‌شود</translation>
 <translation id="5242724311594467048">«<ph name="EXTENSION_NAME" />» فعال شود؟</translation>
+<translation id="5243477050423867768">باید حداقل ۸ رقم باشد و نمی‌تواند حاوی دنباله‌های تکراری یا ترتیبی باشد</translation>
 <translation id="5244234799035360187">‏ازاین‌پس OneDrive در برنامه Files نشان داده خواهد شد</translation>
 <translation id="5244466461749935369">فعلاً نگه داشته شود</translation>
 <translation id="5244474230056479698">درحال همگام‌سازی در <ph name="EMAIL" /></translation>
@@ -8053,6 +8059,7 @@
 <translation id="6619990499523117484">پین را تأیید کنید</translation>
 <translation id="6621282332208609777">‏از Google بپرسید یا نشانی وبی تایپ کنید</translation>
 <translation id="6621391692573306628">‏برای ارسال این زبانه به دستگاهی دیگر، در هردو دستگاه به سیستم Chrome وارد شوید</translation>
+<translation id="6622212269189717101">باید حداقل ۶ رقم باشد و نمی‌تواند حاوی توالی‌های تکراری یا ترتیبی باشد</translation>
 <translation id="6622980291894852883">ادامه مسدودکردن تصاویر</translation>
 <translation id="6624036901798307345">در حالت رایانه لوحی، روی دکمه شمارنده زبانه در نوارابزار تک‌ضرب بزنید تا نوار زبانه جدید که ریزعکس هر زبانه را نشان می‌دهد باز شود.</translation>
 <translation id="6624538059730609162">بستن نمای راست</translation>

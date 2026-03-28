@@ -2595,6 +2595,7 @@
 <translation id="2750020734439919571">Chrome 앱 설정 및 권한 더보기</translation>
 <translation id="275010360476017464">마이크를 사용하여 Gemini와 대화하세요. Gemini와 대화할 때 오디오가 Gemini 앱 활동에 저장됩니다(사용 설정된 경우).</translation>
 <translation id="2750602041558385535">확인되지 않은 다운로드 차단됨</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" />개</translation>
 <translation id="2751454300227269244">입을 오른쪽으로 움직이기</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" />에서 보안 키의 ID 번호를 알고 싶어 합니다. 사이트에서 내가 사용하는 보안 키를 정확히 알 수 있습니다.</translation>
 <translation id="275213133112113418">카드가 저장되었습니다</translation>
@@ -4555,6 +4556,7 @@
 <translation id="4107793386654579933"><ph name="ACTION_NAME" /> 작업의 단축키 선택</translation>
 <translation id="4109135793348361820">창을 <ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님에게로 이동</translation>
 <translation id="4110485659976215879">경고 다시 열기</translation>
+<translation id="411052834366185695">1자리 이상이어야 합니다.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />(오프라인)</translation>
 <translation id="4113743276555482284">파일 비밀번호</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{저장된 비밀번호 없음}=1{비밀번호 1개 확인됨}other{비밀번호 {COUNT}개 확인됨}}</translation>
@@ -5044,6 +5046,7 @@
 <translation id="4461483878391246134">번역을 제공하지 않을 언어 추가</translation>
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" />에 <ph name="TIME" /> 시간 제한이 설정됨</translation>
+<translation id="4466922176191762830">+ <ph name="NUM" />개</translation>
 <translation id="4467373268340082204">잘못된 PIN</translation>
 <translation id="4469324811108161144">메모에는 <ph name="CHARACTER_LIMIT" />자(영문 기준)까지만 저장할 수 있습니다.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" />에서 <ph name="FOLDERNAME" />의 파일을 수정할 수 있습니다.</translation>
@@ -5305,6 +5308,7 @@
 <translation id="4653116291358041820">작은 음영</translation>
 <translation id="4654236001025007561">파일을 근처의 Chromebook 및 Android 기기와 공유합니다.</translation>
 <translation id="4654801841330730814">전체</translation>
+<translation id="4657724094180965385">관심 없음</translation>
 <translation id="4657810666108475055">탭 검색</translation>
 <translation id="4657914796247705218">TrackPoint 속도</translation>
 <translation id="4658285806588491142">화면을 비공개로 유지하세요</translation>
@@ -5458,6 +5462,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{공개 키 및 무결성 블록 확인 중… 1분 미만 남음}=1{공개 키 및 무결성 블록 확인 중… 1분 남음}other{공개 키 및 무결성 블록 확인 중… #분 남음}}</translation>
 <translation id="4766598565665644999">모든 확장 프로그램이 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="4767427586072640478">사용 중지된 확장 프로그램에 관해 자세히 알아봅니다.</translation>
+<translation id="4769359569327438364">4자리 이상이어야 합니다.</translation>
 <translation id="4769632191812288342">표준 보호 모드를 사용 중입니다</translation>
 <translation id="4770119228883592393">권한 요청됨, ⌘ 키와 Option 키와 아래쪽 화살표 키를 눌러 응답</translation>
 <translation id="4772914216048388646">질서 정연함</translation>
@@ -6141,6 +6146,7 @@
 <translation id="5240931875940563122">Android 휴대전화로 로그인</translation>
 <translation id="5241689948221696942">일부 제품의 경우 웹에서 수집한 리뷰를 요약한 비교 표가 표시됩니다.</translation>
 <translation id="5242724311594467048">'<ph name="EXTENSION_NAME" />'을(를) 사용하시겠습니까?</translation>
+<translation id="5243477050423867768">8자리 이상이어야 하며, 반복되거나 일정한 순서가 있는 숫자를 사용할 수 없습니다.</translation>
 <translation id="5244234799035360187">이제 Files 앱에 OneDrive가 표시됨</translation>
 <translation id="5244466461749935369">보관하기</translation>
 <translation id="5244474230056479698"><ph name="EMAIL" />에 동기화</translation>
@@ -8054,6 +8060,7 @@
 <translation id="6619990499523117484">PIN 확인</translation>
 <translation id="6621282332208609777">Google에 물어보거나 URL을 입력하세요</translation>
 <translation id="6621391692573306628">이 탭을 다른 기기로 보내려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="6622212269189717101">6자리 이상이어야 하며, 반복되거나 일정한 순서가 있는 숫자를 사용할 수 없습니다.</translation>
 <translation id="6622980291894852883">이미지 계속 차단</translation>
 <translation id="6624036901798307345">태블릿 모드에서 탭 카운터 툴바 버튼을 탭하여 각 탭의 썸네일을 보여주는 새로운 탭 표시줄을 엽니다.</translation>
 <translation id="6624538059730609162">오른쪽 뷰 닫기</translation>

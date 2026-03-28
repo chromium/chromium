@@ -763,6 +763,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2188375229972301266">Több lyuk alul</translation>
 <translation id="218940509700321686">Vesszővel tagolt értékek</translation>
 <translation id="2190094353033916816">Ez a házirend különböző értékeket alkalmaz a gép és a felhasználó szintjén. A házirend a várakozásoknak megfelelően működik.</translation>
+<translation id="219061769324072544">Hitel,Kártya,Bankkártya</translation>
 <translation id="2191980191135734720">A következő lépésben oldja fel a képernyőt, például az ujjlenyomatával. <ph name="LINK_TEXT" />.</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2195729137168608510">E-mail védelem</translation>
@@ -1366,6 +1367,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3134859781443140237">Helyi hálózat</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Keresés itt: <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Nincs}=1{bejelentkezési adat 1 fiókhoz}other{bejelentkezési adat # fiókhoz}}</translation>
+<translation id="3139503241401248626">Ha engedélyezni szeretné ezeket a beállításokat, és használni szeretné a Google-fiókjában tárolt adatokat, látogasson el Az automatikus kitöltés beállításai oldalra.</translation>
 <translation id="3140646734028448730">Üzleti szolgáltatás</translation>
 <translation id="3141093262818886744">Megnyitás mindenképpen</translation>
 <translation id="3141337053413339205">Váltás erre a lapra.</translation>
@@ -2297,6 +2299,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4594403342090139922">&amp;Törlés visszavonása</translation>
 <translation id="4598556348158889687">Tárhelykezelés</translation>
 <translation id="459914240367517409">Webdesign és -fejlesztés</translation>
+<translation id="4599572944836204718">Mentett kártyával gyorsabban fizethet a Google Pay szolgáltatással. A kártyaadatok titkosítva vannak a Google Walletben.</translation>
 <translation id="4602465984861132303">Bowling</translation>
 <translation id="4603727370377253901">Repülőjegy-foglalások</translation>
 <translation id="4607608436550361748">Chrome-tippek megjelenítése</translation>
@@ -2586,6 +2589,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, a Tab billentyű lenyomásával további keresési parancsikonok jelennek meg a keresési javaslat után</translation>
 <translation id="5052488928733955073">Probléma adódott az adatok kitöltésekor. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="5052517576853118371">Aktív témák</translation>
+<translation id="5053116470141135293">A tényleges adatok védelme érdekében a rendszer kitölti a virtuális kártyaszámot, amikor ezzel a kártyával fizet. Ezt a Google Walletben kezelheti. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlt, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}other{Ha a Közeli megosztás funkcióval szeretné elküldeni a fájlokat, szabadítson fel legalább <ph name="DISK_SPACE_SIZE" /> tárhelyet eszközén}}</translation>
 <translation id="5056587122125565772">Kép létrehozása</translation>
 <translation id="505757197798929356">Adja meg a megnyitás okát (kötelező)</translation>
@@ -3362,6 +3366,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6250932670816326647">Fürdő- és testápoló termékek</translation>
 <translation id="6251906504834538140">{0,plural, =1{A fájl áthelyezése le van tiltva}other{<ph name="FILE_COUNT" /> fájl áthelyezése le van tiltva}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban letöltött fájlok kezeléséhez.</translation>
+<translation id="6253380015872250643">Kártya mentése a Google Walletbe</translation>
 <translation id="6254436959401408446">Nincs elég memória az oldal megnyitásához</translation>
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
@@ -4259,6 +4264,7 @@ További részletek:
 <translation id="7615932826417658001">Személyazonosító okmány hozzáadása</translation>
 <translation id="7616390733770379387">Ezek véletlenszerű sorrendben jelennek meg.</translation>
 <translation id="7616645509853975347">Rendszergazdája bekapcsolta a Chrome Enterprise Connectors integrációs eszközöket az Ön böngészőjében. Az eszközök hozzáférnek bizonyos adatokhoz.</translation>
+<translation id="7616747402308801775">Ez a kártya el lett mentve a Google Walletbe, így használhatja a Google-szolgáltatásokban.</translation>
 <translation id="7617825962482469577">C7/C6 boríték</translation>
 <translation id="7618270539713451657">Harcművészet</translation>
 <translation id="7619838219691048931">Befejező lap</translation>
@@ -4581,6 +4587,7 @@ További részletek:
 <translation id="8120720167840853945">Ez a házirend nem szabályozza más házirendek alapértelmezett viselkedését.</translation>
 <translation id="8127301229239896662">A(z) „<ph name="SOFTWARE_NAME" />” nem megfelelően lett telepítve a számítógépre vagy a hálózatra. A probléma elhárítása érdekében forduljon rendszergazdájához.</translation>
 <translation id="8130113808541743942">Áthelyezés…</translation>
+<translation id="813024282736408069">Virtuális kártya bekapcsolása az automatikus kitöltéshez</translation>
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8133495915926741232">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához. Egy adott tágabb kategória kikapcsolásával a hozzá kapcsolódó témákat is letiltja. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="8134058435519644366">Toborzás és munkaerő-szervezés</translation>

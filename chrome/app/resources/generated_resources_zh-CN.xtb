@@ -2572,6 +2572,7 @@
 <translation id="2750020734439919571">更多 Chrome 应用设置和权限</translation>
 <translation id="275010360476017464">使用麦克风与 Gemini 对话。与 Gemini 对话时，对话音频会存储在 Gemini 应用活动记录中（如果已开启这项设置）。</translation>
 <translation id="2750602041558385535">已拦截未经验证的下载内容</translation>
+<translation id="2751320815618312249">以及另外 <ph name="NUM" /> 个</translation>
 <translation id="2751454300227269244">将嘴向右移</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> 想知道您的安全密钥的 ID 编号。此网站将会确切地知道您正在使用哪个安全密钥。</translation>
 <translation id="275213133112113418">您的卡已保存</translation>
@@ -4531,6 +4532,7 @@
 <translation id="4107793386654579933">为<ph name="ACTION_NAME" />操作选择快捷键</translation>
 <translation id="4109135793348361820">将窗口移至<ph name="USER_NAME" />(<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">恢复警告</translation>
+<translation id="411052834366185695">必须至少为 1 位数</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（离线）</translation>
 <translation id="4113743276555482284">文件密码</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{尚未保存任何密码}=1{已检查 1 个密码}other{已检查 {COUNT} 个密码}}</translation>
@@ -5020,6 +5022,7 @@
 <translation id="4461483878391246134">添加一律不提供翻译的语言</translation>
 <translation id="4462159676511157176">自定义域名服务器</translation>
 <translation id="4465236939126352372">为“<ph name="APP_NAME" />”设置了 <ph name="TIME" />的使用时限</translation>
+<translation id="4466922176191762830">以及另外 <ph name="NUM" /> 个</translation>
 <translation id="4467373268340082204">PIN 码错误</translation>
 <translation id="4469324811108161144">备注最多可以包含 <ph name="CHARACTER_LIMIT" /> 个字符。</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> 可修改“<ph name="FOLDERNAME" />”内的文件</translation>
@@ -5281,6 +5284,7 @@
 <translation id="4653116291358041820">小阴影</translation>
 <translation id="4654236001025007561">与附近的 Chromebook 和 Android 设备分享文件</translation>
 <translation id="4654801841330730814">全部</translation>
+<translation id="4657724094180965385">不感兴趣</translation>
 <translation id="4657810666108475055">标签页搜索</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="4658285806588491142">保护您的屏幕隐私</translation>
@@ -5434,6 +5438,7 @@
 <translation id="4766551476047591055">{MINUTES,plural, =0{正在检查公钥和完整性块…还需不到 1 分钟}=1{正在检查公钥和完整性块…还需 1 分钟}other{正在检查公钥和完整性块…还需 # 分钟}}</translation>
 <translation id="4766598565665644999">所有扩展程序都可以读取和更改 <ph name="HOST" /></translation>
 <translation id="4767427586072640478">详细了解已停用的扩展程序。</translation>
+<translation id="4769359569327438364">必须至少为 4 位数</translation>
 <translation id="4769632191812288342">您已获享标准保护</translation>
 <translation id="4770119228883592393">收到了权限请求，按 ⌘ + Option + 向下键即可回复</translation>
 <translation id="4772914216048388646">有序</translation>
@@ -6116,6 +6121,7 @@
 <translation id="5240931875940563122">使用 Android 手机登录</translation>
 <translation id="5241689948221696942">对于某些商品，比较表格会汇总来自网络的评价</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
+<translation id="5243477050423867768">必须至少为 8 位数，且不能包含重复或有序的序列</translation>
 <translation id="5244234799035360187">OneDrive 现在会显示在“文件”应用内</translation>
 <translation id="5244466461749935369">暂时保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -8025,6 +8031,7 @@
 <translation id="6619990499523117484">确认您的 PIN 码</translation>
 <translation id="6621282332208609777">问问 Google 或输入网址</translation>
 <translation id="6621391692573306628">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome</translation>
+<translation id="6622212269189717101">必须至少为 6 位数，且不能包含重复或有序的序列</translation>
 <translation id="6622980291894852883">继续拦截图片</translation>
 <translation id="6624036901798307345">在平板电脑模式下，只需点按工具栏中的标签页计数器按钮，即可打开会显示每个标签页的缩略图的新标签页栏。</translation>
 <translation id="6624538059730609162">关闭右侧视图</translation>

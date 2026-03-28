@@ -763,6 +763,7 @@
 <translation id="2188375229972301266">多孔 (底部)</translation>
 <translation id="218940509700321686">逗號分隔值</translation>
 <translation id="2190094353033916816">此政策在機器和使用者層級套用不同的值。政策運作正常。</translation>
+<translation id="219061769324072544">信用,卡,扣帳</translation>
 <translation id="2191980191135734720">在下一個步驟中解鎖螢幕，通常是使用指紋。你亦可<ph name="LINK_TEXT" />。</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2195729137168608510">電郵保護</translation>
@@ -1366,6 +1367,7 @@
 <translation id="3134859781443140237">區域網絡</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - 搜尋<ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{無}=1{1 個帳戶的登入資料}other{ # 個帳戶的登入資料}}</translation>
+<translation id="3139503241401248626">如要啟用這些設定並使用 Google 帳戶中的資料，請前往自動填入服務設定</translation>
 <translation id="3140646734028448730">商業服務</translation>
 <translation id="3141093262818886744">仍要開啟</translation>
 <translation id="3141337053413339205">切換至此分頁。</translation>
@@ -2299,6 +2301,7 @@
 <translation id="4594403342090139922">復原刪除(&amp;U)</translation>
 <translation id="4598556348158889687">管理儲存空間</translation>
 <translation id="459914240367517409">網頁設計和開發</translation>
+<translation id="4599572944836204718">儲存付款卡即可透過 Google Pay 加快付款速度。「Google 錢包」會加密信用卡詳情。</translation>
 <translation id="4602465984861132303">保齡球</translation>
 <translation id="4603727370377253901">機票預訂</translation>
 <translation id="4607608436550361748">查看 Chrome 提示</translation>
@@ -2588,6 +2591,7 @@
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />，㩒 Tab 掣就可以喺搜尋建議後面睇到更多搜尋捷徑</translation>
 <translation id="5052488928733955073">無法填寫資料，請檢查網絡連線。</translation>
 <translation id="5052517576853118371">有效主題</translation>
+<translation id="5053116470141135293">使用此卡結帳時，系統會填入虛擬卡號以保護你的真實資料。你可以在「Google 錢包」中管理。<ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{如要使用「咫尺共享」傳送此檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}other{如要使用「咫尺共享」傳送這些檔案，請在裝置上騰出空間 (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="5056587122125565772">製作圖像</translation>
 <translation id="505757197798929356">請提供開啟的原因 (必填)</translation>
@@ -3364,6 +3368,7 @@
 <translation id="6250932670816326647">沐浴和身體護理產品</translation>
 <translation id="6251906504834538140">{0,plural, =1{禁止移動檔案}other{禁止移動 <ph name="FILE_COUNT" /> 個檔案}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理您喺 Chrome 度下載嘅檔案</translation>
+<translation id="6253380015872250643">將付款卡儲存至「Google 錢包」</translation>
 <translation id="6254436959401408446">記憶體不足，因此無法開啟此網頁</translation>
 <translation id="625463612687472648">不再授予權限</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
@@ -4261,6 +4266,7 @@
 <translation id="7615932826417658001">加入身分證</translation>
 <translation id="7616390733770379387">搜尋引擎以隨機次序顯示。</translation>
 <translation id="7616645509853975347">管理員已在您的瀏覽器上啟用 Chrome Enterprise Connectors。這些連接器可存取您的部分資料。</translation>
+<translation id="7616747402308801775">此卡已儲存至「Google 錢包」，你可在各項 Google 服務中使用</translation>
 <translation id="7617825962482469577">C7/C6 信封</translation>
 <translation id="7618270539713451657">武術</translation>
 <translation id="7619838219691048931">結束工作表</translation>
@@ -4583,6 +4589,7 @@
 <translation id="8120720167840853945">此政策不會控制任何其他政策的預設行為。</translation>
 <translation id="8127301229239896662">無法在您的電腦或網絡上正確安裝「<ph name="SOFTWARE_NAME" />」。請要求您的 IT 管理員解決此問題。</translation>
 <translation id="8130113808541743942">移至…</translation>
+<translation id="813024282736408069">啟用虛擬卡以使用自動填入功能</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8133495915926741232">選擇系統可根據哪些廣泛的主題類別放送個人化廣告。如果封鎖廣泛類別，系統亦會一併封鎖相關主題。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">人才招募和人力配備</translation>

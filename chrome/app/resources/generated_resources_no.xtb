@@ -2587,6 +2587,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2750020734439919571">Flere innstillinger og tillatelser for Chrome-apper</translation>
 <translation id="275010360476017464">Bruk mikrofonen til å chatte med Gemini. Når du snakker til Gemini, lagres lyden i Aktivitet i Gemini-apper (hvis dette er slått på).</translation>
 <translation id="2750602041558385535">En ubekreftet nedlasting ble blokkert</translation>
+<translation id="2751320815618312249">+ <ph name="NUM" /> til</translation>
 <translation id="2751454300227269244">Beveg munnen til høyre</translation>
 <translation id="2751883373055093745"><ph name="WEBSITE" /> vil vite ID-nummeret for sikkerhetsnøkkelen din. Nettstedet får vite nøyaktig hvilken sikkerhetsnøkkel du bruker.</translation>
 <translation id="275213133112113418">Kortet ditt er lagret</translation>
@@ -4547,6 +4548,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4107793386654579933">Velg en hurtigtast for <ph name="ACTION_NAME" />-handlingen</translation>
 <translation id="4109135793348361820">Flytt vinduet til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Gjenopprett varsel</translation>
+<translation id="411052834366185695">Må bestå av minst 1 siffer.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (uten nett)</translation>
 <translation id="4113743276555482284">Filpassord</translation>
 <translation id="4114391251600134209">{COUNT,plural, =0{Ingen lagrede passord}=1{1 passord er sjekket}other{{COUNT} passord er sjekket}}</translation>
@@ -5036,6 +5038,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4461483878391246134">Legg til språk som Oversetter aldri skal tilby å oversette</translation>
 <translation id="4462159676511157176">Egendefinerte navnetjenere</translation>
 <translation id="4465236939126352372">En tidsgrense på <ph name="TIME" /> er angitt for <ph name="APP_NAME" /></translation>
+<translation id="4466922176191762830">+ <ph name="NUM" /> til</translation>
 <translation id="4467373268340082204">Feil PIN-kode</translation>
 <translation id="4469324811108161144">Notater kan lagre opptil <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> kan redigere filer i <ph name="FOLDERNAME" /></translation>
@@ -5297,6 +5300,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4653116291358041820">Liten skygge</translation>
 <translation id="4654236001025007561">Del filer med Chromebook- og Android-enheter rundt deg</translation>
 <translation id="4654801841330730814">Alle</translation>
+<translation id="4657724094180965385">Ikke interessert</translation>
 <translation id="4657810666108475055">Fanesøk</translation>
 <translation id="4657914796247705218">TrackPoint-hastighet</translation>
 <translation id="4658285806588491142">Hold skjermen privat</translation>
@@ -5450,6 +5454,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4766551476047591055">{MINUTES,plural, =0{Sjekker offentlig nøkkel og integritetsblokk … Mindre enn 1 minutt igjen}=1{Sjekker offentlig nøkkel og integritetsblokk … 1 minutt igjen}other{Sjekker offentlig nøkkel og integritetsblokk … # minutter igjen}}</translation>
 <translation id="4766598565665644999">Alle utvidelser kan lese og endre <ph name="HOST" /></translation>
 <translation id="4767427586072640478">Finn ut mer om deaktiverte utvidelser.</translation>
+<translation id="4769359569327438364">Må bestå av minst 4 sifre.</translation>
 <translation id="4769632191812288342">Du har standardbeskyttelse</translation>
 <translation id="4770119228883592393">Nettstedet ber om tillatelse. Trykk på ⌘ + Tilvalg + nedoverpilen for å svare</translation>
 <translation id="4772914216048388646">Ryddig</translation>
@@ -6132,6 +6137,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5240931875940563122">Logg på med Android-telefon</translation>
 <translation id="5241689948221696942">For noen produkter kan sammenligningstabeller oppsummere anmeldelser fra nettet</translation>
 <translation id="5242724311594467048">Vil du aktivere «<ph name="EXTENSION_NAME" />»?</translation>
+<translation id="5243477050423867768">Må bestå av minst 8 sifre og kan ikke inneholde gjentatte eller sammenhengende sifre.</translation>
 <translation id="5244234799035360187">Nå kommer OneDrive til å vises i Filer-appen</translation>
 <translation id="5244466461749935369">Behold inntil videre</translation>
 <translation id="5244474230056479698">Synkroniserer til <ph name="EMAIL" /></translation>
@@ -8043,6 +8049,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6619990499523117484">Bekreft PIN-koden din</translation>
 <translation id="6621282332208609777">Spør Google, eller skriv inn en nettadresse</translation>
 <translation id="6621391692573306628">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene</translation>
+<translation id="6622212269189717101">Må bestå av minst 6 sifre og kan ikke inneholde gjentatte eller sammenhengende sifre.</translation>
 <translation id="6622980291894852883">Fortsett blokkering av bilder</translation>
 <translation id="6624036901798307345">I nettbrettmodus kan du trykke på fanetellerknappen på verktøyraden for å åpne den nye faneraden som viser miniatyrbilder av alle fanene.</translation>
 <translation id="6624538059730609162">Lukk høyre visning</translation>
