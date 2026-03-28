@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
 
+#include "base/files/file_util.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 
 namespace optimization_guide {
@@ -149,6 +151,22 @@ ManifestBuilder& ManifestBuilder::Add(const DeviceUseCase& use_case,
 
 proto::Manifest ManifestBuilder::Build() {
   return manifest_;
+}
+
+ManifestComponentDirectory::ManifestComponentDirectory(
+    const proto::Manifest& manifest) {
+  CHECK(temp_dir_.CreateUniqueTempDir());
+  CHECK(base::WriteFile(temp_dir_.GetPath().Append(kManifestFileName),
+                        manifest.SerializeAsString()));
+}
+ManifestComponentDirectory::~ManifestComponentDirectory() = default;
+
+ManifestComponentDirectory& ManifestComponentDirectory::Add(
+    const std::string& filename,
+    proto::SolutionConfig& config) {
+  CHECK(base::WriteFile(temp_dir_.GetPath().AppendASCII(filename),
+                        config.SerializeAsString()));
+  return *this;
 }
 
 }  // namespace optimization_guide

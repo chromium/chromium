@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
@@ -29,6 +30,9 @@ extern std::ostream& operator<<(std::ostream& stream,
                                 DeviceCategory device_category);
 
 inline constexpr std::string kManifestAssetName = "manifest";
+// File name of the manifest proto within the manifest component directory.
+inline constexpr const base::FilePath::CharType kManifestFileName[] =
+    FILE_PATH_LITERAL("manifest.pb");
 
 // Manifest is a C++ representation of the manifest proto. It provides APIs for
 // getting the information needed by the model broker implementation.

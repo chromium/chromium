@@ -114,7 +114,8 @@ void ManifestMonitor::OnInputsChanged() {
     // We are not ready to load the manifest yet.
     return;
   }
-  Manifest::Load(*manifest_dir_, GetDeviceCategory(*performance_classifier_),
+  Manifest::Load(manifest_dir_->Append(kManifestFileName),
+                 GetDeviceCategory(*performance_classifier_),
                  base::BindOnce(&ManifestMonitor::OnManifestLoaded,
                                 weak_ptr_factory_.GetWeakPtr()));
 }

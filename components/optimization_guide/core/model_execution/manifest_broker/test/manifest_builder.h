@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/scoped_temp_dir.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
 #include "components/optimization_guide/proto/manifest.pb.h"
 
@@ -67,6 +68,7 @@ struct DeviceUseCase {
   std::string use_case;
 };
 
+// Builder for a Manifest proto.
 class ManifestBuilder {
  public:
   ManifestBuilder();
@@ -100,6 +102,21 @@ class ManifestBuilder {
 
  private:
   proto::Manifest manifest_;
+};
+
+// Constructs a Manifest component directory.
+class ManifestComponentDirectory {
+ public:
+  explicit ManifestComponentDirectory(const proto::Manifest& manifest);
+  ~ManifestComponentDirectory();
+
+  ManifestComponentDirectory& Add(const std::string& filename,
+                                  proto::SolutionConfig& config);
+
+  base::FilePath path() const { return temp_dir_.GetPath(); }
+
+ private:
+  base::ScopedTempDir temp_dir_;
 };
 
 }  // namespace optimization_guide
