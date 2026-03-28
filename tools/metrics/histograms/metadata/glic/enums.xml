@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="Context menu, detached, audio mode."/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ResponseSegmentation) -->
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:ResponseSegmentation) -->
 
 <!-- LINT.IfChange(GlicScrollToErrorReason) -->
 

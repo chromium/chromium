@@ -25,6 +25,31 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
   }
 }
 
+ResponseSegmentation GetResponseSegmentation(bool attached,
+                                             mojom::WebClientMode mode,
+                                             mojom::InvocationSource source) {
+  if (mode == mojom::WebClientMode::kUnknown) {
+    return ResponseSegmentation::kUnknown;
+  }
+
+  ModeOffset modeOffset;
+  if (mode == mojom::WebClientMode::kText && attached) {
+    modeOffset = ModeOffset::kTextAttached;
+  } else if (mode == mojom::WebClientMode::kAudio && attached) {
+    modeOffset = ModeOffset::kAudioAttached;
+  } else if (mode == mojom::WebClientMode::kText && !attached) {
+    modeOffset = ModeOffset::kTextDetached;
+  } else {
+    modeOffset = ModeOffset::kAudioDetached;
+  }
+
+  int baseIndex =
+      static_cast<int>(source) * (static_cast<int>(ModeOffset::kMaxValue));
+  int offset = static_cast<int>(modeOffset);
+
+  return static_cast<ResponseSegmentation>(baseIndex + offset);
+}
+
 GlicEntrypoint GetEntrypointFromInvocationSource(
     mojom::InvocationSource source) {
   switch (source) {

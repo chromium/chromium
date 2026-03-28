@@ -839,6 +839,11 @@ void GlicInstanceMetrics::OnResponseStarted() {
     }
   }
 
+  base::UmaHistogramEnumeration(
+      "Glic.Response.Segmentation",
+      GetResponseSegmentation(turn_.ui_mode_ == EmbedderType::kSidePanel,
+                              turn_.input_mode_, last_invocation_source_));
+
   ukm::builders::Glic_Response(turn_.chosen_source_id_)
       .SetAttached(turn_.ui_mode_ == EmbedderType::kSidePanel)
       .SetInvocationSource(static_cast<int64_t>(last_invocation_source_))

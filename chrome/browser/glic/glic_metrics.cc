@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -158,39 +157,6 @@ constexpr char kHistogramGlicPanelPresentationTimePrefix[] =
     "Glic.PanelPresentationTime2.";
 
 constexpr static base::TimeDelta kLogSizeMetricsDelay = base::Minutes(3);
-
-enum class ModeOffset : int {
-  kTextAttached = 1,
-  kAudioAttached = 2,
-  kTextDetached = 3,
-  kAudioDetached = 4,
-  kMaxValue = kAudioDetached,
-};
-
-ResponseSegmentation GetResponseSegmentation(bool attached,
-                                             mojom::WebClientMode mode,
-                                             mojom::InvocationSource source) {
-  if (mode == mojom::WebClientMode::kUnknown) {
-    return ResponseSegmentation::kUnknown;
-  }
-
-  ModeOffset modeOffset;
-  if (mode == mojom::WebClientMode::kText && attached) {
-    modeOffset = ModeOffset::kTextAttached;
-  } else if (mode == mojom::WebClientMode::kAudio && attached) {
-    modeOffset = ModeOffset::kAudioAttached;
-  } else if (mode == mojom::WebClientMode::kText && !attached) {
-    modeOffset = ModeOffset::kTextDetached;
-  } else {
-    modeOffset = ModeOffset::kAudioDetached;
-  }
-
-  int baseIndex =
-      static_cast<int>(source) * (static_cast<int>(ModeOffset::kMaxValue));
-  int offset = static_cast<int>(modeOffset);
-
-  return static_cast<ResponseSegmentation>(baseIndex + offset);
-}
 
 std::string_view GetInputModeString(mojom::WebClientMode input_mode) {
   switch (input_mode) {
@@ -558,9 +524,6 @@ void GlicMetrics::OnResponseStarted() {
   base::UmaHistogramEnumeration("Glic.Response.InvocationSource",
                                 invocation_source_);
   base::UmaHistogramEnumeration("Glic.Response.InputMode", input_mode_);
-  base::UmaHistogramEnumeration(
-      "Glic.Response.Segmentation",
-      GetResponseSegmentation(attached, input_mode_, invocation_source_));
 
   base::UmaHistogramCounts100("Glic.Response.TabsPinnedForSharingCount",
                               delegate_->GetNumPinnedTabs());
