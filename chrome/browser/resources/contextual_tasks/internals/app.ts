@@ -13,7 +13,7 @@ import type {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import type {Tab} from '../contextual_tasks_internals.mojom-webui.js';
+import type {EligibilityState, Tab} from '../contextual_tasks_internals.mojom-webui.js';
 import {TabSelectionMode} from '../contextual_tasks_types.mojom-webui.js';
 
 import {getCss} from './app.css.js';
@@ -108,6 +108,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
       eventLogMessages_: {type: Array},
       forcedHost_: {type: String},
       currentHost_: {type: String},
+      eligibilityState_: {type: Object},
     };
   }
 
@@ -119,6 +120,7 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
   protected accessor eventLogMessages_: EventLogMessage[] = [];
   protected accessor forcedHost_: string = '';
   protected accessor currentHost_: string = '';
+  protected accessor eligibilityState_: EligibilityState|null = null;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
 
@@ -127,6 +129,12 @@ export class ContextualTasksInternalsAppElement extends CrLitElement {
     this.proxy_.callbackRouter.onLogMessageAdded.addListener(
         this.onLogMessageAdded_.bind(this));
     this.refreshCurrentHost_();
+    this.refreshEligibility_();
+  }
+
+  private async refreshEligibility_() {
+    const response = await this.proxy_.handler.getEligibilityState();
+    this.eligibilityState_ = response.state;
   }
 
   private async refreshCurrentHost_() {

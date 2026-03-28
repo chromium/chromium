@@ -40,6 +40,26 @@ interface ContextualTasksInternalsPageHandlerFactory {
       pending_receiver<ContextualTasksInternalsPageHandler> handler);
 };
 
+// Represents the state of the entry point eligibility checks for Contextual Tasks.
+struct EligibilityState {
+  // Overall eligibility state.
+  bool is_eligible;
+  // Whether the contextual tasks feature flag is enabled.
+  bool is_contextual_tasks_enabled;
+  // Whether the user is signed into the browser with valid credentials.
+  bool is_signed_in;
+  // Whether the cookie jar contains the primary account.
+  bool primary_account_in_cookie_jar;
+  // Whether AIM is allowed by enterprise policy.
+  bool is_aim_allowed_by_policy;
+  // Whether AIM is eligible globally.
+  bool is_aim_eligible;
+  // Whether the user is eligible for Co-Browse.
+  bool is_cobrowse_eligible;
+  // Whether page context sharing is enabled by the user or policy.
+  bool is_context_sharing_enabled;
+};
+
 // PageHandler for ContextualTasksInternals page.
 interface ContextualTasksInternalsPageHandler {
   // Returns the relevant context for the given request.
@@ -50,6 +70,9 @@ interface ContextualTasksInternalsPageHandler {
   SetForcedEmbeddedPageHost(url.mojom.Url host);
   // Gets the forced embedded page host.
   GetForcedEmbeddedPageHost() => (url.mojom.Url host);
+
+  // Gets the current eligibility state for entering AI mode / cobrowsing.
+  GetEligibilityState() => (EligibilityState state);
 };
 
 // Renderer-side handler for internals WebUI page to process the updates from
