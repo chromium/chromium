@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -1013,7 +1014,7 @@ void ToolbarView::FinalizeHideGlicActorTaskIcon() {
   CHECK(glic_button_);
   // Reset Nudge State
   if (glic_actor_task_icon_->GetIsShowingNudge()) {
-    // TODO(crbug.com/): Glic actor nudge animation
+    // TODO(crbug.com/484389669): Glic actor nudge animation
     glic_actor_task_icon_->SetIsShowingNudge(false);
   }
   glic_actor_task_icon_->SetVisible(false);
@@ -1104,7 +1105,9 @@ void ToolbarView::UpdateGlicActorVisibility() {
   }
 
   bool is_glic_actor_visible =
-      should_show_glic_actor_ && should_display_vertical_tabs_;
+      should_show_glic_actor_ &&
+      (should_display_vertical_tabs_ ||
+       base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton));
 
   glic_actor_task_icon_->SetVisible(is_glic_actor_visible);
 }
@@ -1115,7 +1118,9 @@ void ToolbarView::UpdateGlicButtonVisibility() {
   }
 
   bool is_glic_visible =
-      should_show_glic_button_ && should_display_vertical_tabs_;
+      should_show_glic_button_ &&
+      (should_display_vertical_tabs_ ||
+       base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton));
 
   glic_button_->SetVisible(is_glic_visible);
   glic_button_divider_->SetVisible(is_glic_visible);

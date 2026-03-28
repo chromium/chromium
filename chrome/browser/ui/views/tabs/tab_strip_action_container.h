@@ -201,6 +201,12 @@ class TabStripActionContainer : public views::View,
   // Helper to handles teardown logic when the task icon is fully gone.
   void FinalizeHideGlicActorTaskIcon();
 
+  // Update visibility of glic actor button
+  void UpdateGlicActorVisibility(bool should_show);
+
+  // Update visibility of glic button and action container
+  void UpdateGlicButtonVisibility(bool should_show);
+
   // The button currently holding the lock to be shown/hidden.
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<glic::GlicNudgeController> glic_nudge_controller_ = nullptr;

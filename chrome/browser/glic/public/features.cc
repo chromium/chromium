@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/public/features.h"
 
+#include "base/feature.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/android_buildflags.h"
@@ -92,5 +93,8 @@ const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers() {
   }());
   return *eligible_tiers;
 }
+
+BASE_FEATURE(kGlicHorizontalTabToolbarButton,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

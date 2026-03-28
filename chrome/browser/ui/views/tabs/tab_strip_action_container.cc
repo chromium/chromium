@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -281,7 +282,7 @@ TabStripActionContainer::TabStripActionContainer(
           AddChildView(CreateGlicActorButtonContainer());
       glic_actor_task_icon_ =
           glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
-      glic_actor_task_icon_->SetVisible(false);
+      UpdateGlicActorVisibility(false);
       glic_actor_button_container_->SetVisible(false);
     }
     glic_button_ = AddChildView(CreateGlicButton());
@@ -438,7 +439,7 @@ bool TabStripActionContainer::GetIsShowingGlicNudge() {
 
 void TabStripActionContainer::SetGlicShowState(bool show) {
   if (glic_button_) {
-    glic_button_->SetVisible(show);
+    UpdateGlicButtonVisibility(show);
   }
   if (separator_) {
     separator_->SetVisible(show);
@@ -471,8 +472,8 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
   }
   glic_button_ =
       glic_actor_button_container_->InsertGlicButton(glic_button_.get());
-  glic_actor_task_icon_->SetVisible(true);
-  glic_actor_button_container_->SetVisible(true);
+  UpdateGlicActorVisibility(true);
+  UpdateGlicButtonVisibility(true);
   glic_button_->Collapse();
   glic_button_->SetSplitButtonCornerStyling();
   UpdateGlicActorButtonContainerBorders();
@@ -1020,7 +1021,7 @@ void TabStripActionContainer::FinalizeHideGlicActorTaskIcon() {
     }
     glic_actor_task_icon_->SetIsShowingNudge(false);
   }
-  glic_actor_task_icon_->SetVisible(false);
+  UpdateGlicActorVisibility(false);
   glic_actor_task_icon_->SetTaskIconToDefault();
   glic_button_ = AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(false);
@@ -1033,6 +1034,36 @@ void TabStripActionContainer::FinalizeHideGlicActorTaskIcon() {
   // Re-add the separator so it's ordered after the GlicButton.
   separator_ = AddChildView(std::move(separator_));
 #endif  // !BUILDFLAG(IS_MAC)
+}
+
+void TabStripActionContainer::UpdateGlicActorVisibility(bool should_show) {
+  if (!glic_actor_task_icon_) {
+    return;
+  }
+
+  bool is_glic_actor_visible =
+      should_show &&
+      !base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton);
+
+  glic_actor_task_icon_->SetVisible(is_glic_actor_visible);
+}
+
+void TabStripActionContainer::UpdateGlicButtonVisibility(bool should_show) {
+  if (!glic_button_) {
+    return;
+  }
+
+  bool is_glic_visible =
+      should_show &&
+      !base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton);
+
+  glic_button_->SetVisible(is_glic_visible);
+
+  if (glic_actor_button_container_) {
+    // glic_actor_button_container_ should only be visible at the same time as
+    // glic_button_.
+    glic_actor_button_container_->SetVisible(is_glic_visible);
+  }
 }
 
 BEGIN_METADATA(TabStripActionContainer)

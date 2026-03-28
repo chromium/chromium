@@ -49,6 +49,8 @@ BASE_DECLARE_FEATURE(kGlicTieredRolloutV2);
 extern const base::FeatureParam<std::string> kGlicTieredRolloutV2EligibleTiers;
 const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers();
 
+BASE_DECLARE_FEATURE(kGlicHorizontalTabToolbarButton);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
