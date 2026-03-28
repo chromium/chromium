@@ -71,6 +71,7 @@ inline constexpr ui::ColorId kForegroundOnAltBackground =
 inline constexpr int kCollapsedWidth = 41;
 inline constexpr int kSplitFlatEdgetRadius = 2;
 inline constexpr int kSplitRoundedEdgeRadius = 10;
+inline constexpr int kIconSize = 20;
 
 template <typename T>
   requires std::derived_from<T, views::LabelButton>
@@ -498,6 +499,8 @@ class GlicButton : public GlicBaseShim<T>,
 
   virtual int GetSplitRoundedEdgeRadius() { return kSplitRoundedEdgeRadius; }
 
+  virtual int GetGlicIconSize() { return kIconSize; }
+
   void SetWidthFactor(float factor) {
     width_factor_ = factor;
     this->PreferredSizeChanged();
@@ -521,7 +524,7 @@ class GlicButton : public GlicBaseShim<T>,
     OnLabelVisibilityChanged();
     auto* image_view =
         static_cast<views::ImageView*>(this->image_container_view());
-    image_view->SetImageSize({icon_size_, icon_size_});
+    image_view->SetImageSize({GetGlicIconSize(), GetGlicIconSize()});
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
     image_view->SetProperty(views::kMarginsKey,
@@ -642,9 +645,6 @@ class GlicButton : public GlicBaseShim<T>,
 
   // Profile corresponding to the browser that this button is on.
   raw_ptr<Profile> profile_;
-
-  // Icon size for Gemini Button.
-  const int icon_size_ = 20;
 
  private:
   // views::LabelButton:
@@ -937,12 +937,12 @@ class GlicButton : public GlicBaseShim<T>,
     return ui::ImageModel::FromVectorIcon(
         GlicVectorIcon(),
         ShouldUseAltIcon() ? kForegroundOnAltBackground : kForeground,
-        icon_size_);
+        GetGlicIconSize());
   }
 
   ui::ImageModel GetIconForHighlight() {
     return ui::ImageModel::FromVectorIcon(GlicVectorIcon(), kForeground,
-                                          icon_size_);
+                                          GetGlicIconSize());
   }
 
   // Helper for making animation durations instant if animations are disabled.

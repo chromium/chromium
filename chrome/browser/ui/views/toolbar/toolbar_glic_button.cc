@@ -91,6 +91,14 @@ int ToolbarGlicButton::GetSplitRoundedEdgeRadius() {
   return split_rounded_edge_radius_;
 }
 
+int ToolbarGlicButton::GetGlicIconSize() {
+  return kToolbarGlicIconSize;
+}
+
+int ToolbarGlicButton::GetIconSize() const {
+  return kToolbarGlicIconSize;
+}
+
 void ToolbarGlicButton::UpdateColors() {
   ToolbarButton::UpdateColorsAndInsets();
 }
