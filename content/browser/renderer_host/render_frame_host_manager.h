@@ -719,6 +719,12 @@ class CONTENT_EXPORT RenderFrameHostManager {
     return attach_to_inner_delegate_state_ != AttachToInnerDelegateState::NONE;
   }
 
+  // Returns true if an inner delegate has been fully attached.
+  bool is_inner_delegate_attached() const {
+    return attach_to_inner_delegate_state_ ==
+           AttachToInnerDelegateState::ATTACHED;
+  }
+
   // Called by the delegate at the end of the attaching process.
   void set_attach_inner_delegate_complete() {
     attach_to_inner_delegate_state_ = AttachToInnerDelegateState::ATTACHED;
