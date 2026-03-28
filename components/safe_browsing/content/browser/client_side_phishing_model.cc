@@ -198,11 +198,9 @@ void RecordImageEmbeddingModelUpdateSuccess(bool success) {
 
 }  // namespace
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 TargetEmbedding::TargetEmbedding(tflite::task::vision::FeatureVector embedding,
                                  float threshold)
     : embedding(std::move(embedding)), threshold(threshold) {}
-#endif
 
 // --- ClientSidePhishingModel methods ---
 
@@ -551,7 +549,6 @@ void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
   }
   // Drop any existing target image embeddings in preparation for a new set.
   target_image_embeddings_.clear();
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Only load image embeddings when the version of their embedder matches the
   // version of the embedder that's been loaded.
   if (model_and_list.second.has_value() &&
@@ -570,7 +567,6 @@ void ClientSidePhishingModel::OnImageEmbeddingModelFileAndEmbeddingListLoaded(
   }
   base::UmaHistogramCounts100000("SBClientPhishing.ImageEmbeddingList.Size",
                                  target_image_embeddings_.size());
-#endif
   // There is no use of the image embedding model if the visual trigger model is
   // not present, so we will only send to the renderer when that is the case.
   if (visual_tflite_model_ && image_embedding_model_) {
@@ -601,7 +597,6 @@ int ClientSidePhishingModel::GetImageEmbeddingModelVersion() {
              : 0;
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 const std::vector<TargetEmbedding>&
 ClientSidePhishingModel::GetTargetImageEmbeddings() const {
   return target_image_embeddings_;
@@ -611,7 +606,7 @@ void ClientSidePhishingModel::SetTargetImageEmbeddingsForTesting(
     std::vector<TargetEmbedding> target_embeddings) {
   target_image_embeddings_ = std::move(target_embeddings);
 }
-#endif
+
 int ClientSidePhishingModel::GetClassificationInputWidth() {
   return classification_input_width_.has_value()
              ? classification_input_width_.value()

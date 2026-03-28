@@ -55,12 +55,9 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "url/gurl.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "tensorflow_lite_support/cc/port/statusor.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
-#endif
+#include "url/gurl.h"
 
 using content::BrowserThread;
 
@@ -725,7 +722,6 @@ ClientSideDetectionService::GetVisualTfLiteModelThresholds() {
   return client_side_phishing_model_->GetVisualTfLiteModelThresholds();
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 const std::vector<TargetEmbedding>&
 ClientSideDetectionService::GetTargetImageEmbeddings() {
   return client_side_phishing_model_->GetTargetImageEmbeddings();
@@ -738,7 +734,6 @@ void ClientSideDetectionService::SetTargetImageEmbeddingsForTesting(
         std::move(target_embeddings));
   }
 }
-#endif
 
 void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
     ClientPhishingRequest* verdict) {
@@ -797,7 +792,6 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
         client_side_phishing_model_->GetTriggerModelVersion());
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   auto target_image_embeddings =
       client_side_phishing_model_->GetTargetImageEmbeddings();
   if (!target_image_embeddings.empty() && !verdict->is_phishing() &&
@@ -835,7 +829,6 @@ void ClientSideDetectionService::ClassifyPhishingThroughThresholds(
       }
     }
   }
-#endif
 
   base::UmaHistogramEnumeration(
       "SBClientPhishing.ClassifyThresholdsResult",

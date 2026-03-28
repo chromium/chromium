@@ -161,7 +161,6 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
     task_environment()->RunUntilIdle();
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void ValidateTargetEmbeddings(
       const std::vector<TargetEmbedding>& target_embeddings) {
     ASSERT_EQ(target_embeddings.size(), static_cast<size_t>(3));
@@ -181,7 +180,6 @@ class ClientSidePhishingModelTest : public content::RenderViewHostTestHarness {
                 testing::AllOf(testing::SizeIs(EXPECTED_SIZE),
                                testing::Each(testing::FloatEq(.3))));
   }
-#endif
 
   ClientSidePhishingModel* service() {
     return client_side_phishing_model_.get();
@@ -297,14 +295,12 @@ TEST_F(ClientSidePhishingModelTest, ValidModel) {
   // Loading the model again, should increment the counter.
   histogram_tester().ExpectUniqueSample(
       "SBClientPhishing.ModelDynamicUpdateSuccess.ImageEmbedding", true, 3);
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // Verify the loaded image embeddings.
   ValidateTargetEmbeddings(service()->GetTargetImageEmbeddings());
   histogram_tester().ExpectBucketCount(
       "SBClientPhishing.ImageEmbeddingList.Version", 25112401, 1);
   histogram_tester().ExpectBucketCount(
       "SBClientPhishing.ImageEmbeddingList.Size", 3, 1);
-#endif
   // Now we're going to get rid of the image embedding model in file by sending
   // an empty model info.
   SendEmptyModelInfoUpdate(

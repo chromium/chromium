@@ -19,21 +19,17 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/delivery/optimization_target_model_observer.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/proto/embeddings.pb.h"
-#endif
+
 namespace optimization_guide {
 class OptimizationGuideModelProvider;
 }  // namespace optimization_guide
 
 namespace safe_browsing {
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 // Holds an embedding we are targeting.
 struct TargetEmbedding {
   TargetEmbedding(tflite::task::vision::FeatureVector embedding,
@@ -41,7 +37,6 @@ struct TargetEmbedding {
   tflite::task::vision::FeatureVector embedding;
   float threshold;
 };
-#endif
 
 enum class CSDModelType { kNone = 0, kFlatbuffer = 1 };
 
@@ -120,12 +115,10 @@ class ClientSidePhishingModel
   const std::vector<TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds() const;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   const std::vector<TargetEmbedding>& GetTargetImageEmbeddings() const;
 
   void SetTargetImageEmbeddingsForTesting(
       std::vector<TargetEmbedding> target_embeddings);
-#endif
 
   // This function is used to override internal model for testing in
   // client_side_phishing_model_unittest
@@ -241,10 +234,8 @@ class ClientSidePhishingModel
 
   base::TimeTicks beginning_time_;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // The image embedding targets to evaluate pages against.
   std::vector<TargetEmbedding> target_image_embeddings_;
-#endif
 
   base::WeakPtrFactory<ClientSidePhishingModel> weak_ptr_factory_{this};
 };

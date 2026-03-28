@@ -26,7 +26,6 @@
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -97,7 +96,6 @@ class Scorer {
   // (range is inclusive on both ends).
   double ComputeScore(const FeatureMap& features) const;
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   // This method applies the TfLite visual model to the given bitmap for image
   // classification. It asynchronously returns the list of scores for each
   // category, in the same order as `tflite_thresholds()`.
@@ -112,7 +110,6 @@ class Scorer {
   void ApplyVisualTfLiteModelImageEmbedding(
       const SkBitmap& bitmap,
       base::OnceCallback<void(ImageFeatureEmbedding)> callback) const;
-#endif
 
   bool HasVisualTfLiteModel() const;
 

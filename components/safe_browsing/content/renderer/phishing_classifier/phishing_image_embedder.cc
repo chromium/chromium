@@ -56,7 +56,6 @@ void PhishingImageEmbedder::BeginImageEmbedding(
 
 void PhishingImageEmbedder::OnPlaybackDone(bool can_extract_visual_features,
                                            std::unique_ptr<SkBitmap> bitmap) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (bitmap) {
     bitmap_ = std::move(bitmap);
 
@@ -70,9 +69,6 @@ void PhishingImageEmbedder::OnPlaybackDone(bool can_extract_visual_features,
   } else {
     RunFailureCallback();
   }
-#else
-  RunFailureCallback();
-#endif
 }
 
 void PhishingImageEmbedder::CancelPendingImageEmbedding() {

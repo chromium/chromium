@@ -163,13 +163,9 @@ void PhishingClassifier::VisualExtractionFinished(bool success) {
     verdict->mutable_visual_features()->Swap(visual_features_.get());
   }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   ScorerStorage::GetInstance()->GetScorer()->ApplyVisualTfLiteModel(
       *bitmap_, base::BindOnce(&PhishingClassifier::OnVisualTfLiteModelDone,
                                weak_factory_.GetWeakPtr(), std::move(verdict)));
-#else
-  RunFailureCallback(Result::kVisualExtractionFailed);
-#endif
 }
 
 void PhishingClassifier::OnVisualTfLiteModelDone(
@@ -200,7 +196,6 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
   if (request_type_.has_value() &&
       request_type_.value() ==
           safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch) {
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
     ScorerStorage::GetInstance()
         ->GetScorer()
         ->ApplyVisualTfLiteModelImageEmbedding(
@@ -209,7 +204,6 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
                 &PhishingClassifier::OnVisualTfLiteModelImageEmbeddingDone,
                 weak_factory_.GetWeakPtr(), std::move(verdict)));
     return;
-#endif
   }
 
   RunCallback(*verdict, Result::kSuccess);

@@ -32,14 +32,11 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
 #include "third_party/tflite/src/tensorflow/lite/op_resolver.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_embedder.h"
-#endif
 
 namespace safe_browsing {
 
@@ -51,7 +48,6 @@ void RecordScorerCreationStatus(ScorerCreationStatus status) {
       SCORER_STATUS_MAX);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 std::unique_ptr<tflite::MutableOpResolver> CreateOpResolver() {
   tflite::MutableOpResolver resolver;
   // The minimal set of OPs required to run the visual model.
@@ -309,11 +305,9 @@ void OnImageEmbedderCreated(
                      std::move(image_embedder), std::move(callback_task_runner),
                      std::move(callback)));
 }
-#endif
 
 }  // namespace
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void Scorer::ApplyVisualTfLiteModelHelper(
     const SkBitmap& bitmap,
     int input_width,
@@ -361,7 +355,6 @@ void Scorer::ApplyImageEmbeddingTfLiteModelHelper(
                      std::move(image_embedder), std::move(callback_task_runner),
                      std::move(callback)));
 }
-#endif
 
 Scorer::Scorer() = default;
 Scorer::~Scorer() = default;
@@ -533,7 +526,6 @@ void Scorer::AttachImageEmbeddingModel(int image_embedding_input_width,
                               image_embedding_input_height);
 }
 
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void Scorer::ApplyVisualTfLiteModel(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::vector<double>)> callback) const {
@@ -575,7 +567,6 @@ void Scorer::ApplyVisualTfLiteModelImageEmbedding(
     std::move(callback).Run(ImageFeatureEmbedding());
   }
 }
-#endif
 
 int Scorer::tflite_model_version() const {
   return flatbuffer_model_->tflite_metadata()->version();

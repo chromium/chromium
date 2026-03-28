@@ -6,7 +6,6 @@ include_rules = [
   "+components/history/core/browser",
   "+components/no_state_prefetch/browser",
   "+components/optimization_guide/core",
-  "+components/optimization_guide/machine_learning_tflite_buildflags.h",
   "+components/optimization_guide/proto",
   "+components/page_info",
   "+components/permissions/permission_request_manager.h",

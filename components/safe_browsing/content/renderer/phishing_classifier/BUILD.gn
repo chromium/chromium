@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
@@ -35,7 +34,6 @@ if (safe_browsing_mode != 0) {
     public_deps = [ "//base" ]
     deps = [
       "//cc/paint",
-      "//components/optimization_guide:machine_learning_tflite_buildflags",
       "//components/paint_preview/common",
       "//components/safe_browsing:buildflags",
       "//components/safe_browsing/content/common:interfaces",
