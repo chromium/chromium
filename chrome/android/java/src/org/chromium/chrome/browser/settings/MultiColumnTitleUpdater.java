@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -46,6 +47,8 @@ import java.util.List;
 class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
     private static final LinearLayout.LayoutParams LAYOUT_CENTER_VERTICAL;
+
+    private static final String TAG = "MultiColTitleUpdater";
 
     private static final String KEY_FIRST_VISIBLE_INDEX = "first_visible_index";
     private static final String KEY_CACHED_DEEP_LINK_PATH = "cached_deep_link_path";
@@ -353,6 +356,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             view.setBreakStrategy(LineBreaker.BREAK_STRATEGY_BALANCED);
 
             final int backStackCount = title.backStackCount;
+            final int finalIndex = i;
             view.setOnClickListener(
                     (View v) -> {
                         assert mMultiColumnSettings != null;
@@ -375,6 +379,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                                                 FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 mTitleTapCallback.onResult(entry.getName());
                             }
+                        } else {
+                            if (mCachedDeepLinkPath != null) {
+                                SettingsIndexData.Entry entry = mCachedDeepLinkPath.get(finalIndex);
+                                launchFragment(entry);
+                            }
                         }
                     });
             mContainer.addView(view);
@@ -383,6 +392,39 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
         // Make the last-added/tapped one visible after adding titles.
         if (mContainer.getParent() instanceof HorizontalScrollView scrollView) {
             scrollView.post(() -> scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
+        }
+    }
+
+    /**
+     * Navigates to a specific parent fragment when its synthetic breadcrumb is clicked.
+     *
+     * <p>Instantiates the target fragment using the args stored in the {@link
+     * SettingsIndexData.Entry}, and replaces the current detail pane.
+     *
+     * @param entry The index entry containing the fragment class and arguments.
+     */
+    private void launchFragment(SettingsIndexData.Entry entry) {
+        if (entry.fragment == null) return;
+
+        try {
+            FragmentManager fm = mMultiColumnSettings.getChildFragmentManager();
+
+            if (fm.getBackStackEntryCount() > 0) {
+                fm.popBackStackImmediate(
+                        fm.getBackStackEntryAt(0).getId(),
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            }
+
+            mCachedDeepLinkPath = null;
+
+            Fragment f = Fragment.instantiate(mContext, entry.fragment, entry.extras);
+            fm.beginTransaction()
+                    .setReorderingAllowed(true)
+                    .replace(R.id.preferences_detail, f)
+                    .commitNow();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to launch breadcrumb fragment: " + entry.fragment, e);
         }
     }
 
