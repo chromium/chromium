@@ -877,12 +877,12 @@
     {
         "name": "navigationevent",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-alpha01"
+        "version": "1.1.0-beta01"
     },
     {
         "name": "navigationevent-android",
         "group": "androidx.navigationevent",
-        "version": "1.1.0-alpha01"
+        "version": "1.1.0-beta01"
     },
     {
         "name": "navigationevent-compose",
