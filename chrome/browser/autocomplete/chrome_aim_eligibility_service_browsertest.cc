@@ -896,30 +896,6 @@ class ChromeAimEligibilityServicePecApiEnabledBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-class ChromeAimEligibilityServicePecApiDisabledBrowserTest
-    : public AimEligibilityTestBase {
- public:
-  ChromeAimEligibilityServicePecApiDisabledBrowserTest() = default;
-  ~ChromeAimEligibilityServicePecApiDisabledBrowserTest() override = default;
-
- protected:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {omnibox::kAimEnabled, omnibox::kAimServerEligibilityEnabled,
-         omnibox::kAimServerRequestOnStartupEnabled},
-        {contextual_tasks::kContextualTasks, omnibox::kAimUsePecApi});
-    InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    AimEligibilityTestBase::SetUpOnMainThread();
-    SetUpDefaultSearchEngine(browser()->profile(), /*is_google_dse=*/true);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Test that `GetSearchboxConfig` correctly retrieves and parses the config when
 // provided by the server.
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
@@ -954,65 +930,6 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,
   ASSERT_NE(actual_config, nullptr);
   EXPECT_EQ(actual_config->initial_tool_mode(),
             omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
-}
-
-// Test that when the server sends legacy boolean fields and the PEC API feature
-// is disabled, the service correctly backfills (generates) a `SearchboxConfig`
-// locally.
-IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiDisabledBrowserTest,
-                       GetSearchboxConfig_BackfillsFromLegacyFields) {
-  omnibox::AimEligibilityResponse response;
-  response.set_is_eligible(true);
-
-  // Set legacy boolean fields AND `SearchboxConfig`.
-  // This forces the service to generate the config locally using the backfill
-  // logic because the `kAimUsePecApi` feature is disabled.
-  response.set_is_deep_search_eligible(true);
-  response.set_is_canvas_eligible(true);
-  response.mutable_searchbox_config()->set_initial_tool_mode(
-      omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
-
-  base::test::TestFuture<bool> request_handled_future;
-  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
-      base::BindLambdaForTesting(
-          [&](content::URLLoaderInterceptor::RequestParams* params) {
-            return OnRequest(params, std::make_optional(response),
-                             request_handled_future.GetRepeatingCallback());
-          }));
-
-  auto* service = GetAimEligibilityService(browser()->profile());
-
-  base::test::TestFuture<void> eligibility_changed_future;
-  auto eligibility_subscription = service->RegisterEligibilityChangedCallback(
-      eligibility_changed_future.GetRepeatingCallback());
-
-  EXPECT_TRUE(eligibility_changed_future.Wait());
-
-  // Verify that `GetSearchboxConfig` returns a non-null, backfilled config.
-  const auto* actual_config = service->GetSearchboxConfig();
-
-  ASSERT_NE(actual_config, nullptr);
-  ASSERT_TRUE(actual_config->has_rule_set());
-
-  // Verify Deep Search was mapped to allowed_tools.
-  bool has_deep_search = false;
-  for (const auto& tool : actual_config->rule_set().allowed_tools()) {
-    if (tool == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH) {
-      has_deep_search = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(has_deep_search);
-
-  // Verify Canvas was mapped to allowed_tools.
-  bool has_canvas = false;
-  for (const auto& tool : actual_config->rule_set().allowed_tools()) {
-    if (tool == omnibox::ToolMode::TOOL_MODE_CANVAS) {
-      has_canvas = true;
-      break;
-    }
-  }
-  EXPECT_TRUE(has_canvas);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServicePecApiEnabledBrowserTest,

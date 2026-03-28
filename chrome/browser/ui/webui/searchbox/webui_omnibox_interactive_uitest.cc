@@ -4,8 +4,10 @@
 
 #include <optional>
 
+#include "base/base64.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
@@ -23,12 +25,14 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -234,6 +238,32 @@ class OmniboxAimWebUiInteractiveTestBase
   ~OmniboxAimWebUiInteractiveTestBase() override = default;
 
  protected:
+  auto SetAimEligibleResponse() {
+    return Do([this]() {
+      auto* profile = browser()->profile();
+      auto* service = AimEligibilityServiceFactory::GetForProfile(profile);
+      omnibox::AimEligibilityResponse response;
+      response.set_is_eligible(true);
+      response.set_is_fusebox_eligible(true);
+      response.set_is_cobrowse_eligible(true);
+      auto* config = response.mutable_searchbox_config();
+      auto* tool_config = config->add_tool_configs();
+      tool_config->set_tool(omnibox::TOOL_MODE_DEEP_SEARCH);
+      tool_config->mutable_rule()->set_allow_all_input_types(true);
+
+      auto* input_config = config->add_input_type_configs();
+      input_config->set_input_type(omnibox::INPUT_TYPE_LENS_IMAGE);
+
+      auto* input_config2 = config->add_input_type_configs();
+      input_config2->set_input_type(omnibox::INPUT_TYPE_LENS_FILE);
+
+      std::string serialized;
+      response.SerializeToString(&serialized);
+      service->SetEligibilityResponseForDebugging(
+          base::Base64Encode(serialized));
+    });
+  }
+
   auto GetActiveAimPopupWebView() {
     return base::BindLambdaForTesting([&]() -> views::View* {
       auto* aim_presenter = static_cast<OmniboxPopupAimPresenter*>(
@@ -378,10 +408,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
                        AimEntryPointShownInClassicPopup) {
   RunTestSequence(
+      SetAimEligibleResponse(),
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
       WaitForClassicPopupReady(),
-      InAnyContext(EnsurePresent(kPopupWebView, kClassicContextMenu)));
+      InAnyContext(WaitForElementToRender(kPopupWebView, kClassicContextMenu)));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
