@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
+#include "components/zoom/zoom_controller.h"  // nogncheck
 #endif
 
 namespace {
@@ -936,6 +937,10 @@ void ContextualTasksUI::OnSidePanelStateChanged() {
   }
 
   PostMessageToWebview(message);
+
+#if !BUILDFLAG(IS_ANDROID)
+  UpdateZoom();
+#endif
 }
 
 void ContextualTasksUI::OnLensOverlayStateChanged(
@@ -1415,5 +1420,27 @@ base::RefCountedMemory* ContextualTasksUI::GetFaviconResourceBytes(
           IDR_NTP_FAVICON, scale_factor));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
+
+void ContextualTasksUI::UpdateZoom() {
+  content::WebContents* web_contents = web_ui()->GetWebContents();
+  auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  if (!zoom_controller) {
+    zoom::ZoomController::CreateForWebContents(web_contents);
+    zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
+  }
+
+  if (IsShownInTab()) {
+    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DEFAULT);
+  } else {
+    zoom_controller->SetZoomMode(zoom::ZoomController::ZOOM_MODE_DISABLED);
+  }
+}
+
+void ContextualTasksUI::WebUIPrimaryPageChanged(content::Page& page) {
+  ui::MojoWebUIController::WebUIPrimaryPageChanged(page);
+  // Update zoom when WebUI is loaded.
+  UpdateZoom();
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 WEB_UI_CONTROLLER_TYPE_IMPL(ContextualTasksUI)

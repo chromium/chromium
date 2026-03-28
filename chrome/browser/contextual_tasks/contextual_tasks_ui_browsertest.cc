@@ -485,3 +485,23 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest, CanZoom) {
   ASSERT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DEFAULT,
             zoom_controller->zoom_mode());
 }
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       CannotZoomInSidePanel) {
+  std::unique_ptr<content::WebContents> side_panel_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->profile()));
+  auto side_panel_web_ui = std::make_unique<content::TestWebUI>();
+  side_panel_web_ui->set_web_contents(side_panel_contents.get());
+
+  auto side_panel_controller =
+      std::make_unique<ContextualTasksUI>(side_panel_web_ui.get());
+
+  static_cast<content::WebUIController*>(side_panel_controller.get())
+      ->WebUIPrimaryPageChanged(side_panel_contents->GetPrimaryPage());
+
+  auto* zoom_controller =
+      zoom::ZoomController::FromWebContents(side_panel_contents.get());
+  ASSERT_EQ(zoom::ZoomController::ZoomMode::ZOOM_MODE_DISABLED,
+            zoom_controller->zoom_mode());
+}

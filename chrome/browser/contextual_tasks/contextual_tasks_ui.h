@@ -377,6 +377,13 @@ class ContextualTasksUI
 
   base::WeakPtrFactory<ContextualTasksUI> weak_ptr_factory_{this};
 
+#if !BUILDFLAG(IS_ANDROID)
+  void UpdateZoom();
+
+  // content::WebUIController overrides:
+  void WebUIPrimaryPageChanged(content::Page& page) override;
+#endif
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

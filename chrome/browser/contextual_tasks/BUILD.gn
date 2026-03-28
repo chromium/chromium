@@ -310,6 +310,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
+      "//components/zoom",
       "//content/public/browser",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
