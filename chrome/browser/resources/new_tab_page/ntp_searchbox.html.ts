@@ -1,15 +1,17 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './searchbox_input.js';
+import '//resources/cr_components/searchbox/searchbox_input.js';
 
+import type {SearchboxElement} from '//resources/cr_components/searchbox/searchbox.js';
+import {getHtml as getContextualEntrypointHtml} from '//resources/cr_components/searchbox/searchbox_contextual_entrypoint.html.js';
+import {getHtml as getDropdownHtml} from '//resources/cr_components/searchbox/searchbox_searchbox_dropdown.html.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {SearchboxElement} from './searchbox.js';
-import {getHtml as getDropdownHtml} from './searchbox_searchbox_dropdown.html.js';
+import type {NtpSearchboxElement} from './ntp_searchbox.js';
 
-export function getHtml(this: SearchboxElement) {
+export function getHtml(this: NtpSearchboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="inputWrapper" @focusout="${this.onInputWrapperFocusout}"
@@ -18,6 +20,11 @@ export function getHtml(this: SearchboxElement) {
     @dragover="${this.dragAndDropHandler?.handleDragOver}"
     @dragleave="${this.dragAndDropHandler?.handleDragLeave}"
     @drop="${this.dragAndDropHandler?.handleDrop}">
+  ${this.ntpRealboxNextEnabled ?
+    html`
+      <search-animated-glow animation-state="${this.animationState}" part="animated-glow">
+      </search-animated-glow>
+    ` : ''}
   <cr-searchbox-input id="input"
       exportparts="searchbox-input"
       ?dropdown-is-visible="${this.dropdownIsVisible}"
@@ -28,19 +35,14 @@ export function getHtml(this: SearchboxElement) {
       searchbox-icon="${this.searchboxIcon_}"
       .selectedMatch="${this.selectedMatch}"
       ?input-has-matches="${this.inputHasMatches_()}"
+      ?allow-file-paste="${this.ntpRealboxNextEnabled}"
       @focusin="${this.onInputFocus_}"
       @searchbox-input-files-pasted="${this.onSearchboxInputFilesPasted_}"
       @searchbox-input-text-updated="${this.onInputTextUpdated_}"
       @searchbox-input-tab-or-mouse-clicked="${this.onInputFocusChanged}">
-    ${this.showThumbnail ? html`
-      <div id="thumbnailContainer" slot="thumbnail">
-        <cr-searchbox-thumbnail id="thumbnail"
-            thumbnail-url="${this.thumbnailUrl_}"
-            ?is-deletable="${this.isThumbnailDeletable_}"
-            @remove-thumbnail-click="${this.onRemoveThumbnailClick_}"
-            role="button" aria-label="${this.i18n('searchboxThumbnailLabel')}"
-            tabindex="${this.getThumbnailTabindex_()}">
-        </cr-searchbox-thumbnail>
+    ${this.ntpRealboxNextEnabled ? html`
+      <div class="contextualEntrypointContainer contextualEntrypointContainerCompact" slot="contextual-entrypoint">
+        ${getContextualEntrypointHtml.bind(this as SearchboxElement)()}
       </div>
     ` : ''}
     ${this.shouldShowVoiceLens_(this.searchboxVoiceSearchEnabled_) ? html`
@@ -50,7 +52,7 @@ export function getHtml(this: SearchboxElement) {
             title="${this.i18n('voiceSearchButtonLabel')}">
         </button>
       </div>
-    `: ''}
+    ` : ''}
     ${this.shouldShowVoiceLens_(this.searchboxLensSearchEnabled_) ? html`
       <div slot="action-buttons" class="searchbox-icon-button-container lens">
         <button id="lensSearchButton" class="searchbox-icon-button lens"
@@ -66,7 +68,7 @@ export function getHtml(this: SearchboxElement) {
     ` : ''}
   </cr-searchbox-input>
   <div class="dropdownContainer">
-    ${getDropdownHtml.bind(this)()}
+    ${getDropdownHtml.bind(this as SearchboxElement, this.ntpRealboxNextEnabled)()}
   </div>
 </div>
 <!--_html_template_end_-->`;

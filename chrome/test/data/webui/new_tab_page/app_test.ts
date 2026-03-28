@@ -136,7 +136,7 @@ suite('NewTabPageAppTest', () => {
   }
 
   function getComposeButton(): HTMLElement|null {
-    const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+    const searchboxContainer = app.shadowRoot.querySelector('ntp-searchbox');
     assertTrue(!!searchboxContainer);
     return searchboxContainer.shadowRoot.querySelector<HTMLElement>(
         '#composeButton');
@@ -738,7 +738,7 @@ suite('NewTabPageAppTest', () => {
     ([
       ['#content', NtpElement.BACKGROUND],
       ['ntp-logo', NtpElement.LOGO],
-      ['cr-searchbox', NtpElement.REALBOX],
+      ['ntp-searchbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
       ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
       ['#modules', NtpElement.MODULE],
@@ -1109,8 +1109,8 @@ suite('NewTabPageAppTest', () => {
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
-        // Dispatch the 'compose-click' event directly, which cr-searchbox
-        // listens for. This simulates the `cr-searchbox-compose-button`
+        // Dispatch the 'compose-click' event directly, which ntp-searchbox
+        // listens for. This simulates the `ntp-searchbox-compose-button`
         // child `cr-button` being clicked and its `onClick_` function being
         // called.
         composeButton.dispatchEvent(new CustomEvent(
@@ -1131,7 +1131,7 @@ suite('NewTabPageAppTest', () => {
           () => {
             // Assert compose button is present.
             const searchboxContainer =
-                app.shadowRoot.querySelector('cr-searchbox');
+                app.shadowRoot.querySelector('ntp-searchbox');
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
@@ -1141,8 +1141,8 @@ suite('NewTabPageAppTest', () => {
                 .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
                     new InputEvent('input'));
 
-            // Dispatch the 'compose-click' event directly, which cr-searchbox
-            // listens for. This simulates the `cr-searchbox-compose-button`
+            // Dispatch the 'compose-click' event directly, which ntp-searchbox
+            // listens for. This simulates the `ntp-searchbox-compose-button`
             // child `cr-button` being clicked and its `onClick_` function being
             // called.
             composeButton.dispatchEvent(new CustomEvent(
@@ -1172,7 +1172,8 @@ suite('NewTabPageAppTest', () => {
           return null;
         };
 
-        const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+        const searchboxContainer =
+            app.shadowRoot.querySelector('ntp-searchbox');
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
@@ -1222,7 +1223,7 @@ suite('NewTabPageAppTest', () => {
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
-        // Dispatch the 'compose-click' event directly, which cr-searchbox
+        // Dispatch the 'compose-click' event directly, which ntp-searchbox
         // listens for. This simulates the `cr-searchbox-compose-button`
         // child `cr-button` being clicked and its `onClick_` function being
         // called.
@@ -1244,7 +1245,7 @@ suite('NewTabPageAppTest', () => {
           () => {
             // Assert compose button is present.
             const searchboxContainer =
-                app.shadowRoot.querySelector('cr-searchbox');
+                app.shadowRoot.querySelector('ntp-searchbox');
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
@@ -1415,7 +1416,7 @@ suite('NewTabPageAppTest', () => {
         'Clicking the searchbox composebox button with text navigates',
         async () => {
           const searchboxContainer =
-              app.shadowRoot.querySelector('cr-searchbox');
+              app.shadowRoot.querySelector('ntp-searchbox');
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
@@ -1476,7 +1477,7 @@ suite('NewTabPageAppTest', () => {
             await microtasksFinished();
 
             const searchboxContainer =
-                app.shadowRoot.querySelector('cr-searchbox');
+                app.shadowRoot.querySelector('ntp-searchbox');
 
             assertEquals(
                 'hello',

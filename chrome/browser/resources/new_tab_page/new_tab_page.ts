@@ -32,6 +32,7 @@ export type {ProcessedFile} from './image_processor.js';
 export {LogoElement} from './logo.js';
 export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash} from './metrics_utils.js';
 export {NewTabPageProxy} from './new_tab_page_proxy.js';
+export {NtpSearchboxElement} from './ntp_searchbox.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$} from './utils.js';
 export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';

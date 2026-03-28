@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/new_tab_page.js';
 
-import type {SearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {NtpSearchboxElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {BrowserProxyImpl, MetricsReporterImpl, SearchboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
@@ -59,17 +59,17 @@ const SAMPLE_INPUT_STATE = new MockInputState({
   maxTotalInputs: 10,
 });
 
-function createAndAppendRealbox(properties: Partial<SearchboxElement> = {}):
-    SearchboxElement {
+function createAndAppendRealbox(properties: Partial<NtpSearchboxElement> = {}):
+    NtpSearchboxElement {
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
-  const realbox = document.createElement('cr-searchbox');
+  const realbox = document.createElement('ntp-searchbox');
   Object.assign(realbox, properties);
   document.body.appendChild(realbox);
   return realbox;
 }
 
 suite('NewTabPageRealboxTabsTest', () => {
-  let realbox: SearchboxElement;
+  let realbox: NtpSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
 
   suiteSetup(() => {
@@ -147,7 +147,7 @@ suite('NewTabPageRealboxTabsTest', () => {
 });
 
 suite('NewTabPageRealboxNextTest', () => {
-  let realbox: SearchboxElement;
+  let realbox: NtpSearchboxElement;
   let testProxy: TestSearchboxBrowserProxy;
   let metrics: MetricsTracker;
 

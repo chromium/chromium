@@ -43,7 +43,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
   <div id="searchboxContainer"
       @focusin="${this.onSearchboxContainerFocusin_}"
       @focusout="${this.onSearchboxContainerFocusout_}">
-    <cr-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
+    <ntp-searchbox id="searchbox" ?is-dark="${this.isThemeDark_()}"
         placeholder-text="$i18n{searchBoxPlaceholder}"
         ?color-source-is-baseline="${this.colorSourceIsBaseline}"
         @open-composebox="${this.onOpenComposebox_}"
@@ -60,7 +60,7 @@ import {nothing} from '//resources/lit/v3_0/lit.rollup.js';
         ?cycling-placeholders="${this.searchboxCyclingPlaceholders_}"
         context-menu-glif-animation-state="${this.contextMenuGlifAnimationState_}"
         ?multi-line-enabled="${this.multiLineEnabled_}">
-    </cr-searchbox>
+    </ntp-searchbox>
     ${this.showComposebox_ ? html`
       <div id="dialogAnchor"></div>
       <dialog id="composeboxDialog">
