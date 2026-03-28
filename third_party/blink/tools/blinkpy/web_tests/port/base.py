@@ -1872,7 +1872,6 @@ class Port(object):
         return (self.skipped_due_to_smoke_tests(test)
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test)
-                or self.virtual_test_skipped_due_to_disabled(test)
                 or self.skipped_due_to_exclusive_virtual_tests(test))
 
     @memoized
@@ -1981,17 +1980,6 @@ class Port(object):
         suite = self._lookup_virtual_suite(test)
         if suite is not None:
             return self.port_name not in suite.platforms
-        return False
-
-    def virtual_test_skipped_due_to_disabled(self, test):
-        """Checks if the virtual test is skipped based on the 'disabled' config.
-
-        Returns True if the virtual test is marked as disabled, due to config in
-        VirtualTestSuites; returns False otherwise.
-        """
-        suite = self._lookup_virtual_suite(test)
-        if suite is not None:
-            return suite.disabled
         return False
 
     @memoized
@@ -2982,8 +2970,7 @@ class VirtualTestSuite(object):
                  exclusive_tests=None,
                  args=None,
                  owners=None,
-                 expires=None,
-                 disabled=False):
+                 expires=None):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
         assert isinstance(platforms, list)
@@ -3003,7 +2990,6 @@ class VirtualTestSuite(object):
         self.bases = bases
         self.exclusive_tests = exclusive_tests
         self.expires = expires
-        self.disabled = disabled
         self.args = sorted(args)
         self.owners = owners
         # always put --enable-threaded-compositing at the end of list, so that after appending
