@@ -50,9 +50,6 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
             "adaptive_toolbar_page_summary_web_used";
 
-    /** Add to homescreen events. */
-    public static final String ADD_TO_HOMESCREEN_DIALOG_SHOWN = "add_to_homescreen_dialog_shown";
-
     /** Read later related events. */
     public static final String APP_MENU_BOOKMARK_STAR_ICON_PRESSED =
             "app_menu_bookmark_star_icon_pressed";
@@ -215,13 +212,6 @@ public final class EventConstants {
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
-    /** IPH dialog of RTL gesture navigation dialog is shown. */
-    public static final String RTL_GESTURE_NAVIGATION_DIALOG_SHOW = "rtl_gesture_iph_show";
-
-    /** Screenshot is taken with Chrome in the foreground. */
-    public static final String SCREENSHOT_TAKEN_CHROME_IN_FOREGROUND =
-            "screenshot_taken_chrome_in_foreground";
-
     /** Appearance in Settings was opened by the user. */
     public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
 
@@ -234,10 +224,6 @@ public final class EventConstants {
     /** The option to track the price of a product was selected from the main menu. */
     public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
             "shopping_list_track_price_from_menu";
-
-    /** A tap on the folder icon in the enhanced bookmark save flow. */
-    public static final String SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP =
-            "shopping_list_save_flow_folder_tap";
 
     /** Reengagement events. */
     public static final String STARTED_FROM_MAIN_INTENT = "started_from_main_intent";
