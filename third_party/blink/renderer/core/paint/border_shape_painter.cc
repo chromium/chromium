@@ -67,38 +67,29 @@ Path BorderShapePainter::InnerPath(const ComputedStyle& style,
   CHECK(style.HasBorderShape());
 
   const StyleBorderShape& border_shape = *style.BorderShape();
-  return border_shape.InnerShape().GetPath(gfx::RectF(inner_reference_rect),
-                                           style.EffectiveZoom(), 1);
-}
+  Path inner_path = border_shape.InnerShape().GetPath(
+      gfx::RectF(inner_reference_rect), style.EffectiveZoom(), 1);
 
-Path BorderShapePainter::OverflowClipInnerPath(
-    const ComputedStyle& style,
-    const PhysicalRect& inner_reference_rect) {
-  CHECK(style.HasBorderShape());
-  Path inner_path = InnerPath(style, inner_reference_rect);
+  if (border_shape.HasSeparateInnerShape()) {
+    return inner_path;
+  }
 
   // For single-shape border-shape, the border is drawn as a stroke centered on
   // the path with the border width as the stroke thickness. The inner edge of
-  // the border is therefore at path - border_width/2. Contract the path inward
-  // by half the border width so that overflow-clipped children do not paint
-  // over the inner half of the border stroke.
-  const StyleBorderShape& border_shape = *style.BorderShape();
-  if (!border_shape.HasSeparateInnerShape()) {
-    DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
-    if (derived_stroke.thickness > 0) {
-      StrokeData stroke_data;
-      stroke_data.SetThickness(derived_stroke.thickness);
-      Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
-      SkOpBuilder builder;
-      builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-      builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
-      SkPath result;
-      if (builder.resolve(&result)) {
-        return Path(result);
-      }
-    }
+  // the border is therefore at path - border_width/2.
+  DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
+  if (derived_stroke.thickness <= 0) {
+    return inner_path;
   }
-  return inner_path;
+
+  StrokeData stroke_data;
+  stroke_data.SetThickness(derived_stroke.thickness);
+  Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
+  SkOpBuilder builder;
+  builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+  builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
+  SkPath result;
+  return builder.resolve(&result) ? Path(result) : inner_path;
 }
 
 // static
@@ -309,8 +300,8 @@ PhysicalBoxStrut BorderShapePainter::VisualOutsets(
 
   // Box-shadow visual bounds. BoxDecorationOutsets() uses (spread + sigma_3)
   // for shadows, but for border-shape the shadow path is built via:
-  //   ExpandPathWithStroke(outer_path, (spread + blur) * 2)
-  // giving a total visual extent of (spread + blur + sigma_3). Replicate the
+  //   ExpandPathWithStroke(outer_path, spread * 2)
+  // giving a total visual extent of (spread + sigma_3). Replicate the
   // exact path the painter builds so the overflow bounds match the pixels
   // actually drawn.
   if (const ShadowList* box_shadow = style.BoxShadow()) {
@@ -319,25 +310,12 @@ PhysicalBoxStrut BorderShapePainter::VisualOutsets(
         continue;
       }
       const float spread = shadow.Spread();
-      const float blur = shadow.BlurRadius();
       // 3 * sigma is how Skia computes the box blur extent.
       // See ShadowData::RectOutsets().
       const float sigma_3 = std::ceil(3.0f * shadow.BlurAsSigma());
 
-      // Mirror BoxPainterBase::PaintNormalBoxShadow exactly.
-      Path shadow_path;
-      if (spread < 0) {
-        gfx::RectF adjusted_ref_rect = gfx::RectF(outer_reference_rect);
-        adjusted_ref_rect.Outset(spread);  // negative outset shrinks
-        if (adjusted_ref_rect.IsEmpty()) {
-          continue;
-        }
-        const Path adjusted_outer_path = OuterPath(
-            style, PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect));
-        shadow_path = ExpandPathWithStroke(adjusted_outer_path, blur * 2);
-      } else {
-        shadow_path = ExpandPathWithStroke(outer_path, (spread + blur) * 2);
-      }
+      const Path shadow_path =
+          OuterPathWithOffset(style, outer_reference_rect, spread);
 
       // The draw looper blurs shadow_path by sigma_3, then offsets by (X, Y).
       gfx::RectF shadow_visual_rect = shadow_path.BoundingRect();

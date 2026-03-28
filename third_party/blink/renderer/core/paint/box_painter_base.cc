@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/platform/graphics/scoped_image_rendering_settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -362,32 +363,11 @@ void BoxPainterBase::PaintNormalBoxShadow(
           border_shape_rects ? border_shape_rects->outer : paint_rect;
 
       const float spread = shadow.Spread();
-      const float blur_radius = shadow.BlurRadius();
-      if (spread < 0) {
-        // Negative spread: shrink the reference rect by the spread amount and
-        // compute a new outer path for that shrunk rect, then fill it.
-        gfx::RectF adjusted_ref_rect = gfx::RectF(outer_reference_rect);
-        // Outset with a negative value insets the rect.
-        adjusted_ref_rect.Outset(spread);
-        if (adjusted_ref_rect.IsEmpty()) {
-          continue;
-        }
-        PhysicalRect adjusted_physical_ref =
-            PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
-        const Path adjusted_outer_path =
-            BorderShapePainter::OuterPath(style, adjusted_physical_ref);
-        const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
-            adjusted_outer_path, blur_radius * 2);
-        context.SetFillColor(Color::kBlack);
-        context.FillPath(shadow_path, auto_dark_mode);
-      } else {
-        const Path border_shape_outer_path =
-            BorderShapePainter::OuterPath(style, outer_reference_rect);
-        const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
-            border_shape_outer_path, (spread + blur_radius) * 2);
-        context.SetFillColor(Color::kBlack);
-        context.FillPath(shadow_path, auto_dark_mode);
-      }
+      const Path shadow_path = BorderShapePainter::OuterPathWithOffset(
+          style, outer_reference_rect, spread);
+
+      context.SetFillColor(Color::kBlack);
+      context.FillPath(shadow_path, auto_dark_mode);
     } else if (has_border_radius) {
       ContouredRect rounded_fill_rect(
           FloatRoundedRect(fill_rect, border.GetRadii()),
@@ -476,45 +456,53 @@ void BoxPainterBase::PaintInsetBoxShadowForBorderShape(
         PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground);
 
     const float spread = shadow.Spread();
-    const float blur_radius = shadow.BlurRadius();
-    if (spread > 0) {
-      // Inner box-shadow follows the inside of the inner path,
-      // rendered as a stroke with stroke width of (spread + blur) * 2, clipped
-      // by the border shape. We include blur_radius to ensure the shadow area
-      // is large enough for the blur effect (similar to
-      // AreaCastingShadowInHole).
+
+    Path hole_path = inner_path;
+
+    if (spread != 0) {
       StrokeData stroke_data;
-      stroke_data.SetThickness((spread + blur_radius) * 2);
-      context.SetStrokeColor(Color::kBlack);
-      context.SetStroke(stroke_data);
-      context.StrokePath(inner_path, auto_dark_mode);
-    } else if (spread < 0) {
-      // Negative spread: shrink the reference rect by the spread amount and
-      // compute a new inner path for that shrunk rect, then fill it.
-      // Include blur_radius to extend shadow area for blur effect.
-      gfx::RectF adjusted_ref_rect = gfx::RectF(inner_reference_rect);
-      // Outset with a negative value insets the rect.
-      adjusted_ref_rect.Outset(spread);
-      PhysicalRect adjusted_physical_ref =
-          PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
-      const Path adjusted_inner_path =
-          BorderShapePainter::InnerPath(style, adjusted_physical_ref);
-      const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
-          adjusted_inner_path, blur_radius * 2);
-      context.SetFillColor(Color::kBlack);
-      context.FillPath(shadow_path, auto_dark_mode);
-    } else {
-      // When spread is 0 but blur is non-zero, we need to draw a stroke
-      // with thickness based on blur radius to create an area for the
-      // blur effect to be applied to.
-      if (blur_radius > 0) {
-        StrokeData stroke_data;
-        stroke_data.SetThickness(blur_radius * 2);
-        context.SetStroke(stroke_data);
-        context.SetStrokeColor(Color::kBlack);
-        context.StrokePath(inner_path, auto_dark_mode);
+      stroke_data.SetThickness(std::abs(spread) * 2);
+      Path stroke_path = inner_path.StrokePath(stroke_data, AffineTransform());
+
+      SkOpBuilder builder;
+      builder.add(inner_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+      if (spread > 0) {
+        // Positive spread for inset shadow means the shadow area grows inward.
+        // So the hole shrinks. We subtract the stroke from the hole.
+        builder.add(stroke_path.GetSkPath(), SkPathOp::kDifference_SkPathOp);
+      } else {
+        // Negative spread for inset shadow means the shadow area shrinks
+        // outward. So the hole grows. We union the stroke with the hole.
+        builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
+      }
+      SkPath result;
+      if (builder.resolve(&result)) {
+        hole_path = Path(result);
       }
     }
+
+    // Create a bounding rect outside the hole, padded sufficiently for blur.
+    // The caster must be large enough that its outer edges don't cast a shadow
+    // into the inner clipping region. We base it on inner_path's bounds because
+    // the clipping region is inner_path, and we must cover it entirely.
+    gfx::RectF bounds = inner_path.BoundingRect();
+    bounds.Outset(std::ceil(3.0f * shadow.BlurAsSigma()));
+    if (spread < 0) {
+      bounds.Outset(-spread);
+    }
+    gfx::RectF offset_bounds = bounds;
+    offset_bounds.Offset(-shadow.Offset());
+    bounds.Union(offset_bounds);
+
+    SkPathBuilder builder;
+    builder.setFillType(SkPathFillType::kEvenOdd);
+    builder.addRect(gfx::RectFToSkRect(bounds));
+    builder.addPath(hole_path.GetSkPath());
+
+    Path path_casting_shadow(builder.detach());
+
+    context.SetFillColor(Color::kBlack);
+    context.FillPath(path_casting_shadow, auto_dark_mode);
   }
 }
 
