@@ -35,7 +35,8 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
           <localized-link
-            localized-string="${this.i18nAdvanced('suggestionActivityLink')}">
+            localized-string="${this.i18nAdvanced('suggestionActivityLink')}"
+            @link-clicked="${this.onSuggestionActivityLinkClicked_}">
           </localized-link>
         </div>
       `: ''}
@@ -84,7 +85,8 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
           <localized-link
-            localized-string="${this.i18nAdvanced('suggestionActivityLink')}">
+            localized-string="${this.i18nAdvanced('suggestionActivityLink')}"
+            @link-clicked="${this.onSuggestionActivityLinkClicked_}">
           </localized-link>
         </div>
       `: ''}

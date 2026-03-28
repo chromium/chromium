@@ -280,8 +280,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('openOnboardingHelpUi');
   }
 
-  openUrl() {
-    this.methodCalled('openUrl');
+  openUrl(url: Url|string, disposition: number) {
+    this.methodCalled('openUrl', url, disposition);
   }
 
   onboardingTooltipDismissed() {
