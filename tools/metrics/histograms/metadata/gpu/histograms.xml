@@ -1215,15 +1215,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.HardwareAccelerationModeEnabled" enum="BooleanEnabled"
-    expires_after="2024-06-30">
+    expires_after="2027-03-27">
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Records if GPU hardware acceleration is explicitly disabled by the user.
     Recorded when the browser process launches.
 
-    Warning: this histogram was expired from 2022-01-30 to 2022-04-29; data may
-    be missing.
+    Warning: this histogram was expired from 2022-01-30 to 2022-04-29, and then
+    from 2024-06-30 to 2026-03-27; data may be missing.
   </summary>
 </histogram>
 
