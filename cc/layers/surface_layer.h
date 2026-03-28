@@ -86,7 +86,7 @@ class CC_EXPORT SurfaceLayer : public Layer {
 
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override;
+                             CommitState& commit_state) override;
 
  private:
   ~SurfaceLayer() override;

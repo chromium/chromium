@@ -20,6 +20,10 @@ Region::Region(const SkRegion& region) : skregion_(region) {}
 
 Region::Region(const Region& region) = default;
 
+Region::Region(Region&& other) {
+  skregion_.swap(other.skregion_);
+}
+
 Region::Region(const gfx::Rect& rect)
     : skregion_(gfx::RectToSkIRect(rect)) {
 }
@@ -33,6 +37,11 @@ const Region& Region::operator=(const gfx::Rect& rect) {
 
 const Region& Region::operator=(const Region& region) {
   skregion_ = region.skregion_;
+  return *this;
+}
+
+Region& Region::operator=(Region&& other) {
+  skregion_.swap(other.skregion_);
   return *this;
 }
 

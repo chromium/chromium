@@ -4185,10 +4185,8 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   {
     cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
         host_impl.sync_tree());
-    layer->PushPropertiesTo(
-        layer_impl.get(),
-        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-             .pending_commit_state());
+    layer->PushPropertiesTo(layer_impl.get(),
+                            *GetLayerTreeHost().pending_commit_state());
   }
   Update(artifact2);
   ASSERT_EQ(1u, LayerCount());
@@ -4214,10 +4212,8 @@ TEST_P(PaintArtifactCompositorTest, LayerRasterInvalidationWithClip) {
   {
     cc::LayerTreeImpl::DiscardableImageMapUpdater updater(
         host_impl.sync_tree());
-    layer->PushPropertiesTo(
-        layer_impl.get(),
-        *const_cast<const cc::LayerTreeHost&>(GetLayerTreeHost())
-             .pending_commit_state());
+    layer->PushPropertiesTo(layer_impl.get(),
+                            *GetLayerTreeHost().pending_commit_state());
   }
   Update(artifact3);
   ASSERT_EQ(1u, LayerCount());

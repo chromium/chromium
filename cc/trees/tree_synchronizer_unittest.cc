@@ -81,7 +81,7 @@ class MockLayer : public Layer {
 
   void PushDirtyPropertiesTo(LayerImpl* layer_impl,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override {
+                             CommitState& commit_state) override {
     Layer::PushDirtyPropertiesTo(layer_impl, dirty_flag, commit_state);
 
     MockLayerImpl* mock_layer_impl = static_cast<MockLayerImpl*>(layer_impl);

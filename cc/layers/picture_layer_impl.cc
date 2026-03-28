@@ -212,8 +212,8 @@ void PictureLayerImpl::MovePropertiesToActiveLayer(LayerImpl* active_layer) {
   bool changed_other_props = GetChangeFlag(kChangedGeneralProperty);
   if (changed_other_props) {
     layer_impl->UpdateRasterSourceInternal(
-        raster_source_, &invalidation_, tilings_.get(), &paint_worklet_records_,
-        discardable_image_map_.get());
+        raster_source_, std::move(invalidation_), tilings_.get(),
+        &paint_worklet_records_, discardable_image_map_.get());
     DCHECK(invalidation_.IsEmpty());
   }
 
@@ -524,22 +524,28 @@ PictureLayerImpl* PictureLayerImpl::GetPendingOrActiveTwinLayer() const {
   return twin_layer_;
 }
 
-void PictureLayerImpl::UpdateRasterSource(
+void PictureLayerImpl::StageNewRasterSourceForCommit(
     scoped_refptr<RasterSource> raster_source,
-    Region* new_invalidation) {
-  CHECK(layer_tree_impl()->IsSyncTree());
+    Region new_invalidation) {
+  pending_raster_source_ = std::move(raster_source);
+  pending_invalidation_ = std::move(new_invalidation);
+}
+
+void PictureLayerImpl::CommitPendingRasterSource() {
+  CHECK(pending_raster_source_);
   UpdateRasterSourceInternal(
-      std::move(raster_source), new_invalidation,
+      std::move(pending_raster_source_), std::move(pending_invalidation_),
       // These pointers being null indicates we are committing.
       nullptr, nullptr, nullptr);
 }
 
 void PictureLayerImpl::UpdateRasterSourceInternal(
     scoped_refptr<RasterSource> raster_source,
-    Region* new_invalidation,
+    Region new_invalidation,
     const PictureLayerTilingSet* pending_set,
     const PaintWorkletRecordMap* pending_paint_worklet_records,
     const DiscardableImageMap* pending_discardable_image_map) {
+  CHECK(!!pending_set || layer_tree_impl()->IsSyncTree());
   CHECK(raster_source);
   // The layer bounds and the raster source size may differ if the raster source
   // wasn't updated (ie. PictureLayer::Update didn't happen). In that case the
@@ -561,8 +567,8 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
       !raster_source_ || raster_source_->GetDisplayItemList() !=
                              raster_source->GetDisplayItemList();
 
-    // If the MSAA sample count has changed, we need to re-raster the complete
-    // layer.
+  // If the MSAA sample count has changed, we need to re-raster the complete
+  // layer.
   if (recording_updated && raster_source_) {
     const auto& current_display_item_list =
         raster_source_->GetDisplayItemList();
@@ -579,7 +585,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
           layer_tree_impl()->GetTargetColorParams(
               new_display_item_list->content_color_usage());
       if (needs_full_invalidation) {
-        new_invalidation->Union(gfx::Rect(raster_source->size()));
+        new_invalidation.Union(gfx::Rect(raster_source->size()));
       }
     }
   }
@@ -613,8 +619,7 @@ void PictureLayerImpl::UpdateRasterSourceInternal(
 
   // The |new_invalidation| must be cleared before updating tilings since they
   // access the invalidation through the PictureLayerTilingClient interface.
-  invalidation_.Clear();
-  invalidation_.Swap(new_invalidation);
+  invalidation_ = std::move(new_invalidation);
 
   bool can_have_tilings = CanHaveTilings();
   DCHECK(!pending_set ||
@@ -652,8 +657,8 @@ void PictureLayerImpl::SetRasterSourceForTesting(
     scoped_refptr<RasterSource> raster_source,
     const Region& invalidation) {
   LayerTreeImpl::DiscardableImageMapUpdater updater(layer_tree_impl());
-  Region invalidation_temp = invalidation;
-  UpdateRasterSource(std::move(raster_source), &invalidation_temp);
+  UpdateRasterSourceInternal(std::move(raster_source), std::move(invalidation),
+                             nullptr, nullptr, nullptr);
 }
 
 void PictureLayerImpl::RegenerateDiscardableImageMap() {

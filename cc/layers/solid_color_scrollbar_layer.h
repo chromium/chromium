@@ -50,7 +50,7 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
  protected:
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override;
+                             CommitState& commit_state) override;
 
  private:
   SolidColorScrollbarLayer(ScrollbarOrientation orientation,

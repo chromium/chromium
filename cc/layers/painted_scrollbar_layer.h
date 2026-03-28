@@ -52,7 +52,7 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
 
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override;
+                             CommitState& commit_state) override;
 
   // For unit tests
   UIResourceId track_and_buttons_resource_id() {

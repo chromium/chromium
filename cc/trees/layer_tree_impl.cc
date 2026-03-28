@@ -754,6 +754,12 @@ void LayerTreeImpl::PullPropertiesFrom(
           id);
     }
 
+    for (const int layer_id :
+         commit_state.picture_layer_ids_with_new_raster_source) {
+      static_cast<PictureLayerImpl*>(LayerById(layer_id))
+          ->CommitPendingRasterSource();
+    }
+
     // This must happen after synchronizing property trees and after pushing
     // properties,  which updates the clobber_active_value flag (specifically in
     // Layer::PushPropertiesTo).

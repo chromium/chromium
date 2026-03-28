@@ -186,7 +186,7 @@ bool TextureLayer::IsSnappedToPixelGridInTarget() const {
 
 void TextureLayer::PushDirtyPropertiesTo(LayerImpl* layer,
                                          uint8_t dirty_flag,
-                                         const CommitState& commit_state) {
+                                         CommitState& commit_state) {
   Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {

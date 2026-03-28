@@ -94,7 +94,7 @@ SolidColorScrollbarLayer::GetScrollbarLayerType() const {
 void SolidColorScrollbarLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
     uint8_t dirty_flag,
-    const CommitState& commit_state) {
+    CommitState& commit_state) {
   ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {

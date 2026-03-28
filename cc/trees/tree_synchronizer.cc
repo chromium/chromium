@@ -171,7 +171,7 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
 }
 
 void TreeSynchronizer::PushLayerProperties(
-    const CommitState& commit_state,
+    CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state,
     LayerTreeImpl* impl_tree) {
   TRACE_EVENT1("cc", "TreeSynchronizer::PushLayerPropertiesTo.Main",

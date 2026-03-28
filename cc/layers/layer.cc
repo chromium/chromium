@@ -1482,7 +1482,7 @@ bool Layer::IsSnappedToPixelGridInTarget() const {
 
 void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
                                   uint8_t dirty_flag,
-                                  const CommitState& commit_state) {
+                                  CommitState& commit_state) {
   const PropertyTrees& property_trees = commit_state.property_trees;
 
   if (dirty_flag & kChangedPropertyTreeIndex) {
@@ -1550,8 +1550,7 @@ void Layer::PushDirtyPropertiesTo(LayerImpl* layer,
   layer->SetNeedsPushProperties(dirty_flag);
 }
 
-void Layer::PushPropertiesTo(LayerImpl* layer_impl,
-                             const CommitState& commit_state) {
+void Layer::PushPropertiesTo(LayerImpl* layer_impl, CommitState& commit_state) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "Layer::PushPropertiesTo");
   DCHECK(IsAttached());

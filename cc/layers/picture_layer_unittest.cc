@@ -122,6 +122,7 @@ TEST(PictureLayerTest, InvalidateRasterAfterUpdate) {
   {
     LayerTreeImpl::DiscardableImageMapUpdater updater(host_impl.pending_tree());
     layer->PushPropertiesTo(layer_impl, *host->GetPendingCommitState());
+    layer_impl->CommitPendingRasterSource();
   }
 
   EXPECT_EQ(invalidation_bounds,

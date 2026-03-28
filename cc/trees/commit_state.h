@@ -174,6 +174,7 @@ struct CC_EXPORT CommitState {
   // property_trees.
   PropertyTreesChangeState property_trees_change_state;
   base::flat_set<int> layer_ids_that_should_push_properties;
+  base::flat_set<int> picture_layer_ids_with_new_raster_source;
 
   // Specific scrollers may request clobbering the active delta value on the
   // compositor when committing the current scroll offset to ensure the scroll

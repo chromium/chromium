@@ -192,6 +192,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     DCHECK(IsMainThread());
     return pending_commit_state_.get();
   }
+  CommitState* pending_commit_state() {
+    DCHECK(task_runner_provider_->IsMainThread());
+    return pending_commit_state_.get();
+  }
 
   // Additional state required for commit. Unlike pending_commit_state(), this
   // state is *not* snapshotted. Both the compositor and the host access a
@@ -998,10 +1002,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   TaskGraphRunner* task_graph_runner() const {
     DCHECK(IsMainThread());
     return task_graph_runner_;
-  }
-  CommitState* pending_commit_state() {
-    DCHECK(task_runner_provider_->IsMainThread());
-    return pending_commit_state_.get();
   }
   ThreadUnsafeCommitState& thread_unsafe_commit_state() {
     DCHECK(IsMainThread());

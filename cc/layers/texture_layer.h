@@ -131,7 +131,7 @@ class CC_EXPORT TextureLayer : public Layer {
   ~TextureLayer() override;
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override;
+                             CommitState& commit_state) override;
   bool HasDrawableContent() const override;
 
  private:

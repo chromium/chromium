@@ -49,7 +49,7 @@ class CC_EXPORT ViewTransitionContentLayer : public Layer {
       bool is_live_content_layer);
   void PushDirtyPropertiesTo(LayerImpl* layer,
                              uint8_t dirty_flag,
-                             const CommitState& commit_state) override;
+                             CommitState& commit_state) override;
 
  private:
   ~ViewTransitionContentLayer() override;

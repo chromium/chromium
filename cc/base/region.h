@@ -34,11 +34,13 @@ class CC_BASE_EXPORT Region {
   Region();
   explicit Region(const SkRegion& region);
   Region(const Region& region);
+  Region(Region&& region);
   Region(const gfx::Rect& rect);  // NOLINT(runtime/explicit)
   ~Region();
 
   const Region& operator=(const gfx::Rect& rect);
   const Region& operator=(const Region& region);
+  Region& operator=(Region&& region);
   const Region& operator+=(const gfx::Vector2d& offset);
 
   // Returns a reference to a global empty Region. This should only be used for

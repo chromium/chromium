@@ -103,8 +103,9 @@ class CC_EXPORT PictureLayerImpl
 
   float GetMaximumContentsScaleForUseInAppendQuads() const override;
 
-  void UpdateRasterSource(scoped_refptr<RasterSource> raster_source,
-                          Region* new_invalidation);
+  void StageNewRasterSourceForCommit(scoped_refptr<RasterSource> raster_source,
+                                     Region new_invalidation);
+  void CommitPendingRasterSource();
   void SetRasterSourceForTesting(scoped_refptr<RasterSource> raster_source,
                                  const Region& invalidation = Region());
   void RegenerateDiscardableImageMap();
@@ -249,7 +250,7 @@ class CC_EXPORT PictureLayerImpl
 
   void UpdateRasterSourceInternal(
       scoped_refptr<RasterSource> raster_source,
-      Region* new_invalidation,
+      Region new_invalidation,
       const PictureLayerTilingSet* pending_set,
       const PaintWorkletRecordMap* pending_paint_worklet_records,
       const DiscardableImageMap* pending_discardable_image_map);
@@ -314,6 +315,11 @@ class CC_EXPORT PictureLayerImpl
   scoped_refptr<RasterSource> raster_source_;
   Region invalidation_;
   scoped_refptr<const DiscardableImageMap> discardable_image_map_;
+
+  // This values are taken from the PictureLayer during tree sync and applied
+  // during commit.
+  scoped_refptr<RasterSource> pending_raster_source_;
+  Region pending_invalidation_;
 
   // Ideal scales are calcuated from the transforms applied to the layer. They
   // represent the best known scale from the layer to the final output.

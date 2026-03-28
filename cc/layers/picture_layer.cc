@@ -42,7 +42,7 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
 
 void PictureLayer::PushDirtyPropertiesTo(LayerImpl* base_layer,
                                          uint8_t dirty_flag,
-                                         const CommitState& commit_state) {
+                                         CommitState& commit_state) {
   Layer::PushDirtyPropertiesTo(base_layer, dirty_flag, commit_state);
 
   if (dirty_flag & kChangedGeneralProperty) {
@@ -61,8 +61,10 @@ void PictureLayer::PushDirtyPropertiesTo(LayerImpl* base_layer,
         commit_state.device_viewport_rect.size());
     layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
 
-    layer_impl->UpdateRasterSource(CreateRasterSource(),
-                                   &last_updated_invalidation_.Write(*this));
+    layer_impl->StageNewRasterSourceForCommit(
+        CreateRasterSource(),
+        std::move(last_updated_invalidation_.Write(*this)));
+    commit_state.picture_layer_ids_with_new_raster_source.insert(id());
     layer_impl->set_should_batch_updated_tiles();
   }
 
