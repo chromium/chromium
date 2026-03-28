@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {hexToColor, Ink2Manager, MIN_TEXTBOX_SIZE_PX, PluginController, PluginControllerEventType, TEXT_COLORS, TextAlignment, TextBoxState, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {TextAnnotation} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {TextAnnotation, TextBoxRect} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -16,7 +16,7 @@ manager.initializeTextAnnotations();
 const textbox = document.createElement('ink-text-box');
 document.body.appendChild(textbox);
 
-function getDefaultAnnotation(): TextAnnotation {
+function getTestAnnotation(textBoxRect: TextBoxRect): TextAnnotation {
   return {
     text: 'Hello World',
     textAttributes: {
@@ -29,7 +29,7 @@ function getDefaultAnnotation(): TextAnnotation {
       alignment: TextAlignment.LEFT,
       color: hexToColor(TEXT_COLORS[0]!.color),
     },
-    textBoxRect: {height: 100, locationX: 400, locationY: 300, width: 100},
+    textBoxRect,
     textOrientation: 0,
     id: 0,
     pageIndex: 0,
@@ -39,17 +39,14 @@ function getDefaultAnnotation(): TextAnnotation {
 function initializeBox(
     width: number, height: number, x: number, y: number, existing?: boolean,
     orientation?: number) {
-  const annotation = getDefaultAnnotation();
+  const annotation =
+      getTestAnnotation({height, locationX: x, locationY: y, width});
   if (!existing) {
     annotation.text = '';
   }
   if (orientation) {
     annotation.textOrientation = orientation;
   }
-  annotation.textBoxRect.locationX = x;
-  annotation.textBoxRect.locationY = y;
-  annotation.textBoxRect.width = width;
-  annotation.textBoxRect.height = height;
 
   manager.dispatchEvent(new CustomEvent('initialize-text-box', {
     detail: {
@@ -742,10 +739,9 @@ chrome.test.runTests([
     initializeBox(100, 100, 400, 300);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
-    const testAnnotation = getDefaultAnnotation();
     // Messages to the backend are in page coordinates.
-    testAnnotation
-        .textBoxRect = {locationX: 195, locationY: 147, height: 50, width: 50};
+    const testAnnotation = getTestAnnotation(
+        {locationX: 195, locationY: 147, height: 50, width: 50});
 
     function startNewAnnotationAndVerifyMessage(existing: boolean = false) {
       mockPlugin.clearMessages();
@@ -936,8 +932,9 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
-  async function testEscapeAndDelete() {
+  async function testEscape() {
     viewport.setZoom(1.0);
+
     // Initialize to a 100x100 box at 55, 10. Place the box in the top corner
     // of the page, so that the viewport won't scroll when it is focused.
     initializeBox(100, 100, 55, 10);
@@ -949,11 +946,8 @@ chrome.test.runTests([
     chrome.test.assertTrue(isVisible(textbox));
 
     // Editing text --> commit annotation on event.
-    const testAnnotation = getDefaultAnnotation();
-    // Messages to the backend are in page coordinates. Convert to page
-    // coordinates since this is used for validating the commit message.
-    testAnnotation
-        .textBoxRect = {locationX: 0, locationY: 7, height: 100, width: 100};
+    const testAnnotation = getTestAnnotation(
+        {locationX: 0, locationY: 7, height: 100, width: 100});
 
     mockPlugin.clearMessages();
     textbox.$.textbox.value = testAnnotation.text;
@@ -979,12 +973,20 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textbox));
     verifyFinishTextAnnotationMessage(testAnnotation);
 
+    chrome.test.succeed();
+  },
+
+  async function testEscapeWhileDragging() {
+    viewport.setZoom(1.0);
+
     // If the user is dragging, escape commits the annotation at the start
     // location and hides the box.
     initializeBox(100, 100, 55, 10);
     await microtasksFinished();
     chrome.test.assertTrue(isVisible(textbox));
     mockPlugin.clearMessages();
+    const testAnnotation = getTestAnnotation(
+        {locationX: 0, locationY: 7, height: 100, width: 100});
     textbox.$.textbox.value = testAnnotation.text;
     textbox.$.textbox.dispatchEvent(new CustomEvent('input'));
     await microtasksFinished();
@@ -1002,6 +1004,10 @@ chrome.test.runTests([
     // Message is identical to before because 'pointerup' was never fired.
     verifyFinishTextAnnotationMessage(testAnnotation);
 
+    chrome.test.succeed();
+  },
+
+  async function testEscapeWithoutModifications() {
     // Escape without any modification hides the box but doesn't send a message.
     // This should also work when the Escape key is on some other element in the
     // document, and not on the textbox itself.
@@ -1016,6 +1022,12 @@ chrome.test.runTests([
     chrome.test.assertEq(
         undefined, mockPlugin.findMessage('setTextAnnotation'));
 
+    chrome.test.succeed();
+  },
+
+  async function testDelete() {
+    viewport.setZoom(1.0);
+
     // Initialize to a 100x100 box at 55, 10 with some text content. Use
     // "Delete" to clear all the content, which will trigger a message since
     // this is for an existing annotation.
@@ -1028,6 +1040,9 @@ chrome.test.runTests([
     await microtasksFinished();
     chrome.test.assertTrue(textbox.hidden);
     chrome.test.assertFalse(isVisible(textbox));
+
+    const testAnnotation = getTestAnnotation(
+        {locationX: 0, locationY: 7, height: 100, width: 100});
     testAnnotation.text = '';
     verifyFinishTextAnnotationMessage(testAnnotation);
 

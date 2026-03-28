@@ -13,7 +13,7 @@ export type {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
 export {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
-export type {AnnotationBrush, Color, TextAnnotation, TextAttributes} from './constants.js';
+export type {AnnotationBrush, Color, TextAnnotation, TextAttributes, TextBoxRect} from './constants.js';
 // </if>
 // <if expr="enable_pdf_ink2">
 export {AnnotationMode} from './constants.js';
