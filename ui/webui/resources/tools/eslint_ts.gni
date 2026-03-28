@@ -15,7 +15,6 @@ template("eslint_ts") {
 
     forward_variables_from(invoker,
                            [
-                             "deps",
                              "in_folder",
                              "in_files",
                              "tsconfig",
@@ -24,32 +23,25 @@ template("eslint_ts") {
                              "visibility",
                            ])
 
-    # The file holding the ESLint configuration.
-    config_base = "//ui/webui/resources/tools/eslint_ts.config_base.mjs"
-
     inputs = [
-      config_base,
       tsconfig,
-      "//ui/webui/resources/tools/eslint/inline_event_handler.js",
-      "//ui/webui/resources/tools/eslint/lit_property_accessor.js",
-      "//ui/webui/resources/tools/eslint/lit_element_bindings.js",
-      "//ui/webui/resources/tools/eslint/lit_element_invalid_interface.js",
-      "//ui/webui/resources/tools/eslint/lit_element_structure.js",
-      "//ui/webui/resources/tools/eslint/lit_element_template_structure.js",
-      "//ui/webui/resources/tools/eslint/no_mixed_type_and_value_imports.js",
-      "//ui/webui/resources/tools/eslint/polymer_property_class_member.js",
-      "//ui/webui/resources/tools/eslint/polymer_property_declare.js",
-      "//ui/webui/resources/tools/eslint/query_utils.js",
-      "//ui/webui/resources/tools/eslint/web_component_missing_deps.js",
-      "//ui/webui/resources/tools/webui_eslint_plugin.js",
+      "//ui/webui/resources/tools/eslint/custom_loader.mjs",
     ]
     outputs = [ "$target_gen_dir/eslint.config.mjs" ]
+
+    deps = [ "//ui/webui/resources/tools/eslint:build_ts" ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
 
     foreach(f, in_files) {
       extension = get_path_info(f, "extension")
       assert(extension == "ts")
       inputs += [ "${in_folder}/${f}" ]
     }
+
+    # The file holding the ESLint configuration.
+    config_base = "${root_gen_dir}/ui/webui/resources/tools/eslint/eslint_ts.config_base.js"
 
     args = [
              "--in_folder",
@@ -60,6 +52,9 @@ template("eslint_ts") {
              rebase_path(config_base, target_gen_dir),
              "--tsconfig",
              rebase_path(tsconfig, target_gen_dir),
+             "--custom_loader_script",
+             rebase_path("//ui/webui/resources/tools/eslint/custom_loader.mjs",
+                         root_build_dir),
              "--in_files",
            ] + in_files
 

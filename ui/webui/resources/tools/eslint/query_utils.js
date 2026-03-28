@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import assert from 'node:assert';
 import path from 'node:path';
-
-import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 
 // NOTE: Using `\u002F` instead of a forward slash, to workaround for
 // https://github.com/eslint/eslint/issues/16555,

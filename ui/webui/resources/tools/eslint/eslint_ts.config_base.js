@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import eslintPluginLit from '../../../../third_party/node/node_modules/eslint-plugin-lit/lib/index.js';
-import typescriptEslint from '../../../../third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
-import tsParser from '../../../../third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
+import typescriptEslint from '/third_party/node/node_modules/@typescript-eslint/eslint-plugin/dist/index.js';
+import tsParser from '/third_party/node/node_modules/@typescript-eslint/parser/dist/index.js';
+import eslintPluginLit from '/third_party/node/node_modules/eslint-plugin-lit/lib/index.js';
+
 import webUiEslint from './webui_eslint_plugin.js';
 
 export const defaultConfig = [
@@ -20,7 +21,8 @@ export const defaultConfig = [
       // The following field should be specified by client code. as follows:
       //
       // parserOptions: {
-      //   project: [path.join(import.meta.dirname, './tsconfig_build_ts.json')],
+      //   project: [path.join(import.meta.dirname,
+      //   './tsconfig_build_ts.json')],
       // },
     },
 
@@ -33,7 +35,7 @@ export const defaultConfig = [
 
     rules: {
       'require-await': 'off',
-      '@typescript-eslint/require-await' : 'error',
+      '@typescript-eslint/require-await': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/no-unnecessary-type-conversion': 'error',
 
@@ -93,7 +95,8 @@ export const noChromeSendConfig = {
       },
     ],
     'no-restricted-imports': [
-      'error', {
+      'error',
+      {
         paths: [
           {
             name: '//resources/js/cr.js',

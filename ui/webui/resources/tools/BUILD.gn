@@ -25,5 +25,8 @@ script_test("webui_resources_tools_python_unittests") {
     # Needed for eslint_ts_test.EslintTsTest.testSuccess
     "//tools/typescript/tsconfig_base.json",
   ]
-  data_deps = [ "//tools/code_cache_generator" ]
+  data_deps = [
+    "//tools/code_cache_generator",
+    "//ui/webui/resources/tools/eslint:build_ts",
+  ]
 }

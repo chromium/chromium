@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import assert from 'node:assert';
 import path from 'node:path';
-
-import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
 import {dashCaseToCamelCase, isCrLitElementSubclass, LIT_IMPORT_REGEX} from './query_utils.js';
 

@@ -9,7 +9,19 @@ import tempfile
 import shutil
 import unittest
 
+# Instructions on how to run these tests locally.
+#    1) Build target //ui/webui/resources/tools:webui_resources_tools_python_unittests
+#   2a) Run
+#       ./out/<out_folder>/bin/run_webui_resources_tools_python_unittests \
+#       -- eslint_ts_test.EslintTsTest
+#   2b) Alternatively, on Linux these tests can be run directly by manually
+#       setting the CHROMIUM_BUILD_DIRECTORY environment variable, for example
+#       as follows:
+#       CHROMIUM_BUILD_DIRECTORY=/absolute/path/to/output/folder/ \
+#       python3 -m unittest eslint_ts_test.EslintTsTest
+
 _HERE_DIR = os.path.dirname(__file__)
+_BUILD_DIR = os.environ['CHROMIUM_BUILD_DIRECTORY']
 
 
 class EslintTsTest(unittest.TestCase):
@@ -27,8 +39,10 @@ class EslintTsTest(unittest.TestCase):
       return file.read()
 
   def _run_test(self, in_files, enable_web_component_missing_deps=False):
-    config_base = os.path.join(_HERE_DIR, "eslint_ts.config_base.mjs")
+    config_base = os.path.join(_BUILD_DIR, "gen", "ui", "webui", "resources",
+                               "tools", "eslint", "eslint_ts.config_base.js")
     tsconfig = os.path.join(self._in_folder, "tsconfig.json")
+    custom_loader = os.path.join(_HERE_DIR, "eslint", "custom_loader.mjs")
 
     args = [
         "--in_folder",
@@ -36,9 +50,11 @@ class EslintTsTest(unittest.TestCase):
         "--out_folder",
         self._out_dir,
         "--config_base",
-        os.path.relpath(config_base, self._out_dir).replace(os.sep, '/'),
+        os.path.relpath(config_base, self._out_dir).replace(os.sep, "/"),
         "--tsconfig",
-        os.path.relpath(tsconfig, self._out_dir).replace(os.sep, '/'),
+        os.path.relpath(tsconfig, self._out_dir).replace(os.sep, "/"),
+        "--custom_loader_script",
+        custom_loader,
         "--in_files",
         *in_files,
     ]
@@ -52,9 +68,13 @@ class EslintTsTest(unittest.TestCase):
     self._run_test(["no_violations.ts"])
     actual_contents = self._read_file(
         os.path.join(self._out_dir, "eslint.config.mjs"))
+    path_to_build_dir = os.path.relpath(_BUILD_DIR,
+                                        self._out_dir).replace('\\', '/')
     expected_contents = self._read_file(
         os.path.join(self._in_folder, "eslint_expected.config.mjs"))
-    self.assertMultiLineEqual(expected_contents, actual_contents)
+    self.assertMultiLineEqual(
+        expected_contents % {"path_to_build_dir": path_to_build_dir},
+        actual_contents)
 
   def testError(self):
     with self.assertRaises(RuntimeError) as context:

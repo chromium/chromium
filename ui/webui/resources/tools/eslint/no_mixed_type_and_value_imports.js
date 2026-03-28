@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 
 export const noMixedTypeAndValueImports = ESLintUtils.RuleCreator.withoutDocs({
   name: 'no-mixed-type-and-value-imports',

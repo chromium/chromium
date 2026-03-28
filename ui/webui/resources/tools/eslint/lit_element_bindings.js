@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ESLintUtils} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
+import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
+import ts from '/third_party/node/node_modules/typescript/lib/typescript.js';
 import assert from 'node:assert';
 import path from 'node:path';
-
-import {ESLintUtils} from '../../../../../third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
-import esquery from '../../../../../third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
-import ts from '../../../../../third_party/node/node_modules/typescript/lib/typescript.js';
 
 import {dashCaseToCamelCase, extractClassImport, LIT_IMPORT_REGEX} from './query_utils.js';
 
