@@ -49,6 +49,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/side_panel_container/public:java",
   ]
 }
 

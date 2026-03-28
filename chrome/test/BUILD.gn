@@ -2040,6 +2040,7 @@ if (is_android) {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/plus_addresses:browser_tests",
       "//chrome/browser/ui/side_panel/internal/android:browser_tests",
+      "//chrome/browser/ui/side_panel/test/android:browser_test_support_java",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/unified_consent",
       "//chrome/browser/user_agent:browser_tests",

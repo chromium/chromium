@@ -110,6 +110,16 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
     std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
     std::optional<SidePanelNativeView> content_view) {
+  std::unique_ptr<SidePanelNativeViewAndroid> native_view =
+      content_view.has_value() ? std::move(content_view.value())
+                               : entry->GetContent();
+  if (!native_view) {
+    return;
+  }
+
+  Java_SidePanelCoordinatorAndroidImpl_populateSidePanel(
+      base::android::AttachCurrentThread(), java_coordinator(),
+      native_view->view());
   SetCurrentKey(entry->type(), unique_key);
   entry->OnEntryShown();
 }

@@ -4,21 +4,30 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import android.view.View;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContent;
 
 /** Implements {@code SidePanelCoordinatorAndroid}. */
 @NullMarked
 public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinatorAndroid {
 
+    private final SidePanelContainerCoordinator mSidePanelContainerCoordinator;
+
     /** Address of the native {@code SidePanelCoordinatorAndroid}. */
     private long mNativeSidePanelCoordinatorAndroid;
 
-    public SidePanelCoordinatorAndroidImpl() {}
+    public SidePanelCoordinatorAndroidImpl(
+            SidePanelContainerCoordinator sidePanelContainerCoordinator) {
+        mSidePanelContainerCoordinator = sidePanelContainerCoordinator;
+    }
 
     @Override
     public void onAddedToTask(long nativeBrowserWindowPtr) {
@@ -55,6 +64,11 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
     @CalledByNative
     private void clearNativePtr() {
         mNativeSidePanelCoordinatorAndroid = 0;
+    }
+
+    @CalledByNative
+    private void populateSidePanel(View sidePanelNativeView) {
+        mSidePanelContainerCoordinator.populateContent(new SidePanelContent(sidePanelNativeView));
     }
 
     @NativeMethods

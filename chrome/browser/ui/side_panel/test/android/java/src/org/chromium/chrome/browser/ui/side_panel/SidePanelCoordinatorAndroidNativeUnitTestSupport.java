@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.ui.side_panel;
 
+import static org.mockito.Mockito.mock;
+
 import org.jni_zero.CalledByNativeForTesting;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 
 /**
  * Supports {@code side_panel_coordinator_android_unittest.cc}.
@@ -25,7 +28,8 @@ final class SidePanelCoordinatorAndroidNativeUnitTestSupport {
 
     @CalledByNativeForTesting
     private SidePanelCoordinatorAndroidNativeUnitTestSupport() {
-        mCoordinator = new SidePanelCoordinatorAndroidImpl();
+        mCoordinator =
+                new SidePanelCoordinatorAndroidImpl(mock(SidePanelContainerCoordinator.class));
     }
 
     @CalledByNativeForTesting

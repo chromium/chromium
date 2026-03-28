@@ -1923,9 +1923,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             SidePanelCoordinatorAndroid.class,
                             mProfileSupplier.get(),
                             mWindowAndroid),
-                    // TODO(crbug.com/491597112): pass mSidePanelContainerCoordinator
-                    //  to SidePanelCoordinatorAndroidBridge.
-                    SidePanelCoordinatorAndroidFactory::create);
+                    () ->
+                            SidePanelCoordinatorAndroidFactory.create(
+                                    mSidePanelContainerCoordinator));
             chromeAndroidTask.addFeature(
                     new ChromeAndroidTaskFeatureKey(
                             WindowScopedSidePanelRegistryBridge.class,

@@ -49,6 +49,7 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/side_panel/android:java",
+    "//chrome/browser/ui/side_panel_container/public:java",
     "//components/cached_flags:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -98,8 +99,11 @@ source_set("browser_tests") {
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//chrome/browser/ui/side_panel/android",
     "//chrome/browser/ui/side_panel/test/android:browser_test_support",
+    "//chrome/browser/ui/side_panel/test/android:browser_test_support_jni",
     "//components/tabs:public",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/android",
+    "//ui/base",
   ]
 }

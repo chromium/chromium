@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/android/side_panel_native_view_android.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
@@ -14,9 +15,12 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
+#include "chrome/browser/ui/side_panel/test/android/browser_test_support_jni/SidePanelCoordinatorAndroidBrowserTestSupport_jni.h"
 #include "chrome/browser/ui/side_panel/test/android/side_panel_android_browser_test_base.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
+#include "ui/base/base_window.h"
 
 namespace {
 class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
@@ -31,13 +35,22 @@ class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
   std::optional<SidePanelEntry::Id> id_for_last_entry_shown_;
 };
 
-std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(SidePanelEntryKey key) {
+std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(
+    SidePanelEntryKey key,
+    BrowserWindowInterface* browser) {
   SidePanelEntry::CreateContentCallback create_content_callback =
-      base::BindRepeating([](SidePanelEntryScope& scope) {
-        base::android::ScopedJavaGlobalRef<jobject> java_view;
-        return std::make_unique<SidePanelNativeViewAndroid>(
-            std::move(java_view));
-      });
+      base::BindRepeating(
+          [](BrowserWindowInterface* browser, SidePanelEntryScope& scope) {
+            ui::WindowAndroid* window_android =
+                browser->GetWindow()->GetNativeWindow();
+            base::android::ScopedJavaLocalRef<jobject> java_view =
+                Java_SidePanelCoordinatorAndroidBrowserTestSupport_createTestView(
+                    base::android::AttachCurrentThread(),
+                    window_android->GetJavaObject());
+            return std::make_unique<SidePanelNativeViewAndroid>(
+                base::android::ScopedJavaGlobalRef<jobject>(java_view));
+          },
+          base::Unretained(browser));
 
   auto default_content_width_callback = base::RepeatingCallback<int()>();
 
@@ -65,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   BrowserWindowInterface* browser = GetBrowserWindow();
 
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
-  std::unique_ptr<SidePanelEntry> entry = CreateSidePanelEntry(entry_key);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
   TestSidePanelEntryObserver entry_observer;
   entry->AddObserver(&entry_observer);
 
@@ -92,7 +106,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   BrowserWindowInterface* browser = GetBrowserWindow();
 
   auto entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
-  std::unique_ptr<SidePanelEntry> entry = CreateSidePanelEntry(entry_key);
+  std::unique_ptr<SidePanelEntry> entry =
+      CreateSidePanelEntry(entry_key, browser);
   TestSidePanelEntryObserver entry_observer;
   entry->AddObserver(&entry_observer);
 
