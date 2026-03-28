@@ -115,6 +115,8 @@ static_library("observers") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "gmock_matchers.cc",
+    "gmock_matchers.h",
     "test_ukm_recorder.cc",
     "test_ukm_recorder.h",
   ]
@@ -127,6 +129,7 @@ static_library("test_support") {
     "//base",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

@@ -10,6 +10,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/ukm/gmock_matchers.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -22,17 +23,20 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/page_transition_types.h"
 
-using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
-using PageLoad = ukm::builders::PageLoad;
-
 namespace {
+using testing::AllOf;
+using testing::Not;
+using ukm::builders::PageLoad;
+using ukm::builders::PrerenderPageLoad;
+using ukm::testing::HasMetric;
+using ukm::testing::HasMetricWithValue;
+
 const char kResponseWithNoStore[] =
     "HTTP/1.1 200 OK\r\n"
     "Content-Type: text/html; charset=utf-8\r\n"
     "Cache-Control: no-store\r\n"
     "\r\n"
     "The server speaks HTTP!";
-}
 
 class PrerenderPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -63,7 +67,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
         continue;
       }
       EXPECT_TRUE(source->url().is_valid());
-      result.emplace(source->url(), std::move(kv.second));
+      EXPECT_TRUE(result.emplace(source->url(), std::move(kv.second)).second);
     }
     return result;
   }
@@ -128,30 +132,21 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   }
 
   void CheckResponsivenessMetrics(const GURL& url) {
-    std::vector<std::string> ukm_list = {
-        "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration",
-        "InteractiveTiming.UserInteractionLatency.HighPercentile2."
-        "MaxEventDuration",
-        "InteractiveTiming.NumInteractions"};
-
-    for (auto& ukm : ukm_list) {
-      int count = 0;
-      for (const ukm::mojom::UkmEntry* entry :
-           ukm_recorder().GetEntriesByName(PrerenderPageLoad::kEntryName)) {
-        auto* source = ukm_recorder().GetSourceForSourceId(entry->source_id);
-        if (!source) {
-          continue;
-        }
-        if (source->url() != url) {
-          continue;
-        }
-        if (!ukm_recorder().EntryHasMetric(entry, ukm.c_str())) {
-          continue;
-        }
-        count++;
-      }
-      EXPECT_EQ(count, 1);
-    }
+    auto entries = GetMergedUkmEntries(PrerenderPageLoad::kEntryName);
+    EXPECT_TRUE(entries.contains(url));
+    const ukm::mojom::UkmEntry* entry = entries[url].get();
+    EXPECT_TRUE(entry);
+    EXPECT_THAT(
+        entry,
+        AllOf(
+            HasMetric(
+                PrerenderPageLoad::
+                    kInteractiveTiming_WorstUserInteractionLatency_MaxEventDurationName),
+            HasMetric(
+                PrerenderPageLoad::
+                    kInteractiveTiming_UserInteractionLatency_HighPercentile2_MaxEventDurationName),
+            HasMetric(
+                PrerenderPageLoad::kInteractiveTiming_NumInteractionsName)));
 
     std::vector<std::string> uma_list = {
         internal::kHistogramPrerenderNumInteractions,
@@ -239,56 +234,52 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[prerender_url].get();
   ASSERT_TRUE(prerendered_page_entry);
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kTriggeredPrerenderName));
-  ukm_recorder().ExpectEntryMetric(prerendered_page_entry,
-                                   PrerenderPageLoad::kWasPrerenderedName, 1);
-  ukm_recorder().ExpectEntryMetric(
-      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
-      ui::PAGE_TRANSITION_LINK);
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_NavigationToActivationName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      AllOf(
+          Not(HasMetric(PrerenderPageLoad::kTriggeredPrerenderName)),
+          HasMetricWithValue(PrerenderPageLoad::kWasPrerenderedName, 1),
+          HasMetricWithValue(PrerenderPageLoad::kNavigation_PageTransitionName,
+                             ui::PAGE_TRANSITION_LINK)));
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      AllOf(
+          HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName),
+          HasMetric(
+              PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+          HasMetric(PrerenderPageLoad::
+                        kTiming_ActivationToLargestContentfulPaintName),
+          HasMetric(PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name),
+          HasMetric(
+              PrerenderPageLoad::
+                  kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName)));
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::
-          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
+      AllOf(Not(HasMetric(
+                PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName)),
+            Not(HasMetric(
+                PageLoad::
+                    kPaintTiming_NavigationToLargestContentfulPaint2Name))));
   // Expect that when the response has no Cache-control:no-store we still record
   // the `kMainFrameResource_RequestHasNoStoreName` metric for prerender.
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName));
+      HasMetric(PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName));
 
   const ukm::mojom::UkmEntry* initiator_page_entry = entries[initial_url].get();
   ASSERT_TRUE(initiator_page_entry);
-  ukm_recorder().ExpectEntryMetric(
-      initiator_page_entry, PrerenderPageLoad::kTriggeredPrerenderName, 1);
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      initiator_page_entry, PrerenderPageLoad::kWasPrerenderedName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       initiator_page_entry,
-      PrerenderPageLoad::kTiming_NavigationToActivationName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+      HasMetricWithValue(PrerenderPageLoad::kTriggeredPrerenderName, 1));
+  EXPECT_THAT(
       initiator_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      initiator_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+      AllOf(
+          Not(HasMetric(PrerenderPageLoad::kWasPrerenderedName)),
+          Not(HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName)),
+          Not(HasMetric(
+              PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName)),
+          Not(HasMetric(PrerenderPageLoad::
+                            kTiming_ActivationToLargestContentfulPaintName))));
 
   CheckResponsivenessMetrics(prerender_url);
 }
@@ -328,17 +319,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(prerendered_page_entry);
   // `WasPrerendered` and `PageTransition` exist since they're recorded when the
   // activation starts.
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName));
-  ukm_recorder().ExpectEntryMetric(
-      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
-      ui::PAGE_TRANSITION_LINK);
+  EXPECT_THAT(prerendered_page_entry,
+              AllOf(HasMetric(PrerenderPageLoad::kWasPrerenderedName),
+                    HasMetricWithValue(
+                        PrerenderPageLoad::kNavigation_PageTransitionName,
+                        ui::PAGE_TRANSITION_LINK)));
 
   // LCP for prerender shouldn't be recorded since the page is in the
   // background.
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+      Not(HasMetric(
+          PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName)));
 
   histogram_tester().ExpectTotalCount(
       prerender_helper_.GenerateHistogramName(
@@ -446,11 +438,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   ASSERT_TRUE(prerendered_page_entry);
   // `WasPrerendered` and `PageTransition` exist since they're recorded when the
   // activation starts.
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kWasPrerenderedName));
-  ukm_recorder().ExpectEntryMetric(
-      prerendered_page_entry, PrerenderPageLoad::kNavigation_PageTransitionName,
-      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  EXPECT_THAT(prerendered_page_entry,
+              AllOf(HasMetric(PrerenderPageLoad::kWasPrerenderedName),
+                    HasMetricWithValue(
+                        PrerenderPageLoad::kNavigation_PageTransitionName,
+                        ui::PAGE_TRANSITION_TYPED |
+                            ui::PAGE_TRANSITION_FROM_ADDRESS_BAR)));
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -522,20 +515,18 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   const ukm::mojom::UkmEntry* prerendered_page_entry =
       entries[redirected_url].get();
   ASSERT_TRUE(prerendered_page_entry);
-
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kTriggeredPrerenderName));
-  ukm_recorder().ExpectEntryMetric(prerendered_page_entry,
-                                   PrerenderPageLoad::kWasPrerenderedName, 1);
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_NavigationToActivationName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      AllOf(Not(HasMetric(PrerenderPageLoad::kTriggeredPrerenderName)),
+            HasMetricWithValue(PrerenderPageLoad::kWasPrerenderedName, 1)));
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+      AllOf(
+          HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName),
+          HasMetric(
+              PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+          HasMetric(PrerenderPageLoad::
+                        kTiming_ActivationToLargestContentfulPaintName)));
 }
 
 // Tests that metrics are recoreded correctly with Cache-control:no store when
@@ -607,16 +598,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 
   // RequestHasNoStore should be recorded with value 1 as the response has
   // Cache-control no-store in it.
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName));
-  ukm_recorder().ExpectEntryMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName, 1);
-
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+      AllOf(HasMetricWithValue(
+                PrerenderPageLoad::kMainFrameResource_RequestHasNoStoreName, 1),
+            HasMetric(PrerenderPageLoad::
+                          kTiming_ActivationToLargestContentfulPaintName)));
 }
 
 // Tests that metrics are recoreded correctly for loading main resource of an
@@ -914,48 +901,45 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       entries[navigation_url].get();
   ASSERT_TRUE(prerendered_page_entry);
 
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry, PrerenderPageLoad::kTriggeredPrerenderName));
-  ukm_recorder().ExpectEntryMetric(prerendered_page_entry,
-                                   PrerenderPageLoad::kWasPrerenderedName, 1);
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_NavigationToActivationName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
+      AllOf(
+          Not(HasMetric(PrerenderPageLoad::kTriggeredPrerenderName)),
+          HasMetricWithValue(PrerenderPageLoad::kWasPrerenderedName, 1),
+          HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName),
+          HasMetric(
+              PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+          HasMetric(PrerenderPageLoad::
+                        kTiming_ActivationToLargestContentfulPaintName),
+          HasMetric(PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name),
+          HasMetric(
+              PrerenderPageLoad::
+                  kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName)));
+
+  EXPECT_THAT(
       prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::kInteractiveTiming_FirstInputDelay4Name));
-  EXPECT_TRUE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PrerenderPageLoad::
-          kLayoutInstability_MaxCumulativeShiftScore_SessionWindow_Gap1000ms_Max5000msName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      prerendered_page_entry,
-      PageLoad::kPaintTiming_NavigationToLargestContentfulPaint2Name));
+      AllOf(Not(HasMetric(
+                PageLoad::kPaintTiming_NavigationToFirstContentfulPaintName)),
+            Not(HasMetric(
+                PageLoad::
+                    kPaintTiming_NavigationToLargestContentfulPaint2Name))));
 
   const ukm::mojom::UkmEntry* initiator_page_entry = entries[initial_url].get();
   ASSERT_TRUE(initiator_page_entry);
-  ukm_recorder().ExpectEntryMetric(
-      initiator_page_entry, PrerenderPageLoad::kTriggeredPrerenderName, 1);
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      initiator_page_entry, PrerenderPageLoad::kWasPrerenderedName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+  EXPECT_THAT(
       initiator_page_entry,
-      PrerenderPageLoad::kTiming_NavigationToActivationName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+      HasMetricWithValue(PrerenderPageLoad::kTriggeredPrerenderName, 1));
+  EXPECT_THAT(
       initiator_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName));
-  EXPECT_FALSE(ukm_recorder().EntryHasMetric(
-      initiator_page_entry,
-      PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
+      AllOf(
+          Not(HasMetric(PrerenderPageLoad::kWasPrerenderedName)),
+          Not(HasMetric(PrerenderPageLoad::kTiming_NavigationToActivationName)),
+          Not(HasMetric(
+              PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName)),
+          Not(HasMetric(PrerenderPageLoad::
+                            kTiming_ActivationToLargestContentfulPaintName))));
 
   CheckResponsivenessMetrics(navigation_url);
 }
+
+}  // namespace
