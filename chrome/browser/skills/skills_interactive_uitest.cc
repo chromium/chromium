@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/json/json_writer.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "base/values.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -35,9 +37,9 @@
 #include "components/sync/model/data_type_store_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/interaction/interactive_test.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "ui/base/interaction/interactive_test.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTabId);
@@ -50,6 +52,20 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementEnabled);
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
 static constexpr char kClickFn[] = "el => el.click()";
+
+}  // namespace
+
+namespace skills {
+void PrintTo(const Skill* skill, std::ostream* os) {
+  if (!skill) {
+    *os << "nullptr";
+    return;
+  }
+  *os << *skill;
+}
+}  // namespace skills
+
+namespace {
 
 MATCHER_P(VerifyUserCreatedSkill, expected, "") {
   // Ensures that the skill matches the expected values and that has a "user
@@ -279,6 +295,8 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
     });
   }
 
+  // Waits for a SkillPreview with `skill_name` to be shown in the test client's
+  // Skills list (Observes the getSkillPreviews() API endpoint).
   auto WaitForSkillPreviewShown(std::string_view skill_name) {
     DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSkillPreviewShown);
     StateChange state_change;
@@ -287,6 +305,33 @@ class SkillsInteractiveUiTest : public TabStripInteractiveTestMixin<
                           std::string(skill_name) + "\"]"};
     state_change.test_function = "el => el.checkVisibility()";
     state_change.event = kSkillPreviewShown;
+    return WaitForStateChange(glic::test::kGlicContentsElementId, state_change);
+  }
+
+  // Waits for the SkillPreviews in the test client's Skills list to be in the
+  // same order as the given skill names.
+  auto WaitForSkillPreviewOrder(const std::vector<std::string>& skill_names) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kSkillPreviewOrderMatched);
+    // Construct a JSON array of the expected names.
+    base::ListValue expected_list;
+    for (const auto& name : skill_names) {
+      expected_list.Append(name);
+    }
+    std::string expected_json;
+    base::JSONWriter::Write(expected_list, &expected_json);
+
+    StateChange state_change;
+    state_change.type = StateChange::Type::kExistsAndConditionTrue;
+    state_change.where = {"#skillsList"};
+    // Ensures that the skill names in the test client match the expected order.
+    state_change.test_function = base::StringPrintf(
+        "(el) => {"
+        "  const names = Array.from(el.querySelectorAll('.skill-name'), "
+        "span => span.getAttribute('value'));"
+        "  return JSON.stringify(names) === JSON.stringify(%s);"
+        "}",
+        expected_json.c_str());
+    state_change.event = kSkillPreviewOrderMatched;
     return WaitForStateChange(glic::test::kGlicContentsElementId, state_change);
   }
 
@@ -628,6 +673,59 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
   ASSERT_TRUE(updated_remixed_skill);
   EXPECT_THAT(updated_remixed_skill,
               VerifyRemixedFirstPartySkill(updated_skill, first_party_skill));
+}
+
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
+                       DISABLED_UpdateSkillSortsByLastUpdateTime) {
+  std::string updated_skill_name = "Updated Skill";
+  std::string first_party_skill_name = "1P Skill";
+
+  std::vector<skills::Skill> test_skills;
+  for (int i = 0; i <= 2; ++i) {
+    auto skill = GetMockSkill();
+    skill.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+    skill.name = base::StringPrintf("Skill %d", i);
+    test_skills.push_back(std::move(skill));
+  }
+
+  RunTestSequence(
+      OpenGlicAcceptFreAndInstrument(), Do([this, test_skills]() {
+        for (const auto& skill : test_skills) {
+          GetSkillsService()->AddOrUpdateSkillFromSync(
+              skill.id, /*source_skill_id=*/"", skill.name, skill.icon,
+              skill.prompt, skill.description,
+              /*creation_time=*/base::Time::Now(),
+              /*last_update_time=*/base::Time::Now(),
+              sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED);
+        }
+      }),
+      // SkillPreviews should be sorted by last update time in descending order.
+      WaitForSkillPreviewOrder(
+          {test_skills[2].name, test_skills[1].name, test_skills[0].name}),
+      // Update oldest skill (Skill 0).
+      UpdateSkill(&test_skills[0].id),
+      InstrumentNonTabWebView(kSkillsDialogElementId,
+                              skills::SkillsDialogView::kSkillsDialogElementId),
+      EditDialogInput(updated_skill_name, kNameInputQuery),
+      ClickButtonAndVerifyDialogHides(kSaveButtonQuery),
+      // Skill 0 should now move to the top because it was just updated.
+      WaitForSkillPreviewOrder(
+          {updated_skill_name, test_skills[2].name, test_skills[1].name}),
+      // Add a 1P skill with a creation and last update time older than all
+      // other user created skills.
+      Do([this, first_party_skill_name]() {
+        auto older_time = base::Time::Now() - base::Minutes(10);
+
+        GetSkillsService()->AddOrUpdateSkillFromSync(
+            base::Uuid::GenerateRandomV4().AsLowercaseString(),
+            /*source_skill_id=*/"", first_party_skill_name, "icon", "prompt",
+            "description", /*creation_time=*/older_time,
+            /*last_update_time=*/older_time,
+            sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY);
+      }),
+      // Ensure the 1P skill is at the end of the list.
+      WaitForSkillPreviewOrder({updated_skill_name, test_skills[2].name,
+                                test_skills[1].name, first_party_skill_name}));
 }
 
 IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
