@@ -710,11 +710,6 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
 
   VariationsLayers layers(seed, entropy_providers);
 
-  // Use the VariationsIdsProvider's clock to get the current time. This is
-  // the timestamp used for entropy evaluation.
-  base::Time current_time =
-      VariationsIdsProvider::GetInstance()->GetCurrentTime();
-
   // The server is not expected to send a seed with misconfigured entropy. Just
   // in case there is an unexpected server-side bug and the entropy is
   // misconfigured, return early to skip assigning any trials from the seed.
@@ -728,8 +723,7 @@ CreateTrialsResult VariationsFieldTrialCreator::CreateTrialsFromSeed(
   // `SeedHasMisconfiguredEntropy()`is always false.
   const MisconfiguredEntropyResult result =
       SeedHasMisconfiguredEntropy(*client_state, seed,
-                                  GetGoogleWebEntropyLimitInBits(),
-                                  current_time);
+                                  GetGoogleWebEntropyLimitInBits());
   if (result.is_misconfigured) {
     RecordVariationsSeedUsage(
         run_in_safe_mode ? SeedUsage::kMisconfiguredSafeSeedNotUsed

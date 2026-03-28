@@ -6,8 +6,10 @@
 
 #include <math.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <limits>
+#include <ranges>
 
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
@@ -21,24 +23,27 @@
 namespace variations {
 namespace {
 
-// Returns true if start <= reference_time <= end, where start and end are
-// non-negative seconds since Unix epoch, or min/max base::Time, respectively.
-bool IsBetween(int64_t start, int64_t end, base::Time reference_time) {
-  const auto start_time = start <= 0
-                              ? base::Time::Min()
-                              : base::Time::FromSecondsSinceUnixEpoch(start);
-  const auto end_time =
-      end <= 0 ? base::Time::Max() : base::Time::FromSecondsSinceUnixEpoch(end);
-  return start_time <= reference_time && reference_time <= end_time;
+constexpr uint32_t kInvalidLayerId = 0u;
+constexpr uint32_t kInvalidLayerMemberId = 0u;
+constexpr int64_t kMinTimeStamp = 0;
+constexpr int64_t kMaxTimeStamp = std::numeric_limits<int64_t>::max();
+
+// Returns the given timestamp if it is positive, otherwise returns the given
+// default value.
+int64_t GetTimestamp(int64_t t, int64_t default_if_not_valid) {
+  return t <= kMinTimeStamp ? default_if_not_valid : t;
 }
 
-// Returns true if study is active (consuming entropy) at the given reference
-// time.
-bool IsActive(const Study& study, base::Time reference_time) {
-  const auto& filter = study.filter();
-  return IsBetween(filter.start_date(), filter.end_date(), reference_time) &&
-         IsBetween(study.google_web_visibility_start_date(),
-                   study.google_web_visibility_end_date(), reference_time);
+int64_t GetWebVisibilityStartTime(const Study& study) {
+  return std::max(
+      GetTimestamp(study.filter().start_date(), kMinTimeStamp),
+      GetTimestamp(study.google_web_visibility_start_date(), kMinTimeStamp));
+}
+
+int64_t GetWebVisibilityEndTime(const Study& study) {
+  return std::min(
+      GetTimestamp(study.filter().end_date(), kMaxTimeStamp),
+      GetTimestamp(study.google_web_visibility_end_date(), kMaxTimeStamp));
 }
 
 // Converts a probability value (represented by numerator/denominator) to an
@@ -115,16 +120,14 @@ double GetLayerMemberEntropy(const Layer::LayerMember& member,
 
 LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
     const Layer& layer,
-    double entropy_limit_in_bits,
-    base::Time current_time)
+    double entropy_limit_in_bits)
     : entropy_limit_in_bits_(entropy_limit_in_bits),
-      entropy_evaluation_time_(current_time),
       limited_layer_id_(layer.id()) {
   // The caller should have already validated the layer. However, as the layer
   // data comes from an external source, we verify it here again for safety,
   // instead of using a CHECK. Note that verify each condition individually in
   // order to dump a unique stack trace for each failure condition.
-  if (limited_layer_id_ == 0u) {
+  if (limited_layer_id_ == kInvalidLayerId) {
     Invalidate();
     return;
   }
@@ -152,9 +155,9 @@ LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
   }
 
   // Compute the entropy used by each layer member keyed by its memberID.
-  entropy_used_by_member_id_.reserve(layer_members.size());
+  entropy_events_by_member_id_.reserve(layer_members.size());
   for (const auto& member : layer_members) {
-    if (member.id() == 0u) {
+    if (member.id() == kInvalidLayerMemberId) {
       Invalidate();
       return;
     }
@@ -163,15 +166,32 @@ LimitedLayerEntropyCostTracker::LimitedLayerEntropyCostTracker(
     // empty layer member would have the visible assignment state of "no study
     // assigned", which itself reveals information and should be accounted for
     // in the entropy calculation.
-    const bool inserted =
-        entropy_used_by_member_id_
-            .emplace(member.id(), GetLayerMemberEntropy(member, num_slots))
-            .second;
+    auto [iterator, inserted] =
+        entropy_events_by_member_id_.emplace(member.id(), EntropyEventList());
     if (!inserted) {
       // => Duplicated layer member ID.
       Invalidate();
       return;
     }
+
+    // Add an entropy event at kMinTimeStamp, representing the initial entropy
+    // state of the layer member before any study assignments. I.e., the entropy
+    // cost of the layer member itself.
+    //
+    // Note that we reserve an initial capacity for the entropy events to avoid
+    // up to 6-8 (re)allocations per layer member when growing the entropy event
+    // vector. This pre-allocation is not expected to exactly match the number
+    // of entropy events; rather, it simply avoids the allocation overhead for
+    // the growth of the entropy events vector up to the given capacity.
+    //
+    // Also note that these allocations are lifetime bound to the tracker, which
+    // exists transiently during seed validation, so there should be no net
+    // impact on memory usage.
+    constexpr size_t kInitialCapacity = 64;
+    auto& entropy_events = iterator->second;
+    entropy_events.reserve(kInitialCapacity);
+    entropy_events.emplace_back(kMinTimeStamp,
+                                GetLayerMemberEntropy(member, num_slots));
   }
 }
 
@@ -204,62 +224,70 @@ bool LimitedLayerEntropyCostTracker::AddEntropyUsedByStudy(const Study& study) {
     return false;
   }
 
-  // Returns false if the entropy used by a layer member is already above the
-  // entropy limit, meaning no more study can be assigned to the limited layer.
-  if (entropy_limit_exceeded_) {
-    return false;
-  }
-
-  // Returns true if the study is not active at entropy_evaluation_time_.
-  if (!IsActive(study, entropy_evaluation_time_)) {
-    return true;
-  }
-
   // Returns true if the study does not consume entropy at all (e.g. a study
   // with no Google web experiment ID or Google web trigger experiment ID).
-  double study_entropy = GetEntropyUsedByStudy(study);
+  const double study_entropy = GetEntropyUsedByStudy(study);
   if (study_entropy <= 0) {
     return true;
   }
 
-  // Update the entropy in the members referenced by the study. It is assumed
-  // that layer member references have already been validated by the caller.
+  // Get the start and end times for the study's visibility.
+  const int64_t start_time = GetWebVisibilityStartTime(study);
+  const int64_t end_time = GetWebVisibilityEndTime(study);
+
+  // Update the entropy events for each layer member referenced by the study.
+  // It is assumed that layer member references have already been validated by
+  // the caller.
   for (const uint32_t member_id : layer_member_ids) {
-    if (member_id == 0u) {
+    if (member_id == kInvalidLayerMemberId) {
       Invalidate();
       return false;
     }
-    const auto it = entropy_used_by_member_id_.find(member_id);
-    if (it == entropy_used_by_member_id_.end()) {
+    const auto it = entropy_events_by_member_id_.find(member_id);
+    if (it == entropy_events_by_member_id_.end()) {
       Invalidate();
       return false;
     }
 
-    auto& entropy_used = it->second;
-    entropy_used += study_entropy;
+    // Add an entropy event for the study's start and end times. Note that
+    // events which free entropy at the end-of-time can (as an optimization)
+    // be skipped, as they will not contribute the maximum entropy used.
+    auto& entropy_events = it->second;
+    entropy_events.emplace_back(start_time, study_entropy);
+    if (end_time != kMaxTimeStamp) {
+      entropy_events.emplace_back(end_time, -study_entropy);
+    }
     includes_study_entropy_ = true;
-
-    // TODO(siakabaro): The entropy used by a layer member could be over the
-    // entropy limit if the layer member covers a very small percentage of the
-    // population. In such a case, we need to need to pool the empty layer
-    // members together and check if their combined entropy is not over the
-    // limit.
-    if (entropy_used > entropy_limit_in_bits_) {
-      entropy_limit_exceeded_ = true;
-    }
   }
 
-  // Returns false if the entropy limit is reached.
-  return !entropy_limit_exceeded_;
+  // Returning true means that the studies entropy has been successfully added
+  // to the tracker. It does not mean that the entropy limit has not been
+  // exceeded. Callers should check `IsEntropyLimitExceeded()` to determine if
+  // the entropy limit has been exceeded.
+  return true;
 }
 
-double LimitedLayerEntropyCostTracker::GetMaxEntropyUsedForTesting() const {
+bool LimitedLayerEntropyCostTracker::IsEntropyLimitExceeded() const {
+  return GetMaxEntropyUsed() > entropy_limit_in_bits_;
+}
+
+double LimitedLayerEntropyCostTracker::GetMaxEntropyUsed() const {
   if (!includes_study_entropy_) {
     return 0.0;
   }
   double max_entropy_used = 0.0;
-  for (const auto& [member_id, entropy_used] : entropy_used_by_member_id_) {
-    max_entropy_used = std::max(max_entropy_used, entropy_used);
+  for (auto& [member_id, entropy_events] : entropy_events_by_member_id_) {
+    // Sort the entropy events by increasing time, then by increasing entropy
+    // entropy change. This ensures that we removing entropy (negative changes)
+    // before adding entropy (positive changes) for identical timestamps.
+    std::ranges::sort(entropy_events);
+    // Iterate through the sorted entropy events, accumulating the entropy
+    // used and tracking the maximum entropy used at any point.
+    double entropy_used = 0.0;
+    for (const auto& [unused_timestamp, entropy_change] : entropy_events) {
+      entropy_used += entropy_change;
+      max_entropy_used = std::max(max_entropy_used, entropy_used);
+    }
   }
   return max_entropy_used;
 }

@@ -216,8 +216,7 @@ double GetGoogleWebEntropyLimitInBits() {
 MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     const ClientFilterableState& client_state,
     const VariationsSeed& seed,
-    double entropy_limit_in_bits,
-    base::Time current_time) {
+    double entropy_limit_in_bits) {
   SCOPED_CRASH_KEY_STRING32(SR_CRASH_KEY, "seed_version", seed.version());
   SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "entropy_limit", entropy_limit_in_bits);
 
@@ -272,8 +271,7 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     // the active limited layer matches the current layer.
     if (active_limited_layer == nullptr) {
       active_limited_layer = current_layer;
-      entropy_tracker.emplace(*active_limited_layer, entropy_limit_in_bits,
-                              current_time);
+      entropy_tracker.emplace(*active_limited_layer, entropy_limit_in_bits);
       if (!entropy_tracker->IsValid()) {
         // The entropy tracker may have been invalidated by the layer config.
         LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerConfiguration,
@@ -288,14 +286,10 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
       return MisconfiguredEntropyResult{.is_misconfigured = true};
     }
     if (!entropy_tracker->AddEntropyUsedByStudy(study)) {
-      // The entropy tracker may have been invalidated by the study config, or
-      // the entropy limit may have been exceeded.
-      auto rejection_reason =
-          entropy_tracker->IsValid()
-              ? SeedRejectionReason::kHighEntropyUsage
-              : SeedRejectionReason::kInvalidLayerConfiguration;
-      LogSeedRejectionReason(rejection_reason, &study, active_limited_layer,
-                             active_low_layer, current_layer);
+      // The entropy tracker may have been invalidated by the study config.
+      LogSeedRejectionReason(SeedRejectionReason::kInvalidLayerConfiguration,
+                             &study, active_limited_layer, active_low_layer,
+                             current_layer);
       return MisconfiguredEntropyResult{.is_misconfigured = true};
     }
 
@@ -306,6 +300,13 @@ MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
   if (active_limited_layer && (active_low_layer || num_legacy_studies > 0)) {
     SCOPED_CRASH_KEY_NUMBER(SR_CRASH_KEY, "legacy_studies", num_legacy_studies);
     LogSeedRejectionReason(SeedRejectionReason::kActiveLowAndLimitedEntropy,
+                           /*study=*/nullptr, active_limited_layer,
+                           active_low_layer);
+    return MisconfiguredEntropyResult{.is_misconfigured = true};
+  }
+
+  if (entropy_tracker && entropy_tracker->IsEntropyLimitExceeded()) {
+    LogSeedRejectionReason(SeedRejectionReason::kHighEntropyUsage,
                            /*study=*/nullptr, active_limited_layer,
                            active_low_layer);
     return MisconfiguredEntropyResult{.is_misconfigured = true};

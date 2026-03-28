@@ -108,8 +108,7 @@ double GetGoogleWebEntropyLimitInBits();
 MisconfiguredEntropyResult SeedHasMisconfiguredEntropy(
     const ClientFilterableState& client_state,
     const VariationsSeed& seed,
-    double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits(),
-    base::Time current_time = base::Time::Now());
+    double entropy_limit_in_bits = GetGoogleWebEntropyLimitInBits());
 
 }  // namespace variations
 
