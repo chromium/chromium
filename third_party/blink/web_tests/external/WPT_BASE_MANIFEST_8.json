@@ -92351,7 +92351,7 @@
        ]
       ],
       "border-shape-inset-shadow.html": [
-       "a80014a081a08d14b0927b35a657d83661f26ffa",
+       "e6f03d67efc054790e066da1f16fec4968fe0b08",
        [
         null,
         [
@@ -92360,7 +92360,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             255
+            ],
+            [
+             0,
+             2000
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "border-shape-outline-double-path.html": [
@@ -92682,6 +92698,77 @@
         }
        ]
       ],
+      "border-shape-shadow-blur.html": [
+       "783a4ae01ea4b7c35fc46697419e7bc57d40ecd0",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-blur-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             32
+            ],
+            [
+             0,
+             500
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-shadow-circle.html": [
+       "aa53605b9247cab12e6c7e8acae1091e56f5b5cb",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-circle-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-shadow-inset-blur.html": [
+       "eb376a97eb0ece93b7705c38cce4d39b7ed476f4",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-inset-blur-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             150
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "border-shape-shadow-negative-spread.html": [
        "66e554e48cedc6a1e2915f57b43e0bd0d39b8e71",
        [
@@ -92706,6 +92793,35 @@
          ]
         ],
         {}
+       ]
+      ],
+      "border-shape-shadow-transparent.html": [
+       "eeb762dd298dde0a96fe0ce57a70d2b775f38901",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-transparent-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             72
+            ],
+            [
+             0,
+             500
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "border-shape-shadow.html": [
@@ -92780,7 +92896,7 @@
        ]
       ],
       "border-shape-two-shapes-shadow.html": [
-       "044b7127f4b0deccc8f7e085c0a9f5cebb98f411",
+       "30521495917bfd340ed185365bd9b0f30764591e",
        [
         null,
         [
@@ -92796,11 +92912,11 @@
            [
             [
              0,
-             110
+             91
             ],
             [
              0,
-             1400
+             2000
             ]
            ]
           ]
@@ -371655,7 +371771,7 @@
        []
       ],
       "border-shape-combined-shadow-ref.html": [
-       "f4d7a567a09954c0bc692466d61573d89c69454f",
+       "19096d995b5604b1a7903c585bd304ef80f7fcb9",
        []
       ],
       "border-shape-double-shape-default-ref.html": [
@@ -371683,7 +371799,7 @@
        []
       ],
       "border-shape-inset-shadow-ref.html": [
-       "2b5704bc2ccc56991be0d4b5ab9abe26220bbcf2",
+       "9c9aad052c8c544dc98c36b7a473e7349b4f8b9d",
        []
       ],
       "border-shape-outline-double-path-ref.html": [
@@ -371722,6 +371838,18 @@
        "cc482e344e2a0716b4a527f273115a0d19d2d4b8",
        []
       ],
+      "border-shape-shadow-blur-ref.html": [
+       "2f367dbe0252ccc19bb7b3fe517a97d4d52ff073",
+       []
+      ],
+      "border-shape-shadow-circle-ref.html": [
+       "abc14517f17fc3735e330b65799ced42869ffe1a",
+       []
+      ],
+      "border-shape-shadow-inset-blur-ref.html": [
+       "19ab9b3b9ba1a2463b57c88afa8ee9ba0cc3feb4",
+       []
+      ],
       "border-shape-shadow-negative-spread-ref.html": [
        "8e25bc3a7eba34c36cf6a12a1f2565a92a626b8c",
        []
@@ -371734,6 +371862,10 @@
        "c044533aee3c5f6048a87b03323a797321850b2e",
        []
       ],
+      "border-shape-shadow-transparent-ref.html": [
+       "2010f11bbac4530cb05b1905b5e6f597b44d7f64",
+       []
+      ],
       "border-shape-stroke-from-border-ref.html": [
        "c88b30e8ba472bfdb1e1dc2c0b928ec223cf81c9",
        []
@@ -371743,7 +371875,7 @@
        []
       ],
       "border-shape-two-shapes-shadow-ref.html": [
-       "8c71bd17734103138cbc7d5752c6de0cb30332c5",
+       "8cbc0b3fa7f5a3486ab478a0f8965e95c67a2ae3",
        []
       ],
       "resources": {
@@ -397393,7 +397525,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "7db666f28122c074d358924d3e21baebece2431f",
+       "87c10222f93e1ca22dcdc2d84b98a8a27a40965f",
        []
       ],
       "block-ellipsis-valid-expected.txt": [
@@ -397497,7 +397629,7 @@
      ],
      "scroll-markers": {
       "WEB_FEATURES.yaml": [
-       "b3862f22ed98930fe0e9551a96f64d1ec3aca9e8",
+       "e5316fb4ea86c0db89a1836391a64724857b6562",
        []
       ],
       "column-scroll-marker-001-ref.html": [
@@ -418352,7 +418484,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "8cd9b0463cfcf212272bbe16eb945dd513d184ef",
+      "af829bd62281e3d6cf6c56f12331d8948ad4d53d",
       []
      ],
      "add-background-attachment-fixed-during-smooth-scroll-ref.html": [
@@ -592838,7 +592970,7 @@
       ]
      ],
      "Element-innerHTML.html": [
-      "25ff9e547a88e25ea9cefb767c2e57dc41c9dfc4",
+      "f6c7765f7264c7595294d4d006685151d3448d9b",
       [
        null,
        {}
@@ -709069,6 +709201,15 @@
         [
          "html/semantics/links/links-created-by-a-and-area-elements/non-special-url-getter-setter.window.html",
          {}
+        ]
+       ],
+       "rel-attribute-clearing.html": [
+        "31cb82da18b82a5e1368f33615794ca2aa97532e",
+        [
+         null,
+         {
+          "timeout": "long"
+         }
         ]
        ],
        "rel-opener-prevents-browsing-context-group-change.tentative.html": [
