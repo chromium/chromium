@@ -192,6 +192,12 @@ export function enumToClient(
   val: mojomGlic.SwitchConversationErrorReason | null):
     glicApi.SwitchConversationErrorReason | undefined;
 export function enumToClient(
+  val: mojomActor.TaskDuration):
+    glicApi.TaskDuration;
+export function enumToClient(
+  val: mojomActor.TaskDuration | null):
+    glicApi.TaskDuration | undefined;
+export function enumToClient(
   val: mojomGlic.UnpinTrigger):
     glicApi.UnpinTrigger;
 export function enumToClient(
@@ -405,6 +411,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.SwitchConversationErrorReason | undefined):
     mojomGlic.SwitchConversationErrorReason | null;
+export function enumFromClient(
+  val: glicApi.TaskDuration):
+    mojomActor.TaskDuration;
+export function enumFromClient(
+  val: glicApi.TaskDuration | undefined):
+    mojomActor.TaskDuration | null;
 export function enumFromClient(
   val: glicApi.UnpinTrigger):
     mojomGlic.UnpinTrigger;

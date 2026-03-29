@@ -614,6 +614,7 @@ export function taskOptionsToMojo(taskOptions?: TaskOptions): TaskOptionsMojo|
   if (taskOptions) {
     return {
       title: taskOptions.title ?? null,
+      duration: enumFromClient(taskOptions.duration),
     };
   }
   return null;

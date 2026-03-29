@@ -11,10 +11,24 @@ import "url/mojom/origin.mojom";
 // Place the mojom structs that require Javascript bindings here.
 //
 
+// @generate glic_api
+// Describes the duration of the actions in the task.  This is used by the actor
+// to customize the task UI.
+[Extensible]
+enum TaskDuration {
+  // The task has actions that permit user observation and intervention in the
+  // browser.
+  [Default] kDefault = 1,
+  // The task has fast actions that do not permit observation and intervention.
+  kTransient = 2,
+};
+
 // Contains information about the task.
 struct TaskOptions {
   // A user-facing string that describes the task.
   string? title;
+  // The expected duration of the the task.
+  TaskDuration? duration;
 };
 
 // @generate glic_api

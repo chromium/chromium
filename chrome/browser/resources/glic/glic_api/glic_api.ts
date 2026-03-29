@@ -1455,7 +1455,7 @@ export declare interface PanelOpeningData {
    *
    * - The web client will load the requested `conversationInfo.conversationId`.
    * - If `conversationInfo.conversationId` is empty, it indicates a new
-   * conversation is being started.
+   *   conversation is being started.
    * - The object may contain `clientData` if it was provided in the
    *   `registerConversation` or `switchConversation` calls.
    */
@@ -1840,6 +1840,10 @@ export declare interface TaskOptions {
    * A user-facing string that describes the task.
    */
   title?: string;
+  /**
+   * The expected duration of the the task.
+   */
+  duration?: TaskDuration;
 }
 
 /** Maps the ErrorWithReason.reasonType to the type of reason. */
@@ -2965,6 +2969,21 @@ export enum ClientCapabilities {
   // The glic web client does not use favicons in TabData, so they can
   // be omitted from TabData.
   IGNORES_TAB_DATA_FAVICONS = 0,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+//
+// Place the mojom structs that require Javascript bindings here.
+//
+// Describes the duration of the actions in the task.  This is used by the actor
+// to customize the task UI.
+export enum TaskDuration {
+  // The task has actions that permit user observation and intervention in the
+  // browser.
+  DEFAULT = 1,
+  // The task has fast actions that do not permit observation and intervention.
+  TRANSIENT = 2,
 }
 
 ///////////////////////////////////////////////
