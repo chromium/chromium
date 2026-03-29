@@ -596,7 +596,6 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
           const contextEntrypoint =
               composebox.shadowRoot.querySelector('#contextEntrypoint');
           assertTrue(!!contextEntrypoint);
-          contextEntrypoint.showModelPicker = false;
 
           await microtasksFinished();
           await composebox.updateComplete;

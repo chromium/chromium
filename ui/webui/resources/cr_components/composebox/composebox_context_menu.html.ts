@@ -27,7 +27,6 @@ export function getHtml(this: ComposeboxElement) {
         @get-tab-preview="${this.onGetTabPreview_}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
-        .showModelPicker="${this.showModelPicker}"
         .inputState="${this.inputState}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
@@ -37,7 +36,7 @@ export function getHtml(this: ComposeboxElement) {
         ?upload-button-disabled="${this.uploadButtonDisabled}"
         ?show-context-menu-description="${this.showContextMenuDescription_}">
     </cr-composebox-contextual-entrypoint-and-menu>
-  ` : (hasAllowedInputs(this.inputState, this.showModelPicker) ? html`
+  ` : (hasAllowedInputs(this.inputState, this.usePecApi) ? html`
     <cr-composebox-contextual-entrypoint-button
         id="contextEntrypoint"
         part="composebox-entrypoint"

@@ -23,7 +23,6 @@ export function getHtml(this: SearchboxElement) {
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         @context-menu-closed="${this.onContextMenuClosed_}"
         @context-menu-opened="${this.onContextMenuOpened_}"
-        .showModelPicker="${this.showModelPicker_}"
         .inputState="${this.inputState_}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions_}"

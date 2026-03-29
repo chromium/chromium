@@ -23,7 +23,6 @@ suite('ContextualEntrypointAndMenu', () => {
         document.createElement('cr-composebox-contextual-entrypoint-and-menu');
     Object.assign(entrypointAndMenu, {
       inputState,
-      showModelPicker: true,
     });
     document.body.appendChild(entrypointAndMenu);
     await microtasksFinished();

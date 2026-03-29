@@ -63,7 +63,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
-            showModelPicker: {
+            usePecApi: {
               type: Boolean,
               reflect: true,
             },
@@ -104,7 +104,7 @@ export const ComposeboxEmbedderMixin =
         accessor showDropdown: boolean =
             loadTimeData.getBoolean('composeboxShowZps');
         accessor showFileCarousel: boolean = false;
-        accessor showModelPicker: boolean = getLoadTimeBoolean(
+        accessor usePecApi: boolean = getLoadTimeBoolean(
             'contextualMenuUsePecApi', /*defaultValue=*/ false);
         showVoiceSearch: boolean = getLoadTimeBoolean(
             'composeboxShowVoiceSearch', /*defaultValue=*/ false);
@@ -229,8 +229,7 @@ export interface ComposeboxEmbedderMixinInterface {
   selectedMatchIndex: number;
   showDropdown: boolean;
   showFileCarousel: boolean;
-  // TODO(crbug.com/493988206): Rename to usePecApi_ and update all references.
-  showModelPicker: boolean;
+  usePecApi: boolean;
   showVoiceSearch: boolean;
   smartComposeInlineHint: string;
   state: ComposeboxState|null;
