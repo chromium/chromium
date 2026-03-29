@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Уншсан гэж тэмдэглэх</translation>
 <translation id="428768789042547925">Шинэ юм юу байна</translation>
 <translation id="429074084062258019">{count,plural, =1{Табыг бүлэгт нэмэх}other{Табуудыг бүлэгт нэмэх}}</translation>
+<translation id="4300830875340617674">Карт скан хийж, автоматаар бөглөх</translation>
 <translation id="4302061870579014542">Байрлал тохируулах</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
 <translation id="4306349443295056740">OCSP-н хариултад гарын үсэг зурах</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">А</translation>
 <translation id="5225463052809312700">Камерыг асаах</translation>
 <translation id="5229315183665181733">Сайтыг засах</translation>
+<translation id="5233111790346066304">Файлуудаа Google Драйвтаа хадгалж, хүссэн үедээ хандаарай.</translation>
 <translation id="5233638681132016545">Шинэ таб</translation>
 <translation id="5234094073825090254">{count,plural, =1{Хавчуургыг таны {email} Google Бүртгэлд хадгалсан.}other{Хавчуургуудыг таны {email} Google Бүртгэлд хадгалсан.}}</translation>
 <translation id="5234764350956374838">Хэрэгсэхгүй болго</translation>

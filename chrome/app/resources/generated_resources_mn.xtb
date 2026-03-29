@@ -2248,6 +2248,7 @@
 <translation id="2518024842978892609">Өөрийн хэрэглэгчийн гэрчилгээг ашиглах</translation>
 <translation id="2518620532958109495">Бүтэн дэлгэцэд автоматаар орохыг зөвшөөрсөн</translation>
 <translation id="2519250377986324805">Хэрхэн хийхийг харах</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini-д таны ажил дээр үргэлжлүүлэн ажиллахад таны тусламж хэрэгтэй байна.</translation>
 <translation id="2519517390894391510">Гэрчилгээний профайлын нэр</translation>
 <translation id="2520644704042891903">Бэлэн залгуурыг хүлээж байна ...</translation>
 <translation id="2521427645491031107">Аппуудын синк хийхийг төхөөрөмжийн Тохиргоонд тохируулдаг</translation>
@@ -4649,6 +4650,7 @@
 <translation id="4190492351494485814">Анхны тохируулгад та интернэтэд холбогдох шаардлагатай бөгөөд ингэснээр файлууд таны Chromebook-д синк хийх боломжтой</translation>
 <translation id="4190828427319282529">Гарын фокусыг тодруулах</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" />-р хүлээн авах уу?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini таны ажил дээр ажиллаж байгаа бөгөөд нэмэлт үйлдэл шаардлагатай тохиолдолд танд мэдэгдэнэ.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" />-д тусгайлан зориулсан.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Үүсгэгч ХОУ нь туршилтынх мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Итгэмжлэгдсэн CA</translation>
@@ -5261,6 +5263,7 @@
 <translation id="4624054169152573743">Өнгөний загвар</translation>
 <translation id="4625078469366263107">Аппыг идэвхжүүлэх</translation>
 <translation id="4625905218692741757">Өгөгдмөл саарал өнгө</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini таны ажлыг түр зогсоосон. Үүнийг хянахын тулд Chrome руу буцна уу.</translation>
 <translation id="4627107755957573804">Сайт, аппад одоогийн бүртгэлийг нэвтрэх түлхүүр ашиглах болгож сайжруулахыг зөвшөөрнө үү</translation>
 <translation id="4627442949885028695">Өөр төхөөрөмжөөс үргэлжлүүлэх</translation>
 <translation id="4628762811416793313">Linux-н контейнерыг тохируулж дууссангүй. Дахин оролдоно уу.</translation>
@@ -8305,6 +8308,7 @@
 <translation id="6798420440063423019">ПИН-г хэт олон удаа буруу оруулсан тул аюулгүй байдлын түлхүүрийг түгжсэн байна. Та аюулгүй байдлын түлхүүрийг шинэчлэх шаардлагатай.</translation>
 <translation id="679845623837196966">Унших жагсаалтыг харуулах</translation>
 <translation id="6798578729981748444">Импортыг дуусгахын тулд Firefox-н бүх цонхыг хаана уу.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini таны ажлыг гүйцэтгэсэн бөгөөд та үүнийг Chrome-с үзэх боломжтой.</translation>
 <translation id="6798780071646309401">томоор бичих горим асаалттай</translation>
 <translation id="679905836499387150">Самбарын нуусан товчлуурууд</translation>
 <translation id="6800893479155997609">Таны <ph name="DEVICE_TYPE" />-д зориулсан шилдэг аппууд</translation>
@@ -9907,6 +9911,7 @@
 <translation id="7916364730877325865">Танай байгууллага танд энэ бүртгэлээр синк хийхийг асаахыг зөвшөөрдөггүй</translation>
 <translation id="791698251820376781">Танай байгууллага танд нэвтрэхийг зөвшөөрдөггүй</translation>
 <translation id="7918257978052780342">Хамрагдах</translation>
+<translation id="7918928051723770926">Ажлыг гүйцэтгэсэн</translation>
 <translation id="7919123827536834358">Эдгээр хэлийг автоматаар орчуулах</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />сек</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> нь <ph name="FILENAME" />-г үзэх боломжтой</translation>
@@ -10395,6 +10400,7 @@
 <translation id="8244724656154470844">Шинэчлэлтийг шалгаж чадсангүй.</translation>
 <translation id="8246776524656196770">Аюулгүй байдлын түлхүүрээ ПИН (Personal Identification Number буюу Хувийн тодорхойлолтын дугаар)-р хамгаалаарай</translation>
 <translation id="824713170151383793">DevTools-р</translation>
+<translation id="8247210755024677100">Нэвтэрч байна ...</translation>
 <translation id="8247795734638043885">Аюултай файл татах</translation>
 <translation id="8248050856337841185">&amp; Наах</translation>
 <translation id="8248381369318572865">Микрофондоо нэвтэрч, яриагаа задлан шинжилнэ үү</translation>
@@ -10838,6 +10844,7 @@
 <translation id="8557022314818157177">Хурууны хээг автал аюулгүй байдлын түлхүүр дээрээ үргэлжлүүлэн хүрнэ үү</translation>
 <translation id="8557100046150195444">Үргэлжлүүлэхийн тулд хүрэлтийн ID оруулна уу</translation>
 <translation id="8557856025359704738">Дараагийн татан авалтыг <ph name="NEXT_DATE_DOWNLOAD" />-д хийнэ.</translation>
+<translation id="8558063527625343224">Google Beam-г тохируулах</translation>
 <translation id="8559858985063901027">Нууц үгнүүд</translation>
 <translation id="8559961053328923750">Chrome нь зарын гүйцэтгэлийг хэмжихийн тулд хөтчөөр дамжуулан сайтуудын хуваалцаж болох нийт өгөгдлийн хэмжээг хязгаарладаг</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Бүгдийг &amp;Шинэ цонхонд нээх}=1{&amp;Шинэ цонхонд нээх}other{Бүгдийг ({COUNT}) &amp;Шинэ цонхонд нээх}}</translation>
@@ -11351,6 +11358,7 @@
 <translation id="8898786835233784856">Дараагийн tab-г сонгоно уу</translation>
 <translation id="8898790559170352647">Microsoft бүртгэлээ нэмэх</translation>
 <translation id="8898822736010347272">Шинэ аюул заналыг олж илрүүлэх болон веб дээрх бүх хүнийг хамгаалахад туслахын тулд таны зочилдог зарим хуудасны URL, системийн хязгаарлагдмал мэдээлэл болон хуудасны зарим контентыг Google рүү илгээдэг.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini таны ажил дээр ажиллахаа больсон.</translation>
 <translation id="8899851313684471736">Шинэ цонхонд нээлттэй байгаа холбоос</translation>
 <translation id="8900413463156971200">Үүрэн холбоог идэвхжүүлэх</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> танаас өнөөдөр өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна.}other{<ph name="MANAGER" /> танаас эцсийн хугацаанаас өмнө өгөгдлөө хуулбарлаж, энэ <ph name="DEVICE_TYPE" />-г буцаахыг шаардаж байна.}}</translation>

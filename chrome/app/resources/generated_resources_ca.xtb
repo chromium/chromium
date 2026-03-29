@@ -2239,6 +2239,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2518024842978892609">Utilitzar els certificats de client</translation>
 <translation id="2518620532958109495">Amb permís per entrar automàticament en pantalla completa</translation>
 <translation id="2519250377986324805">Com es fa</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini necessita la teva ajuda per continuar treballant en la tasca.</translation>
 <translation id="2519517390894391510">Nom del perfil del certificat</translation>
 <translation id="2520644704042891903">Estem esperant que hi hagi un sòcol disponible...</translation>
 <translation id="2521427645491031107">La sincronització d'aplicacions s'estableix a la configuració del dispositiu</translation>
@@ -4638,6 +4639,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4190492351494485814">Per a la configuració inicial, t'has de connectar a Internet perquè els fitxers es puguin sincronitzar amb el Chromebook</translation>
 <translation id="4190828427319282529">Marca el focus del teclat</translation>
 <translation id="4191892134568599822">Vols rebre fitxers amb <ph name="FEATURE_NAME" />?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini està treballant en la tasca i t'avisarà si cal que facis res més.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Exclusiu per a <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />La IA generativa és experimental, està en fase primerenca de desenvolupament i actualment té una disponibilitat limitada.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">CA de confiança</translation>
@@ -5250,6 +5252,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4624054169152573743">Tema de color</translation>
 <translation id="4625078469366263107">Activa l'aplicació</translation>
 <translation id="4625905218692741757">Color gris predeterminat</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini ha posat en pausa la tasca. Torna a Chrome per revisar-ho.</translation>
 <translation id="4627107755957573804">Permet que els llocs web i les aplicacions actualitzin els comptes existents per utilitzar les claus d'accés</translation>
 <translation id="4627442949885028695">Continua des d'un altre dispositiu</translation>
 <translation id="4628762811416793313">La configuració del contenidor de Linux no s'ha completat. Torna-ho a provar.</translation>
@@ -8291,6 +8294,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6798420440063423019">La clau de seguretat està bloquejada perquè s'ha introduït un PIN incorrecte massa vegades. Cal que la restableixis.</translation>
 <translation id="679845623837196966">Mostra la Llista de lectura</translation>
 <translation id="6798578729981748444">Per finalitzar la importació, tanca totes les finestres de Firefox.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini ha completat la tasca. Pots consultar-ho a Chrome.</translation>
 <translation id="6798780071646309401">bloqueig de majúscules activat</translation>
 <translation id="679905836499387150">Botons amagats de la barra d'eines</translation>
 <translation id="6800893479155997609">Les millors aplicacions per al <ph name="DEVICE_TYPE" /></translation>
@@ -9894,6 +9898,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7916364730877325865">La teva organització no et permet activar la sincronització amb aquest compte</translation>
 <translation id="791698251820376781">La teva organització no et permet iniciar la sessió</translation>
 <translation id="7918257978052780342">Inscriu</translation>
+<translation id="7918928051723770926">S'ha completat la tasca</translation>
 <translation id="7919123827536834358">Tradueix automàticament aquests idiomes</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> pot veure <ph name="FILENAME" /></translation>
@@ -10383,6 +10388,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8244724656154470844">No s'ha pogut comprovar si hi ha actualitzacions.</translation>
 <translation id="8246776524656196770">Protegeix la teva clau de seguretat amb un PIN (número d'identificació personal)</translation>
 <translation id="824713170151383793">Amb DevTools</translation>
+<translation id="8247210755024677100">S'està iniciant la sessió...</translation>
 <translation id="8247795734638043885">Baixa el fitxer no segur</translation>
 <translation id="8248050856337841185">&amp;Enganxa</translation>
 <translation id="8248381369318572865">Accedeix al micròfon i analitza la teva parla</translation>
@@ -10826,6 +10832,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8557022314818157177">Continua tocant la clau de seguretat fins que es capturi l'empremta digital</translation>
 <translation id="8557100046150195444">Utilitza Touch ID per continuar</translation>
 <translation id="8557856025359704738">La baixada següent serà a les <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Configura Google Beam</translation>
 <translation id="8559858985063901027">Claus d'accés</translation>
 <translation id="8559961053328923750">Chrome limita la quantitat total de dades que els llocs web poden compartir a través del navegador per mesurar el rendiment dels anuncis</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Obre-les totes en una finestra &amp;nova}=1{Obre en una finestra &amp;nova}other{Obre-les totes ({COUNT}) en una finestra &amp;nova}}</translation>
@@ -11341,6 +11348,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="8898786835233784856">Selecciona la pestanya següent</translation>
 <translation id="8898790559170352647">Afegeix el teu compte de Microsoft</translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini ha deixat de treballar en la tasca.</translation>
 <translation id="8899851313684471736">Obre l'enllaç en una &amp;finestra nova</translation>
 <translation id="8900413463156971200">Activa les funcions per a mòbils</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> avui.}other{<ph name="MANAGER" /> requereix que creïs una còpia de seguretat de les teves dades i que tornis aquest dispositiu <ph name="DEVICE_TYPE" /> abans del termini establert.}}</translation>

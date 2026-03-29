@@ -1177,6 +1177,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2837891525090413132">Võib küsida teie klaviatuuri lukustamist ja kasutamist</translation>
 <translation id="2839032553903800133">Märguanded on blokeeritud</translation>
 <translation id="2839501879576190149">Ees on võltssait</translation>
+<translation id="2840680829170913626">Nende valikute pakkumiseks jagatakse Google’iga kassalehe sisu. Maksegraafikutele kehtivad sobilikkuse nõuded. Hiljem maksmise valikute peitmiseks automaattäites avage <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Kas kerida ja suumida teie jagatud vahelehte?</translation>
 <translation id="2851291081585704741">Võrguühendus puudub</translation>
 <translation id="2854163610915391726">Teie Google’i kontole salvestatava Chrome’i teabe haldamine</translation>
@@ -1388,6 +1389,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3162070126914310576">Seda seadet ei saa praegu registreerida, kuna teie organisatsiooniüksuse esialgne registreerimiste limiit on täis. Abi saamiseks võtke ühendust oma administraatoriga.</translation>
 <translation id="3162559335345991374">WiFi-võrk, mida kasutate, võib nõuda sisselogimislehe külastamist.</translation>
 <translation id="316638481603975524">Võib küsida veebirakenduste installimist</translation>
+<translation id="3166788340998560642">Chrome pakub võimalust salvestada see rahakotti <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> järgmisel korral, kui seda kasutate.</translation>
 <translation id="3168744840365648658">Raadioseadmed</translation>
 <translation id="3168938241115725594">Klassikalised sõidukid</translation>
 <translation id="3169472444629675720">Discover</translation>

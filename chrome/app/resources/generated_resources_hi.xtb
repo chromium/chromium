@@ -2253,6 +2253,7 @@
 <translation id="2518024842978892609">अपने क्‍लाइंट प्रमाणपत्रों का उपयोग करें</translation>
 <translation id="2518620532958109495">फ़ुल स्क्रीन मोड को अपने-आप चालू करने की अनुमति है</translation>
 <translation id="2519250377986324805">इसका तरीका देखें</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini को आपके टास्क पर काम जारी रखने के लिए आपकी मदद चाहिए.</translation>
 <translation id="2519517390894391510">प्रमाणपत्र वाली प्रोफ़ाइल का नाम</translation>
 <translation id="2520644704042891903">उपलब्ध सॉकेट की प्रतीक्षा की जा रही है...</translation>
 <translation id="2521427645491031107">ऐप्लिकेशन सिंक करने की सुविधा, डिवाइस की सेटिंग में सेट की गई है</translation>
@@ -4654,6 +4655,7 @@
 <translation id="4190492351494485814">शुरुआती सेटअप के लिए आपको इंटरनेट से कनेक्ट करना होगा, ताकि आपके Chromebook से फ़ाइलें सिंक हो सकें</translation>
 <translation id="4190828427319282529">कीबोर्ड के फ़ोकस को हाइलाइट करें</translation>
 <translation id="4191892134568599822">क्या आपको फ़ाइलें पाने के लिए <ph name="FEATURE_NAME" /> का इस्तेमाल करना है?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini आपके टास्क पर काम कर रहा है. अगर किसी और कार्रवाई की ज़रूरत होगी, तो हम आपको इसकी जानकारी देंगे.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />खास तौर पर, <ph name="DEVICE_TYPE" /> के लिए उपलब्ध.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />जनरेटिव एआई की सुविधा, फ़िलहाल एक्सपेरिमेंट के तौर पर उपलब्ध है. इस पर अभी काम चल रहा है. फ़िलहाल, यह सभी लोगों के लिए उपलब्ध नहीं है.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">भरोसेमंद CA</translation>
@@ -5266,6 +5268,7 @@
 <translation id="4624054169152573743">रंग की थीम</translation>
 <translation id="4625078469366263107">ऐप्लिकेशन चालू करें</translation>
 <translation id="4625905218692741757">स्लेटी डिफ़ॉल्ट रंग</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini ने आपके टास्क पर काम करना रोक दिया है. इसकी समीक्षा करने के लिए, Chrome पर वापस जाएं.</translation>
 <translation id="4627107755957573804">साइटों और ऐप्लिकेशन को, मौजूदा खाते अपग्रेड करने की अनुमति दें, ताकि वे पासकी इस्तेमाल कर सकें</translation>
 <translation id="4627442949885028695">किसी अन्य डिवाइस से जारी रखें</translation>
 <translation id="4628762811416793313">Linux कंटेनर का सेटअप पूरा नहीं हुआ. कृपया फिर से कोशिश करें.</translation>
@@ -8310,6 +8313,7 @@
 <translation id="6798420440063423019">बार-बार गलत बिन डालने की वजह से सुरक्षा कुंजी लॉक हो गई है. आपको सुरक्षा कुंजी को रीसेट करना होगा.</translation>
 <translation id="679845623837196966">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="6798578729981748444">आयात करना पूरा करने के लिए, सभी Firefox विंडो बंद करें.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini ने आपका टास्क पूरा कर दिया है. अब इसे Chrome में देखा जा सकता है.</translation>
 <translation id="6798780071646309401">caps lock चालू है</translation>
 <translation id="679905836499387150">छिपे हुए टूलबार बटन</translation>
 <translation id="6800893479155997609">आपके <ph name="DEVICE_TYPE" /> के लिए सबसे लोकप्रिय ऐप्लिकेशन</translation>
@@ -9912,6 +9916,7 @@
 <translation id="7916364730877325865">इस खाते के साथ सिंक नहीं किया जा सकता, क्योंकि आपका संगठन इसकी अनुमति नहीं देता</translation>
 <translation id="791698251820376781">आपका संगठन आपको साइन इन करने की अनुमति नहीं देता है</translation>
 <translation id="7918257978052780342">नामांकित करें</translation>
+<translation id="7918928051723770926">टास्क पूरा हो गया है</translation>
 <translation id="7919123827536834358">अपने-आप इन भाषाओं का अनुवाद करें</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> सेकंड</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> को देख सकती है</translation>
@@ -10401,6 +10406,7 @@
 <translation id="8244724656154470844">अपडेट की जांच नहीं की जा सकी.</translation>
 <translation id="8246776524656196770">पिन (व्यक्तिगत पहचान संख्या) की मदद से अपनी सुरक्षा कुंजी की रक्षा करें</translation>
 <translation id="824713170151383793">DevTools की मदद से</translation>
+<translation id="8247210755024677100">साइन इन किया जा रहा है ...</translation>
 <translation id="8247795734638043885">असुरक्षित फ़ाइल डाउनलोड करें</translation>
 <translation id="8248050856337841185">&amp;चिपकाएं</translation>
 <translation id="8248381369318572865">माइक्रोफ़ोन को ऐक्सेस करना और बोली का विश्लेषण करना</translation>
@@ -10844,6 +10850,7 @@
 <translation id="8557022314818157177">अपनी सुरक्षा कुंजी को तब तक छूते रहें, जब तक फ़िंगरप्रिंट कैप्चर न हाे जाए</translation>
 <translation id="8557100046150195444">साइन इन करने के लिए, टच आईडी का इस्तेमाल करें</translation>
 <translation id="8557856025359704738">अगली बार <ph name="NEXT_DATE_DOWNLOAD" /> को डाउनलोड होंगी.</translation>
+<translation id="8558063527625343224">Google Beam सेट अप करें</translation>
 <translation id="8559858985063901027">पासवर्ड</translation>
 <translation id="8559961053328923750">Chrome यह तय करता है कि विज्ञापनों की परफ़ॉर्मेंस का आकलन करने के लिए साइटें, ब्राउज़र से कितना डेटा ले सकती हैं</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{सभी यूआरएल को &amp;नई विंडो में खोलें}=1{यूआरएल को &amp;नई विंडो में खोलें}one{दिया गया ({COUNT}) यूआरएल &amp;नई विंडो में खोलें}other{सभी ({COUNT}) यूआरएल को &amp;नई विंडो में खोलें}}</translation>
@@ -11360,6 +11367,7 @@
 <translation id="8898786835233784856">अगले टैब को चुनें</translation>
 <translation id="8898790559170352647">अपना Microsoft खाता जोड़ें</translation>
 <translation id="8898822736010347272">आपने जिन पेजों को विज़िट किया है उनमें से कुछ के यूआरएल, सिस्टम की सीमित जानकारी, और पेज का कुछ कॉन्टेंट Google को भेजा जाता है. ऐसा इसलिए, ताकि नए खतरों का पता लगाया जा सके और वेब पर सबको सुरक्षित रखा जा सके.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini ने आपके टास्क पर काम करना बंद कर दिया है.</translation>
 <translation id="8899851313684471736">लिंक को नई &amp;विंडो में खोलें</translation>
 <translation id="8900413463156971200">सेल्युलर नेटवर्क चालू करें</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> आज ही लौटा दें.}one{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}other{<ph name="MANAGER" /> का इस्तेमाल करने के लिए ज़रूरी है कि आप अपने डेटा का बैक अप लें और यह <ph name="DEVICE_TYPE" /> तय समय से पहले लौटा दें.}}</translation>

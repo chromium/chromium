@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">'पढ़ा गया' के तौर पर मार्क करें</translation>
 <translation id="428768789042547925">नया क्या है</translation>
 <translation id="429074084062258019">{count,plural, =1{टैब को ग्रुप में जोड़ें}one{टैब को ग्रुप में जोड़ें}other{टैब को ग्रुप में जोड़ें}}</translation>
+<translation id="4300830875340617674">कार्ड स्कैन करें और ऑटोमैटिक तरीके से भरें</translation>
 <translation id="4302061870579014542">जगह सेट करें</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4306349443295056740">ओसीएसपी साइनिंग</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">कैमरा चालू करें</translation>
 <translation id="5229315183665181733">साइट में बदलाव करें</translation>
+<translation id="5233111790346066304">अपनी फ़ाइलों को Google Drive में सेव करें और उन्हें किसी भी समय ऐक्सेस करें.</translation>
 <translation id="5233638681132016545">नया टैब</translation>
 <translation id="5234094073825090254">{count,plural, =1{आपके Google खाते, {email} में बुकमार्क सेव किया गया.}one{आपके Google खाते, {email} में बुकमार्क सेव किया गया.}other{आपके Google खाते, {email} में बुकमार्क सेव किए गए.}}</translation>
 <translation id="5234764350956374838">खारिज करें</translation>
