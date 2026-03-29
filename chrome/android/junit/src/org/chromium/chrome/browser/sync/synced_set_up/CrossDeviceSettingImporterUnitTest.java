@@ -807,4 +807,33 @@ public class CrossDeviceSettingImporterUnitTest {
         // This should NOT crash even though tab.getProfile() is null.
         mTrackerObserverCaptor.getValue().onServiceStatusChanged(ServiceStatus.AVAILABLE);
     }
+
+    @Test
+    public void testOnTabChange_TrackerNotReady_ObserverRemovedWhenReady() {
+        when(mCrossDevicePrefTracker.getServiceStatus())
+                .thenReturn(ServiceStatus.LOCAL_DEVICE_INFO_MISSING);
+
+        initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
+
+        verify(mCrossDevicePrefTracker).addObserver(mTrackerObserverCaptor.capture());
+
+        // Simulate tracker becoming ready.
+        mTrackerObserverCaptor.getValue().onServiceStatusChanged(ServiceStatus.AVAILABLE);
+
+        verify(mCrossDevicePrefTracker).removeObserver(mTrackerObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testDestroy_RemovesTrackerObserver() {
+        when(mCrossDevicePrefTracker.getServiceStatus())
+                .thenReturn(ServiceStatus.LOCAL_DEVICE_INFO_MISSING);
+
+        initializeCrossDeviceSettingImporter().onTabChangeOrGainFocus(mTab);
+
+        verify(mCrossDevicePrefTracker).addObserver(mTrackerObserverCaptor.capture());
+
+        mCrossDeviceSettingImporter.destroy();
+
+        verify(mCrossDevicePrefTracker).removeObserver(mTrackerObserverCaptor.getValue());
+    }
 }
