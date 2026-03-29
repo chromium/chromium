@@ -73,8 +73,9 @@ public class SettingsSearchCoordinatorTest {
         var resultDisplayHelper = new CallbackHelper();
         int callCount = resultDisplayHelper.getCallCount();
 
-        // Search for 'Ad privacy'.
-        String query = activity.getString(R.string.ad_privacy_link_row_label);
+        // Search for 'Privacy Guide'.
+        int titleId = R.string.privacy_guide_pref_title;
+        String query = activity.getString(titleId);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     searchCoordinator.enterSearchState(/* isRestored= */ false);
@@ -86,7 +87,7 @@ public class SettingsSearchCoordinatorTest {
                             });
                 });
         resultDisplayHelper.waitForCallback(callCount);
-        onView(withText(R.string.ad_privacy_link_row_label)).perform(click());
+        onView(withText(titleId)).perform(click());
         assertTrue(searchCoordinator.hasRecentSearchEntriesForTesting());
 
         activity.finish();
