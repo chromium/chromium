@@ -455,6 +455,14 @@ export class ContextualTasksAppElement extends CrLitElement {
           return;
         }
 
+        if (this.isShownInTab_) {
+          chrome.metricsPrivate.recordUserAction(
+              'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab');
+          chrome.metricsPrivate.recordBoolean(
+              'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab',
+              true);
+        }
+
         this.browserProxy_.handler.setTaskId({value: taskUuid});
         this.$.threadFrame.src = url;
 

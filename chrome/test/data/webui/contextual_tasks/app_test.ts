@@ -7,6 +7,8 @@ import 'chrome://contextual-tasks/app.js';
 import {BrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
@@ -28,6 +30,8 @@ async function removeThreadFrameToPreventRaceConditions() {
 suite('ContextualTasksAppTest', function() {
   let initialUrl: string;
 
+  let metrics: MetricsTracker;
+
   suiteSetup(() => {
     initialUrl = window.location.href;
   });
@@ -38,6 +42,9 @@ suite('ContextualTasksAppTest', function() {
       window.history.replaceState({}, '', initialUrl);
     }
     loadTimeData.overrideValues({enableBasicModeZOrder: true});
+    metrics = fakeMetricsPrivate();
+    const proxy = new TestContextualTasksBrowserProxy('http://example.com');
+    BrowserProxyImpl.setInstance(proxy);
   });
 
   test('gets thread url', () => {
@@ -477,6 +484,38 @@ suite('ContextualTasksAppTest', function() {
     assertEquals(newThreadUrl, finalUrl.origin + finalUrl.pathname);
     assertEquals('some-source', finalUrl.searchParams.get('source'));
     assertEquals('some-aep', finalUrl.searchParams.get('aep'));
+  });
+
+  test('logs back button metric in full tab', async () => {
+    const threadUuid = 'ab12';
+    const url = new URL(window.location.href);
+    url.searchParams.set('chrome_task_id', threadUuid);
+    window.history.pushState({}, '', url.href);
+
+    const proxy =
+        BrowserProxyImpl.getInstance() as TestContextualTasksBrowserProxy;
+    proxy.handler.setIsShownInTab(true);
+
+    const appElement = document.createElement('contextual-tasks-app');
+    document.body.appendChild(appElement);
+    const {promise, resolve} = Promise.withResolvers<void>();
+    appElement.setPopStateFinishedCallbackForTesting(resolve);
+    await microtasksFinished();
+
+    window.dispatchEvent(new CustomEvent('popstate'));
+    await promise;
+
+    // Both recordUserAction and recordBoolean map to the same metric name in
+    // the fake metrics tracker.
+    assertEquals(
+        2,
+        metrics.count(
+            'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab'));
+    assertEquals(
+        1,
+        metrics.count(
+            'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab',
+            true));
   });
 
   test(

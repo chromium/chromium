@@ -232,6 +232,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab"
+    enum="Boolean" expires_after="2026-06-28">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Logged when the back or forward button is clicked while the user is viewing
+    the Contextual Tasks full tab, causing a task switch. Always recorded as
+    true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.InnerFrameContents.HttpResponseCode"
     enum="HttpResponseCode" expires_after="2026-09-05">
   <owner>juanmojica@google.com</owner>
