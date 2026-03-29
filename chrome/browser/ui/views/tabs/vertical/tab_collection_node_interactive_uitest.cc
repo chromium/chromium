@@ -8,10 +8,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -36,6 +38,11 @@ class TabCollectionNodeInteractiveUiTest
 
   views::FocusManager* GetFocusManager() {
     return browser()->GetBrowserView().GetFocusManager();
+  }
+
+  gfx::NativeWindow GetWindowHint(const views::View* view) {
+    return view->GetWidget() ? view->GetWidget()->GetNativeWindow()
+                             : gfx::NativeWindow();
   }
 };
 
@@ -145,4 +152,44 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
                         ->HasFocus();
                   }),
                   true));
+}
+
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeInteractiveUiTest,
+                       ClosingTabsUpdatesHoverState) {
+  for (size_t i = 0; i < 2; ++i) {
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL(url::kAboutBlankURL),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  }
+
+  TabStripModel* model = browser()->tab_strip_model();
+  ASSERT_EQ(model->count(), 3);
+
+  const auto& unpinned_node = GetRootNode()->children()[1];
+
+  auto* first_tab =
+      views::AsViewClass<VerticalTabView>(unpinned_node->children()[0]->view());
+  auto* second_tab =
+      views::AsViewClass<VerticalTabView>(unpinned_node->children()[1]->view());
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !first_tab->bounds().IsEmpty(); }));
+
+  // Move the mouse position over the first tab.
+  EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(
+      first_tab->GetBoundsInScreen().CenterPoint(), GetWindowHint(first_tab)));
+  EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(
+      first_tab->GetBoundsInScreen().CenterPoint() + gfx::Vector2d(1, 0),
+      GetWindowHint(first_tab)));
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return first_tab->close_button_for_testing()->GetVisible(); }));
+
+  // Close the tab that is currently hovered.
+  model->CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+
+  // Check if the hover state is on the second tab.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return second_tab->close_button_for_testing()->GetVisible(); }));
 }
