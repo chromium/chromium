@@ -6,7 +6,7 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/pref_names.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
@@ -20,7 +20,7 @@
 
 namespace lens {
 
-bool IsRegionSearchEnabled(Browser* browser,
+bool IsRegionSearchEnabled(BrowserWindowInterface* browser,
                            Profile* profile,
                            TemplateURLService* service,
                            const GURL& url) {
@@ -49,8 +49,10 @@ bool IsRegionSearchEnabled(Browser* browser,
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 }
 
-bool IsInProgressiveWebApp(Browser* browser) {
-  return browser && (browser->is_type_app() || browser->is_type_app_popup());
+bool IsInProgressiveWebApp(BrowserWindowInterface* browser) {
+  return browser &&
+         (browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+          browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP);
 }
 
 }  // namespace lens

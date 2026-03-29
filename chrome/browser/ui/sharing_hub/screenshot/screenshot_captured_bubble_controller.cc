@@ -7,9 +7,9 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/image_editor/screenshot_flow.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -49,9 +49,10 @@ void ScreenshotCapturedBubbleController::OnBubbleClosed() {
   NOTIMPLEMENTED();
 }
 
-void ScreenshotCapturedBubbleController::Capture(Browser* browser) {
+void ScreenshotCapturedBubbleController::Capture(
+    BrowserWindowInterface* browser) {
   content::WebContents* web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   screenshot_flow_ =
       std::make_unique<image_editor::ScreenshotFlow>(web_contents);
 

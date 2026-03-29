@@ -9,7 +9,7 @@
 
 #include "content/public/browser/web_contents_user_data.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -39,7 +39,7 @@ class ScreenshotCapturedBubbleController
   void HideBubble();
 
   // Start the capture flow.
-  void Capture(Browser* browser);
+  void Capture(BrowserWindowInterface* browser);
 
   // Handler for when the bubble is dismissed.
   void OnBubbleClosed();

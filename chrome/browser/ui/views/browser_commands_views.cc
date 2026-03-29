@@ -24,10 +24,10 @@
 #endif
 
 namespace {
-views::View* GetActiveWindowRootView(const Browser* browser) {
+views::View* GetActiveWindowRootView(const BrowserWindowInterface* browser) {
 #if defined(USE_AURA)
   wm::ActivationClient* client = wm::GetActivationClient(
-      browser->window()->GetNativeWindow()->GetRootWindow());
+      browser->GetWindow()->GetNativeWindow()->GetRootWindow());
   if (!client) {
     return nullptr;
   }
@@ -44,7 +44,8 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
 
 namespace chrome {
 
-std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
+std::optional<int> GetKeyboardFocusedTabIndex(
+    const BrowserWindowInterface* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
   if (view && view->tab_strip_view()) {
     return view->tab_strip_view()->GetFocusedTabIndex();
@@ -52,7 +53,7 @@ std::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   return std::nullopt;
 }
 
-void ExecuteUIDebugCommand(int id, const Browser* browser) {
+void ExecuteUIDebugCommand(int id, const BrowserWindowInterface* browser) {
   if (!base::FeatureList::IsEnabled(features::kUIDebugTools)) {
     return;
   }

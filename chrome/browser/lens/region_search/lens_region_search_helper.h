@@ -5,19 +5,19 @@
 #ifndef CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_HELPER_H_
 #define CHROME_BROWSER_LENS_REGION_SEARCH_LENS_REGION_SEARCH_HELPER_H_
 
-class Browser;
+class BrowserWindowInterface;
 class GURL;
 class Profile;
 class TemplateURLService;
 
 namespace lens {
 
-bool IsRegionSearchEnabled(Browser* browser,
+bool IsRegionSearchEnabled(BrowserWindowInterface* browser,
                            Profile* profile,
                            TemplateURLService* service,
                            const GURL& url);
 
-bool IsInProgressiveWebApp(Browser* browser);
+bool IsInProgressiveWebApp(BrowserWindowInterface* browser);
 
 }  // namespace lens
 
