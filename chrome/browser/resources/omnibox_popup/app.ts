@@ -301,17 +301,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
     return this.searchboxLayoutMode_ === 'Compact';
   }
 
-  // TODO(crbug.com/493988206): Move to composebox/common.ts.
-  protected hasAllowedInputs_(): boolean {
-    if (!this.usePecApi_) {
-      return true;
-    }
-    return !!this.inputState_ &&
-        (this.inputState_.allowedModels.length > 0 ||
-         this.inputState_.allowedTools.length > 0 ||
-         this.inputState_.allowedInputTypes.length > 0);
-  }
-
   private computeShowContextEntrypoint_(): boolean {
     const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
     const showRecentTabChip = this.computeShowRecentTabChip_();
