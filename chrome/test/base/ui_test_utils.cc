@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -98,6 +99,15 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/multi_user/multi_user_window_manager.h"
+#include "ash/shell.h"
+#include "base/check_is_test.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "components/account_id/account_id.h"
+#include "ui/base/base_window.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -204,6 +214,36 @@ class WebContentsDestructionObserver : public content::WebContentsObserver {
   base::OnceClosure destruction_cb_;
 };
 
+// Returns true if `browser` is currently shown on the desktop of a user whose
+// original profile matches `profile`'s original profile. On non-ChromeOS
+// platforms this is always true.
+bool IsBrowserShownForProfile(BrowserWindowInterface& browser,
+                              const Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Get the profile on which the window is currently shown.
+  // ash::Shell might be NULL under test scenario.
+  // TODO(crbug.com/427889779): Consider to drop this check.
+  if (ash::Shell::HasInstance()) {
+    ash::MultiUserWindowManager* const multi_user_window_manager =
+        ash::Shell::Get()->multi_user_window_manager();
+    const AccountId& shown_account_id =
+        multi_user_window_manager->GetUserPresentingWindow(
+            browser.GetWindow()->GetNativeWindow());
+    Profile* shown_profile =
+        shown_account_id.is_valid()
+            ? multi_user_util::GetProfileFromAccountId(shown_account_id)
+            : nullptr;
+    if (shown_profile &&
+        shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
+      return false;
+    }
+  } else {
+    CHECK_IS_TEST();
+  }
+#endif
+  return true;
+}
+
 }  // namespace
 
 bool GetCurrentTabTitle(const BrowserWindowInterface* browser,
@@ -217,6 +257,33 @@ bool GetCurrentTabTitle(const BrowserWindowInterface* browser,
     return false;
   title->assign(last_entry->GetTitleForDisplay());
   return true;
+}
+
+BrowserWindowInterface* FindAnyBrowser(const Profile* profile,
+                                       bool match_original_profiles) {
+  BrowserWindowInterface* found = nullptr;
+  auto matcher = [&found, profile,
+                  match_original_profiles](BrowserWindowInterface* browser) {
+    if (match_original_profiles) {
+      if (browser->GetProfile()->GetOriginalProfile() !=
+          profile->GetOriginalProfile()) {
+        return true;
+      }
+    } else {
+      if (browser->GetProfile() != profile) {
+        return true;
+      }
+    }
+    if (browser->IsDeleteScheduled() ||
+        !IsBrowserShownForProfile(*browser, profile)) {
+      return true;
+    }
+    found = browser;
+    return false;
+  };
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      matcher, BrowserCollection::Order::kActivation);
+  return found;
 }
 
 void NavigateToURL(NavigateParams* params) {

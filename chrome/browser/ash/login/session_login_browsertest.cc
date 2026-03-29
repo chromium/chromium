@@ -26,14 +26,13 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -83,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
   histograms.ExpectTotalCount("OOBE.BootToSignInCompleted", 1);
 
   BrowserWindowInterface* browser =
-      chrome::FindAnyBrowser(ProfileManager::GetActiveUserProfile(), false);
+      ui_test_utils::FindAnyBrowser(ProfileManager::GetActiveUserProfile(),
+                                    /*match_original_profiles=*/false);
   EXPECT_TRUE(browser != nullptr);
   EXPECT_TRUE(browser->IsActive());
 

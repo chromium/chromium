@@ -11332,6 +11332,7 @@ if (!is_android) {
         "//chrome/browser/ash/input_method",
         "//chrome/browser/ash/system_web_apps",
         "//chrome/browser/ash/system_web_apps/test_support",
+        "//chrome/browser/ui/ash/multi_user",
         "//chrome/test/data/webui/chromeos:web_ui_test_bindings",
         "//chromeos/ash/components/browser_context_helper",
         "//chromeos/ash/components/cryptohome",

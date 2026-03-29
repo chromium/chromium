@@ -395,6 +395,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:test_support",
       "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/frame",

@@ -9,7 +9,9 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
@@ -61,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
   EXPECT_EQ(1u, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
-  EXPECT_EQ(browser_1, chrome::FindAnyBrowser(browser()->profile(), true));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
 
   // Switch to desk_2 and create a browser there.
   ash::ActivateDesk(desk_2);
@@ -74,15 +76,15 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
 
   // FindAnyBrowser should return the MRU browser, which is browser_2 in this
   // case.
-  EXPECT_EQ(browser_2, chrome::FindAnyBrowser(browser()->profile(), true));
+  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->profile()));
 
-  // Switch to desk_3, no browsers on this desk, however, FindAnyBrowser should
-  // still return browser_2.
+  // Switch to desk_3, no browsers on this desk, however, FindAnyBrowser
+  // should still return browser_2.
   ash::ActivateDesk(desk_3);
   EXPECT_TRUE(desk_3->is_active());
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_1));
   EXPECT_FALSE(desks_controller->BelongsToActiveDesk(window_2));
-  EXPECT_EQ(browser_2, chrome::FindAnyBrowser(browser()->profile(), true));
+  EXPECT_EQ(browser_2, ui_test_utils::FindAnyBrowser(browser()->profile()));
 
   // Switch to desk_1 by activating browser_1. When we switch back to desk_3,
   // FindAnyBrowser() will return browser_1 as the MRU browser.
@@ -92,11 +94,11 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindAnyBrowser) {
 
   EXPECT_TRUE(desk_1->is_active());
   EXPECT_TRUE(desks_controller->BelongsToActiveDesk(window_1));
-  EXPECT_EQ(browser_1, chrome::FindAnyBrowser(browser()->profile(), true));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
 
   ash::ActivateDesk(desk_3);
   EXPECT_TRUE(desk_3->is_active());
-  EXPECT_EQ(browser_1, chrome::FindAnyBrowser(browser()->profile(), true));
+  EXPECT_EQ(browser_1, ui_test_utils::FindAnyBrowser(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindTabbedBrowser) {

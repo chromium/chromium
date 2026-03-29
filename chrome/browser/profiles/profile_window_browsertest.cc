@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
 
   // Close the remaining guest browser window.
   BrowserWindowInterface* found_guest_browser =
-      chrome::FindAnyBrowser(guest_profile, true);
+      ui_test_utils::FindAnyBrowser(guest_profile);
   EXPECT_TRUE(found_guest_browser);
   CloseBrowserSynchronously(found_guest_browser);
   content::RunAllTasksUntilIdle();

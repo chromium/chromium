@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/account_id/account_id_literal.h"
 #include "components/user_manager/user.h"
@@ -92,8 +93,9 @@ class BrowserFinderChromeOSTest : public BrowserWithTestWindowTest {
 TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
   // GetBrowserCount() use kMatchAll to find all browser windows for profile().
   EXPECT_EQ(1u, chrome::GetBrowserCount(profile()));
-  EXPECT_TRUE(chrome::FindAnyBrowser(profile(), true));
-  EXPECT_TRUE(chrome::FindAnyBrowser(profile(), false));
+  EXPECT_TRUE(ui_test_utils::FindAnyBrowser(profile()));
+  EXPECT_TRUE(ui_test_utils::FindAnyBrowser(profile(),
+                                            /*match_original_profiles=*/false));
   release_browser();
 
   // Create an incognito browser.
@@ -104,8 +106,14 @@ TEST_F(BrowserFinderChromeOSTest, IncognitoBrowserMatchTest) {
   // Incognito windows are excluded in GetBrowserCount() because kMatchAll
   // doesn't match original profile of the browser with the given profile.
   EXPECT_EQ(0u, chrome::GetBrowserCount(profile()));
-  EXPECT_TRUE(chrome::FindAnyBrowser(profile(), true));
-  EXPECT_FALSE(chrome::FindAnyBrowser(profile(), false));
+
+  // Exact profile match returns nothing (only the incognito browser exists,
+  // and it belongs to the OTR profile).
+  EXPECT_FALSE(ui_test_utils::FindAnyBrowser(
+      profile(), /*match_original_profiles=*/false));
+
+  // But searching by original profile finds the incognito browser.
+  EXPECT_TRUE(ui_test_utils::FindAnyBrowser(profile()));
 }
 
 TEST_F(BrowserFinderChromeOSTest, FindBrowserOwnedByAnotherProfile) {
@@ -117,18 +125,24 @@ TEST_F(BrowserFinderChromeOSTest, FindBrowserOwnedByAnotherProfile) {
   ash::Shell::Get()->multi_user_window_manager()->SetWindowOwner(
       browser->window()->GetNativeWindow(), kTestAccountId1);
   EXPECT_EQ(1u, chrome::GetBrowserCount(profile()));
-  EXPECT_TRUE(chrome::FindAnyBrowser(profile(), true));
-  EXPECT_TRUE(chrome::FindAnyBrowser(profile(), false));
+  // The browser is shown for the owning user, so FindAnyBrowser finds it
+  // regardless of match_original_profiles setting.
+  EXPECT_TRUE(ui_test_utils::FindAnyBrowser(profile(),
+                                            /*match_original_profiles=*/false));
+  EXPECT_TRUE(ui_test_utils::FindAnyBrowser(profile()));
 
-  // Move the browser window to another user's desktop. Then no window should
-  // be available for the current profile.
+  // Move the browser window to another user's desktop.
   ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
       browser->window()->GetNativeWindow(), kTestAccountId2);
   // ShowWindowForUser() notifies chrome async. FlushBindings() to ensure all
   // the changes happen.
   EXPECT_EQ(0u, chrome::GetBrowserCount(profile()));
-  EXPECT_FALSE(chrome::FindAnyBrowser(profile(), true));
-  EXPECT_FALSE(chrome::FindAnyBrowser(profile(), false));
+  // FindAnyBrowser filters by multi-user window visibility on ChromeOS.
+  // A window shown on another user's desktop is excluded regardless of
+  // match_original_profiles setting.
+  EXPECT_FALSE(ui_test_utils::FindAnyBrowser(
+      profile(), /*match_original_profiles=*/false));
+  EXPECT_FALSE(ui_test_utils::FindAnyBrowser(profile()));
 }
 
 }  // namespace test

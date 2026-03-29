@@ -190,6 +190,15 @@ int FindInPage(content::WebContents* tab,
 // Blocks until the |history_service|'s history finishes loading.
 void WaitForHistoryToLoad(history::HistoryService* history_service);
 
+// Returns any non-delete-scheduled browser matching |profile|. When
+// |match_original_profiles| is true, matches any browser whose original
+// profile equals |profile|'s original profile (e.g. finds incognito/OTR
+// browsers associated with a regular profile). When false, matches only
+// browsers whose profile is exactly |profile|. On ChromeOS, browsers
+// displayed on another user's desktop are excluded.
+BrowserWindowInterface* FindAnyBrowser(const Profile* profile,
+                                       bool match_original_profiles = true);
+
 // Blocks until a Browser is added to the BrowserList.
 Browser* WaitForBrowserToOpen();
 
