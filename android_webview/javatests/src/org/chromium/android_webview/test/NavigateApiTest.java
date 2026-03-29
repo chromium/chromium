@@ -4,8 +4,10 @@
 
 package org.chromium.android_webview.test;
 
+import android.os.Bundle;
 import android.webkit.WebSettings;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -24,6 +26,7 @@ import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -357,6 +360,52 @@ public class NavigateApiTest extends AwParameterizedTest {
         AwWebResourceRequest request =
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(mPage1Url);
         Assert.assertEquals(HEADER_VALUE, getHeader(request, HEADER_NAME));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewSaveStateIncludeHeaders"})
+    public void extraHeaders_saveRestoreState() throws Throwable {
+        int currentCallCount = mOnPageLoadFinished.getCallCount();
+
+        // Load the page with headers via navigate.
+        AwNavigationParams params = paramsWithExtraHeader(mPage1Url, HEADER_NAME, HEADER_VALUE);
+        ThreadUtils.runOnUiThreadBlocking(() -> mAwContents.navigate(params));
+        mOnPageLoadFinished.waitForCallback(currentCallCount);
+
+        // Create variables to restore state.
+        TestAwContentsClient restoredStateContentsClient = new TestAwContentsClient();
+        AwTestContainerView restoredStateTestView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(restoredStateContentsClient);
+        CallbackHelper restoredStateOnPageFinishedHelper =
+                restoredStateContentsClient.getOnPageFinishedHelper();
+        int restoredStateCurrentCallCount = restoredStateOnPageFinishedHelper.getCallCount();
+
+        // Disable caches so restore will trigger a network request.
+        mActivityTestRule
+                .getAwSettingsOnUiThread(restoredStateTestView.getAwContents())
+                .setCacheMode(WebSettings.LOAD_NO_CACHE);
+
+        // Save and restore state
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            Bundle bundle = new Bundle();
+                            boolean result = mAwContents.saveState(bundle);
+                            Assert.assertTrue(result);
+                            result = restoredStateTestView.getAwContents().restoreState(bundle);
+                            Assert.assertTrue(result);
+                        });
+
+        restoredStateOnPageFinishedHelper.waitForCallback(restoredStateCurrentCallCount);
+
+        // Check for initial and restored network request
+        Assert.assertEquals(2, mWebServer.getRequestCount(PAGE1_PATH));
+        // Check restored network request included headers
+        String restoredStateActualValue =
+                getHeader(mWebServer.getLastRequest(PAGE1_PATH), HEADER_NAME);
+        Assert.assertEquals(HEADER_VALUE, restoredStateActualValue);
     }
 
     @Nullable
