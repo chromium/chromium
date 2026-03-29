@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/video/mappable_shared_image_video_frame_pool.h"
 
 #include <GLES2/gl2.h>
@@ -25,6 +20,7 @@
 #include "base/barrier_closure.h"
 #include "base/bits.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -375,13 +371,15 @@ void CopyRowsToI420Buffer(size_t first_row,
   DCHECK_GE(bit_depth, 8u);
 
   if (bit_depth == 8u) {
-    libyuv::CopyPlane(source + source_stride * first_row, source_stride,
+    libyuv::CopyPlane(UNSAFE_TODO(source + source_stride * first_row),
+                      source_stride,
                       output.subspan(dest_stride * first_row).data(),
                       dest_stride, bytes_per_row, rows);
   } else {
     const int scale = 0x10000 >> (bit_depth - 8u);
     libyuv::Convert16To8Plane(
-        reinterpret_cast<const uint16_t*>(source + source_stride * first_row),
+        reinterpret_cast<const uint16_t*>(
+            UNSAFE_TODO(source + source_stride * first_row)),
         source_stride / 2, output.subspan(dest_stride * first_row).data(),
         dest_stride, scale, bytes_per_row, rows);
   }
@@ -409,16 +407,16 @@ void CopyRowsToP010Buffer(int first_row,
             source_frame->stride(VideoFrame::Plane::kY));
 
   const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kY) +
-      first_row * source_frame->stride(VideoFrame::Plane::kY));
+      UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kY) +
+                  first_row * source_frame->stride(VideoFrame::Plane::kY)));
   const size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
-  const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(
+  const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
       source_frame->visible_data(VideoFrame::Plane::kU) +
-      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kU));
+      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kU)));
   const size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;
-  const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(
+  const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
       source_frame->visible_data(VideoFrame::Plane::kV) +
-      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kV));
+      (first_row / 2) * source_frame->stride(VideoFrame::Plane::kV)));
   const size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV) / 2;
 
   libyuv::I010ToP010(
@@ -471,15 +469,16 @@ void CopyRowsToNV12Buffer(int first_row,
 
     if (source_frame->format() == PIXEL_FORMAT_NV12) {
       libyuv::CopyPlane(
-          source_frame->visible_data(VideoFrame::Plane::kY) +
-              first_row * source_frame->stride(VideoFrame::Plane::kY),
+          UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kY) +
+                      first_row * source_frame->stride(VideoFrame::Plane::kY)),
           source_frame->stride(VideoFrame::Plane::kY),
           dest_y.subspan(base::checked_cast<size_t>(first_row * dest_stride_y))
               .data(),
           dest_stride_y, bytes_per_row_y, rows_y);
       libyuv::CopyPlane(
-          source_frame->visible_data(VideoFrame::Plane::kUV) +
-              first_row / 2 * source_frame->stride(VideoFrame::Plane::kUV),
+          UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kUV) +
+                      first_row / 2 *
+                          source_frame->stride(VideoFrame::Plane::kUV)),
           source_frame->stride(VideoFrame::Plane::kUV),
           dest_uv
               .subspan(
@@ -491,14 +490,16 @@ void CopyRowsToNV12Buffer(int first_row,
     }
 
     libyuv::I420ToNV12(
-        source_frame->visible_data(VideoFrame::Plane::kY) +
-            first_row * source_frame->stride(VideoFrame::Plane::kY),
+        UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kY) +
+                    first_row * source_frame->stride(VideoFrame::Plane::kY)),
         source_frame->stride(VideoFrame::Plane::kY),
-        source_frame->visible_data(VideoFrame::Plane::kU) +
-            first_row / 2 * source_frame->stride(VideoFrame::Plane::kU),
+        UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kU) +
+                    first_row / 2 *
+                        source_frame->stride(VideoFrame::Plane::kU)),
         source_frame->stride(VideoFrame::Plane::kU),
-        source_frame->visible_data(VideoFrame::Plane::kV) +
-            first_row / 2 * source_frame->stride(VideoFrame::Plane::kV),
+        UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kV) +
+                    first_row / 2 *
+                        source_frame->stride(VideoFrame::Plane::kV)),
         source_frame->stride(VideoFrame::Plane::kV),
         dest_y.subspan(base::checked_cast<size_t>(first_row * dest_stride_y))
             .data(),
@@ -512,18 +513,18 @@ void CopyRowsToNV12Buffer(int first_row,
               source_frame->stride(VideoFrame::Plane::kY));
 
     const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
-        source_frame->visible_data(VideoFrame::Plane::kY) +
-        first_row * source_frame->stride(VideoFrame::Plane::kY));
+        UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kY) +
+                    first_row * source_frame->stride(VideoFrame::Plane::kY)));
     const size_t y_plane_stride =
         source_frame->stride(VideoFrame::Plane::kY) / 2;
-    const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(
+    const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
         source_frame->visible_data(VideoFrame::Plane::kU) +
-        (first_row / 2) * source_frame->stride(VideoFrame::Plane::kU));
+        (first_row / 2) * source_frame->stride(VideoFrame::Plane::kU)));
     const size_t u_plane_stride =
         source_frame->stride(VideoFrame::Plane::kU) / 2;
-    const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(
+    const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(UNSAFE_TODO(
         source_frame->visible_data(VideoFrame::Plane::kV) +
-        (first_row / 2) * source_frame->stride(VideoFrame::Plane::kV));
+        (first_row / 2) * source_frame->stride(VideoFrame::Plane::kV)));
     const size_t v_plane_stride =
         source_frame->stride(VideoFrame::Plane::kV) / 2;
 
@@ -560,14 +561,14 @@ void CopyRowsToRGB10Buffer(bool is_rgba,
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
 
   const auto* y_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kY) +
-      first_row * source_frame->stride(VideoFrame::Plane::kY));
+      UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kY) +
+                  first_row * source_frame->stride(VideoFrame::Plane::kY)));
   const auto* u_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kU) +
-      first_row / 2 * source_frame->stride(VideoFrame::Plane::kU));
+      UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kU) +
+                  first_row / 2 * source_frame->stride(VideoFrame::Plane::kU)));
   const auto* v_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kV) +
-      first_row / 2 * source_frame->stride(VideoFrame::Plane::kV));
+      UNSAFE_TODO(source_frame->visible_data(VideoFrame::Plane::kV) +
+                  first_row / 2 * source_frame->stride(VideoFrame::Plane::kV)));
 
   size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
   size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;

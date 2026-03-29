@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #ifndef MEDIA_BASE_AUDIO_BUS_H_
 #define MEDIA_BASE_AUDIO_BUS_H_
@@ -15,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -329,8 +326,8 @@ class MEDIA_EXPORT AudioBus {
     } else {
       CHECK_EQ(data.size() % sizeof(T), 0u);
       CHECK(base::IsAligned(data.data(), alignof(T)));
-      return base::span<T>(reinterpret_cast<T*>(data.data()),
-                           data.size() / sizeof(T));
+      return UNSAFE_TODO(base::span<T>(reinterpret_cast<T*>(data.data()),
+                                       data.size() / sizeof(T)));
     }
   }
 
@@ -341,8 +338,8 @@ class MEDIA_EXPORT AudioBus {
     } else {
       CHECK_EQ(data.size() % sizeof(T), 0u);
       CHECK(base::IsAligned(data.data(), alignof(T)));
-      return base::span<const T>(reinterpret_cast<const T*>(data.data()),
-                                 data.size() / sizeof(T));
+      return UNSAFE_TODO(base::span<const T>(
+          reinterpret_cast<const T*>(data.data()), data.size() / sizeof(T)));
     }
   }
 
@@ -491,7 +488,7 @@ void AudioBus::CopyConvertFromInterleavedSourceToAudioBus(
              read_pos_in_source = ch;
          target_frame_index < write_offset_in_frames + num_frames_to_write;
          ++target_frame_index, read_pos_in_source += channels) {
-      auto source_value = source_buffer[read_pos_in_source];
+      auto source_value = UNSAFE_TODO(source_buffer[read_pos_in_source]);
       channel_data[target_frame_index] =
           SourceSampleTypeTraits::ToFloat(source_value);
     }
@@ -534,7 +531,7 @@ void AudioBus::CopyConvertFromAudioBusToInterleavedTarget(
          source_frame_index < read_offset_in_frames + num_frames_to_read;
          ++source_frame_index, write_pos_in_dest += channels) {
       float sourceSampleValue = channel_data[source_frame_index];
-      dest_buffer[write_pos_in_dest] =
+      UNSAFE_TODO(dest_buffer[write_pos_in_dest]) =
           TargetSampleTypeTraits::FromFloat(sourceSampleValue);
     }
   }

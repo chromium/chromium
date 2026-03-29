@@ -4,16 +4,13 @@
 
 #include "base/feature_list.h"
 #include "media/base/media_switches.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
 
 #ifndef MEDIA_BASE_CODEC_WORKER_IMPL_H_
 #define MEDIA_BASE_CODEC_WORKER_IMPL_H_
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -59,7 +56,7 @@ class CodecWorkerImpl {
   }
 
   static void Init(Worker* const worker) {
-    memset(worker, 0, sizeof(*worker));
+    UNSAFE_TODO(memset(worker, 0, sizeof(*worker)));
     worker->status_ = StatusNotOk;
     worker->impl_ = nullptr;
   }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/webrtc/audio_processor.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -145,7 +141,8 @@ class AudioProcessorTest : public ::testing::Test {
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
                                            num_preferred_channels, 1.0);
 
-      data_ptr += input_params.frames_per_buffer() * input_params.channels();
+      UNSAFE_TODO(data_ptr +=
+                  input_params.frames_per_buffer() * input_params.channels());
 
       // Test different values of num_preferred_channels.
       if (++num_preferred_channels > 5) {

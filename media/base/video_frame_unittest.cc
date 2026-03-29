@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/video_frame.h"
 
@@ -17,6 +13,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -51,7 +48,7 @@ void CreateTestY16Frame(const gfx::Size& coded_size,
   for (int j = 0; j < visible_rect.height(); j++) {
     for (int i = 0; i < visible_rect.width(); i++) {
       const int value = i + j * visible_rect.width();
-      data[(stride * (j + offset_y)) + i + offset_x] =
+      UNSAFE_TODO(data[(stride * (j + offset_y)) + i + offset_x]) =
           ((value & 0xFF) << 8) | (~value & 0xFF);
     }
   }
@@ -161,16 +158,16 @@ void InitializeYV12Frame(VideoFrame* frame, double white_to_black) {
   uint8_t* y_plane = frame->writable_data(VideoFrame::Plane::kY);
   for (int row = 0; row < frame->coded_size().height(); ++row) {
     int color = (row < first_black_row) ? 0xFF : 0x00;
-    memset(y_plane, color, frame->stride(VideoFrame::Plane::kY));
-    y_plane += frame->stride(VideoFrame::Plane::kY);
+    UNSAFE_TODO(memset(y_plane, color, frame->stride(VideoFrame::Plane::kY)));
+    UNSAFE_TODO(y_plane += frame->stride(VideoFrame::Plane::kY));
   }
   uint8_t* u_plane = frame->writable_data(VideoFrame::Plane::kU);
   uint8_t* v_plane = frame->writable_data(VideoFrame::Plane::kV);
   for (int row = 0; row < frame->coded_size().height(); row += 2) {
-    memset(u_plane, 0x80, frame->stride(VideoFrame::Plane::kU));
-    memset(v_plane, 0x80, frame->stride(VideoFrame::Plane::kV));
-    u_plane += frame->stride(VideoFrame::Plane::kU);
-    v_plane += frame->stride(VideoFrame::Plane::kV);
+    UNSAFE_TODO(memset(u_plane, 0x80, frame->stride(VideoFrame::Plane::kU)));
+    UNSAFE_TODO(memset(v_plane, 0x80, frame->stride(VideoFrame::Plane::kV)));
+    UNSAFE_TODO(u_plane += frame->stride(VideoFrame::Plane::kU));
+    UNSAFE_TODO(v_plane += frame->stride(VideoFrame::Plane::kV));
   }
 }
 
@@ -200,10 +197,10 @@ void ExpectFrameColor(VideoFrame* yv12_frame, uint32_t expect_rgb_color) {
 
   for (int row = 0; row < yv12_frame->coded_size().height(); ++row) {
     uint32_t* rgb_row_data =
-        reinterpret_cast<uint32_t*>(rgb_data + (rgb_stride * row));
+        reinterpret_cast<uint32_t*>(UNSAFE_TODO(rgb_data + (rgb_stride * row)));
     for (int col = 0; col < yv12_frame->coded_size().width(); ++col) {
       SCOPED_TRACE(base::StringPrintf("Checking (%d, %d)", row, col));
-      EXPECT_EQ(expect_rgb_color, rgb_row_data[col]);
+      EXPECT_EQ(expect_rgb_color, UNSAFE_TODO(rgb_row_data[col]));
     }
   }
 
@@ -233,8 +230,8 @@ void ExpectFrameExtents(VideoPixelFormat format, const char* expected_hash) {
     EXPECT_TRUE(frame->row_bytes(plane));
     EXPECT_TRUE(frame->columns(plane));
 
-    memset(frame->writable_data(plane), kFillByte,
-           frame->stride(plane) * frame->rows(plane));
+    UNSAFE_TODO(memset(frame->writable_data(plane), kFillByte,
+                       frame->stride(plane) * frame->rows(plane)));
   }
 
   EXPECT_EQ(VideoFrame::HexHashOfFrameForTesting(*frame,
@@ -334,17 +331,20 @@ TEST(VideoFrame, CreateBlackFrame) {
   // Test frames themselves.
   uint8_t* y_plane = frame->writable_data(VideoFrame::Plane::kY);
   for (int y = 0; y < frame->coded_size().height(); ++y) {
-    EXPECT_EQ(0, memcmp(kExpectedYRow, y_plane, std::size(kExpectedYRow)));
-    y_plane += frame->stride(VideoFrame::Plane::kY);
+    EXPECT_EQ(0, UNSAFE_TODO(
+                     memcmp(kExpectedYRow, y_plane, std::size(kExpectedYRow))));
+    UNSAFE_TODO(y_plane += frame->stride(VideoFrame::Plane::kY));
   }
 
   uint8_t* u_plane = frame->writable_data(VideoFrame::Plane::kU);
   uint8_t* v_plane = frame->writable_data(VideoFrame::Plane::kV);
   for (int y = 0; y < frame->coded_size().height() / 2; ++y) {
-    EXPECT_EQ(0, memcmp(kExpectedUVRow, u_plane, std::size(kExpectedUVRow)));
-    EXPECT_EQ(0, memcmp(kExpectedUVRow, v_plane, std::size(kExpectedUVRow)));
-    u_plane += frame->stride(VideoFrame::Plane::kU);
-    v_plane += frame->stride(VideoFrame::Plane::kV);
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(kExpectedUVRow, u_plane,
+                                    std::size(kExpectedUVRow))));
+    EXPECT_EQ(0, UNSAFE_TODO(memcmp(kExpectedUVRow, v_plane,
+                                    std::size(kExpectedUVRow))));
+    UNSAFE_TODO(u_plane += frame->stride(VideoFrame::Plane::kU));
+    UNSAFE_TODO(v_plane += frame->stride(VideoFrame::Plane::kV));
   }
 }
 
@@ -1079,9 +1079,10 @@ TEST(VideoFrame, AccessPlaneDataSpans) {
       auto writable_plane_span = frame->GetWritableVisiblePlaneData(plane);
       EXPECT_EQ(
           plane_span.data(),
-          pixels.data() + plane_offset +
-              visible_rect.y() / sample_size.height() * frame->stride(plane) +
-              visible_rect.x() / sample_size.width() * bytes_per_pixel)
+          UNSAFE_TODO(pixels.data() + plane_offset +
+                      visible_rect.y() / sample_size.height() *
+                          frame->stride(plane) +
+                      visible_rect.x() / sample_size.width() * bytes_per_pixel))
           << " format: " << format << " plane: " << plane;
       EXPECT_GE(
           static_cast<int>(plane_span.size()),
@@ -1112,7 +1113,7 @@ TEST(VideoFrame, WrappedPlaneDataAccess) {
       /* stride U */ 100,
       /* stride V */ 100,
       /* Y plane */ y_pixels,
-      /* U plane */ base::span(u_pixels.data(), 0u),
+      /* U plane */ UNSAFE_TODO(base::span(u_pixels.data(), 0u)),
       /* V plane */ v_pixels, timestamp);
 
   EXPECT_EQ(frame->data(VideoFrame::Plane::kY), y_pixels.data());

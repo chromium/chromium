@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -300,9 +296,9 @@ TEST_F(VideoFrameStructTraitsTest, InvalidOffsets) {
 
   // Scan for the offsets array in the message body. It will start with an
   // array header and then have the three offsets matching our frame.
-  base::span<uint32_t> body(
+  base::span<uint32_t> body = UNSAFE_TODO(base::span<uint32_t>(
       reinterpret_cast<uint32_t*>(message.mutable_payload()),
-      message.payload_num_bytes() / sizeof(uint32_t));
+      message.payload_num_bytes() / sizeof(uint32_t)));
 
   bool patched_offsets = false;
   for (size_t i = 0; i + 3 < body.size(); ++i) {
