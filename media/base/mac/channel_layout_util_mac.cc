@@ -144,7 +144,9 @@ std::unique_ptr<ScopedAudioChannelLayout> ChannelLayoutToAudioChannelLayout(
   } else {
     for (int ch = 0; ch <= CHANNELS_MAX; ++ch) {
       const int order = ChannelOrder(input_layout, static_cast<Channels>(ch));
-      if (order == -1) {
+      // We only allocate up to `input_channels`, skip if past what was
+      // allocated for.
+      if (order == -1 || order >= input_channels) {
         continue;
       }
       UNSAFE_TODO(descriptions[order].mChannelLabel) =
