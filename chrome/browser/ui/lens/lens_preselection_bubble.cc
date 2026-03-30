@@ -91,6 +91,19 @@ void LensPreselectionBubble::Init() {
                : online_toast_text;
   SetAccessibleTitle(toast_text);
   icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+  const gfx::VectorIcon* icon;
+  if (offline_) {
+    icon = &vector_icons::kErrorOutlineIcon;
+  } else {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    icon = &vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+    icon = &vector_icons::kSearchChromeRefreshIcon;
+#endif
+  }
+  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      *icon, kColorLensOverlayToastForeground, 24));
+
   label_ = AddChildView(std::make_unique<views::Label>(toast_text));
   label_->SetMultiLine(false);
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -117,8 +130,7 @@ void LensPreselectionBubble::Init() {
   }
   layout->set_between_child_spacing(8);
   // Need to set this false so label color token doesn't get changed by
-  // changed by SetEnabledColor() color mapper. Color tokens provided
-  // have enough contrast.
+  // SetEnabledColor() color mapper. Color tokens provided have enough contrast.
   label_->SetAutoColorReadabilityEnabled(false);
   if (offline_) {
     exit_button_ = AddChildView(std::make_unique<views::MdTextButton>(
@@ -145,6 +157,11 @@ void LensPreselectionBubble::SetLabelText(int string_id) {
   SetAccessibleTitle(new_toast_text);
   label_->SetText(new_toast_text);
   SizeToContents();
+}
+
+void LensPreselectionBubble::SetIcon(const gfx::VectorIcon& icon) {
+  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+      icon, kColorLensOverlayToastForeground, 24));
 }
 
 gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
@@ -176,16 +193,6 @@ gfx::Rect LensPreselectionBubble::GetBubbleBounds() {
 void LensPreselectionBubble::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
   const auto* color_provider = GetColorProvider();
-  icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      offline_ ? vector_icons::kErrorOutlineIcon
-               : vector_icons::kGoogleLensMonochromeLogoIcon,
-#else
-      offline_ ? vector_icons::kErrorOutlineIcon
-               : vector_icons::kSearchChromeRefreshIcon,
-#endif
-      color_provider->GetColor(kColorLensOverlayToastForeground),
-      /*icon_size=*/24));
   label_->SetEnabledColor(
       color_provider->GetColor(kColorLensOverlayToastForeground));
 

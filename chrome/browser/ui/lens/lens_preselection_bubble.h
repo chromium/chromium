@@ -12,6 +12,10 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
+
 namespace views {
 class ImageButton;
 class MenuRunner;
@@ -41,6 +45,9 @@ class LensPreselectionBubble : public views::BubbleDialogDelegateView,
   // Also makes sure the bubble resizes and the accessible title is also
   // changed.
   void SetLabelText(int string_id);
+
+  // Set the icon on the preselection bubble to the new `icon`.
+  void SetIcon(const gfx::VectorIcon& icon);
 
   enum CommandID {
     COMMAND_MY_ACTIVITY,
