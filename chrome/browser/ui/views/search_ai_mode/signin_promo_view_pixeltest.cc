@@ -20,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -51,10 +52,9 @@ class SearchAIModeSignInPromoViewPixelTest
   }
 
   void DismissUi() override {
-    if (promo_view_) {
-      promo_view_->GetWidget()->CloseWithReason(
+    if (promo_view_tracker_.view()) {
+      promo_view_tracker_.view()->GetWidget()->CloseWithReason(
           views::Widget::ClosedReason::kUnspecified);
-      promo_view_ = nullptr;
     }
   }
 
@@ -67,29 +67,33 @@ class SearchAIModeSignInPromoViewPixelTest
     auto promo_view = std::make_unique<SearchAIModeSignInPromoView>(
         anchor_view, browser()->tab_strip_model()->GetActiveWebContents(),
         /*controller=*/nullptr);
-    promo_view_ = promo_view.get();
+    promo_view_tracker_.SetView(promo_view.get());
     views::BubbleDialogDelegateView::CreateBubble(std::move(promo_view))
         ->Show();
   }
 
   bool VerifyUi() override {
-    if (!promo_view_) {
+    if (!promo_view_tracker_.view()) {
       return false;
     }
     auto* test_info = testing::UnitTest::GetInstance()->current_test_info();
-    return VerifyPixelUi(promo_view_->GetWidget(), test_info->test_suite_name(),
+    return VerifyPixelUi(promo_view_tracker_.view()->GetWidget(),
+                         test_info->test_suite_name(),
                          test_info->name()) != ui::test::ActionResult::kFailed;
   }
 
   void WaitForUserDismissal() override {
-    base::RunLoop run_loop;
-    views::test::WidgetDestroyedWaiter waiter(promo_view_->GetWidget());
+    if (!promo_view_tracker_.view()) {
+      return;
+    }
+    views::test::WidgetDestroyedWaiter waiter(
+        promo_view_tracker_.view()->GetWidget());
     waiter.Wait();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<SearchAIModeSignInPromoView> promo_view_ = nullptr;
+  views::ViewTracker promo_view_tracker_;
 };
 
 IN_PROC_BROWSER_TEST_P(SearchAIModeSignInPromoViewPixelTest, InvokeUi_default) {
@@ -101,7 +105,7 @@ std::string ParamToTestSuffix(
   return info.param.test_suffix;
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
+INSTANTIATE_TEST_SUITE_P(,
                          SearchAIModeSignInPromoViewPixelTest,
                          testing::ValuesIn(kTestParams),
                          &ParamToTestSuffix);
