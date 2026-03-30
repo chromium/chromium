@@ -108,6 +108,7 @@ TEST_F(ReloadButtonTest, Basic) {
   // running.
   CheckState(true, ReloadButton::Mode::kReload, ReloadButton::Mode::kReload,
              false, false);
+  EXPECT_TRUE(reload_button()->GetVectorIconsHasValueForTesting());
 
   // Press the button.  This should start the double-click timer.
   ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
