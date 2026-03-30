@@ -273,6 +273,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/497812812")
     public void testReengagementActivity() throws Exception {
         WebPageStation blankPage = mTabbedActivityTestRule.startOnBlankPage();
         int initialTabCount =
