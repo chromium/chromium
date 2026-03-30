@@ -54,7 +54,13 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMonitor {
   ClipboardMonitor();
   virtual ~ClipboardMonitor();
 
-  base::ObserverList<ClipboardObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      ClipboardObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 
   raw_ptr<ClipboardChangeNotifier> notifier_ = nullptr;
 
