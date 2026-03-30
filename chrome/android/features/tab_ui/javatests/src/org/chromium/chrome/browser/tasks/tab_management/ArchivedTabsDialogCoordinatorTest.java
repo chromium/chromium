@@ -112,7 +112,12 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({"IPH_AndroidTabDeclutter", ChromeFeatureList.SETTINGS_MULTI_COLUMN})
+@DisableFeatures({
+    "IPH_AndroidTabDeclutter",
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+    ChromeFeatureList.DRAW_CHROME_PAGES_EDGE_TO_EDGE,
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
+})
 public class ArchivedTabsDialogCoordinatorTest {
     private static final String SYNC_GROUP_ID1 = "test_sync_group_id1";
     private static final String SYNC_GROUP_ID2 = "test_sync_group_id2";
