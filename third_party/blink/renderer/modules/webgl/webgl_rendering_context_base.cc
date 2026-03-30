@@ -6810,7 +6810,7 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     return;
   }
 
-  scoped_refptr<Image> image =
+  scoped_refptr<StaticBitmapImage> image =
       GetElementImage(element, sx, sy, swidth, sheight, width, height,
                       "texElementImage2D()", exception_state);
   if (!image) {
@@ -6837,18 +6837,8 @@ void WebGLRenderingContextBase::TexElementImage2DInternal(
     exception_state.ThrowTypeError("ValidateTexFunc failure");
     return;
   }
-  ImageExtractor image_extractor(
-      image.get(), params.GetDestinationAlphaType(),
-      params.unpack_colorspace_conversion
-          ? PredefinedColorSpaceToSkColorSpace(unpack_color_space_)
-          : nullptr);
-  auto sk_image = image_extractor.GetSkImage();
-  if (!sk_image) {
-    exception_state.ThrowTypeError("GetSkImage failure");
-    return;
-  }
 
-  TexImageSkImage(params, std::move(sk_image));
+  TexImageStaticBitmapImage(params, image.get(), /*allow_copy_via_gpu=*/true);
 }
 
 void WebGLRenderingContextBase::texSubImage2D(
