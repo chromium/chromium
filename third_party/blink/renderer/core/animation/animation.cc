@@ -2249,6 +2249,7 @@ bool Animation::HasPendingActivity() const {
 
   return pending_finished_event_ || pending_cancelled_event_ ||
          pending_remove_event_ || has_pending_promise || can_trigger ||
+         pending_finish_notification_ ||
          (!finished_ && HasEventListeners(event_type_names::kFinish));
 }
 

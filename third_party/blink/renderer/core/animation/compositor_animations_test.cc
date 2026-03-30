@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -559,10 +560,16 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     return nullptr;
   }
 
+  void SimulateMicrotask() {
+    GetDocument().GetAgent().event_loop()->PerformMicrotaskCheckpoint();
+  }
+
   void SimulateFrame(double time) {
     GetAnimationClock().UpdateTime(base::TimeTicks() + base::Seconds(time));
     timeline_->ServiceAnimations(kTimingUpdateForAnimationFrame);
     GetPendingAnimations().Update(nullptr, false);
+
+    SimulateMicrotask();
   }
 
   std::unique_ptr<cc::KeyframeModel> ConvertToCompositorAnimation(
