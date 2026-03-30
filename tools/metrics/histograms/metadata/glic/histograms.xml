@@ -2587,6 +2587,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.WebContentContextMenu.Enabled" enum="Boolean"
+    expires_after="2026-09-01">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@chromium.org</owner>
+  <summary>
+    Recorded when the Glic WebContent context menu item is evaluated for
+    display. Records true if menu item will be shown, false otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
     enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2026-09-20">
   <owner>basiaz@google.com</owner>
