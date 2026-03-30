@@ -161,7 +161,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
     const firstBulletText =
         firstBullet.querySelector('.cr-secondary-text')!.textContent.trim();
     assertEquals(
-        loadTimeData.getString('autofillAiWhenOnUseToFill'), firstBulletText);
+        loadTimeData.getString('autofillAiWhenOnSavedInfo'), firstBulletText);
 
     const secondBullet = bulletsInFirstColumn.item(1);
     assertTrue(secondBullet !== null);

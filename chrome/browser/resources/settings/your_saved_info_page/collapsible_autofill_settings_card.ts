@@ -210,7 +210,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
     return this.i18n(
         this.autofillAiAvailableByDefault_ ?
             'autofillAiWhenOnCanFillDifficultFields' :
-            'autofillAiWhenOnUseToFill');
+            'autofillAiWhenOnSavedInfo');
   }
 
   private getFirstWhenOnSectionIcon_() {

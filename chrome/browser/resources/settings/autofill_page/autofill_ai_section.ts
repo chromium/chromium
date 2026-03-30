@@ -303,7 +303,7 @@ export class SettingsAutofillAiSectionElement extends
     return this.i18n(
         this.autofillAiAvailableByDefault_ ?
             'autofillAiWhenOnCanFillDifficultFields' :
-            'autofillAiWhenOnUseToFill');
+            'autofillAiWhenOnSavedInfo');
   }
 
   private getFirstWhenOnSectionIcon_() {
