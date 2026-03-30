@@ -48,7 +48,12 @@ decltype(&GetNetworkConnectivityHint) GetGetNetworkConnectivityHint() {
 }  // namespace
 
 NetworkChangeNotifierWin::NetworkChangeNotifierWin()
-    : NetworkChangeNotifier(NetworkChangeCalculatorParamsWin()),
+    : NetworkChangeNotifierWin(nullptr) {}
+
+NetworkChangeNotifierWin::NetworkChangeNotifierWin(
+    SystemDnsConfigChangeNotifier* dns_config_notifier)
+    : NetworkChangeNotifier(NetworkChangeCalculatorParamsWin(),
+                            dns_config_notifier),
       addr_overlapped_(),
       blocking_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),

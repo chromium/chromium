@@ -29,6 +29,7 @@ class SequencedTaskRunner;
 namespace net {
 
 class NetworkCostChangeNotifierWin;
+class SystemDnsConfigChangeNotifier;
 
 // NetworkChangeNotifierWin uses a SequenceChecker, as all its internal
 // notification code must be called on the sequence it is created and destroyed
@@ -61,6 +62,12 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierWin
   }
 
  protected:
+  // Constructor for tests that provides a custom SystemDnsConfigChangeNotifier
+  // to avoid using the process-wide singleton (which creates a
+  // PooledSequencedTaskRunner that becomes stale across TaskEnvironments).
+  explicit NetworkChangeNotifierWin(
+      SystemDnsConfigChangeNotifier* dns_config_notifier);
+
   // For unit tests only.
   bool is_watching() const { return is_watching_; }
   void set_is_watching(bool is_watching) { is_watching_ = is_watching; }

@@ -23,6 +23,8 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_factory.h"
 #include "net/base/network_cost_change_notifier_win.h"
+#include "net/dns/dns_config_service.h"
+#include "net/dns/system_dns_config_change_notifier.h"
 #include "net/test/test_connection_cost_observer.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/test/win/fake_network_cost_manager.h"
@@ -52,10 +54,10 @@ class TestNetworkChangeNotifierWin : public NetworkChangeNotifierWin {
   using GetConnectionTypeCallback =
       base::RepeatingCallback<NetworkChangeNotifier::ConnectionType()>;
 
-  TestNetworkChangeNotifierWin() {
+  TestNetworkChangeNotifierWin(
+      SystemDnsConfigChangeNotifier* dns_config_notifier)
+      : NetworkChangeNotifierWin(dns_config_notifier) {
     last_computed_connection_type_ = NetworkChangeNotifier::CONNECTION_UNKNOWN;
-    sequence_runner_for_registration_ =
-        base::SequencedTaskRunner::GetCurrentDefault();
   }
 
   TestNetworkChangeNotifierWin(const TestNetworkChangeNotifierWin&) = delete;
@@ -482,7 +484,15 @@ class NetworkChangeNotifierWinTest : public TestWithTaskEnvironment {
   // |network_change_notifier_| and destroyed after it to avoid DCHECK failures.
   NetworkChangeNotifier::DisableForTest disable_for_test_;
 
-  StrictMock<TestNetworkChangeNotifierWin> network_change_notifier_;
+  // Per-test SystemDnsConfigChangeNotifier avoids the process-wide singleton
+  // whose PooledSequencedTaskRunner becomes stale across TaskEnvironments.
+  // Must be created before |network_change_notifier_| and destroyed after it.
+  SystemDnsConfigChangeNotifier dns_config_notifier_{/*task_runner=*/nullptr,
+                                                     /*dns_config_service=*/
+                                                     nullptr};
+
+  StrictMock<TestNetworkChangeNotifierWin> network_change_notifier_{
+      &dns_config_notifier_};
 
   // Must be created after |network_change_notifier_|, so it can add itself as
   // an IPAddressObserver.
