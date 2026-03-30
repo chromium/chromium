@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 
+#include "base/logging.h"
 #include "components/messages/android/message_wrapper.h"
 #include "ui/android/window_android.h"
 
