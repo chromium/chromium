@@ -120,7 +120,7 @@ bool GaiaScreen::MaybeSkip(WizardContext& context) {
   }
 
   if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
-      !StartupUtils::IsOobeCompleted()) {
+      !StartupUtils::IsOobeCompleted(local_state_.get())) {
     exit_callback_.Run(Result::ERROR_OOBE_NOT_COMPLETED);
     return true;
   }

@@ -498,7 +498,7 @@ void WizardController::Init(OobeScreenId first_screen) {
 
   VLOG(1) << "Starting OOBE wizard with screen: " << first_screen;
 
-  bool oobe_complete = StartupUtils::IsOobeCompleted();
+  bool oobe_complete = StartupUtils::IsOobeCompleted(local_state_.get());
   if (!oobe_complete) {
     UpdateOobeConfiguration();
     is_out_of_box_ = true;
@@ -2222,11 +2222,11 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       ShowNetworkScreen();
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_GAIA_INFO:
-      CHECK(StartupUtils::IsOobeCompleted());
+      CHECK(StartupUtils::IsOobeCompleted(local_state_.get()));
       AdvanceToScreen(GaiaInfoScreenView::kScreenId);
       return;
     case ash::QuickStartScreen::Result::FALLBACK_URL_ON_GAIA:
-      CHECK(StartupUtils::IsOobeCompleted());
+      CHECK(StartupUtils::IsOobeCompleted(local_state_.get()));
       wizard_context_->gaia_config.gaia_path =
           WizardContext::GaiaPath::kQuickStartFallback;
       wizard_context_->gaia_config.quick_start_fallback_path_contents =
@@ -2234,14 +2234,14 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       AdvanceToScreen(GaiaView::kScreenId);
       return;
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_SIGNIN:
-      CHECK(StartupUtils::IsOobeCompleted());
+      CHECK(StartupUtils::IsOobeCompleted(local_state_.get()));
       AdvanceToScreen(GaiaView::kScreenId);
       return;
     // Last step of the QuickStart flow. This is triggered immediately
     // after the 'RecoveryEligibility' screen and continues OOBE into
     // the TermsOfServiceScreen
     case QuickStartScreen::Result::SETUP_COMPLETE_NEXT_BUTTON:
-      CHECK(StartupUtils::IsOobeCompleted());
+      CHECK(StartupUtils::IsOobeCompleted(local_state_.get()));
       quickstart_controller_->RecordFlowFinished();
       AdvanceToScreen(TermsOfServiceScreenView::kScreenId);
   }
@@ -3227,7 +3227,7 @@ void WizardController::OnDeviceDisabledChecked(bool device_disabled) {
     // or if OOBE is already completed. Otherwise, `SignInFatalErrorScreen` is
     // expected to be shown if the forced check hasn't led to OOBE completion.
     if (!features::IsOobeAutoEnrollmentCheckForcedEnabled() ||
-        StartupUtils::IsOobeCompleted()) {
+        StartupUtils::IsOobeCompleted(local_state_.get())) {
       ShowPackagedLicenseScreen();
     }
   }
@@ -3297,7 +3297,7 @@ void WizardController::PerformOOBECompletedActions(
     OobeMetricsHelper::CompletedPreLoginOobeFlowType flow_type) {
   // Avoid marking OOBE as completed multiple times if going from login screen
   // to enrollment screen (and back).
-  if (StartupUtils::IsOobeCompleted()) {
+  if (StartupUtils::IsOobeCompleted(local_state_.get())) {
     return;
   }
 

@@ -195,8 +195,8 @@ bool StartupUtils::IsEulaAccepted(const PrefService& local_state) {
 }
 
 // static
-bool StartupUtils::IsOobeCompleted() {
-  return g_browser_process->local_state()->GetBoolean(prefs::kOobeComplete);
+bool StartupUtils::IsOobeCompleted(const PrefService& local_state) {
+  return local_state.GetBoolean(prefs::kOobeComplete);
 }
 
 // static

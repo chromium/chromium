@@ -4,7 +4,9 @@
 
 #include "chrome/browser/metrics/structured/oobe_structured_metrics_watcher.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "components/metrics/structured/structured_metrics_service.h"
 
 namespace metrics::structured {
@@ -40,7 +42,8 @@ void OobeStructuredMetricsWatcher::OnProvideIndependentMetrics(
     ChromeUserMetricsExtension* uma_proto) {}
 
 bool OobeStructuredMetricsWatcher::IsOobeActive() const {
-  return !ash::StartupUtils::IsOobeCompleted();
+  return !ash::StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 void OobeStructuredMetricsWatcher::OnProfileAdded(

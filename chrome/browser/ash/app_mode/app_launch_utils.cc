@@ -106,7 +106,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
          // IsOobeCompleted() is needed to prevent kiosk session start in case
          // of enterprise rollback, when keeping the enrollment, policy, not
          // clearing TPM, but wiping stateful partition.
-         StartupUtils::IsOobeCompleted();
+         StartupUtils::IsOobeCompleted(local_state);
 }
 
 }  // namespace ash

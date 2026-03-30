@@ -183,17 +183,19 @@ bool HasManagedDeviceSettings() {
 
 // Even if oobe is complete we may still want to show it, for example, if there
 // are no users registered then the user may want to enterprise enroll.
-bool IsOobeComplete() {
+bool IsOobeComplete(const PrefService& local_state) {
   // Oobe is completed and we have a user or we are enterprise enrolled.
-  return StartupUtils::IsOobeCompleted() &&
+  return StartupUtils::IsOobeCompleted(local_state) &&
          ((!user_manager::UserManager::Get()->GetPersistedUsers().empty() &&
            !HasManagedDeviceSettings()) ||
           ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
 // Returns true if signin (not oobe) should be displayed.
-bool ShouldShowSigninScreen(OobeScreenId first_screen) {
-  return (first_screen == ash::OOBE_SCREEN_UNKNOWN && IsOobeComplete());
+bool ShouldShowSigninScreen(const PrefService& local_state,
+                            OobeScreenId first_screen) {
+  return (first_screen == ash::OOBE_SCREEN_UNKNOWN &&
+          IsOobeComplete(local_state));
 }
 
 void MaybeShowDeviceDisabledScreen() {
@@ -282,7 +284,7 @@ void ShowLoginWizardFinish(
   }
 
   std::unique_ptr<TimeboundUserContextHolder> user_context;
-  if (ShouldShowSigninScreen(first_screen)) {
+  if (ShouldShowSigninScreen(CHECK_DEREF(local_state), first_screen)) {
     if (ShouldPreserveUserContext()) {
       // Move the user context to the local variable before it's destroyed.
       WizardContext* wizard_context =
@@ -303,7 +305,7 @@ void ShowLoginWizardFinish(
   if (LoginDisplayHost::default_host()) {
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
-  } else if (ShouldShowSigninScreen(first_screen)) {
+  } else if (ShouldShowSigninScreen(CHECK_DEREF(local_state), first_screen)) {
     display_host = new LoginDisplayHostMojo(
         local_state, application_locale_storage, shared_url_loader_factory,
         browser_policy_connector_ash, DisplayedScreen::SIGN_IN_SCREEN,
@@ -335,7 +337,7 @@ void ShowLoginWizardFinish(
   }
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
-  if (ShouldShowSigninScreen(first_screen)) {
+  if (ShouldShowSigninScreen(CHECK_DEREF(local_state), first_screen)) {
     display_host->StartSignInScreen();
   } else {
     display_host->StartWizard(first_screen);
@@ -524,7 +526,8 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI(
                              std::move(shared_url_loader_factory),
                              browser_policy_connector_ash,
                              /*update_geolocation_usage_allowed=*/true),
-      oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
+      oobe_startup_sound_played_(
+          StartupUtils::IsOobeCompleted(local_state_.get())) {
   session_manager_client_observation_.Observe(SessionManagerClient::Get());
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
@@ -612,7 +615,7 @@ void LoginDisplayHostWebUI::OnOobeConfigurationChanged() {
 }
 
 void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
-  if (!StartupUtils::IsOobeCompleted()) {
+  if (!StartupUtils::IsOobeCompleted(local_state_.get())) {
     // If `prefs::kOobeStartTime` is not yet stored, then this is the first
     // time OOBE has started.
     if (local_state_->GetTime(prefs::kOobeStartTime).is_null()) {
@@ -1261,7 +1264,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
           switches::kNaturalScrollDefault));
 
   auto session_state = session_manager::SessionState::OOBE;
-  if (IsOobeComplete()) {
+  if (IsOobeComplete(local_state)) {
     session_state = session_manager::SessionState::LOGIN_PRIMARY;
   }
   session_manager::SessionManager::Get()->SetSessionState(session_state);
@@ -1306,7 +1309,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   language::ConvertToActualUILocale(&current_locale);
   VLOG(1) << "Current locale: " << current_locale;
 
-  if (ShouldShowSigninScreen(first_screen)) {
+  if (ShouldShowSigninScreen(local_state, first_screen)) {
     std::string switch_locale = GetManagedLoginScreenLocale();
     if (switch_locale == current_locale) {
       switch_locale.clear();

@@ -870,7 +870,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   // Start loading machine statistics here. StatisticsProvider::Shutdown()
   // will ensure that loading is aborted on early exit.
-  bool load_oem_statistics = !StartupUtils::IsOobeCompleted();
+  bool load_oem_statistics = !StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
   system::StatisticsProvider::GetInstance()->StartLoadingMachineStatistics(
       load_oem_statistics);
 

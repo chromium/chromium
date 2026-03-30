@@ -1361,6 +1361,9 @@ void GaiaScreenHandler::Hide() {
 }
 
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
   // loading slowly.
   // CallExternalAPI("onBeforeLoad");
@@ -1369,7 +1372,8 @@ void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   if (account_id.is_valid()) {
     login_request_variant_ = GaiaLoginVariant::kOnlineSignin;
   } else {
-    if (StartupUtils::IsOobeCompleted() && StartupUtils::IsDeviceOwned()) {
+    if (StartupUtils::IsOobeCompleted(local_state) &&
+        StartupUtils::IsDeviceOwned()) {
       login_request_variant_ = GaiaLoginVariant::kAddUser;
     } else {
       login_request_variant_ = GaiaLoginVariant::kOobe;

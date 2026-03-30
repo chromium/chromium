@@ -510,7 +510,8 @@ TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
   ASSERT_TRUE(enrollment_signal.Wait());
 
   ASSERT_TRUE(AwaitScreen(kGaiaSigninScreen));
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())));
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 
@@ -525,7 +526,8 @@ TEST_F(WizardControllerTest, BackOnNetworkScreenCancelsDemoMode) {
 
   PerformUserAction(kActionBack);
   ASSERT_TRUE(AwaitScreen(kWelcomeScreen));
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())));
   EXPECT_FALSE(DemoSetupController::IsOobeDemoSetupFlowInProgress());
 }
 #endif  // !BUILDFLAG(PLATFORM_CFM)

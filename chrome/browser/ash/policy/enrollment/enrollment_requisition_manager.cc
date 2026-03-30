@@ -33,8 +33,9 @@ const char EnrollmentRequisitionManager::kSquidRequisition[] = "squid";
 // static
 void EnrollmentRequisitionManager::Initialize(PrefService& local_state) {
   // OEM statistics are only loaded when OOBE is not completed.
-  if (ash::StartupUtils::IsOobeCompleted())
+  if (ash::StartupUtils::IsOobeCompleted(local_state)) {
     return;
+  }
 
   // Demo requisition may have been set in a prior enrollment attempt that was
   // interrupted.

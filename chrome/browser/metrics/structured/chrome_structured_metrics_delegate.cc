@@ -15,6 +15,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/browser_process.h"                       // nogncheck
 #include "chrome/browser/metrics/structured/ash_structured_metrics_delegate.h"  // nogncheck
@@ -99,7 +100,8 @@ void ChromeStructuredMetricsDelegate::Initialize() {
       std::make_unique<cros_event::CrOSEventsProcessor>(
           cros_event::kResetCounterPath));
 
-  if (!ash::StartupUtils::IsOobeCompleted()) {
+  if (!ash::StartupUtils::IsOobeCompleted(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     Recorder::GetInstance()->AddEventsProcessor(
         std::make_unique<OobeStructuredMetricsWatcher>(service,
                                                        kOobeUploadCount));

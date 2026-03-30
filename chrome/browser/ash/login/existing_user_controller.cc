@@ -1590,7 +1590,7 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
   }
 
   if (features::IsOobeAutoEnrollmentCheckForcedEnabled() &&
-      !StartupUtils::IsOobeCompleted()) {
+      !StartupUtils::IsOobeCompleted(local_state_.get())) {
     // If OOBE is not yet completed, abort the current login attempt. This
     // indicates a potential bypass attempt and an error screen is shown.
     ++num_login_attempts_;

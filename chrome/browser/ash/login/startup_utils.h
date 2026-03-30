@@ -29,7 +29,7 @@ class StartupUtils {
   // Returns OOBE completion status, i.e. whether the OOBE wizard should be run
   // on next boot.  This is NOT what causes the .oobe_completed flag file to be
   // written.
-  static bool IsOobeCompleted();
+  static bool IsOobeCompleted(const PrefService& local_state);
 
   // Marks EULA status as accepted.
   static void MarkEulaAccepted();

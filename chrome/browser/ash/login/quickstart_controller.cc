@@ -725,7 +725,8 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 
         // Only start account transfer the first time the following is reached
         // after OOBE completion.
-        if (!StartupUtils::IsOobeCompleted() || did_request_account_info_) {
+        if (!StartupUtils::IsOobeCompleted(local_state_.get()) ||
+            did_request_account_info_) {
           // Resuming after an external interruption (e.g. Reset screen).
           RestoreCachedUIState();
         } else {
@@ -908,8 +909,9 @@ void QuickStartController::StartAdvertising() {
 }
 
 void QuickStartController::SetExitPointToDefault() {
-  exit_point_ = StartupUtils::IsOobeCompleted() ? EntryPoint::GAIA_INFO_SCREEN
-                                                : EntryPoint::WELCOME_SCREEN;
+  exit_point_ = StartupUtils::IsOobeCompleted(local_state_.get())
+                    ? EntryPoint::GAIA_INFO_SCREEN
+                    : EntryPoint::WELCOME_SCREEN;
 }
 
 void QuickStartController::RestoreCachedUIState() {

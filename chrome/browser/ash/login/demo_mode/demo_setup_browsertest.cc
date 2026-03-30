@@ -542,7 +542,8 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
     // it's shown again when Demo setup completes.
     LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-    EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+    EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+        CHECK_DEREF(g_browser_process->local_state())));
     EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   }
 };
@@ -642,7 +643,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   // it's shown again when Demo setup completes.
   LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 
   // Both components were successfully loaded on the initial attempt.
@@ -750,7 +752,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   EXPECT_EQ("1234", g_browser_process->local_state()->GetString(
                         prefs::kDemoModeStoreId));
 
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 
   // Both components were successfully loaded on the initial attempt.
@@ -813,7 +816,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   SetAndVerifyValidRetailerNameAndStoreNumber("ValidRetailer", "1234");
   SetAndVerifyInvalidRetailerNameAndStoreNumber("", "");
 
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 }
 
@@ -846,7 +850,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
   test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
   test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
 
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 
   // The error occurred at the enrollment step. In the previous component
@@ -892,7 +897,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectVisiblePath(kDemoSetupErrorDialogPowerwash);
   test::OobeJS().ExpectDisabledPath(kDemoSetupErrorDialogBack);
 
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 
   // The error occurred at the enrollment step. In the previous component
@@ -1049,7 +1055,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_RetryOnErrorScreen) {
   // it's shown again when Demo setup completes.
   LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success. There should have been two counts because of two tries.
@@ -1088,7 +1095,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickRetryOnErrorScreen) {
   test::OobeJS().ExpectHiddenPath(kDemoSetupErrorDialogPowerwash);
   test::OobeJS().ExpectEnabledPath(kDemoSetupErrorDialogBack);
 
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 
   test::LockDemoDeviceInstallAttributes();
@@ -1254,7 +1262,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupComponentLoadErrorTest,
   ExpectErrorMessage(IDS_DEMO_SETUP_COMPONENT_ERROR,
                      IDS_DEMO_SETUP_RECOVERY_CHECK_NETWORK);
 
-  EXPECT_FALSE(StartupUtils::IsOobeCompleted());
+  EXPECT_FALSE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
 
   // DemoSetupComponentLoadErrorTest gives INSTALL_FAILURE to the demo mode app
@@ -1311,7 +1320,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
   // it's shown again when Demo setup completes.
   LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success.
@@ -1465,7 +1475,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
   // it's shown again when Demo setup completes.
   LoginOrLockScreenVisibleWaiter().WaitEvenIfShown();
 
-  EXPECT_TRUE(StartupUtils::IsOobeCompleted());
+  EXPECT_TRUE(StartupUtils::IsOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success.
