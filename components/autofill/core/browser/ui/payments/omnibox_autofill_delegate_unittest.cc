@@ -1,0 +1,145 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
+
+#include <memory>
+
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+using autofill_metrics::OmniboxAutofillShowChipDecisionPart1;
+using test::CreateTestFormField;
+
+class OmniboxAutofillDelegateTest
+    : public testing::Test,
+      public WithTestAutofillClientDriverManager<> {
+ public:
+  OmniboxAutofillDelegateTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableOmniboxAutofill);
+  }
+
+  ~OmniboxAutofillDelegateTest() override = default;
+
+  void SetUp() override {
+    InitAutofillClient();
+    CreateAutofillDriver();
+  }
+
+  void TearDown() override { DestroyAutofillClient(); }
+
+  void FormsSeen(const std::vector<FormData>& forms) {
+    autofill_manager().OnFormsSeen(/*updated_forms=*/forms,
+                                   /*removed_forms=*/{});
+  }
+
+  FormData CreateTestCreditCardFormData() {
+    FormData form;
+    AppendTestCreditCardFormData(&form);
+    return form;
+  }
+
+ private:
+  // Populates `form` with data corresponding to a simple credit card form.
+  void AppendTestCreditCardFormData(FormData* form) {
+    form->set_name(u"MyForm");
+    form->set_url(GURL("https://myform.com/form.html"));
+    form->set_action(GURL("https://myform.com/submit.html"));
+    autofill_client().set_last_committed_primary_main_frame_url(form->url());
+
+    test_api(*form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                               FormControlType::kInputText));
+    test_api(*form).Append(CreateTestFormField("Card Number", "cardnumber", "",
+                                               FormControlType::kInputText));
+    test_api(*form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                               FormControlType::kInputText));
+    test_api(*form).Append(
+        CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+    test_api(*form).Append(
+        CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  test::AutofillUnitTestEnvironment autofill_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(OmniboxAutofillDelegateTest, OnFieldTypesDetermined_SuccessPath) {
+  base::HistogramTester histogram_tester;
+
+  autofill_driver().SetParent(nullptr);
+  autofill_driver().SetIsEmbedded(false);
+  autofill_driver().SetIsActive(true);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CalledFromNonOutermostDriver_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // If the main AutofillDriver has a parent, it's not the right
+  // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
+  CreateAutofillDriver();
+  autofill_driver(0).SetParent(&autofill_driver(1));
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  // Logic flow aborting at the stage of finding the right BAM is not logged.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+
+  autofill_driver(0).SetParent(nullptr);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CalledFromEmbeddedDriver_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // If the main AutofillDriver is embedded, it's not the right
+  // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
+  autofill_driver().SetIsEmbedded(true);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  // Logic flow aborting at the stage of finding the right BAM is not logged.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CalledFromInactiveDriver_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // If the main AutofillDriver is inactive, it's not the right
+  // BrowserAutofillManager to run OmniboxAutofillDelegate logic.
+  autofill_driver().SetIsActive(false);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  // Logic flow aborting at the stage of finding the right BAM is not logged.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+}
+
+}  // namespace autofill

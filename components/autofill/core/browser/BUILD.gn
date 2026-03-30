@@ -914,6 +914,8 @@ static_library("browser") {
     sources += [
       "metrics/payments/credit_card_save_metrics_desktop.cc",
       "metrics/payments/credit_card_save_metrics_desktop.h",
+      "metrics/payments/omnibox_autofill_metrics.cc",
+      "metrics/payments/omnibox_autofill_metrics.h",
       "payments/desktop_bnpl_strategy.cc",
       "payments/desktop_bnpl_strategy.h",
       "ui/payments/omnibox_autofill_delegate.cc",
@@ -1834,7 +1836,10 @@ source_set("unit_tests") {
   }
 
   if (!is_ios && !is_android) {
-    sources += [ "payments/desktop_bnpl_strategy_unittest.cc" ]
+    sources += [
+      "payments/desktop_bnpl_strategy_unittest.cc",
+      "ui/payments/omnibox_autofill_delegate_unittest.cc",
+    ]
   }
 
   if (!is_fuchsia) {

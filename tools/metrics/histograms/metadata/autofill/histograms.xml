@@ -5525,6 +5525,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OmniboxAutofill.ShowChipDecisionPart1"
+    enum="OmniboxShowChipDecisionPart1" expires_after="2026-08-02">
+  <owner>osaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the logic flow of whether to show the Omnibox Autofill chip, up to
+    the point where the IntersectionObserver is called (at which point the flow
+    becomes async and ShowChipDecisionPart2 picks up where this one leaves off).
+    Starts when AutofillManager::Observer::OnFieldTypesDetermined is called.
+    Logs if the logic made it to the IntersectionObserver section, or if the
+    flow aborted, why it aborted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Sms.APIError"
     enum="SmsOtpRetrievalApiErrorCode" expires_after="2026-10-31">
   <owner>luchenpeng@google.com</owner>
