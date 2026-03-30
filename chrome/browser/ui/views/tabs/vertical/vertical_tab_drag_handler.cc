@@ -614,8 +614,6 @@ void VerticalTabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
     return;
   }
 
-  bool handler_alive = true;
-
   switch (event->type()) {
     case ui::EventType::kGestureScrollEnd:
     case ui::EventType::kScrollFlingStart:
@@ -650,7 +648,7 @@ void VerticalTabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
       break;
 
     case ui::EventType::kGestureScrollUpdate:
-      handler_alive = ContinueDrag(*this, *event);
+      ContinueDrag(*this, *event);
       break;
 
     default:
@@ -658,10 +656,6 @@ void VerticalTabDragHandlerImpl::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   event->SetHandled();
-
-  if (!handler_alive) {
-    return;
-  }
 }
 
 bool VerticalTabDragHandlerImpl::OnMouseDragged(const ui::MouseEvent& event) {
