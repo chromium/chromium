@@ -121,6 +121,10 @@ class PasswordGenerationPopupControllerImpl
   void OnZoomChanged(
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 
+  base::WeakPtr<password_manager::PasswordManagerDriver> driver() const {
+    return driver_;
+  }
+
 #if defined(UNIT_TEST)
   PasswordGenerationPopupView* view() const { return view_; }
   void SetViewForTesting(PasswordGenerationPopupView* view) { view_ = view; }

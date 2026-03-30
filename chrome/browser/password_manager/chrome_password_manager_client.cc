@@ -1583,15 +1583,16 @@ void ChromePasswordManagerClient::PresaveGeneratedPassword(
     return;
   }
 
+  PasswordManagerDriver* driver =
+      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
+          rfh);
+
 #if !BUILDFLAG(IS_ANDROID)
-  if (popup_controller_) {
+  if (popup_controller_ && popup_controller_->driver().get() == driver) {
     popup_controller_->UpdateGeneratedPassword(password_value);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  PasswordManagerDriver* driver =
-      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          rfh);
   // This method is called over Mojo via a RenderFrameHostReceiverSet; the
   // current target frame must be live.
   CHECK(driver);
