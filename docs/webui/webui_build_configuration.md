@@ -704,7 +704,7 @@ optimize_webui_host: See |host| in bundle_js().
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
-optimize_webui_in_files: See |in_files| in bundle_js().
+optimize_webui_in_files: See |js_module_in_files| in bundle_js().
 generate_code_cache: Specifies whether code cache resources should be generated
                      for the minified files. Use
                      `generate_code_cache = enable_webui_generate_code_cache` to
