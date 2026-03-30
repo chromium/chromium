@@ -155,7 +155,7 @@
   if (self.started) {
     return;
   }
-  // Set a default position, overriden by `setInitialOmniboxPosition` below.
+  // Set a default position, overridden by `setInitialOmniboxPosition` below.
   _omniboxPosition = ToolbarType::kPrimary;
 
   Browser* browser = self.browser;

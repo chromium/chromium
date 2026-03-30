@@ -306,8 +306,8 @@
                                 overrideReusedPasswordsCount.has_value() ||
                                 overrideCompromisedPasswordsCount.has_value();
 
-  // NOTE: If any password counts are overriden via Experimental
-  // settings, all password counts will be considered overriden.
+  // NOTE: If any password counts are overridden via Experimental
+  // settings, all password counts will be considered overridden.
   if (passwordCountsOverride) {
     config.weakPasswordsCount = overrideWeakPasswordsCount.value_or(0);
     config.reusedPasswordsCount = overrideReusedPasswordsCount.value_or(0);

@@ -612,7 +612,7 @@ def override_default_iphonesim_runtime(runtime_id, ios_version):
   sdk_build = sdks.get(iphone_sdk_key, {}).get("sdkBuild")
   if sdk_build is None:
     LOGGER.debug(
-        'Unable to find the simulator runtime build number to be overriden...')
+        'Unable to find the simulator runtime build number to be overridden...')
     return
   cmd = [
       'xcrun', 'simctl', 'runtime', 'match', 'set', iphone_sdk_key,

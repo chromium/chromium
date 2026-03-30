@@ -4317,7 +4317,7 @@ const char kChromeAppStoreUrl[] =
                           viewController:viewController];
   };
   if (command.actionType == TabGroupActionType::kCloseLastTabUnknownRole) {
-    // If the user's member role is unkown (i.e. sync not complete yet),
+    // If the user's member role is unknown (i.e. sync not complete yet),
     // cannot show option to leave/keep group when attempting to close last
     // tab. Instead, close last tab and replace with new tab after an error
     // alert is shown.

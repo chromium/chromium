@@ -671,7 +671,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   // NTPs where there is saved scroll state in the destination tab). If the
   // content offset is being set to the top, it is safe to assume this can be
   // set to NO. Being called before setSavedContentOffset: is no problem since
-  // then it will be subsequently overriden to YES.
+  // then it will be subsequently overridden to YES.
   self.hasSavedOffsetFromPreviousScrollState = NO;
 }
 
@@ -888,7 +888,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   }
 
   // User has interacted with the surface, so it is safe to assume that a saved
-  // scroll position can now be overriden.
+  // scroll position can now be overridden.
   self.hasSavedOffsetFromPreviousScrollState = NO;
   [self.overscrollActionsController scrollViewWillBeginDragging:scrollView];
   self.scrollStartPosition = scrollView.contentOffset.y;
@@ -955,7 +955,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   // is saved scroll state in the destination tab). If the content offset is
   // being set to the top, it is safe to assume this can be set to NO. Being
   // called before setSavedContentOffset: is no problem since then it will be
-  // subsequently overriden to YES.
+  // subsequently overridden to YES.
   self.hasSavedOffsetFromPreviousScrollState = NO;
   // Unfocus omnibox without scrolling back.
   [self unfocusOmnibox];

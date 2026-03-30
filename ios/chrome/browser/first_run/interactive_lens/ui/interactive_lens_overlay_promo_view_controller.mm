@@ -69,7 +69,7 @@ const CGFloat kHUDViewTopMargin = 20.0;
   NSLayoutConstraint* _bubbleViewBottomInnerAnimationConstraint;
   // View controller for the interactive Lens instance.
   LensOverlayPromoContainerViewController* _lensViewController;
-  // Constraint to make sure the lens view intially shows the entire image.
+  // Constraint to make sure the lens view initially shows the entire image.
   NSLayoutConstraint* _lensViewHeightConstraint;
   // Container view for the entire lens section. This allows placing a view
   // containing the fake webpage content below the actual lens image view.

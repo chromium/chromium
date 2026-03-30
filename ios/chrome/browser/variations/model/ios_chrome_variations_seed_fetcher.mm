@@ -39,7 +39,7 @@ const char kSeedFetchTimeHistogram[] = "IOS.Variations.FirstRun.SeedFetchTime";
 // global seed at one time. It is access in the static serial queue
 // "*.first_run_variations_seed_manager" at the start of each task in the queue.
 // If the value is NO, it's set to YES and keep executing the task; otherwise,
-// it aborts the task to make sure the fetch result won't be overriden.
+// it aborts the task to make sure the fetch result won't be overridden.
 static BOOL g_seed_fetching_in_progress = NO;
 
 // Returns the trimmed and URL-escaped value of the given string.

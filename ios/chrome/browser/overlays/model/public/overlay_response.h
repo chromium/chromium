@@ -28,7 +28,7 @@ class OverlayResponse {
     return response;
   }
 
-  // Returns the OverlayResponseInfo of type InfoType stored in the reponse's
+  // Returns the OverlayResponseInfo of type InfoType stored in the response's
   // user data, or nullptr if it is not found.  For example, an info of type
   // Info can be retrieved using:
   //

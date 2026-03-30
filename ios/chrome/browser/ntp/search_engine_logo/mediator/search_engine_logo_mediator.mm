@@ -474,7 +474,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     return;
   }
 
-  // Animate this view seperately in case the doodle has updated multiple times.
+  // Animate this view separately in case the doodle has updated multiple times.
   // This can happen when a particular doodle cycles thru multiple images.
   __weak __typeof(self) weakSelf = self;
   SearchEngineLogoState logoState = self.logoState;
