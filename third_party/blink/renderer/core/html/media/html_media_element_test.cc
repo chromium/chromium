@@ -2647,4 +2647,17 @@ TEST_P(HTMLMediaElementTest, StartVideoWithDoubleTrackSelection) {
   }
 }
 
+// crbug.com/497011407. AddTrack() crashed by invalid UTF-8.
+TEST_P(HTMLMediaElementTest, AddTrackCrash) {
+  auto* element = Media();
+  element->AddTrackForTesting(media::MediaTrack::CreateAudioTrack(
+      "audio1", media::MediaTrack::AudioKind::kMain, "label\x80", "lang\x80",
+      true, 0));
+  if (GetParam() == MediaTestParam::kVideo) {
+    element->AddTrackForTesting(media::MediaTrack::CreateVideoTrack(
+        "video1", media::MediaTrack::VideoKind::kMain, "label\x80", "lang\x80",
+        true, 0));
+  }
+}
+
 }  // namespace blink

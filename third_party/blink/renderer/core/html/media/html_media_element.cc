@@ -3512,23 +3512,25 @@ void HTMLMediaElement::SelectedVideoTrackChanged(
 }
 
 void HTMLMediaElement::AddTrack(const media::MediaTrack& track) {
+  // `track.label()` and `track.language()` may contains invalid UTF-8
+  // sequences, and AtomicString::FromUtf8() doesn't accept invalid sequences.
   switch (track.type()) {
     case media::MediaTrack::Type::kVideo: {
       bool enabled = track.enabled() && videoTracks().selectedIndex() == -1;
       videoTracks().Add(MakeGarbageCollected<VideoTrack>(
           String::FromUtf8(track.track_id().value()),
-          AtomicString::FromUtf8(track.kind().value()),
-          AtomicString::FromUtf8(track.label().value()),
-          AtomicString::FromUtf8(track.language().value()), enabled));
+          AtomicString(String::FromUtf8(track.kind().value())),
+          AtomicString(String::FromUtf8(track.label().value())),
+          AtomicString(String::FromUtf8(track.language().value())), enabled));
       break;
     }
     case media::MediaTrack::Type::kAudio: {
       audioTracks().Add(MakeGarbageCollected<AudioTrack>(
           String::FromUtf8(track.track_id().value()),
-          AtomicString::FromUtf8(track.kind().value()),
-          AtomicString::FromUtf8(track.label().value()),
-          AtomicString::FromUtf8(track.language().value()), track.enabled(),
-          track.exclusive()));
+          AtomicString(String::FromUtf8(track.kind().value())),
+          AtomicString(String::FromUtf8(track.label().value())),
+          AtomicString(String::FromUtf8(track.language().value())),
+          track.enabled(), track.exclusive()));
       break;
     }
   }
