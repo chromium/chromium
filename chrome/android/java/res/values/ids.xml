@@ -156,6 +156,7 @@ found in the LICENSE file.
     <item type="id" name="history_parent_menu_id" />
     <item type="id" name="quick_delete_menu_id" />
     <item type="id" name="quick_delete_divider_line_id" />
+    <item type="id" name="page_info_divider_line_id" />
     <item type="id" name="downloads_menu_id" />
     <item type="id" name="all_bookmarks_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />

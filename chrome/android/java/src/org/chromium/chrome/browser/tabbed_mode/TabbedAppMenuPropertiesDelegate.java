@@ -305,16 +305,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildHistoryItem());
         }
 
+        boolean isPageInfoItemShown = shouldShowPageInfoItem();
+
         // Quick Delete
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
                 && shouldShowQuickDeleteItem()) {
             modelList.add(buildQuickDeleteItem());
-            maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
+            if (!isPageInfoItemShown) {
+                maybeAddDividerLine(modelList, R.id.quick_delete_divider_line_id);
+            }
         }
 
         // Page info
-        if (shouldShowPageInfoItem()) {
+        if (isPageInfoItemShown) {
             modelList.add(buildPageInfoItem(currentTab));
+            maybeAddDividerLine(modelList, R.id.page_info_divider_line_id);
         }
 
         // Downloads

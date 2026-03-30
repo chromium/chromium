@@ -600,6 +600,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -650,6 +651,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -720,6 +722,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         historyExpectedTitles.add(R.string.menu_quick_delete);
         expectedItems.add(R.id.info_menu_id);
         expectedTitles.add(R.string.menu_site_controls);
+        expectedItems.add(R.id.page_info_divider_line_id);
+        expectedTitles.add(0);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -822,6 +826,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         }
         expectedItems.add(R.id.info_menu_id);
         expectedTitles.add(R.string.menu_site_controls);
+        expectedItems.add(R.id.page_info_divider_line_id);
+        expectedTitles.add(0);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -918,6 +924,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         historyExpectedTitles.add(R.string.menu_quick_delete);
         expectedItems.add(R.id.info_menu_id);
         expectedTitles.add(R.string.menu_site_controls);
+        expectedItems.add(R.id.page_info_divider_line_id);
+        expectedTitles.add(0);
         expectedItems.add(R.id.downloads_menu_id);
         expectedTitles.add(R.string.menu_downloads);
         expectedItems.add(R.id.all_bookmarks_menu_id);
@@ -1000,6 +1008,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1372,6 +1381,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1463,6 +1473,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
@@ -1529,6 +1540,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.divider_line_id,
                                 R.id.history_parent_menu_id,
                                 R.id.info_menu_id,
+                                R.id.page_info_divider_line_id,
                                 R.id.downloads_menu_id,
                                 R.id.all_bookmarks_menu_id,
                                 R.id.divider_line_id,
