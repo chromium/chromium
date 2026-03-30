@@ -48,8 +48,6 @@
 #include "chrome/browser/web_applications/commands/internal/callback_command.h"
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
-#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
-#include "chrome/browser/web_applications/commands/manifest_update_finalize_command.h"
 #include "chrome/browser/web_applications/commands/navigate_and_trigger_install_dialog_command.h"
 #include "chrome/browser/web_applications/commands/os_integration_synchronize_command.h"
 #include "chrome/browser/web_applications/commands/resolve_web_app_pending_migration_info_command.h"
@@ -230,21 +228,6 @@ void WebAppCommandScheduler::PersistFileHandlersUserChoice(
       location);
 }
 
-void WebAppCommandScheduler::ScheduleManifestUpdateCheck(
-    const GURL& url,
-    const webapps::AppId& app_id,
-    base::Time check_time,
-    base::WeakPtr<content::WebContents> contents,
-    ManifestUpdateCheckCommand::CompletedCallback callback,
-    const base::Location& location) {
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<ManifestUpdateCheckCommand>(
-          url, app_id, check_time, contents, std::move(callback),
-          provider_->web_contents_manager().CreateDataRetriever(),
-          provider_->web_contents_manager().CreateIconDownloader()),
-      location);
-}
-
 void WebAppCommandScheduler::ScheduleManifestSilentUpdate(
     content::WebContents& contents,
     std::optional<base::Time> previous_time_for_silent_icon_update,
@@ -266,23 +249,6 @@ void WebAppCommandScheduler::ScheduleApplyPendingManifestUpdate(
       std::make_unique<ApplyPendingManifestUpdateCommand>(
           app_id, std::move(keep_alive), std::move(profile_keep_alive),
           std::move(callback)),
-      location);
-}
-
-void WebAppCommandScheduler::ScheduleManifestUpdateFinalize(
-    const GURL& url,
-    const webapps::AppId& app_id,
-    std::unique_ptr<WebAppInstallInfo> install_info,
-    std::unique_ptr<ScopedKeepAlive> optional_keep_alive,
-    std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive,
-    ManifestWriteCallback callback,
-    const base::Location& location) {
-  CHECK(install_info);
-  provider_->command_manager().ScheduleCommand(
-      std::make_unique<ManifestUpdateFinalizeCommand>(
-          url, app_id, std::move(install_info), std::move(callback),
-          std::move(optional_keep_alive),
-          std::move(optional_profile_keep_alive)),
       location);
 }
 

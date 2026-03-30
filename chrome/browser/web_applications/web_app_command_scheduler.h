@@ -79,8 +79,6 @@ enum class InstallableCheckResult;
 enum class IsolatedInstallabilityCheckResult;
 enum class LaunchWebAppWindowSetting;
 enum class RunOnOsLoginMode;
-enum class ManifestUpdateCheckResult;
-enum class ManifestUpdateResult;
 enum class ManifestSilentUpdateCheckResult;
 enum class NavigateAndTriggerInstallDialogCommandResult;
 struct CleanupOrphanedIsolatedWebAppsCommandError;
@@ -125,10 +123,6 @@ enum class RewriteIconResult;
 //   scheduler class.
 class WebAppCommandScheduler {
  public:
-  using ManifestWriteCallback =
-      base::OnceCallback<void(const GURL& url,
-                              const webapps::AppId& app_id,
-                              ManifestUpdateResult result)>;
   using InstallIsolatedWebAppCallback = base::OnceCallback<void(
       base::expected<InstallIsolatedWebAppCommandSuccess,
                      InstallIsolatedWebAppCommandError>)>;
@@ -227,25 +221,10 @@ class WebAppCommandScheduler {
       base::OnceClosure callback,
       const base::Location& location = FROM_HERE);
 
-  using ManifestUpdateCheckCompletedCallback = base::OnceCallback<void(
-      ManifestUpdateCheckResult check_result,
-      std::unique_ptr<WebAppInstallInfo> new_install_info)>;
-  // Checks if an installed web app has an updated manifest. It fetches the new
-  // manifest from the app's `url`, compares it with the existing one, and if
-  // there are changes, it may prompt the user for confirmation before applying
-  // them.
-  void ScheduleManifestUpdateCheck(
-      const GURL& url,
-      const webapps::AppId& app_id,
-      base::Time check_time,
-      base::WeakPtr<content::WebContents> contents,
-      ManifestUpdateCheckCompletedCallback callback,
-      const base::Location& location = FROM_HERE);
-
-  // A newer version of `ScheduleManifestUpdateCheck` that uses a more
-  // predictable app updating algorithm. This will eventually replace the
-  // original.
-  // For more details, go/predictable-app-updating-design-doc.
+  // Start the predictable app updating algorithm by fetching the manifest and
+  // choosing to either apply the manifest update silently or store it to be
+  // surfaced later to the user. For more details,
+  // go/predictable-app-updating-design-doc.
   void ScheduleManifestSilentUpdate(
       content::WebContents& contents,
       std::optional<base::Time> previous_time_for_silent_icon_update,
@@ -260,19 +239,6 @@ class WebAppCommandScheduler {
       std::unique_ptr<ScopedKeepAlive> keep_alive,
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       ApplyPendingManifestUpdateCompletedCallback callback,
-      const base::Location& location = FROM_HERE);
-
-  // Finalizes a manifest update by writing the new `install_info` to the
-  // database. This is often called after all app windows are closed to avoid
-  // conflicts. The keep-alives ensure the browser doesn't shut down during the
-  // write. `install_info` must be non-null.
-  void ScheduleManifestUpdateFinalize(
-      const GURL& url,
-      const webapps::AppId& app_id,
-      std::unique_ptr<WebAppInstallInfo> install_info,
-      std::unique_ptr<ScopedKeepAlive> keep_alive,
-      std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-      ManifestWriteCallback callback,
       const base::Location& location = FROM_HERE);
 
   // Checks if a URL is installable as a web app, used for enterprise policy
