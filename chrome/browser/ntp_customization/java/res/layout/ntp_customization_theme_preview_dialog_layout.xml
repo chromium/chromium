@@ -45,6 +45,7 @@ found in the LICENSE file.
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="@dimen/ntp_logo_height"
+        android:layoutDirection="ltr"
         android:importantForAccessibility="no"
         android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
         app:layout_constraintStart_toStartOf="parent"
