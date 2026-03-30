@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 
 #include <memory>
@@ -400,7 +399,8 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
     const diagnostics::SessionLogHandler::SelectFilePolicyCreator&
         select_file_policy_creator,
     HoldingSpaceClient* holding_space_client,
-    const base::FilePath& log_directory_path)
+    const base::FilePath& log_directory_path,
+    std::unique_ptr<diagnostics::SystemRoutineControllerDelegate> delegate)
     : ui::MojoWebDialogUI(web_ui) {
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(
@@ -419,7 +419,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
       select_file_policy_creator, holding_space_client, log_directory_path);
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
-      session_log_handler.get(), web_ui);
+      session_log_handler.get(), web_ui, std::move(delegate));
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source);

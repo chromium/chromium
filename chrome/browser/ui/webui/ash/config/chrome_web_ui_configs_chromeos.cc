@@ -48,6 +48,7 @@
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
 #include "chrome/browser/ash/borealis/borealis_motd_ui_impl.h"
+#include "chrome/browser/ash/diagnostics/system_routine_controller_delegate_impl.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
@@ -195,7 +196,9 @@ std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
             }),
             holding_space_keyed_service->client(),
             Profile::FromWebUI(web_ui)->GetPath().Append(
-                kDiagnosticsLogDirectoryName));
+                kDiagnosticsLogDirectoryName),
+            std::make_unique<
+                diagnostics::SystemRoutineControllerDelegateImpl>());
       });
 
   return std::make_unique<DiagnosticsDialogUIConfig>(create_controller_func);

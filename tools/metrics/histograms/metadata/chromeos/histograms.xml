@@ -1471,6 +1471,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     <variant name="DnsResolution"/>
     <variant name="DnsResolverPresent"/>
     <variant name="GatewayCanBePinged"/>
+    <variant name="GoogleServicesConnectivity"/>
     <variant name="HasSecureWiFiConnection"/>
     <variant name="HttpFirewall"/>
     <variant name="HttpsFirewall"/>

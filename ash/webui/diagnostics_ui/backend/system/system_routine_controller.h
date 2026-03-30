@@ -8,13 +8,16 @@
 #include <memory>
 #include <optional>
 
+#include "ash/webui/diagnostics_ui/backend/system/system_routine_controller_delegate.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom-forward.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
@@ -33,7 +36,8 @@ constexpr int32_t kInvalidRoutineId = 0;
 
 class SystemRoutineController : public mojom::SystemRoutineController {
  public:
-  SystemRoutineController();
+  explicit SystemRoutineController(
+      std::unique_ptr<SystemRoutineControllerDelegate> delegate);
   ~SystemRoutineController() override;
 
   SystemRoutineController(const SystemRoutineController&) = delete;
@@ -85,7 +89,7 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                               cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   void HandlePowerRoutineStatusUpdate(
-      mojom ::RoutineType routine_type,
+      mojom::RoutineType routine_type,
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
 
   bool IsRoutineRunning() const;
@@ -108,6 +112,14 @@ class SystemRoutineController : public mojom::SystemRoutineController {
                             double percent_change,
                             uint32_t seconds_elapsed);
 
+  // Handles the result from a GoogleServicesConnectivity routine: maps the
+  // network diagnostics verdict to `StandardRoutineResult` and delivers it
+  // via `SendRoutineResult`.
+  // Returns the mapped `StandardRoutineResult` for metrics and logging.
+  mojom::StandardRoutineResult OnGoogleServicesConnectivityRoutineResult(
+      mojom::RoutineType type,
+      chromeos::network_diagnostics::mojom::RoutineResultPtr result);
+
   void SendRoutineResult(mojom::RoutineResultInfoPtr result_info);
 
   void BindCrosHealthdDiagnosticsServiceIfNeccessary();
@@ -115,6 +127,15 @@ class SystemRoutineController : public mojom::SystemRoutineController {
   void OnDiagnosticsServiceDisconnected();
 
   void OnInflightRoutineRunnerDisconnected();
+
+  // Executes a network diagnostic routine via the injected delegate,
+  // bypassing cros_healthd.
+  void ExecuteNetworkRoutineDirect(mojom::RoutineType type);
+
+  // Callback for direct network diagnostics routine results.
+  void OnDirectNetworkRoutineResult(
+      mojom::RoutineType type,
+      chromeos::network_diagnostics::mojom::RoutineResultPtr result);
 
   void OnRoutineCancelAttempted(
       cros_healthd::mojom::RoutineUpdatePtr update_ptr);
@@ -144,6 +165,8 @@ class SystemRoutineController : public mojom::SystemRoutineController {
 
   mojo::Remote<cros_healthd::mojom::CrosHealthdDiagnosticsService>
       diagnostics_service_;
+
+  std::unique_ptr<SystemRoutineControllerDelegate> delegate_;
 
   mojo::Receiver<mojom::SystemRoutineController> receiver_{this};
 

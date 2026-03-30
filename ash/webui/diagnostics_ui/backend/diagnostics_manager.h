@@ -17,6 +17,7 @@ class NetworkHealthProvider;
 class SessionLogHandler;
 class SystemDataProvider;
 class SystemRoutineController;
+class SystemRoutineControllerDelegate;
 class InputDataProvider;
 
 // DiagnosticsManager is responsible for managing the lifetime of the services
@@ -24,7 +25,8 @@ class InputDataProvider;
 class DiagnosticsManager {
  public:
   DiagnosticsManager(SessionLogHandler* session_log_handler,
-                     content::WebUI* webui);
+                     content::WebUI* webui,
+                     std::unique_ptr<SystemRoutineControllerDelegate> delegate);
   ~DiagnosticsManager();
 
   DiagnosticsManager(const DiagnosticsManager&) = delete;

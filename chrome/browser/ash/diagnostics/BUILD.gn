@@ -10,13 +10,18 @@ static_library("diagnostics") {
   sources = [
     "diagnostics_browser_delegate_impl.cc",
     "diagnostics_browser_delegate_impl.h",
+    "system_routine_controller_delegate_impl.cc",
+    "system_routine_controller_delegate_impl.h",
   ]
 
   deps = [
     "//ash",
+    "//ash/webui/diagnostics_ui/backend",
     "//base",
+    "//chrome/browser/ash/net/network_health",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
+    "//chromeos/services/network_health/public/mojom",
     "//components/user_manager",
   ]
 }

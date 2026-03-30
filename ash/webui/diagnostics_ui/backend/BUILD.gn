@@ -44,6 +44,8 @@ static_library("backend") {
     "system/system_data_provider.h",
     "system/system_routine_controller.cc",
     "system/system_routine_controller.h",
+    "system/system_routine_controller_delegate.cc",
+    "system/system_routine_controller_delegate.h",
   ]
 
   deps = [
@@ -61,6 +63,7 @@ static_library("backend") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_health/public/mojom",
     "//chromeos/strings/",
     "//content/public/browser",
     "//services/device/public/mojom",
@@ -98,6 +101,8 @@ source_set("unit_tests") {
     "session_log_async_helper_unittest.cc",
     "session_log_handler_unittest.cc",
     "system/cpu_usage_data_unittest.cc",
+    "system/fake_system_routine_controller_delegate.cc",
+    "system/fake_system_routine_controller_delegate.h",
     "system/power_manager_client_conversions_unittest.cc",
     "system/system_data_provider_unittest.cc",
     "system/system_routine_controller_unittest.cc",
@@ -125,6 +130,7 @@ source_set("unit_tests") {
     "//chromeos/ash/services/network_config:in_process_instance",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/network_health/public/mojom",
     "//components/onc",
     "//components/prefs:test_support",
     "//components/proxy_config",

@@ -25,7 +25,8 @@ enum RoutineType {
   kHttpsLatency,
   kArcHttp,
   kArcPing,
-  kArcDnsResolution
+  kArcDnsResolution,
+  kGoogleServicesConnectivity,
 };
 
 enum StandardRoutineResult {

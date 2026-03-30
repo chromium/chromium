@@ -59,6 +59,12 @@ const RoutineProperties kRoutineProperties[] = {
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcPing},
     {mojom::RoutineType::kArcDnsResolution, "ArcDnsResolutionResult",
      /*duration_seconds=*/1, healthd::DiagnosticRoutineEnum::kArcDnsResolution},
+    // GoogleServicesConnectivity bypasses cros_healthd (uses
+    // SystemRoutineControllerDelegate). healthd_type is kUnknown (unused)
+    // and duration_seconds is 0 (no cros_healthd polling).
+    {mojom::RoutineType::kGoogleServicesConnectivity,
+     "GoogleServicesConnectivityResult",
+     /*duration_seconds=*/0, healthd::DiagnosticRoutineEnum::kUnknown},
 };
 
 const size_t kRoutinePropertiesLength = std::size(kRoutineProperties);

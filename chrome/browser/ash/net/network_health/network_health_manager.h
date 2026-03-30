@@ -55,6 +55,12 @@ class NetworkHealthManager {
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer);
 
+  // Runs the GoogleServicesConnectivity diagnostic routine directly
+  // (bypassing Mojo IPC) and invokes `callback` with the result.
+  void RunGoogleServicesConnectivity(
+      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+          RunGoogleServicesConnectivityCallback callback);
+
   NetworkHealthHelper* helper() { return helper_.get(); }
 
  private:

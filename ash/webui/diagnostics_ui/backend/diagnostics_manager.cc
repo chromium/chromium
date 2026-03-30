@@ -5,6 +5,7 @@
 #include "ash/webui/diagnostics_ui/backend/diagnostics_manager.h"
 
 #include <ui/aura/window.h>
+
 #include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/webui/diagnostics_ui/backend/connectivity/network_health_provider.h"
@@ -17,14 +18,17 @@
 namespace ash {
 namespace diagnostics {
 
-DiagnosticsManager::DiagnosticsManager(SessionLogHandler* session_log_handler,
-                                       content::WebUI* webui)
+DiagnosticsManager::DiagnosticsManager(
+    SessionLogHandler* session_log_handler,
+    content::WebUI* webui,
+    std::unique_ptr<SystemRoutineControllerDelegate> delegate)
     : webui_(webui) {
   // Configure providers with logs from DiagnosticsLogController when flag
   // enabled.
   if (DiagnosticsLogController::IsInitialized()) {
     system_data_provider_ = std::make_unique<SystemDataProvider>();
-    system_routine_controller_ = std::make_unique<SystemRoutineController>();
+    system_routine_controller_ =
+        std::make_unique<SystemRoutineController>(std::move(delegate));
     network_health_provider_ = std::make_unique<NetworkHealthProvider>();
   }
 }

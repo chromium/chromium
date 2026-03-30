@@ -84,6 +84,7 @@ RoutineLog::RoutineCategory GetRoutineCategory(mojom::RoutineType type) {
     case mojom::RoutineType::kArcHttp:
     case mojom::RoutineType::kArcPing:
     case mojom::RoutineType::kArcDnsResolution:
+    case mojom::RoutineType::kGoogleServicesConnectivity:
       return RoutineLog::RoutineCategory::kNetwork;
   };
 }

@@ -6,20 +6,23 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
 #include "ash/system/diagnostics/fake_diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/routine_log.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/diagnostics_ui/backend/system/fake_system_routine_controller_delegate.h"
 #include "ash/webui/diagnostics_ui/mojom/system_routine_controller.mojom.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_writer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/components/test/ash_test_suite.h"
@@ -149,6 +152,21 @@ std::vector<std::string> GetLogLineContents(const std::string& log_line) {
   return result;
 }
 
+chromeos::network_diagnostics::mojom::RoutineResultPtr
+MakeGoogleServicesConnectivityResult(
+    chromeos::network_diagnostics::mojom::RoutineVerdict verdict,
+    std::vector<chromeos::network_diagnostics::mojom::
+                    GoogleServicesConnectivityProblemPtr> problems) {
+  auto result = chromeos::network_diagnostics::mojom::RoutineResult::New();
+  result->verdict = verdict;
+  result->problems = chromeos::network_diagnostics::mojom::RoutineProblems::
+      NewGoogleServicesConnectivityProblems(std::move(problems));
+  result->timestamp = base::Time::Now();
+  result->source =
+      chromeos::network_diagnostics::mojom::RoutineCallSource::kUnknown;
+  return result;
+}
+
 }  // namespace
 
 struct FakeRoutineRunner : public mojom::RoutineRunner {
@@ -180,7 +198,10 @@ class SystemRoutineControllerTest : public AshTestBase {
     AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
     cros_healthd::FakeCrosHealthd::Initialize();
-    system_routine_controller_ = std::make_unique<SystemRoutineController>();
+    auto delegate = std::make_unique<FakeSystemRoutineControllerDelegate>();
+    fake_delegate_ = delegate.get();
+    system_routine_controller_ =
+        std::make_unique<SystemRoutineController>(std::move(delegate));
     DiagnosticsLogController::Initialize(
         std::make_unique<FakeDiagnosticsBrowserDelegate>());
 
@@ -194,6 +215,9 @@ class SystemRoutineControllerTest : public AshTestBase {
   }
 
   void TearDown() override {
+    // Clear raw_ptr before destroying controller (which owns the delegate)
+    // to avoid dangling pointer detection.
+    fake_delegate_ = nullptr;
     system_routine_controller_.reset();
     cros_healthd::FakeCrosHealthd::Shutdown();
     base::RunLoop().RunUntilIdle();
@@ -229,7 +253,22 @@ class SystemRoutineControllerTest : public AshTestBase {
     task_environment()->RunUntilIdle();
   }
 
+  // Sets up inflight state and calls OnDirectNetworkRoutineResult directly.
+  // Used to test the null result path without running the full routine.
+  void CallOnDirectNetworkRoutineResult(
+      mojom::RoutineType type,
+      chromeos::network_diagnostics::mojom::RoutineResultPtr result,
+      mojo::PendingRemote<mojom::RoutineRunner> runner) {
+    system_routine_controller_->inflight_routine_runner_.Bind(
+        std::move(runner));
+    system_routine_controller_->inflight_routine_type_ = type;
+    system_routine_controller_->OnDirectNetworkRoutineResult(type,
+                                                             std::move(result));
+    task_environment()->RunUntilIdle();
+  }
+
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
+  raw_ptr<FakeSystemRoutineControllerDelegate> fake_delegate_ = nullptr;
   std::unique_ptr<SystemRoutineController> system_routine_controller_;
 
  private:
@@ -547,6 +586,10 @@ TEST_F(SystemRoutineControllerTest, DischargeRoutineSuccess) {
 }
 
 TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
   SetAvailableRoutines(
       {healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
        healthd::DiagnosticRoutineEnum::kMemory,
@@ -572,7 +615,7 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
   base::RunLoop run_loop;
   system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
       [&](const std::vector<mojom::RoutineType>& supported_routines) {
-        EXPECT_EQ(17u, supported_routines.size());
+        EXPECT_EQ(18u, supported_routines.size());
         EXPECT_FALSE(std::ranges::contains(supported_routines,
                                            mojom::RoutineType::kBatteryCharge));
         EXPECT_FALSE(std::ranges::contains(
@@ -615,6 +658,45 @@ TEST_F(SystemRoutineControllerTest, AvailableRoutines) {
                                           mojom::RoutineType::kArcPing));
         EXPECT_TRUE(std::ranges::contains(
             supported_routines, mojom::RoutineType::kArcDnsResolution));
+        EXPECT_TRUE(std::ranges::contains(
+            supported_routines,
+            mojom::RoutineType::kGoogleServicesConnectivity));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(SystemRoutineControllerTest, AvailableRoutines_FeatureDisabled) {
+  // Same healthd set, but GSC feature flag is disabled (default).
+  SetAvailableRoutines(
+      {healthd::DiagnosticRoutineEnum::kFloatingPointAccuracy,
+       healthd::DiagnosticRoutineEnum::kMemory,
+       healthd::DiagnosticRoutineEnum::kPrimeSearch,
+       healthd::DiagnosticRoutineEnum::kAcPower,
+       healthd::DiagnosticRoutineEnum::kBatteryCapacity,
+       healthd::DiagnosticRoutineEnum::kBatteryHealth,
+       healthd::DiagnosticRoutineEnum::kCaptivePortal,
+       healthd::DiagnosticRoutineEnum::kDnsLatency,
+       healthd::DiagnosticRoutineEnum::kDnsResolution,
+       healthd::DiagnosticRoutineEnum::kDnsResolverPresent,
+       healthd::DiagnosticRoutineEnum::kGatewayCanBePinged,
+       healthd::DiagnosticRoutineEnum::kHasSecureWiFiConnection,
+       healthd::DiagnosticRoutineEnum::kHttpFirewall,
+       healthd::DiagnosticRoutineEnum::kHttpsFirewall,
+       healthd::DiagnosticRoutineEnum::kHttpsLatency,
+       healthd::DiagnosticRoutineEnum::kLanConnectivity,
+       healthd::DiagnosticRoutineEnum::kSignalStrength,
+       healthd::DiagnosticRoutineEnum::kArcHttp,
+       healthd::DiagnosticRoutineEnum::kArcPing,
+       healthd::DiagnosticRoutineEnum::kArcDnsResolution});
+
+  base::RunLoop run_loop;
+  system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
+      [&](const std::vector<mojom::RoutineType>& supported_routines) {
+        EXPECT_EQ(17u, supported_routines.size());
+        EXPECT_FALSE(std::ranges::contains(
+            supported_routines,
+            mojom::RoutineType::kGoogleServicesConnectivity));
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -675,7 +757,9 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
       /*percent_complete=*/0, healthd::DiagnosticRoutineStatusEnum::kCancelled,
       mojo::ScopedHandle());
 
-  // Destroy the SystemRoutineController
+  // Destroy the SystemRoutineController.
+  // Clear raw_ptr before destroying controller to avoid dangling detection.
+  fake_delegate_ = nullptr;
   system_routine_controller_.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -690,9 +774,39 @@ TEST_F(SystemRoutineControllerTest, CancelRoutineDtor) {
             update_params->command);
 }
 
+TEST_F(SystemRoutineControllerTest, CancelRoutineDtor_DirectPath) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  fake_delegate_->set_hold_callback(true);
+
+  auto routine_runner = std::make_unique<FakeRoutineRunner>();
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kGoogleServicesConnectivity,
+      routine_runner->receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(routine_runner->result.is_null());
+
+  // Destroy the controller while GSC routine is inflight.
+  // Destructor does NOT call cros_healthd cancel for direct-path routines.
+  // Clear raw_ptr before destroying controller to avoid dangling detection.
+  fake_delegate_ = nullptr;
+  system_routine_controller_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify cros_healthd was NOT called with kCancel.
+  std::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
+      update_params =
+          cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
+  EXPECT_FALSE(update_params.has_value());
+}
+
 TEST_F(SystemRoutineControllerTest, RunRoutineCount0) {
   base::HistogramTester histogram_tester;
 
+  fake_delegate_ = nullptr;
   system_routine_controller_.reset();
 
   histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 0,
@@ -731,6 +845,7 @@ TEST_F(SystemRoutineControllerTest, RunRoutineCount1) {
   // Destroy the SystemRoutineController and check the emitted result.
   base::HistogramTester histogram_tester;
 
+  fake_delegate_ = nullptr;
   system_routine_controller_.reset();
 
   histogram_tester.ExpectBucketCount("ChromeOS.DiagnosticsUi.RoutineCount", 1,
@@ -1072,6 +1187,179 @@ TEST_F(SystemRoutineControllerTest,
       mojom::RoutineType::kCpuStress,
       mojom::RoutineResult::NewSimpleResult(
           mojom::StandardRoutineResult::kTestPassed))));
+}
+
+// Covers all verdict branches (kNoProblem, kNotRun, kProblem).
+TEST_F(SystemRoutineControllerTest, GoogleServicesConnectivity_VerdictMapping) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  // Helper: run a GSC routine with the given verdict and empty problems,
+  // then assert the result is a simple_result matching `expected`.
+  auto run_and_expect_simple =
+      [&](chromeos::network_diagnostics::mojom::RoutineVerdict verdict,
+          mojom::StandardRoutineResult expected) {
+        SCOPED_TRACE(testing::PrintToString(verdict));
+        fake_delegate_->SetGoogleServicesConnectivityResult(
+            MakeGoogleServicesConnectivityResult(verdict, {}));
+
+        FakeRoutineRunner runner;
+        system_routine_controller_->RunRoutine(
+            mojom::RoutineType::kGoogleServicesConnectivity,
+            runner.receiver.BindNewPipeAndPassRemote());
+        base::RunLoop().RunUntilIdle();
+
+        ASSERT_FALSE(runner.result.is_null());
+        ASSERT_TRUE(runner.result->result->is_simple_result());
+        EXPECT_EQ(expected, runner.result->result->get_simple_result());
+      };
+
+  run_and_expect_simple(
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kNoProblem,
+      mojom::StandardRoutineResult::kTestPassed);
+  run_and_expect_simple(
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kNotRun,
+      mojom::StandardRoutineResult::kUnableToRun);
+  run_and_expect_simple(
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kProblem,
+      mojom::StandardRoutineResult::kTestFailed);
+}
+
+// Covers null result, network pipe disconnect, and runner disconnect.
+TEST_F(SystemRoutineControllerTest, GoogleServicesConnectivity_ErrorHandling) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  {
+    SCOPED_TRACE("Null result from delegate");
+
+    FakeRoutineRunner runner;
+    CallOnDirectNetworkRoutineResult(
+        mojom::RoutineType::kGoogleServicesConnectivity,
+        /*result=*/nullptr, runner.receiver.BindNewPipeAndPassRemote());
+
+    ASSERT_FALSE(runner.result.is_null());
+    ASSERT_TRUE(runner.result->result->is_simple_result());
+    EXPECT_EQ(mojom::StandardRoutineResult::kExecutionError,
+              runner.result->result->get_simple_result());
+  }
+
+  {
+    SCOPED_TRACE("Runner disconnect while inflight");
+
+    fake_delegate_->set_hold_callback(true);
+
+    auto routine_runner = std::make_unique<FakeRoutineRunner>();
+    system_routine_controller_->RunRoutine(
+        mojom::RoutineType::kGoogleServicesConnectivity,
+        routine_runner->receiver.BindNewPipeAndPassRemote());
+    base::RunLoop().RunUntilIdle();
+
+    ASSERT_TRUE(routine_runner->result.is_null());
+
+    // Disconnect the RoutineRunner (simulates UI navigating away).
+    routine_runner.reset();
+    base::RunLoop().RunUntilIdle();
+
+    // Fire the held delegate callback after runner disconnect.
+    // Must not crash (early-return guard in
+    // OnGoogleServicesConnectivityRoutineResult handles this).
+    fake_delegate_->RunHeldCallback();
+    base::RunLoop().RunUntilIdle();
+
+    // Verify no crash. Verify cros_healthd was NOT called with kCancel.
+    std::optional<cros_healthd::FakeCrosHealthd::RoutineUpdateParams>
+        update_params =
+            cros_healthd::FakeCrosHealthd::Get()->GetRoutineUpdateParams();
+    EXPECT_FALSE(update_params.has_value());
+
+    fake_delegate_->set_hold_callback(false);
+  }
+}
+
+TEST_F(SystemRoutineControllerTest,
+       GoogleServicesConnectivity_DisabledFlagReturnsUnableToRun) {
+  base::HistogramTester histogram_tester;
+
+  // Feature flag is OFF (default). The feature gate should prevent
+  // the delegate call and emit metrics via OnDirectNetworkRoutineResult.
+  FakeRoutineRunner runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kGoogleServicesConnectivity,
+      runner.receiver.BindNewPipeAndPassRemote());
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_FALSE(runner.result.is_null());
+  ASSERT_TRUE(runner.result->result->is_simple_result());
+  EXPECT_EQ(mojom::StandardRoutineResult::kUnableToRun,
+            runner.result->result->get_simple_result());
+
+  histogram_tester.ExpectBucketCount(
+      "ChromeOS.DiagnosticsUi.GoogleServicesConnectivityResult",
+      mojom::StandardRoutineResult::kUnableToRun, 1);
+}
+
+TEST_F(SystemRoutineControllerTest,
+       GoogleServicesConnectivity_AvailableWithoutCrosHealthd) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ash::features::kGoogleServicesConnectivityRoutine);
+
+  // cros_healthd reports CPU and Memory only -- NOT
+  // kGoogleServicesConnectivity.
+  SetAvailableRoutines({healthd::DiagnosticRoutineEnum::kCpuStress,
+                        healthd::DiagnosticRoutineEnum::kMemory});
+
+  base::RunLoop run_loop;
+  system_routine_controller_->GetSupportedRoutines(base::BindLambdaForTesting(
+      [&](const std::vector<mojom::RoutineType>& supported_routines) {
+        // GoogleServicesConnectivity should be available based
+        // on the feature flag alone, regardless of cros_healthd.
+        // Exactly once -- not duplicated.
+        EXPECT_EQ(1, std::ranges::count(
+                         supported_routines,
+                         mojom::RoutineType::kGoogleServicesConnectivity));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Verifies that LogRoutineStarted is called before
+// OnDirectNetworkRoutineResult even on sync error paths
+// (feature-disabled completes the routine synchronously).
+TEST_F(SystemRoutineControllerTest,
+       GoogleServicesConnectivity_LogStartedBeforeCompleted) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath log_path = temp_dir.GetPath().AppendASCII("routine_log");
+  DiagnosticsLogController::Get()->SetRoutineLogForTesting(
+      std::make_unique<RoutineLog>(log_path));
+
+  // Feature flag is OFF (default). The feature-disabled path in
+  // ExecuteNetworkRoutineDirect completes the routine synchronously,
+  // which exposes the logging-order bug.
+  FakeRoutineRunner runner;
+  system_routine_controller_->RunRoutine(
+      mojom::RoutineType::kGoogleServicesConnectivity,
+      runner.receiver.BindNewPipeAndPassRemote());
+  task_environment()->RunUntilIdle();
+
+  const std::string log =
+      DiagnosticsLogController::Get()->GetRoutineLog().GetContentsForCategory(
+          RoutineLog::RoutineCategory::kNetwork);
+  const std::vector<std::string> lines = GetLogLines(log);
+  ASSERT_EQ(2u, lines.size());
+
+  std::vector<std::string> first = GetLogLineContents(lines[0]);
+  EXPECT_EQ("GoogleServicesConnectivity", first[1]);
+  EXPECT_EQ("Started", first[2]);
+
+  std::vector<std::string> second = GetLogLineContents(lines[1]);
+  EXPECT_EQ("GoogleServicesConnectivity", second[1]);
+  // kNotRun maps to kUnableToRun which logs "Unable to run".
+  EXPECT_EQ("Unable to run", second[2]);
 }
 
 }  // namespace ash::diagnostics

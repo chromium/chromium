@@ -14,6 +14,7 @@ include_rules = [
   "+chrome/browser/ash/annotator",
   "+chrome/browser/ash/borealis",
   "+chrome/browser/ash/boca/receiver",
+  "+chrome/browser/ash/diagnostics",
   "+chrome/browser/ash/eche_app",
   "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/mall",

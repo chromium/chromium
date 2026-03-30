@@ -86,5 +86,13 @@ void NetworkHealthManager::AddObserver(
   GetInProcessInstance()->AddObserver(std::move(observer));
 }
 
+void NetworkHealthManager::RunGoogleServicesConnectivity(
+    chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines::
+        RunGoogleServicesConnectivityCallback callback) {
+  network_diagnostics_->RunGoogleServicesConnectivity(
+      chromeos::network_diagnostics::mojom::RoutineCallSource::kDiagnosticsUI,
+      std::move(callback));
+}
+
 }  // namespace network_health
 }  // namespace ash
