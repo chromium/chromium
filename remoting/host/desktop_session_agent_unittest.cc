@@ -85,7 +85,8 @@ class DesktopSessionAgentTest : public ::testing::Test {
   void Shutdown();
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
   base::test::TestFuture<void> shutdown_future_;
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
   scoped_refptr<DesktopSessionAgent> agent_;

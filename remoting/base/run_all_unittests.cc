@@ -4,6 +4,7 @@
 
 #include "base/base_switches.h"
 #include "base/compiler_specific.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
@@ -14,6 +15,9 @@
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#if BUILDFLAG(IS_POSIX)
+#include "remoting/base/security_key_socket_name.h"
+#endif
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -21,6 +25,16 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 int main(int argc, char** argv) {
+#if BUILDFLAG(IS_POSIX)
+  // Use a temporary directory for the security key socket to avoid interfering
+  // with any active CRD sessions on the machine.
+  base::ScopedTempDir temp_dir;
+  if (temp_dir.CreateUniqueTempDir()) {
+    remoting::SetDefaultSecurityKeySocketNameForTest(
+        temp_dir.GetPath().Append("crd_ssh_auth_sock_test"));
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
   remoting::ChromeOSRemotingTestSuite test_suite(argc, argv);
 #else

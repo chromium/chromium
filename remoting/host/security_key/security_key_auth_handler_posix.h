@@ -27,12 +27,8 @@ class SecurityKeySocket;
 
 class SecurityKeyAuthHandlerPosix : public SecurityKeyAuthHandler {
  public:
-  // Returns the default security key socket name that will be used if
-  // SetSecurityKeySocketName() is never called.
-  static base::FilePath GetDefaultSecurityKeySocketName();
-
   // Returns the name of the socket to listen for security key requests on.
-  // GetDefaultSecurityKeySocketName() will be returned if
+  // The default security key socket name will be returned if
   // SetSecurityKeySocketName() has not been called.
   static const base::FilePath& GetSecurityKeySocketName();
 

@@ -23,6 +23,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/security_key_socket_name.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/ipc_constants.h"
@@ -70,9 +71,7 @@ void PrintJson(bool is_crd_session) {
   base::DictValue dict;
   dict.Set("isCrdSession", is_crd_session);
   if (is_crd_session) {
-    dict.Set(
-        "sshAuthSock",
-        SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName().value());
+    dict.Set("sshAuthSock", GetDefaultSecurityKeySocketName().value());
   }
   std::cout << base::WriteJsonWithOptions(dict, base::OPTIONS_PRETTY_PRINT)
                    .value_or("");

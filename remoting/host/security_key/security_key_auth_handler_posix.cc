@@ -30,6 +30,7 @@
 #include "net/socket/stream_socket.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
 #include "remoting/base/logging.h"
+#include "remoting/base/security_key_socket_name.h"
 #include "remoting/host/security_key/security_key_socket.h"
 
 namespace remoting {
@@ -40,7 +41,7 @@ const int64_t kDefaultRequestTimeoutSeconds = 60;
 
 base::FilePath& GetMutableSecurityKeySocketName() {
   static base::NoDestructor<base::FilePath> path{
-      SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName()};
+      GetDefaultSecurityKeySocketName()};
   return *path;
 }
 
@@ -61,22 +62,6 @@ unsigned int GetCommandCode(const std::string& data) {
 }
 
 }  // namespace
-
-// static
-base::FilePath SecurityKeyAuthHandlerPosix::GetDefaultSecurityKeySocketName() {
-#if BUILDFLAG(IS_LINUX)
-  // LINT.IfChange(ssh_auth_sock_name)
-  const char* xdg_runtime_dir = getenv("XDG_RUNTIME_DIR");
-  if (xdg_runtime_dir) {
-    return base::FilePath(xdg_runtime_dir).Append("crd_ssh_auth_sock");
-  }
-  // LINT.ThenChange(//remoting/host/linux/linux_me2me_host.py:ssh_auth_sock_name)
-  LOG(WARNING) << "Cannot find the XDG_RUNTIME_DIR environment variable.";
-#else
-  NOTIMPLEMENTED();
-#endif
-  return {};
-}
 
 // static
 const base::FilePath& SecurityKeyAuthHandlerPosix::GetSecurityKeySocketName() {

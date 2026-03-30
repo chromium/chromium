@@ -47,6 +47,7 @@ source_set("security_key") {
       "security_key_auth_handler_posix.cc",
       "security_key_auth_handler_posix.h",
     ]
+    public_deps += [ "//remoting/base:security_key_socket_name" ]
   }
 
   if (is_win) {

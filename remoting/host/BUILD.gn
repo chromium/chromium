@@ -1274,6 +1274,9 @@ if (enable_me2me_host) {
   } else {
     shared_library("remoting_core") {
       deps = [ ":implementation" ]
+      if (is_posix) {
+        deps += [ "//remoting/base:security_key_socket_name" ]
+      }
 
       if (!is_component_build) {
         if (is_linux) {

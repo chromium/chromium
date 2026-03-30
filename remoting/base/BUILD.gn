@@ -47,6 +47,27 @@ source_set("authentication_method") {
   ]
 }
 
+source_set("base_export") {
+  sources = [ "base_export.h" ]
+  public_deps = [ "//base" ]
+  if (is_linux || is_mac || is_win) {
+    configs += [ "//remoting/build/config:host_implementation" ]
+  }
+}
+
+if (is_posix) {
+  source_set("security_key_socket_name") {
+    sources = [
+      "security_key_socket_name.cc",
+      "security_key_socket_name.h",
+    ]
+    deps = [
+      ":base_export",
+      "//base",
+    ]
+  }
+}
+
 source_set("base") {
   sources = [
     "async_file_util.cc",
@@ -405,6 +426,9 @@ source_set("run_all_unittests") {
     "//mojo/core/embedder",
     "//testing/gtest",
   ]
+  if (is_posix) {
+    deps += [ ":security_key_socket_name" ]
+  }
   if (is_chromeos) {
     deps += [ "//chromeos/ash/components:test_support" ]
     data = [ "$root_out_dir/locales/en-US.pak" ]

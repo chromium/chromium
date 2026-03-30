@@ -109,6 +109,9 @@ test("remoting_unittests") {
       "//remoting/host:unit_tests",
       "//ui/gfx",
     ]
+    if (is_posix) {
+      deps += [ "//remoting/base:security_key_socket_name" ]
+    }
   }
 
   deps += [ "//third_party/webrtc_overrides:webrtc_component" ]
