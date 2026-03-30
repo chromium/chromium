@@ -39,6 +39,9 @@ enum class AutofillSnackbarType {
 
   // Used when an entity migration to Google Wallet fails.
   kAutofillAiSaveToWalletFailure = 9,
+
+  // Used when the server request to fetch entity data failed.
+  kAutofillAiFetchFromWalletFailure = 10,
 };
 
 }  // namespace autofill
