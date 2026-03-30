@@ -1995,11 +1995,13 @@ bool RenderProcessHostImpl::Init() {
     NotifyRendererOfLockedStateUpdate();
     // Send the initial system color info to the renderer.
     ThemeHelper::GetInstance()->SendSystemColorInfo(GetRendererInterface());
-    for (auto* observer : GetAllCreationObservers()) {
-      observer->OnRenderProcessHostCreated(this);
-    }
 
     if (ShouldPauseChannelUntilProcessLaunched()) {
+      // We pause the mojo channel to the renderer when launching the process
+      // until we get the OnProcessLaunched signal, where we flush and unpause
+      // the channel. Note that this delays any message sent before the
+      // OnProcessLaunched signal is run on the main thread.
+      // TODO(crbug.com/448511116): Remove this path.
       TRACE_EVENT_BEGIN(
           "ipc", "RenderProcessHostImpl.Channel.ProcessLaunchPauseToUnpause",
           tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
@@ -2008,6 +2010,14 @@ bool RenderProcessHostImpl::Init() {
           tracing_track_, ChromeTrackEvent::kRenderProcessHost, *this);
       pause_channel_on_process_launch_time_ = base::TimeTicks::Now();
       channel_->Pause();
+    } else {
+      // Since we're not pausing the mojo channel, trigger
+      // `OnRenderProcessHostCreated()` so that messages that need to be sent
+      // early to a newly created renderer, before e.g. navigation commits,
+      // get sent as soon as possible / not wait for `OnProcessLaunched()`.
+      for (auto* observer : GetAllCreationObservers()) {
+        observer->OnRenderProcessHostCreated(this);
+      }
     }
 
     // In single process mode, browser-side tracing and memory will cover the
@@ -5921,13 +5931,22 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   // creation failed events to the observers.
   sent_process_launched_ = true;
 
-  // NOTE: This needs to be before flushing queued messages, because
-  // ExtensionService uses this notification to initialize the renderer
-  // process with state that must be there before any JavaScript executes.
-  //
-  // The queued messages contain such things as "navigate". If this
-  // notification was after, we can end up executing JavaScript before the
-  // initialization happens.
+  if (ShouldPauseChannelUntilProcessLaunched() && !run_renderer_in_process()) {
+    // If we're pausing the mojo channel and the renderer does not run
+    // in-process, OnRenderProcessHostCreated() is not triggered yet, so trigger
+    // it now before we flush and unpause the channel.
+    // NOTE: This needs to be before flushing queued messages, because
+    // ExtensionService uses this notification to initialize the renderer
+    // process with state that must be there before any JavaScript executes.
+    //
+    // The queued messages contain such things as "navigate". If this
+    // notification was after, we can end up executing JavaScript before the
+    // initialization happens.
+    // TODO(crbug.com/448511116): Remove this path.
+    for (auto* observer : GetAllCreationObservers()) {
+      observer->OnRenderProcessHostCreated(this);
+    }
+  }
   for (auto* observer : GetAllCreationObservers()) {
     observer->OnRenderProcessLaunched(this);
   }

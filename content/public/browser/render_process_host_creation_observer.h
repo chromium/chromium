@@ -23,10 +23,15 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
 
   virtual ~RenderProcessHostCreationObserver();
 
-  // This method is invoked when the process host is being initialized, and the
-  // renderer process has been requested to be launched. Note that the channel
-  // may or may not have been connected when this is invoked. Use this instead
-  // of `OnRenderProcessHostLaunched` when information needs to be sent to the
+  // If kSkipIPCChannelPausingForNonGuests is disabled or the renderer is run
+  // in-process, this function is triggered at the same timing (but just before)
+  // `OnRenderProcessLaunched()`.
+  // Otherwise if the renderer does not run in-process and
+  // kSkipIPCChannelPausingForNonGuests is enabled, this method is invoked when
+  // the process host is being initialized, and the renderer process has been
+  // requested to be launched. Note that the channel may or may not have been
+  // connected when this is invoked. Use this instead of
+  // `OnRenderProcessHostLaunched` when information needs to be sent to the
   // renderer process as soon as possible before e.g. the renderer process
   // commits a navigation, etc. (which can possibly be triggered before the
   // OnRenderProcessLaunched signal if there is no IPC channel pausing).
@@ -39,6 +44,9 @@ class CONTENT_EXPORT RenderProcessHostCreationObserver {
   // TODO(crbug.com/448511116): Rename this to reflect that this is triggered
   // when initializing and requesting to launch the renderer process, instead
   // of when the `process_host` itself being created.
+  // TODO(crbug.com/458372810): Make it so that we consistently invoke this
+  // function on renderer process init instead of potentially triggering at
+  // renderer processlaunch depending on kSkipIPCChannelPausingForNonGuests.
   virtual void OnRenderProcessHostCreated(RenderProcessHost* process_host) {}
 
   // This method is invoked when the renderer process for the given host was
