@@ -76,18 +76,22 @@ reports:
 
 ### Patches to simulate a compromised renderer
 
+* Instead of providing a patch, use MojoJS to simulate a compromised renderer.
+* Explain why MojoJS is not sufficient.
 * Upload a git generated patch with a clear base commit.
 * Use process guards (e.g. test the commandline for `--type="renderer"`) if
   code can run in multiple processes.
 * Use Sleep() in privileged processes to simulate a race.
-* Avoid extraneous logging like `LOG(INFO) << "EXPLOIT SUCCEEDED"`.
+* Do not add extraneous logging like `LOG(INFO) << "EXPLOIT SUCCEEDED"`.
 
 ### Steps to Reproduce
 
 * Please include clear, concise, numbered steps to reproduce the bug you are
   reporting.
 * Provide the full Chrome or d8 command line and any build flags to reproduce.
-* Do not run Chrome in a harness or via CDP it must run directly.
+  * avoid `--enable-experimental-web-platform-features` and
+    `--enable-unsafe-webgpu` and instead provide specific feature flags.
+* Do not run Chrome in a harness or via CDP.
 
 ### Report Attachments
 
@@ -133,6 +137,8 @@ reports:
     please consider performing a full bisection, detailing the commit that
     introduced the issue and / or all the active release channels impacted by
     the bug.
+* Empty initial comments will lead to your report being closed and may lead to
+  your account being suspended. Do not create then populate placeholder issues.
 
 ### Suggested Fix / Patch Rewards
 
@@ -236,17 +242,27 @@ reports:
   directly communicate with that vendor or project owner, and receive credit or
   acknowledgement (if they have such a mechanism to do so).
 
-#### Can I submit my report(s) and provide a working exploit later?
-Is there a time limit for submitting an exploit?
+#### Can I submit my report(s) and provide a working exploit or proof of r/w later?
 
 * Most definitely! We realize that developing an exploit is a lengthy process
   and we very much encourage this approach, as it allows us to work on fixing
   the bugs as soon as possible. It also reduces the chance that someone else
   reports the same issue while you are working on the exploit.
+* The exploit must work against a released Chrome build on the latest operating
+  system versions and architectures, and prove code execution by executing a
+  command shell with the credentials of the user running Chrome.
+* r/w and arbitrary read must work using Chrome in a special mode - details will
+  be released here soon.
+* If you have a proof to add to a bug after it has been rewarded, add the hotlist
+  [Security-Request-Exploit-Assessment](https://issues.chromium.org/hotlists/8186895)
+  (hotlist id:8186895) along with a poc and comment that demonstrates the proof.
+  We will review this queue roughly weekly.
+
+#### Is there a time limit for submitting an exploit?
+
 * Although we don't have a set time limit, we would expect that the exploit
   would follow within six  weeks of the initial report. If more time is needed,
   we are happy to discuss extended timelines.
-  * Please reach out to security-vrp@chromium.org to discuss exploit extensions.
 
 #### Will you reward for types of bugs that are not specifically listed?
 
@@ -422,10 +438,11 @@ Is there a time limit for submitting an exploit?
 
 #### I don't agree with the reward amount. Can I get the reward reassessed?
 
-* We always try our best to be fair and consistent, but sometimes we may get it
-  wrong or miss something in our assessment. If you feel that is the case,
-  please reach out to us at security-vrp@chromium.org detailing why you believe
-  we should reassess your report.
+* We try our best to be fair and consistent, but sometimes we miss something in
+  our assessment. If you feel that is the case please add a comment explaining
+  your position to the issue and add the
+  [Security-VRP-Reassessment-Request](https://issues.chromium.org/hotlists/8186354)
+  hotlist (id:8186354).
 
 ### Updates On The VRP
 
