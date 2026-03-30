@@ -1,0 +1,16 @@
+import("//build/config/features.gni")
+
+static_library("first_run") {
+  sources = [
+    "accessibility_annotator_first_run_client.h",
+    "accessibility_annotator_first_run_service_impl.cc",
+    "accessibility_annotator_first_run_service_impl.h",
+    "accessibility_annotator_first_run_types.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+}

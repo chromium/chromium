@@ -1473,6 +1473,7 @@ static_library("browser") {
     "//chrome/browser/accessibility:utils",
     "//chrome/browser/accessibility_annotator",
     "//chrome/browser/accessibility_annotator:impl",
+    "//chrome/browser/accessibility_annotator/first_run",
     "//chrome/browser/account_settings",
     "//chrome/browser/affiliations",
     "//chrome/browser/ai",

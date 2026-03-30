@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("first_run") {
+  sources = [
+    "accessibility_annotator_first_run_service_factory.cc",
+    "accessibility_annotator_first_run_service_factory.h",
+    "chrome_accessibility_annotator_first_run_client.cc",
+    "chrome_accessibility_annotator_first_run_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/accessibility_annotator/core:features",
+    "//components/accessibility_annotator/first_run",
+    "//components/keyed_service/content",
+  ]
+}
