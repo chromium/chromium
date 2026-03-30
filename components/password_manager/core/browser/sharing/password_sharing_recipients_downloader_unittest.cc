@@ -92,7 +92,7 @@ TEST_F(PasswordSharingRecipientsDownloaderTest,
   EXPECT_CALL(callback, Run).Times(0);
   ASSERT_TRUE(identity_env()->IsAccessTokenRequestPending());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   EXPECT_EQ(downloader->GetAuthError().state(),
             GoogleServiceAuthError::CONNECTION_FAILED);
 
@@ -101,7 +101,7 @@ TEST_F(PasswordSharingRecipientsDownloaderTest,
   EXPECT_CALL(callback, Run);
   ASSERT_TRUE(identity_env()->IsAccessTokenRequestPending());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   EXPECT_EQ(downloader->GetAuthError().state(),
             GoogleServiceAuthError::CONNECTION_FAILED);
