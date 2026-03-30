@@ -12,10 +12,10 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -80,13 +80,13 @@ void FakeListener::OnAssociatedInterfaceRequest(
 class DesktopSessionAgentTest : public ::testing::Test {
  public:
   DesktopSessionAgentTest();
-  ~DesktopSessionAgentTest() override = default;
+  ~DesktopSessionAgentTest() override;
 
   void Shutdown();
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::TestFuture<void> shutdown_future_;
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
   scoped_refptr<DesktopSessionAgent> agent_;
 };
@@ -94,16 +94,20 @@ class DesktopSessionAgentTest : public ::testing::Test {
 DesktopSessionAgentTest::DesktopSessionAgentTest()
     : task_runner_(
           new AutoThreadTaskRunner(task_environment_.GetMainThreadTaskRunner(),
-                                   run_loop_.QuitClosure())),
+                                   shutdown_future_.GetCallback())),
       agent_(new DesktopSessionAgent(task_runner_,
                                      task_runner_,
                                      task_runner_,
                                      task_runner_)) {}
 
+DesktopSessionAgentTest::~DesktopSessionAgentTest() = default;
+
 void DesktopSessionAgentTest::Shutdown() {
   task_runner_ = nullptr;
-  agent_->Stop();
-  agent_ = nullptr;
+  if (agent_) {
+    agent_->Stop();
+    agent_ = nullptr;
+  }
 }
 
 TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
@@ -138,7 +142,7 @@ TEST_F(DesktopSessionAgentTest, StartDesktopSessionAgent) {
             desktop_session_agent.reset();
           }));
 
-  run_loop_.Run();
+  EXPECT_TRUE(shutdown_future_.Wait());
 
   ASSERT_TRUE(remote_received);
   ASSERT_TRUE(session_started);
