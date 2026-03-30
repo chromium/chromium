@@ -499,6 +499,7 @@ class CONTENT_EXPORT NavigationRequest
       blink::mojom::RendererContentSettingsPtr content_settings) override;
   blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
       override;
+  BeforeUnloadExecutionMode GetBeforeUnloadExecutionMode() const override;
   void SetIsAdTagged() override;
   std::optional<NavigationDiscardReason> GetNavigationDiscardReason() override;
   // NOTE: Read function comments in NavigationHandle before use!
@@ -1784,6 +1785,10 @@ class CONTENT_EXPORT NavigationRequest
     return remove_extra_headers_on_cross_origin_redirect_;
   }
 
+  void set_before_unload_execution_mode(BeforeUnloadExecutionMode mode) {
+    before_unload_execution_mode_ = mode;
+  }
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -2847,6 +2852,9 @@ class CONTENT_EXPORT NavigationRequest
 
   // Tracks whether a beforeunload dialog was shown as part of this navigation.
   bool beforeunload_dialog_shown_ = false;
+
+  BeforeUnloadExecutionMode before_unload_execution_mode_ =
+      BeforeUnloadExecutionMode::kNotBlocked;
 
   // The time this NavigationRequest was created.
   base::TimeTicks creation_time_ = base::TimeTicks().Now();

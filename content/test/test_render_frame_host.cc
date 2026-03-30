@@ -260,7 +260,7 @@ void TestRenderFrameHost::SimulateBeforeUnloadCompleted(bool proceed) {
   base::TimeTicks now = base::TimeTicks::Now();
   ProcessBeforeUnloadCompleted(proceed,
                                /* treat_as_final_completion_callback= */ false,
-                               now, now, BeforeUnloadExecutionMode::kDefault);
+                               now, now, BeforeUnloadExecutionMode::kSync);
 }
 
 void TestRenderFrameHost::SimulateUnloadACK() {

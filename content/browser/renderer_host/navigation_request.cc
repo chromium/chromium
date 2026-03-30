@@ -9713,6 +9713,11 @@ ukm::SourceId NavigationRequest::GetNextPageUkmSourceId() {
                                 ukm::SourceIdObj::Type::NAVIGATION_ID);
 }
 
+NavigationHandle::BeforeUnloadExecutionMode
+NavigationRequest::GetBeforeUnloadExecutionMode() const {
+  return before_unload_execution_mode_;
+}
+
 const GURL& NavigationRequest::GetURL() {
   return common_params().url;
 }

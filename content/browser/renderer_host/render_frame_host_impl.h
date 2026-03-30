@@ -337,6 +337,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       public BucketContext,
       public base::MemoryPressureListener {
  public:
+  using BeforeUnloadExecutionMode = NavigationHandle::BeforeUnloadExecutionMode;
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
@@ -3884,34 +3885,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       bool is_same_document,
       bool is_same_document_history_api_navigation,
       base::TimeTicks actual_navigation_start);
-
-  // Execution mode for the beforeunload handling.
-  enum class BeforeUnloadExecutionMode {
-    // Normal beforeunload check. The browser process waits for the renderer's
-    // response before proceeding with the navigation. This mode is used when
-    // there are beforeunload handlers that have sticky user activation,
-    // potentially allowing them to show a confirmation dialog or cancel the
-    // navigation.
-    kDefault,
-    // Used for navigations when beforeunload handler is not actually present.
-    // In this case, the renderer is not notified, but potentially PostTask() is
-    // used. PostTask() is used because synchronously proceeding with navigation
-    // could lead to reentrancy problems. In particular, some tests and Android
-    // WebView assume they can synchronously navigate from WillStartRequest().
-    // If PostTask() is not used, then CHECKs would trigger in a
-    // NavigationController. See https://crbug.com/365039 for more details. This
-    // was previously managed as a `for_legacy` boolean, which is still used in
-    // some parts of the codebase.
-    kForLegacy,
-    // Asynchronous beforeunload optimization (AsyncBeforeUnload). The browser
-    // process runs beforeunload handlers in the background without blocking the
-    // navigation. This is only used when no handlers in the affected subtree
-    // have sticky user activation, meaning they are guaranteed not to show a
-    // dialog or cancel the navigation. The navigation commit will still be
-    // deferred by AsyncBeforeUnloadCommitDeferringCondition until these
-    // handlers complete or timeout.
-    kAsync,
-  };
 
   // Continue navigation without waiting for the renderer's beforeunload
   // response.

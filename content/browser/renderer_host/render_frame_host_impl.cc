@@ -3045,7 +3045,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
     beforeunload_initiator->ProcessBeforeUnloadCompletedFromFrame(
         /*proceed=*/true, /*treat_as_final_completion_callback=*/false, this,
         /*is_frame_being_destroyed=*/true, approx_renderer_start_time,
-        base::TimeTicks::Now(), BeforeUnloadExecutionMode::kDefault);
+        base::TimeTicks::Now(), BeforeUnloadExecutionMode::kSync);
   }
 
   // If `NavigationRequest` is waiting for asynchronous beforeunload completion
@@ -6896,7 +6896,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     base::TimeTicks before_unload_completed_time = base::TimeTicks::Now();
 
     if (!base::TimeTicks::IsConsistentAcrossProcesses() &&
-        execution_mode == BeforeUnloadExecutionMode::kDefault) {
+        execution_mode == BeforeUnloadExecutionMode::kSync) {
       // TimeTicks is not consistent across processes and we are passing
       // TimeTicks across process boundaries so we need to compensate for any
       // skew between the processes. Here we are converting the renderer's
@@ -6942,7 +6942,7 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     base::UmaHistogramTimes("Navigation.OnBeforeUnloadOverheadTime",
                             on_before_unload_overhead_time);
     switch (execution_mode) {
-      case BeforeUnloadExecutionMode::kDefault:
+      case BeforeUnloadExecutionMode::kSync:
       case BeforeUnloadExecutionMode::kAsync:
         base::UmaHistogramTimes(
             "Navigation.OnBeforeUnloadOverheadTime."
@@ -6966,6 +6966,10 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
             "NoBeforeUnloadHandlerRegistered",
             on_before_unload_overhead_time);
         break;
+      case BeforeUnloadExecutionMode::kNotBlocked:
+        // ProcessBeforeUnloadCompletedFromFrame should not be called if
+        // beforeunload handlers were not executed.
+        NOTREACHED();
     }
 
     frame_tree_node_->navigator().LogBeforeUnloadTime(
@@ -6973,6 +6977,10 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
         send_before_unload_start_time_,
         execution_mode == BeforeUnloadExecutionMode::kForLegacy ||
             execution_mode == BeforeUnloadExecutionMode::kAsync);
+  }
+
+  if (auto* navigation_request = frame_tree_node_->navigation_request()) {
+    navigation_request->set_before_unload_execution_mode(execution_mode);
   }
 
   bool showed_dialog = has_shown_beforeunload_dialog_;
@@ -12426,7 +12434,7 @@ void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
                      weak_ptr_factory_.GetWeakPtr(), proceed,
                      /*treat_as_final_completion_callback=*/true,
                      approx_renderer_start_time, base::TimeTicks::Now(),
-                     BeforeUnloadExecutionMode::kDefault));
+                     BeforeUnloadExecutionMode::kSync));
 }
 
 bool RenderFrameHostImpl::ShouldDispatchBeforeUnload(
@@ -17199,7 +17207,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
     ProcessBeforeUnloadCompleted(
         /*proceed=*/true, /*treat_as_final_completion_callback=*/true,
         approx_renderer_start_time, base::TimeTicks::Now(),
-        BeforeUnloadExecutionMode::kDefault);
+        BeforeUnloadExecutionMode::kSync);
   }
 
   // When a frame enters pending deletion, it waits for itself and its children
@@ -17395,7 +17403,7 @@ void RenderFrameHostImpl::SendBeforeUnload(
                 proceed, /*treat_as_final_completion_callback=*/false,
                 renderer_before_unload_start_time,
                 renderer_before_unload_end_time,
-                BeforeUnloadExecutionMode::kDefault);
+                BeforeUnloadExecutionMode::kSync);
           },
           rfh));
 }

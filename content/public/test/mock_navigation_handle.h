@@ -289,6 +289,10 @@ class MockNavigationHandle : public NavigationHandle {
     return process_selection_user_data_;
   }
 
+  MOCK_METHOD(BeforeUnloadExecutionMode,
+              GetBeforeUnloadExecutionMode,
+              (),
+              (const, override));
   MOCK_METHOD(void, SetIsAdTagged, ());
 
   blink::RuntimeFeatureStateContext& GetMutableRuntimeFeatureStateContext()
