@@ -70,8 +70,8 @@ public class FuseboxSessionStateUnitTest {
 
                     clearInvocations(mComposeboxQueryControllerBridge);
                     input.setHasAttachments(true);
-                    verify(mComposeboxQueryControllerBridge)
-                            .setActiveTool(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
+                    verify(mComposeboxQueryControllerBridge, never())
+                            .setActiveTool(org.mockito.ArgumentMatchers.anyInt());
                 };
 
         session.activate(mProfileSupplier, onFullyActivated);
@@ -95,19 +95,19 @@ public class FuseboxSessionStateUnitTest {
     }
 
     @Test
-    public void testToolModeObserver() {
+    public void testRequestTypeObserver() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
-        assertTrue(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         session.destroy();
-        assertFalse(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
     }
 
     @Test
-    public void testToolModeObserver_disabledShowModelPicker() {
+    public void testRequestTypeObserver_disabledShowModelPicker() {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
-        assertFalse(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
     }
 
     @Test
@@ -204,9 +204,9 @@ public class FuseboxSessionStateUnitTest {
         session.activate(mProfileSupplier, null);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        assertTrue(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertTrue(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         session.destroy();
-        assertFalse(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertFalse(session.getAutocompleteInput().getRequestTypeSupplier().hasObservers());
         assertNull(session.getProfile());
         assertNull(session.getAutocompleteController());
         assertNull(session.getComposeboxQueryControllerBridge());

@@ -119,7 +119,7 @@ public class AutocompleteController {
                         null,
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
-                        input.getToolModeSupplier().get(),
+                        input.getToolMode(),
                         preventInlineAutocomplete,
                         input.getSiteSearchData() != null,
                         input.allowExactKeywordMatch(),
@@ -188,7 +188,7 @@ public class AutocompleteController {
                         input.getUserText(),
                         input.getPageUrl().getSpec(),
                         input.getPageClassification(),
-                        input.getToolModeSupplier().get(),
+                        input.getToolMode(),
                         input.getPageTitle());
     }
 
