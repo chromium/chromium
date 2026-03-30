@@ -130,10 +130,9 @@ Vector<uint8_t> HyphenationMinikin::Hyphenate(const StringView& text) const {
   if (text.Is8Bit()) {
     String text16_bit = text.ToString();
     text16_bit.Ensure16Bit();
-    hyphenator_->hyphenate(&result, text16_bit.SpanUint16().data(),
-                           text16_bit.length());
+    hyphenator_->hyphenate(&result, text16_bit.SpanUint16());
   } else {
-    hyphenator_->hyphenate(&result, text.SpanUint16().data(), text.length());
+    hyphenator_->hyphenate(&result, text.SpanUint16());
   }
   return result;
 }

@@ -23,6 +23,7 @@
  * An implementation of Liang's hyphenation algorithm.
  */
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -43,8 +44,7 @@ class Hyphenator {
   // for nonstandard hyphenation.  Example: word is "hyphen", result is [0 0 1 0
   // 0 0], corresponding to "hy-phen".
   void hyphenate(blink::Vector<uint8_t>* result,
-                 const uint16_t* word,
-                 blink::wtf_size_t len);
+                 base::span<const uint16_t> word);
 
   // pattern data is in binary format, as described in doc/hyb_file_format.md.
   // Note: the caller is responsible for ensuring that the lifetime of the
@@ -56,22 +56,19 @@ class Hyphenator {
 
  private:
   // apply soft hyphens only, ignoring patterns
-  void hyphenateSoft(uint8_t* result,
-                     const uint16_t* word,
-                     blink::wtf_size_t len);
+  void hyphenateSoft(base::span<uint8_t> result,
+                     base::span<const uint16_t> word);
 
   // Try looking up word in alphabet table, return false if any code units fail
   // to map.  Note that this methor writes len+2 entries into alpha_codes
   // (including start and stop).
-  bool alphabetLookup(uint16_t* alpha_codes,
-                      const uint16_t* word,
-                      blink::wtf_size_t len);
+  bool alphabetLookup(base::span<uint16_t> alpha_codes,
+                      base::span<const uint16_t> word);
 
   // calculate hyphenation from patterns, assuming alphabet lookup has already
   // been done
-  void hyphenateFromCodes(uint8_t* result,
-                          const uint16_t* codes,
-                          blink::wtf_size_t len);
+  void hyphenateFromCodes(base::span<uint8_t> result,
+                          base::span<const uint16_t> codes);
 
   // TODO: these should become parameters, as they might vary by locale, screen
   // size, and possibly explicit user control.

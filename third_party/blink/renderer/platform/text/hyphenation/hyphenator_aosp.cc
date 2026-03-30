@@ -16,14 +16,16 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#include <memory>
-#include <algorithm>
 #include <unicode/uchar.h>
+
+#include <algorithm>
+#include <memory>
 
 // HACK: for reading pattern file
 #include <fcntl.h>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/text/hyphenation/hyphenator_aosp.h"
 
 namespace android {
@@ -72,8 +74,11 @@ struct Pattern {
   static uint32_t len(uint32_t entry) { return entry >> 26; }
   static uint32_t shift(uint32_t entry) { return (entry >> 20) & 0x3f; }
   const uint8_t* buf(uint32_t entry) const {
-    return UNSAFE_TODO(reinterpret_cast<const uint8_t*>(this) + pattern_offset +
-                       (entry & 0xfffff));
+    // SAFETY: The Pattern struct is embedded in a binary hyb file blob, and
+    // `pattern_offset + (entry & 0xfffff)` is a valid offset into that blob
+    // as defined by the hyb file format.
+    return UNSAFE_BUFFERS(reinterpret_cast<const uint8_t*>(this) +
+                          pattern_offset + (entry & 0xfffff));
   }
 };
 
@@ -89,24 +94,27 @@ struct Header {
   const uint8_t* bytes() const {
     return reinterpret_cast<const uint8_t*>(this);
   }
+  // SAFETY: The Header struct is at the start of a binary hyb file blob.
+  // The offset fields (alphabet_offset, trie_offset, pattern_offset) are
+  // valid offsets into that blob as defined by the hyb file format.
   uint32_t alphabetVersion() const {
     return *reinterpret_cast<const uint32_t*>(
-        UNSAFE_TODO(bytes() + alphabet_offset));
+        UNSAFE_BUFFERS(bytes() + alphabet_offset));
   }
   const AlphabetTable0* alphabetTable0() const {
     return reinterpret_cast<const AlphabetTable0*>(
-        UNSAFE_TODO(bytes() + alphabet_offset));
+        UNSAFE_BUFFERS(bytes() + alphabet_offset));
   }
   const AlphabetTable1* alphabetTable1() const {
     return reinterpret_cast<const AlphabetTable1*>(
-        UNSAFE_TODO(bytes() + alphabet_offset));
+        UNSAFE_BUFFERS(bytes() + alphabet_offset));
   }
   const Trie* trieTable() const {
-    return reinterpret_cast<const Trie*>(UNSAFE_TODO(bytes() + trie_offset));
+    return reinterpret_cast<const Trie*>(UNSAFE_BUFFERS(bytes() + trie_offset));
   }
   const Pattern* patternTable() const {
     return reinterpret_cast<const Pattern*>(
-        UNSAFE_TODO(bytes() + pattern_offset));
+        UNSAFE_BUFFERS(bytes() + pattern_offset));
   }
 };
 
@@ -117,78 +125,84 @@ Hyphenator* Hyphenator::loadBinary(const uint8_t* patternData) {
 }
 
 void Hyphenator::hyphenate(blink::Vector<uint8_t>* result,
-                           const uint16_t* word,
-                           wtf_size_t len) {
+                           base::span<const uint16_t> word) {
+  const wtf_size_t len = static_cast<wtf_size_t>(word.size());
   result->clear();
   result->resize(len);
+  auto result_span = base::span(*result);
   const wtf_size_t paddedLen = len + 2;  // start and stop code each count for 1
   if (patternData != nullptr && (int)len >= MIN_PREFIX + MIN_SUFFIX &&
       paddedLen <= MAX_HYPHENATED_SIZE) {
     uint16_t alpha_codes[MAX_HYPHENATED_SIZE];
-    if (alphabetLookup(alpha_codes, word, len)) {
-      hyphenateFromCodes(result->data(), alpha_codes, paddedLen);
+    if (alphabetLookup(base::span(alpha_codes).first(paddedLen), word)) {
+      hyphenateFromCodes(result_span, base::span(alpha_codes).first(paddedLen));
       return;
     }
     // TODO: try NFC normalization
     // TODO: handle non-BMP Unicode (requires remapping of offsets)
   }
-  hyphenateSoft(result->data(), word, len);
+  hyphenateSoft(result_span, word);
 }
 
 // If any soft hyphen is present in the word, use soft hyphens to decide
 // hyphenation, as recommended in UAX #14 (Use of Soft Hyphen)
-void Hyphenator::hyphenateSoft(uint8_t* result,
-                               const uint16_t* word,
-                               wtf_size_t len) {
+void Hyphenator::hyphenateSoft(base::span<uint8_t> result,
+                               base::span<const uint16_t> word) {
   result[0] = 0;
-  for (wtf_size_t i = 1; i < len; i++) {
-    UNSAFE_TODO(result[i] = word[i - 1] == CHAR_SOFT_HYPHEN);
+  for (wtf_size_t i = 1; i < result.size(); i++) {
+    result[i] = word[i - 1] == CHAR_SOFT_HYPHEN;
   }
 }
 
-bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
-                                const uint16_t* word,
-                                wtf_size_t len) {
+bool Hyphenator::alphabetLookup(base::span<uint16_t> alpha_codes,
+                                base::span<const uint16_t> word) {
   const Header* header = getHeader();
+  const wtf_size_t len = static_cast<wtf_size_t>(word.size());
   // TODO: check header magic
   uint32_t alphabetVersion = header->alphabetVersion();
   if (alphabetVersion == 0) {
     const AlphabetTable0* alphabet = header->alphabetTable0();
     uint32_t min_codepoint = alphabet->min_codepoint;
     uint32_t max_codepoint = alphabet->max_codepoint;
+    // SAFETY: `alphabet->data` is a flexible array with
+    // `max_codepoint - min_codepoint` entries as defined by the hyb file
+    // format.
+    auto alphabet_data = UNSAFE_BUFFERS(
+        base::span(alphabet->data, max_codepoint - min_codepoint));
     alpha_codes[0] = 0;  // word start
     for (wtf_size_t i = 0; i < len; i++) {
-      uint16_t c = UNSAFE_TODO(word[i]);
+      uint16_t c = word[i];
       if (c < min_codepoint || c >= max_codepoint) {
         return false;
       }
-      uint8_t code = UNSAFE_TODO(alphabet->data[c - min_codepoint]);
+      uint8_t code = alphabet_data[c - min_codepoint];
       if (code == 0) {
         return false;
       }
-      UNSAFE_TODO(alpha_codes[i + 1]) = code;
+      alpha_codes[i + 1] = code;
     }
-    UNSAFE_TODO(alpha_codes[len + 1]) = 0;  // word termination
+    alpha_codes[len + 1] = 0;  // word termination
     return true;
   } else if (alphabetVersion == 1) {
     const AlphabetTable1* alphabet = header->alphabetTable1();
     size_t n_entries = alphabet->n_entries;
-    const uint32_t* begin = alphabet->data;
-    const uint32_t* end = UNSAFE_TODO(begin + n_entries);
+    // SAFETY: `alphabet->data` is a flexible array with `n_entries` elements
+    // as defined by the hyb file format.
+    auto alphabet_data = UNSAFE_BUFFERS(base::span(alphabet->data, n_entries));
     alpha_codes[0] = 0;
     for (wtf_size_t i = 0; i < len; i++) {
-      uint16_t c = UNSAFE_TODO(word[i]);
-      auto* p = std::lower_bound(begin, end, c << 11);
-      if (p == end) {
+      uint16_t c = word[i];
+      auto it = std::ranges::lower_bound(alphabet_data, c << 11);
+      if (it == alphabet_data.end()) {
         return false;
       }
-      uint32_t entry = *p;
+      uint32_t entry = *it;
       if (AlphabetTable1::codepoint(entry) != c) {
         return false;
       }
-      UNSAFE_TODO(alpha_codes[i + 1]) = AlphabetTable1::value(entry);
+      alpha_codes[i + 1] = AlphabetTable1::value(entry);
     }
-    UNSAFE_TODO(alpha_codes[len + 1]) = 0;
+    alpha_codes[len + 1] = 0;
     return true;
   }
   return false;
@@ -200,9 +214,9 @@ bool Hyphenator::alphabetLookup(uint16_t* alpha_codes,
  * alphabet.  Note: len here is the padded length including 0 codes at start and
  * end.
  **/
-void Hyphenator::hyphenateFromCodes(uint8_t* result,
-                                    const uint16_t* codes,
-                                    wtf_size_t len) {
+void Hyphenator::hyphenateFromCodes(base::span<uint8_t> result,
+                                    base::span<const uint16_t> codes) {
+  const wtf_size_t len = static_cast<wtf_size_t>(codes.size());
   const Header* header = getHeader();
   const Trie* trie = header->trieTable();
   const Pattern* pattern = header->patternTable();
@@ -210,35 +224,45 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   uint32_t link_shift = trie->link_shift;
   uint32_t link_mask = trie->link_mask;
   uint32_t pattern_shift = trie->pattern_shift;
+  // SAFETY: `trie->data` is a flexible array with `n_entries` elements as
+  // defined by the hyb file format. The trie traversal below guarantees
+  // indices stay within bounds.
+  auto trie_data = UNSAFE_BUFFERS(base::span(trie->data, trie->n_entries));
+  // SAFETY: `pattern->data` is a flexible array with `n_entries` elements as
+  // defined by the hyb file format.
+  auto pattern_data =
+      UNSAFE_BUFFERS(base::span(pattern->data, pattern->n_entries));
   wtf_size_t maxOffset = len - MIN_SUFFIX - 1;
   for (wtf_size_t i = 0; i < len - 1; i++) {
     uint32_t node = 0;  // index into Trie table
     for (wtf_size_t j = i; j < len; j++) {
-      uint16_t c = UNSAFE_TODO(codes[j]);
-      uint32_t entry = UNSAFE_TODO(trie->data[node + c]);
+      uint16_t c = codes[j];
+      uint32_t entry = trie_data[node + c];
       if ((entry & char_mask) == c) {
         node = (entry & link_mask) >> link_shift;
       } else {
         break;
       }
-      uint32_t pat_ix = UNSAFE_TODO(trie->data[node]) >> pattern_shift;
+      uint32_t pat_ix = trie_data[node] >> pattern_shift;
       // pat_ix contains a 3-tuple of length, shift (number of trailing zeros),
       // and an offset into the buf pool. This is the pattern for the substring
       // (i..j) we just matched,
       // which we combine (via point-wise max) into the result vector.
       if (pat_ix != 0) {
-        uint32_t pat_entry = UNSAFE_TODO(pattern->data[pat_ix]);
+        uint32_t pat_entry = pattern_data[pat_ix];
         int pat_len = Pattern::len(pat_entry);
         int pat_shift = Pattern::shift(pat_entry);
-        const uint8_t* pat_buf = pattern->buf(pat_entry);
+        // SAFETY: `pattern->buf()` returns a pointer into the pattern data
+        // blob with at least `pat_len` bytes as defined by the hyb file format.
+        auto pat_buf = UNSAFE_BUFFERS(
+            base::span(pattern->buf(pat_entry), static_cast<size_t>(pat_len)));
         int offset = j + 1 - (pat_len + pat_shift);
         // offset is the index within result that lines up with the start of
         // pat_buf
         int start = std::max(MIN_PREFIX - offset, 0);
         int end = std::min(pat_len, (int)maxOffset - offset);
         for (int k = start; k < end; k++) {
-          UNSAFE_TODO(result[offset + k] =
-                          std::max(result[offset + k], pat_buf[k]));
+          result[offset + k] = std::max(result[offset + k], pat_buf[k]);
         }
       }
     }
@@ -246,7 +270,7 @@ void Hyphenator::hyphenateFromCodes(uint8_t* result,
   // Since the above calculation does not modify values outside
   // [MIN_PREFIX, len - MIN_SUFFIX], they are left as 0.
   for (wtf_size_t i = MIN_PREFIX; i < maxOffset; i++) {
-    UNSAFE_TODO(result[i]) &= 1;
+    result[i] &= 1;
   }
 }
 
