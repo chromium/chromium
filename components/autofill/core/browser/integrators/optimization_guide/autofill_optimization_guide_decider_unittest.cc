@@ -719,39 +719,43 @@ class BuyNowPayLaterAutofillOptimizationGuideDeciderTest
  protected:
   optimization_guide::proto::OptimizationType GetAffirmOptimizationType()
       const {
-    if (IsBlocklistFlagEnabled()) {
-      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM;
-    }
+    return IsBlocklistFlagEnabled()
 #if BUILDFLAG(IS_ANDROID)
-    return optimization_guide::proto::
-        BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID;
+               ? optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM_ANDROID
+               : optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM_ANDROID;
 #else
-    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM;
-#endif
+               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_AFFIRM
+               : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   optimization_guide::proto::OptimizationType GetZipOptimizationType() const {
-    if (IsBlocklistFlagEnabled()) {
-      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP;
-    }
+    return IsBlocklistFlagEnabled()
 #if BUILDFLAG(IS_ANDROID)
-    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID;
+               ? optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_BLOCKLIST_ZIP_ANDROID
+               : optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_ALLOWLIST_ZIP_ANDROID;
 #else
-    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP;
-#endif
+               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_ZIP
+               : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   optimization_guide::proto::OptimizationType GetKlarnaOptimizationType()
       const {
-    if (IsBlocklistFlagEnabled()) {
-      return optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA;
-    }
+    return IsBlocklistFlagEnabled()
 #if BUILDFLAG(IS_ANDROID)
-    return optimization_guide::proto::
-        BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID;
+               ? optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA_ANDROID
+               : optimization_guide::proto::
+                     BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA_ANDROID;
 #else
-    return optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA;
-#endif
+               ? optimization_guide::proto::BUY_NOW_PAY_LATER_BLOCKLIST_KLARNA
+               : optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_KLARNA;
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 };
 

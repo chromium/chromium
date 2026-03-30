@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BuyNowPayLaterAllowlistAffirmAndroid"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Affirm
-               on Android OS."/>
+               on Chrome Android."/>
   <variant name="BuyNowPayLaterAllowlistAffirmDesktop"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Affirm
@@ -346,7 +346,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BuyNowPayLaterAllowlistKlarnaAndroid"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Klarna
-               on Android OS."/>
+               on Chrome Android."/>
   <variant name="BuyNowPayLaterAllowlistKlarnaDesktop"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Klarna
@@ -354,20 +354,34 @@ chromium-metrics-reviews@google.com.
   <variant name="BuyNowPayLaterAllowlistZipAndroid"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Zip on
-               Android OS."/>
+               Chrome Android."/>
   <variant name="BuyNowPayLaterAllowlistZipDesktop"
       summary="This optimization helps determine if this merchant page is a
                good candidate for enabling buy now pay later flow with Zip on
                desktop."/>
-  <variant name="BuyNowPayLaterBlocklistAffirm"
+  <variant name="BuyNowPayLaterBlocklistAffirmAndroid"
       summary="This optimization helps determine if this merchant page should
-               be blocked for the buy now pay later flow with Affirm."/>
-  <variant name="BuyNowPayLaterBlocklistKlarna"
+               be blocked for the buy now pay later flow with Affirm on
+               Chrome Android."/>
+  <variant name="BuyNowPayLaterBlocklistAffirmDesktop"
       summary="This optimization helps determine if this merchant page should
-               be blocked for the buy now pay later flow with Klarna."/>
-  <variant name="BuyNowPayLaterBlocklistZip"
+               be blocked for the buy now pay later flow with Affirm on
+               desktop."/>
+  <variant name="BuyNowPayLaterBlocklistKlarnaAndroid"
       summary="This optimization helps determine if this merchant page should
-               be blocked for the buy now pay later flow with Zip."/>
+               be blocked for the buy now pay later flow with Klarna on
+               Chrome Android."/>
+  <variant name="BuyNowPayLaterBlocklistKlarnaDesktop"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Klarna on
+               desktop."/>
+  <variant name="BuyNowPayLaterBlocklistZipAndroid"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Zip on Chrome
+               Android."/>
+  <variant name="BuyNowPayLaterBlocklistZipDesktop"
+      summary="This optimization helps determine if this merchant page should
+               be blocked for the buy now pay later flow with Zip on desktop."/>
   <variant name="CapitalOneCreditCardBenefitsBlocked"
       summary="This optimization provides information about whether a
                merchant url is eligible to display Capital One credit card
