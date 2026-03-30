@@ -1233,7 +1233,8 @@ void CanvasNon2DResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
 
 void Canvas2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (GetCanvasForCanvas2D().IsCachingImage(content_id)) {
+  if (recorder_for_canvas_2d_->getRecordingCanvas().IsCachingImage(
+          content_id)) {
     FlushCanvas2D();
   }
   if (cached_snapshot_ &&
@@ -1844,7 +1845,8 @@ void CanvasResourceProvider::RecordingCleared() {
   }
 }
 
-MemoryManagedPaintCanvas& CanvasResourceProvider::GetCanvasForCanvas2D() {
+MemoryManagedPaintCanvas&
+CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
   CHECK(IsCanvas2D());
   return recorder_for_canvas_2d_->getRecordingCanvas();
 }

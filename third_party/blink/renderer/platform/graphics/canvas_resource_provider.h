@@ -141,7 +141,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
-  MemoryManagedPaintCanvas& GetCanvasForCanvas2D();
+  MemoryManagedPaintCanvas& GetCanvasForCanvas2DForTesting();
   std::optional<cc::PaintRecord> FlushCanvas2D(
       FlushReason = FlushReason::kOther);
   virtual ScopedRasterTimer CreateScopedRasterTimer();

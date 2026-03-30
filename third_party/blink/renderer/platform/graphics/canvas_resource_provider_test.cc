@@ -315,7 +315,7 @@ scoped_refptr<CanvasResource> UpdateResource(
     Canvas2DResourceProviderSharedImage* provider) {
   provider->ProduceCanvasResource(FlushReason::kOther);
   // Resource updated after draw.
-  provider->GetCanvasForCanvas2D().clear(SkColors::kWhite);
+  provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kWhite);
   return provider->ProduceCanvasResource(FlushReason::kOther);
 }
 
@@ -534,7 +534,7 @@ TEST_F(CanvasResourceProviderTest,
             image->GetSharedImage());
 
   // Resource updated after draw.
-  provider->GetCanvasForCanvas2D().clear(SkColors::kWhite);
+  provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kWhite);
   provider->FlushCanvas2D(FlushReason::kOther);
   new_image = provider->Snapshot();
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
@@ -542,7 +542,7 @@ TEST_F(CanvasResourceProviderTest,
   // Resource recycled.
   auto original_shared_image = image->GetSharedImage();
   image.reset();
-  provider->GetCanvasForCanvas2D().clear(SkColors::kBlack);
+  provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kBlack);
   provider->FlushCanvas2D(FlushReason::kOther);
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
@@ -729,16 +729,16 @@ TEST_F(CanvasResourceProviderTest, ImageCacheOnContextLost) {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
                     SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
                     SkM44(), 0u, cc::TargetColorParams())};
-  provider->GetCanvasForCanvas2D().drawImage(images[0].paint_image(), 0u, 0u,
-                                             SkSamplingOptions(), nullptr);
+  provider->GetCanvasForCanvas2DForTesting().drawImage(
+      images[0].paint_image(), 0u, 0u, SkSamplingOptions(), nullptr);
 
   // Lose the context and ensure that the image provider is not used.
   provider->OnContextDestroyed();
   // We should unref all images on the cache when the context is destroyed.
   EXPECT_EQ(image_decode_cache_.num_locked_images(), 0);
   image_decode_cache_.set_disallow_cache_use(true);
-  provider->GetCanvasForCanvas2D().drawImage(images[1].paint_image(), 0u, 0u,
-                                             SkSamplingOptions(), nullptr);
+  provider->GetCanvasForCanvas2DForTesting().drawImage(
+      images[1].paint_image(), 0u, 0u, SkSamplingOptions(), nullptr);
 }
 
 TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
@@ -748,7 +748,8 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   EXPECT_FALSE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
   EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
 
-  provider->GetCanvasForCanvas2D().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  provider->GetCanvasForCanvas2DForTesting().drawRect({0, 0, 10, 10},
+                                                      cc::PaintFlags());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
 
@@ -769,10 +770,12 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   // Side canvases (used for canvas 2d layers) cannot be flushed until closed.
   // Open one and validate that flushing the canvas only flushed that main
   // recording, not the side one.
-  provider->GetCanvasForCanvas2D().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  provider->GetCanvasForCanvas2DForTesting().drawRect({0, 0, 10, 10},
+                                                      cc::PaintFlags());
   provider->RecorderForCanvas2D().BeginSideRecording();
-  provider->GetCanvasForCanvas2D().saveLayerAlphaf(0.5f);
-  provider->GetCanvasForCanvas2D().drawRect({0, 0, 10, 10}, cc::PaintFlags());
+  provider->GetCanvasForCanvas2DForTesting().saveLayerAlphaf(0.5f);
+  provider->GetCanvasForCanvas2DForTesting().drawRect({0, 0, 10, 10},
+                                                      cc::PaintFlags());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
@@ -782,7 +785,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
 
-  provider->GetCanvasForCanvas2D().restore();
+  provider->GetCanvasForCanvas2DForTesting().restore();
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
   EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
   EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
