@@ -6333,7 +6333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PushMessaging.NumUnsubscribedEntries" units="count"
-    expires_after="2026-04-11">
+    expires_after="2027-04-11">
   <owner>peter@chromium.org</owner>
   <owner>antoniosartori@chromium.org</owner>
   <summary>
