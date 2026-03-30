@@ -4151,6 +4151,7 @@ static_library("browser") {
       "//components/soda",
       "//components/soda:constants",
       "//components/soda:utils",
+      "//components/tabs:public",
       "//components/trusted_vault/proto",
       "//components/ukm/content",
       "//components/unexportable_keys",

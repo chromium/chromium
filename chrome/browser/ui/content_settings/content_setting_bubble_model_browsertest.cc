@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
@@ -80,8 +81,8 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
   content::WebContents* GetActiveTab() {
     // First, we need to find the active browser window. It should be at
     // the same desktop as the browser in which we invoked the bubble.
-    Browser* active_browser = chrome::FindLastActive();
-    return active_browser->tab_strip_model()->GetActiveWebContents();
+    BrowserWindowInterface* active_browser = chrome::FindLastActive();
+    return active_browser->GetTabStripModel()->GetActiveWebContents();
   }
 
   content::WebContents* OpenTab() {

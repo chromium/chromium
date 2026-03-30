@@ -49,7 +49,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service.h"          // nogncheck
 #include "chrome/browser/ui/hats/hats_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/user_education/show_promo_in_page.h"
@@ -213,9 +213,9 @@ std::string GetGooglePasswordManagerSubPageURLStr() {
 
 // Navigation is handled differently on Android.
 #if !BUILDFLAG(IS_ANDROID)
-void TriggerManagePasswordsPerceptionSurvey(Browser* browser,
+void TriggerManagePasswordsPerceptionSurvey(BrowserWindowInterface* browser,
                                             ManagePasswordsReferrer referrer) {
-  Profile* profile = browser->profile();
+  Profile* profile = browser->GetProfile();
   if (!base::FeatureList::IsEnabled(
           autofill::features::kManagePasswordsPerceptionSurvey) ||
       !base::FeatureList::IsEnabled(
@@ -236,7 +236,7 @@ void TriggerManagePasswordsPerceptionSurvey(Browser* browser,
                                     10000, product_specific_bits_data);
 }
 
-void NavigateToManagePasswordsPage(Browser* browser,
+void NavigateToManagePasswordsPage(BrowserWindowInterface* browser,
                                    ManagePasswordsReferrer referrer) {
   if (!browser) {
     return;
@@ -247,7 +247,7 @@ void NavigateToManagePasswordsPage(Browser* browser,
   chrome::ShowPasswordManager(browser);
 }
 
-void NavigateToPasswordDetailsPage(Browser* browser,
+void NavigateToPasswordDetailsPage(BrowserWindowInterface* browser,
                                    const std::string& password_domain_name,
                                    ManagePasswordsReferrer referrer) {
   if (!browser) {

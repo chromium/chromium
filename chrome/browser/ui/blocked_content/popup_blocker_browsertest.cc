@@ -615,7 +615,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
 
   NavigateAndCheckPopupShown(url, kExpectPopup);
 
-  Browser* popup_browser = chrome::FindLastActive();
+  BrowserWindowInterface* popup_browser = chrome::FindLastActive();
   ASSERT_NE(popup_browser, browser());
 
 // Showing an alert will raise the tab over the popup.
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_PrintPreviewPopUnder) {
 
   NavigateAndCheckPopupShown(url, kExpectPopup);
 
-  Browser* popup_browser = chrome::FindLastActive();
+  BrowserWindowInterface* popup_browser = chrome::FindLastActive();
   ASSERT_NE(popup_browser, browser());
 
   // Show a print preview dialog and confirm it doesn't activate the

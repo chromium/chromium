@@ -21,6 +21,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
 namespace {
@@ -48,9 +49,9 @@ void ShowPrintErrorDialogTask(const std::u16string& title,
 
   gfx::NativeWindow window = gfx::NativeWindow();
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (browser) {
-    window = browser->window()->GetNativeWindow();
+    window = browser->GetWindow()->GetNativeWindow();
   }
 #endif
   chrome::ShowWarningMessageBoxAsync(window, title, message);

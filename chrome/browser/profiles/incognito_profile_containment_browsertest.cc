@@ -19,6 +19,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -296,8 +297,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
   GetUserDirectorySnapshot(before_incognito, /*compute_file_hashes=*/true);
 
   // Run an Incognito session.
-  Browser* browser = chrome::FindLastActive();
-  EXPECT_TRUE(browser->profile()->IsOffTheRecord());
+  BrowserWindowInterface* browser = chrome::FindLastActive();
+  EXPECT_TRUE(browser->GetProfile()->IsOffTheRecord());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser,
       embedded_test_server()->GetURL("/browsing_data/site_data.html")));
@@ -308,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(IncognitoProfileContainmentBrowserTest,
 
   for (const std::string& type : kStorageTypes) {
     ASSERT_TRUE(
-        content::EvalJs(browser->tab_strip_model()->GetActiveWebContents(),
+        content::EvalJs(browser->GetTabStripModel()->GetActiveWebContents(),
                         "set" + type + "()")
             .ExtractBool())
         << "Couldn't create data for: " << type;

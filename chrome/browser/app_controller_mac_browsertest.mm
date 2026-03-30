@@ -800,11 +800,11 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest,
   event_navigation_observer.Wait();
   // Check that a new regular browser is opened
   // and the url is opened in the regular browser.
-  Browser* new_browser = chrome::FindLastActive();
+  BrowserWindowInterface* new_browser = chrome::FindLastActive();
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 2u);
-  EXPECT_TRUE(new_browser->profile()->IsRegularProfile());
-  EXPECT_EQ(profile, new_browser->profile());
-  EXPECT_EQ(simple, new_browser->tab_strip_model()
+  EXPECT_TRUE(new_browser->GetProfile()->IsRegularProfile());
+  EXPECT_EQ(profile, new_browser->GetProfile());
+  EXPECT_EQ(simple, new_browser->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
 }
@@ -869,12 +869,12 @@ IN_PROC_BROWSER_TEST_F(AppControllerBrowserTest, OpenUrlWhenForcedIncognito) {
   event_navigation_observer.Wait();
   // Check that a new incognito browser is opened
   // and the url is opened in the incognito browser.
-  Browser* new_browser = chrome::FindLastActive();
+  BrowserWindowInterface* new_browser = chrome::FindLastActive();
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
-  EXPECT_TRUE(new_browser->profile()->IsIncognitoProfile());
-  EXPECT_TRUE(new_browser->profile()->IsPrimaryOTRProfile());
-  EXPECT_EQ(profile, new_browser->profile()->GetOriginalProfile());
-  EXPECT_EQ(simple, new_browser->tab_strip_model()
+  EXPECT_TRUE(new_browser->GetProfile()->IsIncognitoProfile());
+  EXPECT_TRUE(new_browser->GetProfile()->IsPrimaryOTRProfile());
+  EXPECT_EQ(profile, new_browser->GetProfile()->GetOriginalProfile());
+  EXPECT_EQ(simple, new_browser->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
 }
@@ -1001,10 +1001,10 @@ IN_PROC_BROWSER_TEST_F(AppControllerShortcutsNotAppsBrowserTest,
 
   // It should be opened in a new browser in the second profile.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  Browser* new_browser = chrome::FindLastActive();
-  EXPECT_EQ(profile2_ptr, new_browser->profile());
-  EXPECT_EQ(1, new_browser->tab_strip_model()->count());
-  EXPECT_EQ(simple, new_browser->tab_strip_model()
+  BrowserWindowInterface* new_browser = chrome::FindLastActive();
+  EXPECT_EQ(profile2_ptr, new_browser->GetProfile());
+  EXPECT_EQ(1, new_browser->GetTabStripModel()->count());
+  EXPECT_EQ(simple, new_browser->GetTabStripModel()
                         ->GetActiveWebContents()
                         ->GetLastCommittedURL());
 

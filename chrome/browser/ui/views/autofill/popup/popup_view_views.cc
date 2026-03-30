@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
@@ -189,7 +190,7 @@ std::vector<views::BubbleArrowSide> GetPreferredPopupSides(
 }
 
 void DefaultA11yAnnouncer(const std::u16string& message, bool polite) {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }

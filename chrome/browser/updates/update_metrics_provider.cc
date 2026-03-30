@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/webui_url_constants.h"
@@ -46,14 +47,14 @@ PendingUpdateState GetPendingUpdateState() {
     return PendingUpdateState::kMultipleTabsOrWindows;
   }
 
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     // This might happen during startup.
     return PendingUpdateState::kUnknown;
   }
 
   // Multiple tabs.
-  if (browser->tab_strip_model()->count() > 1) {
+  if (browser->GetTabStripModel()->count() > 1) {
     return PendingUpdateState::kMultipleTabsOrWindows;
   }
   return PendingUpdateState::kOneWindowOneTab;
@@ -61,13 +62,13 @@ PendingUpdateState GetPendingUpdateState() {
 
 // When there is one tab in one window, what is it?
 PageBlockingUpdate GetPageBlockingUpdate() {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return PageBlockingUpdate::kErrorNoBrowser;
   }
 
   content::WebContents* active_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   if (!active_contents) {
     return PageBlockingUpdate::kErrorNoTabs;
   }

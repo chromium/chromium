@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
@@ -578,12 +579,13 @@ void WallpaperSearchHandler::ShowFeedbackPage() {
     return;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
   OptimizationGuideKeyedService* opt_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(browser->profile());
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          browser->GetProfile());
   if (!opt_guide_keyed_service ||
       !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
           optimization_guide::proto::LogAiDataRequest::kWallpaperSearch)) {

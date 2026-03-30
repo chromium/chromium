@@ -180,7 +180,7 @@ void ReadingListPageHandler::OpenURL(
     const GURL& url,
     bool mark_as_read,
     ui::mojom::ClickModifiersPtr click_modifiers) {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
@@ -193,7 +193,9 @@ void ReadingListPageHandler::OpenURL(
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  browser->GetBrowserForMigrationOnly()->OpenURL(
+      params,
+      /*navigation_handle_callback=*/{});
 
   scoped_refptr<const ReadingListEntry> entry =
       reading_list_model_->GetEntryByURL(url);
@@ -218,22 +220,23 @@ void ReadingListPageHandler::UpdateReadStatus(const GURL& url, bool read) {
 }
 
 void ReadingListPageHandler::MarkCurrentTabAsRead() {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
 
-  chrome::MarkCurrentTabAsReadInReadLater(browser);
+  chrome::MarkCurrentTabAsReadInReadLater(
+      browser->GetBrowserForMigrationOnly());
   base::RecordAction(base::UserMetricsAction("DesktopReadingList.MarkAsRead"));
 }
 
 void ReadingListPageHandler::AddCurrentTab() {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
 
-  chrome::MoveCurrentTabToReadLater(browser);
+  chrome::MoveCurrentTabToReadLater(browser->GetBrowserForMigrationOnly());
   reading_list_model_->MarkAllSeen();
 
   base::RecordAction(
@@ -249,11 +252,12 @@ void ReadingListPageHandler::ShowContextMenuForURL(const GURL& url,
                                                    int32_t x,
                                                    int32_t y) {
   auto embedder = reading_list_ui_->embedder();
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (embedder) {
-    embedder->ShowContextMenu(gfx::Point(x, y),
-                              std::make_unique<ReadLaterItemContextMenu>(
-                                  browser, reading_list_model_, url));
+    embedder->ShowContextMenu(
+        gfx::Point(x, y),
+        std::make_unique<ReadLaterItemContextMenu>(
+            browser->GetBrowserForMigrationOnly(), reading_list_model_, url));
   }
 }
 
@@ -334,10 +338,10 @@ const std::optional<GURL> ReadingListPageHandler::GetActiveTabURL() {
   if (active_tab_url_) {
     return active_tab_url_.value();
   }
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (browser) {
     return chrome::GetURLToBookmark(
-        browser->tab_strip_model()->GetActiveWebContents());
+        browser->GetTabStripModel()->GetActiveWebContents());
   }
   return std::nullopt;
 }

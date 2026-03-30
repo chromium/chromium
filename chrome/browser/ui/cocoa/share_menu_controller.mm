@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -48,13 +49,13 @@ NSString* const kRemindersSharingServiceName =
     @"com.apple.reminders.RemindersShareExtension";
 
 bool CanShare() {
-  Browser* last_active_browser = chrome::FindLastActive();
+  BrowserWindowInterface* last_active_browser = chrome::FindLastActive();
   return last_active_browser &&
          last_active_browser->GetFeatures()
              .location_bar_model()
              ->ShouldDisplayURL() &&
-         last_active_browser->tab_strip_model()->GetActiveWebContents() &&
-         last_active_browser->tab_strip_model()
+         last_active_browser->GetTabStripModel()->GetActiveWebContents() &&
+         last_active_browser->GetTabStripModel()
              ->GetActiveWebContents()
              ->GetLastCommittedURL()
              .is_valid();
@@ -192,9 +193,9 @@ bool CanShare() {
 
 // Saves details required by delegate methods for the transition animation, and
 // calls the provided closure when done.
-- (void)saveTransitionDataFromBrowser:(Browser*)browser
+- (void)saveTransitionDataFromBrowser:(BrowserWindowInterface*)browser
                          whenComplete:(base::OnceClosure)closure {
-  _windowForShare = browser->window()->GetNativeWindow().GetNativeNSWindow();
+  _windowForShare = browser->GetWindow()->GetNativeWindow().GetNativeNSWindow();
   BrowserView* browserView = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browserView) {
     return;
@@ -236,11 +237,11 @@ bool CanShare() {
 // Performs the share action using the sharing service represented by |sender|.
 - (void)performShare:(NSMenuItem*)sender {
   CHECK(CanShare());
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   CHECK(browser);
 
   content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   CHECK(contents);
   NSURL* url = net::NSURLWithGURL(contents->GetLastCommittedURL());
   NSString* title = base::SysUTF16ToNSString(contents->GetTitle());
@@ -278,11 +279,11 @@ bool CanShare() {
 
 - (void)emailLink:(id)sender {
   CHECK(CanShare());
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   CHECK(browser);
 
   content::WebContents* contents =
-      browser->tab_strip_model()->GetActiveWebContents();
+      browser->GetTabStripModel()->GetActiveWebContents();
   CHECK(contents);
   std::string title = base::EscapeQueryParamValue(
       base::UTF16ToUTF8(contents->GetTitle()), false);

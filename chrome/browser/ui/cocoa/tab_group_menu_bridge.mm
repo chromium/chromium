@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -243,15 +244,15 @@ void TabGroupMenuBridge::OnMenuItem(NSMenuItem* item) {
     return;
   }
 
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   if (!browser) {
     return;
   }
 
   tab_groups::TabGroupMenuAction action = it->second;
   tab_groups::SavedTabGroupUtils::PerformTabGroupMenuAction(
-      action, tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU, browser,
-      tab_group_service_);
+      action, tab_groups::TabGroupMenuContext::MAC_SYSTEM_MENU,
+      browser->GetBrowserForMigrationOnly(), tab_group_service_);
 }
 
 NSMenuItem* TabGroupMenuBridge::CreateStaticSubmenuItem(

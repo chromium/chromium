@@ -47,7 +47,7 @@ enum class PasswordTitleType {
   UPDATE_PASSWORD,  // update plain password
 };
 
-class Browser;
+class BrowserWindowInterface;
 class Profile;
 struct AccountInfo;
 
@@ -116,13 +116,13 @@ std::string GetGooglePasswordManagerSubPageURLStr();
 #if !BUILDFLAG(IS_ANDROID)
 // Navigates to the Google Password Manager page.
 void NavigateToManagePasswordsPage(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     password_manager::ManagePasswordsReferrer referrer);
 
 // Navigates to the Google Password Manager subpage to show the credential
 // details for the `password_domain_name`.
 void NavigateToPasswordDetailsPage(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::string& password_domain_name,
     password_manager::ManagePasswordsReferrer referrer);
 

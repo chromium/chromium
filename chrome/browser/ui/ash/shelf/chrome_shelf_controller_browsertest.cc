@@ -809,13 +809,13 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, DISABLED_WindowActivation) {
 
 IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, MultipleBrowsers) {
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  Browser* const browser1 = chrome::FindLastActive();
+  BrowserWindowInterface* const browser1 = chrome::FindLastActive();
   ASSERT_TRUE(browser1);
 
   Browser* const browser2 = CreateBrowser(profile());
   ASSERT_TRUE(browser2);
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_NE(browser1->window(), browser2->window());
+  EXPECT_NE(browser1->GetWindow(), browser2->window());
   EXPECT_TRUE(browser2->window()->IsActive());
 
   const Extension* app = LoadAndLaunchPlatformApp("launch", "Launched");
@@ -1991,17 +1991,17 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // A second activation should not create a new instance.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  Browser* browser1 = chrome::FindLastActive();
+  BrowserWindowInterface* browser1 = chrome::FindLastActive();
   EXPECT_TRUE(browser1);
   Browser* browser2 = CreateBrowser(profile());
 
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
-  EXPECT_NE(browser1->window(), browser2->window());
+  EXPECT_NE(browser1->GetWindow(), browser2->window());
   EXPECT_TRUE(browser2->window()->IsActive());
 
   // Activate multiple times the switcher to see that the windows get activated.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser1->window()->IsActive());
+  EXPECT_TRUE(browser1->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser2->window()->IsActive());
 
@@ -2010,29 +2010,29 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   Browser* browser3 = CreateBrowser(profile());
 
   EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
-  EXPECT_NE(browser1->window(), browser3->window());
+  EXPECT_NE(browser1->GetWindow(), browser3->GetWindow());
   EXPECT_NE(browser2->window(), browser3->window());
   EXPECT_TRUE(browser3->window()->IsActive());
 
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser1->window()->IsActive());
+  EXPECT_TRUE(browser1->GetWindow()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser2->window()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
   EXPECT_TRUE(browser3->window()->IsActive());
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser1->window()->IsActive());
+  EXPECT_TRUE(browser1->GetWindow()->IsActive());
 
   // Create another app and make sure that none of our browsers is active.
   LoadAndLaunchExtension("app1",
                          apps::GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                                              false /* prefer_containner */));
-  EXPECT_FALSE(browser1->window()->IsActive());
+  EXPECT_FALSE(browser1->GetWindow()->IsActive());
   EXPECT_FALSE(browser2->window()->IsActive());
 
   // After activation our browser should be active again.
   SelectItem(browser_id, ui::EventType::kKeyReleased);
-  EXPECT_TRUE(browser1->window()->IsActive());
+  EXPECT_TRUE(browser1->GetWindow()->IsActive());
 }
 
 // Checks that after a session restore, we do not start applications on an
@@ -2117,17 +2117,17 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_GE(time_after_launch, time_launch);
 
   // Minimize Window.
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
   ASSERT_TRUE(browser);
-  browser->window()->Minimize();
-  EXPECT_TRUE(browser->window()->IsMinimized());
+  browser->GetWindow()->Minimize();
+  EXPECT_TRUE(browser->GetWindow()->IsMinimized());
 
   // Activate again. This doesn't create new browser, it activates the window.
   SelectItem(browser_id, ui::EventType::kUnknown);
   running_browser = chrome::GetTotalBrowserCount();
   EXPECT_EQ(1u, running_browser);
   EXPECT_TRUE(controller_->IsOpen(browser_id));
-  EXPECT_FALSE(browser->window()->IsMinimized());
+  EXPECT_FALSE(browser->GetWindow()->IsMinimized());
   // Re-activation should not upate the recorded launch time.
   EXPECT_GE(time_launch, prefs->GetLastLaunchTime(app_constants::kChromeAppId));
 }

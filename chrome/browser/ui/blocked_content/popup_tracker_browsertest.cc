@@ -550,17 +550,17 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  Browser* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
-  EXPECT_EQ(1, created_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
-      created_browser->tab_strip_model()->GetActiveWebContents();
+      created_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(popup));
 
   // Close the popup and check metric.
-  int active_index = created_browser->tab_strip_model()->active_index();
+  int active_index = created_browser->GetTabStripModel()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
-  created_browser->tab_strip_model()->CloseWebContentsAt(
+  created_browser->GetTabStripModel()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
@@ -592,17 +592,17 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  Browser* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
-  EXPECT_EQ(1, created_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
-      created_browser->tab_strip_model()->GetActiveWebContents();
+      created_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(popup));
 
   // Close the popup and check that the pop up did not redirect.
-  int active_index = created_browser->tab_strip_model()->active_index();
+  int active_index = created_browser->GetTabStripModel()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
-  created_browser->tab_strip_model()->CloseWebContentsAt(
+  created_browser->GetTabStripModel()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
@@ -639,17 +639,17 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  Browser* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
-  EXPECT_EQ(1, created_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
-      created_browser->tab_strip_model()->GetActiveWebContents();
+      created_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(popup));
 
   // Close the popup and check metric.
-  int active_index = created_browser->tab_strip_model()->active_index();
+  int active_index = created_browser->GetTabStripModel()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
-  created_browser->tab_strip_model()->CloseWebContentsAt(
+  created_browser->GetTabStripModel()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 
@@ -683,17 +683,17 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
   navigation_observer.Wait();
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  Browser* created_browser = chrome::FindLastActive();
+  BrowserWindowInterface* created_browser = chrome::FindLastActive();
 
-  EXPECT_EQ(1, created_browser->tab_strip_model()->count());
+  EXPECT_EQ(1, created_browser->GetTabStripModel()->count());
   content::WebContents* popup =
-      created_browser->tab_strip_model()->GetActiveWebContents();
+      created_browser->GetTabStripModel()->GetActiveWebContents();
   EXPECT_TRUE(blocked_content::PopupTracker::FromWebContents(popup));
 
   // Close the popup and check metric.
-  int active_index = created_browser->tab_strip_model()->active_index();
+  int active_index = created_browser->GetTabStripModel()->active_index();
   content::WebContentsDestroyedWatcher destroyed_watcher(popup);
-  created_browser->tab_strip_model()->CloseWebContentsAt(
+  created_browser->GetTabStripModel()->CloseWebContentsAt(
       active_index, TabCloseTypes::CLOSE_USER_GESTURE);
   destroyed_watcher.Wait();
 

@@ -176,7 +176,7 @@ void NetworkProfileBubble::RecordUmaEvent(MetricNetworkedProfileCheck event) {
 
 // static
 void NetworkProfileBubble::NotifyNetworkProfileDetected() {
-  Browser* browser = chrome::FindLastActive();
+  BrowserWindowInterface* browser = chrome::FindLastActive();
 
   if (browser) {
     ShowNotification(browser);

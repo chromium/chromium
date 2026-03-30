@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -50,7 +51,7 @@ GetSampleData() {
 // Sample/debugging implementation that closes the browser tab regardless of the
 // item map.
 void CloseBrowserTabOnCompletionSample(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const std::map<syncer::DataType,
                    std::vector<syncer::LocalDataItemModel::DataId>>& items) {
   browser->GetTabStripModel()->GetActiveTab()->Close();
@@ -147,11 +148,11 @@ void BatchUploadUI::CreateBatchUploadHandler(
   // Chrome for debugging purposes - fill it with sample data.
   if (!initialize_handler_callback_) {
     auto [account_info, descriptions] = GetSampleData();
-    Browser* browser = chrome::FindLastActive();
+    BrowserWindowInterface* browser = chrome::FindLastActive();
     BatchUploadSelectedDataTypeItemsCallback sample_completion_callback =
         base::BindOnce(&CloseBrowserTabOnCompletionSample, browser);
-    Initialize(account_info, browser, std::move(descriptions),
-               base::DoNothing(), base::DoNothing(),
+    Initialize(account_info, browser->GetBrowserForMigrationOnly(),
+               std::move(descriptions), base::DoNothing(), base::DoNothing(),
                std::move(sample_completion_callback));
   }
 

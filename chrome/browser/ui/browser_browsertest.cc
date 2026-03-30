@@ -1268,9 +1268,11 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollEnabledInPopups) {
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, OverscrollDisabledInDevToolsWindows) {
   DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
-  Browser* dev_tools_browser = chrome::FindLastActive();
-  ASSERT_EQ(dev_tools_browser->app_name(), DevToolsWindow::kDevToolsApp);
-  EXPECT_FALSE(dev_tools_browser->CanOverscrollContent());
+  BrowserWindowInterface* dev_tools_browser = chrome::FindLastActive();
+  ASSERT_EQ(dev_tools_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+  EXPECT_FALSE(
+      dev_tools_browser->GetBrowserForMigrationOnly()->CanOverscrollContent());
 }
 #endif
 
