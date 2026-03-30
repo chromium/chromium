@@ -264,7 +264,8 @@ IDBOpenDBRequest* IDBFactory::OpenInternal(ScriptState* script_state,
                                            const String& name,
                                            int64_t version,
                                            ExceptionState& exception_state) {
-  TRACE_EVENT1("IndexedDB", "IDBFactory::open", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::openRequestSetup", "name",
+               name.Utf8());
   IDBRequest::AsyncTraceState metrics(IDBRequest::TypeForMetrics::kFactoryOpen);
   DCHECK(version >= 1 || version == IDBDatabaseMetadata::kNoVersion);
 
@@ -380,7 +381,8 @@ IDBOpenDBRequest* IDBFactory::DeleteDatabaseInternal(
     const String& name,
     ExceptionState& exception_state,
     bool force_close) {
-  TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabase", "name", name.Utf8());
+  TRACE_EVENT1("IndexedDB", "IDBFactory::deleteDatabaseRequestSetup", "name",
+               name.Utf8());
   IDBRequest::AsyncTraceState metrics(
       IDBRequest::TypeForMetrics::kFactoryDeleteDatabase);
 
