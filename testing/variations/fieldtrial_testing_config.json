@@ -15113,10 +15113,12 @@
                 {
                     "name": "Experiment",
                     "params": {
+                        "defer_notify_headers_until_next_step": "true",
                         "defer_until_next_step": "true"
                     },
                     "enable_features": [
-                        "NetworkQualityEstimatorAsyncNotifyHeadersReceived"
+                        "NetworkQualityEstimatorAsyncNotifyHeadersReceived",
+                        "NetworkQualityEstimatorAsyncNotifyStartTransaction"
                     ]
                 }
             ]

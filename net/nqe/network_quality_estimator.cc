@@ -68,7 +68,7 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE_PARAM(bool,
                    kDeferHeadersReceivedUntilNextStep,
                    &kNetworkQualityEstimatorAsyncNotifyHeadersReceived,
-                   "defer_until_next_step",
+                   "defer_notify_headers_until_next_step",
                    false);
 
 #if BUILDFLAG(IS_CHROMEOS)
