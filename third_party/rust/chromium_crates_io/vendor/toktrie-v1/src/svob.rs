@@ -6,6 +6,10 @@ use std::{
 
 pub type TokenId = u32;
 
+/// A compact bit vector representing a set of allowed [`crate::TokenId`]s.
+///
+/// Used as the output of constrained-decoding mask computation: bit *i* is
+/// set when token *i* is permitted by the current grammar state.
 #[derive(Clone)]
 pub struct SimpleVob {
     data: Vec<u32>,

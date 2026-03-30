@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.87"
 name = "toktrie"
-version = "1.6.1"
+version = "1.7.0"
 build = false
 autolib = false
 autobins = false
@@ -32,6 +32,10 @@ path = "src/lib.rs"
 [[test]]
 name = "test_svob"
 path = "tests/test_svob.rs"
+
+[[test]]
+name = "test_toktrie"
+path = "tests/test_toktrie.rs"
 
 [dependencies.anyhow]
 version = "1.0.95"

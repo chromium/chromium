@@ -1,3 +1,27 @@
+//! Utility library for working with tokens and token tries.
+//!
+//! This crate provides efficient implementations of token tries, which are useful
+//! for when constraining large language models with a grammar. A token trie is a
+//! prefix tree of all tokens in a tokenizer. For example, the node 't' might have
+//! children 'the', 'token' and 'try' (and so on - the node 'the' would have its
+//! own children 'there' and 'they'). If we know that the token 't' does not
+//! currently match our constraints, we know that all of its children (and their
+//! children) will not match either.
+//!
+//! This crate is a highly optimized implementation of token tries, with a focus on
+//! efficient memory access.
+//!
+//! # Key types
+//!
+//! - [`TokTrie`] – the token trie itself.
+//! - [`SimpleVob`] – a bit vector representing a set of allowed [`TokenId`]s.
+//! - [`TokenizerEnv`] – trait abstracting over tokenizer implementations.
+//!
+//! # Constraint interface
+//!
+//! The [`Recognizer`] trait expresses byte-level constraints that can be
+//! applied to the trie as a byte-stack interface for trie-based filtering.
+
 use serde::{Deserialize, Serialize};
 
 pub mod bytes;
@@ -34,7 +58,7 @@ pub struct InferenceCapabilities {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct StepArg {
     /// Sampling result for the previous iteration.
-    /// For simple sampled token 't', backtrack==0 and tokens==[t].
+    /// For simple sampled token 't', backtrack==0 and `tokens==[t]`.
     /// For first request, backtrack==0 and tokens==[] (prompt is passed separately, before).
     /// Can be more complex when splices are used.
     pub backtrack: u32,
