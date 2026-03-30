@@ -1071,6 +1071,60 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 }
 
+TEST_F(
+    PictureLayerImplTest,
+    GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize) {
+  gfx::Size layer_bounds(100, 200);
+  scoped_refptr<FakeRasterSource> valid_raster_source =
+      FakeRasterSource::CreateFilled(layer_bounds);
+  SetupPendingTree(valid_raster_source);
+
+  CreateEffectNode(pending_layer())
+      .backdrop_filters.Append(FilterOperation::CreateHueRotateFilter(1.0));
+  auto* pending_mask = AddLayer<FakePictureLayerImpl>(
+      host_impl()->pending_tree(), valid_raster_source);
+  SetupMaskProperties(pending_layer(), pending_mask);
+  ASSERT_TRUE(pending_mask->is_backdrop_filter_mask());
+
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+  UpdateDrawProperties(host_impl()->pending_tree());
+
+  // Mask has a 1.0 scale tiling.
+  EXPECT_EQ(1.f, pending_mask->HighResTiling()->contents_scale_key());
+  EXPECT_EQ(1u, pending_mask->num_tilings());
+
+  ActivateTree();
+
+  FakePictureLayerImpl* active_mask = static_cast<FakePictureLayerImpl*>(
+      host_impl()->active_tree()->LayerById(pending_mask->id()));
+
+  // Manually initialize the tile with a resource size that is larger than the
+  // tiling rect.
+  active_mask->HighResTiling()->CreateAllTilesForTesting();
+  std::vector<Tile*> tiles = active_mask->HighResTiling()->AllTilesForTesting();
+  ASSERT_EQ(1u, tiles.size());
+
+  Tile* tile = tiles[0];
+  gfx::Size resource_size(200, 400);
+  active_mask->InitializeTileWithResourceSize(tile, resource_size);
+
+  // The mask resource exists.
+  viz::ResourceId mask_resource_id;
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  active_mask->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                                     &mask_uv_size);
+  EXPECT_NE(viz::kInvalidResourceId, mask_resource_id);
+  EXPECT_EQ(resource_size, mask_texture_size);
+
+  // `mask_uv_size` is the ratio between the tiling's width/height (i.e., the
+  // content size) and that of the resource. Here, the tiling rect (100x200) is
+  // half the size of the resource (200x400) in each dimension.
+  EXPECT_EQ(mask_uv_size, gfx::SizeF(0.5f, 0.5f));
+
+  active_mask->ReleaseTileResources();
+}
+
 TEST_F(LegacySWPictureLayerImplTest, ScaledMaskLayer) {
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 

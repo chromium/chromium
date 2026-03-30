@@ -89,6 +89,7 @@ class CC_EXPORT TileDrawInfo {
  private:
   friend class Tile;
   friend class TileManager;
+  friend class FakePictureLayerImpl;
 
   void SetResource(ResourcePool::InUsePoolResource resource,
                    bool resource_is_checker_imaged);

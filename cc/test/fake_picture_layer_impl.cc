@@ -6,11 +6,18 @@
 
 #include <stddef.h>
 
+#include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "cc/raster/raster_buffer.h"
+#include "cc/raster/raster_buffer_provider.h"
+#include "cc/resources/resource_pool.h"
 #include "cc/test/fake_raster_source.h"
+#include "cc/test/fake_tile_manager.h"
 #include "cc/tiles/tile.h"
+#include "cc/tiles/tile_draw_info.h"
+#include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
@@ -196,6 +203,34 @@ void FakePictureLayerImpl::ReleaseResources() {
 void FakePictureLayerImpl::ReleaseTileResources() {
   PictureLayerImpl::ReleaseTileResources();
   ++release_tile_resources_count_;
+}
+
+void FakePictureLayerImpl::InitializeTileWithResourceSize(
+    Tile* tile,
+    const gfx::Size& resource_size) {
+  LayerTreeHostImpl* host_impl = layer_tree_impl()->host_impl();
+  ResourcePool* resource_pool = host_impl->resource_pool();
+  FakeTileManager* tile_manager =
+      static_cast<FakeTileManager*>(host_impl->tile_manager());
+  RasterBufferProvider* raster_buffer_provider =
+      tile_manager->GetRasterBufferProvider();
+  TileDrawInfo& draw_info = tile->draw_info();
+  ResourcePool::InUsePoolResource resource = resource_pool->AcquireResource(
+      resource_size, host_impl->GetTileFormat(),
+      host_impl->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
+          .color_space);
+
+  raster_buffer_provider->AcquireBufferForRaster(resource, 0, 0);
+
+  if (resource.backing()) {
+    resource.backing()->CreateSharedImageForTesting();
+    resource.backing()->mailbox_sync_token.Set(
+        gpu::GPU_IO, gpu::CommandBufferId::FromUnsafeValue(1), 1);
+  }
+  resource_pool->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTest);
+  draw_info.SetResource(std::move(resource), false);
+  draw_info.set_resource_ready_for_draw();
 }
 
 }  // namespace cc
