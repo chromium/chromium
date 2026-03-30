@@ -230,7 +230,7 @@ class DataWriterFileStreamWriter final : public storage::FileStreamWriter {
 
 // Represents an ongoing operation of writing to an IOutputStream.
 class OutputStreamWriteOperation
-    : public base::RefCounted<OutputStreamWriteOperation> {
+    : public base::RefCountedThreadSafe<OutputStreamWriteOperation> {
  public:
   OutputStreamWriteOperation(
       content::BrowserContext::BlobContextGetter blob_context_getter,
@@ -257,7 +257,7 @@ class OutputStreamWriteOperation
   }
 
  private:
-  friend class base::RefCounted<OutputStreamWriteOperation>;
+  friend class base::RefCountedThreadSafe<OutputStreamWriteOperation>;
 
   ~OutputStreamWriteOperation() = default;
 
