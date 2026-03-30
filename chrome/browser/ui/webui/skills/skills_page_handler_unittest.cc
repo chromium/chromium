@@ -45,7 +45,10 @@ class MockSkillsPage : public skills::mojom::SkillsPage {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
-  MOCK_METHOD(void, UpdateSkill, (const skills::Skill& skill), (override));
+  MOCK_METHOD(void,
+              UpdateSkills,
+              ((const std::vector<skills::Skill>&)),
+              (override));
   MOCK_METHOD(void, RemoveSkill, (const std::string& skill_id), (override));
   MOCK_METHOD(
       void,
@@ -182,11 +185,9 @@ TEST_F(SkillsPageHandlerTest, GetInitialUserSkills_ServiceNotReady) {
       .WillRepeatedly(
           testing::Return(SkillsService::ServiceStatus::kNotInitialized));
 
-  base::test::TestFuture<std::vector<skills::Skill>> future;
-  handler_->GetInitialUserSkills(base::BindLambdaForTesting(
-      [&future](const std::vector<skills::Skill>& skills) {
-        future.SetValue(skills);
-      }));
+  base::test::TestFuture<const std::vector<skills::Skill>&> future;
+  handler_->GetInitialUserSkills(future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
 
   histogram_tester_.ExpectUniqueSample(
       "Skills.Management.Error", SkillsManagementError::kSkillsServiceNotReady,
