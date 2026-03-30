@@ -109,7 +109,8 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
   // Creates mediator with the correct request ID.
   mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
       initWithWebStateList:&web_state_list_
-                 requestID:params.RequestId()
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               "", params.RequestId())
           accountForSaving:@"test@example.com"
               reauthModule:mock_reauth_module_
                   delegate:mock_delegate_];
@@ -143,7 +144,8 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest,
 
   mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
       initWithWebStateList:&web_state_list_
-                 requestID:params.RequestId()
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               "", params.RequestId())
           accountForSaving:@"test@example.com"
               reauthModule:mock_reauth_module_
                   delegate:mock_delegate_];
@@ -188,7 +190,8 @@ TEST_F(PasskeyCreationBottomSheetMediatorTest, CreatePasskeyReauthFailure) {
 
   mediator_ = [[PasskeyCreationBottomSheetMediator alloc]
       initWithWebStateList:&web_state_list_
-                 requestID:params.RequestId()
+               requestInfo:webauthn::IOSPasskeyClient::RequestInfo(
+                               "", params.RequestId())
           accountForSaving:@"test@example.com"
               reauthModule:mock_reauth_module_
                   delegate:mock_delegate_];

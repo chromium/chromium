@@ -2393,12 +2393,13 @@ const char kChromeAppStoreUrl[] =
 
 #pragma mark - IOSPasskeyClientCommands
 
-- (void)showPasskeyCreationBottomSheet:(const std::string&)requestID {
+- (void)showPasskeyCreationBottomSheet:
+    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo {
   _passkeyCreationBottomSheetCoordinator =
       [[PasskeyCreationBottomSheetCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:self.browser
-                           requestID:requestID];
+                         requestInfo:std::move(requestInfo)];
   _passkeyCreationBottomSheetCoordinator.browserCoordinatorCommandsHandler =
       HandlerForProtocol(self.dispatcher, BrowserCoordinatorCommands);
   [_passkeyCreationBottomSheetCoordinator start];

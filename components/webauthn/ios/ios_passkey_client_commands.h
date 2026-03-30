@@ -11,7 +11,8 @@
 @protocol IOSPasskeyClientCommands
 
 // Shows the passkey creation bottom sheet.
-- (void)showPasskeyCreationBottomSheet:(const std::string&)requestID;
+- (void)showPasskeyCreationBottomSheet:
+    (webauthn::IOSPasskeyClient::RequestInfo)requestInfo;
 
 // Shows the passkey suggestion bottom sheet.
 - (void)showPasskeySuggestionBottomSheet:

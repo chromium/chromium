@@ -34,8 +34,8 @@
       base::ScopedObservation<WebStateList, WebStateListObserverBridge>>
       _webStateListObservation;
 
-  // ID of the passkey request.
-  std::string _requestID;
+  // Information about the pending passkey request.
+  std::optional<webauthn::IOSPasskeyClient::RequestInfo> _requestInfo;
 
   // Email associated with the account the passkey will get saved in.
   NSString* _accountForSaving;
@@ -47,14 +47,13 @@
   GURL _URL;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                           requestID:(std::string)requestID
-                    accountForSaving:(NSString*)accountForSaving
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                            delegate:
-                                (id<PasskeyCreationBottomSheetMediatorDelegate>)
-                                    mediatorDelegate {
-  CHECK(!requestID.empty());
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+             requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+        accountForSaving:(NSString*)accountForSaving
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                delegate:(id<PasskeyCreationBottomSheetMediatorDelegate>)
+                             mediatorDelegate {
   self = [super init];
   if (self) {
     _webStateList = webStateList;
@@ -64,7 +63,7 @@
     _webStateListObservation.emplace(&(*_webStateListObserver));
     _webStateListObservation->Observe(_webStateList);
 
-    _requestID = requestID;
+    _requestInfo = std::move(requestInfo);
     _accountForSaving = accountForSaving;
     _reauthModule = reauthModule;
     _URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
@@ -81,13 +80,14 @@
 
 - (void)createPasskey {
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper) {
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
     return;
   }
 
   std::optional<bool> shouldPerformUserVerification =
       passkeyTabHelper->ShouldPerformUserVerification(
-          _requestID, [_reauthModule canAttemptReauthWithBiometrics]);
+          _requestInfo->request_id,
+          [_reauthModule canAttemptReauthWithBiometrics]);
 
   if (!shouldPerformUserVerification.has_value()) {
     // TODO(crbug.com/479249845): This should not happen. The correct behavior
@@ -142,30 +142,35 @@
 
 - (void)performPasskeyCreation {
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper) {
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
     [_mediatorDelegate dismissPasskeyCreation];
     return;
   }
-  passkeyTabHelper->StartPasskeyCreation(_requestID);
+  passkeyTabHelper->StartPasskeyCreation(_requestInfo->request_id);
   [_mediatorDelegate dismissPasskeyCreation];
 }
 
 - (void)deferPasskeyCreationToRenderer {
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper) {
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
     return;
   }
 
-  passkeyTabHelper->DeferPendingRequestToRenderer(_requestID);
+  passkeyTabHelper->DeferPendingRequestToRenderer(_requestInfo->request_id);
 }
 
 - (void)cancelPasskeyCreation {
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper) {
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
     return;
   }
 
-  passkeyTabHelper->RejectPendingRequest(_requestID);
+  passkeyTabHelper->RejectPendingRequest(_requestInfo->request_id);
+}
+
+- (BOOL)hasPendingRequest:
+    (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo {
+  return _requestInfo.has_value() && *_requestInfo == requestInfo;
 }
 
 #pragma mark - Accessors
@@ -196,12 +201,12 @@
 // Returns the username for the passkey request.
 - (NSString*)username {
   webauthn::PasskeyTabHelper* passkeyTabHelper = [self passkeyTabHelper];
-  if (!passkeyTabHelper) {
+  if (!passkeyTabHelper || !_requestInfo.has_value()) {
     return nil;
   }
 
   const std::string& username =
-      passkeyTabHelper->UsernameForRequest(_requestID);
+      passkeyTabHelper->UsernameForRequest(_requestInfo->request_id);
   if (username.empty()) {
     return nil;
   }

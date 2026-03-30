@@ -15,6 +15,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "components/webauthn/ios/passkey_types.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
@@ -147,7 +148,7 @@ void IOSChromePasskeyClient::ShowSuggestionBottomSheet(
 }
 
 void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
-  [command_handler_ showPasskeyCreationBottomSheet:request_info.request_id];
+  [command_handler_ showPasskeyCreationBottomSheet:std::move(request_info)];
 }
 
 void IOSChromePasskeyClient::ShowInterstitial(InterstitialCallback callback) {

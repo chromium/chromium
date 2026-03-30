@@ -9,6 +9,7 @@
 
 #import <string>
 
+#import "components/webauthn/ios/ios_passkey_client.h"
 #import "url/gurl.h"
 
 class WebStateList;
@@ -19,13 +20,13 @@ class WebStateList;
 // Mediator for the passkey creation bottom sheet.
 @interface PasskeyCreationBottomSheetMediator : NSObject
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                           requestID:(std::string)requestID
-                    accountForSaving:(NSString*)accountForSaving
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                            delegate:
-                                (id<PasskeyCreationBottomSheetMediatorDelegate>)
-                                    mediatorDelegate;
+- (instancetype)
+    initWithWebStateList:(WebStateList*)webStateList
+             requestInfo:(webauthn::IOSPasskeyClient::RequestInfo)requestInfo
+        accountForSaving:(NSString*)accountForSaving
+            reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                delegate:(id<PasskeyCreationBottomSheetMediatorDelegate>)
+                             mediatorDelegate;
 
 // The passkey creation bottom sheet consumer.
 @property(nonatomic, weak) id<PasskeyCreationBottomSheetConsumer> consumer;
@@ -39,6 +40,10 @@ class WebStateList;
 // Cancels the passkey request and defers to the renderer to save the passkey,
 // potentially using a different credential provider.
 - (void)deferPasskeyCreationToRenderer;
+
+// Returns whether this mediator is currently fulfilling the given request.
+- (BOOL)hasPendingRequest:
+    (const webauthn::IOSPasskeyClient::RequestInfo&)requestInfo;
 
 @end
 
