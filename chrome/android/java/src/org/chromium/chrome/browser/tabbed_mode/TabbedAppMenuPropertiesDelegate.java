@@ -245,9 +245,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             iconModels.add(buildForwardActionModel(currentTab));
             iconModels.add(buildBookmarkActionModel(currentTab));
             iconModels.add(buildDownloadActionModel(currentTab));
-            if (ChromeFeatureList.sGlic.isEnabled()) {
-                iconModels.add(buildGlicActionModel(currentTab));
-            } else if (!ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()) {
+            if (!ChromeFeatureList.sThreeDotMenuBackButton.isEnabled()) {
                 iconModels.add(buildPageInfoModel(currentTab));
             }
 
