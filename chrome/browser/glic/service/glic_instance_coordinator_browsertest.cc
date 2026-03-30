@@ -210,6 +210,11 @@ class GlicInstanceCoordinatorBrowserTest
 #endif
   }
 
+ protected:
+  static InvokeWithAutoSubmitPasskey GetPassKey() {
+    return InvokeWithAutoSubmitPasskeyProvider::GetPassKey();
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -424,6 +429,40 @@ IN_PROC_BROWSER_TEST_F(
     // Verify daisy chaining occurred.
     EXPECT_NE(nullptr, tab2_instance);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
+    AutoSubmitIsDiverted) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), tab, std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(coordinator().GetInstanceForTab(tab));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest,
+    AutoSubmitNotDivertedWhenFreCompleted) {
+  // Simulate FRE completion.
+  GetProfile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kCompleted));
+
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), tab, std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(coordinator().GetInstanceForTab(tab));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
@@ -1051,6 +1090,20 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Verify it took at least some fraction of the longer timeout, proving
   // it didn't instantly time out like the short one.
   EXPECT_GE(elapsed_timer.Elapsed(), base::Milliseconds(50));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithAutoSubmitSuccess) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), tab, std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+  EXPECT_TRUE(coordinator().GetInstanceForTab(tab));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
