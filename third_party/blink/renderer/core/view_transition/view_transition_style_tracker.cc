@@ -943,11 +943,11 @@ bool ViewTransitionStyleTracker::HasContainmentBoundary(
     }
     node = FlatTreeTraversal::Parent(*node);
     // Sanity check in case we have missed anything.
-    if (!node) {
+    if (!node && root_node) {
       StringBuilder sb;
       sb.Append(child_object.GetNode()->nodeName());
       sb.Append(" / ");
-      sb.Append(!!root_node ? root_node->nodeName() : "<null>");
+      sb.Append(root_node->nodeName());
       String message = sb.ReleaseString();
       DCHECK(false) << "Failed traversal: " << message;
       auto* key = base::debug::AllocateCrashKeyString(
