@@ -1222,20 +1222,18 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayout(
 void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
     const BrowserLayoutParams& params,
     CustomCornersBackground* background) {
-  // Fall back to default implementation when vertical tabstrip not present.
-  if (!delegate().ShouldDrawVerticalTabStrip()) {
-    BrowserViewLayoutImpl::ConfigureTopContainerBackground(params, background);
-    return;
-  }
-
-  // The top container always draws an opaque background when in vertical
-  // tabstrip mode.
+  // The top container always draws an opaque background in tabbed browser mode
+  // to avoid cracking between visual elements.
   background->SetVisible(true);
   background->SetPrimaryColor(CustomCornersBackground::ToolbarTheme());
 
-  // Rounded corners are drawn when not maximized or fullscreen.
+  // By default, this is just a flat background.
   CustomCornersBackground::Corners corners;
-  if (delegate().GetBrowserWindowState() == WindowState::kNormal) {
+
+  // Rounded corners are drawn in vertical tab strip mode when not maximized or
+  // fullscreen.
+  if (delegate().ShouldDrawVerticalTabStrip() &&
+      delegate().GetBrowserWindowState() == WindowState::kNormal) {
     corners.upper_trailing = background->GetWindowCorner(/*upper=*/true);
     const bool vertical_tab_strip_reaches_top =
         GetVerticalTabStripCollapsedState() !=
@@ -1245,6 +1243,7 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
       corners.upper_leading = background->GetWindowCorner(/*upper=*/true);
     }
   }
+
   background->SetCorners(corners);
 }
 
