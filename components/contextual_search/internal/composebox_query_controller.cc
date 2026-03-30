@@ -862,6 +862,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
   }
   // Create a file info struct to hold the file upload data.
   auto file_info = std::make_unique<FileInfo>();
+#if BUILDFLAG(IS_IOS)
+  // Ensure the app doesn't suspend while we are uploading a file. By creating a
+  // ScopedCriticalAction, we tell the system that a critical task is running,
+  // granting a grace period if the app is backgrounded.
+  file_info->background_action =
+      std::make_unique<base::ios::ScopedCriticalAction>("ComposeboxFileUpload");
+#endif
   file_info->file_token = file_token;
   if (contextual_input_data->primary_content_type.has_value()) {
     file_info->mime_type = contextual_input_data->primary_content_type.value();
@@ -2042,6 +2049,9 @@ void ComposeboxQueryController::HandleUploadResponse(
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     file_info->upload_error_type =
         contextual_search::ContextUploadErrorType::kServerError;
+#if BUILDFLAG(IS_IOS)
+    file_info->background_action.reset();
+#endif
     UpdateContextUploadStatus(
         file_token, contextual_search::ContextUploadStatus::kUploadFailed,
         contextual_search::ContextUploadErrorType::kServerError);
@@ -2058,6 +2068,9 @@ void ComposeboxQueryController::HandleUploadResponse(
   if (file_info->upload_status ==
           contextual_search::ContextUploadStatus::kUploadStarted &&
       file_info->num_outstanding_network_requests_ == 0) {
+#if BUILDFLAG(IS_IOS)
+    file_info->background_action.reset();
+#endif
     UpdateContextUploadStatus(
         file_token, contextual_search::ContextUploadStatus::kUploadSuccessful,
         std::nullopt);

@@ -11,6 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_IOS)
+#include "base/ios/scoped_critical_action.h"
+#endif
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -223,6 +229,12 @@ class ComposeboxQueryController
     // StartFileUploadFlow() and decremented when successful network responses
     // are received.
     size_t num_outstanding_network_requests_ = 0;
+
+#if BUILDFLAG(IS_IOS)
+    // Background execution assertion to prevent iOS from suspending the app
+    // during a file upload.
+    std::unique_ptr<base::ios::ScopedCriticalAction> background_action;
+#endif
   };
 
   // Creates the request body proto for an image and calls the callback with the
