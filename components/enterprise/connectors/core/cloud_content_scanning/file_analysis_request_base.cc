@@ -94,6 +94,9 @@ std::string GetFileMimeType(const base::FilePath& path,
 // computation can occur after RunCallback to unblock the user faster, make it
 // the last operation which uses the file and release the associated scoped file
 // access at the end of this function.
+// Both parameters are moved into this function as this should be the last
+// function to use the file, and are released by going out of scope.
+// scoped_file_access will not do anything outside of ChromeOS.
 std::string ComputeHashBlocking(
     base::File file,
     std::unique_ptr<file_access::ScopedFileAccess> scoped_file_access) {
