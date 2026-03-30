@@ -18684,27 +18684,6 @@
             ]
         }
     ],
-    "ProtoBasedEnterpriseReporting": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UploadRealtimeReportingEventsUsingProto"
-                    ]
-                }
-            ]
-        }
-    ],
     "ProvisionalNotificationAlert": [
         {
             "platforms": [
