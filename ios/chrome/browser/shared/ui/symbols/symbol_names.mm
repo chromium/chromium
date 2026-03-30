@@ -79,6 +79,7 @@ NSString* const kPDFFillSymbol = @"pdf_fill";
 NSString* const kLineThreeSparkSymbol = @"line_three_spark";
 NSString* const kDocumentBadgeSpark = @"document_badge_spark";
 NSString* const kDeepSearchSymbol = @"deep_search";
+NSString* const kGeminiLiveLogoSymbol = @"gemini_live";
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.

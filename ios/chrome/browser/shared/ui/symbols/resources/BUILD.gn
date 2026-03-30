@@ -48,6 +48,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/familylink.symbolset/familylink.cr.svg",
     "Assets.xcassets/folder_badge_arrow_forward.symbolset/Contents.json",
     "Assets.xcassets/folder_badge_arrow_forward.symbolset/folder.badge.arrow.forward.cr.svg",
+    "Assets.xcassets/gemini_live.symbolset/Contents.json",
+    "Assets.xcassets/gemini_live.symbolset/gemini.live.cr.svg",
     "Assets.xcassets/incognito.symbolset/Contents.json",
     "Assets.xcassets/incognito.symbolset/incognito.cr.svg",
     "Assets.xcassets/incognito_circle_fill.symbolset/Contents.json",

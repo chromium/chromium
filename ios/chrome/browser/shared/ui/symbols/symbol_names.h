@@ -20,6 +20,7 @@
 #if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
 extern NSString* const kGeminiFullSymbol;
 extern NSString* const kGeminiBrandedLogoSymbol;
+extern NSString* const kGeminiLiveLogoSymbol;
 extern NSString* const kGoogleDriveSymbol;
 extern NSString* const kGoogleFullSymbol;
 extern NSString* const kGoogleIconSymbol;
