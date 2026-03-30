@@ -554,8 +554,8 @@ class CONTENT_EXPORT MediaStreamManager
                    const base::UnguessableToken& session_id);
 
   // Returns true if a request for devices has been completed and the devices
-  // has either been opened or an error has occurred.
-  bool RequestDone(const DeviceRequest& request) const;
+  // have either been opened or an error has occurred.
+  static bool RequestDone(const DeviceRequest& request);
 
   MediaStreamProvider* GetDeviceManager(
       blink::mojom::MediaStreamType stream_type) const;
