@@ -477,19 +477,18 @@ Error DataURL::BuildResponse(const GURL& url,
   DCHECK(data);
   DCHECK(!*headers);
 
-  if (!DataURL::Parse(url, mime_type, charset, data))
+  std::string parsed_mime_type;
+  if (!DataURL::Parse(url, &parsed_mime_type, charset, data)) {
     return ERR_INVALID_URL;
+  }
 
-  // |mime_type| set by DataURL::Parse() is guaranteed to be in
-  //     token "/" token
-  // form. |charset| can be an empty string.
-  DCHECK(!mime_type->empty());
+  DCHECK(!parsed_mime_type.empty());
 
   // "charset" in the Content-Type header is specified explicitly to follow
   // the "token" ABNF in the HTTP spec. When the DataURL::Parse() call is
   // successful, it's guaranteed that the string in |charset| follows the
   // "token" ABNF.
-  std::string content_type = *mime_type;
+  std::string content_type = parsed_mime_type;
   if (!charset->empty())
     content_type.append(";charset=" + *charset);
   // The terminal double CRLF isn't needed by TryToCreateForDataURL().
@@ -498,6 +497,16 @@ Error DataURL::BuildResponse(const GURL& url,
   // there are nulls in the string, and DataURL::Parse() can't return nulls in
   // anything but the |data| argument.
   DCHECK(*headers);
+
+  // Return only the MIME type essence without parameters for compatibility
+  // with callers that expect token/token in the MIME type field.
+  std::optional<std::string> mime_type_without_parameters =
+      ExtractMimeTypeFromMediaType(parsed_mime_type,
+                                   /*accept_comma_separated=*/false);
+  if (!mime_type_without_parameters) {
+    return ERR_INVALID_URL;
+  }
+  *mime_type = std::move(*mime_type_without_parameters);
 
   if (base::EqualsCaseInsensitiveASCII(method, "HEAD"))
     data->clear();

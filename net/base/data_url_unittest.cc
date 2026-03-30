@@ -325,6 +325,32 @@ TEST_P(DataURLTest, BuildResponseHead) {
   }
 }
 
+TEST_P(DataURLTest, BuildResponseMimeTypeEssenceAndHeaderParameters) {
+  // Regression test for crbug.com/494341340.
+  std::string mime_type;
+  std::string charset;
+  std::string data;
+  scoped_refptr<HttpResponseHeaders> headers;
+
+  ASSERT_EQ(
+      OK,
+      DataURL::BuildResponse(
+          GURL("data:application/pdf;filename=generated.pdf;base64,SGVsbG8="),
+          "GET", &mime_type, &charset, &data, &headers));
+
+  EXPECT_EQ("application/pdf", mime_type);
+  EXPECT_TRUE(charset.empty());
+  EXPECT_EQ("Hello", data);
+
+  ASSERT_TRUE(headers);
+  if (MimeTypeParameterPreservation()) {
+    EXPECT_EQ("application/pdf;filename=generated.pdf",
+              headers->GetNormalizedHeader("Content-Type"));
+  } else {
+    EXPECT_EQ("application/pdf", headers->GetNormalizedHeader("Content-Type"));
+  }
+}
+
 TEST_P(DataURLTest, BuildResponseInput) {
   std::string mime_type;
   std::string charset;
