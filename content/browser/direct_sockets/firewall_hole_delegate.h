@@ -99,8 +99,6 @@ class CONTENT_EXPORT FirewallHoleDelegate
       const std::optional<net::IPEndPoint>& local_addr);
 
   void OnUDPFirewallHoleOpened(
-      mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
-          connection_tracker,
       const net::IPEndPoint& local_addr,
       std::unique_ptr<chromeos::FirewallHole> firewall_hole);
 
@@ -117,9 +115,23 @@ class CONTENT_EXPORT FirewallHoleDelegate
                     std::unique_ptr<chromeos::FirewallHole>>
       tcp_receivers_;
 
+  struct PendingUDPRequest {
+    PendingUDPRequest(
+        OpenSocketCallback callback,
+        mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+            connection_tracker);
+    ~PendingUDPRequest();
+    PendingUDPRequest(PendingUDPRequest&&);
+    PendingUDPRequest& operator=(PendingUDPRequest&&);
+
+    OpenSocketCallback callback;
+    mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+        connection_tracker;
+  };
+
   // This map tracks UDP socket callbacks so that
   // UDP sockets created in parallel can share the same firewall hole.
-  base::flat_map<LocalPort, std::vector<OpenSocketCallback>>
+  base::flat_map<LocalPort, std::vector<PendingUDPRequest>>
       pending_udp_open_socket_requests_;
 
   mojo::ReceiverSet<network::mojom::SocketConnectionTracker, LocalPort>

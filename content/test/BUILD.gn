@@ -2334,8 +2334,15 @@ test("content_browsertests") {
   }
 
   if (is_chromeos) {
-    sources += [ "../browser/smart_card/smart_card_browsertest.cc" ]
-    deps += [ "//chromeos/components/firewall_hole" ]
+    sources += [
+      "../browser/direct_sockets/firewall_hole_browsertest.cc",
+      "../browser/smart_card/smart_card_browsertest.cc",
+    ]
+
+    deps += [
+      "//chromeos/components/firewall_hole",
+      "//chromeos/dbus/permission_broker",
+    ]
 
     if (is_component_build) {
       sources += [

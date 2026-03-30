@@ -42,6 +42,21 @@ FirewallHoleTracker& FirewallHoleTracker::operator=(FirewallHoleTracker&&) =
 
 FirewallHoleTracker::~FirewallHoleTracker() = default;
 
+FirewallHoleDelegate::PendingUDPRequest::PendingUDPRequest(
+    OpenSocketCallback callback,
+    mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
+        connection_tracker)
+    : callback(std::move(callback)),
+      connection_tracker(std::move(connection_tracker)) {}
+
+FirewallHoleDelegate::PendingUDPRequest::~PendingUDPRequest() = default;
+
+FirewallHoleDelegate::PendingUDPRequest::PendingUDPRequest(
+    PendingUDPRequest&&) = default;
+FirewallHoleDelegate::PendingUDPRequest&
+FirewallHoleDelegate::PendingUDPRequest::operator=(PendingUDPRequest&&) =
+    default;
+
 // static
 FirewallHoleDelegate* FirewallHoleDelegate::GetInstance() {
   static base::NoDestructor<FirewallHoleDelegate> instance;
@@ -144,37 +159,36 @@ void FirewallHoleDelegate::OpenUDPFirewallHoleImpl(
     return;
   }
 
-  auto& pending_callbacks =
+  auto& pending_requests =
       pending_udp_open_socket_requests_[local_addr->port()];
-  pending_callbacks.push_back(std::move(callback));
+  pending_requests.emplace_back(std::move(callback),
+                                std::move(connection_tracker));
 
   // Only initiate a new FirewallHole::Open request if this is the first
   // request for this port.
-  if (pending_callbacks.size() == 1) {
+  if (pending_requests.size() == 1) {
     chromeos::FirewallHole::Open(
         chromeos::FirewallHole::PortType::kUdp, local_addr->port(),
         "" /*all interfaces*/,
         base::BindOnce(&FirewallHoleDelegate::OnUDPFirewallHoleOpened,
-                       base::Unretained(this), std::move(connection_tracker),
-                       *local_addr));
+                       base::Unretained(this), *local_addr));
   }
 }
 
 void FirewallHoleDelegate::OnUDPFirewallHoleOpened(
-    mojo::PendingReceiver<network::mojom::SocketConnectionTracker>
-        connection_tracker,
     const net::IPEndPoint& local_addr,
     std::unique_ptr<chromeos::FirewallHole> firewall_hole) {
-  auto find_pending_callbacks =
+  auto find_pending_requests =
       pending_udp_open_socket_requests_.find(local_addr.port());
-  CHECK(find_pending_callbacks != pending_udp_open_socket_requests_.end());
-  CHECK(!find_pending_callbacks->second.empty());
-  auto pending_callbacks = std::move(find_pending_callbacks->second);
-  pending_udp_open_socket_requests_.erase(find_pending_callbacks);
+  CHECK(find_pending_requests != pending_udp_open_socket_requests_.end());
+  CHECK(!find_pending_requests->second.empty());
+  auto pending_requests = std::move(find_pending_requests->second);
+  pending_udp_open_socket_requests_.erase(find_pending_requests);
 
   if (!firewall_hole) {
-    for (auto& callback : pending_callbacks) {
-      FulfillWithError(std::move(callback), net::ERR_NETWORK_ACCESS_DENIED);
+    for (auto& request : pending_requests) {
+      FulfillWithError(std::move(request.callback),
+                       net::ERR_NETWORK_ACCESS_DENIED);
     }
     return;
   }
@@ -183,13 +197,16 @@ void FirewallHoleDelegate::OnUDPFirewallHoleOpened(
       std::move(firewall_hole),
       // The number of pending callbacks corresponds to the number of UDP
       // socket instances created for this port.
-      pending_callbacks.size()};
+      pending_requests.size()};
 
-  udp_receivers_.Add(this, std::move(connection_tracker), local_addr.port());
+  for (auto& request : pending_requests) {
+    udp_receivers_.Add(this, std::move(request.connection_tracker),
+                       local_addr.port());
+  }
   udp_firewall_holes_.emplace(local_addr.port(), std::move(tracker));
 
-  for (auto& callback : pending_callbacks) {
-    std::move(callback).Run(net::OK, local_addr);
+  for (auto& request : pending_requests) {
+    std::move(request.callback).Run(net::OK, local_addr);
   }
 }
 
