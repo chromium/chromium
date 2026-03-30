@@ -90,17 +90,13 @@ ThemeInstalledInfoBarDelegate::ThemeInstalledInfoBarDelegate(
     const std::string& theme_id,
     std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller)
     : ConfirmInfoBarDelegate(),
-      theme_service_(theme_service),
       theme_name_(theme_name),
       theme_id_(theme_id),
       prev_theme_reinstaller_(std::move(prev_theme_reinstaller)) {
-  theme_service_->AddObserver(this);
+  theme_observation_.Observe(theme_service);
 }
 
-ThemeInstalledInfoBarDelegate::~ThemeInstalledInfoBarDelegate() {
-  // We don't want any notifications while we're running our destructor.
-  theme_service_->RemoveObserver(this);
-}
+ThemeInstalledInfoBarDelegate::~ThemeInstalledInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 ThemeInstalledInfoBarDelegate::GetIdentifier() const {
@@ -141,7 +137,8 @@ bool ThemeInstalledInfoBarDelegate::Cancel() {
 void ThemeInstalledInfoBarDelegate::OnThemeChanged() {
   // If the new theme is different from what this info bar is associated with,
   // close this info bar since it is no longer relevant.
-  if (theme_id_ != theme_service_->GetThemeID()) {
+  CHECK(theme_observation_.IsObserving());
+  if (theme_id_ != theme_observation_.GetSource()->GetThemeID()) {
     infobar()->RemoveSelf();
   }
 }
