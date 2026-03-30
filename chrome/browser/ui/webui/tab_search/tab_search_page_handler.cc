@@ -38,9 +38,10 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/aggregation/tab_strip_service_aggregator.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_model_impl/browser_tab_strip_service_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_prefs.h"
@@ -134,6 +135,21 @@ gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
       provider.GetColor(kColorTabSearchBackground));
 }
 
+// Returns true if the browser window should be tracked by Tab Search.
+bool ShouldTrackBrowser(Profile* profile, BrowserWindowInterface* browser) {
+  return browser->GetProfile() == profile &&
+         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
+}
+
+// Returns true if the tab change event contains updates to tab properties
+// (e.g. title, URL, favicon, etc.) that are displayed in the Tab Search UI.
+// This is used to filter out tab state changes that can be noisy and not affect
+// the UI such as activation or selection state.
+bool HasTabSiteDataChanged(const tabs_api::mojom::TabFieldMaskPtr& mask) {
+  return mask->title || mask->url || mask->favicon || mask->alert_states ||
+         mask->last_active;
+}
+
 }  // namespace
 
 TabSearchPageHandler::TabSearchPageHandler(
@@ -145,6 +161,7 @@ TabSearchPageHandler::TabSearchPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_ui_(web_ui),
+      profile_(Profile::FromWebUI(web_ui_)),
       webui_controller_(webui_controller),
       metrics_reporter_(metrics_reporter),
       debounce_timer_(std::make_unique<base::RetainingOneShotTimer>(
@@ -157,8 +174,13 @@ TabSearchPageHandler::TabSearchPageHandler(
               web_ui->GetWebContents(),
               base::BindRepeating(
                   &TabSearchPageHandler::BrowserWindowInterfaceChanged,
-                  base::Unretained(this)))) {
-  browser_tab_strip_tracker_.Init();
+                  base::Unretained(this)))),
+      aggregator_(std::make_unique<tabs_api::TabStripServiceAggregator>(
+          std::make_unique<tabs_api::BrowserTabStripServiceTracker>(
+              profile_,
+              base::BindRepeating(&ShouldTrackBrowser, profile_)),
+          base::BindRepeating(&TabSearchPageHandler::OnTabEvents,
+                              base::Unretained(this)))) {
   BrowserWindowInterfaceChanged();
 }
 
@@ -180,8 +202,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 
   ++num_tabs_closed_;
 
-  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
-      tab_search_prefs::kTabSearchUsed, true);
+  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
   // CloseTab() can target the WebContents hosting Tab Search if the Tab Search
   // WebUI is open in a chrome browser tab rather than its bubble. In this case
@@ -235,9 +256,8 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
                                 profile_tabs->windows.size());
     base::UmaHistogramCounts10000("Tabs.TabSearch.NumTabsOnOpen", tab_count);
 
-    bool expand_preference =
-        Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
-            tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
+    bool expand_preference = profile_->GetPrefs()->GetBoolean(
+        tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
     base::UmaHistogramEnumeration(
         "Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen",
         expand_preference ? TabSearchRecentlyClosedToggleAction::kExpand
@@ -255,7 +275,7 @@ TabSearchPageHandler::GetTabDetails(int32_t tab_id) {
     return std::nullopt;
   }
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
-  if (!browser || !ShouldTrackBrowser(browser)) {
+  if (!browser || !ShouldTrackBrowser(profile_, browser)) {
     return std::nullopt;
   }
   return TabDetails(tab);
@@ -281,8 +301,7 @@ void TabSearchPageHandler::SwitchToTab(
 
   called_switch_to_tab_ = true;
 
-  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
-      tab_search_prefs::kTabSearchUsed, true);
+  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
   tabs_api::TabStripService* const service =
       GetTabStripService(details->tab->GetBrowserWindowInterface());
@@ -307,13 +326,12 @@ void TabSearchPageHandler::SwitchToTab(
 
 void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
   sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+      TabRestoreServiceFactory::GetForProfile(profile_);
   if (!tab_restore_service) {
     return;
   }
 
-  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
-      tab_search_prefs::kTabSearchUsed, true);
+  profile_->GetPrefs()->SetBoolean(tab_search_prefs::kTabSearchUsed, true);
 
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(
@@ -333,7 +351,7 @@ void TabSearchPageHandler::ReplaceActiveSplitTab(int32_t replacement_tab_id) {
 }
 
 void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
-  Profile::FromWebUI(web_ui_)->GetPrefs()->SetBoolean(
+  profile_->GetPrefs()->SetBoolean(
       tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded, expanded);
 
   base::UmaHistogramEnumeration(
@@ -379,7 +397,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this, &profile_data, &tab_dedup_keys,
        &tab_group_ids](BrowserWindowInterface* browser) {
-        if (!ShouldTrackBrowser(browser)) {
+        if (!ShouldTrackBrowser(profile_, browser)) {
           return true;
         }
 
@@ -387,6 +405,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
         CHECK(service);
         auto get_tabs_result = service->GetTabs();
         if (!get_tabs_result.has_value()) {
+          VLOG(1) << "Failed to get tabs";
           return true;
         }
 
@@ -412,7 +431,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
                            tab_group_ids, profile_data->tab_groups,
                            tab_dedup_keys);
   profile_data->recently_closed_section_expanded =
-      Profile::FromWebUI(web_ui_)->GetPrefs()->GetBoolean(
+      profile_->GetPrefs()->GetBoolean(
           tab_search_prefs::kTabSearchRecentlyClosedSectionExpanded);
   return profile_data;
 }
@@ -474,7 +493,7 @@ void TabSearchPageHandler::AddRecentlyClosedEntries(
     std::vector<tab_search::mojom::TabGroupPtr>& tab_groups,
     std::set<DedupKey>& tab_dedup_keys) {
   sessions::TabRestoreService* tab_restore_service =
-      TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+      TabRestoreServiceFactory::GetForProfile(profile_);
   if (!tab_restore_service) {
     return;
   }
@@ -713,93 +732,116 @@ tabs_api::TabStripService* TabSearchPageHandler::GetTabStripService(
       ->GetTabStripService();
 }
 
-void TabSearchPageHandler::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
+void TabSearchPageHandler::OnTabEvents(
+    const std::vector<tabs_api::mojom::TabsEventPtr>& events) {
   const auto* preload_state =
       WebUIContentsPreloadState::FromWebContents(web_ui_->GetWebContents());
   if (!IsWebContentsVisible() ||
-      (preload_state && preload_state->pending_request) ||
-      browser_tab_strip_tracker_.is_processing_initial_browsers()) {
+      (preload_state && preload_state->pending_request)) {
     return;
   }
 
-  if (change.type() == TabStripModelChange::kRemoved) {
-    std::vector<int> tab_ids;
-    std::set<SessionID> tab_restore_ids;
-    for (const auto& removed_tab : change.GetRemove()->contents) {
-      tabs::TabInterface* tab = removed_tab.tab;
-      tab_ids.push_back(tab->GetHandle().raw_value());
-
-      if (removed_tab.session_id.has_value() &&
-          removed_tab.session_id.value().is_valid()) {
-        tab_restore_ids.insert(removed_tab.session_id.value());
+  for (const auto& event : events) {
+    if (event->is_nodes_closed_event()) {
+      OnNodesRemoved(event->get_nodes_closed_event());
+    } else if (event->is_data_changed_event()) {
+      const auto& data_changed_event = event->get_data_changed_event();
+      if (data_changed_event->is_tab()) {
+        OnTabDataChanged(*data_changed_event->get_tab());
       }
+    } else {
+      ScheduleDebounce();
     }
-
-    auto tabs_removed_info = tab_search::mojom::TabsRemovedInfo::New();
-    tabs_removed_info->tab_ids = std::move(tab_ids);
-
-    sessions::TabRestoreService* tab_restore_service =
-        TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-    if (tab_restore_service) {
-      // Loops through at most (TabRestoreServiceHelper) kMaxEntries.
-      // Recently closed entries appear first in the list.
-      for (auto& entry : tab_restore_service->entries()) {
-        if (entry->type == sessions::tab_restore::Type::TAB &&
-            tab_restore_ids.contains(entry->id)) {
-          // The associated tab group visual data for the recently closed tab is
-          // already present at the client side from the initial GetProfileData
-          // call.
-          sessions::tab_restore::Tab* tab =
-              static_cast<sessions::tab_restore::Tab*>(entry.get());
-          tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
-              GetRecentlyClosedTab(tab, entry->timestamp);
-          tabs_removed_info->recently_closed_tabs.push_back(
-              std::move(recently_closed_tab));
-        }
-      }
-    }
-
-    page_->TabsRemoved(std::move(tabs_removed_info));
-    return;
   }
-  ScheduleDebounce();
 }
 
-void TabSearchPageHandler::OnTabChangedAt(tabs::TabInterface* tab,
-                                          int index,
-                                          TabChangeType change_type) {
-  if (!IsWebContentsVisible()) {
-    return;
+void TabSearchPageHandler::OnNodesRemoved(
+    const tabs_api::mojom::OnNodesClosedEventPtr& event) {
+  std::vector<int> tab_ids;
+  std::set<SessionID> tab_restore_ids;
+
+  for (const auto& node_id : event->node_ids) {
+    if (node_id.Type() == tabs_api::NodeId::Type::kContent) {
+      int32_t tab_id;
+      if (base::StringToInt(node_id.Id(), &tab_id)) {
+        tab_ids.push_back(tab_id);
+        std::optional<int32_t> session_id =
+            tabs::SessionMappedTabHandleFactory::GetInstance()
+                .GetSessionIdForHandle(tab_id);
+        if (session_id.has_value()) {
+          tab_restore_ids.insert(
+              SessionID::FromSerializedValue(session_id.value()));
+        }
+      }
+    } else if (node_id.Type() == tabs_api::NodeId::Type::kCollection) {
+      OnSplitTabRemoved();
+    }
   }
-  // TODO(crbug.com/40709736): Support more values for TabChangeType and filter
-  // out the changes we are not interested in.
-  if (change_type != TabChangeType::kAll) {
+
+  if (!tab_ids.empty() || !tab_restore_ids.empty()) {
+    OnTabsRemoved(std::move(tab_ids), std::move(tab_restore_ids));
+  }
+}
+
+void TabSearchPageHandler::OnTabsRemoved(std::vector<int> tab_ids,
+                                         std::set<SessionID> tab_restore_ids) {
+  auto tabs_removed_info = tab_search::mojom::TabsRemovedInfo::New();
+  tabs_removed_info->tab_ids = std::move(tab_ids);
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(profile_);
+  if (tab_restore_service) {
+    // Loops through at most (TabRestoreServiceHelper) kMaxEntries.
+    // Recently closed entries appear first in the list.
+    for (auto& entry : tab_restore_service->entries()) {
+      if (entry->type == sessions::tab_restore::Type::TAB &&
+          tab_restore_ids.contains(entry->id)) {
+        // The associated tab group visual data for the recently closed tab
+        // is already present at the client side from the initial
+        // GetProfileData call.
+        sessions::tab_restore::Tab* tab =
+            static_cast<sessions::tab_restore::Tab*>(entry.get());
+        tabs_removed_info->recently_closed_tabs.push_back(
+            GetRecentlyClosedTab(tab, entry->timestamp));
+      }
+    }
+  }
+
+  page_->TabsRemoved(std::move(tabs_removed_info));
+}
+
+void TabSearchPageHandler::OnTabDataChanged(
+    const tabs_api::mojom::TabChange& event) {
+  // Ignore if the UI is hidden or the event doesn't contain
+  // relevant tab data changes.
+  if (!IsWebContentsVisible() || !HasTabSiteDataChanged(event.mask)) {
     return;
   }
 
-  TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
+  auto handle = event.data->id.ToTabHandle();
+  std::optional<TabDetails> details =
+      handle ? GetTabDetails(handle->raw_value()) : std::nullopt;
+  if (!details) {
+    return;
+  }
+
+  TRACE_EVENT0("browser", "TabSearchPageHandler:OnTabDataChanged");
   const bool is_mark_overlap = metrics_reporter_->HasLocalMark("TabUpdated");
   base::UmaHistogramBoolean("Tabs.TabSearch.Mojo.TabUpdated.IsOverlap",
                             is_mark_overlap);
   if (!is_mark_overlap) {
     metrics_reporter_->Mark("TabUpdated");
   }
-
   auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();
+  tabs::TabInterface* tab = details->tab;
   BrowserWindowInterface* browser = tab->GetBrowserWindowInterface();
   tab_update_info->in_active_window = browser->IsActive();
   tab_update_info->in_host_window = browser == browser_;
-  tab_update_info->tab = GetTab(tab, index);
+  tab_update_info->tab = GetTab(tab, details->GetIndex());
   page_->TabUpdated(std::move(tab_update_info));
 }
 
-void TabSearchPageHandler::OnSplitTabChanged(const SplitTabChange& change) {
-  if (change.type != SplitTabChange::Type::kRemoved) {
-    return;
-  }
+void TabSearchPageHandler::OnSplitTabRemoved() {
   GURL url = web_ui_->GetWebContents()->GetURL();
   if (url.spec() != chrome::kChromeUISplitViewNewTabPageURL) {
     return;
@@ -832,11 +874,6 @@ bool TabSearchPageHandler::IsWebContentsVisible() {
 
 void TabSearchPageHandler::BeforeBubbleWidgetShowed() {
   NotifyTabsChanged();
-}
-
-bool TabSearchPageHandler::ShouldTrackBrowser(BrowserWindowInterface* browser) {
-  return browser->GetProfile() == Profile::FromWebUI(web_ui_) &&
-         browser->GetType() == BrowserWindowInterface::TYPE_NORMAL;
 }
 
 void TabSearchPageHandler::SetTimerForTesting(

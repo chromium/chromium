@@ -940,7 +940,7 @@ TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
   EXPECT_EQ(kTabUrl2,
             tabs_in_split_after_replacement[1]->GetContents()->GetURL().spec());
 
-  EXPECT_CALL(page_, TabUpdated(_)).Times(3);
+  EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
 }
 
