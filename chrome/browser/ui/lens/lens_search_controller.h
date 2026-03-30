@@ -309,6 +309,9 @@ class LensSearchController {
       bool use_dark_mode,
       lens::LensOverlayGen204Controller* gen204_controller);
 
+  // Override these methods to be able to track calls made to the query flow router.
+  virtual std::unique_ptr<lens::LensQueryFlowRouter> CreateLensQueryFlowRouter();
+
   // Override these methods to be able to track calls made to the side panel
   // coordinator.
   virtual std::unique_ptr<lens::LensOverlaySidePanelCoordinator>

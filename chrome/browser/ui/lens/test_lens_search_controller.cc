@@ -114,6 +114,21 @@ TestLensSearchController::CreateLensQueryController(
   return fake_query_controller;
 }
 
+FakeLensQueryFlowRouter::FakeLensQueryFlowRouter(
+    LensSearchController* lens_search_controller)
+    : LensQueryFlowRouter(lens_search_controller) {}
+
+FakeLensQueryFlowRouter::~FakeLensQueryFlowRouter() = default;
+
+bool FakeLensQueryFlowRouter::IsActiveTabContextEligible() const {
+  return true;
+}
+
+std::unique_ptr<lens::LensQueryFlowRouter>
+TestLensSearchController::CreateLensQueryFlowRouter() {
+  return std::make_unique<FakeLensQueryFlowRouter>(this);
+}
+
 std::unique_ptr<lens::LensSearchContextualizationController>
 TestLensSearchController::CreateLensSearchContextualizationController() {
   return std::make_unique<lens::TestLensSearchContextualizationController>(

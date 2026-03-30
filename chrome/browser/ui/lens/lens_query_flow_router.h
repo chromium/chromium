@@ -155,6 +155,9 @@ class LensQueryFlowRouter
   virtual TabContextualizationController* GetTabContextualizationController()
       const;
 
+  // Returns whether the current active tab is context eligible.
+  virtual bool IsActiveTabContextEligible() const;
+
  private:
   friend class LensQueryFlowRouterTestApi;
 
@@ -211,6 +214,7 @@ class LensQueryFlowRouter
   // Opens the contextual tasks panel to a provided URL.
   void OpenContextualTasksPanel(
       std::optional<lens::LensOverlaySelectionType> lens_selection_type,
+      bool is_contextual_text_query,
       GURL url);
 
   // Opens the contextual tasks error page.
@@ -251,9 +255,6 @@ class LensQueryFlowRouter
       std::map<std::string, std::string> additional_search_query_params,
       base::Time query_start_time,
       lens::LensOverlayInvocationSource invocation_source);
-
-  // Returns whether the current active tab is context eligible.
-  bool IsActiveTabContextEligible() const;
 
   // Stores a pending search request to be sent to contextual tasks after the
   // tab context is ready.

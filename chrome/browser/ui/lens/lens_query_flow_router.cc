@@ -488,14 +488,19 @@ void LensQueryFlowRouter::SendInteractionToContextualTasks(
   }
 
   auto lens_selection_type = request_info->lens_overlay_selection_type;
+  bool is_contextual_text_query =
+      !request_info->image_crop.has_value() &&
+      request_info->search_url_type == SearchUrlType::kAim;
   GetContextualSearchSessionHandle()->CreateSearchUrl(
       std::move(request_info),
       base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
-                     weak_factory_.GetWeakPtr(), lens_selection_type));
+                     weak_factory_.GetWeakPtr(), lens_selection_type,
+                     is_contextual_text_query));
 }
 
 void LensQueryFlowRouter::OpenContextualTasksPanel(
     std::optional<lens::LensOverlaySelectionType> lens_selection_type,
+    bool is_contextual_text_query,
     GURL url) {
   // If the invocation source was the contextual tasks composebox, avoid
   // navigating the side panel URL for visual selections to preserve the current
@@ -528,6 +533,20 @@ void LensQueryFlowRouter::OpenContextualTasksPanel(
   // Notify the overlay controller that the side panel was opened so it can
   // update its UI state.
   lens_overlay_controller()->NotifyResultsPanelOpened();
+
+  if (is_contextual_text_query &&
+      lens_overlay_controller()->IsOverlayShowing()) {
+    // Wait until the URL generation concludes and the panel is successfully
+    // opened to avoid interrupting the flow by closing Lens too early. Close
+    // the overlay by posting a task to avoid destroying the searchbox handler
+    // while it is still on the stack.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &LensSearchController::CloseLensSync,
+            lens_search_controller_->GetWeakPtr(),
+            lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted));
+  }
 }
 
 void LensQueryFlowRouter::ShowContextualTasksErrorPage() {
@@ -570,10 +589,14 @@ void LensQueryFlowRouter::UploadContextualInputData(
     pending_search_url_request_->file_tokens.push_back(token);
     auto lens_selection_type =
         pending_search_url_request_->lens_overlay_selection_type;
+    bool is_contextual_text_query =
+        !pending_search_url_request_->image_crop.has_value() &&
+        pending_search_url_request_->search_url_type == SearchUrlType::kAim;
     session_handle->CreateSearchUrl(
         std::move(pending_search_url_request_),
         base::BindOnce(&LensQueryFlowRouter::OpenContextualTasksPanel,
-                       weak_factory_.GetWeakPtr(), lens_selection_type));
+                       weak_factory_.GetWeakPtr(), lens_selection_type,
+                       is_contextual_text_query));
   }
 }
 
