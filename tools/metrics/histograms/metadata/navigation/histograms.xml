@@ -313,9 +313,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CountType">
     <variant name="AllCookies"/>
-    <variant name="AllCookiesFromMainFrameNavigation"/>
     <variant name="HttpOnlyCookies"/>
-    <variant name="HttpOnlyCookiesFromMainFrameNavigation"/>
   </token>
 </histogram>
 

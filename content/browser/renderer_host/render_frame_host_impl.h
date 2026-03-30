@@ -1544,11 +1544,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int64_t cookie_modification_count = 0;
       int64_t http_only_cookie_modification_count = 0;
       int64_t non_http_only_cookie_modification_count = 0;
-      // The number of observed cookie modifications that should be removed
-      // since we want to adjust the count by subtracting the number of cookie
-      // modification from the navigation itself.
-      int64_t cookie_modification_removing_count = 0;
-      int64_t http_only_cookie_modification_removing_count = 0;
     };
 
     CookieChangeListener(StoragePartition* storage_partition, GURL& url);
@@ -1560,19 +1555,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
     CookieChangeInfo cookie_change_info() { return cookie_change_info_; }
 
     // We don't want to count the cookie modification made by the
-    // `NavigationRequest` itself, so provide this function to allow the count
-    // adjustment.
+    // `NavigationRequest` itself, so provide this function to allow adding
+    // certain cookie to the ignore list.
     // Passing the `base::PassKey` to restrict the caller of this method to
     // `NavigationRequest` only.
-    void RemoveNavigationCookieModificationCount(
+    void AddNavigationCookieToIgnore(
         base::PassKey<content::NavigationRequest> navigation_request,
-        uint64_t cookie_modification_count_delta,
-        uint64_t http_only_cookie_modification_count_delta) {
-      cookie_change_info_.cookie_modification_removing_count +=
-          cookie_modification_count_delta;
-      cookie_change_info_.http_only_cookie_modification_removing_count +=
-          http_only_cookie_modification_count_delta;
-    }
+        const net::CanonicalCookie& cookie);
 
    private:
     // network::mojom::CookieChangeListener
@@ -1581,7 +1570,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
     mojo::Receiver<network::mojom::CookieChangeListener>
         cookie_change_listener_receiver_{this};
 
+    // The information about the cookie change observed during the lifetime of
+    // this RFHI, excluding the cookies set by the navigation.
     CookieChangeInfo cookie_change_info_;
+
+    using CookieKey = std::tuple<net::UniqueCookieKey, bool>;
+    // Stores the navigation cookies and the count.
+    base::flat_map<CookieKey, int> navigation_cookies_to_ignore_;
+    // Stores the cookie changes received before they are added to the ignore
+    // list.
+    base::flat_map<CookieKey, int> unmatched_cookie_changes_;
   };
 
   class DeviceBoundSessionObserver

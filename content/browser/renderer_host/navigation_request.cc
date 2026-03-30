@@ -10608,19 +10608,13 @@ void NavigationRequest::NotifyCookiesAccessed(
     // `CookieChangeListener` to only track the cookie changes that potentially
     // make the document initially rendered by the navigation request outdated.
     if (allowed.type == CookieAccessDetails::Type::kChange) {
-      uint64_t cookie_modification_count =
-          allowed.cookie_access_result_list.size();
-      uint64_t http_only_cookie_modification_count = 0u;
-      for (const net::CookieWithAccessResult& cookie_with_access_result :
-           allowed.cookie_access_result_list) {
-        if (cookie_with_access_result.cookie.IsHttpOnly()) {
-          http_only_cookie_modification_count++;
-        }
-      }
       if (cookie_change_listener_) {
-        cookie_change_listener_->RemoveNavigationCookieModificationCount(
-            base::PassKey<NavigationRequest>(), cookie_modification_count,
-            http_only_cookie_modification_count);
+        for (const net::CookieWithAccessResult& cookie_with_access_result :
+             allowed.cookie_access_result_list) {
+          cookie_change_listener_->AddNavigationCookieToIgnore(
+              base::PassKey<NavigationRequest>(),
+              cookie_with_access_result.cookie);
+        }
       }
     }
   }

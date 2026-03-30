@@ -823,23 +823,13 @@ void BackForwardCacheImpl::UpdateCanStoreToIncludeCacheControlNoStore(
       base::StrCat({kCookieCHangeInfoMetricName, "AllCookies"}),
       cookie_change_info.cookie_modification_count);
   base::UmaHistogramCounts1000(
-      base::StrCat(
-          {kCookieCHangeInfoMetricName, "AllCookiesFromMainFrameNavigation"}),
-      cookie_change_info.cookie_modification_removing_count);
-  base::UmaHistogramCounts1000(
       base::StrCat({kCookieCHangeInfoMetricName, "HttpOnlyCookies"}),
       cookie_change_info.http_only_cookie_modification_count);
-  base::UmaHistogramCounts1000(
-      base::StrCat({kCookieCHangeInfoMetricName,
-                    "HttpOnlyCookiesFromMainFrameNavigation"}),
-      cookie_change_info.http_only_cookie_modification_removing_count);
 
-  if (cookie_change_info.http_only_cookie_modification_count >
-      cookie_change_info.http_only_cookie_modification_removing_count) {
+  if (cookie_change_info.http_only_cookie_modification_count > 0) {
     result.No(BackForwardCacheMetrics::NotRestoredReason::
                   kCacheControlNoStoreHTTPOnlyCookieModified);
-  } else if (cookie_change_info.cookie_modification_count >
-             cookie_change_info.cookie_modification_removing_count) {
+  } else if (cookie_change_info.cookie_modification_count > 0) {
     // JavaScript cookies are modified but not HTTP cookies. Only restore based
     // on the experiment level.
     if (GetCacheControlNoStoreLevel() <=
