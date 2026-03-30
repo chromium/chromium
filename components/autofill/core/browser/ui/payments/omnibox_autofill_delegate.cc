@@ -54,6 +54,17 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     return;
   }
 
+  // The user must have credit cards saved in order to have something to
+  // autofill.
+  if (client_->GetPaymentsAutofillClient()
+          ->GetPaymentsDataManager()
+          .GetCreditCards()
+          .empty()) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kNoCreditCardsSaved);
+    return;
+  }
+
   // More checks to follow as implementation continues...
 
   LogOmniboxAutofillShowChipDecisionPart1(

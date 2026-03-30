@@ -36,8 +36,24 @@ class OmniboxAutofillDelegateTest
 
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
 
+    // Set up the PaymentsDataManager and add a masked server card by default.
+    autofill_client().GetPersonalDataManager().set_payments_data_manager(
+        std::make_unique<TestPaymentsDataManager>());
+    autofill_client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager()
+        .SetPrefService(autofill_client().GetPrefs());
+    autofill_client()
+        .GetPersonalDataManager()
+        .payments_data_manager()
+        .SetSyncingForTest(true);
+    autofill_client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager()
+        .AddCreditCard(test::GetMaskedServerCard());
+
+    CreateAutofillDriver();
     autofill_driver().SetParent(nullptr);
     autofill_driver().SetIsEmbedded(false);
     autofill_driver().SetIsActive(true);
@@ -159,6 +175,68 @@ TEST_F(OmniboxAutofillDelegateTest,
       OmniboxAutofillShowChipDecisionPart1::
           kAutofillPaymentMethodsPolicyDisabled,
       1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_NoCreditCardsSaved_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Specifically remove all credit cards from PaymentsDataManager.
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .ClearCreditCards();
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNoCreditCardsSaved, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CreditCardSaved_CanBeLocalCard) {
+  base::HistogramTester histogram_tester;
+
+  // Specifically add a local credit card to PaymentsDataManager.
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .ClearCreditCards();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddCreditCard(test::GetCreditCard());
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_CreditCardSaved_CanBeServerCard) {
+  base::HistogramTester histogram_tester;
+
+  // Specifically add a masked server credit card to PaymentsDataManager.
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .ClearCreditCards();
+  autofill_client()
+      .GetPersonalDataManager()
+      .test_payments_data_manager()
+      .AddCreditCard(test::GetMaskedServerCard());
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
 }
 
 }  // namespace autofill

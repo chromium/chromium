@@ -23,8 +23,10 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // extension.
   kAutofillPaymentMethodsPolicyDisabled = 0,
 
+  // The user did not have any cards saved, so nothing can be autofilled.
+  kNoCreditCardsSaved = 1,
+
   // Expected remaining buckets:
-  //  kNoCreditCardsOnFile = 1,
   //  kNotCompleteCreditCardForm = 2,
   //  kCouldNotDeduceCardNumberField = 3,
   //  kNonAllowlistedIframe = 4,
