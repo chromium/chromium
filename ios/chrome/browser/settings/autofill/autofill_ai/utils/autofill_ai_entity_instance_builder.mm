@@ -98,6 +98,10 @@ EntityInstanceBuilder& EntityInstanceBuilder::AddPrimaryAttribute() {
     case autofill::EntityTypeName::kOrder:
       primary_attribute_name = autofill::AttributeTypeName::kOrderId;
       break;
+    case autofill::EntityTypeName::kShipment:
+      primary_attribute_name =
+          autofill::AttributeTypeName::kShipmentTrackingNumber;
+      break;
     default:
       NOTREACHED();
   }

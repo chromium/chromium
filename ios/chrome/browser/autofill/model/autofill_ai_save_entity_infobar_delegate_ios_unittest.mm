@@ -48,7 +48,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOSTest
       case EntityTypeName::kFlightReservation:
         return test::GetFlightReservationEntityInstance();
       case EntityTypeName::kShipment:
-        NOTIMPLEMENTED();
+        return test::GetShipmentEntityInstance();
     }
     NOTREACHED();
   }
@@ -139,6 +139,7 @@ INSTANTIATE_TEST_SUITE_P(AllEntityTypes,
                                            EntityTypeName::kNationalIdCard,
                                            EntityTypeName::kKnownTravelerNumber,
                                            EntityTypeName::kRedressNumber,
-                                           EntityTypeName::kFlightReservation));
+                                           EntityTypeName::kFlightReservation,
+                                           EntityTypeName::kShipment));
 
 }  // namespace autofill

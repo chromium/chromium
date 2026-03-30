@@ -40,6 +40,9 @@ UIImage* DefaultIconForAutofillAiEntityType(EntityTypeName entity_type_name,
         symbol_name = kAirplaneSymbol;
       }
       break;
+    case EntityTypeName::kShipment:
+      symbol_name = kBoxTruckFillSymbol;
+      break;
     default:
       return nil;
   }
