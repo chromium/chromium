@@ -891,8 +891,7 @@ bool SearchPrefetchService::OnNavigationLikely(
   // up-or-down arrow key predictions, the confidence is lower, so we strictly
   // enforce saver mode restrictions.
   bool should_ignore_saver_modes = [&] {
-    if (!base::FeatureList::IsEnabled(
-            kSearchPrefetchIgnoreSaverModesForNavigation)) {
+    if (!base::FeatureList::IsEnabled(kSearchPrefetchIgnoreSaverModesOnPress)) {
       return false;
     }
     switch (navigation_predictor) {

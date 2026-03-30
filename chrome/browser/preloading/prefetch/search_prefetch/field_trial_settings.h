@@ -52,7 +52,7 @@ BASE_DECLARE_FEATURE(kSearchNavigationPrefetch);
 // on-press navigation prefetches. This is because the navigation is highly
 // likely to happen soon, so prefetching doesn't waste resources
 // (crbug.com/495481378).
-BASE_DECLARE_FEATURE(kSearchPrefetchIgnoreSaverModesForNavigation);
+BASE_DECLARE_FEATURE(kSearchPrefetchIgnoreSaverModesOnPress);
 
 // Feature params for the "pf" query param for suggest prefetch and navigation
 // prefetch respectively. This param allows the search server to treat the
