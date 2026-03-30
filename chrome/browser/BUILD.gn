@@ -1200,6 +1200,17 @@ static_library("browser") {
     # c/b/browser_process_platform_part.h
     "//chrome/browser/enterprise/browser_management:management_identity_impl",
     "//chrome/browser/devtools",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once the
+    # following headers get componentized:
+    # c/b/enterprise/connectors/common.h
+    # c/b/enterprise/connectors/connectors_service.h
+    # c/b/enterprise/identifiers/profile_id_service_factory.h
+    # c/b/enterprise/signals/signals_aggregator_factory.h
+    # c/b/enterprise/signin/enterprise_signin_prefs.h
+    # c/b/policy/chrome_browser_policy_connector.h
+    "//chrome/browser/enterprise/connectors/reporting:impl",
+
     "//chrome/browser/favicon:impl",
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_impl",
@@ -1216,12 +1227,14 @@ static_library("browser") {
     # chrome_metrics_service_accessor.h gets extracted into its own target.
     "//chrome/browser/gpu:impl",
 
-    # TODO(crbug.com/489125036): Remove this circular dependency when
-    # enterprise/connectors/reporting/reporting_event_router_factory.h gets
-    # extracted into its own target.
     "//chrome/browser/history_clusters:history_clusters",
     "//chrome/browser/history_clusters:impl",
+
+    # TODO(crbug.com/353332589): Remove this circular dependency once the
+    # following header get componentized:
+    # c/b/safe_browsing/android/safe_browsing_settings_navigation_android.h
     "//chrome/browser/interstitials:impl",
+
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
 
@@ -1430,6 +1443,7 @@ static_library("browser") {
     # should be added to browser_generated_files.
     ":browser_public_dependencies",
     ":chrome_content_browser_client_parts",
+    "//chrome/browser/enterprise/connectors/reporting:impl",
     "//chrome/browser/external_protocol",
     "//chrome/browser/google",
     "//chrome/browser/headless",
@@ -6503,16 +6517,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/content_analysis_info.h",
       "enterprise/connectors/common.cc",
       "enterprise/connectors/common.h",
-      "enterprise/connectors/reporting/browser_crash_event_router.cc",
-      "enterprise/connectors/reporting/browser_crash_event_router.h",
-      "enterprise/connectors/reporting/crash_reporting_context.cc",
-      "enterprise/connectors/reporting/crash_reporting_context.h",
-      "enterprise/connectors/reporting/realtime_reporting_client.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client.h",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.cc",
-      "enterprise/connectors/reporting/realtime_reporting_client_factory.h",
-      "enterprise/connectors/reporting/reporting_event_router_factory.cc",
-      "enterprise/connectors/reporting/reporting_event_router_factory.h",
     ]
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
@@ -6544,12 +6548,6 @@ static_library("browser") {
       "enterprise/connectors/analysis/page_print_analysis_request.h",
       "enterprise/connectors/analysis/page_print_request_handler.cc",
       "enterprise/connectors/analysis/page_print_request_handler.h",
-      "enterprise/connectors/reporting/extension_install_event_router.cc",
-      "enterprise/connectors/reporting/extension_install_event_router.h",
-      "enterprise/connectors/reporting/extension_telemetry_event_router.cc",
-      "enterprise/connectors/reporting/extension_telemetry_event_router.h",
-      "enterprise/connectors/reporting/extension_telemetry_event_router_factory.cc",
-      "enterprise/connectors/reporting/extension_telemetry_event_router_factory.h",
     ]
     deps += [
       "//components/enterprise/common/proto:chrome_reporting_entity",
@@ -6557,15 +6555,6 @@ static_library("browser") {
     ]
     public_deps +=
         [ "//components/enterprise/common/proto:browser_events_proto" ]
-  }
-
-  if (enterprise_telomere_reporting) {
-    sources += [
-      "enterprise/connectors/reporting/telomere_event_router.cc",
-      "enterprise/connectors/reporting/telomere_event_router.h",
-      "enterprise/connectors/reporting/telomere_reporting_context.cc",
-      "enterprise/connectors/reporting/telomere_reporting_context.h",
-    ]
   }
 
   if (enterprise_local_content_analysis) {

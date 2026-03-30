@@ -1,0 +1,185 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("reporting") {
+  sources = []
+
+  if (enterprise_cloud_content_analysis || is_android ||
+      safe_browsing_mode == 1) {
+    sources += [
+      "browser_crash_event_router.h",
+      "crash_reporting_context.h",
+      "realtime_reporting_client.h",
+      "realtime_reporting_client_factory.h",
+      "reporting_event_router_factory.h",
+    ]
+  }
+
+  if (enterprise_cloud_content_analysis && enable_extensions) {
+    sources += [
+      "extension_install_event_router.h",
+      "extension_telemetry_event_router.h",
+      "extension_telemetry_event_router_factory.h",
+    ]
+  }
+
+  if (enterprise_telomere_reporting) {
+    sources += [
+      "telomere_event_router.h",
+      "telomere_reporting_context.h",
+    ]
+  }
+
+  public_deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core",
+    "//components/keyed_service/content",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//components/device_signals/core/browser",
+    "//components/enterprise",
+    "//components/policy/core/common",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//third_party/crashpad/crashpad/client",
+  ]
+
+  if (enterprise_cloud_content_analysis && enable_extensions) {
+    deps += [
+      "//extensions/browser",
+      "//extensions/common",
+    ]
+  }
+}
+
+source_set("impl") {
+  sources = []
+
+  if (enterprise_cloud_content_analysis || is_android ||
+      safe_browsing_mode == 1) {
+    sources += [
+      "browser_crash_event_router.cc",
+      "crash_reporting_context.cc",
+      "realtime_reporting_client.cc",
+      "realtime_reporting_client_factory.cc",
+      "reporting_event_router_factory.cc",
+    ]
+  }
+
+  if (enterprise_cloud_content_analysis && enable_extensions) {
+    sources += [
+      "extension_install_event_router.cc",
+      "extension_telemetry_event_router.cc",
+      "extension_telemetry_event_router_factory.cc",
+    ]
+  }
+
+  if (enterprise_telomere_reporting) {
+    sources += [
+      "telomere_event_router.cc",
+      "telomere_reporting_context.cc",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [ ":reporting" ]
+
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/signin",
+    "//components/crash/core/app",
+    "//components/device_signals/core/browser",
+    "//components/device_signals/core/common",
+    "//components/enterprise",
+    "//components/enterprise/browser/identifiers",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/common:features",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chrome/browser/ash/profiles",
+      "//chromeos/components/mgs",
+      "//components/user_manager",
+    ]
+  }
+
+  if (enterprise_cloud_content_analysis) {
+    deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
+
+    if (enable_extensions) {
+      deps += [ "//chrome/browser/extensions" ]
+    }
+  }
+
+  # This target has circular dependencies with //chrome/browser:browser
+  # until more of //chrome/browser is modularized.
+  deps += [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "crash_reporting_context_unittest.cc",
+    "realtime_reporting_client_unittest.cc",
+    "reporting_event_router_unittest.cc",
+  ]
+
+  if (enterprise_cloud_content_analysis && enable_extensions) {
+    sources += [
+      "extension_install_event_router_unittest.cc",
+      "extension_telemetry_event_router_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":impl",
+    ":reporting",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/enterprise/connectors/test:test_support",
+    "//chrome/test:test_support",
+    "//components/device_signals/core/browser",
+    "//components/enterprise",
+    "//components/enterprise:test_support",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:connectors_proto",
+    "//components/enterprise/connectors/core:test_support",
+    "//testing/gtest",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+
+    sources = [ "crash_reporting_context_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    deps = [
+      ":impl",
+      ":reporting",
+      "//chrome/browser",
+      "//chrome/browser/enterprise/connectors/test:test_support",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+    ]
+  }
+}

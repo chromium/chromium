@@ -504,6 +504,7 @@ source_set("extensions") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",
     "//chrome/browser/download",
+    "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/extensions:external_loader",
     "//chrome/browser/extensions/api:api_registration",
     "//chrome/browser/favicon",

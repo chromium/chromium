@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/enterprise/connectors/test/mock_realtime_reporting_client.h"
@@ -42,14 +43,14 @@ constexpr char kFakeActiveUserEmail[] = "active_user@example.com";
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 const std::set<std::string>* ZipMimeType() {
-  static std::set<std::string> set = {"application/zip"};
-  return &set;
+  static base::NoDestructor<std::set<std::string>> set({"application/zip"});
+  return set.get();
 }
 
 const std::vector<std::string>& GetFakeFrameUrlChain() {
-  static const std::vector<std::string> kFrameUrls = {"https://frame1.com/",
-                                                      "https://frame2.com/"};
-  return kFrameUrls;
+  static base::NoDestructor<std::vector<std::string>> kFrameUrls(
+      {"https://frame1.com/", "https://frame2.com/"});
+  return *kFrameUrls;
 }
 
 google::protobuf::RepeatedPtrField<std::string> CreateFakeFrameUrlChainProto() {
@@ -1450,8 +1451,8 @@ TEST_P(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
         /*expected_destination*/ "exampleDestination",
         /*expected_mimetypes=*/
         []() {
-          static std::set<std::string> set = {"text/html"};
-          return &set;
+          static base::NoDestructor<std::set<std::string>> set({"text/html"});
+          return set.get();
         }(),
         /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
         /*triggered_rules=*/triggered_rules,

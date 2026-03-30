@@ -38,6 +38,7 @@ source_set("impl") {
 
   deps = [
     "//base",
+    "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/profiles:profile",
     "//components/enterprise/connectors/core",
     "//components/prefs",

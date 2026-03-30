@@ -4875,8 +4875,9 @@ if (!is_android) {
         # on Android.
         sources += [
           "../browser/enterprise/connectors/connectors_service_browsertest.cc",
-          "../browser/enterprise/connectors/reporting/crash_reporting_context_browsertest.cc",
         ]
+        deps +=
+            [ "//chrome/browser/enterprise/connectors/reporting:browser_tests" ]
       }
 
       if (enterprise_cloud_content_analysis) {
@@ -10267,12 +10268,10 @@ test("unit_tests") {
       "../browser/enterprise/connectors/common_unittest.cc",
       "../browser/enterprise/connectors/connectors_manager_unittest.cc",
       "../browser/enterprise/connectors/connectors_service_unittest.cc",
-      "../browser/enterprise/connectors/reporting/crash_reporting_context_unittest.cc",
-      "../browser/enterprise/connectors/reporting/realtime_reporting_client_unittest.cc",
-      "../browser/enterprise/connectors/reporting/reporting_event_router_unittest.cc",
       "../browser/interstitials/enterprise_util_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/enterprise/connectors/reporting:unit_tests",
       "//chrome/browser/enterprise/connectors/test:test_support",
       "//components/enterprise/common/proto:browser_events_proto",
       "//components/enterprise/common/proto:chrome_reporting_entity",
@@ -10291,8 +10290,6 @@ test("unit_tests") {
       "../browser/enterprise/connectors/analysis/files_request_handler_unittest.cc",
       "../browser/enterprise/connectors/analysis/page_print_analysis_request_unittest.cc",
       "../browser/enterprise/connectors/analysis/page_print_request_handler_unittest.cc",
-      "../browser/enterprise/connectors/reporting/extension_install_event_router_unittest.cc",
-      "../browser/enterprise/connectors/reporting/extension_telemetry_event_router_unittest.cc",
       "../browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_unittest.cc",
       "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
     ]

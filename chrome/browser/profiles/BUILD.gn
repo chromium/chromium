@@ -395,6 +395,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/dom_distiller",
     "//chrome/browser/domain_reliability",
     "//chrome/browser/engagement",
+    "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/file_system_access",
