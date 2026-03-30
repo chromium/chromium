@@ -1701,17 +1701,19 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     When a transfer cache is found, record the time since last use. Recorded on
-    every successful transfer cache look up.
+    every successful transfer cache look up. Expired from 2025-06-22 to
+    2026-03-24.
   </summary>
 </histogram>
 
 <histogram name="GPU.TransferCache.TimeSinceLastUseOnDelete" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2027-03-01">
   <owner>boliu@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     When a transfer cache entry is deleted, record the last time the entry was
-    used. Recorded when an entry is deleted.
+    used. Recorded when an entry is deleted. Expired from 2025-06-22 to
+    2026-03-30.
   </summary>
 </histogram>
 
