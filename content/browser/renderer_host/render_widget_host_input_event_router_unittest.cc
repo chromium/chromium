@@ -204,6 +204,14 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     return delegate_->GetInputEventRouter();
   }
 
+  input::RenderWidgetHostViewInput* mouse_capture_target() {
+    return rwhier()->mouse_capture_target_;
+  }
+
+  input::RenderWidgetHostViewInput* last_mouse_down_target() {
+    return rwhier()->last_mouse_down_target_;
+  }
+
   // testing::Test:
   void SetUp() override {
     browser_context_ = std::make_unique<TestBrowserContext>();
@@ -1230,6 +1238,45 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
 
   EXPECT_FALSE(targeter->is_auto_scroll_in_progress());
+}
+
+// Tests that SetMouseCaptureTarget only allows a frame to capture the mouse if
+// it was the target of the most recent MouseDown event.
+TEST_F(RenderWidgetHostInputEventRouterTest, SetMouseCaptureTargetValidation) {
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // 1. Request capture without a prior MouseDown. Should be rejected.
+  rwhier()->SetMouseCaptureTarget(child.view.get(), true);
+  EXPECT_EQ(nullptr, mouse_capture_target());
+
+  // 2. Simulate a MouseDown on the child view.
+  blink::WebMouseEvent mouse_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down_event.button = blink::WebPointerProperties::Button::kLeft;
+
+  view_root_->SetHittestResult(child.view.get(), false);
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_down_event,
+                            ui::LatencyInfo());
+
+  // Verify the child is now the last mouse down target.
+  EXPECT_EQ(child.view.get(), last_mouse_down_target());
+
+  // 3. Request capture again. Should be accepted.
+  rwhier()->SetMouseCaptureTarget(child.view.get(), true);
+  EXPECT_EQ(child.view.get(), mouse_capture_target());
+
+  // 4. Simulate a MouseUp. The capture and last mouse down target should be
+  // cleared.
+  blink::WebMouseEvent mouse_up_event(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up_event.button = blink::WebPointerProperties::Button::kLeft;
+  rwhier()->RouteMouseEvent(view_root_.get(), &mouse_up_event,
+                            ui::LatencyInfo());
+  EXPECT_EQ(nullptr, last_mouse_down_target());
+  EXPECT_EQ(nullptr, mouse_capture_target());
 }
 
 TEST_F(RenderWidgetHostInputEventRouterTest, QueryResultAfterChildViewDead) {

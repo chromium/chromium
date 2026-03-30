@@ -640,32 +640,38 @@ void RenderWidgetHostInputEventRouter::DispatchMouseEvent(
   // platforms where MouseUps are not received when the mouse cursor is off the
   // browser window.
   // Also, this is strictly necessary for touch emulation.
-  if (mouse_capture_target_ &&
-      (mouse_event.GetType() == blink::WebInputEvent::Type::kMouseUp ||
+  if (mouse_event.GetType() == blink::WebInputEvent::Type::kMouseUp ||
+      (mouse_event.GetType() != blink::WebInputEvent::Type::kMouseDown &&
        !IsMouseButtonDown(mouse_event))) {
-    mouse_capture_target_ = nullptr;
+    if (mouse_capture_target_) {
+      mouse_capture_target_ = nullptr;
 
-    // Since capture is being lost it is possible that MouseMoves over a hit
-    // test region might have been going to a different region, and now the
-    // CursorManager might need to be notified that the view underneath the
-    // cursor has changed, which could cause the display cursor to update.
-    gfx::PointF transformed_point;
-    auto hit_test_result =
-        FindViewAtLocation(root_view, mouse_event.PositionInWidget(),
-                           viz::EventSource::MOUSE, &transformed_point);
-    // TODO(crbug.com/41419447): This is skipped if the HitTestResult is
-    // requiring an asynchronous hit test to the renderer process, because it
-    // might mean sending extra MouseMoves to renderers that don't need the
-    // event updates which is a worse outcome than the cursor being delayed in
-    // updating. An asynchronous hit test can be added here to fix the problem.
-    if (hit_test_result.view != target && !hit_test_result.should_query_view) {
-      SendMouseEnterOrLeaveEvents(
-          mouse_event, hit_test_result.view, root_view,
-          blink::WebInputEvent::Modifiers::kRelativeMotionEvent, true);
-      if (root_view->GetCursorManager())
-        root_view->GetCursorManager()->UpdateViewUnderCursor(
-            hit_test_result.view);
+      // Since capture is being lost it is possible that MouseMoves over a hit
+      // test region might have been going to a different region, and now the
+      // CursorManager might need to be notified that the view underneath the
+      // cursor has changed, which could cause the display cursor to update.
+      gfx::PointF transformed_point;
+      auto hit_test_result =
+          FindViewAtLocation(root_view, mouse_event.PositionInWidget(),
+                             viz::EventSource::MOUSE, &transformed_point);
+      // TODO(crbug.com/41419447): This is skipped if the HitTestResult is
+      // requiring an asynchronous hit test to the renderer process, because it
+      // might mean sending extra MouseMoves to renderers that don't need the
+      // event updates which is a worse outcome than the cursor being delayed in
+      // updating. An asynchronous hit test can be added here to fix the
+      // problem.
+      if (hit_test_result.view != target &&
+          !hit_test_result.should_query_view) {
+        SendMouseEnterOrLeaveEvents(
+            mouse_event, hit_test_result.view, root_view,
+            blink::WebInputEvent::Modifiers::kRelativeMotionEvent, true);
+        if (root_view->GetCursorManager()) {
+          root_view->GetCursorManager()->UpdateViewUnderCursor(
+              hit_test_result.view);
+        }
+      }
     }
+    last_mouse_down_target_ = nullptr;
   }
 
   // When touch emulation is active, mouse events have to act like touch
@@ -2143,6 +2149,12 @@ void RenderWidgetHostInputEventRouter::SetMouseCaptureTarget(
   }
 
   if (capture) {
+    // A frame should only be able to capture the mouse if it was the target of
+    // the last mouse down event. This prevents malicious frames (e.g. OOPIFs or
+    // Fenced Frames) from hijacking mouse events intended for other frames.
+    if (target != last_mouse_down_target_) {
+      return;
+    }
     mouse_capture_target_ = target;
     return;
   }
