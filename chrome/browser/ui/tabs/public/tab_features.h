@@ -275,11 +275,6 @@ class TabFeatures {
     return manage_passwords_page_action_controller_.get();
   }
 
-  tab_groups::CollaborationMessagingTabData*
-  collaboration_messaging_tab_data() {
-    return collaboration_messaging_tab_data_.get();
-  }
-
   zoom::ZoomViewController* zoom_view_controller() {
     return zoom_view_controller_.get();
   }

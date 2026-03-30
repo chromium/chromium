@@ -25,26 +25,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
-namespace {
-using collaboration::messaging::MessagingBackendService;
-using collaboration::messaging::MessagingBackendServiceFactory;
-using collaboration::messaging::PersistentMessage;
-
-base::WeakPtr<tab_groups::CollaborationMessagingTabData>
-GetCollaborationMessage(tabs::TabInterface* tab) {
-  if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
-    return nullptr;
-  }
-
-  auto* data = tab->GetTabFeatures()->collaboration_messaging_tab_data();
-  if (!data) {
-    return nullptr;
-  }
-
-  return data->GetWeakPtr();
-}
-}  // namespace
-
 namespace tabs {
 
 TabData TabData::FromTabInterface(tabs::TabInterface* tab_interface) {
@@ -87,7 +67,10 @@ TabData TabData::FromTabInterface(tabs::TabInterface* tab_interface) {
       TabResourceUsageTabHelper::From(tab_interface);
   tab_data.tab_resource_usage = tab_resource_usage_tab_helper->resource_usage();
 
-  tab_data.collaboration_messaging = GetCollaborationMessage(tab_interface);
+  tab_groups::CollaborationMessagingTabData* collaboration_messaging =
+      tab_groups::CollaborationMessagingTabData::From(tab_interface);
+  tab_data.collaboration_messaging =
+      collaboration_messaging ? collaboration_messaging->GetWeakPtr() : nullptr;
 
   return tab_data;
 }

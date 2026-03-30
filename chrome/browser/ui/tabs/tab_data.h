@@ -88,7 +88,6 @@ class TabDataObserver {
   const TabData& tab_data() { return tab_data_; }
 
  private:
-  void MaybeUpdateShouldThemifyFavicon();
   void NotifyTabDataChanged(TabChangeType change_type);
   void OnTabUIChange();
   void OnAlertsChanged(std::optional<TabAlert> alert_to_show);
