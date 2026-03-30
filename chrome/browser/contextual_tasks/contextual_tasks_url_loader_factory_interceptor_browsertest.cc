@@ -141,6 +141,14 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
       const net::test_server::HttpRequest& request) {
     if (request.relative_url.find("/echoheader?Authorization") !=
         std::string::npos) {
+      if (request.method == net::test_server::METHOD_OPTIONS) {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+        response->AddCustomHeader("Access-Control-Allow-Headers",
+                                  "Authorization");
+        return response;
+      }
+
       auto it = request.headers.find("Authorization");
       std::string auth_header_value;
       if (it != request.headers.end()) {
@@ -273,6 +281,87 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // "access_token_...".
   EXPECT_THAT(captured_auth_header_,
               testing::StartsWith("Bearer access_token"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       AuthorizationHeaderAppendedWhenAlreadyExists) {
+  base::RunLoop run_loop;
+  header_capture_quit_closure_ = run_loop.QuitClosure();
+
+  // Navigate to the Contextual Tasks WebUI.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for the WebUI to load and create the webview.
+  content::WebContents* web_ui_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  // Script to find the webview and perform a cross-origin fetch.
+  // We navigate the webview to about:blank (no interception), then
+  // fetch from kTestHost (interception enabled).
+  GURL fetch_url = https_server_.GetURL(kTestHost, "/echoheader?Authorization");
+
+  std::string script = content::JsReplace(
+      R"(
+    (async () => {
+      const waitFor = (selector, scope = document) => {
+        return new Promise(resolve => {
+          if (scope.querySelector(selector)) {
+            return resolve(scope.querySelector(selector));
+          }
+          const observer = new MutationObserver(() => {
+            if (scope.querySelector(selector)) {
+              observer.disconnect();
+              resolve(scope.querySelector(selector));
+            }
+          });
+          observer.observe(scope, {childList: true, subtree: true});
+        });
+      };
+
+      const app = await waitFor('contextual-tasks-app');
+      if (!app.shadowRoot) {
+        await customElements.whenDefined('contextual-tasks-app');
+      }
+      const webview = await waitFor('#threadFrame', app.shadowRoot);
+
+      // Navigate webview first
+      const targetUrl = 'data:text/html,<html><body></body></html>';
+      webview.src = targetUrl;
+
+      // Wait for load
+      await new Promise((resolve, reject) => {
+        const stop = () => {
+            webview.removeEventListener('loadstop', stop);
+            webview.removeEventListener('loadabort', abort);
+            resolve();
+        };
+        const abort = (e) => {
+            if (e.url === targetUrl) {
+                webview.removeEventListener('loadstop', stop);
+                webview.removeEventListener('loadabort', abort);
+                reject('Load aborted for ' + e.url + ': ' + e.reason);
+            }
+        };
+        webview.addEventListener('loadstop', stop);
+        webview.addEventListener('loadabort', abort);
+      });
+
+      // Execute fetch inside webview
+      webview.executeScript({code: `fetch($1, {headers: {'Authorization': 'Custom foo'}});`});
+    })();
+  )",
+      fetch_url.spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  // Wait for the request to reach the server.
+  run_loop.Run();
+
+  // Verify the header. The IdentityTestEnvironment issues tokens like
+  // "access_token_...".
+  EXPECT_THAT(captured_auth_header_,
+              testing::StartsWith("Custom foo, Bearer access_token"));
 }
 
 class
