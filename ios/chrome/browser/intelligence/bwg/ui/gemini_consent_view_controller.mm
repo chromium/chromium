@@ -52,12 +52,16 @@ const CGFloat kSpacingPrimarySecondaryButtonsIOS18 = 0;
   UIStackView* _mainStackView;
   // Whether the account is managed.
   BOOL _isAccountManaged;
+  // Type of Gemini FRE.
+  GeminiFREType _FREType;
 }
 
-- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged {
+- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                                 FREType:(GeminiFREType)FREType {
   self = [super init];
   if (self) {
     _isAccountManaged = isAccountManaged;
+    _FREType = FREType;
   }
   return self;
 }

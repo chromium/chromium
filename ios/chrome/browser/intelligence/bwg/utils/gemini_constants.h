@@ -122,6 +122,12 @@ enum class FREState {
 
 }  // namespace gemini
 
+// Types of Gemini First Run Experience (FRE).
+enum class GeminiFREType {
+  kNewUser,
+  kLive,
+};
+
 // Set of parameters for starting a Gemini session.
 @interface GeminiStartupState : NSObject
 

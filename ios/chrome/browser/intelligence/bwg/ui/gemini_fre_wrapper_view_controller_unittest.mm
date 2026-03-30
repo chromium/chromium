@@ -26,7 +26,8 @@ class GeminiFREWrapperViewControllerTest : public PlatformTest {
     GeminiFREWrapperViewController* view_controller =
         [[GeminiFREWrapperViewController alloc]
                initWithPromo:with_promo
-            isAccountManaged:is_account_managed];
+            isAccountManaged:is_account_managed
+                     FREType:GeminiFREType::kNewUser];
     mock_mutator_ =
         [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
     view_controller.mutator = mock_mutator_;

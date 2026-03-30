@@ -3615,6 +3615,7 @@ const char kChromeAppStoreUrl[] =
       initWithBaseViewController:self.viewController
                          browser:self.browser
                   fromEntryPoint:entryPoint
+                         FREType:GeminiFREType::kNewUser
                completionHandler:completion];
   [_geminiFirstRunCoordinator start];
 }

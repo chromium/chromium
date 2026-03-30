@@ -48,6 +48,9 @@
   // The `gemini::EntryPoint` the coordinator was initialized from.
   gemini::EntryPoint _entryPoint;
 
+  // Type of Gemini FRE.
+  GeminiFREType _FREType;
+
   // Handler for sending IPH commands.
   id<HelpCommands> _helpCommandsHandler;
 
@@ -64,10 +67,12 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             fromEntryPoint:(gemini::EntryPoint)entryPoint
+                                   FREType:(GeminiFREType)FREType
                          completionHandler:(void (^)(BOOL success))completion {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _entryPoint = entryPoint;
+    _FREType = FREType;
     _completion = completion;
   }
   return self;
@@ -109,7 +114,8 @@
 
   _viewController = [[GeminiFREWrapperViewController alloc]
          initWithPromo:_mediator.shouldShowPromo
-      isAccountManaged:[self isManagedAccount]];
+      isAccountManaged:[self isManagedAccount]
+               FREType:_FREType];
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 

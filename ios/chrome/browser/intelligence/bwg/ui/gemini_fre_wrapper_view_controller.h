@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+
 @protocol GeminiConsentMutator;
 
 // UIViewController that owns GeminiPromo and GeminiConsent view controllers and
@@ -17,8 +19,10 @@
 // If `showPromo` is YES, the navigation controller will display the promo.
 // If NO, the navigation controller will display the consent view.
 // `isAccountManaged` indicates whether the account is managed.
+// `freType` specifies the type of Gemini FRE being shown.
 - (instancetype)initWithPromo:(BOOL)showPromo
-             isAccountManaged:(BOOL)isAccountManaged NS_DESIGNATED_INITIALIZER;
+             isAccountManaged:(BOOL)isAccountManaged
+                      FREType:(GeminiFREType)FREType NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRootViewController:(UIViewController*)rootViewController

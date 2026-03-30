@@ -52,6 +52,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   BOOL _showPromo;
   // Whether the account is managed.
   BOOL _isAccountManaged;
+  // Type of Gemini FRE.
+  GeminiFREType _FREType;
   // The main stack view containing the logos.
   UIStackView* _mainStackView;
   // Scroll view that contains the horizontal stack view for transitions.
@@ -69,11 +71,13 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
 }
 
 - (instancetype)initWithPromo:(BOOL)showPromo
-             isAccountManaged:(BOOL)isAccountManaged {
+             isAccountManaged:(BOOL)isAccountManaged
+                      FREType:(GeminiFREType)FREType {
   self = [super initWithNibName:nil bundle:nil];
   if (self) {
     _showPromo = showPromo;
     _isAccountManaged = isAccountManaged;
+    _FREType = FREType;
   }
   return self;
 }
@@ -302,7 +306,8 @@ const CGFloat kSpacingAfterSecondaryButton = 32.0;
   }
 
   _consentViewController = [[GeminiConsentViewController alloc]
-      initWithIsAccountManaged:_isAccountManaged];
+      initWithIsAccountManaged:_isAccountManaged
+                       FREType:_FREType];
   _consentViewController.mutator = self.mutator;
 }
 

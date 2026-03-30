@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_view_controller_protocol.h"
 
+enum class GeminiFREType;
+
 @protocol GeminiConsentMutator;
 
 // Gemini consent View Controller (VC).
@@ -16,7 +18,8 @@
     : UIViewController <GeminiFREViewControllerProtocol>
 
 // Initializer for the VC whether the account is managed.
-- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged;
+- (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                                 FREType:(GeminiFREType)FREType;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

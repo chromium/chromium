@@ -60,7 +60,8 @@ class GeminiConsentViewControllerTest : public PlatformTest {
   GeminiConsentViewController* CreateViewController(BOOL is_account_managed) {
     GeminiConsentViewController* controller =
         [[GeminiConsentViewController alloc]
-            initWithIsAccountManaged:is_account_managed];
+            initWithIsAccountManaged:is_account_managed
+                             FREType:GeminiFREType::kNewUser];
     mock_mutator_ = OCMProtocolMock(@protocol(GeminiConsentMutator));
     controller.mutator = mock_mutator_;
     // Force view initialization since this view controller is never added into

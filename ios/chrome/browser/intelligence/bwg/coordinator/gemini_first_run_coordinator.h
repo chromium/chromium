@@ -13,12 +13,13 @@
 // Coordinator that manages the first run and any BWG triggers.
 @interface GeminiFirstRunCoordinator : ChromeCoordinator
 
-// Initializes the coordinator. `entryPoint` denotes where the flow starts from,
-// and `completion` is called when the flow finishes, with `success` indicating
-// whether the FRE was completed.
+// Initializes the coordinator with a specific FRE type. `entryPoint` denotes
+// where the flow starts from, and `completion` is called when the flow
+// finishes, with `success` indicating whether the FRE was completed.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             fromEntryPoint:(gemini::EntryPoint)entryPoint
+                                   FREType:(GeminiFREType)FREType
                          completionHandler:(void (^)(BOOL success))completion
     NS_DESIGNATED_INITIALIZER;
 
