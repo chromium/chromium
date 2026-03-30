@@ -6,12 +6,14 @@ source_set("accessibility_annotator") {
   sources = [
     "accessibility_annotation_service_factory.h",
     "accessibility_annotator_backend_factory.h",
+    "accessibility_annotator_enablement_service_factory.h",
     "accessibility_query_service_factory.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core/annotation_reducer",
     "//components/autofill/core/browser",
     "//components/keyed_service/content",
@@ -25,6 +27,7 @@ source_set("impl") {
   sources = [
     "accessibility_annotation_service_factory.cc",
     "accessibility_annotator_backend_factory.cc",
+    "accessibility_annotator_enablement_service_factory.cc",
     "accessibility_query_service_factory.cc",
   ]
   deps = [

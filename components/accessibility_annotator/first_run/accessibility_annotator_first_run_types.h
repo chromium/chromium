@@ -7,16 +7,6 @@
 
 namespace accessibility_annotator {
 
-// Tracks the global enablement state of the feature for the current profile.
-// Used by consuming features to determine both feature execution and UI
-// entrypoint visibility.
-enum class RemoteAnnotatorEnablementState {
-  kDisabledNotEligible = 0,   // Feature disabled, user not eligible.
-  kDisabledPendingInfo = 1,   // Feature disabled pending Info.
-  kDisabledPendingSetup = 2,  // Feature disabled pending Setup.
-  kEnabled = 3                // Feature enabled, first run completed.
-};
-
 // First run trigger result.
 enum class FirstRunTriggerResult {
   kSuccess = 0,

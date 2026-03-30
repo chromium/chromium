@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/accessibility_annotator/first_run/chrome_accessibility_annotator_first_run_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -38,7 +39,9 @@ AccessibilityAnnotatorFirstRunServiceFactory::
           "AccessibilityAnnotatorFirstRunService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(AccessibilityAnnotatorEnablementServiceFactory::GetInstance());
+}
 
 AccessibilityAnnotatorFirstRunServiceFactory::
     ~AccessibilityAnnotatorFirstRunServiceFactory() = default;
@@ -49,9 +52,11 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
   if (!base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRun)) {
     return nullptr;
   }
+  Profile* profile = Profile::FromBrowserContext(context);
   auto client = std::make_unique<ChromeAccessibilityAnnotatorFirstRunClient>();
   return std::make_unique<AccessibilityAnnotatorFirstRunServiceImpl>(
-      std::move(client));
+      std::move(client),
+      AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace accessibility_annotator

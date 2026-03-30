@@ -28,26 +28,7 @@ class AccessibilityAnnotatorFirstRunService : public KeyedService {
   using FirstRunTriggerCallback =
       base::OnceCallback<void(FirstRunTriggerResult)>;
 
-  // Observable interface for consuming features, notifies when the conditions
-  // change.
-  class Observer : public base::CheckedObserver {
-   public:
-    // Called whenever the global state changes. Can be used to track the
-    // enablement status changes and show/hide the entrypoint. Notifies
-    // observers of changes to the value returned by GetEnablementState().
-    virtual void OnEnablementStateChanged(
-        RemoteAnnotatorEnablementState new_state) = 0;
-  };
-
   ~AccessibilityAnnotatorFirstRunService() override = default;
-
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Sync getter for the current enablement state. Checks whether the profile
-  // is enabled to use Remote annotator. Includes feature check, eligibility
-  // check, info acknowledgement OR setup completion.
-  virtual RemoteAnnotatorEnablementState GetEnablementState() = 0;
 
   // Triggers the first-run experience if the current profile is eligible but
   // has not completed it yet. The `callback` is invoked with the result of

@@ -6,9 +6,8 @@
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_SERVICE_IMPL_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_client.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_service.h"
 #include "components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h"
@@ -19,22 +18,19 @@ class WebContents;
 }
 
 namespace accessibility_annotator {
+class AccessibilityAnnotatorEnablementService;
 
 class AccessibilityAnnotatorFirstRunServiceImpl
     : public AccessibilityAnnotatorFirstRunService {
  public:
-  explicit AccessibilityAnnotatorFirstRunServiceImpl(
-      std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client);
+  AccessibilityAnnotatorFirstRunServiceImpl(
+      std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
+      AccessibilityAnnotatorEnablementService* enablement_service);
   AccessibilityAnnotatorFirstRunServiceImpl(
       const AccessibilityAnnotatorFirstRunServiceImpl&) = delete;
   AccessibilityAnnotatorFirstRunServiceImpl& operator=(
       const AccessibilityAnnotatorFirstRunServiceImpl&) = delete;
   ~AccessibilityAnnotatorFirstRunServiceImpl() override;
-
-  void AddObserver(Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
-
-  RemoteAnnotatorEnablementState GetEnablementState() override;
 
   void MaybeTriggerFirstRun(
       content::WebContents* web_contents,
@@ -47,9 +43,7 @@ class AccessibilityAnnotatorFirstRunServiceImpl
       InfoResult result);
 
   std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client_;
-  base::ObserverList<Observer> observers_;
-  RemoteAnnotatorEnablementState current_state_ =
-      RemoteAnnotatorEnablementState::kDisabledPendingInfo;
+  raw_ptr<AccessibilityAnnotatorEnablementService> enablement_service_;
 
   base::WeakPtrFactory<AccessibilityAnnotatorFirstRunServiceImpl>
       weak_ptr_factory_{this};

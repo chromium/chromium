@@ -10,6 +10,7 @@ static_library("first_run") {
 
   deps = [
     "//base",
+    "//components/accessibility_annotator/core",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]

@@ -7,35 +7,38 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
 
 namespace accessibility_annotator {
 AccessibilityAnnotatorFirstRunServiceImpl::
     AccessibilityAnnotatorFirstRunServiceImpl(
-        std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client)
-    : client_(std::move(client)) {}
+        std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
+        AccessibilityAnnotatorEnablementService* enablement_service)
+    : client_(std::move(client)), enablement_service_(enablement_service) {}
 
 AccessibilityAnnotatorFirstRunServiceImpl::
     ~AccessibilityAnnotatorFirstRunServiceImpl() = default;
-
-void AccessibilityAnnotatorFirstRunServiceImpl::AddObserver(
-    Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AccessibilityAnnotatorFirstRunServiceImpl::RemoveObserver(
-    Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-RemoteAnnotatorEnablementState
-AccessibilityAnnotatorFirstRunServiceImpl::GetEnablementState() {
-  return current_state_;
-}
 
 void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
     content::WebContents* web_contents,
     FirstRunInvocationSource invocation_source,
     base::OnceCallback<void(FirstRunTriggerResult)> callback) {
+  if (!enablement_service_) {
+    std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
+    return;
+  }
+
+  RemoteAnnotatorEnablementState state =
+      enablement_service_->GetEnablementState();
+  if (state == RemoteAnnotatorEnablementState::kDisabledNotEligible) {
+    std::move(callback).Run(FirstRunTriggerResult::kIgnoredNotEligible);
+    return;
+  }
+  if (state == RemoteAnnotatorEnablementState::kEnabled) {
+    std::move(callback).Run(FirstRunTriggerResult::kIgnoredAlreadyEnabled);
+    return;
+  }
+
   auto wrapped_callback = base::BindOnce(
       &AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -50,11 +53,8 @@ void AccessibilityAnnotatorFirstRunServiceImpl::MaybeTriggerFirstRun(
 void AccessibilityAnnotatorFirstRunServiceImpl::OnInfoDialogCompleted(
     base::OnceCallback<void(FirstRunTriggerResult)> callback,
     InfoResult result) {
+  // TODO(b/489414512): Update prefs when Info is acknowledged.
   if (result == InfoResult::kAcknowledged) {
-    current_state_ = RemoteAnnotatorEnablementState::kEnabled;
-    for (auto& observer : observers_) {
-      observer.OnEnablementStateChanged(current_state_);
-    }
   }
   std::move(callback).Run(FirstRunTriggerResult::kSuccess);
 }

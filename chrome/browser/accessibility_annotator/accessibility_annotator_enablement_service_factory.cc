@@ -1,0 +1,45 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
+
+#include "chrome/browser/profiles/profile.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
+
+namespace accessibility_annotator {
+
+// static
+AccessibilityAnnotatorEnablementService*
+AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(
+    Profile* profile) {
+  return static_cast<AccessibilityAnnotatorEnablementService*>(
+      GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
+}
+
+// static
+AccessibilityAnnotatorEnablementServiceFactory*
+AccessibilityAnnotatorEnablementServiceFactory::GetInstance() {
+  static base::NoDestructor<AccessibilityAnnotatorEnablementServiceFactory>
+      instance;
+  return instance.get();
+}
+
+AccessibilityAnnotatorEnablementServiceFactory::
+    AccessibilityAnnotatorEnablementServiceFactory()
+    : ProfileKeyedServiceFactory(
+          "AccessibilityAnnotatorEnablementService",
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              .Build()) {}
+
+AccessibilityAnnotatorEnablementServiceFactory::
+    ~AccessibilityAnnotatorEnablementServiceFactory() = default;
+
+std::unique_ptr<KeyedService> AccessibilityAnnotatorEnablementServiceFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>();
+}
+
+}  // namespace accessibility_annotator
