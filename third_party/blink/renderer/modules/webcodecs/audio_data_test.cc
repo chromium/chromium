@@ -44,10 +44,10 @@ constexpr float kEpsilon = kIncrement / 100;
 
 class AudioDataTest : public testing::Test {
  protected:
-  void VerifyPlanarData(float* data, float start_value, int count) {
-    for (int i = 0; i < count; ++i)
-      UNSAFE_TODO(ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon))
-          << "i=" << i;
+  void VerifyPlanarData(base::span<float> data, float start_value, int count) {
+    for (int i = 0; i < count; ++i) {
+      ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
+    }
   }
 
   AllowSharedBufferSource* CreateDefaultData() {
@@ -59,12 +59,13 @@ class AudioDataTest : public testing::Test {
   }
 
   AllowSharedBufferSource* CreateCustomData(int channels, int frames) {
-    auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
+    MaybeShared buffer(DOMFloat32Array::Create(channels * frames));
     for (int ch = 0; ch < channels; ++ch) {
-      float* plane_start =
-          UNSAFE_TODO(reinterpret_cast<float*>(buffer->Data()) + ch * frames);
+      auto plane =
+          buffer->AsSpan().subspan(base::checked_cast<size_t>(ch * frames),
+                                   base::checked_cast<size_t>(frames));
       for (int i = 0; i < frames; ++i) {
-        UNSAFE_TODO(plane_start[i]) = GetCustomValue(i, frames, ch);
+        plane[i] = GetCustomValue(i, frames, ch);
       }
     }
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -255,7 +256,7 @@ TEST_F(AudioDataTest, CopyTo_FullFrames) {
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/std::nullopt,
                                       /*count=*/std::nullopt);
 
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  MaybeShared data_copy(DOMFloat32Array::Create(kFrames));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -263,7 +264,7 @@ TEST_F(AudioDataTest, CopyTo_FullFrames) {
   frame->copyTo(dest, options, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  VerifyPlanarData(static_cast<float*>(data_copy->Data()), /*start_value=*/0,
+  VerifyPlanarData(data_copy->AsSpan(), /*start_value=*/0,
                    /*count=*/kFrames);
 }
 
@@ -274,7 +275,7 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
   auto* options = CreateCopyToOptions(/*index=*/1, /*offset=*/std::nullopt,
                                       /*count=*/std::nullopt);
 
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  MaybeShared data_copy(DOMFloat32Array::Create(kFrames));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -283,8 +284,7 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // The channel 1's start value is kFrames*in.
-  VerifyPlanarData(static_cast<float*>(data_copy->Data()),
-                   /*start_value=*/kFrames * kIncrement,
+  VerifyPlanarData(data_copy->AsSpan(), /*start_value=*/kFrames * kIncrement,
                    /*count=*/kFrames);
 }
 
@@ -413,7 +413,7 @@ TEST_F(AudioDataTest, CopyTo_Offset) {
       CreateCopyToOptions(/*index=*/0, kOffset, /*count=*/std::nullopt);
 
   // |data_copy| is bigger than what we need, and that's ok.
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  MaybeShared data_copy(DOMFloat32Array::Create(kFrames));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -421,7 +421,7 @@ TEST_F(AudioDataTest, CopyTo_Offset) {
   frame->copyTo(dest, options, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  VerifyPlanarData(static_cast<float*>(data_copy->Data()),
+  VerifyPlanarData(data_copy->AsSpan(),
                    /*start_value=*/kOffset * kIncrement,
                    /*count=*/kFrames - kOffset);
 }
@@ -434,8 +434,7 @@ TEST_F(AudioDataTest, CopyTo_PartialFrames) {
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/std::nullopt,
                                       kPartialFrameCount);
 
-  DOMArrayBuffer* data_copy =
-      DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
+  MaybeShared data_copy(DOMFloat32Array::Create(kPartialFrameCount));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -443,8 +442,7 @@ TEST_F(AudioDataTest, CopyTo_PartialFrames) {
   frame->copyTo(dest, options, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  VerifyPlanarData(static_cast<float*>(data_copy->Data()),
-                   /*start_value=*/0, kPartialFrameCount);
+  VerifyPlanarData(data_copy->AsSpan(), /*start_value=*/0, kPartialFrameCount);
 }
 
 TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
@@ -454,8 +452,7 @@ TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
       CreateDefaultAudioData(scope.GetScriptState(), scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
 
-  DOMArrayBuffer* data_copy =
-      DOMArrayBuffer::Create(kPartialFrameCount, sizeof(float));
+  MaybeShared data_copy(DOMFloat32Array::Create(kPartialFrameCount));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -463,7 +460,7 @@ TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
   frame->copyTo(dest, options, scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  VerifyPlanarData(static_cast<float*>(data_copy->Data()),
+  VerifyPlanarData(data_copy->AsSpan(),
                    /*start_value=*/kOffset * kIncrement, kPartialFrameCount);
 }
 
@@ -522,8 +519,8 @@ TEST_F(AudioDataTest, Interleaved) {
   EXPECT_EQ(static_cast<unsigned int>(allocations_size),
             kPartialFrameCount * kInterleavedChannels * sizeof(uint16_t));
 
-  DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
-      kPartialFrameCount * kInterleavedChannels, sizeof(uint16_t));
+  MaybeShared data_copy(
+      DOMInt16Array::Create(kPartialFrameCount * kInterleavedChannels));
   AllowSharedBufferSource* dest =
       MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -532,16 +529,14 @@ TEST_F(AudioDataTest, Interleaved) {
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
   // Verify we retrieved the right samples.
-  int16_t* copy = static_cast<int16_t*>(data_copy->Data());
+  base::span<int16_t> copy = data_copy->AsSpan();
   for (int i = 0; i < kPartialFrameCount; ++i) {
     int block_index = i * kInterleavedChannels;
     int16_t base_value = kOffset + i;
 
-    UNSAFE_TODO(EXPECT_EQ(copy[block_index], base_value));  // channel 0
-    UNSAFE_TODO(
-        EXPECT_EQ(copy[block_index + 1], base_value + kFrames));  // channel 1
-    UNSAFE_TODO(EXPECT_EQ(copy[block_index + 2],
-                          base_value + 2 * kFrames));  // channel 2
+    EXPECT_EQ(copy[block_index], base_value);                    // channel 0
+    EXPECT_EQ(copy[block_index + 1], base_value + kFrames);      // channel 1
+    EXPECT_EQ(copy[block_index + 2], base_value + 2 * kFrames);  // channel 2
   }
 }
 
@@ -551,6 +546,7 @@ struct U8Traits {
   static constexpr V8AudioSampleFormat::Enum PlanarFormat =
       V8AudioSampleFormat::Enum::kU8Planar;
   using Traits = media::UnsignedInt8SampleTypeTraits;
+  using BufferType = DOMUint8Array;
 };
 
 struct S16Traits {
@@ -559,6 +555,7 @@ struct S16Traits {
   static constexpr V8AudioSampleFormat::Enum PlanarFormat =
       V8AudioSampleFormat::Enum::kS16Planar;
   using Traits = media::SignedInt16SampleTypeTraits;
+  using BufferType = DOMInt16Array;
 };
 
 struct S32Traits {
@@ -567,6 +564,7 @@ struct S32Traits {
   static constexpr V8AudioSampleFormat::Enum PlanarFormat =
       V8AudioSampleFormat::Enum::kS32Planar;
   using Traits = media::SignedInt32SampleTypeTraits;
+  using BufferType = DOMInt32Array;
 };
 
 struct F32Traits {
@@ -575,6 +573,7 @@ struct F32Traits {
   static constexpr V8AudioSampleFormat::Enum PlanarFormat =
       V8AudioSampleFormat::Enum::kF32Planar;
   using Traits = media::Float32SampleTypeTraits;
+  using BufferType = DOMFloat32Array;
 };
 
 template <typename SourceTraits, typename TargetTraits>
@@ -651,33 +650,34 @@ class AudioDataConversionTest : public testing::Test {
                                             bool use_frame_count) {
     static_assert(kChannels == 2, "CreatePlanarData() assumes 2 channels");
     using SourceTraits = TestConfig::From::Traits;
-    using ValueType = SourceTraits::ValueType;
-    auto* buffer =
-        DOMArrayBuffer::Create(kChannels * kFrames, sizeof(ValueType));
+    using BufferType = TestConfig::From::BufferType;
+    MaybeShared buffer(BufferType::Create(kChannels * kFrames));
 
-    ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
-    for (int i = 0; i < kFrames; ++i) {
-      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
+    auto [first_plane, second_plane] =
+        buffer->AsSpan().split_at(base::checked_cast<size_t>(kFrames));
+
+    for (size_t i = 0; i < first_plane.size(); ++i) {
+      first_plane[i] = SourceTraits::kMinValue;
     }
 
     if (use_offset) {
-      plane_start[0] = SourceTraits::kZeroPointValue;
+      first_plane[0] = SourceTraits::kZeroPointValue;
     }
+
     if (use_frame_count) {
-      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
+      first_plane[kFrames - 1] = SourceTraits::kZeroPointValue;
     }
 
-    UNSAFE_TODO(plane_start += kFrames);
-
-    for (int i = 0; i < kFrames; ++i) {
-      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMaxValue;
+    for (size_t i = 0; i < second_plane.size(); ++i) {
+      second_plane[i] = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
-      plane_start[0] = SourceTraits::kZeroPointValue;
+      second_plane[0] = SourceTraits::kZeroPointValue;
     }
+
     if (use_frame_count) {
-      UNSAFE_TODO(plane_start[kFrames - 1]) = SourceTraits::kZeroPointValue;
+      second_plane[kFrames - 1] = SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -692,33 +692,31 @@ class AudioDataConversionTest : public testing::Test {
     static_assert(kChannels == 2,
                   "CreateInterleavedData() assumes 2 channels.");
     using SourceTraits = TestConfig::From::Traits;
-    using ValueType = SourceTraits::ValueType;
+    using BufferType = TestConfig::From::BufferType;
     constexpr int kTotalSamples = kChannels * kFrames;
-    auto* buffer = DOMArrayBuffer::Create(kTotalSamples, sizeof(ValueType));
+    MaybeShared buffer(BufferType::Create(kTotalSamples));
 
-    ValueType* plane_start = reinterpret_cast<ValueType*>(buffer->Data());
-    for (int i = 0; i < kTotalSamples; i += 2) {
-      UNSAFE_TODO(plane_start[i]) = SourceTraits::kMinValue;
-      UNSAFE_TODO(plane_start[i + 1]) = SourceTraits::kMaxValue;
+    auto plane = buffer->AsSpan();
+    for (size_t i = 0; i < plane.size(); i += 2) {
+      plane[i] = SourceTraits::kMinValue;
+      plane[i + 1] = SourceTraits::kMaxValue;
     }
 
     if (use_offset) {
-      plane_start[0] = SourceTraits::kZeroPointValue;
-      UNSAFE_TODO(plane_start[1]) = SourceTraits::kZeroPointValue;
+      plane[0] = SourceTraits::kZeroPointValue;
+      plane[1] = SourceTraits::kZeroPointValue;
     }
 
     if (use_frame_count) {
-      UNSAFE_TODO(plane_start[kTotalSamples - 2]) =
-          SourceTraits::kZeroPointValue;
-      UNSAFE_TODO(plane_start[kTotalSamples - 1]) =
-          SourceTraits::kZeroPointValue;
+      plane[kTotalSamples - 2] = SourceTraits::kZeroPointValue;
+      plane[kTotalSamples - 1] = SourceTraits::kZeroPointValue;
     }
 
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
   }
 
-  int GetFramesToCopy(bool use_offset, bool use_frame_count) {
-    int frames_to_copy = kFrames;
+  size_t GetFramesToCopy(bool use_offset, bool use_frame_count) {
+    size_t frames_to_copy = kFrames;
     if (use_offset) {
       --frames_to_copy;
     }
@@ -732,7 +730,7 @@ class AudioDataConversionTest : public testing::Test {
                               bool use_offset,
                               bool use_frame_count) {
     using Config = TestConfig;
-    using TargetType = Config::To::Traits::ValueType;
+    using TargetBufferType = Config::To::BufferType;
     constexpr int kChannelToCopy = 1;
 
     V8AudioSampleFormat::Enum source_format =
@@ -751,9 +749,8 @@ class AudioDataConversionTest : public testing::Test {
     auto* copy_to_options = CreateCopyToOptions(
         kChannelToCopy, Config::To::PlanarFormat, use_offset, use_frame_count);
 
-    const int frames_to_copy = GetFramesToCopy(use_offset, use_frame_count);
-    DOMArrayBuffer* data_copy =
-        DOMArrayBuffer::Create(frames_to_copy, sizeof(TargetType));
+    const size_t frames_to_copy = GetFramesToCopy(use_offset, use_frame_count);
+    MaybeShared data_copy(TargetBufferType::Create(frames_to_copy));
     AllowSharedBufferSource* dest =
         MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -763,11 +760,10 @@ class AudioDataConversionTest : public testing::Test {
     EXPECT_FALSE(scope.GetExceptionState().HadException())
         << scope.GetExceptionState().Message();
 
-    TargetType* copied_data = static_cast<TargetType*>(data_copy->Data());
-
     // `kChannelToCopy` should only contain kMaxValue
-    for (int i = 0; i < frames_to_copy; ++i) {
-      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue));
+    auto copied_data = data_copy->AsSpan();
+    for (size_t i = 0; i < frames_to_copy; ++i) {
+      ASSERT_EQ(copied_data[i], Config::To::Traits::kMaxValue);
     }
   }
 
@@ -775,7 +771,7 @@ class AudioDataConversionTest : public testing::Test {
                                    bool use_offset,
                                    bool use_frame_count) {
     using Config = TestConfig;
-    using TargetType = Config::To::Traits::ValueType;
+    using TargetBufferType = Config::To::BufferType;
 
     V8AudioSampleFormat::Enum source_format =
         source_is_planar ? Config::From::PlanarFormat : Config::From::Format;
@@ -793,10 +789,9 @@ class AudioDataConversionTest : public testing::Test {
     auto* copy_to_options =
         CreateCopyToOptions(0, Config::To::Format, use_offset, use_frame_count);
 
-    const int total_frames =
+    const size_t total_frames =
         GetFramesToCopy(use_offset, use_frame_count) * kChannels;
-    DOMArrayBuffer* data_copy =
-        DOMArrayBuffer::Create(total_frames, sizeof(TargetType));
+    MaybeShared data_copy(TargetBufferType::Create(total_frames));
     AllowSharedBufferSource* dest =
         MakeGarbageCollected<AllowSharedBufferSource>(data_copy);
 
@@ -806,13 +801,12 @@ class AudioDataConversionTest : public testing::Test {
     EXPECT_FALSE(scope.GetExceptionState().HadException())
         << scope.GetExceptionState().Message();
 
-    TargetType* copied_data = static_cast<TargetType*>(data_copy->Data());
-
     // The interleaved data should have kMinValue in
     // channel 0 and kMaxValue in channel 1.
-    for (int i = 0; i < total_frames; i += 2) {
-      UNSAFE_TODO(ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue));
-      UNSAFE_TODO(ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue));
+    auto copied_data = data_copy->AsSpan();
+    for (size_t i = 0; i < total_frames; i += 2) {
+      ASSERT_EQ(copied_data[i], Config::To::Traits::kMinValue);
+      ASSERT_EQ(copied_data[i + 1], Config::To::Traits::kMaxValue);
     }
   }
 
