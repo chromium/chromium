@@ -34,6 +34,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -524,6 +525,30 @@ void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
                  kGoogleSignoutResponseHeader);
              header_value) {
     params = DiceHeaderHelper::BuildDiceSignoutResponseParams(*header_value);
+  }
+
+  if (std::optional<std::string> meta_header_value =
+          response_headers->GetNormalizedHeader(kDiceConaccMetaHeader);
+      meta_header_value) {
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata meta_header =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(*meta_header_value);
+    if (!meta_header.IsValid()) {
+      // TODO(crbug.com/475435113):
+      // - Revisit handling gracefully malformed meta header. The code as it is
+      // as of now, sign-in will fail completely if `initiator_id is empty`.
+      // - Add histogram
+      DLOG(WARNING) << "Malformed X-Chrome-ID-Consistency-Conacc-Meta header: "
+                    << *meta_header_value;
+    }
+
+    if (DiceResponseParams::SigninInfo* signin_info = params.signin_info();
+        signin_info) {
+      signin_info->set_connected_accounts_metadata(std::move(meta_header));
+    } else {
+      DLOG(WARNING)
+          << "X-Chrome-ID-Consistency-Conacc-Meta is only supported for "
+             "Sign-in Dice action";
+    }
   }
 
   if (!params.IsValid()) {

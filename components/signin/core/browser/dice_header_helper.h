@@ -38,6 +38,11 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   static DiceResponseParams BuildDiceSignoutResponseParams(
       const std::string& header_value);
 
+  // Returns the metadata contained in the X-Chrome-ID-Consistency-Conacc-Meta
+  // response header.
+  static DiceResponseParams::SigninInfo::ConnectedAccountsMetadata
+  ParseConnectedAccountsMetadata(const std::string& header_value);
+
   // Adds the Dice to all Gaia requests from a connected profile, with the
   // exception of requests from gaia webview.
   // Removes the header in case it should not be transferred to a redirected

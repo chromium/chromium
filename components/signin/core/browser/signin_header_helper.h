@@ -44,6 +44,7 @@ extern const char kChromeConnectedHeader[];
 extern const char kChromeManageAccountsHeader[];
 extern const char kDiceRequestHeader[];
 extern const char kDiceResponseHeader[];
+extern const char kDiceConaccMetaHeader[];
 
 // The X-Auto-Login header detects when a user is prompted to enter their
 // credentials on the Gaia sign-in page. It is sent with an empty email if the

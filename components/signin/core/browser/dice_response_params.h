@@ -5,10 +5,12 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_DICE_RESPONSE_PARAMS_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_DICE_RESPONSE_PARAMS_H_
 
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
 
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_id.h"
 
 namespace signin {
@@ -33,6 +35,8 @@ struct DiceResponseParams {
     AccountInfo(const AccountInfo&);
 
     bool IsValid() const;
+
+    friend bool operator==(const AccountInfo&, const AccountInfo&) = default;
 
     // Gaia ID of the account.
     GaiaId gaia_id;
@@ -72,6 +76,20 @@ struct DiceResponseParams {
       bool mtls_token_binding = false;
     };
 
+    // Metadata for Connected Accounts.
+    struct ConnectedAccountsMetadata {
+      friend bool operator==(const ConnectedAccountsMetadata&,
+                             const ConnectedAccountsMetadata&) = default;
+
+      bool IsValid() const;
+
+      // Whether the primary account is connected to the accounts added
+      // within this sign-in event.
+      Tribool primary_is_connected = Tribool::kUnknown;
+      // The Gaia ID of the account that initiated the sign-in event.
+      GaiaId initiator_id;
+    };
+
     SigninInfo();
     SigninInfo(const SigninInfo&) = delete;
     SigninInfo& operator=(const SigninInfo&) = delete;
@@ -85,14 +103,20 @@ struct DiceResponseParams {
     // and no initiator is specified. Returns nullptr if no match is found.
     const SigninAccount* GetInitiator() const;
 
-    void SetInitiator(const GaiaId& gaia_id);
-
     void AddAccount(SigninAccount account);
 
     const std::vector<SigninAccount>& accounts() const { return accounts_; }
 
+    const ConnectedAccountsMetadata& connected_accounts_metadata() const {
+      return connected_accounts_metadata_;
+    }
+
+    void set_connected_accounts_metadata(ConnectedAccountsMetadata metadata) {
+      connected_accounts_metadata_ = std::move(metadata);
+    }
+
    private:
-    GaiaId initiator_id;
+    ConnectedAccountsMetadata connected_accounts_metadata_;
     std::vector<SigninAccount> accounts_;
   };
 

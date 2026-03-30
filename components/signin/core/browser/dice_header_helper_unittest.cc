@@ -349,6 +349,93 @@ TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
             account->supported_algorithms_for_token_binding);
 }
 
+TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
+  {
+    // Valid header.
+    std::string header_value =
+        "initiator_id=initiator_gaia_id;primary_is_connected=1";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kTrue,
+                  .initiator_id = GaiaId("initiator_gaia_id")}),
+              metadata);
+    EXPECT_TRUE(metadata.IsValid());
+  }
+
+  {
+    // primary_is_connected=0
+    std::string header_value =
+        "initiator_id=initiator_gaia_id;primary_is_connected=0";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kFalse,
+                  .initiator_id = GaiaId("initiator_gaia_id")}),
+              metadata);
+    EXPECT_TRUE(metadata.IsValid());
+  }
+
+  {
+    // Missing primary_is_connected -> Partial info.
+    std::string header_value = "initiator_id=initiator_gaia_id";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kUnknown,
+                  .initiator_id = GaiaId("initiator_gaia_id")}),
+              metadata);
+    EXPECT_FALSE(metadata.IsValid());
+  }
+
+  {
+    // Missing initiator_id -> Partial info.
+    std::string header_value = "primary_is_connected=1";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ(
+        (DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+            .primary_is_connected = Tribool::kTrue, .initiator_id = GaiaId()}),
+        metadata);
+    EXPECT_FALSE(metadata.IsValid());
+  }
+
+  {
+    // Empty header -> Default metadata.
+    std::string header_value = "";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kUnknown,
+                  .initiator_id = GaiaId()}),
+              metadata);
+    EXPECT_FALSE(metadata.IsValid());
+  }
+
+  {
+    // Garbage header -> Default metadata.
+    std::string header_value = "garbage";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kUnknown,
+                  .initiator_id = GaiaId()}),
+              metadata);
+    EXPECT_FALSE(metadata.IsValid());
+  }
+
+  {
+    // Escaped values.
+    std::string header_value = "initiator_id=gaia%3Aid;primary_is_connected=1";
+    DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata =
+        DiceHeaderHelper::ParseConnectedAccountsMetadata(header_value);
+    EXPECT_EQ((DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+                  .primary_is_connected = Tribool::kTrue,
+                  .initiator_id = GaiaId("gaia:id")}),
+              metadata);
+    EXPECT_TRUE(metadata.IsValid());
+  }
+}
 TEST_F(DiceHeaderHelperTest, TestDiceRequest) {
   account_consistency_ = AccountConsistencyMethod::kDice;
   // No Dice for Docs URLs.

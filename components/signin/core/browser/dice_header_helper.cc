@@ -8,10 +8,13 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/signin/core/browser/signin_header_helper.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -40,6 +43,11 @@ const char kSigninMtlsTokenBindingAttrName[] = "mtls_token_binding";
 const char kSignoutEmailAttrName[] = "email";
 const char kSignoutSessionIndexAttrName[] = "sessionindex";
 const char kSignoutObfuscatedIDAttrName[] = "obfuscatedid";
+
+// ConnectedAccounts metadata response parameters.
+constexpr char kConnectedAccountsInitiatorIdAttrName[] = "initiator_id";
+constexpr char kConnectedAccountsPrimaryIsConnectedAttrName[] =
+    "primary_is_connected";
 
 // Determines the Dice action that has been passed from Gaia in the header.
 DiceAction GetDiceActionFromHeader(const std::string& value) {
@@ -194,6 +202,40 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   }
 
   return params;
+}
+
+// static
+DiceResponseParams::SigninInfo::ConnectedAccountsMetadata
+DiceHeaderHelper::ParseConnectedAccountsMetadata(
+    const std::string& header_value) {
+  if (header_value.empty()) {
+    return DiceResponseParams::SigninInfo::ConnectedAccountsMetadata();
+  }
+
+  DiceResponseParams::SigninInfo::ConnectedAccountsMetadata metadata;
+  for (std::string_view field :
+       base::SplitStringPiece(header_value, ";", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    size_t delim = field.find_first_of('=');
+    if (delim == std::string::npos) {
+      continue;
+    }
+
+    std::string_view key = field.substr(0, delim);
+    std::string value = base::UnescapeURLComponent(
+        field.substr(delim + 1),
+        base::UnescapeRule::PATH_SEPARATORS |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
+
+    if (key == kConnectedAccountsInitiatorIdAttrName) {
+      metadata.initiator_id = GaiaId(value);
+    } else if (key == kConnectedAccountsPrimaryIsConnectedAttrName) {
+      metadata.primary_is_connected =
+          (value == "1") ? Tribool::kTrue : Tribool::kFalse;
+    }
+  }
+
+  return metadata;
 }
 
 // static
