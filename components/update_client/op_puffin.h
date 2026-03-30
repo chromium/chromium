@@ -34,6 +34,7 @@ base::OnceClosure PuffOperation(
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& old_hash,
     const std::string& output_hash,
+    bool is_foreground,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback);

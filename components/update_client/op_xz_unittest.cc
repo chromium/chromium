@@ -24,7 +24,10 @@
 
 namespace update_client {
 
-class XzOperationTest : public testing::Test {
+class XzOperationTest : public ::testing::TestWithParam<bool> {
+ public:
+  bool IsForeground() const { return GetParam(); }
+
  private:
   // `env_` must be constructed before sequence_checker_.
   base::test::TaskEnvironment env_;
@@ -62,12 +65,16 @@ class XzOperationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(XzOperationTest, Success) {
+INSTANTIATE_TEST_SUITE_P(ForegroundAndBackground,
+                         XzOperationTest,
+                         ::testing::Bool());
+
+TEST_P(XzOperationTest, Success) {
   base::FilePath in_file = CopyToTemp("file1.xz");
   XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>(
                   InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
                   ->Create(),
-              MakePingCallback(), MakeStateCallback(), in_file,
+              MakePingCallback(), MakeStateCallback(), IsForeground(), in_file,
               base::BindLambdaForTesting(
                   [&](base::expected<base::FilePath, CategorizedError> result) {
                     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -83,12 +90,12 @@ TEST_F(XzOperationTest, Success) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"), 1);
 }
 
-TEST_F(XzOperationTest, BadPatch) {
+TEST_P(XzOperationTest, BadPatch) {
   base::FilePath in_file = CopyToTemp("file1");
   XzOperation(base::MakeRefCounted<InProcessUnzipperFactory>(
                   InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
                   ->Create(),
-              MakePingCallback(), MakeStateCallback(), in_file,
+              MakePingCallback(), MakeStateCallback(), IsForeground(), in_file,
               base::BindLambdaForTesting(
                   [&](base::expected<base::FilePath, CategorizedError> result) {
                     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,13 +109,13 @@ TEST_F(XzOperationTest, BadPatch) {
   EXPECT_EQ(pings_[0].FindInt("eventresult"), 0);
 }
 
-TEST_F(XzOperationTest, Cancel) {
+TEST_P(XzOperationTest, Cancel) {
   base::FilePath in_file = CopyToTemp("file1.xz");
   base::OnceClosure cancel = XzOperation(
       base::MakeRefCounted<InProcessUnzipperFactory>(
           InProcessUnzipperFactory::SymlinkOption::DONT_PRESERVE)
           ->Create(),
-      MakePingCallback(), MakeStateCallback(), in_file,
+      MakePingCallback(), MakeStateCallback(), IsForeground(), in_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

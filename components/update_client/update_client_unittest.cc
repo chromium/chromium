@@ -4792,6 +4792,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
             base::BindRepeating(&unzip::LaunchInProcessUnzipper))
             ->Create(),
         crx_file::VerifierFormat::CRX3,
+        /*is_foreground=*/true,
         base::BindOnce(
             [](base::FilePath* unpack_path, base::OnceClosure quit_closure,
                const Unpacker::Result& result) {

@@ -701,6 +701,7 @@ void UpdaterUtilApp::UnpackCRX() {
                   kSymlinkOption)
                   ->Create(),
               crx_file::VerifierFormat::CRX3,
+              /*is_foreground=*/true,
               base::BindOnce([](const update_client::Unpacker::Result& result) {
                 if (result.error == update_client::UnpackerError::kNone) {
                   LOG(INFO) << "Unpacked to " << result.unpack_path

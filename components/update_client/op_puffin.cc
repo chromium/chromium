@@ -31,6 +31,7 @@ base::OnceClosure PuffOperation(
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& old_hash,
     const std::string& output_hash,
+    bool is_foreground,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
@@ -39,7 +40,7 @@ base::OnceClosure PuffOperation(
       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
           base::File::FLAG_WIN_EXCLUSIVE_WRITE,
       output_hash, puffin::P_OK, patch_file, protocol_request::kEventPuff,
-      std::move(callback))
+      is_foreground, std::move(callback))
       ->Operation(base::BindOnce(&Patcher::PatchPuffPatch, patcher));
   return base::DoNothing();
 }

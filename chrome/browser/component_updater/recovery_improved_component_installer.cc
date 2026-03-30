@@ -92,6 +92,7 @@ void RecoveryComponentActionHandler::Unpack() {
   update_client::Unpacker::Unpack(
       kRecoveryImprovedComponentId, "RecoveryComponentActionHandler", key_hash_,
       crx_path_, std::move(unzipper), verifier_format_,
+      /*is_foreground=*/true,
       base::BindOnce(&RecoveryComponentActionHandler::UnpackComplete, this));
 }
 

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/crx_file/crx_verifier.h"
@@ -50,11 +52,13 @@ Unpacker::Unpacker(const std::string& app_id,
                    const std::string& prod_id,
                    const base::FilePath& path,
                    std::unique_ptr<Unzipper> unzipper,
+                   bool is_foreground,
                    base::OnceCallback<void(const Result& result)> callback)
     : app_id_(app_id),
       prod_id_(update_client::UTF8ToStringType(prod_id)),
       path_(path),
       unzipper_(std::move(unzipper)),
+      is_foreground_(is_foreground),
       callback_(std::move(callback)) {}
 
 Unpacker::~Unpacker() {
@@ -68,9 +72,10 @@ void Unpacker::Unpack(const std::string& app_id,
                       const base::FilePath& path,
                       std::unique_ptr<Unzipper> unzipper,
                       crx_file::VerifierFormat crx_format,
+                      bool is_foreground,
                       base::OnceCallback<void(const Result& result)> callback) {
   base::WrapRefCounted(new Unpacker(app_id, prod_id, path, std::move(unzipper),
-                                    std::move(callback)))
+                                    is_foreground, std::move(callback)))
       ->Verify(pk_hash, crx_format);
 }
 
@@ -147,6 +152,13 @@ void Unpacker::EndUnzipping(bool result) {
 void Unpacker::UncompressVerifiedContents() {
   TRACE_EVENT("update_client", "Unpacker::UncompressVerifiedContents",
               perfetto::Flow::FromPointer(this));
+
+  // Apply background priority if this is a background task.
+  std::optional<base::ScopedBoostPriority> priority;
+  if (!is_foreground_) {
+    priority.emplace(base::ThreadType::kBackground);
+  }
+
   std::string verified_contents;
   if (!compression::GzipUncompress(compressed_verified_contents_,
                                    &verified_contents)) {

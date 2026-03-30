@@ -52,6 +52,7 @@ class DeltaPatchOperation
       int expected_success_result,
       const base::FilePath& patch_file,
       int event_type,
+      bool is_foreground,
       base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
           callback);
 
@@ -94,6 +95,7 @@ class DeltaPatchOperation
   const int expected_success_result_;
   const base::FilePath patch_file_;
   const int event_type_;
+  const bool is_foreground_;
   base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
       callback_;
   scoped_refptr<base::SequencedTaskRunner> original_sequence_ =

@@ -39,6 +39,7 @@ base::OnceClosure InstallOperation(
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
+    bool is_foreground,
     base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxInstaller::ProgressCallback progress_callback,

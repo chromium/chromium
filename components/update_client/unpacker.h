@@ -76,6 +76,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
                      const base::FilePath& path,
                      std::unique_ptr<Unzipper> unzipper,
                      crx_file::VerifierFormat crx_format,
+                     bool is_foreground,
                      base::OnceCallback<void(const Result& result)> callback);
 
  private:
@@ -89,6 +90,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
            const std::string& prod_id,
            const base::FilePath& path,
            std::unique_ptr<Unzipper> unzipper,
+           bool is_foreground,
            base::OnceCallback<void(const Result& result)> callback);
 
   virtual ~Unpacker();
@@ -121,6 +123,7 @@ class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
   const base::FilePath::StringType prod_id_;
   base::FilePath path_;
   std::unique_ptr<Unzipper> unzipper_;
+  const bool is_foreground_;
   base::OnceCallback<void(const Result& result)> callback_;
   base::FilePath unpack_path_;
   std::string public_key_;

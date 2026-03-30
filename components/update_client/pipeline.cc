@@ -288,13 +288,13 @@ std::queue<Operation> MakeOperations(
           base::BindOnce(&PuffOperation, crx_cache,
                          config->GetPatcherFactory()->Create(), event_adder,
                          state_tracker, operation.sha256_previous,
-                         operation.sha256_out)));
+                         operation.sha256_out, is_foreground)));
     } else if (operation.type == "xz") {
       // expects no extra fields.
       ops.push(SkipIfCached(
           cache_check,
           base::BindOnce(&XzOperation, config->GetUnzipperFactory()->Create(),
-                         event_adder, state_tracker)));
+                         event_adder, state_tracker, is_foreground)));
     } else if (operation.type == "zucc") {
       // expects: `previous` (hash object) and `out` (hash object)
       if (operation.sha256_previous.empty() || operation.sha256_out.empty()) {
@@ -307,7 +307,7 @@ std::queue<Operation> MakeOperations(
           base::BindOnce(&ZucchiniOperation, crx_cache,
                          config->GetPatcherFactory()->Create(), event_adder,
                          state_tracker, operation.sha256_previous,
-                         operation.sha256_out)));
+                         operation.sha256_out, is_foreground)));
     } else if (operation.type == "crx3") {
       // expects: `in` (hash object)
       // Note: `path` and `arguments` fields are optional.
@@ -324,7 +324,7 @@ std::queue<Operation> MakeOperations(
               ? nullptr
               : std::make_unique<CrxInstaller::InstallParams>(
                     operation.path, operation.arguments, install_data),
-          event_adder, state_tracker, install_progress_callback,
+          is_foreground, event_adder, state_tracker, install_progress_callback,
           install_complete_callback));
     } else if (operation.type == "run") {
       // expects: `path`

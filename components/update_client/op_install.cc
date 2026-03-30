@@ -173,6 +173,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
             std::unique_ptr<Unzipper> unzipper,
             const std::vector<uint8_t>& pk_hash,
             crx_file::VerifierFormat crx_format,
+            bool is_foreground,
             base::expected<base::FilePath, UnpackerError> cache_result) {
   if (!cache_result.has_value()) {
     // Caching is optional: continue with the install, but add a task to clean
@@ -201,7 +202,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
               &Unpacker::Unpack, id, prod_id, pk_hash,
               // If and only if cached, the original path no longer exists.
               cache_result.has_value() ? cache_result.value() : crx_file,
-              std::move(unzipper), crx_format,
+              std::move(unzipper), crx_format, is_foreground,
               base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
@@ -217,6 +218,7 @@ base::OnceClosure InstallOperation(
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
+    bool is_foreground,
     base::RepeatingCallback<void(base::DictValue)> event_adder,
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxInstaller::ProgressCallback progress_callback,
@@ -236,7 +238,8 @@ base::OnceClosure InstallOperation(
                              std::move(installer_result_callback),
                              std::move(callback), event_adder, crx_file),
               std::move(install_params), installer, progress_callback),
-          id, prod_id, crx_file, std::move(unzipper), pk_hash, crx_format));
+          id, prod_id, crx_file, std::move(unzipper), pk_hash, crx_format,
+          is_foreground));
   return base::DoNothing();
 }
 

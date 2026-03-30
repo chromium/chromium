@@ -31,7 +31,10 @@
 
 namespace update_client {
 
-class ZucchiniOperationTest : public testing::Test {
+class ZucchiniOperationTest : public ::testing::TestWithParam<bool> {
+ public:
+  bool IsForeground() const { return GetParam(); }
+
  private:
   // env_ must be constructed before sequence_checker_.
   base::test::TaskEnvironment env_;
@@ -70,7 +73,11 @@ class ZucchiniOperationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(ZucchiniOperationTest, Success) {
+INSTANTIATE_TEST_SUITE_P(ForegroundAndBackground,
+                         ZucchiniOperationTest,
+                         ::testing::Bool());
+
+TEST_P(ZucchiniOperationTest, Success) {
   auto cache = base::MakeRefCounted<CrxCache>(TempPath("cache"));
 
   // `ZucchiniOperation` deletes the patch file, so copy it to the temp dir.
@@ -92,7 +99,7 @@ TEST_F(ZucchiniOperationTest, Success) {
                 ->Create(),
             MakePingCallback(), MakeStateCallback(), "hash1",
             "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
-            patch_file,
+            IsForeground(), patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -114,7 +121,7 @@ TEST_F(ZucchiniOperationTest, Success) {
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
-TEST_F(ZucchiniOperationTest, BadPatch) {
+TEST_P(ZucchiniOperationTest, BadPatch) {
   auto cache = base::MakeRefCounted<CrxCache>(TempPath("cache"));
 
   // ZucchiniOperation deletes the patch file, so copy it to the temp dir. For
@@ -137,7 +144,7 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
                 ->Create(),
             MakePingCallback(), MakeStateCallback(), "hash1",
             "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
-            patch_file,
+            IsForeground(), patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -162,7 +169,7 @@ TEST_F(ZucchiniOperationTest, BadPatch) {
             static_cast<int>(zucchini::status::kStatusPatchReadError));
 }
 
-TEST_F(ZucchiniOperationTest, NotInCache) {
+TEST_P(ZucchiniOperationTest, NotInCache) {
   auto cache = base::MakeRefCounted<CrxCache>(TempPath("cache"));
 
   // ZucchiniOperation deletes the patch file, so copy it to the temp dir.
@@ -176,7 +183,7 @@ TEST_F(ZucchiniOperationTest, NotInCache) {
           ->Create(),
       MakePingCallback(), MakeStateCallback(), {},
       "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
-      patch_file,
+      IsForeground(), patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -198,7 +205,7 @@ TEST_F(ZucchiniOperationTest, NotInCache) {
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
-TEST_F(ZucchiniOperationTest, NoCache) {
+TEST_P(ZucchiniOperationTest, NoCache) {
   // ZucchiniOperation deletes the patch file, so copy it to the temp dir.
   base::FilePath patch_file =
       CopyToTemp("zucchini_patch_test/app1_to_app2.zucchini");
@@ -210,7 +217,7 @@ TEST_F(ZucchiniOperationTest, NoCache) {
           ->Create(),
       MakePingCallback(), MakeStateCallback(), {},
       "30ab1a10edb5b33a63f61263f702b71c2ad3043773fef2a2122111ea542b765a",
-      patch_file,
+      IsForeground(), patch_file,
       base::BindLambdaForTesting(
           [&](base::expected<base::FilePath, CategorizedError> result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -232,7 +239,7 @@ TEST_F(ZucchiniOperationTest, NoCache) {
   EXPECT_EQ(pings_[0].Find("extracode1"), nullptr);
 }
 
-TEST_F(ZucchiniOperationTest, OutHashMismatch) {
+TEST_P(ZucchiniOperationTest, OutHashMismatch) {
   auto cache = base::MakeRefCounted<CrxCache>(TempPath("cache"));
 
   // `ZucchiniOperation` deletes the patch file, so copy it to the temp dir.
@@ -253,7 +260,7 @@ TEST_F(ZucchiniOperationTest, OutHashMismatch) {
                 base::BindRepeating(&patch::LaunchInProcessFilePatcher))
                 ->Create(),
             MakePingCallback(), MakeStateCallback(), "hash1", "incorrecthash",
-            patch_file,
+            IsForeground(), patch_file,
             base::BindLambdaForTesting(
                 [&](base::expected<base::FilePath, CategorizedError> result) {
                   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

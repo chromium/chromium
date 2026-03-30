@@ -30,6 +30,7 @@ base::OnceClosure ZucchiniOperation(
     base::RepeatingCallback<void(ComponentState)> state_tracker,
     const std::string& previous_hash,
     const std::string& output_hash,
+    bool is_foreground,
     const base::FilePath& patch_file,
     base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
         callback) {
@@ -40,7 +41,7 @@ base::OnceClosure ZucchiniOperation(
           base::File::FLAG_WIN_SHARE_DELETE |
           base::File::FLAG_CAN_DELETE_ON_CLOSE,
       output_hash, 0, patch_file, protocol_request::kEventZucchini,
-      std::move(callback))
+      is_foreground, std::move(callback))
       ->Operation(base::BindOnce(&Patcher::PatchZucchini, patcher));
   return base::DoNothing();
 }
