@@ -59,10 +59,10 @@ interface SetupMessage {
 
 interface RealtimeInputMessage {
   realtimeInput: {
-    mediaChunks: Array<{
+    audio: {
       data: string,
       mimeType: string,
-    }>,
+    },
   };
 }
 
@@ -120,6 +120,10 @@ export class ApiSession {
 
   private ws: WebSocket|null = null;
 
+  // Buffers audio messages that are sent while the WebSocket is still in the
+  // CONNECTING state. These are flushed as soon as the connection opens.
+  private audioQueue: RealtimeInputMessage[] = [];
+
   private delegate: ApiSessionDelegate;
 
   constructor(
@@ -138,6 +142,14 @@ export class ApiSession {
     this.ws.onopen = () => {
       log('WebSocket Opened');
       this.sendSetup();
+
+      if (this.audioQueue.length > 0) {
+        log(`Flushing ${this.audioQueue.length} queued audio chunks`);
+        for (const msg of this.audioQueue) {
+          this.ws?.send(JSON.stringify(msg));
+        }
+        this.audioQueue = [];
+      }
     };
 
     this.ws.onmessage = async (event) => {
@@ -171,13 +183,14 @@ export class ApiSession {
     };
 
     this.ws.onclose = (e) => {
-      log('WebSocket Closed: ', e);
+      log(`WebSocket Closed: code=${e.code}, reason=${e.reason}, wasClean=${
+          e.wasClean}`);
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
 
     this.ws.onerror = (error) => {
-      console.error('WebSocket Error:', error);
+      console.error('[ApiSession] WebSocket Error:', error);
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
@@ -187,6 +200,7 @@ export class ApiSession {
     log('stop()');
     this.ws?.close();
     this.ws = null;
+    this.audioQueue = [];
   }
 
   private sendSetup() {
@@ -216,13 +230,17 @@ export class ApiSession {
   sendAudio(sampleRate: number, base64Data: string) {
     const msg: RealtimeInputMessage = {
       realtimeInput: {
-        mediaChunks: [{
+        audio: {
           data: base64Data,
           mimeType: `audio/pcm;rate=${sampleRate}`,
-        }],
+        },
       },
     };
-    this.ws?.send(JSON.stringify(msg));
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(msg));
+    } else if (this.ws?.readyState === WebSocket.CONNECTING) {
+      this.audioQueue.push(msg);
+    }
   }
 
   sendToolResponse(responses: FunctionResponse[]) {
@@ -237,12 +255,19 @@ export class ApiSession {
       },
     };
     log('Sending Tool Response', msg);
-    this.ws?.send(JSON.stringify(msg));
+    if (this.ws?.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify(msg));
+    } else {
+      console.warn(
+          '[ApiSession] Dropping tool response because WebSocket is not OPEN');
+    }
   }
 
   private handleMessage(msg: ServerContentMessage) {
+    // The top-level BidiGenerateContentServerMessage acts as a union and will
+    // only contain exactly one of setupComplete, toolCall, or serverContent.
     if (msg.setupComplete) {
-      log('SetupComplete');
+      log('SetupComplete received from server.');
       this.delegate.onConnectionChanged(true);
       return;
     }
@@ -258,6 +283,9 @@ export class ApiSession {
       return;
     }
 
+    // Inside serverContent, multiple fields (like modelTurn and turnComplete)
+    // can be present simultaneously, so we process each independently without
+    // if/else chains.
     if (content.inputTranscription?.text) {
       log('Input transcription:', content.inputTranscription.text);
       this.delegate.onTranscription(content.inputTranscription.text, true);

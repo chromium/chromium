@@ -47,7 +47,7 @@ interface ResourceBundle {
 const DEFAULT_API_CONFIG = {
   endpointUrl:
       'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent',
-  model: 'models/gemini-2.5-flash-native-audio-preview-12-2025',
+  model: 'models/gemini-3.1-flash-live-preview',
 };
 
 const DEFAULT_PERSONA: Persona = {
@@ -122,6 +122,7 @@ export class AppElement extends CrLitElement {
   private initialPageContext?: PageContext;
   private configPromise: Promise<ConversationConfig>;
   private unregisterPageContextListeners: (() => void)|null;
+  private transcriptionTimeout: number = 0;
 
   protected get uiState(): UiState {
     if (this.isConnecting) {
@@ -320,16 +321,19 @@ export class AppElement extends CrLitElement {
     }
 
     if (!this.conversation.connected) {
-      log('Attempting to connect');
+      log('Attempting to connect. conversation state is not connected.');
       this.isConnecting = true;
-      this.conversation.start();
+      this.conversation.start().catch(e => {
+        console.error('[App] Failed to start conversation:', e);
+      });
     } else {
+      log('Conversation connected, stopping it.');
       this.conversation.stop();
     }
   }
 
   private async onConversationStateChanged(state: State, oldState: State) {
-    log('onConversationStateChanged: ', state);
+    log(`onConversationStateChanged: from ${oldState} to ${state}`);
 
     if (oldState === State.STOPPED && state !== State.STOPPED) {
       this.isConnecting = false;
@@ -354,16 +358,16 @@ export class AppElement extends CrLitElement {
     }
   }
 
-  private transcriptionTimeout: number = 0;
-
   private onMessageFromConversation(msg: any) {
     if (msg.type === 'outputTranscription') {
       this.transcription = msg.text;
 
       clearTimeout(this.transcriptionTimeout);
-      this.transcriptionTimeout = setTimeout(() => {
-        this.transcription = '';
-      }, 3000);
+      if (this.transcription) {
+        this.transcriptionTimeout = setTimeout(() => {
+          this.transcription = '';
+        }, 3000);
+      }
     }
   }
 
