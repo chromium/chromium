@@ -78,9 +78,9 @@ public class SendTabToSelfAndroidBridgeTest {
     public void testGetAllTargetDeviceInfos() {
         List<TargetDeviceInfo> expected =
                 List.of(
-                        new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, 123L),
-                        new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, 456L),
-                        new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, 789L));
+                        new TargetDeviceInfo("name1", "guid1", FormFactor.DESKTOP, "Active today"),
+                        new TargetDeviceInfo("name2", "guid2", FormFactor.DESKTOP, "Active today"),
+                        new TargetDeviceInfo("name3", "guid3", FormFactor.PHONE, "Active today"));
         when(mNativeMock.getAllTargetDeviceInfos(eq(mProfile))).thenReturn(expected);
 
         List<TargetDeviceInfo> actual =

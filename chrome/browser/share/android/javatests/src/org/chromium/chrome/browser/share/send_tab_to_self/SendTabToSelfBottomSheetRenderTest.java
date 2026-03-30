@@ -42,9 +42,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /** Render tests for the send-tab-to-self bottom sheets. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -80,20 +78,13 @@ public class SendTabToSelfBottomSheetRenderTest {
     @Feature("RenderTest")
     public void testDevicePickerBottomSheet() throws Throwable {
         setUpAccountData(TestAccounts.ACCOUNT1);
-        long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, todayTimestamp),
+                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer",
-                                "guid2",
-                                FormFactor.DESKTOP,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(1)),
+                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
                         new TargetDeviceInfo(
-                                "My Tablet",
-                                "guid3",
-                                FormFactor.TABLET,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(2)));
+                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
         View view =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -117,20 +108,13 @@ public class SendTabToSelfBottomSheetRenderTest {
     public void testDevicePickerBottomSheetWithNonDisplayableAccountEmail() throws Throwable {
         AccountInfo account = TestAccounts.CHILD_ACCOUNT_NON_DISPLAYABLE_EMAIL;
         setUpAccountData(account);
-        long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices =
                 Arrays.asList(
-                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, todayTimestamp),
+                        new TargetDeviceInfo("My Phone", "guid1", FormFactor.PHONE, "Active today"),
                         new TargetDeviceInfo(
-                                "My Computer",
-                                "guid2",
-                                FormFactor.DESKTOP,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(1)),
+                                "My Computer", "guid2", FormFactor.DESKTOP, "Active 1 day ago"),
                         new TargetDeviceInfo(
-                                "My Tablet",
-                                "guid3",
-                                FormFactor.TABLET,
-                                todayTimestamp - TimeUnit.DAYS.toMillis(2)));
+                                "My Tablet", "guid3", FormFactor.TABLET, "Active 2 days ago"));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     DevicePickerBottomSheetContent sheetContent =

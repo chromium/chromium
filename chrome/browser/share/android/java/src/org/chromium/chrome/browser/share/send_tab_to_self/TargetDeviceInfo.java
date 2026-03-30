@@ -19,19 +19,19 @@ class TargetDeviceInfo {
     public final String cacheGuid;
     public final @FormFactor int formFactor;
     public final String deviceName;
-    public final long lastUpdatedTimestamp;
+    public final String lastActiveTimeForDisplay;
 
     public TargetDeviceInfo(
-            String name, String cacheGuid, @FormFactor int formFactor, long lastUpdatedTimestamp) {
+            String name, String cacheGuid, @FormFactor int formFactor, String lastActiveTimeForDisplay) {
         this.deviceName = name;
         this.cacheGuid = cacheGuid;
         this.formFactor = formFactor;
-        this.lastUpdatedTimestamp = lastUpdatedTimestamp;
+        this.lastActiveTimeForDisplay = lastActiveTimeForDisplay;
     }
 
     @CalledByNative
     public static TargetDeviceInfo build(
-            String name, String cacheGuid, @FormFactor int formFactor, long lastUpdatedTimestamp) {
-        return new TargetDeviceInfo(name, cacheGuid, formFactor, lastUpdatedTimestamp);
+            String name, String cacheGuid, @FormFactor int formFactor, String lastActiveTimeForDisplay) {
+        return new TargetDeviceInfo(name, cacheGuid, formFactor, lastActiveTimeForDisplay);
     }
 }

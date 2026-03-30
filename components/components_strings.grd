@@ -618,6 +618,12 @@
        <message name="IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE" desc="A description informing the user about the way to clear their search history when their Default Search Engine is not Google.">
          Your search engine is <ph name="DSE">$1<ex>Bing</ex></ph>. See their instructions for deleting your search history, if applicable.
        </message>
+
+      <!-- Send Tab To Self strings -->
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS" desc="The label of valid device button inside omnibox bubble or the Send Tab To Self dialog, which shows the last activated time of a valid device.">
+        {DAYS, plural, =0 {Active today} =1 {Active 1 day ago} other {Active # days ago}}
+      </message>
+
     </messages>
   </release>
 </grit>

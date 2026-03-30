@@ -81,7 +81,9 @@ public class DevicePickerBottomSheetContentTest {
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
 
-        mDevices = Arrays.asList(new TargetDeviceInfo("Device", "guid", FormFactor.DESKTOP, 0L));
+        mDevices =
+                Arrays.asList(
+                        new TargetDeviceInfo("Device", "guid", FormFactor.DESKTOP, "Active today"));
 
         when(mTab.getWebContents()).thenReturn(mWebContents);
     }

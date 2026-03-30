@@ -28,6 +28,10 @@ struct TargetDeviceInfo {
 
   bool operator==(const TargetDeviceInfo& rhs) const;
 
+  // Returns a localized string representing the time since the device was last
+  // updated.
+  std::u16string GetLastActiveTimeForDisplay() const;
+
   // Device display name.
   std::string device_name;
   // Device guid.
