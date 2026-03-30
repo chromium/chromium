@@ -175,11 +175,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   const MemoryManagedPaintRecorder& RecorderForCanvas2D() const {
     CHECK(IsCanvas2D());
-    return *recorder_;
+    return *recorder_for_canvas_2d_;
   }
   MemoryManagedPaintRecorder& RecorderForCanvas2D() {
     CHECK(IsCanvas2D());
-    return *recorder_;
+    return *recorder_for_canvas_2d_;
   }
   std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorderForCanvas2D();
   void SetRecorderForCanvas2D(
@@ -299,7 +299,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Recording accumulating draw ops. This pointer is always valid and safe to
   // dereference.
-  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_for_canvas_2d_;
 
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =
@@ -749,6 +749,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void FlushCanvas(bool is_overwrite);
 
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal(bool is_overwrite);
+
+  std::unique_ptr<MemoryManagedPaintRecorder> recorder_;
 };
 
 }  // namespace blink

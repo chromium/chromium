@@ -150,7 +150,10 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
                              format,
                              alpha_type,
                              color_space,
-                             delegate) {}
+                             delegate) {
+  recorder_for_canvas_2d_ =
+      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+}
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
@@ -1698,7 +1701,6 @@ CanvasResourceProvider::CanvasResourceProvider(
       alpha_type_(alpha_type),
       color_space_(color_space),
       delegate_(delegate),
-      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   max_recorded_op_bytes_ = static_cast<size_t>(kMaxRecordedOpKB.Get()) * 1024;
   max_pinned_image_bytes_ = static_cast<size_t>(kMaxPinnedImageKB.Get()) * 1024;
@@ -1714,10 +1716,10 @@ std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
   CHECK(IsCanvas2D());
   // When releasing the recorder, we swap it with a new, valid one. This way,
-  // the `recorder_` member is guarantied to be always valid.
+  // the `recorder_for_canvas_2d_` member is guarantied to be always valid.
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
-  recorder_->SetClient(nullptr);
-  recorder_.swap(recorder);
+  recorder_for_canvas_2d_->SetClient(nullptr);
+  recorder_for_canvas_2d_.swap(recorder);
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
   return recorder;
 }
@@ -1726,7 +1728,7 @@ void CanvasResourceProvider::SetRecorderForCanvas2D(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   CHECK(IsCanvas2D());
   recorder->SetClient(this);
-  recorder_ = std::move(recorder);
+  recorder_for_canvas_2d_ = std::move(recorder);
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
 }
 
@@ -1737,9 +1739,10 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
   if (IsPrinting() && clear_frame_for_canvas2d_) {
     return;
   }
-  if (recorder_->ReleasableOpBytesUsed() > max_recorded_op_bytes_ ||
-      recorder_->ReleasableImageBytesUsed() > max_pinned_image_bytes_)
-      [[unlikely]] {
+  if (recorder_for_canvas_2d_->ReleasableOpBytesUsed() >
+          max_recorded_op_bytes_ ||
+      recorder_for_canvas_2d_->ReleasableImageBytesUsed() >
+          max_pinned_image_bytes_) [[unlikely]] {
     FlushCanvas2D();
   }
 }
@@ -1843,7 +1846,7 @@ void CanvasResourceProvider::RecordingCleared() {
 
 MemoryManagedPaintCanvas& CanvasResourceProvider::GetCanvasForCanvas2D() {
   CHECK(IsCanvas2D());
-  return recorder_->getRecordingCanvas();
+  return recorder_for_canvas_2d_->getRecordingCanvas();
 }
 
 MemoryManagedPaintCanvas& CanvasNon2DResourceProviderSharedImage::Canvas() {
@@ -1972,7 +1975,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
 std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
     FlushReason reason /*=FlushReason::kOther*/) {
   CHECK(IsCanvas2D());
-  if (!recorder_->HasReleasableDrawOps()) {
+  if (!recorder_for_canvas_2d_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
   auto timer = CreateScopedRasterTimer();
@@ -1985,7 +1988,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
   // printing.
   clear_frame_for_canvas2d_ = false;
   cc::PaintRecord recording;
-  recording = recorder_->ReleaseMainRecording();
+  recording = recorder_for_canvas_2d_->ReleaseMainRecording();
   RasterRecordForCanvas2D(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
@@ -2039,6 +2042,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         is_accelerated,
                                         shared_image_usage_flags,
                                         delegate) {
+  recorder_for_canvas_2d_ =
+      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
@@ -2047,7 +2052,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
         gpu::kGpuFeatureStatusEnabled) {
       max_recorded_op_bytes_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
-      recorder_->DisableLineDrawingAsPaths();
+      recorder_for_canvas_2d_->DisableLineDrawingAsPaths();
     }
   }
 }
@@ -2064,7 +2069,10 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         alpha_type,
                                         color_space,
                                         shared_image_interface_provider,
-                                        delegate) {}
+                                        delegate) {
+  recorder_for_canvas_2d_ =
+      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+}
 
 CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     gfx::Size size,
@@ -2082,7 +2090,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         context_provider_wrapper,
                                         is_accelerated,
                                         shared_image_usage_flags,
-                                        delegate) {
+                                        delegate),
+      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {
   if (context_provider_wrapper_) {
     // Graphite can handle a large buffer size.
     if (context_provider_wrapper_->ContextProvider()
@@ -2108,7 +2117,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         alpha_type,
                                         color_space,
                                         shared_image_interface_provider,
-                                        delegate) {}
+                                        delegate),
+      recorder_(std::make_unique<MemoryManagedPaintRecorder>(Size(), this)) {}
 
 bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
     const SkImageInfo& orig_info,
@@ -2121,7 +2131,7 @@ bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(
   CHECK(!IsAccelerated());
 
   DCHECK(IsValid());
-  DCHECK(!recorder_->HasRecordedDrawOps());
+  DCHECK(!recorder_for_canvas_2d_->HasRecordedDrawOps());
 
   EnsureSkiaCanvas();
 
