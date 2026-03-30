@@ -201,11 +201,10 @@ UUID KeySystemManager::GetUUID(const std::string& key_system) {
 
 std::vector<std::string> KeySystemManager::GetPlatformKeySystemNames() {
   std::vector<std::string> key_systems;
-  for (KeySystemUuidMap::iterator it = key_system_uuid_map_.begin();
-       it != key_system_uuid_map_.end(); ++it) {
+  for (auto& it : key_system_uuid_map_) {
     // Rule out the key system handled by Chrome explicitly.
-    if (it->first != kWidevineKeySystem) {
-      key_systems.push_back(it->first);
+    if (it.first != kWidevineKeySystem) {
+      key_systems.push_back(it.first);
     }
   }
   return key_systems;
@@ -452,7 +451,7 @@ MediaDrmBridge::GetVersionResult MediaDrmBridge::MaybeGetVersion(
   if (!media_drm_bridge.has_value()) {
     DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system
              << ", CreateCdmStatus: "
-             << (media::StatusCodeType)media_drm_bridge.code();
+             << static_cast<media::StatusCodeType>(media_drm_bridge.code());
     return base::unexpected(media_drm_bridge.code());
   }
 
