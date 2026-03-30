@@ -88,6 +88,8 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
 
   XrLayerClient* LayerClient() override;
 
+  WebGLRenderingContextBase* GetWebGLContext() { return webgl_context_; }
+
   void Trace(Visitor*) const override;
 
  protected:
@@ -114,15 +116,6 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
   bool ignore_depth_values_ = false;
 
   uint32_t clean_frame_count = 0;
-
-  std::unique_ptr<gpu::SharedImageTexture> camera_image_shared_image_texture_;
-  std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
-      camera_image_texture_scoped_access_;
-
-  // WebGL texture that points to the |camera_image_texture_|. Must be notified
-  // via a call to |WebGLUnownedTexture::OnGLDeleteTextures()| when
-  // |camera_image_texture_id_| is deleted.
-  Member<WebGLUnownedTexture> camera_image_texture_;
 
   Member<XRWebGLFrameTransportDelegate> transport_delegate_;
 };

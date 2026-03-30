@@ -701,11 +701,8 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
     return nullptr;
   }
 
-  XRWebGLLayer* base_layer = frame_session->renderState()->baseLayer();
-  DCHECK(base_layer);
-
   // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
-  return base_layer->GetCameraTexture();
+  return frame_session->renderState()->GetCameraTexture();
 }
 
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(

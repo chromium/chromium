@@ -7,7 +7,11 @@
 
 #include <optional>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
+#include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -25,6 +29,28 @@ class XRFrameTransportDelegate;
 class XRRenderState : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
+  struct XRCameraUpdateHelper : public GarbageCollected<XRCameraUpdateHelper> {
+   public:
+    explicit XRCameraUpdateHelper(WebGLRenderingContextBase* webgl_context);
+
+    WebGLTexture* GetCameraTexture();
+    void OnFrameStart(XRSession* session);
+    void OnFrameEnd(XRSession* session);
+
+    void Trace(Visitor*) const;
+
+   private:
+    Member<WebGLRenderingContextBase> webgl_context_;
+    std::unique_ptr<gpu::SharedImageTexture> camera_image_shared_image_texture_;
+    std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
+        camera_image_texture_scoped_access_;
+
+    // WebGL texture that points to the |camera_image_texture_|. Must be
+    // notified via a call to |WebGLUnownedTexture::OnGLDeleteTextures()| when
+    // |camera_image_texture_id_| is deleted.
+    Member<WebGLUnownedTexture> camera_image_texture_;
+  };
+
  public:
   explicit XRRenderState(bool immersive);
   ~XRRenderState() override = default;
@@ -39,6 +65,8 @@ class XRRenderState : public ScriptWrappable {
 
   // Returns either baseLayer or layers[0], or nullptr if neither is set.
   XRLayer* GetFirstLayer() const;
+
+  WebGLTexture* GetCameraTexture();
 
   HTMLCanvasElement* output_canvas() const;
 
@@ -67,9 +95,9 @@ class XRRenderState : public ScriptWrappable {
   // bound to a different session.
   void removeOutputContext();
 
-  // Returns true if the current render state has at least one layer configured
-  // for drawing. This could be either the baseLayer or a non-empty layers
-  // list.
+  // Returns true if the current render state has at least one layer
+  // configured for drawing. This could be either the baseLayer or a non-empty
+  // layers list.
   bool HasActiveLayer() const;
 
   // Returns true if the layer is included in the current render state.
@@ -84,9 +112,9 @@ class XRRenderState : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  // Helper method to update the list of layers according to a new render state.
-  // It also adds the needs redraw state for newly added layers and resets the
-  // needs redraw state for removed layers.
+  // Helper method to update the list of layers according to a new render
+  // state. It also adds the needs redraw state for newly added layers and
+  // resets the needs redraw state for removed layers.
   void UpdateLayersState(FrozenArray<XRLayer>* layers);
 
   bool immersive_;
@@ -95,6 +123,7 @@ class XRRenderState : public ScriptWrappable {
   Member<XRWebGLLayer> base_layer_;
   Member<FrozenArray<XRLayer>> layers_ =
       MakeGarbageCollected<FrozenArray<XRLayer>>();
+  Member<XRCameraUpdateHelper> camera_helper_;
   bool needs_layers_update_ = false;
   std::optional<double> inline_vertical_fov_;
 };
