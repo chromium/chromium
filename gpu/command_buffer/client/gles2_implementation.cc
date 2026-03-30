@@ -110,6 +110,9 @@
 namespace gpu {
 namespace gles2 {
 
+BASE_FEATURE(kGLES2CopySIToTextureAlwaysTexAndBind,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -505,7 +508,8 @@ gpu::SyncToken GLES2Implementation::CopySharedImageToGLTextureViaTextureCopy(
       source_shared_image->alpha_type() == kPremul_SkAlphaType;
 
   const bool do_flip_y = source_shared_image->surface_origin() != dst_origin;
-  if (src_rect != gfx::Rect(source_shared_image->size())) {
+  if (base::FeatureList::IsEnabled(kGLES2CopySIToTextureAlwaysTexAndBind) ||
+      src_rect != gfx::Rect(source_shared_image->size())) {
     // Must reallocate the destination texture and copy only a sub-portion.
 
     // There should always be enough data in the source texture to
