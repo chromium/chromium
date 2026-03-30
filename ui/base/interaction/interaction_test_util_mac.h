@@ -6,6 +6,7 @@
 #define UI_BASE_INTERACTION_INTERACTION_TEST_UTIL_MAC_H_
 
 #include "ui/base/interaction/interaction_test_util.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class TrackedElement;
@@ -23,6 +24,16 @@ class InteractionTestUtilSimulatorMac : public InteractionTestUtil::Simulator {
   // InteractionTestUtil::Simulator:
   ActionResult SelectMenuItem(ui::TrackedElement* element,
                               InputType input_type) override;
+};
+
+// Static class for Mac-specific logic.
+class InteractionTestUtilMac {
+ public:
+  InteractionTestUtilMac() = delete;
+
+  static gfx::NativeWindow GetNativeWindowFor(const ui::TrackedElement* el);
+
+ private:
 };
 
 }  // namespace ui::test

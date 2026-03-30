@@ -99,7 +99,6 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::MoveMouseTo(
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
          ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        test->test_impl_->mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl_->GetGestureParamsForStep(el, seq),
@@ -132,7 +131,6 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ClickMouse(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
          bool release, int modifier_keys, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
-        test->test_impl_->mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl_->GetGestureParamsForStep(el, seq),
@@ -161,7 +159,6 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::DragMouseTo(
   step.SetStartCallback(base::BindOnce(
       [](InteractiveViewsTestApi* test, RelativePositionCallback pos_callback,
          bool release, ui::InteractionSequence* seq, ui::TrackedElement* el) {
-        test->test_impl_->mouse_error_message_.clear();
         const gfx::Point target = std::move(pos_callback).Run(el);
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
@@ -196,7 +193,6 @@ InteractiveViewsTestApi::StepBuilder InteractiveViewsTestApi::ReleaseMouse(
       [](InteractiveViewsTestApi* test, ui_controls::MouseButton button,
          int modifier_keys, ui::InteractionSequence* seq,
          ui::TrackedElement* el) {
-        test->test_impl_->mouse_error_message_.clear();
         const auto weak_seq = seq->AsWeakPtr();
         if (!test->mouse_util().PerformGestures(
                 test->test_impl_->GetGestureParamsForStep(el, seq),

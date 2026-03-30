@@ -4769,6 +4769,7 @@ test("ash_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
     "//ui/base/ime/ash",
+    "//ui/base/interaction:test_support",
     "//ui/base/mojom:ui_base_types",
     "//ui/chromeos",
     "//ui/chromeos/styles:cros_styles_views",

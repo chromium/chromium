@@ -68,5 +68,6 @@ source_set("test_support") {
     "//components/onc",
     "//dbus",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

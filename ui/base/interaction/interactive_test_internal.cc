@@ -16,10 +16,12 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -27,6 +29,18 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/base/interaction/interaction_test_util_mac.h"
+#elif BUILDFLAG(IS_ANDROID)
+#include "ui/android/window_android.h"
+#elif USE_AURA
+#include "ui/aura/window.h"
+#endif
+
+#if !BUILDFLAG(IS_IOS)
+#include "ui/native_window_tracker/native_window_tracker.h"
+#endif
 
 namespace ui::test::internal {
 
@@ -66,6 +80,21 @@ class InteractiveTestPrivateFrameworkImpl
     oss << context;
     return oss.str();
   }
+
+  gfx::NativeWindow GetNativeWindowFromElement(
+      const TrackedElement* el) const override {
+#if BUILDFLAG(IS_MAC)
+    return InteractionTestUtilMac::GetNativeWindowFor(el);
+#elif BUILDFLAG(IS_ANDROID)
+    const auto view = el->GetNativeView();
+    return view ? view->GetWindowAndroid() : gfx::NativeWindow();
+#elif USE_AURA
+    const auto view = el->GetNativeView();
+    return view ? view->GetToplevelWindow() : gfx::NativeWindow();
+#else
+    return gfx::NativeWindow();
+#endif
+  }
 };
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveTestPrivateFrameworkImpl)
@@ -76,6 +105,47 @@ DEFINE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 DEFINE_STATE_IDENTIFIER_VALUE(PollingStateObserver<bool>,
                               kInteractiveTestPollUntilState);
+
+// Caches the last-known native window associated with a context.
+// Useful for executing ClickMouse() and ReleaseMouse() commands, as no target
+// element is provided for those commands. A NativeWindowTracker is used to
+// prevent using a cached value after the native window has been destroyed.
+class InteractiveTestPrivate::NativeWindowReference {
+ public:
+  NativeWindowReference() = default;
+  ~NativeWindowReference() = default;
+  NativeWindowReference(NativeWindowReference&& other) = default;
+  NativeWindowReference& operator=(NativeWindowReference&& other) = default;
+
+  bool IsValid() const {
+#if BUILDFLAG(IS_IOS)
+    // iOS uses a weak reference already.
+    return static_cast<bool>(window_);
+#else
+    return window_ && tracker_ && !tracker_->WasNativeWindowDestroyed();
+#endif
+  }
+
+  gfx::NativeWindow GetWindow() const {
+    return IsValid() ? window_ : gfx::NativeWindow();
+  }
+
+  void SetWindow(gfx::NativeWindow window) {
+    if (window_ == window) {
+      return;
+    }
+    window_ = window;
+#if !BUILDFLAG(IS_IOS)
+    tracker_ = window ? ui::NativeWindowTracker::Create(window) : nullptr;
+#endif
+  }
+
+ private:
+  gfx::NativeWindow window_ = gfx::NativeWindow();
+#if !BUILDFLAG(IS_IOS)
+  std::unique_ptr<ui::NativeWindowTracker> tracker_;
+#endif
+};
 
 StateObserverElement::StateObserverElement(ElementIdentifier id,
                                            ElementContext context)
@@ -184,17 +254,46 @@ base::WeakPtr<InteractiveTestPrivate> InteractiveTestPrivate::GetAsWeakPtr() {
 
 gfx::NativeWindow InteractiveTestPrivate::GetNativeWindowFor(
     const ui::TrackedElement* el) const {
-  for (auto& framework : framework_implementations_) {
-    if (auto result = framework.GetNativeWindowFromElement(el)) {
-      return result;
+  gfx::NativeWindow window = gfx::NativeWindow();
+
+  for (auto& framework : base::Reversed(framework_implementations_)) {
+    window = framework.GetNativeWindowFromElement(el);
+    if (window) {
+      break;
     }
   }
-  for (auto& framework : framework_implementations_) {
-    if (auto result = framework.GetNativeWindowFromContext(el->context())) {
-      return result;
+
+  if (window) {
+    // Want to remember the last window hit within each context so that verbs
+    // which do not target a real element use the same window as the previous
+    // action.
+    const auto emplace_result = most_recent_windows_.try_emplace(
+        el->context(), NativeWindowReference());
+    emplace_result.first->second.SetWindow(window);
+  } else {
+    // If the element does not correspond to a specific native window (because
+    // it is a pivot, test element, or for some other reason), fall back to the
+    // most recent window for that context.
+    if (auto* const entry =
+            base::FindOrNull(most_recent_windows_, el->context())) {
+      window = entry->GetWindow();
     }
   }
-  return gfx::NativeWindow();
+
+  // If we still don't know what window to use, use the default one for the
+  // current context. We don't check this one before the most recent windows
+  // cache because it will always return the primary window for the context, but
+  // the mouse could be over a child window.
+  if (!window) {
+    for (auto& framework : base::Reversed(framework_implementations_)) {
+      window = framework.GetNativeWindowFromContext(el->context());
+      if (window) {
+        break;
+      }
+    }
+  }
+
+  return window;
 }
 
 void InteractiveTestPrivate::HandleActionResult(

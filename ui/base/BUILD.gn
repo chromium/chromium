@@ -841,7 +841,7 @@ static_library("test_support") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base/idle",
-    "//ui/base/interaction:test_support",
+    "//ui/base/interaction",
   ]
 
   if (!is_ios) {

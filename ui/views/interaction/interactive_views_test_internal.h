@@ -28,10 +28,6 @@
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 
-namespace ui {
-class NativeWindowTracker;
-}  // namespace ui
-
 namespace views {
 class View;
 }  // namespace views
@@ -98,10 +94,6 @@ class InteractiveViewsTestPrivate
   gfx::NativeWindow GetNativeWindowFromElement(
       const ui::TrackedElement* el) const override;
 
-  // Retrieves the native window from a context. Used by GetWindowHintFor().
-  gfx::NativeWindow GetNativeWindowFromContext(
-      ui::ElementContext context) const override;
-
   // Use this to register widget focus suppliers.
   WidgetFocusSupplierFrame::SupplierList& widget_focus_suppliers() {
     return widget_focus_supplier_frame_->supplier_list();
@@ -117,22 +109,11 @@ class InteractiveViewsTestPrivate
  private:
   friend class views::test::InteractiveViewsTestApi;
 
-  class WindowHintCacheEntry;
-
   std::optional<DebugTreeNode> DebugDumpElement(
       const ui::TrackedElement* el) const;
 
   // Provides mouse input simulation.
   std::unique_ptr<InteractionTestUtilMouse> mouse_util_;
-
-  // Tracks failures when a mouse operation fails.
-  std::string mouse_error_message_;
-
-  // Safely tracks the most recent native window targeted in each context.
-  // For actions like ClickMouse() or ReleaseMouse(), a pivot element is used
-  // so only the context is known; a NativeWindowTracker must be used to verify
-  // that the cached information is still valid.
-  std::map<ui::ElementContext, WindowHintCacheEntry> window_hint_cache_;
 
   std::unique_ptr<WidgetFocusSupplierFrame> widget_focus_supplier_frame_;
 };

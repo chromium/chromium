@@ -23,7 +23,6 @@
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
@@ -217,38 +216,6 @@ InteractiveViewsTestPrivate::DebugTreeNodeViews::operator<=>(
   return impl <=> other.impl;
 }
 
-// Caches the last-known native window associated with a context.
-// Useful for executing ClickMouse() and ReleaseMouse() commands, as no target
-// element is provided for those commands. A NativeWindowTracker is used to
-// prevent using a cached value after the native window has been destroyed.
-class InteractiveViewsTestPrivate::WindowHintCacheEntry {
- public:
-  WindowHintCacheEntry() = default;
-  ~WindowHintCacheEntry() = default;
-  WindowHintCacheEntry(WindowHintCacheEntry&& other) = default;
-  WindowHintCacheEntry& operator=(WindowHintCacheEntry&& other) = default;
-
-  bool IsValid() const {
-    return window_ && tracker_ && !tracker_->WasNativeWindowDestroyed();
-  }
-
-  gfx::NativeWindow GetWindow() const {
-    return IsValid() ? window_ : gfx::NativeWindow();
-  }
-
-  void SetWindow(gfx::NativeWindow window) {
-    if (window_ == window) {
-      return;
-    }
-    window_ = window;
-    tracker_ = window ? ui::NativeWindowTracker::Create(window) : nullptr;
-  }
-
- private:
-  gfx::NativeWindow window_ = gfx::NativeWindow();
-  std::unique_ptr<ui::NativeWindowTracker> tracker_;
-};
-
 InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
     ui::test::internal::InteractiveTestPrivate& test_impl)
     : ui::test::internal::InteractiveTestPrivateFrameworkBase(test_impl) {
@@ -293,16 +260,6 @@ InteractiveViewsTestPrivate::GetGestureParamsForStep(
     const ui::InteractionSequence* seq) {
   // Get the native window.
   gfx::NativeWindow window = test_impl().GetNativeWindowFor(el);
-
-  // If a window was found, then a cache entry may need to be inserted/updated.
-  if (window) {
-    // This is just a find if the entry already exists.
-    auto result =
-        window_hint_cache_.try_emplace(el->context(), WindowHintCacheEntry());
-    // This is a no-op if this is already the cached window.
-    result.first->second.SetWindow(window);
-  }
-
   return InteractionTestUtilMouse::GestureParams(
       window, seq->IsCurrentStepImmediateForTesting());
 }
@@ -326,14 +283,6 @@ gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromElement(
     }
   }
   return window;
-}
-
-gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromContext(
-    ui::ElementContext context) const {
-  // Used the cached value, if one exists.
-  const auto it = window_hint_cache_.find(context);
-  return it != window_hint_cache_.end() ? it->second.GetWindow()
-                                        : gfx::NativeWindow();
 }
 
 std::string InteractiveViewsTestPrivate::DebugDumpWidget(

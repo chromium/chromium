@@ -45,5 +45,6 @@ source_set("test_support") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/services/hotspot_config/public/mojom",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

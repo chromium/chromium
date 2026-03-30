@@ -51,5 +51,6 @@ source_set("test_support") {
     "//base/test:test_support",
     "//device/bluetooth",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

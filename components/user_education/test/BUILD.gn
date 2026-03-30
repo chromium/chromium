@@ -42,6 +42,7 @@ source_set("test") {
     "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
     "//ui/events",
   ]
 

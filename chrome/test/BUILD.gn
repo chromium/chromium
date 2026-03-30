@@ -1298,11 +1298,12 @@ if (is_chromeos && is_chromeos_device) {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ui/ash/main_extra_parts",
       "//chrome/common:non_code_constants",
-      "//chrome/test/base/ash/interactive:test_support",
       "//google_apis",
       "//net:test_support",
       "//url",
     ]
+
+    public_deps = [ "//chrome/test/base/ash/interactive:test_support" ]
   }
 
   test("chromeos_integration_tests") {
@@ -11132,6 +11133,7 @@ if (!is_android) {
       "//google_apis:test_support",
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/system",
+      "//ui/base/interaction:test_support",
     ]
 
     deps = [

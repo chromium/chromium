@@ -20,5 +20,6 @@ source_set("test_support") {
     "//chromeos/ash/components/network",
     "//dbus",
     "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
   ]
 }

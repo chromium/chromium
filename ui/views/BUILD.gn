@@ -1395,6 +1395,7 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/interaction:test_support",
     "//ui/base/mojom",
     "//ui/base/mojom:ui_base_types",
     "//ui/color",

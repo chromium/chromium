@@ -7,6 +7,7 @@
 #include "base/apple/foundation_util.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/menus/cocoa/menu_controller.h"
 
 namespace ui::test {
@@ -58,6 +59,14 @@ ActionResult InteractionTestUtilSimulatorMac::SelectMenuItem(
   LOG(ERROR) << "Item with id " << element->identifier()
              << " not found in menu.";
   return ActionResult::kFailed;
+}
+
+// static
+gfx::NativeWindow InteractionTestUtilMac::GetNativeWindowFor(
+    const ui::TrackedElement* el) {
+  auto view = el->GetNativeView();
+  return view ? gfx::NativeWindow([view.GetNativeNSView() window])
+              : gfx::NativeWindow();
 }
 
 }  // namespace ui::test

@@ -417,6 +417,15 @@ class InteractiveTestPrivate {
   FrameworkSpecificRegistrationList<InteractiveTestPrivateFrameworkBase>
       framework_implementations_;
 
+  // Safely tracks the most recent native window targeted in each context.
+  // For actions like ClickMouse() or ReleaseMouse(), a pivot element is used
+  // so only the context is known; since there can be multiple native windows in
+  // a given context, this tracks the most recently used native window so the
+  // click (or other action) continues to target the most recently hit window.
+  class NativeWindowReference;
+  mutable std::map<ui::ElementContext, NativeWindowReference>
+      most_recent_windows_;
+
   base::WeakPtrFactory<InteractiveTestPrivate> weak_ptr_factory_{this};
 
   // Whether interactive test verbs are allowed. See
