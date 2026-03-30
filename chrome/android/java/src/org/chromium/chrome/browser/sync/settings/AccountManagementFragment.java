@@ -195,7 +195,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         }
 
         DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(mSignedInCoreAccountInfo.getEmail());
+                mProfileDataCache.getById(mSignedInCoreAccountInfo.getId());
         mPageTitle.set(
                 assumeNonNull(
                         SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
@@ -327,8 +327,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         Preference accountPreference = new Preference(getStyledContext());
         accountPreference.setLayoutResource(R.layout.account_management_account_row);
 
-        DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(coreAccountInfo.getEmail());
+        DisplayableProfileData profileData = mProfileDataCache.getById(coreAccountInfo.getId());
         accountPreference.setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.EMAIL));

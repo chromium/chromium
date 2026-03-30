@@ -137,7 +137,7 @@ public class AccountManagementFragmentTest {
                     return !mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .getById(accountInfo.getId())
                             .hasDisplayableEmailAddress();
                 });
         ThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
@@ -167,7 +167,7 @@ public class AccountManagementFragmentTest {
                     return !mSettingsActivityTestRule
                             .getFragment()
                             .getProfileDataCacheForTesting()
-                            .getProfileDataOrDefault(accountInfo.getEmail())
+                            .getById(accountInfo.getId())
                             .hasDisplayableEmailAddress();
                 });
         ThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
