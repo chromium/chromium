@@ -6,12 +6,14 @@
 
 #include <stdint.h>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_client.h"
+#include "net/base/schemeful_site.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -19,7 +21,7 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
-
+#include "url/origin.h"
 namespace content {
 
 namespace {
@@ -35,7 +37,8 @@ void DispatchManifestNotFound(
 
 std::optional<std::string> MaybeGetBadMessageStringForManifest(
     blink::mojom::ManifestRequestResult result,
-    const blink::mojom::Manifest& manifest) {
+    const blink::mojom::Manifest& manifest,
+    const GURL& document_url) {
   if (result == blink::mojom::ManifestRequestResult::kSuccess &&
       blink::IsEmptyManifest(manifest)) {
     return "RequestManifest reported success but didn't return a manifest";
@@ -58,6 +61,32 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
            valid_to_string(start_url_valid), "), id (",
            valid_to_string(id_valid), "), and scope (",
            valid_to_string(scope_valid), ")."});
+    }
+
+    for (const auto& migrate_from : manifest.migrate_from) {
+      if (!net::SchemefulSite::IsSameSite(document_url, migrate_from->id)) {
+        return "Manifest migrate_from id must be the same site as the "
+               "document.";
+      }
+      if (migrate_from->install_url && migrate_from->install_url->is_valid() &&
+          !net::SchemefulSite::IsSameSite(document_url,
+                                          *migrate_from->install_url)) {
+        return "Manifest migrate_from install_url must be the same site as the "
+               "document.";
+      }
+    }
+
+    if (manifest.migrate_to) {
+      if (!net::SchemefulSite::IsSameSite(document_url,
+                                          manifest.migrate_to->id)) {
+        return "Manifest migrate_to id must be the same site as the document.";
+      }
+      if (manifest.migrate_to->install_url.is_valid() &&
+          !net::SchemefulSite::IsSameSite(document_url,
+                                          manifest.migrate_to->install_url)) {
+        return "Manifest migrate_to install_url must be the same site as the "
+               "document.";
+      }
     }
   }
   return std::nullopt;
@@ -146,8 +175,9 @@ blink::mojom::ManifestPtr ManifestManagerHost::ValidateAndMaybeOverrideManifest(
     blink::mojom::ManifestPtr manifest) {
   // Mojo bindings guarantee that `manifest` isn't null.
   CHECK(manifest);
+  const GURL& document_url = page().GetMainDocument().GetLastCommittedURL();
   if (std::optional<std::string> bad_message_error =
-          MaybeGetBadMessageStringForManifest(result, *manifest);
+          MaybeGetBadMessageStringForManifest(result, *manifest, document_url);
       bad_message_error.has_value()) {
     mojo::ReportBadMessage(*bad_message_error);
     return blink::mojom::Manifest::New();
@@ -159,6 +189,14 @@ blink::mojom::ManifestPtr ManifestManagerHost::ValidateAndMaybeOverrideManifest(
         &page().GetMainDocument(), manifest);
   }
   return manifest;
+}
+
+void ManifestManagerHost::
+    ValidateAndMaybeOverrideManifestForTesting(  // IN-TEST
+        blink::mojom::ManifestRequestResult result,
+        blink::mojom::ManifestPtr manifest) {
+  CHECK_IS_TEST();
+  ValidateAndMaybeOverrideManifest(result, std::move(manifest));
 }
 
 std::vector<ManifestManagerHost::GetManifestCallback>

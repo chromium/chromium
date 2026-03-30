@@ -21,6 +21,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/manifest/manifest_manager_host.h"
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_manifest_manager.h"
@@ -42,18 +43,20 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 
 namespace content {
 namespace {
 
 using ::testing::Contains;
 using ::testing::HasSubstr;
-
 
 class ManifestBrowserTest;
 
@@ -1056,6 +1059,132 @@ IN_PROC_BROWSER_TEST_F(ManifestFencedFrameBrowserTest,
   EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
   EXPECT_FALSE(blink::IsEmptyManifest(
       *manifest_future.Get<blink::mojom::ManifestPtr>()));
+}
+
+// Tests that if a compromised renderer bypasses the manifest parser and sends
+// cross-site migration data directly, the browser correctly rejects it and
+// kills the renderer with a bad message.
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossSiteBadMessage_MigrateToId) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site migrate_to.id triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Inject cross-origin ID to trigger bad message.
+  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
+  migrate_to->id = GURL("https://www.other_example.com/manifest");
+  migrate_to->install_url = GURL("https://www.other_example.com/install");
+  bad_manifest->migrate_to = std::move(migrate_to);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_to id must be the same site as the "
+                  "document."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossSiteBadMessage_MigrateToInstallUrl) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site migrate_to.install_url triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Inject cross-origin install_url to trigger bad message.
+  auto migrate_to = blink::mojom::ManifestMigrateTo::New();
+  migrate_to->id = embedded_test_server()->GetURL("/manifest/new");
+  migrate_to->install_url = GURL("https://www.other_example.com/install");
+  bad_manifest->migrate_to = std::move(migrate_to);
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_to install_url must be the same site as "
+                  "the document."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossSiteBadMessage_MigrateFromId) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site migrate_from.id triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Inject cross-origin ID to trigger bad message.
+  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
+  migrate_from->id = GURL("https://www.other_example.com/manifest");
+  bad_manifest->migrate_from.push_back(std::move(migrate_from));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_from id must be the same site as the "
+                  "document."));
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
+                       MigrateCrossSiteBadMessage_MigrateFromInstallUrl) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  // Test that a cross-site migrate_from.install_url triggers a bad message.
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  // Inject cross-origin install_url to trigger bad message.
+  auto migrate_from = blink::mojom::ManifestMigrateFrom::New();
+  migrate_from->id = embedded_test_server()->GetURL("/manifest/old");
+  migrate_from->install_url = GURL("https://www.other_example.com/install");
+  bad_manifest->migrate_from.push_back(std::move(migrate_from));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              ::testing::StartsWith(
+                  "Manifest migrate_from install_url must be the same site "
+                  "as the document."));
 }
 
 }  // namespace

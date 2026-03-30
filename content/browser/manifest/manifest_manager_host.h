@@ -10,6 +10,7 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/page_manifest_manager.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -24,9 +25,10 @@ namespace content {
 // associated with the main frame of the observed WebContents. It handles the
 // IPC messaging with the child process.
 // TODO(mlamouri): keep a cached version and a dirty bit here.
-class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
-                            public PageManifestManager,
-                            public blink::mojom::ManifestUrlChangeObserver {
+class CONTENT_EXPORT ManifestManagerHost
+    : public PageUserData<ManifestManagerHost>,
+      public PageManifestManager,
+      public blink::mojom::ManifestUrlChangeObserver {
  public:
   ManifestManagerHost(const ManifestManagerHost&) = delete;
   ManifestManagerHost& operator=(const ManifestManagerHost&) = delete;
@@ -54,6 +56,15 @@ class ManifestManagerHost : public PageUserData<ManifestManagerHost>,
   void BindObserver(
       mojo::PendingAssociatedReceiver<blink::mojom::ManifestUrlChangeObserver>
           receiver);
+
+  // Exposes internal manifest validation and override logic for tests. This
+  // allows testing the bad message termination (e.g., cross-site migration
+  // checks) natively without spinning up an end-to-end generic mojo pipe.
+  // Note: Callers testing mojo::ReportBadMessage usually need to setup a
+  // mojo::FakeMessageDispatchContext before calling this method.
+  void ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult result,
+      blink::mojom::ManifestPtr manifest);
 
  private:
   explicit ManifestManagerHost(Page& page);
