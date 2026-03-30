@@ -478,6 +478,22 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
+    public void testUserSignsInWhilePromoIsDisplayed() {
+        mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
+
+        launchActivity();
+
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+
+        // Sign in from somewhere else (this can happen in split-screen mode for example)
+        mSigninTestRule.addAccountThenSignin(TestAccounts.AADC_ADULT_ACCOUNT);
+
+        // Verify that the flow completion callback, which finishes the activity, is called.
+        ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
+    }
+
+    @Test
+    @MediumTest
     public void testAadcMinorAccount_refuseHistorySync() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()

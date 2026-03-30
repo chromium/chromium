@@ -697,11 +697,11 @@ public class FullscreenSigninMediator
     }
 
     /**
-     * Returns whether the user has already clicked either 'Continue' or 'Dismiss'.
-     * If the user has pressed either of the two buttons consecutive taps are ignored.
-     * See crbug.com/1294994 for details.
+     * Returns whether the user has already clicked either 'Continue' or 'Dismiss'. If the user has
+     * pressed either of the two buttons consecutive taps are ignored. See crbug.com/1294994 for
+     * details.
      */
-    private boolean isContinueOrDismissClicked() {
+    boolean isContinueOrDismissClicked() {
         // These property keys are set when continue or dismiss button is clicked respectively.
         return mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT)
                 || mModel.get(FullscreenSigninProperties.SHOW_SIGNIN_PROGRESS_SPINNER);

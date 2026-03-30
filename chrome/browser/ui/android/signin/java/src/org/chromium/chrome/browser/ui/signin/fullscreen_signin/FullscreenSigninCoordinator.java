@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.MainThread;
@@ -15,6 +17,10 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -25,7 +31,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** The coordinator handles the update and interaction of the fullscreen sign-in screen. */
 @NullMarked
 @MainThread
-public class FullscreenSigninCoordinator {
+public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     /** Delegate for the fullscreen signin MVC. */
     public interface Delegate {
         /** Notifies when the user clicked the "add account" button. */
@@ -103,6 +109,8 @@ public class FullscreenSigninCoordinator {
     }
 
     private final FullscreenSigninMediator mMediator;
+    private final Delegate mDelegate;
+    @Nullable private IdentityManager mIdentityManager;
 
     @Nullable
     private PropertyModelChangeProcessor<PropertyModel, FullscreenSigninView, PropertyKey>
@@ -124,20 +132,44 @@ public class FullscreenSigninCoordinator {
             PrivacyPreferencesManager privacyPreferencesManager,
             FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
+        mDelegate = delegate;
+        mDelegate.getProfileSupplier().onAvailable(this::onProfileAvailable);
         mMediator =
                 new FullscreenSigninMediator(
                         context,
                         modalDialogManager,
-                        delegate,
+                        mDelegate,
                         privacyPreferencesManager,
                         config,
                         accessPoint);
     }
 
+    private void onProfileAvailable(ProfileProvider result) {
+        mIdentityManager =
+                IdentityServicesProvider.get().getIdentityManager(result.getOriginalProfile());
+        assumeNonNull(mIdentityManager).addObserver(this);
+    }
+
     /** Releases the resources used by the coordinator. */
     public void destroy() {
         setView(null);
+        if (mIdentityManager != null) {
+            mIdentityManager.removeObserver(this);
+        }
         mMediator.destroy();
+    }
+
+    /** Implements {@link IdentityManager.Observer}. */
+    @Override
+    public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        if (mMediator.isContinueOrDismissClicked()) {
+            // If the sign-in occurred through this promo, then it is already being handled.
+            return;
+        }
+        if (eventDetails.getEventTypeFor(ConsentLevel.SIGNIN)
+                == PrimaryAccountChangeEvent.Type.SET) {
+            mDelegate.advanceToNextPage();
+        }
     }
 
     /**
