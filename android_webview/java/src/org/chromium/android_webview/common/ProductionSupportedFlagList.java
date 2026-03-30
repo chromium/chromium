@@ -1379,6 +1379,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_PASS_NULL_FAVICON_TO_ON_PAGE_STARTED,
                 "Passes a null favicon to the onPageStarted method."),
         Flag.baseFeature("PrefetchPrerenderIntegration"),
+        Flag.baseFeature(
+                GpuFeatures.AAPM_BLOCKS_WEB_GPU,
+                "Android Advanced Protection Mode (AAPM) blocks WebGPU for At-Risk Users."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.

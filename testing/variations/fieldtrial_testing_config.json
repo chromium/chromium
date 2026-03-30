@@ -2,6 +2,7 @@
     "AAPMBlocksWebGPU": [
         {
             "platforms": [
+                "android_webview",
                 "android"
             ],
             "experiments": [

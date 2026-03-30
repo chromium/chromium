@@ -72,7 +72,7 @@ public class AwAdvancedProtectionStatusManagerBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void onAdvancedProtectionOsSettingChanged();
     }
 }
