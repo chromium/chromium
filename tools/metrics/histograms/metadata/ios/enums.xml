@@ -858,6 +858,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Bottom Banner (e.g. Download Banner)"/>
   <int value="13" label="Keyboard"/>
   <int value="14" label="Gesture IPH"/>
+  <int value="15" label="Search Related Page"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h:FloatyUpdateSource) -->
@@ -935,6 +936,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiOSCameraAuthorizationInitialStatus) -->
+
+<!-- LINT.IfChange(IOSGeminiPageAvailability) -->
+
+<enum name="IOSGeminiPageAvailability">
+  <int value="0" label="Unavailable"/>
+  <int value="1" label="Available"/>
+  <int value="2" label="Search Result Page"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiPageAvailability) -->
 
 <!-- LINT.IfChange(IOSGeminiSessionCancellationReason) -->
 

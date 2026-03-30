@@ -731,6 +731,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   is_floaty_invoked_ = false;
   active_hiding_sources_.clear();
   is_hidden_by_keyboard_ = false;
+  elapsed_minimized_floaty_time_ = base::TimeTicks();
   // TODO(crbug.com/484045717): Refactor to merge these two provider calls.
   if (IsGeminiCopresenceEnabled()) {
     ios::provider::UpdateGeminiViewState(
@@ -757,6 +758,7 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
     case gemini::FloatyUpdateSource::ContextMenu:
     case gemini::FloatyUpdateSource::WebContextMenu:
     case gemini::FloatyUpdateSource::IneligibleSite:
+    case gemini::FloatyUpdateSource::SearchRelatedPage:
     case gemini::FloatyUpdateSource::ForcedFromQueryResponse:
     case gemini::FloatyUpdateSource::TabGrid:
     case gemini::FloatyUpdateSource::Banner:

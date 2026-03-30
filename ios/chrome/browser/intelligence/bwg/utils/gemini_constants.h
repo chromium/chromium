@@ -57,7 +57,8 @@ enum class FloatyUpdateSource {
   Banner = 12,
   Keyboard = 13,
   GestureIph = 14,
-  kMaxValue = GestureIph,
+  SearchRelatedPage = 15,
+  kMaxValue = SearchRelatedPage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFloatyUpdateSource)
 

@@ -79,6 +79,9 @@ extern const char kFloatyHiddenFromSourceHistogram[];
 // UMA histogram key for IOS.Gemini.Floaty.DismissedState.
 extern const char kFloatyDismissedStateHistogram[];
 
+// UMA histogram key for IOS.Gemini.PageAvailability.
+extern const char kGeminiPageAvailabilityHistogram[];
+
 // Enum for the IOS.Gemini.FRE.PromoAction and IOS.Gemini.FRE.ConsentAction
 // histograms.
 // LINT.IfChange(IOSGeminiFREAction)
@@ -95,6 +98,18 @@ void RecordFREPromoAction(IOSGeminiFREAction action);
 
 // Records the user action on the FRE Consent Screen.
 void RecordFREConsentAction(IOSGeminiFREAction action);
+
+// LINT.IfChange(IOSGeminiPageAvailability)
+enum class IOSGeminiPageAvailability {
+  kUnavailable = 0,
+  kAvailable = 1,
+  kSearchResultPage = 2,
+  kMaxValue = kSearchResultPage,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiPageAvailability)
+
+// Records the reason why Gemini is available or unavailable for a given page.
+void RecordGeminiPageAvailability(IOSGeminiPageAvailability reason);
 
 // Enum for tracking Gemini ineligibility reasons.
 // LINT.IfChange(IOSGeminiIneligibilityReason)

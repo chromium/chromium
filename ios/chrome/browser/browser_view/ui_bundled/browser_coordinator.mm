@@ -3558,15 +3558,27 @@ const char kChromeAppStoreUrl[] =
   // Don't show the floaty if the page is ineligible or the active WebState
   // isn't visible.
   // TODO(crbug.com/476145805): Move WebState related checks to tab helper.
-  bool eligibleSite = geminiTabHelper->IsGeminiAvailableForWebState() &&
-                      geminiService->IsProfileEligibleForGemini();
   bool isWebStateVisible = self.activeWebState->IsVisible();
-  if (!eligibleSite || !isWebStateVisible) {
-    // Reset presented sources before hiding the floaty due to an ineligible
-    // site.
+  if (!isWebStateVisible) {
     geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);
+    return;
+  }
+
+  bool eligibleSite = geminiTabHelper->IsGeminiAvailableForWebState() &&
+                      geminiService->IsProfileEligibleForGemini();
+  if (!eligibleSite) {
+    // Reset presented sources before hiding the floaty due to an ineligible
+    // site.
+    geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
+    gemini::FloatyUpdateSource hideSource =
+        gemini::FloatyUpdateSource::IneligibleSite;
+    if (geminiTabHelper->IsAimRelatedUrl(
+            self.activeWebState->GetVisibleURL())) {
+      hideSource = gemini::FloatyUpdateSource::SearchRelatedPage;
+    }
+    geminiBrowserAgent->HideFloatyIfInvoked(animated, hideSource);
     return;
   }
 

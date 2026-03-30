@@ -106,6 +106,7 @@ source_set("tab_helper") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/ui",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
