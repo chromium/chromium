@@ -4312,6 +4312,39 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
       PrerenderFinalStatus::kTabClosedWithoutUserGesture);
 }
 
+// Tests that trigger cancellation via BrowsingDataRemover (e.g.,
+// Clear-Site-Data) is handled safely without causing Use-After-Free due to
+// synchronous destruction of the WebContentsImpl during iteration.
+IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
+                       NewTabPrerenderCancellationByBrowsingDataRemover) {
+  const GURL initial_url = GetUrl("/empty.html");
+  const GURL prerendering_url = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  // Start prerendering.
+  PrerenderHostId host_id = prerender_helper()->AddPrerender(
+      prerendering_url, /*eagerness=*/std::nullopt, "_blank");
+  auto* prerender_web_contents =
+      test::PrerenderTestHelper::GetPrerenderWebContents(host_id);
+  WebContentsDestroyedWatcher wc_destroyed_watcher(prerender_web_contents);
+
+  // Trigger browsing data removal which will call CancelHostsByOriginFilter.
+  BrowsingDataRemover* remover =
+      web_contents_impl()->GetBrowserContext()->GetBrowsingDataRemover();
+  BrowsingDataRemoverCompletionObserver completion_observer(remover);
+  remover->RemoveAndReply(base::Time::Min(), base::Time::Max(),
+                          BrowsingDataRemover::DATA_TYPE_CACHE,
+                          BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
+                          &completion_observer);
+  completion_observer.BlockUntilCompletion();
+
+  // WebContents created for the new-tab trigger will be destroyed safely.
+  wc_destroyed_watcher.Wait();
+  EXPECT_FALSE(prerender_helper()->HasNewTabHandle(host_id));
+}
+
 // Tests that prerendering is cancelled if a network request for the
 // navigation results in an empty response with 404 status.
 IN_PROC_BROWSER_TEST_P(PrerenderTargetAgnosticBrowserTest,

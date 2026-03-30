@@ -49,8 +49,10 @@ class PrerenderNewTabHandle {
       const PreloadingPredictor& enacting_predictor,
       PreloadingConfidence confidence);
 
-  // Cancels prerendering started in `web_contents_`.
-  void CancelPrerendering(const PrerenderCancellationReason& reason);
+  // Cancels prerendering and schedules the destruction of the handle.
+  static void CancelPrerenderingAndDestroy(
+      std::unique_ptr<PrerenderNewTabHandle> handle,
+      const PrerenderCancellationReason& reason);
 
   // Passes the ownership of `web_contents_` to the caller if it's available for
   // new tab navigation with given params.
