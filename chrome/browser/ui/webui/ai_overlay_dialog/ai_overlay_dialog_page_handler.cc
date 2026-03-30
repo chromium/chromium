@@ -64,7 +64,7 @@ AiOverlayDialogPageHandler::~AiOverlayDialogPageHandler() = default;
 AiOverlayDialogPageHandler::AnnotationTask::AnnotationTask(
     mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> host_receiver,
     mojo::Remote<blink::mojom::AnnotationAgent> agent_remote,
-    base::OnceCallback<void(AiOverlayToolResult)> callback)
+    base::OnceCallback<void(ToolResult)> callback)
     : receiver_(this, std::move(host_receiver)),
       agent_remote_(std::move(agent_remote)),
       callback_(std::move(callback)) {}
@@ -81,9 +81,9 @@ void AiOverlayDialogPageHandler::AnnotationTask::DidFinishAttachment(
   if (attachment_result == blink::mojom::AttachmentResult::kSuccess) {
     agent_remote_->ScrollIntoView(/*applies_focus=*/true);
     if (callback_) {
-      base::DictValue result;
-      result.Set("match_count", 1);
-      std::move(callback_).Run(base::Value(std::move(result)));
+      ToolResponse response = ToolResponse::Silent();
+      response.data.Set("match_count", 1);
+      std::move(callback_).Run(std::move(response));
     }
   } else {
     if (callback_) {
@@ -181,14 +181,14 @@ void AiOverlayDialogPageHandler::ExecuteTool(const std::string& name,
   }
   const base::DictValue& args = parsed_args->GetDict();
 
-  auto result_callback = base::BindOnce(
-      [](ExecuteToolCallback callback, AiOverlayToolResult result) {
+  auto result_callback =
+      base::BindOnce([](ExecuteToolCallback callback, ToolResult result) {
         base::DictValue dict;
         if (result.has_value()) {
           dict.Set("success", true);
-          // If the tool returned a dictionary, merge its fields into the result
-          if (result.value().is_dict()) {
-            dict.Merge(std::move(result.value().GetDict()));
+          dict.Merge(std::move(result.value().data));
+          if (result.value().is_silent) {
+            dict.Set("scheduling", "SILENT");
           }
         } else {
           dict.Set("success", false);
@@ -279,7 +279,7 @@ void AiOverlayDialogPageHandler::ExecuteTool(const std::string& name,
 void AiOverlayDialogPageHandler::OpenUrl(
     const std::string& url_string,
     bool new_tab,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   GURL url(url_string);
   if (!url.is_valid()) {
     std::move(callback).Run(base::unexpected("Invalid URL"));
@@ -290,13 +290,13 @@ void AiOverlayDialogPageHandler::OpenUrl(
       new_tab ? WindowOpenDisposition::NEW_FOREGROUND_TAB
               : WindowOpenDisposition::CURRENT_TAB;
   browser_->OpenGURL(url, disposition);
-  std::move(callback).Run(base::Value());
+  std::move(callback).Run(ToolResponse::Silent());
 }
 
 void AiOverlayDialogPageHandler::PerformSearch(
     const std::string& query,
     bool new_tab,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(browser_->GetProfile());
   if (!template_url_service) {
@@ -319,7 +319,7 @@ void AiOverlayDialogPageHandler::PerformSearch(
 
 void AiOverlayDialogPageHandler::SwitchTab(
     const std::string& query,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   std::string query_lower = base::ToLowerASCII(query);
   TabStripModel* tab_strip_model = browser_->GetTabStripModel();
   for (int i = 0; i < tab_strip_model->count(); ++i) {
@@ -338,9 +338,9 @@ void AiOverlayDialogPageHandler::SwitchTab(
       matched_tab.Set("tab_id",
                       sessions::SessionTabHelper::IdForTab(contents).id());
 
-      base::DictValue response;
-      response.Set("matchedTab", std::move(matched_tab));
-      std::move(callback).Run(base::Value(std::move(response)));
+      ToolResponse response = ToolResponse::Silent();
+      response.data.Set("matchedTab", std::move(matched_tab));
+      std::move(callback).Run(std::move(response));
       return;
     }
   }
@@ -348,46 +348,46 @@ void AiOverlayDialogPageHandler::SwitchTab(
 }
 
 void AiOverlayDialogPageHandler::CloseCurrentTab(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   if (browser_->GetTabStripModel()->count() > 0) {
     browser_->GetTabStripModel()->CloseSelectedTabs();
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
   } else {
     std::move(callback).Run(base::unexpected("No active tab to close"));
   }
 }
 
 void AiOverlayDialogPageHandler::GoBack(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoBack()) {
     contents->GetController().GoBack();
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot go back"));
 }
 
 void AiOverlayDialogPageHandler::GoForward(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents && contents->GetController().CanGoForward()) {
     contents->GetController().GoForward();
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot go forward"));
 }
 
 void AiOverlayDialogPageHandler::ReloadPage(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (contents) {
     contents->GetController().Reload(content::ReloadType::NORMAL, true);
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
     return;
   }
   std::move(callback).Run(base::unexpected("Cannot reload page"));
@@ -395,7 +395,7 @@ void AiOverlayDialogPageHandler::ReloadPage(
 
 void AiOverlayDialogPageHandler::FindAndHighlight(
     const std::string& query,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -434,7 +434,7 @@ void AiOverlayDialogPageHandler::FindAndHighlight(
 void AiOverlayDialogPageHandler::Scroll(
     const std::string& direction,
     double magnitude,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents || !contents->GetRenderWidgetHostView()) {
@@ -477,11 +477,11 @@ void AiOverlayDialogPageHandler::Scroll(
       blink::WebInputEvent::DispatchType::kEventNonBlocking;
   widget_host->ForwardWheelEvent(wheel_event);
 
-  std::move(callback).Run(base::Value());
+  std::move(callback).Run(ToolResponse::Silent());
 }
 
 void AiOverlayDialogPageHandler::PlayVideo(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -493,14 +493,14 @@ void AiOverlayDialogPageHandler::PlayVideo(
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
     media_session->Resume(content::MediaSession::SuspendType::kUI);
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
 }
 
 void AiOverlayDialogPageHandler::PauseVideo(
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -512,7 +512,7 @@ void AiOverlayDialogPageHandler::PauseVideo(
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
     media_session->Suspend(content::MediaSession::SuspendType::kUI);
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(ToolResponse::Silent());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
   }
@@ -547,7 +547,7 @@ std::optional<base::TimeDelta> ParseTimecode(const std::string& timecode) {
 
 void AiOverlayDialogPageHandler::SeekToTimestamp(
     const std::string& timecode,
-    base::OnceCallback<void(AiOverlayToolResult)> callback) {
+    base::OnceCallback<void(ToolResult)> callback) {
   content::WebContents* contents =
       browser_->GetTabStripModel()->GetActiveWebContents();
   if (!contents) {
@@ -562,7 +562,7 @@ void AiOverlayDialogPageHandler::SeekToTimestamp(
     if (seek_time.has_value() &&
         (seek_time.value().is_positive() || seek_time.value().is_zero())) {
       media_session->SeekTo(seek_time.value());
-      std::move(callback).Run(base::Value());
+      std::move(callback).Run(ToolResponse::Silent());
     } else {
       std::move(callback).Run(base::unexpected("Invalid timecode"));
     }

@@ -32,6 +32,7 @@ export interface FunctionResponse {
   id: string;
   name: string;
   response: any;
+  scheduling?: string;
 }
 
 interface SetupMessage {
@@ -231,6 +232,7 @@ export class ApiSession {
                                            id: response.id,
                                            name: response.name,
                                            response: response.response,
+                                           scheduling: response.scheduling,
                                          })),
       },
     };

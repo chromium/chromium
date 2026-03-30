@@ -171,10 +171,16 @@ export class Conversation implements ApiSessionDelegate {
       const {name, args, id} = call;
       let result: any = {success: false};
 
+      let scheduling: string|undefined = undefined;
+
       try {
         const jsonArgs = JSON.stringify(args);
         const {jsonResult} = await this.pageHandler.executeTool(name, jsonArgs);
         result = JSON.parse(jsonResult);
+        if (result.scheduling) {
+          scheduling = result.scheduling;
+          delete result.scheduling;
+        }
       } catch (e) {
         console.error(`Error executing tool ${name}:`, e);
       }
@@ -183,6 +189,7 @@ export class Conversation implements ApiSessionDelegate {
         name,
         response: result,
         id,
+        scheduling,
       });
     }
 
