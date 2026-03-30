@@ -317,7 +317,7 @@ void TabSearchPageHandler::OpenRecentlyClosedEntry(int32_t session_id) {
 
   tab_restore_service->RestoreEntryById(
       BrowserLiveTabContext::FindContextForWebContents(
-          browser_->tab_strip_model()->GetActiveWebContents()),
+          browser_->GetActiveTabInterface()->GetContents()),
       SessionID::FromSerializedValue(session_id),
       WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
