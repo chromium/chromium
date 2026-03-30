@@ -53,6 +53,7 @@
 #include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
@@ -340,9 +341,11 @@ void RequestRecordTimeToVisible(RenderFrameHostImpl* rfh,
   // hidden.
   if (rfh->delegate()->GetVisibility() != Visibility::HIDDEN) {
     rfh->GetRenderWidgetHost()->GetVisibleTimeRequestTrigger().UpdateRequest(
-        navigation_start, /*destination_is_loaded=*/false,
-        /*show_reason_tab_switching=*/false,
-        /*show_reason_bfcache_restore=*/true);
+        blink::RecordContentToVisibleTimeRequest{
+            .event_start_time = navigation_start,
+            .destination_is_loaded = false,
+            .show_reason_tab_switching = false,
+            .show_reason_bfcache_restore = true});
   }
 }
 

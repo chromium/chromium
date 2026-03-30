@@ -197,6 +197,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -12266,9 +12267,10 @@ void WebContentsImpl::SetV8CompileHints(base::ReadOnlySharedMemoryRegion data) {
 void WebContentsImpl::SetTabSwitchStartTime(base::TimeTicks start_time,
                                             bool destination_is_loaded) {
   GetVisibleTimeRequestTrigger().UpdateRequest(
-      start_time, destination_is_loaded,
-      /*show_reason_tab_switching=*/true,
-      /*show_reason_bfcache_restore=*/false);
+      blink::RecordContentToVisibleTimeRequest{
+          .event_start_time = start_time,
+          .destination_is_loaded = destination_is_loaded,
+          .show_reason_tab_switching = true});
 }
 
 bool WebContentsImpl::IsInPreviewMode() const {

@@ -64,6 +64,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom-shared.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/display/display_switches.h"
@@ -1620,8 +1621,11 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
     GetRenderWidgetHostView()
         ->host()
         ->GetVisibleTimeRequestTrigger()
-        .UpdateRequest(base::TimeTicks::Now(), /*destination_is_loaded=*/true,
-                       show_reason_tab_switching, show_reason_bfcache_restore);
+        .UpdateRequest(blink::RecordContentToVisibleTimeRequest{
+            .event_start_time = base::TimeTicks::Now(),
+            .destination_is_loaded = true,
+            .show_reason_tab_switching = show_reason_tab_switching,
+            .show_reason_bfcache_restore = show_reason_bfcache_restore});
   }
 
   void ExpectPresentationFeedback(TabSwitchResult expected_result) {

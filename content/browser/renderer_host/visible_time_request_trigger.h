@@ -10,10 +10,6 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
-namespace base {
-class TimeTicks;
-}  // namespace base
-
 namespace content {
 
 // Records the time of an event that will make a WebContents become visible,
@@ -41,20 +37,9 @@ class CONTENT_EXPORT VisibleTimeRequestTrigger {
   // Set the last time a content to visible event starts to be processed for
   // this WebContents. Will merge with the previous value if it exists (which
   // means that several events may happen at the same time and must be
-  // individually reported). |start_time| marks event start time to calculate
-  // the duration later.
-  //
-  // |destination_is_loaded| is true when
-  //   ResourceCoordinatorTabHelper::IsLoaded() is true for the new tab
-  //   contents. It is only used when |show_reason_tab_switching| is true.
-  // |show_reason_tab_switching| is true when tab switch event should be
-  //   reported.
-  // |show_reason_bfcache_restore| is true when page restored from bfcache event
-  //   should be reported.
-  void UpdateRequest(base::TimeTicks start_time,
-                     bool destination_is_loaded,
-                     bool show_reason_tab_switching,
-                     bool show_reason_bfcache_restore);
+  // individually reported). `new_request.event_start_time` marks event start
+  // time to calculate the duration later.
+  void UpdateRequest(blink::RecordContentToVisibleTimeRequest new_request);
 
   // Returns the time set by UpdateRequest. If this was not preceded by a call
   // to UpdateRequest it will return nullopt. Calling this will reset
