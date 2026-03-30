@@ -213,7 +213,7 @@ class GlicButton : public GlicBaseShim<T>,
   // button when another nudge occupies the display space.
   //
   // Suppresses the default label on the glic button with a hide animation.
-  void Collapse() {
+  virtual void Collapse() {
     WidthState old_width_state = width_state_;
     if (width_state_ == WidthState::kCollapsed) {
       return;
@@ -233,7 +233,7 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   // Shows the default label on the glic button with a show animation.
-  void Expand() {
+  virtual void Expand() {
     // Update state.
     if (width_state_ != WidthState::kCollapsed) {
       return;
@@ -919,7 +919,9 @@ class GlicButton : public GlicBaseShim<T>,
   void ApplyTextAndFadeIn(std::optional<std::u16string> text,
                           base::TimeDelta delay,
                           base::TimeDelta duration) {
-    if (text) {
+    if (width_state_ == WidthState::kNudge && pending_text_) {
+      SetText(*pending_text_);
+    } else if (text) {
       SetText(*text);
     }
 
