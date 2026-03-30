@@ -51,8 +51,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabStripComboButton,
                                       kEverythingMenuUnpinMenuItem);
 
-TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
+TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser,
+                                         Context context)
     : browser_(browser),
+      context_(context),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   start_button_animation_.SetSlideDuration(kAnimationDuration);
   end_button_animation_.SetSlideDuration(kAnimationDuration);
@@ -63,26 +65,29 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
           LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding)));
 
   std::unique_ptr<TabStripFlatEdgeButton> start_button;
-  if (projects_panel::IsProjectsPanelVisibleForProfile(browser->GetProfile())) {
-    start_button = CreateFlatEdgeButtonFor(
-        kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
-    projects_panel_button_subscription_ =
-        start_button->RegisterWillInvokeActionCallback(base::BindRepeating(
-            &TabStripComboButton::OnProjectsPanelButtonPressed,
-            base::Unretained(this)));
-  } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
-                 browser_->GetProfile())) {
-    start_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu,
-                                           kSavedTabGroupButtonElementId);
+  if (context_ == Context::kVerticalTabStrip) {
+    if (projects_panel::IsProjectsPanelVisibleForProfile(
+            browser->GetProfile())) {
+      start_button = CreateFlatEdgeButtonFor(
+          kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
+      projects_panel_button_subscription_ =
+          start_button->RegisterWillInvokeActionCallback(base::BindRepeating(
+              &TabStripComboButton::OnProjectsPanelButtonPressed,
+              base::Unretained(this)));
+    } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+                   browser_->GetProfile())) {
+      start_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu,
+                                             kSavedTabGroupButtonElementId);
 
-    auto controller = std::make_unique<views::MenuButtonController>(
-        start_button.get(),
-        base::BindRepeating(&TabStripComboButton::ShowEverythingMenu,
-                            base::Unretained(this)),
-        std::make_unique<views::Button::DefaultButtonControllerDelegate>(
-            start_button.get()));
-    everything_menu_controller_ = controller.get();
-    start_button->SetButtonController(std::move(controller));
+      auto controller = std::make_unique<views::MenuButtonController>(
+          start_button.get(),
+          base::BindRepeating(&TabStripComboButton::ShowEverythingMenu,
+                              base::Unretained(this)),
+          std::make_unique<views::Button::DefaultButtonControllerDelegate>(
+              start_button.get()));
+      everything_menu_controller_ = controller.get();
+      start_button->SetButtonController(std::move(controller));
+    }
   }
 
   if (start_button) {
@@ -140,8 +145,11 @@ void TabStripComboButton::UpdateButtonsVisibility() {
       tab_groups::IsProjectsPanelFeatureEnabled()
           ? prefs::kProjectsPanelPinnedToTabstrip
           : prefs::kEverythingMenuPinnedToTabstrip;
-  update_button_visibility(GetStartButtonActionItem(), start_button_animation_,
-                           prefs->GetBoolean(pref_name));
+  if (start_button_) {
+    update_button_visibility(GetStartButtonActionItem(),
+                             start_button_animation_,
+                             prefs->GetBoolean(pref_name));
+  }
 
   update_button_visibility(
       GetEndButtonActionItem(), end_button_animation_,
@@ -445,7 +453,7 @@ void TabStripComboButton::AnimationProgressed(const gfx::Animation* animation) {
 void TabStripComboButton::AnimationEnded(const gfx::Animation* animation) {
   AnimationProgressed(animation);
   if (animation->GetCurrentValue() == 0.0) {
-    if (animation == &start_button_animation_) {
+    if (start_button_ && animation == &start_button_animation_) {
       GetStartButtonActionItem()->SetVisible(false);
     } else if (animation == &end_button_animation_) {
       GetEndButtonActionItem()->SetVisible(false);

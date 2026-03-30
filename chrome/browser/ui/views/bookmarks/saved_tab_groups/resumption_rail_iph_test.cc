@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -76,23 +77,23 @@ class MockProjectsPanelStateController : public ProjectsPanelStateController {
   raw_ptr<bool> can_show_gemini_;
 };
 
-class ResumptionRailPromoTest : public InteractiveFeaturePromoTest {
+class ResumptionRailPromoTest
+    : public VerticalTabsBrowserTestMixin<InteractiveFeaturePromoTest> {
  public:
   ResumptionRailPromoTest()
-      : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
+      : VerticalTabsBrowserTestMixin(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHResumptionRailFeature,
-             feature_engagement::kIPHReadingListDiscoveryFeature})) {
-    feature_list_.InitWithFeatures(
-        {feature_engagement::kIPHResumptionRailFeature,
-         feature_engagement::kIPHReadingListDiscoveryFeature,
-         tab_groups::kProjectsPanel, tabs::kHorizontalTabStripComboButton},
-        {});
-  }
+             feature_engagement::kIPHReadingListDiscoveryFeature,
+             tab_groups::kProjectsPanel, tabs::kVerticalTabs})) {}
 
   ~ResumptionRailPromoTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveFeaturePromoTest::SetUpCommandLine(command_line);
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
-    InteractiveFeaturePromoTest::SetUpInProcessBrowserTestFixture();
+    VerticalTabsBrowserTestMixin::SetUpInProcessBrowserTestFixture();
     projects_panel_override_ =
         BrowserWindowFeatures::GetUserDataFactoryForTesting()
             .AddOverrideForTesting<MockProjectsPanelStateController>(
@@ -109,11 +110,11 @@ class ResumptionRailPromoTest : public InteractiveFeaturePromoTest {
 
   void TearDownInProcessBrowserTestFixture() override {
     projects_panel_override_ = ui::UserDataFactory::ScopedOverride();
-    InteractiveFeaturePromoTest::TearDownInProcessBrowserTestFixture();
+    VerticalTabsBrowserTestMixin::TearDownInProcessBrowserTestFixture();
   }
 
   void SetUpOnMainThread() override {
-    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    VerticalTabsBrowserTestMixin::SetUpOnMainThread();
     browser()->profile()->GetPrefs()->SetBoolean(
         prefs::kProjectsPanelPinnedToTabstrip, true);
     ProjectsPanelView::disable_animations_for_testing();
@@ -155,7 +156,6 @@ class ResumptionRailPromoTest : public InteractiveFeaturePromoTest {
   bool can_show_gemini_ = false;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   ui::UserDataFactory::ScopedOverride projects_panel_override_;
 };
 
