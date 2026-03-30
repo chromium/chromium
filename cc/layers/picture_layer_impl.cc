@@ -1032,7 +1032,7 @@ void PictureLayerImpl::GetContentsResourceId(
   // over-large texture, this size will be smaller, mapping to the subset of the
   // texture being used.
   gfx::SizeF requested_tile_size =
-      gfx::SizeF(iter->tiling()->tiling_data()->tiling_rect().size());
+      gfx::SizeF(iter.CurrentTiling()->tiling_rect().size());
   DCHECK_LE(requested_tile_size.width(), resource_size->width());
   DCHECK_LE(requested_tile_size.height(), resource_size->height());
   *resource_uv_size =
