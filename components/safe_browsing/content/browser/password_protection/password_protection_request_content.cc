@@ -19,7 +19,6 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -39,9 +38,6 @@ namespace safe_browsing {
 namespace {
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-// The maximum time to wait for DOM features to be collected, in milliseconds.
-const int kDomFeatureTimeoutMs = 3000;
-
 void ExtractVisualFeaturesAndReplyOnUIThread(
     const SkBitmap& bitmap,
     base::OnceCallback<void(std::unique_ptr<VisualFeatures>)>
@@ -53,11 +49,6 @@ void ExtractVisualFeaturesAndReplyOnUIThread(
                                 std::move(visual_features)));
 }
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-void LogCSDCacheContainsImages(bool contains_images) {
-  base::UmaHistogramBoolean("PasswordProtection.CSDCacheContainsImages",
-                            contains_images);
-}
 
 void LogCSDCacheContainsDebuggingMetadata(
     LoginReputationClientRequest::DebuggingMetadata* debugging_metadata) {
@@ -191,149 +182,37 @@ bool PasswordProtectionRequestContent::IsVisualFeaturesEnabled() {
   return true;
 }
 
-void PasswordProtectionRequestContent::GetDomFeatures() {
+void PasswordProtectionRequestContent::AddDebuggingMetadata() {
+  // We first include the debugging metadata in the request_proto_ before
+  // checking if visual features can be added.
   ClientSideDetectionFeatureCache* feature_cache_map =
       ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
-  if (feature_cache_map) {
-    if (password_protection_service()->IsExtendedReporting() &&
-        trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
-      LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
-          feature_cache_map->GetDebuggingMetadataForURL(main_frame_url());
+  if (feature_cache_map &&
+      password_protection_service()->IsExtendedReporting() &&
+      trigger_type() == LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
+    LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+        feature_cache_map->GetDebuggingMetadataForURL(main_frame_url());
 
-      LogCSDCacheContainsDebuggingMetadata(debugging_metadata);
-      if (debugging_metadata) {
-        request_proto_->mutable_csd_debugging_metadata()->Swap(
-            debugging_metadata);
-        feature_cache_map->RemoveDebuggingMetadataForURL(main_frame_url());
+    LogCSDCacheContainsDebuggingMetadata(debugging_metadata);
+    if (debugging_metadata) {
+      request_proto_->mutable_csd_debugging_metadata()->Swap(
+          debugging_metadata);
+      feature_cache_map->RemoveDebuggingMetadataForURL(main_frame_url());
 
-        // We expect the debugging metadata size to be non-zero in most cases
-        // because we'd expect that at least the Preclassification checks
-        // would have ran if the tab has loaded the page.
+      // We expect the debugging metadata size to be non-zero in most cases
+      // because we'd expect that at least the Preclassification checks
+      // would have ran if the tab has loaded the page.
 
-        base::UmaHistogramCounts100(
-            "PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit",
-            feature_cache_map->GetTotalDebuggingMetadataMapEntriesSize());
-      }
-    }
-
-    ClientPhishingRequest* verdict =
-        feature_cache_map->GetVerdictForURL(main_frame_url());
-    if (verdict) {
-      dom_features_collection_complete_ = true;
-
-      LogCSDCacheContainsImages(
-          verdict->mutable_visual_features()->has_image());
-
-      base::UmaHistogramCounts100000(
-          "PasswordProtection.CSDCacheSizeAtHit2",
-          feature_cache_map->GetTotalVerdictEntriesSize());
-
-      ExtractClientPhishingRequestFeatures(*verdict);
-
-      if (!request_proto_->mutable_visual_features()->has_image() &&
-          IsVisualFeaturesEnabled()) {
-        MaybeCollectVisualFeatures();
-      } else {
-        SendRequest();
-      }
-      return;
-    } else {
-      LogCSDCacheContainsImages(false);
+      base::UmaHistogramCounts100(
+          "PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit",
+          feature_cache_map->GetTotalDebuggingMetadataMapEntriesSize());
     }
   }
 
-  phishing_detector_.reset();
-
-  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
-  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector_);
-
-  dom_features_collection_complete_ = false;
-  phishing_detector_->StartPhishingDetection(
-      main_frame_url(),
-      safe_browsing::mojom::ClientSideDetectionType::kPasswordProtection,
-      base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
-                          weak_factory_.GetWeakPtr()));
-
-  content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
-              weak_factory_.GetWeakPtr()),
-          base::Milliseconds(kDomFeatureTimeoutMs));
-}
-
-void PasswordProtectionRequestContent::OnGetDomFeatures(
-    mojom::PhishingDetectorResult result,
-    std::optional<mojo_base::ProtoWrapper> verdict) {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (dom_features_collection_complete_)
-    return;
-
-  if (result != mojom::PhishingDetectorResult::SUCCESS &&
-      result != mojom::PhishingDetectorResult::INVALID_SCORE)
-    return;
-
-  base::UmaHistogramBoolean(
-      "PasswordProtection.SuccessfulPhishingDetectionWithinTimeout", true);
-
-  dom_features_collection_complete_ = true;
-  if (verdict.has_value()) {
-    auto dom_features_request = verdict->As<ClientPhishingRequest>();
-    if (dom_features_request.has_value()) {
-      ExtractClientPhishingRequestFeatures(
-          std::move(dom_features_request.value()));
-    }
-  }
-
-  if (!request_proto_->mutable_visual_features()->has_image() &&
-      IsVisualFeaturesEnabled()) {
+  if (IsVisualFeaturesEnabled()) {
     MaybeCollectVisualFeatures();
   } else {
     SendRequest();
-  }
-}
-
-void PasswordProtectionRequestContent::ExtractClientPhishingRequestFeatures(
-    ClientPhishingRequest verdict) {
-  for (const ClientPhishingRequest::Feature& feature : verdict.feature_map()) {
-    DomFeatures::Feature* new_feature =
-        request_proto_->mutable_dom_features()->add_feature_map();
-    new_feature->set_name(feature.name());
-    new_feature->set_value(feature.value());
-  }
-
-  for (const ClientPhishingRequest::Feature& feature :
-       verdict.non_model_feature_map()) {
-    DomFeatures::Feature* new_feature =
-        request_proto_->mutable_dom_features()->add_feature_map();
-    new_feature->set_name(feature.name());
-    new_feature->set_value(feature.value());
-  }
-
-  request_proto_->mutable_dom_features()->mutable_shingle_hashes()->Swap(
-      verdict.mutable_shingle_hashes());
-  request_proto_->mutable_dom_features()->set_model_version(
-      verdict.model_version());
-
-  if (ShouldCollectVisualFeatures() && verdict.mutable_visual_features()) {
-    request_proto_->mutable_visual_features()->Swap(
-        verdict.mutable_visual_features());
-  }
-}
-
-void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (!dom_features_collection_complete_) {
-    dom_features_collection_complete_ = true;
-    base::UmaHistogramBoolean(
-        "PasswordProtection.SuccessfulPhishingDetectionWithinTimeout", false);
-    if (!request_proto_->mutable_visual_features()->has_image() &&
-        IsVisualFeaturesEnabled()) {
-      MaybeCollectVisualFeatures();
-    } else {
-      SendRequest();
-    }
   }
 }
 

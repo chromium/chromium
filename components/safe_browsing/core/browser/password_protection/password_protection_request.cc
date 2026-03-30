@@ -291,7 +291,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (IsClientSideDetectionEnabled()) {
-    GetDomFeatures();
+    AddDebuggingMetadata();
   } else if (IsVisualFeaturesEnabled()) {
     MaybeCollectVisualFeatures();
   } else {

@@ -24,9 +24,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/base/proto_wrapper_passkeys.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
@@ -131,17 +129,8 @@ class PasswordProtectionRequestContent final
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool IsClientSideDetectionEnabled() override;
 
-  // Extracts DOM features.
-  void GetDomFeatures() override;
-
-  // Called when the DOM feature extraction is complete.
-  void OnGetDomFeatures(mojom::PhishingDetectorResult result,
-                        std::optional<mojo_base::ProtoWrapper> verdict);
-
-  void ExtractClientPhishingRequestFeatures(ClientPhishingRequest verdict);
-
-  // Called when the DOM feature extraction times out.
-  void OnGetDomFeatureTimeout();
+  // Add debugging metadata from CSD feature cache.
+  void AddDebuggingMetadata() override;
 
   bool IsVisualFeaturesEnabled() override;
 
@@ -184,14 +173,6 @@ class PasswordProtectionRequestContent final
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // When we start extracting visual features.
   base::TimeTicks visual_feature_start_time_;
-
-  // The Mojo pipe used for extracting DOM features from the renderer.
-  mojo::AssociatedRemote<safe_browsing::mojom::PhishingDetector>
-      phishing_detector_;
-
-  // Whether the DOM features collection is finished, either by timeout or by
-  // successfully gathering the features.
-  bool dom_features_collection_complete_;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
   base::WeakPtrFactory<PasswordProtectionRequestContent> weak_factory_{this};

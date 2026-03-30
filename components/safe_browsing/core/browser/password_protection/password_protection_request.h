@@ -211,8 +211,8 @@ class PasswordProtectionRequest
   // Returns whether client side detection feature collection is available.
   virtual bool IsClientSideDetectionEnabled();
 
-  // Extracts DOM features.
-  virtual void GetDomFeatures() = 0;
+  // Add debugging metadata from CSD feature cache.
+  virtual void AddDebuggingMetadata() = 0;
 
   // Returns whether visual feature collection is available.
   virtual bool IsVisualFeaturesEnabled();

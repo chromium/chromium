@@ -247,13 +247,6 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
                                            receive_time);
   }
 
-  void InitTestApi(content::RenderFrameHost* rfh) {
-    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-        mojom::PhishingDetector::Name_,
-        base::BindRepeating(&TestPhishingDetector::BindReceiver,
-                            base::Unretained(&test_phishing_detector_)));
-  }
-
   LoginReputationClientResponse::VerdictType GetCachedVerdict(
       const GURL& url,
       LoginReputationClientRequest::TriggerType trigger_type,
@@ -271,15 +264,10 @@ class TestPasswordProtectionService : public MockPasswordProtectionService {
     return cache_manager_->GetStoredPhishGuardVerdictCount(trigger_type);
   }
 
-  void SetDomFeatureCollectionTimeout(bool should_timeout) {
-    test_phishing_detector_.set_should_timeout(should_timeout);
-  }
-
  private:
   raw_ptr<PasswordProtectionRequest> latest_request_;
   base::RunLoop run_loop_;
   std::unique_ptr<LoginReputationClientResponse> latest_response_;
-  TestPhishingDetector test_phishing_detector_;
 
   // The TestPasswordProtectionService manages its own cache, rather than using
   // the global one.
@@ -312,8 +300,6 @@ class PasswordProtectionServiceTest : public ::testing::Test {
             content::WebContents::CreateParams(&browser_context_)));
     const std::vector<password_manager::MatchingReusedCredential>
         matching_reused_credentials = {};
-    content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
-    password_protection_service_->InitTestApi(rfh);
     // Delegate MaybeStartOtpPhishingRequest calls to the real implementation in
     // PasswordProtectionService to test the behavior.
     ON_CALL(*password_protection_service_,
@@ -536,8 +522,6 @@ class PasswordProtectionServiceBaseTest
     EXPECT_CALL(*database_manager_, CheckCsdAllowlistUrl(target_url, _))
         .WillRepeatedly(
             Return(match_allowlist ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH));
-    password_protection_service_->InitTestApi(
-        web_contents->GetPrimaryMainFrame());
     request_ = new PasswordProtectionRequestContent(
         web_contents, target_url, GURL(kFormActionUrl), GURL(kPasswordFrameUrl),
         web_contents->GetContentsMimeType(), kUserName,
@@ -1721,8 +1705,6 @@ TEST_P(PasswordProtectionServiceBaseTest, TestPingsForAboutBlank) {
   test_url_loader_factory_.AddResponse(url_.spec(),
                                        expected_response.SerializeAsString());
   std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  password_protection_service_->InitTestApi(
-      web_contents->GetPrimaryMainFrame());
   password_protection_service_->StartRequest(
       web_contents.get(), GURL("about:blank"), GURL(), GURL(), "username",
       PasswordType::SAVED_PASSWORD,
@@ -1787,55 +1769,6 @@ TEST_P(PasswordProtectionServiceBaseTest,
                     ->has_visual_features());
   }
 }
-
-TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesPopulated) {
-  LoginReputationClientResponse expected_response =
-      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").GetHost());
-  test_url_loader_factory_.AddResponse(url_.spec(),
-                                       expected_response.SerializeAsString());
-  EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
-      .Times(AnyNumber())
-      .WillOnce(Return(gfx::Size(1000, 1000)));
-  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  password_protection_service_->InitTestApi(
-      web_contents->GetPrimaryMainFrame());
-  password_protection_service_->StartRequest(
-      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
-      PasswordType::SAVED_PASSWORD,
-      {{"example.com", GURL("https://example.com/"), u"username"}},
-      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
-  base::RunLoop().RunUntilIdle();
-
-  password_protection_service_->WaitForResponse();
-  ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
-  EXPECT_TRUE(password_protection_service_->GetLatestRequestProto()
-                  ->has_dom_features());
-}
-
-TEST_P(PasswordProtectionServiceBaseTest, TestDomFeaturesTimeout) {
-  password_protection_service_->SetDomFeatureCollectionTimeout(true);
-  LoginReputationClientResponse expected_response =
-      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL("about:blank").GetHost());
-  test_url_loader_factory_.AddResponse(url_.spec(),
-                                       expected_response.SerializeAsString());
-  EXPECT_CALL(*password_protection_service_, GetCurrentContentAreaSize())
-      .Times(AnyNumber())
-      .WillOnce(Return(gfx::Size(1000, 1000)));
-  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  password_protection_service_->StartRequest(
-      web_contents.get(), GURL("about:blank"), GURL(), GURL(), kUserName,
-      PasswordType::SAVED_PASSWORD,
-      {{"example.com", GURL("https://example.com/"), u"username"}},
-      LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE, true);
-  task_environment_.RunUntilIdle();
-
-  password_protection_service_->WaitForResponse();
-  ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
-  EXPECT_FALSE(password_protection_service_->GetLatestRequestProto()
-                   ->has_dom_features());
-}
 #endif
 
 TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
@@ -1845,42 +1778,6 @@ TEST_P(PasswordProtectionServiceBaseTest, TestWebContentsDestroyed) {
                                            web_contents.get());
   web_contents.reset();
   task_environment_.RunUntilIdle();
-}
-
-TEST_P(PasswordProtectionServiceBaseTest, TestCSDVerdictInCache) {
-  LoginReputationClientResponse expected_response =
-      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
-                         base::Minutes(10), GURL(kTargetUrl).GetHost());
-  test_url_loader_factory_.AddResponse(url_.spec(),
-                                       expected_response.SerializeAsString());
-
-  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
-  std::unique_ptr<ClientPhishingRequest> verdict =
-      std::make_unique<ClientPhishingRequest>();
-
-  VisualFeatures* visual_feature = verdict->mutable_visual_features();
-  visual_feature->mutable_image()->set_height(1);
-  visual_feature->mutable_image()->set_width(2);
-
-  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents.get());
-  ClientSideDetectionFeatureCache::FromWebContents(web_contents.get())
-      ->InsertVerdict(GURL(kTargetUrl), std::move(verdict));
-
-  histograms_.ExpectTotalCount("PasswordProtection.CSDCacheContainsImages", 0);
-
-  InitializeAndStartPasswordEntryRequest(
-      PasswordType::PRIMARY_ACCOUNT_PASSWORD, {}, false /* match allowlist */,
-      100000 /* timeout in ms*/, web_contents.get());
-  password_protection_service_->WaitForResponse();
-
-  histograms_.ExpectTotalCount("PasswordProtection.CSDCacheContainsImages", 1);
-  EXPECT_THAT(
-      histograms_.GetAllSamples("PasswordProtection.CSDCacheContainsImages"),
-      ElementsAre(base::Bucket(1, 1)));
-
-  ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
-  EXPECT_TRUE(password_protection_service_->GetLatestRequestProto()
-                  ->has_visual_features());
 }
 
 TEST_P(PasswordProtectionServiceBaseTest, TestCSDDebuggingMetadataInCache) {

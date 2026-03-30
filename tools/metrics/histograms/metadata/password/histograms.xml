@@ -4567,17 +4567,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="PasswordProtection.CSDCacheContainsImages"
-    enum="BooleanPresent" expires_after="2026-08-02">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records whether the CSD Features cache had images present for a given URL
-    when using the cache from PhishGuard side. This histogram is used to
-    evaluate the effectiveness of the cache.
-  </summary>
-</histogram>
-
 <histogram name="PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit"
     units="bytes" expires_after="2027-03-02">
   <owner>andysjlim@chromium.org</owner>
@@ -4586,17 +4575,6 @@ useful for Chirp alerts (go/crca-alerts). -->
     Records the CSD Features debugging metadata cache size at the time when
     using the cache from PhishGuard side. This histogram is used to evaluate the
     memory usage of the cache.
-  </summary>
-</histogram>
-
-<histogram name="PasswordProtection.CSDCacheSizeAtHit2" units="bytes"
-    expires_after="2026-08-02">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the CSD Features verdict cache size at the time when using the cache
-    from PhishGuard side. This histogram is used to evaluate the memory usage of
-    the cache.
   </summary>
 </histogram>
 
@@ -4784,17 +4762,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     The decision of whether to skip trying to save a password hash happens when
     the profile picker runs.
-  </summary>
-</histogram>
-
-<histogram name="PasswordProtection.SuccessfulPhishingDetectionWithinTimeout"
-    enum="BooleanSuccess" expires_after="2027-02-10">
-  <owner>andysjlim@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs when a renderer process' phishing detection finishes or not within a
-    timeout when fetching client side detection images for password protection
-    pings.
   </summary>
 </histogram>
 
