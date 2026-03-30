@@ -239,9 +239,12 @@ void IndigoPageActionController::UpdateEntryPointsState() {
                              IDS_INDIGO_ENTRYPOINT_ANCHORED_MESSAGE_TEXT));
       page_action_controller_->ShowAnchoredMessage(kActionIndigo);
       indigo_service_->AnchoredMessageShown();
+      base::RecordAction(
+          base::UserMetricsAction("Indigo.PageAction.ShowAnchoredMessage"));
     } else {
       page_action_controller_->ShowSuggestionChip(kActionIndigo);
     }
+    base::RecordAction(base::UserMetricsAction("Indigo.PageAction.Show"));
   } else {
     page_action_controller_->Hide(kActionIndigo);
   }

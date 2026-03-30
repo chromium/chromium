@@ -16578,6 +16578,15 @@ should be able to be added at any place in this file.
   <description>The indigo page action was displayed.</description>
 </action>
 
+<action name="Indigo.PageAction.ShowAnchoredMessage" not_user_triggered="true">
+  <owner>jbroman@chromium.org</owner>
+  <owner>adithyas@chromium.org</owner>
+  <owner>baranerf@google.com</owner>
+  <description>
+    The indigo page action was displayed as an anchored message.
+  </description>
+</action>
+
 <action name="InfobarModalCancelButtonTap">
   <owner>thegreenfrog@chromium.org</owner>
   <description>Reported when the inforbar modal is cancelled.</description>
