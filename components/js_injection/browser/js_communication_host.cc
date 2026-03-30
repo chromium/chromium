@@ -210,6 +210,8 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
     // navigation notifications for it will be sent.
     // TODO(https://crbug.com/332809183): Guard this behind an origin trial
     // check later on.
+    // Changing this could break downstream apps, see
+    // https://crbug.com/494548175 for more details.
     has_navigation_listener_ = true;
     NavigationWebMessageSender::CreateForPageIfNeeded(
         web_contents()->GetPrimaryPage(), js_object_name, factory.get());
