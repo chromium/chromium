@@ -79,11 +79,10 @@ std::string ClipboardFormatType::WebCustomFormatName(int index) {
 // static
 ClipboardFormatType ClipboardFormatType::CustomPlatformType(
     std::string_view format_string) {
-  CHECK(base::IsStringASCII(format_string));
   // Once these formats are registered, `RegisterClipboardFormat` just returns
   // the `cfFormat` associated with it and doesn't register a new format.
   return ClipboardFormatType(
-      RegisterClipboardFormatChecked(base::ASCIIToWide(format_string).c_str()));
+      RegisterClipboardFormatChecked(base::UTF8ToWide(format_string).c_str()));
 }
 
 // static
