@@ -616,8 +616,11 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/check.h",
       "partition_alloc_base/compiler_specific.h",
       "partition_alloc_base/component_export.h",
+      "partition_alloc_base/containers/checked_iterators.h",
       "partition_alloc_base/containers/flat_map.h",
       "partition_alloc_base/containers/flat_tree.h",
+      "partition_alloc_base/containers/span.h",
+      "partition_alloc_base/containers/span_forward_internal.h",
       "partition_alloc_base/cpu.cc",
       "partition_alloc_base/cpu.h",
       "partition_alloc_base/cxx_wrapper/algorithm.h",
@@ -677,6 +680,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/time/time_override.h",
       "partition_alloc_base/types/same_as_any.h",
       "partition_alloc_base/types/strong_alias.h",
+      "partition_alloc_base/types/to_address.h",
       "partition_alloc_base/win/win_handle_types.h",
       "partition_alloc_base/win/win_handle_types_list.inc",
       "partition_alloc_base/win/windows_handle_util.h",
@@ -1001,7 +1005,10 @@ if (build_with_chromium) {
   source_set("unittests") {
     testonly = true
 
-    sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    sources = [
+      "partition_alloc_base/test/gtest_util.h",
+      "use_death_tests.h",
+    ]
     deps = []
 
     if (is_linux || is_chromeos || is_android) {
@@ -1024,6 +1031,7 @@ if (build_with_chromium) {
         "partition_alloc_base/bits_pa_unittest.cc",
         "partition_alloc_base/component_export_pa_unittest.cc",
         "partition_alloc_base/containers/flat_map_pa_unittest.cc",
+        "partition_alloc_base/containers/span_unittest.cc",
         "partition_alloc_base/cpu_pa_unittest.cc",
         "partition_alloc_base/logging_pa_unittest.cc",
         "partition_alloc_base/no_destructor_pa_unittest.cc",
@@ -1129,7 +1137,10 @@ if (build_with_chromium) {
   source_set("death_unittests") {
     testonly = true
 
-    sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    sources = [
+      "partition_alloc_base/test/gtest_util.h",
+      "use_death_tests.h",
+    ]
     deps = []
 
     if (is_linux || is_chromeos || is_android) {
@@ -1143,7 +1154,6 @@ if (build_with_chromium) {
         "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
         "partition_alloc_unittest.cc",
         "slot_start_unittest.cc",
-        "use_death_tests.h",
       ]
     }
 
