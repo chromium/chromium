@@ -60,9 +60,9 @@ float PagePopupClient::ScaledZoomFactor() {
 
 void PagePopupClient::AddJavaScriptString(const StringView& str,
                                           SegmentedBuffer& data) {
-  addLiteral("\"", data);
   StringBuilder builder;
-  builder.ReserveCapacity(str.length());
+  builder.ReserveCapacity(str.length() + 2);
+  builder.Append('"');
   for (unsigned i = 0; i < str.length(); ++i) {
     if (str[i] == '\r') {
       builder.Append("\\r");
@@ -82,8 +82,8 @@ void PagePopupClient::AddJavaScriptString(const StringView& str,
       builder.Append(str[i]);
     }
   }
-  AddString(builder.ToString(), data);
-  addLiteral("\"", data);
+  builder.Append('"');
+  AddString(builder, data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
