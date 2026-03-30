@@ -361,12 +361,9 @@ void SpeechRecognition::ResultRetrieved(
   // (3) new provisional results from |results|
 
   // |final_results_| = (1) + (2).
-  HeapVector<Member<SpeechRecognitionResult>> new_final_results;
-  new_final_results.ReserveInitialCapacity(aggregated_results.size() -
-                                           provisional_count);
-  new_final_results.Append(
-      aggregated_results.begin(),
-      UNSAFE_TODO(aggregated_results.end() - provisional_count));
+  HeapVector<Member<SpeechRecognitionResult>> new_final_results(
+      base::span(aggregated_results)
+          .first(aggregated_results.size() - provisional_count));
   final_results_ = std::move(new_final_results);
 
   // We dispatch an event with (1) + (2) + (3).
