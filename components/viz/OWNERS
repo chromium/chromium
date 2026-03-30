@@ -1,16 +1,14 @@
 # For patches touching specific topics, try the topic-specific OWNERS. For
 # patches that touch multiple areas or if you aren't sure, try the general
 # OWNERS at the bottom.
-#
-# Folks listed as unofficial can't do OWNERS approvals but are good people to
-# ask for informal reviews.
 
 # display / resources / quads / passes
 vmpstr@chromium.org
 
-# renderers (GL/Skia/Software)
+# renderers (Skia/Software)
 ccameron@chromium.org
 vasilyt@chromium.org
+hitawala@chromium.org
 
 # Skia renderer
 per-file skia_*=michaelludwig@google.com
