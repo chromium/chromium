@@ -76,7 +76,7 @@
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/scoped_mocked_url.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -126,6 +126,9 @@ constexpr size_t kJpegImageSubrangeWithoutDimensionsLength = 3;
 
 class ImageResourceTest : public testing::Test,
                           private ScopedMockOverlayScrollbars {
+ public:
+  ImageResourceTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   void TearDown() override {
     // Trigger a GC so MockFinishObserver gets destroyed and EXPECT_CALL gets
     // checked before the test ends.
@@ -133,7 +136,7 @@ class ImageResourceTest : public testing::Test,
         ThreadState::StackState::kNoHeapPointers);
   }
 
- private:
+ protected:
   test::TaskEnvironment task_environment_;
 };
 
@@ -566,7 +569,7 @@ TEST_F(ImageResourceTest, SVGImageWithSubresource) {
 
   // After asynchronous tasks are executed, the loading of SVG document is
   // completed and ImageNotifyFinished() is called.
-  test::RunPendingTasks();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(ResourceStatus::kCached,
             image_resource->GetContent()->GetContentStatus());
   EXPECT_EQ(2, observer->ImageChangedCount());
@@ -796,7 +799,7 @@ TEST_F(ImageResourceTest, Prune) {
 
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
 
-  blink::test::RunPendingTasks();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_FALSE(image_resource->GetContent()->GetImage()->IsNull());
   EXPECT_EQ(kJpegImageWidth, image_resource->GetContent()->GetImage()->width());
@@ -920,8 +923,7 @@ TEST_F(ImageResourceTest, PartialContentWithoutDimensions) {
 }
 
 TEST_F(ImageResourceTest, PeriodicFlushTest) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   std::unique_ptr<DummyPageHolder> page_holder =
       std::make_unique<DummyPageHolder>(
@@ -978,8 +980,8 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
   EXPECT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_EQ(1, observer->ImageChangedCount());
 
-  platform->RunForPeriodSeconds(1.);
-  platform->AdvanceClockSeconds(1.);
+  task_environment_.FastForwardBy(base::Seconds(1.));
+  task_environment_.AdvanceClock(base::Seconds(1.));
 
   // Sanity check that we created an image after appending |meaningfulImageSize|
   // bytes just once.
@@ -1002,13 +1004,13 @@ TEST_F(ImageResourceTest, PeriodicFlushTest) {
       ASSERT_TRUE(image_resource->GetContent()->HasImage());
       EXPECT_EQ(flush_count, observer->ImageChangedCount());
 
-      platform->RunForPeriodSeconds(0.2001);
+      task_environment_.FastForwardBy(base::Seconds(0.2001));
     }
   }
 
   // Increasing time by a large number only causes one extra flush.
-  platform->RunForPeriodSeconds(10.);
-  platform->AdvanceClockSeconds(10.);
+  task_environment_.FastForwardBy(base::Seconds(10.));
+  task_environment_.AdvanceClock(base::Seconds(10.));
   EXPECT_FALSE(image_resource->ErrorOccurred());
   ASSERT_TRUE(image_resource->GetContent()->HasImage());
   EXPECT_FALSE(image_resource->GetContent()->GetImage()->IsNull());

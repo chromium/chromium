@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -63,15 +63,14 @@ class ScrollbarThemeWithMockInvalidation : public ScrollbarThemeOverlayMock {
 
 class ScrollableAreaTest : public testing::Test,
                            public PaintTestConfigurations {
- private:
+ protected:
   test::TaskEnvironment task_environment_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ScrollableAreaTest);
 
 TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
@@ -82,8 +81,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCurrentPositionShouldBeSync) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollbarBackgroundAndThumbRepaint) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   ScrollbarThemeWithMockInvalidation theme;
   MockScrollableArea* scrollable_area =
@@ -124,8 +122,7 @@ TEST_P(ScrollableAreaTest, ScrollbarBackgroundAndThumbRepaint) {
 }
 
 TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   ScrollbarThemeWithMockInvalidation theme;
   MockScrollableArea* scrollable_area =
@@ -171,8 +168,7 @@ TEST_P(ScrollableAreaTest, InvalidatesNonCompositedScrollbarsWhenThumbMoves) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(100, 100));
@@ -184,8 +180,7 @@ TEST_P(ScrollableAreaTest, ScrollableAreaDidScroll) {
 }
 
 TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   MockAnimatingScrollableArea* scrollable_area =
       MockAnimatingScrollableArea::Create(ScrollOffset(0, 100));
   // Disable animations. Make sure an explicitly smooth programmatic scroll is
@@ -218,8 +213,7 @@ TEST_P(ScrollableAreaTest, ProgrammaticScrollRespectAnimatorEnabled) {
 // they don't appear on hover so users without a wheel can't scroll if they fade
 // out.
 TEST_P(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   ScopedMockOverlayScrollbars mock_overlay_scrollbars;
 
@@ -248,8 +242,7 @@ TEST_P(ScrollableAreaTest, PopupOverlayScrollbarShouldNotFadeOut) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
@@ -264,8 +257,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationCancel) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
@@ -278,8 +270,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnInstantScroll) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));
@@ -297,8 +288,7 @@ TEST_P(ScrollableAreaTest, ScrollAnimatorCallbackFiresOnAnimationFinish) {
 }
 
 TEST_P(ScrollableAreaTest, ScrollBackToInitialPosition) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* scrollable_area =
       MockScrollableArea::Create(ScrollOffset(0, 100));

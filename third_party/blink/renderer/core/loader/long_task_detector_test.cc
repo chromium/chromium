@@ -8,7 +8,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -51,11 +52,14 @@ class SelfUnregisteringObserver
 
 class LongTaskDetectorTest : public testing::Test {
  public:
+  LongTaskDetectorTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   // Public because it's executed on a task queue.
   void DummyTaskWithDuration(base::TimeDelta duration) {
-    dummy_task_start_time_ = platform_->test_task_runner()->NowTicks();
-    platform_->AdvanceClock(duration);
-    dummy_task_end_time_ = platform_->test_task_runner()->NowTicks();
+    dummy_task_start_time_ = task_environment_.NowTicks();
+    task_environment_.AdvanceClock(duration);
+    dummy_task_end_time_ = task_environment_.NowTicks();
   }
 
  protected:
@@ -63,21 +67,21 @@ class LongTaskDetectorTest : public testing::Test {
     // For some reason, platform needs to run for non-zero seconds before we
     // start posting tasks to it. Otherwise TaskTimeObservers don't get notified
     // of tasks.
-    platform_->RunForPeriodSeconds(1);
+    task_environment_.FastForwardBy(base::Seconds(1));
   }
   base::TimeTicks DummyTaskStartTime() { return dummy_task_start_time_; }
 
   base::TimeTicks DummyTaskEndTime() { return dummy_task_end_time_; }
 
   void SimulateTask(base::TimeDelta duration) {
-    platform_->GetMainThreadScheduler()->DefaultTaskRunner()->PostTask(
+    task_environment_.main_thread_scheduler()->DefaultTaskRunner()->PostTask(
         FROM_HERE, blink::BindOnce(&LongTaskDetectorTest::DummyTaskWithDuration,
                                    Unretained(this), duration));
-    platform_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  test::TaskEnvironment task_environment_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 
  private:
   base::TimeTicks dummy_task_start_time_;

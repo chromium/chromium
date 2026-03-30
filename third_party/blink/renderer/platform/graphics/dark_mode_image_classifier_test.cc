@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -46,8 +47,8 @@ class DarkModeImageClassifierTest : public testing::Test {
   }
 
  protected:
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  test::TaskEnvironmentWithMainThreadScheduler task_environment_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   std::unique_ptr<DarkModeImageClassifier> dark_mode_image_classifier_;
 };
 

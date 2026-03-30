@@ -2059,8 +2059,6 @@ static_library("test_support") {
     "testing/test_paint_artifact.h",
     "testing/testing_platform_support.cc",
     "testing/testing_platform_support.h",
-    "testing/testing_platform_support_with_mock_scheduler.cc",
-    "testing/testing_platform_support_with_mock_scheduler.h",
     "testing/unit_test_helpers.cc",
     "testing/unit_test_helpers.h",
     "testing/url_loader_mock.cc",

@@ -35,7 +35,6 @@
 
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -49,8 +48,9 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -114,8 +114,8 @@ class MemoryCacheTest : public testing::Test {
   };
 
   MemoryCacheTest()
-      : scoped_memory_cache_(
-            MakeGarbageCollected<MemoryCache>(platform_->test_task_runner())) {}
+      : scoped_memory_cache_(MakeGarbageCollected<MemoryCache>(
+            task_environment_.GetMainThreadTaskRunner())) {}
 
  protected:
   void SetUp() override {
@@ -129,12 +129,12 @@ class MemoryCacheTest : public testing::Test {
         nullptr /* back_forward_cache_loader_helper */));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  test::TaskEnvironmentWithMainThreadScheduler task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   Persistent<ResourceFetcher> fetcher_;
   Persistent<MockContextLifecycleNotifier> lifecycle_notifier_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   ScopedMemoryCacheForTesting scoped_memory_cache_;
 
  private:
@@ -363,8 +363,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ResourceTimeout) {
 
   (*MemoryCache::Get()->strong_references_.begin())
       ->memory_cache_last_accessed_ = base::TimeTicks();
-  platform_->test_task_runner()->FastForwardBy(base::Minutes(5) +
-                                               base::Seconds(1));
+  task_environment_.FastForwardBy(base::Minutes(5) + base::Seconds(1));
   ASSERT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 

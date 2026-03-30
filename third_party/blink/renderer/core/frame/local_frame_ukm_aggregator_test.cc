@@ -20,7 +20,8 @@
 #include "third_party/blink/renderer/core/testing/intersection_observer_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
 
@@ -677,6 +678,10 @@ TEST_F(LocalFrameUkmAggregatorTest, IntersectionObserverSamplePeriod) {
 
 class LocalFrameUkmAggregatorSimTest : public SimTest {
  protected:
+  explicit LocalFrameUkmAggregatorSimTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::SYSTEM_TIME)
+      : SimTest(time_source) {}
   LocalFrameUkmAggregator& local_root_aggregator() {
     return *LocalFrameRoot().GetFrame()->View()->GetUkmAggregator();
   }
@@ -1044,6 +1049,10 @@ class LocalFrameUkmAggregatorSyncScrollTest
     return ::testing::get<2>(config);
   }
 
+  LocalFrameUkmAggregatorSyncScrollTest()
+      : LocalFrameUkmAggregatorSimTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   bool ShouldTriggerSyncScrollHeuristic() const {
     // We would only attempt to synchronize scrolling if we had a scroll handler
     // and, provided this is the case, we look for both mutating a property and
@@ -1125,8 +1134,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
     NOTREACHED();
   }
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
@@ -1166,7 +1174,7 @@ TEST_P(LocalFrameUkmAggregatorSyncScrollTest, SyncScrollHeuristicRAFSetTop) {
   main_resource.Complete(html.c_str());
 
   // Wait until the script has had time to run.
-  platform_->RunForPeriodSeconds(5.);
+  task_environment().FastForwardBy(base::Seconds(5.));
   base::RunLoop().RunUntilIdle();
 
   // Do a pre-FCP frame.

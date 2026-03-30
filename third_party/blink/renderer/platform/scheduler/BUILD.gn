@@ -203,6 +203,8 @@ source_set("test_support") {
     "test/recording_task_time_observer.cc",
     "test/recording_task_time_observer.h",
     "test/renderer_scheduler_test_support.cc",
+    "test/task_environment.cc",
+    "test/task_environment.h",
     "test/web_scheduling_test_helper.cc",
     "test/web_scheduling_test_helper.h",
   ]

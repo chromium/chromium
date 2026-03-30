@@ -36,9 +36,10 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/noop_url_loader.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -82,8 +83,8 @@ class ResourceLoaderTest : public testing::Test {
     const FetchResponseType expectation;
   };
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  test::TaskEnvironmentWithMainThreadScheduler task_environment_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
   const KURL foo_url_;
   const KURL bar_url_;
 
@@ -102,8 +103,8 @@ class ResourceLoaderTest : public testing::Test {
     CodeCacheHost* GetCodeCacheHost() override { return nullptr; }
   };
 
-  static scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
-    return base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner() {
+    return task_environment_.GetMainThreadTaskRunner();
   }
 
   ResourceFetcher* MakeResourceFetcher(
@@ -122,7 +123,6 @@ class ResourceLoaderTest : public testing::Test {
   MockUseCounter* UseCounter() const { return use_counter_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
   Persistent<MockUseCounter> use_counter_;
 };
 
@@ -177,8 +177,7 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_EQ(actually_written_bytes, 2u);
 
-  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
-      ->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   result =
       producer->WriteData(base::byte_span_from_cstring("llo"),
@@ -186,14 +185,12 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_EQ(actually_written_bytes, 3u);
 
-  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
-      ->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   producer.reset();
-  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
-      ->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
@@ -216,8 +213,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndNonStream) {
   FetchParameters params = FetchParameters::CreateForTest(std::move(request));
   Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
-  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
-      ->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // The resource has a parsed body.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
@@ -259,8 +255,6 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* fetcher = MakeResourceFetcher(properties, context);
-  scheduler::FakeTaskRunner* task_runner =
-      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
   // Fetch a data url as a stream on response.
   KURL url("data:text/plain,Hello%20World!");
@@ -271,7 +265,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   auto* raw_resource_client = MakeGarbageCollected<TestRawResourceClient>();
   Resource* resource = RawResource::Fetch(params, fetcher, raw_resource_client);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // It's still pending because we don't read the body yet.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
@@ -279,7 +273,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncAndStream) {
   // Read through the bytes consumer passed back from the ResourceLoader.
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
-  auto [result, body] = test_reader->Run(task_runner);
+  auto [result, body] = test_reader->Run();
   EXPECT_EQ(result, BytesConsumer::Result::kDone);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   EXPECT_EQ(std::string(body.data(), body.size()), "Hello World!");
@@ -302,8 +296,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_AsyncEmptyData) {
   FetchParameters params = FetchParameters::CreateForTest(std::move(request));
   Resource* resource = RawResource::Fetch(params, fetcher, nullptr);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
-  static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
-      ->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // It successfully finishes, and no buffer is propagated.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
@@ -357,8 +350,6 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* fetcher = MakeResourceFetcher(properties, context);
-  scheduler::FakeTaskRunner* task_runner =
-      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
   // Fetch a data url.
   KURL url("data:text/plain,Hello%20World!");
@@ -370,24 +361,24 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndNonStream) {
 
   // The resource should still be pending since it's deferred.
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending since it's deferred again.
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource should still be pending if it's unset and set in a single
   // task.
   fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
 
   // The resource has a parsed body.
   fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   scoped_refptr<const SharedBuffer> buffer = resource->ResourceBuffer();
   StringBuilder data;
@@ -401,8 +392,6 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   auto* properties = MakeGarbageCollected<TestResourceFetcherProperties>();
   FetchContext* context = MakeGarbageCollected<MockFetchContext>();
   auto* fetcher = MakeResourceFetcher(properties, context);
-  scheduler::FakeTaskRunner* task_runner =
-      static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get());
 
   // Fetch a data url as a stream on response.
   KURL url("data:text/plain,Hello%20World!");
@@ -414,7 +403,7 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   Resource* resource = RawResource::Fetch(params, fetcher, raw_resource_client);
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // It's still pending because the body should not provided yet.
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
@@ -423,14 +412,14 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   // The body should be provided since not deferring now, but it's still pending
   // since we haven't read the body yet.
   fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   EXPECT_TRUE(raw_resource_client->body());
 
   // The resource should still be pending when it's set to deferred again. No
   // body is provided when deferred.
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   base::span<const char> buffer;
   BytesConsumer::Result result = raw_resource_client->body()->BeginRead(buffer);
@@ -440,18 +429,18 @@ TEST_F(ResourceLoaderTest, LoadDataURL_DefersAsyncAndStream) {
   // task. No body is provided when deferred.
   fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
   fetcher->SetDefersLoading(LoaderFreezeMode::kStrict);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kPending);
   result = raw_resource_client->body()->BeginRead(buffer);
   EXPECT_EQ(BytesConsumer::Result::kShouldWait, result);
 
   // Read through the bytes consumer passed back from the ResourceLoader.
   fetcher->SetDefersLoading(LoaderFreezeMode::kNone);
-  task_runner->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   auto* test_reader = MakeGarbageCollected<BytesConsumerTestReader>(
       raw_resource_client->body());
   Vector<char> body;
-  std::tie(result, body) = test_reader->Run(task_runner);
+  std::tie(result, body) = test_reader->Run();
   EXPECT_EQ(resource->GetStatus(), ResourceStatus::kCached);
   EXPECT_EQ(std::string(body.data(), body.size()), "Hello World!");
 

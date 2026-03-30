@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
@@ -135,8 +135,7 @@ void SendEvent(Scrollbar* scrollbar,
 }
 
 TEST_P(ScrollbarThemeAuraTest, ButtonSizeHorizontal) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
   ScrollbarThemeAuraButtonOverride theme;
@@ -159,8 +158,7 @@ TEST_P(ScrollbarThemeAuraTest, ButtonSizeHorizontal) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, ButtonSizeVertical) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
   ScrollbarThemeAuraButtonOverride theme;
@@ -183,8 +181,7 @@ TEST_P(ScrollbarThemeAuraTest, ButtonSizeVertical) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, NoButtonsReturnsSize0) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
   ScrollbarThemeAuraButtonOverride theme;
@@ -201,8 +198,7 @@ TEST_P(ScrollbarThemeAuraTest, NoButtonsReturnsSize0) {
 }
 
 TEST_P(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   MockScrollableArea* mock_scrollable_area = CreateMockScrollableArea();
   ScrollbarThemeAuraButtonOverride theme;

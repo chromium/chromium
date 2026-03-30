@@ -50,7 +50,8 @@
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_image_decoder.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -100,10 +101,10 @@ void GenerateBitmapForPaintImage(cc::PaintImage paint_image,
 
 }  // namespace
 
-// Extends TestingPlatformSupportWithMockScheduler to add the ability to set the
+// Extends TestingPlatformSupport to add the ability to set the
 // return value of MaxDecodedImageBytes().
 class TestingPlatformSupportWithMaxDecodedBytes
-    : public TestingPlatformSupportWithMockScheduler {
+    : public TestingPlatformSupport {
  public:
   TestingPlatformSupportWithMaxDecodedBytes() {}
   TestingPlatformSupportWithMaxDecodedBytes(
@@ -268,6 +269,8 @@ class BitmapImageTest : public testing::Test {
  protected:
   Persistent<FakeImageObserver> image_observer_;
   scoped_refptr<BitmapImage> image_;
+  test::TaskEnvironmentWithMainThreadScheduler task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMaxDecodedBytes>
       platform_;
 };

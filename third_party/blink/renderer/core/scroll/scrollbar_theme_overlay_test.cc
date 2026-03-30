@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
@@ -16,13 +16,12 @@ using testing::NiceMock;
 using testing::Return;
 
 class ScrollbarThemeOverlayTest : public testing::Test {
- private:
+ protected:
   test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
 
   NiceMock<MockScrollableArea>* mock_scrollable_area =
       MakeGarbageCollected<NiceMock<MockScrollableArea>>(

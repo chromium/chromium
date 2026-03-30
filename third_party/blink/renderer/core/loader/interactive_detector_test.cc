@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -49,11 +49,12 @@ int NetworkActivityCheckerForTest::GetActiveConnections() {
 class InteractiveDetectorTest : public testing::Test,
                                 public ScopedMockOverlayScrollbars {
  public:
-  InteractiveDetectorTest() {
-    platform_->AdvanceClockSeconds(1);
+  InteractiveDetectorTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    task_environment_.AdvanceClock(base::Seconds(1));
 
-    auto test_task_runner = platform_->test_task_runner();
-    auto* tick_clock = test_task_runner->GetMockTickClock();
+    auto test_task_runner = task_environment_.GetMainThreadTaskRunner();
+    auto* tick_clock = task_environment_.GetMockTickClock();
     dummy_page_holder_ = std::make_unique<DummyPageHolder>(
         gfx::Size(), nullptr, nullptr, base::NullCallback(), tick_clock);
 
@@ -74,7 +75,7 @@ class InteractiveDetectorTest : public testing::Test,
 
   // Public because it's executed on a task queue.
   void DummyTaskWithDuration(double duration_seconds) {
-    platform_->AdvanceClockSeconds(duration_seconds);
+    task_environment_.AdvanceClock(base::Seconds(duration_seconds));
     dummy_task_end_time_ = Now();
   }
 
@@ -119,7 +120,7 @@ class InteractiveDetectorTest : public testing::Test,
 
   void RunTillTimestamp(base::TimeTicks target_time) {
     base::TimeTicks current_time = Now();
-    platform_->RunForPeriod(
+    task_environment_.FastForwardBy(
         std::max(base::TimeDelta(), target_time - current_time));
   }
 
@@ -145,7 +146,7 @@ class InteractiveDetectorTest : public testing::Test,
     detector_->OnResourceLoadEnd(load_finish_time);
   }
 
-  base::TimeTicks Now() { return platform_->test_task_runner()->NowTicks(); }
+  base::TimeTicks Now() { return task_environment_.NowTicks(); }
 
   base::TimeTicks GetInteractiveTime() { return detector_->interactive_time_; }
 
@@ -163,8 +164,7 @@ class InteractiveDetectorTest : public testing::Test,
   }
 
   test::TaskEnvironment task_environment_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 
  private:
   Persistent<InteractiveDetector> detector_;
@@ -507,10 +507,10 @@ TEST_F(InteractiveDetectorTest, TaskLongerThan5sBlocksTTI) {
       FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
                           Unretained(this), 6.0));
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // We should be able to detect TTI 5s after the end of long task.
-  platform_->RunForPeriodSeconds(5.1);
+  task_environment_.FastForwardBy(base::Seconds(5.1));
   EXPECT_EQ(GetInteractiveTime(), GetDummyTaskEndTime());
 }
 
@@ -526,11 +526,11 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
       FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
                           Unretained(this), 0.1));
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   base::TimeTicks long_task_1_end_time = GetDummyTaskEndTime();
   // We should be able to detect TTI 5s after the end of long task.
-  platform_->RunForPeriodSeconds(5.1);
+  task_environment_.FastForwardBy(base::Seconds(5.1));
   EXPECT_EQ(GetInteractiveTime(), long_task_1_end_time);
 
   // Long task 2.
@@ -538,9 +538,9 @@ TEST_F(InteractiveDetectorTest, LongTaskAfterTTIDoesNothing) {
       FROM_HERE, BindOnce(&InteractiveDetectorTest::DummyTaskWithDuration,
                           Unretained(this), 0.1));
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Wait 5 seconds to see if TTI time changes.
-  platform_->RunForPeriodSeconds(5.1);
+  task_environment_.FastForwardBy(base::Seconds(5.1));
   // TTI time should not change.
   EXPECT_EQ(GetInteractiveTime(), long_task_1_end_time);
 }

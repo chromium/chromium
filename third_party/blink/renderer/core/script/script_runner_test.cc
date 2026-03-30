@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/test/bind.h"
 #include "base/test/null_task_runner.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,8 +22,9 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
+#include "third_party/blink/renderer/platform/scheduler/test/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 using testing::InvokeWithoutArgs;
 using testing::ElementsAre;
@@ -97,7 +99,7 @@ class ScriptRunnerTest : public testing::Test {
     // Give ScriptRunner a task runner that platform_ will pump in
     // RunUntilIdle()/RunSingleTask().
     script_runner_->SetTaskRunnerForTesting(
-        platform_->GetMainThreadScheduler()->DefaultTaskRunner().get());
+        task_environment_.GetMainThreadTaskRunner().get());
     RuntimeCallStats::SetRuntimeCallStatsForTesting();
   }
   void TearDown() override {
@@ -122,8 +124,7 @@ class ScriptRunnerTest : public testing::Test {
   Persistent<Document> document_;
   Persistent<ScriptRunner> script_runner_;
   blink::Vector<int> order_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 TEST_F(ScriptRunnerTest, QueueSingleScript_Async) {
@@ -133,7 +134,7 @@ TEST_F(ScriptRunnerTest, QueueSingleScript_Async) {
   NotifyScriptReady(pending_script);
 
   EXPECT_CALL(*pending_script, ExecuteScriptBlock());
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ScriptRunnerTest, QueueSingleScript_InOrder) {
@@ -144,7 +145,7 @@ TEST_F(ScriptRunnerTest, QueueSingleScript_InOrder) {
 
   NotifyScriptReady(pending_script);
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ScriptRunnerTest, QueueMultipleScripts_InOrder) {
@@ -168,7 +169,7 @@ TEST_F(ScriptRunnerTest, QueueMultipleScripts_InOrder) {
 
   for (int i = 2; i >= 0; i--) {
     NotifyScriptReady(pending_scripts[i]);
-    platform_->RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   // But ensure the scripts were run in the expected order.
@@ -203,12 +204,12 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
   EXPECT_CALL(*pending_script5, ExecuteScriptBlock())
       .WillOnce(InvokeWithoutArgs([this] { order_.push_back(5); }));
 
-  platform_->RunSingleTask();
+  task_environment_.RunUntilIdle();
   document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kPaused);
   document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // In-order script 3 cannot run, since in-order script 2 just scheduled before
   // is not yet ready.
@@ -218,7 +219,7 @@ TEST_F(ScriptRunnerTest, QueueMixedScripts) {
 
   NotifyScriptReady(pending_script2);
   NotifyScriptReady(pending_script4);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // In-order script 3 can now run.
   EXPECT_THAT(order_, ElementsAre(1, 5, 2, 3, 4));
@@ -234,32 +235,40 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_Async) {
   QueueScriptForExecution(pending_script3);
   NotifyScriptReady(pending_script1);
 
+  base::RunLoop run_loop1;
   auto* pending_script = pending_script2;
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, this] {
+      .WillOnce(InvokeWithoutArgs([pending_script, this, &run_loop1] {
         order_.push_back(1);
         NotifyScriptReady(pending_script);
+        run_loop1.Quit();
       }));
 
+  base::RunLoop run_loop2;
   pending_script = pending_script3;
   EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, this] {
+      .WillOnce(InvokeWithoutArgs([pending_script, this, &run_loop2] {
         order_.push_back(2);
         NotifyScriptReady(pending_script);
+        run_loop2.Quit();
       }));
 
+  base::RunLoop run_loop3;
   EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
+      .WillOnce(InvokeWithoutArgs([this, &run_loop3] {
+        order_.push_back(3);
+        run_loop3.Quit();
+      }));
 
   // Make sure that re-entrant calls to notifyScriptReady don't cause
   // ScriptRunner::execute to do more work than expected.
-  platform_->RunSingleTask();
+  run_loop1.Run();
   EXPECT_THAT(order_, ElementsAre(1));
 
-  platform_->RunSingleTask();
+  run_loop2.Run();
   EXPECT_THAT(order_, ElementsAre(1, 2));
 
-  platform_->RunSingleTask();
+  run_loop3.Run();
   EXPECT_THAT(order_, ElementsAre(1, 2, 3));
 }
 
@@ -271,34 +280,44 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_InOrder) {
   QueueScriptForExecution(pending_script1);
   NotifyScriptReady(pending_script1);
 
+  base::RunLoop run_loop1;
   MockPendingScript* pending_script = pending_script2;
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, &pending_script2, this] {
-        order_.push_back(1);
-        QueueScriptForExecution(pending_script);
-        NotifyScriptReady(pending_script2);
-      }));
+      .WillOnce(InvokeWithoutArgs(
+          [pending_script, &pending_script2, this, &run_loop1] {
+            order_.push_back(1);
+            QueueScriptForExecution(pending_script);
+            NotifyScriptReady(pending_script2);
+            run_loop1.Quit();
+          }));
 
+  base::RunLoop run_loop2;
   pending_script = pending_script3;
   EXPECT_CALL(*pending_script2, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([pending_script, &pending_script3, this] {
-        order_.push_back(2);
-        QueueScriptForExecution(pending_script);
-        NotifyScriptReady(pending_script3);
-      }));
+      .WillOnce(InvokeWithoutArgs(
+          [pending_script, &pending_script3, this, &run_loop2] {
+            order_.push_back(2);
+            QueueScriptForExecution(pending_script);
+            NotifyScriptReady(pending_script3);
+            run_loop2.Quit();
+          }));
 
+  base::RunLoop run_loop3;
   EXPECT_CALL(*pending_script3, ExecuteScriptBlock())
-      .WillOnce(InvokeWithoutArgs([this] { order_.push_back(3); }));
+      .WillOnce(InvokeWithoutArgs([this, &run_loop3] {
+        order_.push_back(3);
+        run_loop3.Quit();
+      }));
 
   // Make sure that re-entrant calls to queueScriptForExecution don't cause
   // ScriptRunner::execute to do more work than expected.
-  platform_->RunSingleTask();
+  run_loop1.Run();
   EXPECT_THAT(order_, ElementsAre(1));
 
-  platform_->RunSingleTask();
+  run_loop2.Run();
   EXPECT_THAT(order_, ElementsAre(1, 2));
 
-  platform_->RunSingleTask();
+  run_loop3.Run();
   EXPECT_THAT(order_, ElementsAre(1, 2, 3));
 }
 
@@ -329,7 +348,7 @@ TEST_F(ScriptRunnerTest, QueueReentrantScript_ManyAsyncScripts) {
         order_.push_back(0);
       }));
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   int expected[] = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
                     10, 11, 12, 13, 14, 15, 16, 17, 18, 19};
@@ -361,7 +380,7 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_InOrder) {
       mojom::FrameLifecycleState::kPaused);
   document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Make sure elements are correct and in right order.
   EXPECT_THAT(order_, ElementsAre(1, 2, 3));
@@ -391,7 +410,7 @@ TEST_F(ScriptRunnerTest, ResumeAndSuspend_Async) {
       mojom::FrameLifecycleState::kPaused);
   document_->domWindow()->SetLifecycleState(
       mojom::FrameLifecycleState::kRunning);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Make sure elements are correct.
   EXPECT_THAT(order_, WhenSorted(ElementsAre(1, 2, 3)));
@@ -410,12 +429,12 @@ TEST_F(ScriptRunnerTest, LateNotifications) {
       .WillOnce(InvokeWithoutArgs([this] { order_.push_back(2); }));
 
   NotifyScriptReady(pending_script1);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // At this moment all tasks can be already executed. Make sure that we do not
   // crash here.
   NotifyScriptReady(pending_script2);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_THAT(order_, ElementsAre(1, 2));
 }
@@ -441,7 +460,7 @@ TEST_F(ScriptRunnerTest, TasksWithDeadScriptRunner) {
   EXPECT_CALL(*pending_script1, ExecuteScriptBlock()).Times(0);
   EXPECT_CALL(*pending_script2, ExecuteScriptBlock()).Times(0);
 
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(ScriptRunnerTest, TryStreamWhenEnqueingScript) {
@@ -512,39 +531,39 @@ TEST_F(ScriptRunnerTest, DelayReasons) {
   NotifyScriptReady(pending_script3);
 
   checkpoint.Call(1);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   checkpoint.Call(2);
   delayer1->Deactivate();
   checkpoint.Call(3);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   checkpoint.Call(4);
   delayer2->Deactivate();
   checkpoint.Call(5);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   checkpoint.Call(6);
   NotifyScriptReady(pending_script4);
   checkpoint.Call(7);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   checkpoint.Call(8);
   delayer2->Deactivate();
   checkpoint.Call(9);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 class PostTaskWithLowPriorityUntilTimeoutTest : public testing::Test {
  public:
   PostTaskWithLowPriorityUntilTimeoutTest()
-      : task_runner_(platform_->test_task_runner()),
+      : task_runner_(task_environment_.GetMainThreadTaskRunner()),
         null_task_runner_(base::MakeRefCounted<base::NullTaskRunner>()) {}
 
  protected:
-  test::TaskEnvironment task_environment_;
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+  test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<base::NullTaskRunner> null_task_runner_;
 };
 
@@ -559,17 +578,17 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunTaskOnce) {
       /*normal_priority_task_runner=*/task_runner_);
 
   EXPECT_EQ(0, counter);
-  EXPECT_EQ(2u, task_runner_->GetPendingTaskCount());
-  platform_->SetAutoAdvanceNowToPendingTasks(true);
-  platform_->RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(1, counter);
-  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
 }
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
-                                           blink::Unretained(&counter));
+  base::RunLoop run_loop;
+  base::OnceClosure task = base::BindLambdaForTesting([&run_loop, &counter]() {
+    counter++;
+    run_loop.Quit();
+  });
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -577,16 +596,17 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnLowerPriorityTaskRunner) {
       /*normal_priority_task_runner=*/null_task_runner_);
 
   EXPECT_EQ(0, counter);
-  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
-  platform_->RunSingleTask();
+  run_loop.Run();
   EXPECT_EQ(1, counter);
-  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
 }
 
 TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
   int counter = 0;
-  base::OnceClosure task = blink::BindOnce([](int* counter) { (*counter)++; },
-                                           blink::Unretained(&counter));
+  base::RunLoop run_loop;
+  base::OnceClosure task = base::BindLambdaForTesting([&run_loop, &counter]() {
+    counter++;
+    run_loop.Quit();
+  });
 
   PostTaskWithLowPriorityUntilTimeoutForTesting(
       FROM_HERE, std::move(task), base::Seconds(1),
@@ -594,10 +614,8 @@ TEST_F(PostTaskWithLowPriorityUntilTimeoutTest, RunOnNormalPriorityTaskRunner) {
       /*normal_priority_task_runner=*/task_runner_);
 
   EXPECT_EQ(0, counter);
-  EXPECT_EQ(1u, task_runner_->GetPendingTaskCount());
-  platform_->RunSingleTask();
+  run_loop.Run();
   EXPECT_EQ(1, counter);
-  EXPECT_EQ(0u, task_runner_->GetPendingTaskCount());
 }
 
 }  // namespace blink

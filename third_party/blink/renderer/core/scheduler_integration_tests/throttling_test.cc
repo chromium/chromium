@@ -1,6 +1,6 @@
 // Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in LICENSE file.
+// found in the LICENSE file.
 
 #include "base/numerics/safe_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -34,13 +34,13 @@ constexpr char kTestConsoleMessagePrefix[] = "[ThrottlingTest]";
 // A SimTest with mock time.
 class ThrottlingTestBase : public SimTest {
  public:
-  ThrottlingTestBase() {
-    platform_->SetAutoAdvanceNowToPendingTasks(false);
-
+  ThrottlingTestBase()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     // Align the time on a 1-minute interval, to simplify expectations.
-    platform_->AdvanceClock(platform_->NowTicks().SnappedToNextTick(
-                                base::TimeTicks(), base::Minutes(1)) -
-                            platform_->NowTicks());
+    task_environment().AdvanceClock(
+        task_environment().NowTicks().SnappedToNextTick(base::TimeTicks(),
+                                                        base::Minutes(1)) -
+        task_environment().NowTicks());
   }
 
   String BuildTimerConsoleMessage(String suffix = String()) {
@@ -69,8 +69,7 @@ class ThrottlingTestBase : public SimTest {
     return result;
   }
 
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform_;
+  ScopedTestingPlatformSupport<TestingPlatformSupport> platform_;
 };
 
 class DisableBackgroundThrottlingIsRespectedTest
@@ -103,7 +102,7 @@ TEST_F(DisableBackgroundThrottlingIsRespectedTest,
 
   // Run delayed tasks for 1 second. All tasks should be completed
   // with throttling disabled.
-  platform_->RunForPeriod(base::Seconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
 
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(console_message, console_message, console_message,
@@ -132,7 +131,7 @@ TEST_F(BackgroundPageThrottlingTest, TimersThrottledInBackgroundPage) {
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
   // Make sure that we run no more than one task a second.
-  platform_->RunForPeriod(base::Seconds(3));
+  task_environment().FastForwardBy(base::Seconds(3));
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(console_message, console_message, console_message));
 }
@@ -160,15 +159,15 @@ TEST_F(BackgroundPageThrottlingTest, WithoutNesting) {
       timeout_5_message.Utf8().c_str()));
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(base::Milliseconds(1001));
+  task_environment().FastForwardBy(base::Milliseconds(1001));
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(timeout_0_message, timeout_minus_1_message));
 
-  platform_->RunForPeriod(base::Milliseconds(998));
+  task_environment().FastForwardBy(base::Milliseconds(998));
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(timeout_0_message, timeout_minus_1_message));
 
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(timeout_0_message, timeout_minus_1_message,
                           timeout_5_message));
@@ -194,17 +193,17 @@ TEST_F(BackgroundPageThrottlingTest, DISABLED_NestedSetTimeoutZero) {
                      console_message.Utf8().c_str()));
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(1, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(2, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
-  platform_->RunForPeriod(base::Milliseconds(995));
+  task_environment().FastForwardBy(base::Milliseconds(995));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(4, console_message));
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(5, console_message));
 }
 
@@ -230,10 +229,10 @@ TEST_F(BackgroundPageThrottlingTest, NestedSetIntervalZero) {
 
   // Immediate tasks are not throttled until reaching the nesting level
   // threshold.
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(6, console_message));
   // But once that threshold is reached, throttling should kick in.
-  platform_->RunForPeriod(base::Seconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(7, console_message));
 }
 
@@ -274,7 +273,7 @@ TEST_F(AbortSignalTimeoutThrottlingTest, TimeoutsThrottledInBackgroundPage) {
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
   // Make sure that we run no more than one task a second.
-  platform_->RunForPeriod(base::Seconds(3));
+  task_environment().FastForwardBy(base::Seconds(3));
   EXPECT_THAT(FilteredConsoleMessages(), Vector<String>(3, console_message()));
 }
 
@@ -289,7 +288,7 @@ TEST_F(AbortSignalTimeoutThrottlingTest, ZeroMsTimersNotThrottled) {
 
   // All tasks should run after 1 ms since time does not advance during the
   // test, the timeout was 0 ms, and the timeouts are not throttled.
-  platform_->RunForPeriod(base::Milliseconds(1));
+  task_environment().FastForwardBy(base::Milliseconds(1));
   EXPECT_THAT(FilteredConsoleMessages(),
               Vector<String>(kIterations, console_message()));
 }
@@ -311,17 +310,17 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
   void ExpectRepeatingTimerConsoleMessages(int num_1hz_messages) {
     for (int i = 0; i < num_1hz_messages; ++i) {
       ConsoleMessages().clear();
-      platform_->RunForPeriod(base::Seconds(1));
+      task_environment().FastForwardBy(base::Seconds(1));
       EXPECT_EQ(FilteredConsoleMessages().size(), 1U);
     }
 
     constexpr int kNumIterations = 3;
     for (int i = 0; i < kNumIterations; ++i) {
       ConsoleMessages().clear();
-      platform_->RunForPeriod(base::Seconds(30));
+      task_environment().FastForwardBy(base::Seconds(30));
       // Task shouldn't execute earlier than expected.
       EXPECT_EQ(FilteredConsoleMessages().size(), 0U);
-      platform_->RunForPeriod(base::Seconds(30));
+      task_environment().FastForwardBy(base::Seconds(30));
       EXPECT_EQ(FilteredConsoleMessages().size(), 1U);
     }
   }
@@ -329,7 +328,7 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
   void TestNoIntensiveThrottlingOnTitleOrFaviconUpdate(
       const String& console_message) {
     // The page does not attempt to run onTimer in the first 5 minutes.
-    platform_->RunForPeriod(base::Minutes(5));
+    task_environment().FastForwardBy(base::Minutes(5));
     EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
     // onTimer() communicates in background and re-posts itself. The background
@@ -337,7 +336,7 @@ class IntensiveWakeUpThrottlingTest : public ThrottlingTestBase {
     // allows the re-posted task to run after |kDefaultThrottledWakeUpInterval|.
     constexpr int kNumIterations = 3;
     for (int i = 0; i < kNumIterations; ++i) {
-      platform_->RunForPeriod(kDefaultThrottledWakeUpInterval);
+      task_environment().FastForwardBy(kDefaultThrottledWakeUpInterval);
       EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
       ConsoleMessages().clear();
     }
@@ -442,7 +441,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_ShortTimeout) {
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
   // No timer is scheduled in the 5 first minutes.
-  platform_->RunForPeriod(base::Minutes(5));
+  task_environment().FastForwardBy(base::Minutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
   // Expected execution:
@@ -505,7 +504,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, SameOriginSubFrameTimer_ShortTimeout) {
   main_resource.Complete(R"(<iframe src="https://example.com/iframe.html" />)");
   // Run tasks to let the main frame request the iframe resource. It is not
   // possible to complete the iframe resource request before that.
-  platform_->RunUntilIdle();
+  task_environment().RunUntilIdle();
 
   subframe_resource.Complete(BuildRepeatingTimerPage(
       BuildTimerConsoleMessage().Utf8().c_str(), kCommunicationNop));
@@ -513,7 +512,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, SameOriginSubFrameTimer_ShortTimeout) {
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
   // No timer is scheduled in the 5 first minutes.
-  platform_->RunForPeriod(base::Minutes(5));
+  task_environment().FastForwardBy(base::Minutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
   // Expected execution:
@@ -545,7 +544,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, CrossOriginSubFrameTimer_ShortTimeout) {
       R"(<iframe src="https://cross-origin.example.com/iframe.html" />)");
   // Run tasks to let the main frame request the iframe resource. It is not
   // possible to complete the iframe resource request before that.
-  platform_->RunUntilIdle();
+  task_environment().RunUntilIdle();
 
   subframe_resource.Complete(BuildRepeatingTimerPage(
       BuildTimerConsoleMessage().Utf8().c_str(), kCommunicationNop));
@@ -553,7 +552,7 @@ TEST_F(IntensiveWakeUpThrottlingTest, CrossOriginSubFrameTimer_ShortTimeout) {
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
   // No timer is scheduled in the 5 first minutes.
-  platform_->RunForPeriod(base::Minutes(5));
+  task_environment().FastForwardBy(base::Minutes(5));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
   // Expected execution:
@@ -583,10 +582,10 @@ TEST_F(IntensiveWakeUpThrottlingTest, MainFrameTimer_LongUnalignedTimeout) {
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(kLongUnalignedTimerDelay - base::Seconds(1));
+  task_environment().FastForwardBy(kLongUnalignedTimerDelay - base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-  platform_->RunForPeriod(base::Seconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
 }
 
@@ -600,7 +599,7 @@ TEST_F(IntensiveWakeUpThrottlingTest,
   main_resource.Complete(R"(<iframe src="https://example.com/iframe.html" />)");
   // Run tasks to let the main frame request the iframe resource. It is not
   // possible to complete the iframe resource request before that.
-  platform_->RunUntilIdle();
+  task_environment().RunUntilIdle();
 
   const String console_message = BuildTimerConsoleMessage();
   subframe_resource.Complete(UNSAFE_TODO(String::Format(
@@ -608,10 +607,10 @@ TEST_F(IntensiveWakeUpThrottlingTest,
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(kLongUnalignedTimerDelay - base::Seconds(1));
+  task_environment().FastForwardBy(kLongUnalignedTimerDelay - base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
-  platform_->RunForPeriod(base::Seconds(1));
+  task_environment().FastForwardBy(base::Seconds(1));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
 }
 
@@ -628,7 +627,7 @@ TEST_F(IntensiveWakeUpThrottlingTest,
       R"(<iframe src="https://cross-origin.example.com/iframe.html" />)");
   // Run tasks to let the main frame request the iframe resource. It is not
   // possible to complete the iframe resource request before that.
-  platform_->RunUntilIdle();
+  task_environment().RunUntilIdle();
 
   const String console_message = BuildTimerConsoleMessage();
   subframe_resource.Complete(UNSAFE_TODO(String::Format(
@@ -636,11 +635,11 @@ TEST_F(IntensiveWakeUpThrottlingTest,
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(base::Seconds(342));
+  task_environment().FastForwardBy(base::Seconds(342));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre());
 
   // Fast-forward to the next aligned time.
-  platform_->RunForPeriod(base::Seconds(18));
+  task_environment().FastForwardBy(base::Seconds(18));
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
 }
 
@@ -664,16 +663,16 @@ TEST_F(IntensiveWakeUpThrottlingTest,
       "<iframe src=\"https://cross-origin.example.com/iframe.html\" />");
   // Run tasks to let the main frame request the iframe resource. It is not
   // possible to complete the iframe resource request before that.
-  platform_->RunUntilIdle();
+  task_environment().RunUntilIdle();
   subframe_resource.Complete(script);
 
   GetDocument().GetPage()->GetPageScheduler()->SetPageVisible(false);
 
-  platform_->RunForPeriod(kLongUnalignedTimerDelay);
+  task_environment().FastForwardBy(kLongUnalignedTimerDelay);
   EXPECT_THAT(FilteredConsoleMessages(), ElementsAre(console_message));
 
   // Fast-forward to the next aligned time.
-  platform_->RunForPeriod(base::Seconds(18));
+  task_environment().FastForwardBy(base::Seconds(18));
   EXPECT_THAT(FilteredConsoleMessages(),
               ElementsAre(console_message, console_message));
 }
