@@ -7,7 +7,9 @@
 #import "base/check.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/scene/ui/scene_view.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/scene/ui/scene_view_delegate.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
@@ -135,6 +137,20 @@
   [self updateLayoutForAppBar];
 }
 
+#pragma mark - UIViewController
+
+- (void)dismissViewControllerAnimated:(BOOL)flag
+                           completion:(void (^)())completion {
+  __weak SceneViewController* weakSelf = self;
+  [super dismissViewControllerAnimated:flag
+                            completion:^() {
+                              if (completion) {
+                                completion();
+                              }
+                              [weakSelf showGeminiFloatyIfInvoked];
+                            }];
+}
+
 #pragma mark - Private
 
 // Updates the layout to adapt to screen changes.
@@ -191,6 +207,20 @@
   }
 
   [self.view layoutIfNeeded];
+}
+
+// Helper method for dismissal block when attempting to show the Gemini floaty
+// if invoked.
+- (void)showGeminiFloatyIfInvoked {
+  // Sheet swipe gesture triggers [dismissViewControllerAnimated:completion:].
+  // Check if the presented view was truly dismissed which can be implied by
+  // `presentedViewController` == nil or the scene is no longer active.
+  if (self.presentedViewController ||
+      self.view.window.windowScene.activationState !=
+          UISceneActivationStateForegroundActive) {
+    return;
+  }
+  [self.delegate sceneViewControllerShowGeminiFloatyIfInvoked:self];
 }
 
 @end

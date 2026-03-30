@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
 #import "ios/chrome/browser/main/ui/browser_layout_view_controller.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/safari_data_import/model/features.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_import_entry_point.h"
 #import "ios/chrome/browser/scene/ui/scene_view_controller.h"
+#import "ios/chrome/browser/scene/ui/scene_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -70,6 +72,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
@@ -143,6 +146,7 @@ void OnListFamilyMembersResponse(
                                 PasswordCheckupCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
+                                SceneViewControllerDelegate,
                                 SettingsNavigationControllerDelegate,
                                 YoutubeIncognitoCoordinatorDelegate>
 
@@ -237,6 +241,7 @@ void OnListFamilyMembersResponse(
   if (IsUseSceneViewControllerEnabled()) {
     _viewController = [[SceneViewController alloc] init];
     _viewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
+    _viewController.delegate = self;
     UIViewController* tabGridViewController =
         _tabGridCoordinator.viewController;
     [_viewController addChildViewController:tabGridViewController];
@@ -1959,6 +1964,20 @@ void OnListFamilyMembersResponse(
     // bookmarks or the recent tabs view.
     [self stopSigninCoordinatorWithCompletionAnimated:animated];
     resetAndDismiss();
+  }
+}
+
+#pragma mark - SceneViewControllerDelegate
+
+- (void)sceneViewControllerShowGeminiFloatyIfInvoked:
+    (SceneViewController*)viewController {
+  CommandDispatcher* dispatcher = _regularBrowser->GetCommandDispatcher();
+  if ([dispatcher dispatchingForProtocol:@protocol(BWGCommands)]) {
+    id<BWGCommands> geminiHandler = HandlerForProtocol(dispatcher, BWGCommands);
+    [geminiHandler
+        updateFloatyVisibilityIfEligibleAnimated:NO
+                                      fromSource:gemini::FloatyUpdateSource::
+                                                     ViewTransition];
   }
 }
 
