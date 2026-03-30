@@ -27,8 +27,8 @@ namespace optimization_guide {
 class ManifestBrokerState final : public OnDeviceCapability {
  public:
   ManifestBrokerState(PrefService& local_state,
-                      on_device_model::ServiceClient::LaunchFn launch_fn,
-                      ManifestMonitor::Delegate& monitor_delegate);
+                      std::unique_ptr<ManifestAssetManager::Delegate> delegate,
+                      on_device_model::ServiceClient::LaunchFn launch_fn);
   ~ManifestBrokerState() override;
 
   // OnDeviceCapability
@@ -72,6 +72,7 @@ class ManifestBrokerState final : public OnDeviceCapability {
       const on_device_model::Capabilities& possible_capabilities);
 
   raw_ref<PrefService> local_state_;
+  std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
   on_device_model::ServiceClient service_client_;
   UsageTracker usage_tracker_;
   ModelBrokerImpl model_broker_impl_;

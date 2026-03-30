@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_MANIFEST_ASSET_MANAGER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_MANIFEST_ASSET_MANAGER_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -23,6 +22,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_monitor.h"
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -37,7 +37,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
  public:
   // Delegate to bridge the gap to the platform-specific download mechanism
   // (e.g., Chrome Component Updater on Desktop, AICore on Android).
-  class Delegate {
+  class Delegate : public ManifestMonitor::Delegate {
    public:
     virtual ~Delegate() = default;
 
@@ -56,20 +56,11 @@ class ManifestAssetManager : public UsageTracker::Observer {
     // Triggers an immediate update check for a component.
     virtual void RequestUpdate(const std::string& public_key_hex,
                                bool is_background) = 0;
-
-    // Gets the available free disk space on a background thread.
-    virtual void GetFreeDiskSpace(
-        const base::FilePath& path,
-        base::OnceCallback<void(std::optional<base::ByteCount>)> callback)
-        const = 0;
-
-    // Returns the base install directory for on-demand models.
-    virtual base::FilePath GetInstallDirectory() const = 0;
   };
 
-  explicit ManifestAssetManager(PrefService* local_state,
+  explicit ManifestAssetManager(PrefService& local_state,
                                 UsageTracker& usage_tracker,
-                                std::unique_ptr<Delegate> delegate,
+                                Delegate& delegate,
                                 Manifest manifest);
   ~ManifestAssetManager() override;
 
@@ -209,7 +200,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
   // prefs.
   class AssetLedger {
    public:
-    explicit AssetLedger(PrefService* local_state);
+    explicit AssetLedger(PrefService& local_state);
     ~AssetLedger();
 
     // Loads all persistent contexts from prefs, used in initialization.
@@ -236,7 +227,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
     ComponentContext* GetContextImpl(const std::string& public_key,
                                      bool create_if_missing);
 
-    raw_ptr<PrefService> local_state_;
+    raw_ref<PrefService> local_state_;
     base::flat_map<std::string, ComponentContext> component_contexts_;
   };
 
@@ -274,12 +265,12 @@ class ManifestAssetManager : public UsageTracker::Observer {
       bool required_by_active_use_case,
       bool is_obsolete) const;
 
-  std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<UsageTracker> usage_tracker_;
+  const raw_ref<Delegate> delegate_;
   Manifest manifest_ GUARDED_BY_CONTEXT(sequence_checker_);
-  const base::raw_ref<PrefService> local_state_;
   PrefChangeRegistrar pref_change_registrar_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  const base::raw_ref<UsageTracker> usage_tracker_;
   base::ScopedObservation<UsageTracker, UsageTracker::Observer>
       usage_tracker_observation_{this};
 

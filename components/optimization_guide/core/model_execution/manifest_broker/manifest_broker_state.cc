@@ -35,9 +35,10 @@ void LogEligibilityReason(mojom::OnDeviceFeature feature,
 
 ManifestBrokerState::ManifestBrokerState(
     PrefService& local_state,
-    on_device_model::ServiceClient::LaunchFn launch_fn,
-    ManifestMonitor::Delegate& monitor_delegate)
+    std::unique_ptr<ManifestAssetManager::Delegate> delegate,
+    on_device_model::ServiceClient::LaunchFn launch_fn)
     : local_state_(local_state),
+      delegate_(std::move(delegate)),
       service_client_(std::move(launch_fn)),
       usage_tracker_(&local_state),
       model_broker_impl_(
@@ -49,7 +50,7 @@ ManifestBrokerState::ManifestBrokerState(
       manifest_monitor_(
           local_state,
           performance_classifier_,
-          monitor_delegate,
+          *delegate_,
           base::BindRepeating(&ManifestBrokerState::OnManifestUpdated,
                               base::Unretained(this))) {}
 

@@ -5,9 +5,11 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/byte_count.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -23,13 +25,21 @@
 
 namespace optimization_guide {
 
-class TestManifestAssetManagerComponentState::DelegateImpl
+class TestManifestAssetManagerComponentState::DelegateImpl final
     : public ManifestAssetManager::Delegate {
  public:
   explicit DelegateImpl(
       base::WeakPtr<TestManifestAssetManagerComponentState> state)
       : state_(state) {}
   ~DelegateImpl() override = default;
+
+  base::CallbackListSubscription ListenForManifestReady(
+      base::RepeatingCallback<void(base::FilePath)> on_ready) const override {
+    if (state_) {
+      return state_->manifest_ready_callbacks_.Add(std::move(on_ready));
+    }
+    return base::CallbackListSubscription();
+  }
 
   void RegisterOnDemandComponent(
       const std::string& public_key_hex,
@@ -77,17 +87,12 @@ class TestManifestAssetManagerComponentState::DelegateImpl
     }
   }
 
-  void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteCount>)>
                             callback) const override {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        state_ ? state_->free_disk_space_ : base::ByteCount(0)));
-  }
-
-  base::FilePath GetInstallDirectory() const override {
-    return base::FilePath(FILE_PATH_LITERAL("/tmp/manifest_asset_install_dir"));
   }
 
  private:

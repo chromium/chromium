@@ -4,7 +4,6 @@
 
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -57,7 +56,7 @@ ManifestAssetManager::ComponentContext&
 ManifestAssetManager::ComponentContext::operator=(const ComponentContext&) =
     default;
 
-ManifestAssetManager::AssetLedger::AssetLedger(PrefService* local_state)
+ManifestAssetManager::AssetLedger::AssetLedger(PrefService& local_state)
     : local_state_(local_state) {}
 
 ManifestAssetManager::AssetLedger::~AssetLedger() = default;
@@ -124,7 +123,8 @@ ManifestAssetManager::AssetLedger::GetContextImpl(const std::string& public_key,
 void ManifestAssetManager::AssetLedger::SaveContexts(
     const std::vector<std::string>& public_keys) {
   ScopedDictPrefUpdate update(
-      local_state_, model_execution::prefs::localstate::kManifestAssetLedger);
+      local_state_.get(),
+      model_execution::prefs::localstate::kManifestAssetLedger);
   for (const std::string& public_key : public_keys) {
     const ComponentContext* context = GetContext(public_key);
     if (!context) {
@@ -143,20 +143,19 @@ void ManifestAssetManager::AssetLedger::RemoveContext(
     const std::string& public_key) {
   component_contexts_.erase(public_key);
   ScopedDictPrefUpdate update(
-      local_state_, model_execution::prefs::localstate::kManifestAssetLedger);
+      &*local_state_, model_execution::prefs::localstate::kManifestAssetLedger);
   update->Remove(public_key);
 }
 
-ManifestAssetManager::ManifestAssetManager(PrefService* local_state,
+ManifestAssetManager::ManifestAssetManager(PrefService& local_state,
                                            UsageTracker& usage_tracker,
-                                           std::unique_ptr<Delegate> delegate,
+                                           Delegate& delegate,
                                            Manifest manifest)
-    : delegate_(std::move(delegate)),
-      manifest_(std::move(manifest)),
-      local_state_(*local_state),
+    : local_state_(local_state),
       usage_tracker_(usage_tracker),
+      delegate_(delegate),
+      manifest_(std::move(manifest)),
       ledger_(local_state) {
-  CHECK(local_state != nullptr);  // Useful to catch poor test setup.
   // Load persistent state from the ledger immediately on startup.
   ledger_.Load();
 
@@ -230,7 +229,6 @@ void ManifestAssetManager::UpdateRegistration() {
                    kDiskSpaceFreshnessThreshold);
   if (!is_fresh) {
     delegate_->GetFreeDiskSpace(
-        delegate_->GetInstallDirectory(),
         base::BindOnce(&ManifestAssetManager::OnDiskSpaceEvaluated,
                        weak_ptr_factory_.GetWeakPtr()));
     return;

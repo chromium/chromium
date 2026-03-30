@@ -110,12 +110,16 @@ class ManifestAssetManagerTest : public testing::Test {
   }
 
   void CreateManager(Manifest manifest) {
+    delegate_ = component_state_.CreateDelegate();
     manager_ = std::make_unique<ManifestAssetManager>(
-        &local_state_.local_state(), usage_tracker_,
-        component_state_.CreateDelegate(), std::move(manifest));
+        local_state_.local_state(), usage_tracker_, *delegate_,
+        std::move(manifest));
   }
 
-  void ResetManager() { manager_.reset(); }
+  void ResetManager() {
+    manager_.reset();
+    delegate_.reset();
+  }
 
   void SetupReadyComponents(const DummyManifest& dummy_manifest) {
     CreateManager(dummy_manifest.Build());
@@ -135,6 +139,7 @@ class ManifestAssetManagerTest : public testing::Test {
   ModelBrokerPrefService local_state_;
   UsageTracker usage_tracker_{&local_state_.local_state()};
   TestManifestAssetManagerComponentState component_state_;
+  std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
   std::unique_ptr<ManifestAssetManager> manager_;
 };
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/byte_count.h"
+#include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -91,6 +92,8 @@ class TestManifestAssetManagerComponentState final {
   // Track the managers to simulate callbacks from the component updater, keyed
   // by public key.
   base::flat_map<std::string, base::WeakPtr<ManifestAssetManager>> managers_;
+
+  base::OnceCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
 
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
   base::WeakPtrFactory<TestManifestAssetManagerComponentState>

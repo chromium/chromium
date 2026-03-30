@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/byte_count.h"
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -400,14 +401,17 @@ class ManifestComponentsInstallerPolicy final
 class ManifestAssetManagerDelegateImpl final
     : public optimization_guide::ManifestAssetManager::Delegate {
  public:
-  base::FilePath GetInstallDirectory() const override {
-    return GetComponentInstallDirectory();
+  base::CallbackListSubscription ListenForManifestReady(
+      base::RepeatingCallback<void(base::FilePath)> on_ready) const override {
+    // TODO(crbug.com/489511247): Add a policy for manifest components. and
+    // update this.
+    return base::CallbackListSubscription();
   }
 
-  void GetFreeDiskSpace(const base::FilePath& path,
-                        base::OnceCallback<void(std::optional<base::ByteCount>)>
+  void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteCount>)>
                             callback) const override {
-    GetComponentFreeDiskSpace(path, std::move(callback));
+    GetComponentFreeDiskSpace(GetComponentInstallDirectory(),
+                              std::move(callback));
   }
 
   void RegisterOnDemandComponent(
