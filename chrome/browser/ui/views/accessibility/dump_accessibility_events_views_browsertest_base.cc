@@ -297,9 +297,11 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
     root_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kEndOfTest,
                                                   true);
 
-    // Flush any pending async WidgetAXManager updates so that
-    // BrowserAccessibilityManager fires the corresponding platform events
-    // before we stop listening.
+    // When ViewsAX is enabled, events are processed asynchronously via
+    // WidgetAXManager::SendPendingUpdate() (a posted task). Flush the message
+    // loop so BrowserAccessibilityManager processes pending tree updates and
+    // fires auto-generated platform events (e.g. ATK state-change events on
+    // Linux) before we stop the recorder.
     base::RunLoop().RunUntilIdle();
 
     event_recorder_->StopListeningToEvents();
