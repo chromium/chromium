@@ -61,6 +61,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
         computed: 'computeDefaultSearchEngine_(searchEngines_)',
       },
 
+      // The title of the page and the default search engine card.
+      searchPageTitle_: {
+        type: String,
+        computed: 'computeSearchPageTitle_()',
+      },
+
       // Boolean to check whether we need to show the dialog or not.
       showSearchEngineListDialog_: Boolean,
 
@@ -91,6 +97,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
 
   declare private searchSettingsUpdateEnabled_: boolean;
 
+  declare private searchPageTitle_: string;
   declare private confirmationToastLabel_: string;
 
   override ready() {
@@ -130,6 +137,12 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
   private isDefaultSearchEngineEnforced_(
       pref: chrome.settingsPrivate.PrefObject): boolean {
     return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED;
+  }
+
+  private computeSearchPageTitle_(): string {
+    return this.i18n(
+        this.searchSettingsUpdateEnabled_ ? 'defaultSearch' :
+                                            'searchPageTitle');
   }
 
   private computeDefaultSearchEngine_() {

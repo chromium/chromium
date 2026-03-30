@@ -2845,6 +2845,7 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchEnginesCancelButton", IDS_CANCEL},
       {"searchEnginesConfirmationToastLabel",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
+      {"defaultSearch", IDS_SETTINGS_DEFAULT_SEARCH},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("searchExplanationLearnMoreURL",
