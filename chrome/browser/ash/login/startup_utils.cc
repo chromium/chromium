@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_token_provider.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/common/chrome_paths.h"
@@ -309,19 +308,18 @@ void StartupUtils::MarkEnrollmentRecoveryRequired(PrefService& local_state) {
 }
 
 // static
-std::string StartupUtils::GetInitialLocale() {
-  std::string locale =
-      g_browser_process->local_state()->GetString(::prefs::kInitialLocale);
+std::string StartupUtils::GetInitialLocale(const PrefService& local_state) {
+  std::string locale = local_state.GetString(::prefs::kInitialLocale);
   if (!l10n_util::IsValidLocaleSyntax(locale))
     locale = "en-US";
   return locale;
 }
 
 // static
-void StartupUtils::SetInitialLocale(const std::string& locale) {
+void StartupUtils::SetInitialLocale(PrefService& local_state,
+                                    const std::string& locale) {
   if (l10n_util::IsValidLocaleSyntax(locale)) {
-    SaveStringPreferenceForced(*g_browser_process->local_state(),
-                               ::prefs::kInitialLocale, locale);
+    SaveStringPreferenceForced(local_state, ::prefs::kInitialLocale, locale);
   } else {
     NOTREACHED();
   }

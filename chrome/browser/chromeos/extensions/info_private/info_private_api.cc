@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/stylus_utils.h"
+#include "base/check_deref.h"
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/memory/ptr_util.h"
@@ -282,6 +283,8 @@ std::optional<std::string_view> GetBoolPrefNameForApiProperty(
 }
 
 std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   if (property_name == kPropertyHWID) {
     ash::system::StatisticsProvider* provider =
         ash::system::StatisticsProvider::GetInstance();
@@ -345,7 +348,8 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
   }
 
   if (property_name == kPropertyInitialLocale) {
-    return std::make_unique<base::Value>(ash::StartupUtils::GetInitialLocale());
+    return std::make_unique<base::Value>(
+        ash::StartupUtils::GetInitialLocale(local_state));
   }
 
   if (property_name == kPropertyBoard) {
@@ -408,8 +412,7 @@ std::unique_ptr<base::Value> GetValue(const std::string& property_name) {
       return std::make_unique<base::Value>(kStylusStatusUnsupported);
     }
 
-    bool seen = g_browser_process->local_state()->HasPrefPath(
-        ash::prefs::kHasSeenStylus);
+    bool seen = local_state.HasPrefPath(ash::prefs::kHasSeenStylus);
     return std::make_unique<base::Value>(seen ? kStylusStatusSeen
                                               : kStylusStatusSupported);
   }

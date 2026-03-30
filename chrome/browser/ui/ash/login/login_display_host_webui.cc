@@ -1356,7 +1356,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   // Don't need to schedule pref save because setting initial local
   // will enforce preference saving.
   local_state.SetString(language::prefs::kApplicationLocale, locale);
-  StartupUtils::SetInitialLocale(locale);
+  StartupUtils::SetInitialLocale(local_state, locale);
 
   TriggerShowLoginWizardFinish(locale, std::move(data),
                                /*login_input_methods_only=*/false);
