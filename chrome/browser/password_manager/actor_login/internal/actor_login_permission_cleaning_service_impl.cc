@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 
 #include <utility>
 
@@ -14,25 +14,26 @@
 
 namespace actor_login {
 
-ActorLoginPermissionCleaningService::ActorLoginPermissionCleaningService(
-    ActorLoginPermissionService* permission_service,
-    scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
-    scoped_refptr<password_manager::PasswordStoreInterface> account_store)
+ActorLoginPermissionCleaningServiceImpl::
+    ActorLoginPermissionCleaningServiceImpl(
+        ActorLoginPermissionService* permission_service,
+        scoped_refptr<password_manager::PasswordStoreInterface> profile_store,
+        scoped_refptr<password_manager::PasswordStoreInterface> account_store)
     : permission_service_(permission_service),
       profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
   CHECK(permission_service_);
 }
 
-ActorLoginPermissionCleaningService::~ActorLoginPermissionCleaningService() =
-    default;
+ActorLoginPermissionCleaningServiceImpl::
+    ~ActorLoginPermissionCleaningServiceImpl() = default;
 
-void ActorLoginPermissionCleaningService::Shutdown() {
+void ActorLoginPermissionCleaningServiceImpl::Shutdown() {
   // Clear any active cleaners immediately (implicitly cancelling ongoing jobs).
   active_cleaners_.clear();
 }
 
-void ActorLoginPermissionCleaningService::ClearPermissions(
+void ActorLoginPermissionCleaningServiceImpl::ClearPermissions(
     const Credential& credential,
     std::optional<std::string> signon_realm,
     base::OnceClosure done_callback) {
@@ -43,7 +44,7 @@ void ActorLoginPermissionCleaningService::ClearPermissions(
   ActorLoginDuplicatePermissionCleaner* raw_cleaner = cleaner.get();
 
   auto removal_callback =
-      base::BindOnce(&ActorLoginPermissionCleaningService::OnCleanerDone,
+      base::BindOnce(&ActorLoginPermissionCleaningServiceImpl::OnCleanerDone,
                      base::Unretained(this), raw_cleaner);
 
   active_cleaners_.insert(std::move(cleaner));
@@ -52,7 +53,7 @@ void ActorLoginPermissionCleaningService::ClearPermissions(
       std::move(done_callback).Then(std::move(removal_callback)));
 }
 
-void ActorLoginPermissionCleaningService::OnCleanerDone(
+void ActorLoginPermissionCleaningServiceImpl::OnCleanerDone(
     ActorLoginDuplicatePermissionCleaner* cleaner) {
   auto it = active_cleaners_.find(cleaner);
   if (it != active_cleaners_.end()) {

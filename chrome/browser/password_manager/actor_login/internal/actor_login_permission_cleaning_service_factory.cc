@@ -7,6 +7,7 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
@@ -48,7 +49,7 @@ std::unique_ptr<KeyedService> ActorLoginPermissionCleaningServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return std::make_unique<ActorLoginPermissionCleaningService>(
+  return std::make_unique<ActorLoginPermissionCleaningServiceImpl>(
       ActorLoginPermissionServiceFactory::GetForProfile(profile),
       ProfilePasswordStoreFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS),

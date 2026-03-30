@@ -15,6 +15,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
@@ -49,7 +50,7 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
             &mock_affiliation_service_);
     match_helper_ = match_helper.get();
     store_->Init(std::move(match_helper));
-    service_ = std::make_unique<ActorLoginPermissionCleaningService>(
+    service_ = std::make_unique<ActorLoginPermissionCleaningServiceImpl>(
         &permission_service_, store_.get(), nullptr);
 
     ON_CALL(mock_affiliation_service(), GetAffiliationsAndBranding)
