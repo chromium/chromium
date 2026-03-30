@@ -745,57 +745,57 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   std::unique_ptr<CanvasResourceProvider> provider =
       MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
-  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
 
   provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
-  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
 
   // `FlushCanvas` releases all ops, leaving the canvas clean.
   provider->FlushCanvas2D(FlushReason::kOther);
-  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
 }
 
 TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   std::unique_ptr<CanvasResourceProvider> provider =
       MakeCanvas2DResourceProvider(context_provider_wrapper_);
 
-  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasSideRecording());
 
   // Side canvases (used for canvas 2d layers) cannot be flushed until closed.
   // Open one and validate that flushing the canvas only flushed that main
   // recording, not the side one.
   provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
-  provider->Recorder().BeginSideRecording();
+  provider->RecorderForCanvas2D().BeginSideRecording();
   provider->Canvas().saveLayerAlphaf(0.5f);
   provider->Canvas().drawRect({0, 0, 10, 10}, cc::PaintFlags());
-  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
 
   provider->FlushCanvas2D(FlushReason::kOther);
-  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
 
   provider->Canvas().restore();
-  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasSideRecording());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasSideRecording());
 
-  provider->Recorder().EndSideRecording();
-  EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+  provider->RecorderForCanvas2D().EndSideRecording();
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_TRUE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasSideRecording());
 
   provider->FlushCanvas2D(FlushReason::kOther);
-  EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
-  EXPECT_FALSE(provider->Recorder().HasSideRecording());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasRecordedDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasReleasableDrawOps());
+  EXPECT_FALSE(provider->RecorderForCanvas2D().HasSideRecording());
 }
 
 }  // namespace blink

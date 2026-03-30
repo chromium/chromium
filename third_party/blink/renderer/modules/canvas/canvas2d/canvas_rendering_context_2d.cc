@@ -489,7 +489,7 @@ const MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() const {
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
-  return &provider->Recorder();
+  return &provider->RecorderForCanvas2D();
 }
 
 MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
@@ -497,7 +497,7 @@ MemoryManagedPaintRecorder* CanvasRenderingContext2D::Recorder() {
   if (provider == nullptr) [[unlikely]] {
     return nullptr;
   }
-  return &provider->Recorder();
+  return &provider->RecorderForCanvas2D();
 }
 
 void CanvasRenderingContext2D::WillDraw(

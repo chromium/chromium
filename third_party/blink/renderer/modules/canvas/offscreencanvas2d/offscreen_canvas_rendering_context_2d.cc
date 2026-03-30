@@ -404,7 +404,8 @@ OffscreenCanvasRenderingContext2D::GetPaintCanvas() const {
 
 const MemoryManagedPaintRecorder* OffscreenCanvasRenderingContext2D::Recorder()
     const {
-  return resource_provider_ ? &resource_provider_->Recorder() : nullptr;
+  return resource_provider_ ? &resource_provider_->RecorderForCanvas2D()
+                            : nullptr;
 }
 
 void OffscreenCanvasRenderingContext2D::WillDraw(
