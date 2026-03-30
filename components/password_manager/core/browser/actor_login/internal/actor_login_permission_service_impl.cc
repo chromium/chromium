@@ -149,8 +149,12 @@ std::string CreateGrantRequestBody(const FederatedPermission& permission) {
           .Set("rpEmbedderOrigin", permission.rp_embedder_origin.Serialize())
           .Set("rpRequesterOrigin", permission.rp_requester_origin.Serialize())
           .Set("chosenAccountId", permission.chosen_account_id);
-  auto request_dict = base::DictValue().Set(
-      "federatedCredentialPermission", std::move(federated_permission_dict));
+  auto agent_dict =
+      base::DictValue().Set("type", "AGENT_TYPE_GEMINI_IN_CHROME");
+  auto request_dict = base::DictValue()
+                          .Set("federatedCredentialPermission",
+                               std::move(federated_permission_dict))
+                          .Set("agent", std::move(agent_dict));
 
   std::string post_data;
   base::JSONWriter::Write(request_dict, &post_data);

@@ -390,6 +390,9 @@ TEST_F(ActorLoginPermissionServiceImplTest,
                 "idpOrigin": "https://idp.com",
                 "rpEmbedderOrigin": "https://embedder.com",
                 "rpRequesterOrigin": "https://requester.com"
+              },
+              "agent": {
+                "type": "AGENT_TYPE_GEMINI_IN_CHROME"
               }
             })"),
             base::test::ParseJson(network::GetUploadData(request)));
