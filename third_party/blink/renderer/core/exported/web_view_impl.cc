@@ -1577,8 +1577,8 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetDOMPasteAllowed(prefs.dom_paste_enabled);
   settings->SetTextAreasAreResizable(prefs.text_areas_are_resizable);
   settings->SetAllowScriptsToCloseWindows(prefs.allow_scripts_to_close_windows);
-  settings->SetAllowWindowFocusWithoutUserGesture(
-      prefs.allow_window_focus_without_user_gesture);
+  settings->SetAllowUnrestrictedWindowFocus(
+      prefs.allow_unrestricted_window_focus);
   settings->SetDownloadableBinaryFontsEnabled(prefs.remote_fonts_enabled);
   settings->SetJavaScriptCanAccessClipboard(
       prefs.javascript_can_access_clipboard);

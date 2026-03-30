@@ -197,8 +197,13 @@
       name: "allowScriptsToCloseWindows",
       initial: false,
     },
+
+    // Allows a window to focus itself or other windows programmatically
+    // without requiring a user gesture.
+    // This is primarily intended for Isolated Web Apps (IWAs) with the
+    // to allow them to manage window focus order like native applications.
     {
-      name: "allowWindowFocusWithoutUserGesture",
+      name: "allowUnrestrictedWindowFocus",
       initial: false,
     },
 

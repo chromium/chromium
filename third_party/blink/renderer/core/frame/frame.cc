@@ -677,8 +677,7 @@ void Frame::FocusPage(LocalFrame* originating_frame) {
   // is specially permitted to change focus without user interaction.
   if (originating_frame &&
       (LocalFrame::HasTransientUserActivation(originating_frame) ||
-       originating_frame->GetSettings()
-           ->GetAllowWindowFocusWithoutUserGesture())) {
+       originating_frame->GetSettings()->GetAllowUnrestrictedWindowFocus())) {
     // Ask the browser process to focus the page.
     GetPage()->GetChromeClient().FocusPage();
 

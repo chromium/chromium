@@ -63,7 +63,7 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetAllowGeolocationOnInsecureOrigins(bool) override;
   void SetAllowRunningOfInsecureContent(bool) override;
   void SetAllowScriptsToCloseWindows(bool) override;
-  void SetAllowWindowFocusWithoutUserGesture(bool) override;
+  void SetAllowUnrestrictedWindowFocus(bool) override;
   void SetAllowUniversalAccessFromFileURLs(bool) override;
   void SetAlwaysShowContextMenuOnTouch(bool) override;
   void SetAntialiased2dCanvasEnabled(bool) override;

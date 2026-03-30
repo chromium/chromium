@@ -328,8 +328,8 @@ void WebSettingsImpl::SetAllowScriptsToCloseWindows(bool allow) {
   settings_->SetAllowScriptsToCloseWindows(allow);
 }
 
-void WebSettingsImpl::SetAllowWindowFocusWithoutUserGesture(bool allow) {
-  settings_->SetAllowWindowFocusWithoutUserGesture(allow);
+void WebSettingsImpl::SetAllowUnrestrictedWindowFocus(bool allow) {
+  settings_->SetAllowUnrestrictedWindowFocus(allow);
 }
 
 void WebSettingsImpl::SetWideViewportQuirkEnabled(

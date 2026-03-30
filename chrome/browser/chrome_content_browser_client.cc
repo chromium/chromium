@@ -4834,7 +4834,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
                         web_contents->GetPrimaryMainFrame()) ==
                 blink::mojom::PermissionStatus::GRANTED) {
           web_prefs->allow_scripts_to_close_windows = true;
-          web_prefs->allow_window_focus_without_user_gesture = true;
+          web_prefs->allow_unrestricted_window_focus = true;
         }
 #if BUILDFLAG(IS_CHROMEOS)
         auto* system_app = browser->app_controller()->system_app();
