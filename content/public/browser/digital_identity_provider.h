@@ -34,6 +34,9 @@ class CONTENT_EXPORT DigitalIdentityProvider {
     DigitalCredential& operator=(const DigitalCredential&) = delete;
     ~DigitalCredential();
 
+    // Returns a deep copy of this credential.
+    DigitalCredential Clone() const;
+
     std::string protocol;
     base::Value data;
   };

@@ -16,6 +16,11 @@ DigitalIdentityProvider::DigitalCredential::operator=(
     DigitalCredential&& other) = default;
 DigitalIdentityProvider::DigitalCredential::~DigitalCredential() = default;
 
+DigitalIdentityProvider::DigitalCredential
+DigitalIdentityProvider::DigitalCredential::Clone() const {
+  return DigitalCredential(protocol, data.Clone());
+}
+
 DigitalIdentityProvider::DigitalIdentityProvider() = default;
 DigitalIdentityProvider::~DigitalIdentityProvider() = default;
 
