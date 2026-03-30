@@ -313,8 +313,7 @@ using segmentation_platform::TipIdentifier;
       ReadingListModelFactory::GetForProfile(profile);
 
   self.contentSuggestionsMetricsRecorder =
-      [[ContentSuggestionsMetricsRecorder alloc]
-          initWithLocalState:GetApplicationContext()->GetLocalState()];
+      [[ContentSuggestionsMetricsRecorder alloc] init];
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);

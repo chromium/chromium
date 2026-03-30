@@ -406,8 +406,7 @@ class MagicStackRankingModelTest : public PlatformTest {
               appStoreBundleService:app_store_bundle_service_.get()
                       bookmarkModel:bookmark_model_.get()];
 
-    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
-        initWithLocalState:GetLocalState()];
+    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
     _magicStackRankingModel.contentSuggestionsMetricsRecorder =
         metrics_recorder_;
     _setUpListMediator.contentSuggestionsMetricsRecorder = metrics_recorder_;

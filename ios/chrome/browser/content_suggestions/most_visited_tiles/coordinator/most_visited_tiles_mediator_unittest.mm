@@ -159,8 +159,7 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
               engagementTracker:tracker_.get()
               layoutGuideCenter:nil];
 
-    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
-        initWithLocalState:local_state()];
+    metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc] init];
     mediator_.actionFactory = mock_action_factory();
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     delegate_ = OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
