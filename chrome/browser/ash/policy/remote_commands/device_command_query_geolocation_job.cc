@@ -4,15 +4,27 @@
 
 #include "chrome/browser/ash/policy/remote_commands/device_command_query_geolocation_job.h"
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/notification_utils.h"
 #include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/notifications/system_notification_helper.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace policy {
 
@@ -25,6 +37,26 @@ constexpr char kQueryTimeMs[] = "query_time_ms";
 constexpr char kErrorMessage[] = "error_message";
 constexpr char kErrorCode[] = "error_code";
 constexpr base::TimeDelta kGeolocationTimeout = base::Seconds(60);
+
+constexpr char kLocationSavedNotificationId[] =
+    "device-located-disabled-device";
+
+class LocationSavedNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  LocationSavedNotificationDelegate() = default;
+
+  void Close(bool by_user) override {
+    if (by_user) {
+      g_browser_process->local_state()->ClearPref(
+          ash::prefs::kDeviceCommandQueryGeolocationReported);
+    }
+  }
+
+ private:
+  ~LocationSavedNotificationDelegate() override = default;
+};
+
 }  // namespace
 
 DeviceCommandQueryGeolocationJob::DeviceCommandQueryGeolocationJob(
@@ -32,6 +64,43 @@ DeviceCommandQueryGeolocationJob::DeviceCommandQueryGeolocationJob(
     : policy_manager_(policy_manager) {}
 
 DeviceCommandQueryGeolocationJob::~DeviceCommandQueryGeolocationJob() = default;
+
+// static
+void DeviceCommandQueryGeolocationJob::RegisterPrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(
+      ash::prefs::kDeviceCommandQueryGeolocationReported, false);
+}
+
+// static
+void DeviceCommandQueryGeolocationJob::
+    ShowLocationReportedNotificationIfNeeded() {
+  if (!g_browser_process->local_state()->GetBoolean(
+          ash::prefs::kDeviceCommandQueryGeolocationReported)) {
+    return;
+  }
+
+  message_center::NotifierId notifier_id(
+      message_center::NotifierType::SYSTEM_COMPONENT,
+      kLocationSavedNotificationId,
+      ash::NotificationCatalogName::kDeviceCommandGeolocation);
+
+  message_center::RichNotificationData notification_data;
+  notification_data.priority = message_center::SYSTEM_PRIORITY;
+  notification_data.never_timeout = true;
+
+  auto notification = ash::CreateSystemNotification(
+      message_center::NOTIFICATION_TYPE_SIMPLE, kLocationSavedNotificationId,
+      l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_TITLE),
+      l10n_util::GetStringUTF16(IDS_POLICY_DEVICE_LOCATED_MESSAGE),
+      /*display_source=*/std::u16string(), /*origin_url=*/GURL(), notifier_id,
+      notification_data,
+      base::MakeRefCounted<LocationSavedNotificationDelegate>(),
+      vector_icons::kBusinessIcon,
+      message_center::SystemNotificationWarningLevel::NORMAL);
+
+  SystemNotificationHelper::GetInstance()->Display(notification);
+}
 
 enterprise_management::RemoteCommand_Type
 DeviceCommandQueryGeolocationJob::GetType() const {
@@ -110,6 +179,9 @@ void DeviceCommandQueryGeolocationJob::OnLocationResponse(
     dict.Set(kQueryTimeMs,
              base::NumberToString(
                  position.timestamp.InMillisecondsSinceUnixEpoch()));
+
+    g_browser_process->local_state()->SetBoolean(
+        ash::prefs::kDeviceCommandQueryGeolocationReported, true);
   } else {
     if (!position.error_message.empty()) {
       dict.Set(kErrorMessage, position.error_message);

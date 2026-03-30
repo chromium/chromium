@@ -1454,6 +1454,11 @@ inline constexpr char kPowerQuickDimEnabled[] = "power.quick_dim_enabled";
 // lock to happen if the user is detected to be absent.
 inline constexpr char kPowerQuickLockDelay[] = "power.quick_lock_delay.ms";
 
+// A boolean pref indicating whether the device was successfully located via a
+// remote command. Unset by default.
+inline constexpr char kDeviceCommandQueryGeolocationReported[] =
+    "ash.device_command.query_geolocation_reported";
+
 // A `TimeDelta` pref for the duration when the critical notification is
 // displayed to when no outcome has occurred yet. Updates every 15 seconds.
 inline constexpr char kCriticalStateDuration[] =

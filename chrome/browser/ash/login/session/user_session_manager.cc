@@ -102,6 +102,7 @@
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
+#include "chrome/browser/ash/policy/remote_commands/device_command_query_geolocation_job.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/profiles/signin_profile_handler.h"
 #include "chrome/browser/ash/settings/about_flags.h"
@@ -2225,6 +2226,9 @@ void UserSessionManager::ShowNotificationsIfNeeded(Profile* profile) {
       ->ShowTPMAutoUpdateNotificationIfNeeded();
 
   GetMinimumVersionPolicyHandler()->MaybeShowNotificationOnLogin();
+
+  policy::DeviceCommandQueryGeolocationJob::
+      ShowLocationReportedNotificationIfNeeded();
 
   // Show a notification about ADB sideloading policy change if applicable.
   g_browser_process->platform_part()

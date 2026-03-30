@@ -13,6 +13,8 @@
 #include "chromeos/ash/components/geolocation/geoposition.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 
+class PrefRegistrySimple;
+
 namespace policy {
 
 class DeviceCloudPolicyManagerAsh;
@@ -27,6 +29,9 @@ class DeviceCommandQueryGeolocationJob : public RemoteCommandJob {
       delete;
   DeviceCommandQueryGeolocationJob& operator=(
       const DeviceCommandQueryGeolocationJob&) = delete;
+
+  static void RegisterPrefs(PrefRegistrySimple* registry);
+  static void ShowLocationReportedNotificationIfNeeded();
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand::Type GetType() const override;

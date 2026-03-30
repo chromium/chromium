@@ -44,6 +44,7 @@ include_rules = [
   "+chrome/browser/ash/plugin_vm",
   "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/policy/handlers",
+  "+chrome/browser/ash/policy/remote_commands",
   "+chrome/browser/ash/policy/reporting",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/ash/release_notes",

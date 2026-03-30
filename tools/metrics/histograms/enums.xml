@@ -21531,6 +21531,8 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Disabled"/>
 </enum>
 
+<!-- LINT.IfChange(NotificationCatalogName) -->
+
 <enum name="NotificationCatalogName">
 <!-- Defined in ash/constants/notifier_catalogs.h -->
 
@@ -21735,7 +21737,10 @@ Called by update_net_error_codes.py.-->
   <int value="201" label="Incompatible Charger"/>
   <int value="202" label="Camera Upload"/>
   <int value="203" label="Frozen Update Notification"/>
+  <int value="204" label="Geolocation Reported"/>
 </enum>
+
+<!-- LINT.ThenChange(//ash/constants/notifier_catalogs.h:NotificationCatalogName) -->
 
 <enum name="NQEObservationSource">
   <int value="0" label="HTTP"/>

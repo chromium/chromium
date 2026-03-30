@@ -244,6 +244,7 @@ source_set("impl") {
       "//chrome/browser/ash/policy/external_data/handlers",
       "//chrome/browser/ash/policy/handlers",
       "//chrome/browser/ash/policy/networking",
+      "//chrome/browser/ash/policy/remote_commands",
       "//chrome/browser/ash/policy/remote_commands/crd",
       "//chrome/browser/ash/policy/reporting",
       "//chrome/browser/ash/policy/reporting/metrics_reporting",
