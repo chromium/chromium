@@ -27,6 +27,11 @@ enum class ManagedAccountSigninMode;
                                               signin::ManagedAccountSigninMode>)
                                               mode;
 
+// Called when the coordinator requests to be stopped, not due to a user
+// interaction.
+- (void)managedProfileCreationCoordinatorWantsToBeStopped:
+    (ManagedProfileCreationCoordinator*)coordinator;
+
 @end
 
 // Coordinator to present managed profile creation.
@@ -36,6 +41,8 @@ enum class ManagedAccountSigninMode;
 // in `viewController`. UIViewController::presentViewController will be used
 // to show the ViewController created and owned by
 // ManagedProfileCreationCoordinator.
+// `identity` must be non nil.
+// `hostedDomain` may be nil.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                   identity:(id<SystemIdentity>)identity
                               hostedDomain:(NSString*)hostedDomain

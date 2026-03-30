@@ -8,6 +8,8 @@
 #import "base/ios/ios_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -34,6 +36,8 @@
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_notification_infobar_delegate.h"
@@ -146,6 +150,7 @@ void OnListFamilyMembersResponse(
 @interface SceneCoordinator () <AccountMenuCoordinatorDelegate,
                                 HistoryCoordinatorDelegate,
                                 IncognitoInterstitialCoordinatorDelegate,
+                                ManagedProfileCreationCoordinatorDelegate,
                                 PasswordCheckupCoordinatorDelegate,
                                 PolicyWatcherBrowserAgentObserving,
                                 SafariDataImportMainCoordinatorDelegate,
@@ -190,6 +195,8 @@ void OnListFamilyMembersResponse(
   IncognitoInterstitialCoordinator* _incognitoInterstitialCoordinator;
   // Coordinator for the AI prototyping menu.
   AIPrototypingCoordinator* _AIPrototypingCoordinator;
+  // Dialog for the managed confirmation screen.
+  ManagedProfileCreationCoordinator* _managedConfirmationScreenCoordinator;
   // The coordinator for the AIM Assistant.
   AssistantAIMCoordinator* _assistantAIMCoordinator;
   // The coordinator for the Assistant Container.
@@ -308,6 +315,7 @@ void OnListFamilyMembersResponse(
   _sceneMediator = nil;
   [_tabGridCoordinator stop];
   [_appBarCoordinator stop];
+  [self stopManagedConfirmationScreenCoordinator];
   self.UIHandler = nil;
   self.tabGridDelegate = nil;
   self.sceneURLLoadingService = nullptr;
@@ -973,6 +981,50 @@ void OnListFamilyMembersResponse(
                 openURL:[NSURL URLWithString:kChromeAppStoreURL]
                 options:@{}
       completionHandler:nil];
+}
+
+- (void)showManagedProfileCreation {
+  SystemIdentityManager* systemIdentityManager =
+      GetApplicationContext()->GetSystemIdentityManager();
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(self.profile);
+  id<SystemIdentity> systemIdentity =
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  _managedConfirmationScreenCoordinator =
+      [[ManagedProfileCreationCoordinator alloc]
+          initWithBaseViewController:self.activeViewController
+                            identity:systemIdentity
+                        hostedDomain:systemIdentityManager
+                                         ->GetCachedHostedDomainForIdentity(
+                                             systemIdentity)
+                             browser:_regularBrowser.get()
+                                mode:signin::ManagedAccountSigninMode::
+                                         kInformOfForcedMigration];
+  _managedConfirmationScreenCoordinator.delegate = self;
+
+  [_managedConfirmationScreenCoordinator start];
+}
+
+#pragma mark - ManagedProfileCreationCoordinatorDelegate
+
+- (void)managedProfileCreationCoordinator:
+            (ManagedProfileCreationCoordinator*)coordinator
+                                   result:(std::optional<
+                                              signin::ManagedAccountSigninMode>)
+                                              mode {
+  CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  // The user was not allowed to cancel, only confirm they saw the information.
+  CHECK(mode);
+  CHECK_EQ(*mode, signin::ManagedAccountSigninMode::kInformOfForcedMigration);
+  base::RecordAction(base::UserMetricsAction(
+      "Signin_MultiProfileForcedMigration_DialogAcknowleged"));
+  [self stopManagedConfirmationScreenCoordinator];
+}
+
+- (void)managedProfileCreationCoordinatorWantsToBeStopped:
+    (ManagedProfileCreationCoordinator*)coordinator {
+  CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  [self stopManagedConfirmationScreenCoordinator];
 }
 
 #pragma mark - SettingsCommands
@@ -1885,6 +1937,13 @@ void OnListFamilyMembersResponse(
   } else if (completion) {
     completion();
   }
+}
+
+// Stops the managed confirmation screen coordinator.
+- (void)stopManagedConfirmationScreenCoordinator {
+  _managedConfirmationScreenCoordinator.delegate = nil;
+  [_managedConfirmationScreenCoordinator stop];
+  _managedConfirmationScreenCoordinator = nil;
 }
 
 // Opens the price tracking notification settings view.

@@ -685,8 +685,7 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
 #define MAYBE_testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice \
   testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice
 #endif
-- (void)
-    MAYBE_testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice {
+- (void)testSwitchFromPersonalToManagedAndManagedAccountRemovedFromDevice {
   NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
 
   // Setup: There's 1 personal and 1 managed account. The personal account is

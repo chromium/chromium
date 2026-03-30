@@ -24,6 +24,8 @@
 @property(nonatomic, weak) id<ManagedProfileLearnMoreCoordinatorDelegate>
     delegate;
 
+// `userEmail` must be not nil.
+// `hostedDomain` may be nil
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                  userEmail:(NSString*)userEmail

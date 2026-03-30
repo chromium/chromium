@@ -152,8 +152,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 }
 
 - (void)interrupt {
-  [_managedConfirmationScreenCoordinator stop];
-  _managedConfirmationScreenCoordinator = nil;
+  [self stopManagedConfirmation];
   [_managedConfirmationAlertCoordinator stop];
   _managedConfirmationAlertCoordinator = nil;
   _delegate = nil;
@@ -333,6 +332,12 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 #pragma mark - Private
 
+- (void)stopManagedConfirmation {
+  [_managedConfirmationScreenCoordinator stop];
+  _managedConfirmationScreenCoordinator.delegate = nil;
+  _managedConfirmationScreenCoordinator = nil;
+}
+
 // Called when `_managedConfirmationAlertCoordinator` is finished.
 // `accepted` is YES when the user confirmed or NO if the user canceled.
 - (void)managedConfirmationAlertAccepted:(BOOL)accepted {
@@ -444,8 +449,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
                                               mode {
   CHECK(!_managedConfirmationAlertCoordinator);
   CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
-  [_managedConfirmationScreenCoordinator stop];
-  _managedConfirmationScreenCoordinator = nil;
+  [self stopManagedConfirmation];
   ManagedProfileCreationResult result;
   if (!mode) {
     result = ManagedProfileCreationResult::kCancelled;
@@ -465,6 +469,13 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
     }
   }
   [self managedConfirmationDoneWithResult:result];
+}
+
+- (void)managedProfileCreationCoordinatorWantsToBeStopped:
+    (ManagedProfileCreationCoordinator*)coordinator {
+  CHECK_EQ(_managedConfirmationScreenCoordinator, coordinator);
+  [_delegate managedConfirmationCouldNotProceed];
+  [self stopManagedConfirmation];
 }
 
 @end

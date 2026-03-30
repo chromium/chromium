@@ -53,6 +53,10 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_accountManagerService, base::NotFatalUntil::M155);
+}
+
 - (void)disconnect {
   _consumer = nil;
   _delegate = nil;

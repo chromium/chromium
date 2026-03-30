@@ -59,6 +59,9 @@ class Browser;
 // Indicates that the user cancelled signing in to a managed account.
 - (void)didCancelManagedConfirmation;
 
+// Indicates that the managed confirmation could not proceed.
+- (void)managedConfirmationCouldNotProceed;
+
 // Indicates that switching to a different profile failed.
 - (void)didFailToSwitchToProfile;
 

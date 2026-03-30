@@ -57,12 +57,19 @@
     // Sign-in related work should be done on regular browser.
     CHECK_EQ(browser->type(), Browser::Type::kRegular,
              base::NotFatalUntil::M145);
+    CHECK(identity, base::NotFatalUntil::M155);
     _identity = identity;
     _hostedDomain = hostedDomain;
     _mode = mode;
   }
   return self;
 }
+
+- (void)dealloc {
+  CHECK(!_mediator, base::NotFatalUntil::M155);
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   _viewController = [[ManagedProfileCreationViewController alloc]
@@ -101,23 +108,28 @@
 }
 
 - (void)stop {
-  [self dismissViewControllerAnimated:YES];
   [self stopLearnMoreCoordinator];
+  [_mediator disconnect];
+  _mediator.consumer = nil;
+  _mediator.delegate = nil;
+  _mediator = nil;
+  _viewController.delegate = nil;
+  _viewController.managedProfileCreationViewControllerPresentationDelegate =
+      nil;
+  [_viewController dismissViewControllerAnimated:YES completion:nil];
+  _viewController = nil;
+  [_navigationController dismissViewControllerAnimated:YES completion:nil];
+  _navigationController = nil;
   [super stop];
 }
 
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  // `dismissViewControllerAnimated` will release the mediator, so grab this
-  // value first.
-  signin::ManagedAccountSigninMode mode = _mediator.mode;
-  [self dismissViewControllerAnimated:YES];
-  [self.delegate managedProfileCreationCoordinator:self result:mode];
+  [self.delegate managedProfileCreationCoordinator:self result:_mediator.mode];
 }
 
 - (void)didTapSecondaryActionButton {
-  [self dismissViewControllerAnimated:YES];
   [self.delegate managedProfileCreationCoordinator:self result:std::nullopt];
 }
 
@@ -185,18 +197,6 @@
 
 #pragma mark - Private
 
-- (void)dismissViewControllerAnimated:(BOOL)animated {
-  [_mediator disconnect];
-  _mediator = nil;
-  _viewController.delegate = nil;
-  _viewController.managedProfileCreationViewControllerPresentationDelegate =
-      nil;
-  [_viewController dismissViewControllerAnimated:animated completion:nil];
-  _viewController = nil;
-  [_navigationController dismissViewControllerAnimated:animated completion:nil];
-  _navigationController = nil;
-}
-
 - (void)showLearnMorePage {
   DCHECK(!_learnMoreCoordinator);
   _learnMoreCoordinator = [[ManagedProfileLearnMoreCoordinator alloc]
@@ -217,10 +217,7 @@
 #pragma mark - ManagedProfileCreationMediatorDelegate
 
 - (void)identityRemovedFromDevice {
-  if (_learnMoreCoordinator) {
-    [self stopLearnMoreCoordinator];
-  }
-  [self dismissViewControllerAnimated:YES];
+  [self.delegate managedProfileCreationCoordinatorWantsToBeStopped:self];
 }
 
 @end

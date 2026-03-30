@@ -27,11 +27,18 @@
                               hostedDomain:(NSString*)hostedDomain {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    CHECK(userEmail, base::NotFatalUntil::M155);
     _userEmail = userEmail;
     _hostedDomain = hostedDomain;
   }
   return self;
 }
+
+- (void)dealloc {
+  CHECK(!_navigationController, base::NotFatalUntil::M155);
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   [super start];
@@ -59,6 +66,7 @@
 
 - (void)stop {
   [_navigationController dismissViewControllerAnimated:YES completion:nil];
+  _navigationController = nil;
   [super stop];
 }
 

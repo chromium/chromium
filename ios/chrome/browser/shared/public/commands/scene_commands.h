@@ -197,6 +197,10 @@ enum class TabGridOpeningMode {
 // Shows the application App Store page, if any.
 - (void)showAppStorePage;
 
+// Shows the ManagedProfileCreation view, to inform of an already done
+// migration.
+- (void)showManagedProfileCreation;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SCENE_COMMANDS_H_

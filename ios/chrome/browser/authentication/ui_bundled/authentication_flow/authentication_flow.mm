@@ -883,6 +883,10 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self cancelFlowWithReason:signin_ui::CancelationReason::kUserCanceled];
 }
 
+- (void)managedConfirmationCouldNotProceed {
+  [self cancelFlowWithReason:signin_ui::CancelationReason::kFailed];
+}
+
 - (void)didFailToSwitchToProfile {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
   NSError* error = ios::provider::CreateMissingIdentitySigninError();
