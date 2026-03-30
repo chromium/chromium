@@ -62,7 +62,7 @@ class StartupUtils {
                                    base::OnceClosure done_callback);
 
   // Mark a device as requiring enrollment recovery.
-  static void MarkEnrollmentRecoveryRequired();
+  static void MarkEnrollmentRecoveryRequired(PrefService& local_state);
 
   static void DisableHIDDetectionScreenForTests();
 

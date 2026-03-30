@@ -307,9 +307,9 @@ void StartupUtils::MarkDeviceRegistered(PrefService& local_state,
 }
 
 // static
-void StartupUtils::MarkEnrollmentRecoveryRequired() {
-  SaveBoolPreferenceForced(*g_browser_process->local_state(),
-                           ash::prefs::kEnrollmentRecoveryRequired, true);
+void StartupUtils::MarkEnrollmentRecoveryRequired(PrefService& local_state) {
+  SaveBoolPreferenceForced(local_state, ash::prefs::kEnrollmentRecoveryRequired,
+                           true);
 }
 
 // static

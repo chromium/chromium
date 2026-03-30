@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -330,11 +331,14 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
              << "no DM token! Status: " << service_status
              << ", debug_info: " << debug_info.str() << ".";
 
+  // TODO(crbug.com/404133022): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
   // be started, policy hasn't been read yet.  To work around this, once the
   // need for recovery is detected upon policy load, a flag is stored in prefs
   // which is accessed by LoginDisplayHostWebUI early during (next) boot.
-  ash::StartupUtils::MarkEnrollmentRecoveryRequired();
+  ash::StartupUtils::MarkEnrollmentRecoveryRequired(local_state);
 }
 
 void DeviceCloudPolicyStoreAsh::UpdateFirstPoliciesLoaded() {
