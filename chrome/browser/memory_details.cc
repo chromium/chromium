@@ -66,7 +66,7 @@ namespace {
 void UpdateProcessTypeAndTitles(
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     const extensions::ExtensionSet* extension_set,
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     ProcessMemoryInformation& process,
     content::RenderFrameHost* rfh) {
   // We check the title and the renderer type only of the primary main
