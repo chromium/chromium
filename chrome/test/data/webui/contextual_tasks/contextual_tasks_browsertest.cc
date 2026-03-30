@@ -37,7 +37,13 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Composebox) {
+// TODO(crbug.com/480689282): Flaky on Linux debug.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Composebox DISABLED_Composebox
+#else
+#define MAYBE_Composebox Composebox
+#endif
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_Composebox) {
   RunTest("contextual_tasks/composebox_test.js", "mocha.run();");
 }
 
