@@ -15,7 +15,9 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/sanitizer_buildflags.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/base/features.h"
 #include "cc/base/math_util.h"
@@ -1071,9 +1073,17 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 }
 
+// TODO(crbug.com/450651370): Fix flakiness on UBSan.
+#if BUILDFLAG(IS_UBSAN) && BUILDFLAG(IS_LINUX)
+#define MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize \
+  DISABLED_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize
+#else
+#define MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize \
+  GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize
+#endif
 TEST_F(
     PictureLayerImplTest,
-    GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize) {
+    MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize) {
   gfx::Size layer_bounds(100, 200);
   scoped_refptr<FakeRasterSource> valid_raster_source =
       FakeRasterSource::CreateFilled(layer_bounds);
