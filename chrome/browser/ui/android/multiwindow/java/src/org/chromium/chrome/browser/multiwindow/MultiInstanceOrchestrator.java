@@ -68,7 +68,14 @@ public interface MultiInstanceOrchestrator {
             boolean bringToFront);
 
     /**
-     * Opens a URL in an existing window or a new window.
+     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
+     * @return A set of instance ids of the specified {@code type} that are not marked for deletion.
+     */
+    Set<Integer> getUsableWindowIds(@PersistedInstanceType int type);
+
+    /**
+     * Opens a URL in an existing window or a new window of the same profile type as {@code
+     * sourceTab}.
      *
      * @param sourceTab The tab containing the URL.
      * @param loadUrlParams The url to open.
@@ -78,8 +85,10 @@ public interface MultiInstanceOrchestrator {
     boolean openUrlInOtherWindow(Tab sourceTab, LoadUrlParams loadUrlParams, boolean preferNew);
 
     /**
-     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
-     * @return A set of instance ids of the specified {@code type} that are not marked for deletion.
+     * Opens a URL in an incognito window.
+     *
+     * @param sourceTab The tab containing the URL.
+     * @param loadUrlParams The url to open.
      */
-    Set<Integer> getUsableWindowIds(@PersistedInstanceType int type);
+    void openUrlInIncognitoWindow(Tab sourceTab, LoadUrlParams loadUrlParams);
 }

@@ -1087,19 +1087,21 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             tabItemDelegate.onOpenInNewIncognitoTab(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_open_in_incognito_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_WINDOW);
-            tabItemDelegate.openInAnotherWindow(
-                    mParams.getUrl(), /* referrer= */ null, /* isIncognito= */ true);
+            tabItemDelegate.openInIncognitoWindow(mParams.getUrl());
         } else if (itemId == R.id.contextmenu_open_in_other_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_OTHER_WINDOW);
             tabItemDelegate.openInOtherWindow(
-                    mParams.getUrl(), mParams.getReferrer(), tabItemDelegate.isIncognito());
+                    mParams.getUrl(),
+                    mParams.getReferrer(),
+                    tabItemDelegate.isIncognito(),
+                    /* preferNew= */ false);
         } else if (itemId == R.id.contextmenu_open_in_new_window) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_WINDOW);
-            // TODO(crbug.com/458784417): Update openInOtherWindow to handle all cases of opening
-            // URLs.
-            // |openInOtherWindow| can handle opening in a new window as well.
             tabItemDelegate.openInOtherWindow(
-                    mParams.getUrl(), mParams.getReferrer(), tabItemDelegate.isIncognito());
+                    mParams.getUrl(),
+                    mParams.getReferrer(),
+                    tabItemDelegate.isIncognito(),
+                    /* preferNew= */ true);
         } else if (itemId == R.id.contextmenu_open_in_ephemeral_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_EPHEMERAL_TAB);
             tabItemDelegate.onOpenInEphemeralTab(mParams.getUrl(), mParams.getLinkText());

@@ -460,9 +460,10 @@ public class ContextMenuManager {
                         mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoWindow");
                 return true;
             case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+                delegate.openItem(WindowOpenDisposition.NEW_WINDOW);
+                RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInNewWindow");
+                return true;
             case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
-                // TODO(crbug.com/450631766): Update WindowOpenDisposition to handle
-                // OPEN_IN_OTHER_WINDOW
                 delegate.openItem(WindowOpenDisposition.NEW_WINDOW);
                 RecordUserAction.record(mUserActionPrefix + ".ContextMenu.OpenItemInOtherWindow");
                 return true;

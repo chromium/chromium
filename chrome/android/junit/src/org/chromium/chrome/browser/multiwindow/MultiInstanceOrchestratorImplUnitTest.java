@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
@@ -33,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -380,6 +382,87 @@ public class MultiInstanceOrchestratorImplUnitTest {
                 /* eligibleOtherWindowExists= */ true);
     }
 
+    @Test
+    public void testOpenUrlInOtherWindow_preApi31() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+
+        // Act.
+        mMultiInstanceOrchestrator.openUrlInOtherWindow(mTab1, mUrlParams, /* preferNew= */ false);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity1).startActivity(intentCaptor.capture());
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.URL_LAUNCH,
+                intentCaptor
+                        .getValue()
+                        .getIntExtra(
+                                IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
+                                NewWindowAppSource.UNKNOWN));
+    }
+
+    @Test
+    public void testOpenUrlInIncognitoWindow_withinInstanceLimit_showsDialog() {
+        doTestOpenUrlInIncognitoWindow(
+                /* atInstanceLimit= */ false, /* otherIncognitoWindowExists= */ true);
+    }
+
+    @Test
+    public void testOpenUrlInIncognitoWindow_atInstanceLimit_showsDialog() {
+        doTestOpenUrlInIncognitoWindow(
+                /* atInstanceLimit= */ true, /* otherIncognitoWindowExists= */ true);
+    }
+
+    @Test
+    public void testOpenUrlInIncognitoWindow_noOtherIncognitoWindow_createsNewWindow() {
+        doTestOpenUrlInIncognitoWindow(
+                /* atInstanceLimit= */ false, /* otherIncognitoWindowExists= */ false);
+    }
+
+    @Test
+    public void testOpenUrlInIncognitoWindow_noOtherIncognitoWindow_showsMessageAtInstanceLimit() {
+        doTestOpenUrlInIncognitoWindow(
+                /* atInstanceLimit= */ true, /* otherIncognitoWindowExists= */ false);
+    }
+
+    @Test
+    public void testOnWindowSelectedForUrlLaunch() {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+
+        // Act.
+        Callback<InstanceInfo> callback =
+                MultiInstanceOrchestratorImpl.onWindowSelectedForUrlLaunch(
+                        mTabbedActivity1,
+                        PARENT_TAB_ID_1,
+                        mUrlParams,
+                        /* isIncognitoWindow= */ true);
+        InstanceInfo testInstanceInfo =
+                new InstanceInfo(
+                        DEST_WINDOW_ID,
+                        /* taskId= */ 123,
+                        InstanceInfo.Type.OTHER,
+                        /* url= */ "www.example.com",
+                        /* title= */ "Example",
+                        /* customTitle= */ null,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 2,
+                        /* isIncognitoSelected= */ true,
+                        /* lastAccessedTime= */ 0,
+                        /* closureTime= */ 0);
+        callback.onResult(testInstanceInfo);
+
+        // Verify.
+        var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+        assertEquals(
+                "Uri data is incorrect.",
+                mUrlParams.getUrl(),
+                intentCaptor.getValue().getData().toString());
+    }
+
     private void doTestOpenUrlInOtherWindowWithIncognitoWindowingEnabled(
             boolean isIncognito,
             boolean preferNew,
@@ -389,6 +472,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
         when(mTab1.isIncognitoBranded()).thenReturn(isIncognito);
+        when(mTabbedActivity1.isIncognitoWindow()).thenReturn(isIncognito);
 
         // Setup: Clear existing instance state for mTabbedActivity1 and mTabbedActivity2.
         MultiWindowTestUtils.resetInstanceInfo();
@@ -406,6 +490,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
                             ? SupportedProfileType.REGULAR
                             : SupportedProfileType.OFF_THE_RECORD,
                     /* startId= */ DEST_WINDOW_ID);
+            when(mTabbedActivity2.isIncognitoWindow()).thenReturn(!isIncognito);
         }
 
         // This will overwrite instance state for mTabbedActivity1 and mTabbedActivity2.
@@ -423,24 +508,67 @@ public class MultiInstanceOrchestratorImplUnitTest {
         } else if (preferNew || !eligibleOtherWindowExists) {
             var intentCaptor = ArgumentCaptor.forClass(Intent.class);
             verify(mTabbedActivity1).startActivity(intentCaptor.capture());
+            verifyNewWindowIntentForUrlLaunch(intentCaptor.getValue(), isIncognito);
+        } else if (isIncognito) {
+            var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+            verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
             assertEquals(
-                    "New window source extra is incorrect.",
-                    NewWindowAppSource.URL_LAUNCH,
-                    intentCaptor
-                            .getValue()
-                            .getIntExtra(
-                                    IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE,
-                                    NewWindowAppSource.UNKNOWN));
+                    "Uri data is incorrect.",
+                    mUrlParams.getUrl(),
+                    intentCaptor.getValue().getData().toString());
         } else {
             verify(mMultiInstanceManager1)
                     .showTargetSelectorDialog(
                             any(),
-                            eq(
-                                    PersistedInstanceType.ACTIVE
-                                            | (isIncognito
-                                                    ? PersistedInstanceType.OFF_THE_RECORD
-                                                    : PersistedInstanceType.REGULAR)),
+                            eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR),
                             eq(R.string.contextmenu_open_in_other_window));
+        }
+    }
+
+    private void doTestOpenUrlInIncognitoWindow(
+            boolean atInstanceLimit, boolean otherIncognitoWindowExists) {
+        // Setup.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+
+        // Setup: Clear existing instance state for mTabbedActivity1 and mTabbedActivity2.
+        MultiWindowTestUtils.resetInstanceInfo();
+
+        // Create mTabbedActivity1 as a regular window.
+        createActiveInstances(
+                /* count= */ 1, SupportedProfileType.REGULAR, /* startId= */ SOURCE_WINDOW_ID);
+        if (!otherIncognitoWindowExists) {
+            if (atInstanceLimit) MultiWindowUtils.setMaxInstancesForTesting(2);
+            // Create mTabbedActivity2 as a regular window.
+            createActiveInstances(
+                    /* count= */ 1, SupportedProfileType.REGULAR, /* startId= */ DEST_WINDOW_ID);
+        } else {
+            if (atInstanceLimit) MultiWindowUtils.setMaxInstancesForTesting(2);
+            // Create mTabbedActivity2 as an incognito window.
+            createActiveInstances(
+                    /* count= */ 1,
+                    SupportedProfileType.OFF_THE_RECORD,
+                    /* startId= */ DEST_WINDOW_ID);
+        }
+
+        // Act.
+        mMultiInstanceOrchestrator.openUrlInIncognitoWindow(mTab1, mUrlParams);
+
+        // Verify.
+        if (!otherIncognitoWindowExists && atInstanceLimit) {
+            verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
+        } else if (!otherIncognitoWindowExists) {
+            var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+            verify(mTabbedActivity1).startActivity(intentCaptor.capture());
+            verifyNewWindowIntentForUrlLaunch(
+                    intentCaptor.getValue(), /* isIncognitoWindow= */ true);
+        } else {
+            var intentCaptor = ArgumentCaptor.forClass(Intent.class);
+            verify(mTabbedActivity2).onNewIntent(intentCaptor.capture());
+            assertEquals(
+                    "Uri data is incorrect.",
+                    mUrlParams.getUrl(),
+                    intentCaptor.getValue().getData().toString());
         }
     }
 
@@ -459,5 +587,19 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(tab.getWebContents()).thenReturn(webContents);
         when(webContents.getTopLevelNativeWindow()).thenReturn(windowAndroid);
         when(windowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
+    }
+
+    private void verifyNewWindowIntentForUrlLaunch(Intent intent, boolean isIncognitoWindow) {
+        assertEquals(
+                "New window source extra is incorrect.",
+                NewWindowAppSource.URL_LAUNCH,
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN));
+        assertNotNull("Uri data is missing.", intent.getData());
+        assertEquals("Uri data is incorrect.", mUrlParams.getUrl(), intent.getData().toString());
+        assertEquals(
+                "Target window profile type is incorrect.",
+                isIncognitoWindow,
+                intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, false));
     }
 }

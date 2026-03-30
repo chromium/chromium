@@ -659,6 +659,8 @@ public class MultiWindowUtils implements ActivityStateListener {
         }
         List<Activity> runningActivities = ApplicationStatus.getRunningActivities();
         int currentTaskId = current.getTaskId();
+        long mostRecentAccessTime = 0;
+        Activity selectedActivity = null;
         // The outer loop finds a visible task.
         for (Activity activity : runningActivities) {
             int taskId = activity.getTaskId();
@@ -671,11 +673,17 @@ public class MultiWindowUtils implements ActivityStateListener {
                 if (a.getTaskId() == taskId
                         && a instanceof ChromeTabbedActivity cta
                         && isProfileTypeSupported(cta, incognito)) {
-                    return a;
+                    int windowId = cta.getWindowId();
+                    long lastAccessedTime =
+                            ChromeMultiInstancePersistentStore.readLastAccessedTime(windowId);
+                    if (lastAccessedTime > mostRecentAccessTime) {
+                        mostRecentAccessTime = lastAccessedTime;
+                        selectedActivity = a;
+                    }
                 }
             }
         }
-        return null;
+        return selectedActivity;
     }
 
     private static boolean isProfileTypeSupported(ChromeTabbedActivity cta, boolean incognito) {

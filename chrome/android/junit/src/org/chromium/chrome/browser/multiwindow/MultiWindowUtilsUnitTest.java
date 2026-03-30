@@ -147,14 +147,20 @@ public class MultiWindowUtilsUnitTest {
                 7000 * ConversionUtils.KILOBYTES_PER_MEGABYTE);
     }
 
-    private Activity addRunningTabbedActivity(int windowId) {
-        return addActivity(windowId, /* tabbedActivity= */ true);
+    private ChromeTabbedActivity addRunningTabbedActivity(int windowId) {
+        return (ChromeTabbedActivity) addActivity(windowId, /* tabbedActivity= */ true);
     }
 
     private Activity addActivity(int windowId, boolean tabbedActivity) {
         Activity activity =
                 tabbedActivity ? mock(ChromeTabbedActivity.class) : mock(Activity.class);
         when(mTabWindowManager.getIdForWindow(activity)).thenReturn(windowId);
+        when(activity.getTaskId()).thenReturn(windowId);
+        if (tabbedActivity) {
+            var cta = (ChromeTabbedActivity) activity;
+            when(cta.getWindowId()).thenReturn(windowId);
+            when(cta.getSupportedProfileType()).thenReturn(SupportedProfileType.MIXED);
+        }
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(activity, ActivityState.RESUMED);
         return activity;
@@ -1318,6 +1324,27 @@ public class MultiWindowUtilsUnitTest {
                         PersistentStateIdVerification.PERSISTENT_STATE_MISMATCH);
         MultiWindowUtils.verifyLatestPersistentStateId(windowId, bundle);
         watcher.assertExpected();
+    }
+
+    @Test
+    public void testGetForegroundWindowActivityWithProfileType() {
+        // Create running tabbed activities. A larger instance id is for an instance with a more
+        // recent lastAccessedTime.
+        ChromeTabbedActivity activity0 = addRunningTabbedActivity(INSTANCE_ID_0);
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, INSTANCE_ID_0);
+        ChromeTabbedActivity activity1 = addRunningTabbedActivity(INSTANCE_ID_1);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, INSTANCE_ID_1);
+        ChromeTabbedActivity activity2 = addRunningTabbedActivity(INSTANCE_ID_2);
+        writeInstanceInfo(
+                INSTANCE_ID_2, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, INSTANCE_ID_2);
+
+        assertEquals(
+                "Expected activity with more recent lastAccessedTime.",
+                activity2,
+                MultiWindowUtils.getForegroundWindowActivityWithProfileType(
+                        activity0, /* incognito= */ false));
     }
 
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {

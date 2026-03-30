@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -45,7 +44,6 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
@@ -271,55 +269,32 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     }
 
     /**
-     * Opens a URL in a window selected through the window management dialog.
+     * Opens a URL in a new or existing window.
      *
      * @param url The URL to open.
      * @param referrer The referrer to use when opening the URL.
      * @param isIncognito Whether the other window should be incognito.
+     * @param preferNew Whether the URL should be opened in a new window.
      */
-    public void openInOtherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
+    public void openInOtherWindow(
+            GURL url, @Nullable Referrer referrer, boolean isIncognito, boolean preferNew) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         if (!isIncognito) {
             loadUrlParams.setReferrer(referrer);
         }
-        boolean processed =
-                MultiInstanceOrchestratorFactory.getInstance()
-                        .openUrlInOtherWindow(mTab, loadUrlParams, /* preferNew= */ false);
-        if (!processed) {
-            openInAnotherWindow(url, referrer, isIncognito);
-        }
+        MultiInstanceOrchestratorFactory.getInstance()
+                .openUrlInOtherWindow(mTab, loadUrlParams, preferNew);
     }
 
     /**
-     * Opens a URL in a new window if there is only one window opened, or foreground window if there
-     * are multiple windows. Opens the window with the specified incognito state.
+     * Opens a URL in an incognito window.
      *
      * @param url The URL to open.
-     * @param referrer The referrer to use when opening the URL.
-     * @param isIncognito Whether the other window should be incognito.
      */
-    public void openInAnotherWindow(GURL url, @Nullable Referrer referrer, boolean isIncognito) {
-        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(isIncognito);
+    public void openInIncognitoWindow(GURL url) {
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
-        if (!isIncognito) {
-            loadUrlParams.setReferrer(referrer);
-        }
-        Activity activity = TabUtils.getActivity(mTab);
-        assumeNonNull(activity);
-        // null if there are no foreground window activities.
-        Activity otherWindowActivity =
-                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        ? MultiWindowUtils.getForegroundWindowActivityWithProfileType(
-                                activity, isIncognito)
-                        : MultiWindowUtils.getForegroundWindowActivity(activity);
-
-        chromeAsyncTabLauncher.launchTabInOtherWindow(
-                loadUrlParams,
-                activity,
-                mTab.getParentId(),
-                otherWindowActivity,
-                NewWindowAppSource.URL_LAUNCH,
-                /* preferNew= */ false);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .openUrlInIncognitoWindow(mTab, loadUrlParams);
     }
 
     /**

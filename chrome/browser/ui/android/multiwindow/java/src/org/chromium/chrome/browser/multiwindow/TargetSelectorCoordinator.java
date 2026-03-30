@@ -117,7 +117,6 @@ public class TargetSelectorCoordinator {
         items.sort((info1, info2) -> Long.compare(info2.lastAccessedTime, info1.lastAccessedTime));
         for (InstanceInfo info : items) {
             if (info.type == InstanceInfo.Type.CURRENT) {
-                mSelectedItem = info;
                 mCurrentId = info.instanceId;
             }
             if (info.type != InstanceInfo.Type.CURRENT) {
@@ -195,8 +194,7 @@ public class TargetSelectorCoordinator {
 
     private void selectInstance(InstanceInfo clickedItem) {
         int instanceId = clickedItem.instanceId;
-        assumeNonNull(mSelectedItem);
-        if (mSelectedItem.instanceId == instanceId) return;
+        if (mSelectedItem != null && mSelectedItem.instanceId == instanceId) return;
         // Do not allow the target to be the current one.
         assumeNonNull(mDialog);
         mDialog.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, mCurrentId == instanceId);

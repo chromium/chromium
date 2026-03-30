@@ -2880,9 +2880,7 @@ public class ChromeContextMenuPopulatorTest {
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_in_incognito_window);
-        verify(mItemDelegate)
-                .openInAnotherWindow(
-                        params.getUrl(), /* referrer= */ null, /* isIncognito= */ true);
+        verify(mItemDelegate).openInIncognitoWindow(params.getUrl());
     }
 
     @Test
@@ -2893,7 +2891,11 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_in_other_window);
         verify(mItemDelegate)
-                .openInOtherWindow(params.getUrl(), params.getReferrer(), /* isIncognito= */ false);
+                .openInOtherWindow(
+                        params.getUrl(),
+                        params.getReferrer(),
+                        /* isIncognito= */ false,
+                        /* preferNew= */ false);
     }
 
     @Test
@@ -2904,7 +2906,11 @@ public class ChromeContextMenuPopulatorTest {
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         mPopulator.onItemSelected(R.id.contextmenu_open_in_new_window);
         verify(mItemDelegate)
-                .openInOtherWindow(params.getUrl(), params.getReferrer(), /* isIncognito= */ false);
+                .openInOtherWindow(
+                        params.getUrl(),
+                        params.getReferrer(),
+                        /* isIncognito= */ false,
+                        /* preferNew= */ true);
     }
 
     @Test
