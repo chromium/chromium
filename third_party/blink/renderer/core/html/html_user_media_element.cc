@@ -5,7 +5,9 @@
 
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/html/user_media_request_provider.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
@@ -75,6 +77,11 @@ HTMLUserMediaElement::HTMLUserMediaElement(Document& document)
       document.GetExecutionContext()));
 }
 
+void HTMLUserMediaElement::Trace(Visitor* visitor) const {
+  HTMLCapabilityElementBase::Trace(visitor);
+  Supplementable<HTMLUserMediaElement>::Trace(visitor);
+}
+
 bool HTMLUserMediaElement::IsLegacyMode() const {
   // If the 'type' attribute is explicitly defined, we fallback to legacy
   // behavior.
@@ -113,6 +120,26 @@ void HTMLUserMediaElement::AttributeChanged(
   HTMLCapabilityElementBase::AttributeChanged(params);
 }
 
+void HTMLUserMediaElement::OnPermissionStatusChange(
+    mojom::blink::PermissionName permission_name,
+    mojom::blink::PermissionStatus status) {
+  HTMLCapabilityElementBase::OnPermissionStatusChange(permission_name, status);
+
+  if (PermissionsGranted() && HasPendingPermissionRequest()) {
+    StartMediaStreamRequest();
+  }
+}
+
+void HTMLUserMediaElement::DefaultEventHandler(Event& event) {
+  HTMLCapabilityElementBase::DefaultEventHandler(event);
+  // TODO: b/494481589: Revise legacy behaviour of <usermedia> element
+  // HTMLCapabilityElementBase::HandleActivation checks that the event is
+  // trusted before proceeding with the permission request.
+  if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
+    StartMediaStreamRequest();
+  }
+}
+
 mojom::blink::EmbeddedPermissionRequestDescriptorPtr
 HTMLUserMediaElement::CreateEmbeddedPermissionRequestDescriptor() {
   auto descriptor = mojom::blink::EmbeddedPermissionRequestDescriptor::New(
@@ -127,9 +154,13 @@ Vector<PermissionDescriptorPtr> HTMLUserMediaElement::ParseType(
   return ParsePermissionDescriptorsFromString(type);
 }
 
-void HTMLUserMediaElement::Trace(Visitor* visitor) const {
-  HTMLCapabilityElementBase::Trace(visitor);
-  Supplementable<HTMLUserMediaElement>::Trace(visitor);
+void HTMLUserMediaElement::StartMediaStreamRequest() {
+  if (GetDocument().domWindow()) {
+    if (auto* provider =
+            UserMediaRequestProvider::From(*GetDocument().domWindow())) {
+      provider->StartRequest(this, type_);
+    }
+  }
 }
 
 }  // namespace blink

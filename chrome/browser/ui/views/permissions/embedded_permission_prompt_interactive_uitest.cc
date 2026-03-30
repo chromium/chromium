@@ -15,6 +15,7 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_ask_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
@@ -57,6 +58,10 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPEPCVisibleEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kDoneVisibleEvent);
 
+using ChipTextObserver =
+    views::test::PollingViewPropertyObserver<std::u16string,
+                                             views::LabelButton>;
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ChipTextObserver, kChipTextState);
 using UkmEntry = ukm::builders::Permissions_EmbeddedPromptAction;
 
 constexpr int kMinWindowHeight = 400;
@@ -147,6 +152,17 @@ class EmbeddedPermissionPromptInteractiveTest
       return InAnyContext(WaitForShow(button_identifier),
                           PressButton(button_identifier));
     }
+  }
+
+
+  auto WaitForChipText(int id_string) {
+    return InAnyContext(
+        WaitForShow(PermissionChipView::kIndicatorChipElementId),
+        PollViewProperty(kChipTextState,
+                         PermissionChipView::kIndicatorChipElementId,
+                         &PermissionChipView::GetText),
+        WaitForState(kChipTextState, l10n_util::GetStringUTF16(id_string)),
+        StopObservingState(kChipTextState));
   }
 
   // Checks that the next value in the queue matches the text in the label
@@ -380,6 +396,14 @@ class EmbeddedPermissionPromptInteractiveTest
       bool check_buttons) {
     auto steps = Steps(
         // Set the initial settings values.
+        Do([&, this]() {
+          SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
+                            CONTENT_SETTING_ASK);
+          SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
+                            CONTENT_SETTING_ASK);
+        }),
+        NavigateWebContents(kWebContentsElementId, GURL("about:blank")),
+        NavigateWebContents(kWebContentsElementId, GetURL()),
         Do([&, this]() {
           SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                             camera_setting);
@@ -668,6 +692,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           "camera", EmbeddedPermissionPromptAskView::kAllowId, tester,
           permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_CAMERA,
           /*accepted_count=*/1, /*accepted_once_count=*/0),
+      WaitForChipText(IDS_CAMERA_IN_USE),
 
       CheckLastSampleAndResetTester(
           variant_tester,
@@ -719,6 +744,7 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           tester, permissions::RequestTypeForUma::PERMISSION_MEDIASTREAM_MIC,
           /*accepted_count=*/0,
           /*accepted_once_count=*/1),
+      WaitForChipText(IDS_MICROPHONE_IN_USE),
 
       CheckLastSampleAndResetTester(
           variant_tester,
@@ -736,6 +762,8 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           /*accepted_count=*/0,
           /*accepted_once_count=*/0),
 
+      // Wait for gUM request to complete before resetting content settings.
+      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE),
       CheckLastSampleAndResetTester(
           variant_tester,
           "Permissions.Prompt.AudioAndVideoCapture.ElementAnchoredBubble."
@@ -762,6 +790,9 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
         SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
                           CONTENT_SETTING_DEFAULT);
       }),
+      // Reload the page to stop any active getUserMedia request.
+      NavigateWebContents(kWebContentsElementId, GURL("about:blank")),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
 
       DoPromptAndCheckHistograms(
           "camera-microphone", EmbeddedPermissionPromptAskView::kAllowId,
@@ -777,12 +808,16 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
           static_cast<base::HistogramBase::Sample32>(
               permissions::ElementAnchoredBubbleVariant::kAsk)),
 
+      WaitForChipText(IDS_MICROPHONE_CAMERA_IN_USE),
       Do([&, this]() {
         SetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                           CONTENT_SETTING_DEFAULT);
         SetContentSetting(ContentSettingsType::MEDIASTREAM_MIC,
                           CONTENT_SETTING_DEFAULT);
       }),
+      // Reload the page to stop any active getUserMedia request.
+      NavigateWebContents(kWebContentsElementId, GURL("about:blank")),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
 
       DoPromptAndCheckHistograms(
           "camera-microphone",

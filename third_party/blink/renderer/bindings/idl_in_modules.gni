@@ -468,6 +468,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/mediastream/constrain_long_range.idl",
   "//third_party/blink/renderer/modules/mediastream/crop_target.idl",
   "//third_party/blink/renderer/modules/mediastream/double_range.idl",
+  "//third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.idl",
   "//third_party/blink/renderer/modules/mediastream/input_device_info.idl",
   "//third_party/blink/renderer/modules/mediastream/long_range.idl",
   "//third_party/blink/renderer/modules/mediastream/media_device_info.idl",

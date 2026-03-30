@@ -269,5 +269,10 @@
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ShadowDOM/explainer.md
     "text/css",
     "module",
+
+    // Values of type attribute for <usermedia> element (formerly <permission> element)
+    // https://wicg.github.io/PEPC/permission-elements.html#element-attrdef-permission-type
+    "camera",
+    "microphone",
   ],
 }

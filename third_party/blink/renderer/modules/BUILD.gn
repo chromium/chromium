@@ -535,6 +535,8 @@ source_set("unit_tests") {
     "mediastream/transferred_media_stream_track_test.cc",
     "mediastream/user_media_client_test.cc",
     "mediastream/user_media_element_test.cc",
+    "mediastream/user_media_request_provider_impl_test.cc",
+    "mediastream/html_user_media_element_media_stream_test.cc",
     "mediastream/video_track_adapter_unittest.cc",
     "mediastream/web_media_player_ms_compositor_test.cc",
     "mediastream/web_media_player_ms_test.cc",

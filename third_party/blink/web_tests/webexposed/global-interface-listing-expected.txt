@@ -5453,6 +5453,7 @@ interface HTMLUserMediaElement : HTMLElement
     getter onstream
     getter onvalidationstatuschange
     getter permissionStatus
+    getter stream
     getter type
     method constructor
     method setConstraints

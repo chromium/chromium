@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/presentation/presentation.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
@@ -269,6 +270,7 @@ void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
   InspectorAccessibilityAgent::ProvideTo(&frame);
   ImageDownloaderImpl::ProvideTo(frame);
   AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
+  UserMediaRequestProviderImpl::ProvideTo(*frame.DomWindow());
 #if DCHECK_IS_ON()
   if (frame.IsLocalRoot() &&
       RuntimeEnabledFeatures::AIPageContentBuildOnLoadForTestingEnabled()) {

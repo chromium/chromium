@@ -20,6 +20,7 @@ class CORE_EXPORT HTMLUserMediaElement
   static bool isTypeSupported(const AtomicString& type);
 
   explicit HTMLUserMediaElement(Document& document);
+  void Trace(Visitor*) const override;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stream, kStream)
 
@@ -31,6 +32,13 @@ class CORE_EXPORT HTMLUserMediaElement
 
   void AttributeChanged(const AttributeModificationParams& params) override;
 
+  // HTMLCapabilityElementBase
+  void OnPermissionStatusChange(mojom::blink::PermissionName permission_name,
+                                mojom::blink::PermissionStatus status) override;
+  void DefaultEventHandler(Event& event) override;
+  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
+  CreateEmbeddedPermissionRequestDescriptor() override;
+
   Vector<mojom::blink::PermissionDescriptorPtr> ParseType(
       const AtomicString& type);
 
@@ -41,10 +49,8 @@ class CORE_EXPORT HTMLUserMediaElement
   // <usermedia> element is stable.
   bool IsLegacyMode() const;
 
-  // HTMLCapabilityElementBase:
-  void Trace(Visitor*) const override;
-  mojom::blink::EmbeddedPermissionRequestDescriptorPtr
-  CreateEmbeddedPermissionRequestDescriptor() override;
+ private:
+  void StartMediaStreamRequest();
 };
 
 // The custom type casting is required for the UserMediaElement OT because the

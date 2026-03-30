@@ -4,13 +4,38 @@
 
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/user_media_request_provider.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+using ::testing::_;
+
+class MockUserMediaRequestProvider final
+    : public GarbageCollected<MockUserMediaRequestProvider>,
+      public UserMediaRequestProvider {
+ public:
+  explicit MockUserMediaRequestProvider(LocalDOMWindow& window)
+      : UserMediaRequestProvider(window) {}
+
+  MOCK_METHOD(void, StartRequest, (HTMLUserMediaElement*, const AtomicString&), (override));
+
+  static MockUserMediaRequestProvider* CreateAndProvideTo(LocalDOMWindow& window) {
+    auto* provider = MakeGarbageCollected<MockUserMediaRequestProvider>(window);
+    Supplement<LocalDOMWindow>::ProvideTo(window, provider);
+    return provider;
+  }
+};
 
 class HTMLUserMediaElementTest : public PageTestBase {};
 
@@ -27,6 +52,35 @@ TEST_F(HTMLUserMediaElementTest, BranchingLogicBasedOnTypeAttribute) {
   // Remove type to revert to new capability mode
   element->removeAttribute(html_names::kTypeAttr);
   EXPECT_FALSE(element->IsLegacyMode());
+}
+
+TEST_F(HTMLUserMediaElementTest, StartRequestOnClick) {
+  ScopedBypassPepcSecurityForTestingForTest bypass_pepc(true);
+  MockUserMediaRequestProvider* provider =
+      MockUserMediaRequestProvider::CreateAndProvideTo(*GetDocument().domWindow());
+
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
+
+  HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus> init_map;
+  init_map.insert(mojom::blink::PermissionName::VIDEO_CAPTURE, mojom::blink::PermissionStatus::ASK);
+  element->OnPermissionStatusInitialized(init_map);
+
+  // If permission is not granted, a click should not trigger a request.
+  EXPECT_CALL(*provider, StartRequest(element, _)).Times(0);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  // Grant the permission. This automatically calls StartRequest once.
+  EXPECT_CALL(*provider, StartRequest(element, AtomicString("camera"))).Times(1);
+  element->OnPermissionStatusChange(mojom::blink::PermissionName::VIDEO_CAPTURE,
+                                    mojom::blink::PermissionStatus::GRANTED);
+  ::testing::Mock::VerifyAndClearExpectations(provider);
+
+  // Now, since permissions are granted, another click should trigger a request.
+  EXPECT_CALL(*provider, StartRequest(element, AtomicString("camera"))).Times(1);
+  element->click();
+  ::testing::Mock::VerifyAndClearExpectations(provider);
 }
 
 }  // namespace blink

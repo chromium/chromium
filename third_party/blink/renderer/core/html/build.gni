@@ -591,6 +591,8 @@ blink_core_sources_html = [
   "track/vtt/vtt_tokenizer.h",
   "trust_token_attribute_parsing.cc",
   "trust_token_attribute_parsing.h",
+  "user_media_request_provider.cc",
+  "user_media_request_provider.h",
   "window_name_collection.cc",
   "window_name_collection.h",
   "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.cc",
