@@ -1,0 +1,5 @@
+# Use the owners below for refactorings/trivial changes. For non-trivial
+# behavior changes, please defer to ios/web_view/OWNERS instead.
+
+bsazonov@chromium.org
+jlebel@chromium.org
