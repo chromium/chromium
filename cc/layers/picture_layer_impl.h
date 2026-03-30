@@ -112,9 +112,6 @@ class CC_EXPORT PictureLayerImpl
   bool UpdateTiles();
 
   // Mask-related functions.
-  void GetContentsResourceId(viz::ResourceId* resource_id,
-                             gfx::Size* resource_size,
-                             gfx::SizeF* resource_uv_size) const override;
 
   size_t GPUMemoryUsageInBytes() const override;
 

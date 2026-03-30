@@ -36,6 +36,8 @@ class FakeTile {
 
   std::optional<viz::ResourceId> GetResourceId() const { return std::nullopt; }
 
+  std::optional<gfx::Size> GetResourceSize() const { return std::nullopt; }
+
   std::optional<SkColor4f> GetSolidColor() const { return std::nullopt; }
 
   bool IsOOM() const { return false; }
@@ -58,6 +60,7 @@ class FakeTiling {
   float contents_scale_key() const { return 1.0f; }
   TileResolution resolution() const { return HIGH_RESOLUTION; }
   const TilingData* tiling_data() const { return &tiling_data_; }
+  gfx::Rect tiling_rect() const { return tiling_data_.tiling_rect(); }
   gfx::Size raster_size() const { return gfx::Size{100, 100}; }
   const gfx::AxisTransform2d& raster_transform() const {
     return raster_transform_;

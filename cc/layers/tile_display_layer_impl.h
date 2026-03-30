@@ -204,9 +204,6 @@ class CC_EXPORT TileDisplayLayerImpl
   std::unique_ptr<LayerImpl> CreateLayerImpl(
       LayerTreeImpl* tree_impl) const override;
   void CopyPropertiesTo(LayerImpl* layer) const override;
-  void GetContentsResourceId(viz::ResourceId* resource_id,
-                             gfx::Size* resource_size,
-                             gfx::SizeF* resource_uv_size) const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
 
   void SetContentColorUsage(gfx::ContentColorUsage content_color_usage) {

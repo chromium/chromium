@@ -987,59 +987,6 @@ gfx::Size PictureLayerImpl::CalculateTileSize(const gfx::Size& content_bounds) {
   return tile_size_calculator_.CalculateTileSize(content_bounds);
 }
 
-void PictureLayerImpl::GetContentsResourceId(
-    viz::ResourceId* resource_id,
-    gfx::Size* resource_size,
-    gfx::SizeF* resource_uv_size) const {
-  *resource_id = viz::kInvalidResourceId;
-
-  // We need contents resource for backdrop filter masks only.
-  if (!is_backdrop_filter_mask()) {
-    return;
-  }
-
-  if (!ValidateTilingSetForContentsResourceId()) {
-    return;
-  }
-
-  const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
-  gfx::Rect content_rect =
-      gfx::ScaleToEnclosingRect(gfx::Rect(bounds()), max_contents_scale);
-  auto iter =
-      Cover(content_rect, max_contents_scale, GetIdealContentsScaleKey());
-
-  // Mask resource not ready yet.
-  if (!iter || !*iter) {
-    return;
-  }
-
-  // Masks only supported if they fit on exactly one tile.
-  DCHECK(iter.geometry_rect() == content_rect)
-      << "iter rect " << iter.geometry_rect().ToString() << " content rect "
-      << content_rect.ToString();
-
-  auto resource_id_opt = iter->GetResourceId();
-  auto resource_size_opt = iter->GetResourceSize();
-  if (!resource_id_opt || !resource_size_opt) {
-    return;
-  }
-
-  *resource_id = *resource_id_opt;
-  *resource_size = *resource_size_opt;
-  // |resource_uv_size| represents the range of UV coordinates that map to the
-  // content being drawn. Typically, we draw to the entire texture, so these
-  // coordinates are (1.0f, 1.0f). However, if we are rasterizing to an
-  // over-large texture, this size will be smaller, mapping to the subset of the
-  // texture being used.
-  gfx::SizeF requested_tile_size =
-      gfx::SizeF(iter.CurrentTiling()->tiling_rect().size());
-  DCHECK_LE(requested_tile_size.width(), resource_size->width());
-  DCHECK_LE(requested_tile_size.height(), resource_size->height());
-  *resource_uv_size =
-      gfx::SizeF(requested_tile_size.width() / resource_size->width(),
-                 requested_tile_size.height() / resource_size->height());
-}
-
 void PictureLayerImpl::UpdateDirectlyCompositedImageFromRasterSource() {
   float new_default_raster_scale = 0;
   bool new_nearest_neighbor = false;
