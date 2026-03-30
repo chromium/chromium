@@ -25,7 +25,8 @@ BaseModelRecipeArgs GenericRecipeArgs() {
 // There is no special behavior for different device categories, so we do
 // most testing with CPU arbitrarily.
 auto CreateCpuManifest(ManifestBuilder builder) {
-  return Manifest::Create(builder.Build(), DeviceCategory::kCpu);
+  return Manifest::Create(base::FilePath(), builder.Build(),
+                          DeviceCategory::kCpu);
 }
 
 TEST_F(ManifestTest, ManifestDeviceCategory) {

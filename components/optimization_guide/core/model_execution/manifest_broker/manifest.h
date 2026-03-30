@@ -50,11 +50,12 @@ class Manifest final {
   };
 
   static base::expected<Manifest, ParseError> Create(
+      const base::FilePath& directory,
       proto::Manifest manifest,
       DeviceCategory device_category);
 
   static void Load(
-      const base::FilePath& path,
+      const base::FilePath& directory,
       DeviceCategory device_category,
       base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback);
 
@@ -84,12 +85,15 @@ class Manifest final {
   }
   const proto::Recipes& GetRecipes() const { return recipes_; }
   const proto::Assets& GetAssets() const { return assets_; }
+  const base::FilePath& GetDirectory() const { return directory_; }
 
  private:
-  Manifest(proto::DeviceCategoryConfig device_category_config,
+  Manifest(base::FilePath directory,
+           proto::DeviceCategoryConfig device_category_config,
            proto::Recipes recipes,
            proto::Assets assets);
 
+  base::FilePath directory_;
   // Manifest content narrowed down to what is relevant for the device category.
   proto::DeviceCategoryConfig device_category_config_;
   proto::Recipes recipes_;

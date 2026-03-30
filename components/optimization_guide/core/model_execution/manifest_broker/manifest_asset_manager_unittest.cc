@@ -90,7 +90,8 @@ class DummyManifest {
                                  FileReference(asset.asset_id, "config.pb")));
       builder.Add(use_case, asset.asset_id + "_solution");
     }
-    auto manifest_or = Manifest::Create(builder.Build(), DeviceCategory::kCpu);
+    auto manifest_or = Manifest::Create(base::FilePath(), builder.Build(),
+                                        DeviceCategory::kCpu);
     return std::move(*manifest_or);
   }
 

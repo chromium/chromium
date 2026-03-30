@@ -20,12 +20,13 @@ namespace optimization_guide {
 namespace {
 
 base::expected<Manifest, Manifest::ParseError> ReadManifestFile(
-    const base::FilePath& path,
+    const base::FilePath& directory,
     DeviceCategory device_category) {
   TRACE_EVENT("optimization_guide", "ReadManifestFile");
   // Unpack and verify model config file.
   std::string binary_manifest_pb;
-  if (!base::ReadFileToString(path, &binary_manifest_pb)) {
+  if (!base::ReadFileToString(directory.Append(kManifestFileName),
+                              &binary_manifest_pb)) {
     return base::unexpected(Manifest::ParseError::kFileNotFound);
   }
 
@@ -33,7 +34,7 @@ base::expected<Manifest, Manifest::ParseError> ReadManifestFile(
   if (!manifest.ParseFromString(binary_manifest_pb)) {
     return base::unexpected(Manifest::ParseError::kProtoParseError);
   }
-  return Manifest::Create(std::move(manifest), device_category);
+  return Manifest::Create(directory, std::move(manifest), device_category);
 }
 
 proto::DeviceCategoryConfig SelectDeviceCategoryConfig(
@@ -253,6 +254,7 @@ std::ostream& operator<<(std::ostream& stream, DeviceCategory device_category) {
 
 // static
 base::expected<Manifest, Manifest::ParseError> Manifest::Create(
+    const base::FilePath& directory,
     proto::Manifest manifest,
     DeviceCategory device_category) {
   if (auto error = CheckUniqueIdentifiers(manifest); error.has_value()) {
@@ -277,25 +279,27 @@ base::expected<Manifest, Manifest::ParseError> Manifest::Create(
     return base::unexpected(error.value());
   }
 
-  return Manifest(std::move(device_category_config), std::move(recipes),
-                  std::move(assets));
+  return Manifest(directory, std::move(device_category_config),
+                  std::move(recipes), std::move(assets));
 }
 
 void Manifest::Load(
-    const base::FilePath& path,
+    const base::FilePath& directory,
     DeviceCategory device_category,
     base::OnceCallback<void(base::expected<Manifest, ParseError>)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&ReadManifestFile, path, device_category),
+      base::BindOnce(&ReadManifestFile, directory, device_category),
       std::move(callback));
 }
 
 Manifest::Manifest() = default;
-Manifest::Manifest(proto::DeviceCategoryConfig device_category_config,
+Manifest::Manifest(base::FilePath directory,
+                   proto::DeviceCategoryConfig device_category_config,
                    proto::Recipes recipes,
                    proto::Assets assets)
-    : device_category_config_(std::move(device_category_config)),
+    : directory_(std::move(directory)),
+      device_category_config_(std::move(device_category_config)),
       recipes_(std::move(recipes)),
       assets_(std::move(assets)) {}
 
