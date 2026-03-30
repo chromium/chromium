@@ -47,6 +47,13 @@ extern const wchar_t kRegLogFilePath[];
 // existing file or not.
 extern const wchar_t kRegLogFileAppend[];
 
+// Enables setting the log file and path to pass to Chrome on the command
+// line.
+extern const wchar_t kRegChromeLogFilePath[];
+
+// Sets chrome logs to verbose mode.
+extern const wchar_t kRegEnableChromeVerboseLogging[];
+
 // Determines if crash reporting is initialized for credential provider DLL.
 extern const wchar_t kRegInitializeCrashReporting[];
 

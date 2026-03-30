@@ -1077,17 +1077,27 @@ HRESULT CGaiaCredentialBase::GetBaseGlsCommandline(
   // prevented.
   command_line->AppendSwitch(extensions::switches::kDisableExtensions);
 
-  // Get the language selected by the LanguageSelector and pass it onto Chrome.
-  // The language will depend on if it is currently a SYSTEM logon (initial
-  // logon) or a lock screen logon (from a user). If the user who locked the
-  // screen has a specific language, that will be the one used for the UI
-  // language.
+  // Get the language selected by the LanguageSelector and pass it onto
+  // Chrome. The language will depend on if it is currently a SYSTEM logon
+  // (initial logon) or a lock screen logon (from a user). If the user who
+  // locked the screen has a specific language, that will be the one used for
+  // the UI language.
   command_line->AppendSwitchNative("lang", GetSelectedLanguage());
 
-  // Enable logging and set verbosity, log file is created as
-  // C:\Users\gaia\AppData\Local\Google\Chrome\User Data\chrome_debug.log
-  command_line->AppendSwitch("enable-logging");
-  command_line->AppendSwitchASCII("v", "1");
+  // Enable logging and set verbosity. The path should be accessible to gaia
+  // user for writing, and the filename should be included. For example
+  // "C:\Users\gaia\Desktop\log.txt"
+  std::wstring log_path = GetGlobalFlagOrDefault(kRegChromeLogFilePath, L"");
+
+  if (!log_path.empty()) {
+    command_line->AppendSwitch("enable-logging");
+    command_line->AppendSwitchNative("log-file", log_path);
+  }
+
+  bool is_verbose = GetGlobalFlagOrDefault(kRegEnableChromeVerboseLogging, 0);
+  if (is_verbose) {
+    command_line->AppendSwitchASCII("v", "1");
+  }
 
   if (IsSecurityKeySupportEnabled()) {
     command_line->AppendSwitchASCII("disable-features",
