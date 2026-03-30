@@ -21,6 +21,9 @@
 // Sets whether editing is allowed.
 - (void)setEditingAllowed:(BOOL)editingAllowed;
 
+// Sets whether the entity being viewed is a server wallet item.
+- (void)setIsServerWalletItem:(BOOL)isServerWalletItem;
+
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;
 

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
+#import "url/gurl.h"
 
 namespace autofill {
 class EntityDataManager;
@@ -40,6 +41,9 @@ class EntityInstance;
 // Called when a country is selected.
 - (void)didSelectCountry:(CountryItem*)countryItem
                  forItem:(AutofillAIEntityCountryItem*)item;
+
+// Returns the URL to manage the Server Wallet item.
+- (GURL)walletManagementURL;
 
 @end
 

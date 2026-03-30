@@ -16,8 +16,13 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/fake_autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -144,4 +149,55 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, CreateNewEntity) {
   EXPECT_GE(consumer.editItems.count, 0u);
   // TODO(crbug.com/480933727): Add more verifications when the new entity is
   // created with pre-populated values.
+}
+
+// Tests that tapping the custom Wallet edit button dispatches a SceneCommand
+// to open the Google Wallet URL in a new tab.
+TEST_F(AutofillAIEntityEditCoordinatorTest, OpenWalletURLForServerWalletItem) {
+  // Mock the SceneCommands protocol to verify URL routing.
+  id mock_scene_commands = OCMStrictProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_commands
+                   forProtocol:@protocol(SceneCommands)];
+
+  // Create an explicit Server Wallet entity instance.
+  autofill::EntityType type(autofill::EntityTypeName::kVehicle);
+  autofill::EntityInstanceBuilder builder(type);
+  builder.SetRecordType(autofill::EntityInstance::RecordType::kServerWallet);
+
+  for (autofill::AttributeType attr_type : type.attributes()) {
+    builder.AddAttribute(autofill::AttributeInstance(attr_type));
+  }
+
+  autofill::EntityInstance wallet_instance = builder.Build();
+
+  autofill::EntityDataManager* entity_data_manager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(profile_.get());
+  entity_data_manager->AddOrUpdateEntityInstance(wallet_instance);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager->GetEntityInstance(wallet_instance.guid())
+            .has_value();
+      }));
+
+  coordinator_ = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:base_navigation_controller_
+                               browser:browser_.get()
+                              entityID:wallet_instance.guid()];
+  [coordinator_ start];
+
+  // Expect that a command containing the Wallet URL is dispatched.
+  OCMExpect([mock_scene_commands
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        return command.URL.spec().find("wallet.google.com") !=
+               std::string::npos;
+      }]]);
+
+  // Simulate the delegate callback triggered by the View Controller.
+  id<AutofillAIEntityEditTableViewControllerDelegate> coordinator_as_delegate =
+      (id<AutofillAIEntityEditTableViewControllerDelegate>)coordinator_;
+  [coordinator_as_delegate didTapEditInWalletButton:nil];
+
+  [mock_scene_commands verify];
 }

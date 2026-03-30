@@ -24,6 +24,8 @@
 // Whether editing is allowed.
 @property(nonatomic, assign) BOOL editingAllowed;
 
+@property(nonatomic, assign) BOOL isServerWalletItem;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_COORDINATOR_FAKE_AUTOFILL_AI_ENTITY_EDIT_CONSUMER_H_

@@ -9,6 +9,7 @@
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -90,6 +91,9 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
                          _entityInstance->type().GetNameForI18n())];
 
   [consumer setEditingAllowed:!_entityInstance->are_attributes_read_only()];
+  [consumer setIsServerWalletItem:
+                (_entityInstance->record_type() ==
+                 autofill::EntityInstance::RecordType::kServerWallet)];
 
   _editItems = [[NSMutableArray alloc] init];
   for (AttributeInstance attribute : _entityInstance->attributes()) {
@@ -174,6 +178,11 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
                  forItem:(AutofillAIEntityCountryItem*)item {
   item.detailText = countryItem.text;
   [self.consumer updateItem:item];
+}
+
+- (GURL)walletManagementURL {
+  CHECK(_entityInstance.has_value());
+  return GURL(autofill::GetWalletManagementURL(*_entityInstance));
 }
 
 @end

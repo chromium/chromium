@@ -26,6 +26,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // Whether editing is allowed.
   BOOL _editingAllowed;
+
+  // Denotes the entity is saved in wallet.
+  BOOL _isServerWalletItem;
 }
 
 #pragma mark - UIViewController
@@ -78,7 +81,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
-  return _editingAllowed;
+  return _editingAllowed || _isServerWalletItem;
 }
 
 #pragma mark - AutofillAIEntityEditConsumer
@@ -101,6 +104,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setEditingAllowed:(BOOL)editingAllowed {
   _editingAllowed = editingAllowed;
   [self updateUIForEditState];
+}
+
+- (void)setIsServerWalletItem:(BOOL)isServerWalletItem {
+  _isServerWalletItem = isServerWalletItem;
 }
 
 - (void)updateItem:(TableViewItem*)item {
@@ -127,6 +134,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)editButtonPressed {
+  if (_isServerWalletItem) {
+    [self.delegate didTapEditInWalletButton:self];
+    return;
+  }
+
   BOOL wasEditing = self.tableView.editing;
   [super editButtonPressed];
 

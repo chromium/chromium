@@ -19,6 +19,9 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 namespace {
@@ -175,6 +178,16 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
   [_baseNavigationController pushViewController:countrySelectionController
                                        animated:YES];
+}
+
+- (void)didTapEditInWalletButton:
+    (AutofillAIEntityEditTableViewController*)viewController {
+  GURL walletURL = [_mediator walletManagementURL];
+
+  id<SceneCommands> sceneHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [sceneHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:walletURL]];
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
