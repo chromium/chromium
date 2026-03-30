@@ -9,6 +9,7 @@ import android.os.SystemClock;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -505,10 +506,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     }
 
     @Override
-    public CronetEngineBuilderImpl setProxyOptions(@Nullable ProxyOptions proxyOptions) {
-        if (proxyOptions != null) {
-            mProxyOptions = new VersionSafeProxyOptions(proxyOptions);
-        }
+    public CronetEngineBuilderImpl setProxyOptionsV2(@NonNull ProxyOptions proxyOptions) {
+        mProxyOptions = new VersionSafeProxyOptions(proxyOptions);
         return this;
     }
 

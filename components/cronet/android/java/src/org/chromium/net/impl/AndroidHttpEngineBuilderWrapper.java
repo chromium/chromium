@@ -163,7 +163,7 @@ class AndroidHttpEngineBuilderWrapper extends ICronetEngineBuilder {
     }
 
     @Override
-    public ICronetEngineBuilder setProxyOptions(
+    public ICronetEngineBuilder setProxyOptionsV2(
             @Nullable org.chromium.net.ProxyOptions proxyOptions) {
         AndroidProxyOptions.apply(mBackend, proxyOptions);
         return this;

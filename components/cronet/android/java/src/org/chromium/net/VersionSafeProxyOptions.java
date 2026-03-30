@@ -16,7 +16,7 @@ import java.util.Objects;
 
 /** Wraps a {@link org.chromium.net.ProxyOptions} in a version safe manner. */
 public final class VersionSafeProxyOptions {
-    private static final int SET_PROXY_OPTIONS_API_LEVEL = 38;
+    private static final int SET_PROXY_OPTIONS_API_LEVEL = 49;
 
     private static boolean apiContainsProxyOptionsClass() {
         return VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel()

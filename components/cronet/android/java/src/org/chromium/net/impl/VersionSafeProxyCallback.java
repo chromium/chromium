@@ -17,7 +17,7 @@ import java.util.concurrent.Executor;
 /** Wraps a {@link org.chromium.net.Proxy.HttpConnectCallback} in a version safe manner. */
 public final class VersionSafeProxyCallback {
 
-    private static final int PROXY_CALLBACK_API_LEVEL = 38;
+    private static final int PROXY_CALLBACK_API_LEVEL = 49;
 
     private boolean apiContainsProxyCallbackClass() {
         return VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel()
