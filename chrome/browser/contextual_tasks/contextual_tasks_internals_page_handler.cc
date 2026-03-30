@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
@@ -154,6 +155,9 @@ void ContextualTasksInternalsPageHandler::GetEligibilityState(
           contextual_tasks_service->GetFeatureEligibility()
               .context_sharing_enabled;
     }
+
+    state->is_default_search_engine_google =
+        search::DefaultSearchProviderIsGoogle(profile_);
 
     state->is_eligible =
         contextual_tasks::EntryPointEligibilityManager::IsEligible(profile_);

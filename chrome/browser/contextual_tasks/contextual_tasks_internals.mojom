@@ -58,6 +58,8 @@ struct EligibilityState {
   bool is_cobrowse_eligible;
   // Whether page context sharing is enabled by the user or policy.
   bool is_context_sharing_enabled;
+  // Whether the default search engine is Google.
+  bool is_default_search_engine_google;
 };
 
 // PageHandler for ContextualTasksInternals page.
