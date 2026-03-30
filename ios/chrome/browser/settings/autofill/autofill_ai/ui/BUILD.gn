@@ -29,6 +29,7 @@ source_set("ui") {
     "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements:form_input_accessory",
+    "//ios/chrome/common/ui/util",
   ]
 }
 
@@ -60,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "autofill_ai_add_entities_menu_builder_unittest.mm",
+    "autofill_ai_entity_edit_table_view_controller+testing.h",
     "autofill_ai_entity_edit_table_view_controller_unittest.mm",
   ]
   deps = [
@@ -68,6 +70,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/settings/autofill/ui",
     "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//third_party/ocmock",

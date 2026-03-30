@@ -127,7 +127,7 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, MediatorSetsConsumer) {
   EXPECT_GT(consumer.editItems.count, 0u);
 }
 
-// Tests that the coordinator can create a new entity.
+// Tests that the coordinator can create a new entity and presents it modally.
 TEST_F(AutofillAIEntityEditCoordinatorTest, CreateNewEntity) {
   autofill::EntityType type =
       autofill::EntityType(autofill::EntityTypeName::kVehicle);
@@ -136,7 +136,15 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, CreateNewEntity) {
       initWithBaseNavigationController:base_navigation_controller_
                                browser:browser_.get()
                             entityType:type];
+
+  // Expect modal presentation for new entities.
+  [[base_navigation_controller_ expect] presentViewController:[OCMArg any]
+                                                     animated:YES
+                                                   completion:nil];
+
   [coordinator_ start];
+
+  [base_navigation_controller_ verify];
 
   AutofillAIEntityEditMediator* mediator = coordinator_.mediator;
   ASSERT_TRUE(mediator);
@@ -149,6 +157,8 @@ TEST_F(AutofillAIEntityEditCoordinatorTest, CreateNewEntity) {
   EXPECT_GE(consumer.editItems.count, 0u);
   // TODO(crbug.com/480933727): Add more verifications when the new entity is
   // created with pre-populated values.
+
+  [coordinator_ stop];
 }
 
 // Tests that tapping the custom Wallet edit button dispatches a SceneCommand

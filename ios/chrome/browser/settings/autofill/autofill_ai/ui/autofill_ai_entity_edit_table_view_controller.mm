@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 
 namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -41,6 +42,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   if (self.startInEditMode) {
     [self setEditing:YES animated:NO];
+    self.shouldHideDoneButton = YES;
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemClose
+                             target:self
+                             action:@selector(didTapCancel)];
+    [self setupBottomSaveButton];
   } else {
     self.navigationItem.rightBarButtonItem = [self editButtonItem];
   }
@@ -78,10 +85,46 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   }
 }
 
+#pragma mark - Setup
+
+- (void)setupBottomSaveButton {
+  ChromeButton* saveButton =
+      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  // TODO(crbug.com/480933727): Use i18n string.
+  saveButton.title = @"Save";
+  saveButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [saveButton addTarget:self
+                 action:@selector(didTapSaveNewEntity)
+       forControlEvents:UIControlEventTouchUpInside];
+
+  [self.view addSubview:saveButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [saveButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+    [saveButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                           constant:-32],
+    [saveButton.bottomAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
+                       constant:-16]
+  ]];
+
+  // Add bottom inset to the table view so the last cell doesn't get hidden
+  // behind the button.
+  self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 80, 0);
+}
+
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
+  if (self.startInEditMode) {
+    return NO;
+  }
   return _editingAllowed || _isServerWalletItem;
+}
+
+- (BOOL)shouldShowEditDoneButton {
+  // Only show the top right Done button if we are editing an existing entity.
+  return !self.startInEditMode;
 }
 
 #pragma mark - AutofillAIEntityEditConsumer
@@ -145,6 +188,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   if (wasEditing && !self.tableView.editing) {
     [self.mutator saveEntityInstance];
   }
+}
+
+- (void)didTapSaveNewEntity {
+  CHECK(self.startInEditMode);
+  [self.mutator saveEntityInstance];
+  [self.delegate didTapCloseButton:self];
 }
 
 #pragma mark -

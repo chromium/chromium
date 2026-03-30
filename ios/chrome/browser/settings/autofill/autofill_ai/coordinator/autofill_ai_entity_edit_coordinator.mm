@@ -84,6 +84,9 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
   // The item being edited for country selection.
   AutofillAIEntityCountryItem* _countryItemBeingEdited;
+
+  // Denotes if a new entity is being added or an existing one is edited.
+  BOOL _isNewEntity;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -97,6 +100,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   if (self) {
     _baseNavigationController = navigationController;
     _entityID = entityID;
+    _isNewEntity = NO;
   }
   return self;
 }
@@ -111,6 +115,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   if (self) {
     _baseNavigationController = navigationController;
     _entityType = entityType;
+    _isNewEntity = YES;
   }
   return self;
 }
@@ -121,7 +126,6 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
           self.browser->GetProfile());
   CHECK(entityDataManager);
 
-  bool isNewEntity = !_entityID.has_value();
   std::optional<autofill::EntityInstance> instance = GetOrCreateEntityInstance(
       std::move(_entityID), std::move(_entityType), entityDataManager);
   if (!instance.has_value()) {
@@ -137,12 +141,22 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
   _viewController.mutator = _mediator;
-  _viewController.startInEditMode = isNewEntity;
+  _viewController.startInEditMode = _isNewEntity;
 
   _mediator.consumer = _viewController;
 
   CHECK(_baseNavigationController);
-  [_baseNavigationController pushViewController:_viewController animated:YES];
+  if (_isNewEntity) {
+    // Present modally for creating a new entity.
+    UINavigationController* navController = [[UINavigationController alloc]
+        initWithRootViewController:_viewController];
+    [_baseNavigationController presentViewController:navController
+                                            animated:YES
+                                          completion:nil];
+  } else {
+    // Push for viewing an existing entity.
+    [_baseNavigationController pushViewController:_viewController animated:YES];
+  }
 }
 
 - (void)stop {
@@ -150,7 +164,11 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
 
   if (_viewController) {
     _viewController.delegate = nil;
-    if (_viewController.navigationController) {
+
+    if (_isNewEntity) {
+      [_viewController.navigationController dismissViewControllerAnimated:YES
+                                                               completion:nil];
+    } else if (_viewController.navigationController) {
       [_baseNavigationController popViewControllerAnimated:YES];
     }
     _viewController = nil;
