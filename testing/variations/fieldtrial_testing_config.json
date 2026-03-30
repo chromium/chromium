@@ -9638,24 +9638,6 @@
             ]
         }
     ],
-    "ExplainGeminiEditMenu": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "PositionForExplainGeminiEditMenu": "1"
-                    },
-                    "enable_features": [
-                        "ExplainGeminiEditMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionBrowserNamespaceAndPolyfillSupport": [
         {
             "platforms": [
@@ -11948,6 +11930,24 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GeminiDynamicSettings"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HeliosExplainEditMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "PositionForExplainGeminiEditMenu": "1"
+                    },
+                    "enable_features": [
+                        "ExplainGeminiEditMenu"
                     ]
                 }
             ]
