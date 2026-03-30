@@ -3779,22 +3779,6 @@ static_library("browser") {
       "preloading/preview/preview_zoom_controller.h",
       "process_singleton_startup_lock.cc",
       "process_singleton_startup_lock.h",
-      "profile_resetter/brandcode_config_fetcher.cc",
-      "profile_resetter/brandcode_config_fetcher.h",
-      "profile_resetter/brandcoded_default_settings.cc",
-      "profile_resetter/brandcoded_default_settings.h",
-      "profile_resetter/profile_resetter.cc",
-      "profile_resetter/profile_resetter.h",
-      "profile_resetter/reset_report_uploader.cc",
-      "profile_resetter/reset_report_uploader.h",
-      "profile_resetter/reset_report_uploader_factory.cc",
-      "profile_resetter/reset_report_uploader_factory.h",
-      "profile_resetter/resettable_settings_snapshot.cc",
-      "profile_resetter/resettable_settings_snapshot.h",
-      "profile_resetter/triggered_profile_resetter.cc",
-      "profile_resetter/triggered_profile_resetter.h",
-      "profile_resetter/triggered_profile_resetter_factory.cc",
-      "profile_resetter/triggered_profile_resetter_factory.h",
       "profiles/delete_profile_helper.cc",
       "profiles/delete_profile_helper.h",
       "profiles/profile_window.cc",
@@ -3988,6 +3972,8 @@ static_library("browser") {
       "//chrome/browser/performance_manager/user_tuning",
       "//chrome/browser/policy:path_parser",
       "//chrome/browser/private_ai",
+      "//chrome/browser/profile_resetter",
+      "//chrome/browser/profile_resetter:impl",
       "//chrome/browser/record_replay",
       "//chrome/browser/record_replay:impl",
       "//chrome/browser/resource_coordinator",
@@ -4220,6 +4206,12 @@ static_library("browser") {
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router:mojo_impl",
+
+      # This is needed because profile_resetter.cc depends on
+      # chrome/browser/net/system_network_context_manager.h.
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # //c/b/net is modularized.
+      "//chrome/browser/profile_resetter:impl",
 
       # TODO(crbug.com/40761673): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
@@ -6069,7 +6061,6 @@ static_library("browser") {
       "policy/browser_dm_token_storage_win.cc",
       "policy/browser_dm_token_storage_win.h",
       "process_singleton_win.cc",
-      "profile_resetter/triggered_profile_resetter_win.cc",
       "profiles/profile_shortcut_manager_win.cc",
       "profiles/profile_shortcut_manager_win.h",
       "shell_integration_win.cc",
@@ -6204,10 +6195,7 @@ static_library("browser") {
     }
   } else {
     # Non - Windows.
-    sources += [
-      "profile_resetter/triggered_profile_resetter_stub.cc",
-      "profiles/profile_shortcut_manager_stub.cc",
-    ]
+    sources += [ "profiles/profile_shortcut_manager_stub.cc" ]
     if (toolkit_views) {
       deps += [
         "//ui/views",
@@ -8745,8 +8733,6 @@ static_library("test_support") {
       "notifications/notification_test_util.h",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.cc",
       "privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
-      "profile_resetter/profile_resetter_test_base.cc",
-      "profile_resetter/profile_resetter_test_base.h",
       "sessions/app_session_service_test_helper.cc",
       "sessions/app_session_service_test_helper.h",
       "sessions/session_restore_test_helper.cc",

@@ -822,6 +822,10 @@ static_library("ui") {
     ]
   }
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/profile_resetter" ]
+  }
+
   if (enterprise_data_controls) {
     deps += [ "//chrome/browser/enterprise/data_controls" ]
   }

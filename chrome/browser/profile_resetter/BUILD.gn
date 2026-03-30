@@ -9,14 +9,118 @@ proto_library("profile_reset_report_proto") {
 }
 
 if (!is_android) {
+  source_set("profile_resetter") {
+    sources = [
+      "brandcode_config_fetcher.h",
+      "brandcoded_default_settings.h",
+      "profile_resetter.h",
+      "reset_report_uploader.h",
+      "reset_report_uploader_factory.h",
+      "resettable_settings_snapshot.h",
+      "triggered_profile_resetter.h",
+      "triggered_profile_resetter_factory.h",
+    ]
+
+    public_deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/profiles:profile",
+      "//components/keyed_service/core",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//services/data_decoder/public/cpp",
+      "//url",
+    ]
+  }
+
+  source_set("impl") {
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    sources = [
+      "brandcode_config_fetcher.cc",
+      "brandcoded_default_settings.cc",
+      "profile_resetter.cc",
+      "reset_report_uploader.cc",
+      "reset_report_uploader_factory.cc",
+      "resettable_settings_snapshot.cc",
+      "triggered_profile_resetter.cc",
+      "triggered_profile_resetter_factory.cc",
+    ]
+
+    deps = [
+      ":profile_reset_report_proto",
+      ":profile_resetter",
+      "//base",
+      "//build:branding_buildflags",
+      "//build:chromeos_buildflags",
+      "//chrome/app:branded_strings",
+      "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/browsing_data:constants",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/google",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/translate",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:channel_info",
+      "//chrome/common:constants",
+      "//chrome/installer/util:constants",
+      "//components/browsing_data/content",
+      "//components/content_settings/core/browser",
+      "//components/crx_file",
+      "//components/embedder_support:user_agent",
+      "//components/keyed_service/core",
+      "//components/language/core/browser",
+      "//components/pref_registry",
+      "//components/prefs",
+      "//components/proxy_config",
+      "//components/search_engines",
+      "//components/spellcheck/browser",
+      "//components/strings",
+      "//components/version_info",
+      "//content/public/browser",
+      "//crypto",
+      "//extensions/browser",
+      "//extensions/common",
+      "//google_apis",
+      "//net",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//ui/base",
+      "//url",
+    ]
+
+    if (is_win) {
+      sources += [ "triggered_profile_resetter_win.cc" ]
+      deps += [ "//chrome/installer/util:with_no_strings" ]
+    } else {
+      sources += [ "triggered_profile_resetter_stub.cc" ]
+    }
+
+    if (is_chromeos) {
+      deps += [
+        "//chrome/browser/ash/input_method",
+        "//chromeos/ash/components/network",
+      ]
+    }
+  }
+
   source_set("fake_profile_resetter") {
     testonly = true
     sources = [
       "fake_profile_resetter.cc",
       "fake_profile_resetter.h",
     ]
+    public_deps = [ ":profile_resetter" ]
     deps = [
-      "//chrome/browser",
+      ":impl",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/google",
       "//chrome/browser/search/background",
@@ -31,5 +135,96 @@ if (!is_android) {
         "//chromeos/ash/components/network",
       ]
     }
+  }
+
+  source_set("profile_resetter_test_base") {
+    testonly = true
+    sources = [
+      "profile_resetter_test_base.cc",
+      "profile_resetter_test_base.h",
+    ]
+    public_deps = [
+      ":profile_resetter",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+    deps = [
+      ":impl",
+      "//base",
+      "//components/keyed_service/core",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "profile_resetter_browsertest.cc" ]
+    deps = [
+      ":impl",
+      ":profile_resetter",
+      ":profile_resetter_test_base",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/test:test_support_ui",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//chromeos/ash/components/dbus/hermes",
+        "//chromeos/ash/components/dbus/shill",
+        "//chromeos/ash/components/network",
+      ]
+    }
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "profile_resetter_unittest.cc",
+      "reset_report_uploader_unittest.cc",
+    ]
+    if (is_win) {
+      sources += [ "triggered_profile_resetter_win_unittest.cc" ]
+    }
+    deps = [
+      ":impl",
+      ":profile_reset_report_proto",
+      ":profile_resetter",
+      ":profile_resetter_test_base",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions:test_support",
+      "//chrome/browser/google",
+      "//chrome/browser/prefs",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/webdata_services",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/content_settings/core/browser",
+      "//components/prefs",
+      "//components/search_engines",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//net",
+      "//services/data_decoder/public/cpp:test_support",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//url",
+    ]
   }
 }

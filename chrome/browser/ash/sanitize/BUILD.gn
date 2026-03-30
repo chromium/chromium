@@ -18,6 +18,7 @@ static_library("sanitize") {
     "//ash/webui/sanitize_ui",
     "//ash/webui/sanitize_ui/mojom",
     "//base",
+    "//chrome/browser/profile_resetter",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings",
     "//components/session_manager/core",
