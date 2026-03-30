@@ -1292,7 +1292,7 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     return;
   }
 
-  if (StartupUtils::IsEulaAccepted()) {
+  if (StartupUtils::IsEulaAccepted(local_state)) {
     DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                          ->EnsureCustomizationAppliedClosure());
 

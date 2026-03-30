@@ -9,8 +9,9 @@ namespace ash {
 using ::testing::AtLeast;
 using ::testing::_;
 
-MockErrorScreen::MockErrorScreen(base::WeakPtr<ErrorScreenView> view)
-    : ErrorScreen(std::move(view)) {}
+MockErrorScreen::MockErrorScreen(const PrefService* local_state,
+                                 base::WeakPtr<ErrorScreenView> view)
+    : ErrorScreen(local_state, std::move(view)) {}
 
 MockErrorScreen::~MockErrorScreen() = default;
 

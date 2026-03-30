@@ -30,6 +30,7 @@ source_set("unit_tests") {
     ":certs",
     "//base",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",

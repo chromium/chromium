@@ -16,3 +16,9 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/login",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+chrome/test/base",
+  ]
+}

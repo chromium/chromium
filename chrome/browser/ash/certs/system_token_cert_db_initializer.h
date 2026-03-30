@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "crypto/scoped_nss_types.h"
+
+class PrefService;
 
 namespace net {
 class NSSCertDatabase;
@@ -36,7 +39,8 @@ class SystemTokenCertDBInitializer
   // Note: This should only be used by `ChromeBrowserMainPartsAsh` to
   // initialize the system token certificate database. Use
   // SystemTokenCertDbStorage to retrieve the database.
-  SystemTokenCertDBInitializer();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit SystemTokenCertDBInitializer(const PrefService* local_state);
 
   SystemTokenCertDBInitializer(const SystemTokenCertDBInitializer&) = delete;
   SystemTokenCertDBInitializer& operator=(const SystemTokenCertDBInitializer&) =
@@ -80,6 +84,8 @@ class SystemTokenCertDBInitializer
   // Initializes the global system token NSSCertDatabase with |system_slot|.
   // Also starts NetworkCertLoader with the system token database.
   void InitializeDatabase(crypto::ScopedPK11Slot system_slot);
+
+  const raw_ref<const PrefService> local_state_;
 
   // Whether the database initialization was started.
   bool started_initializing_ = false;

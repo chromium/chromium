@@ -419,6 +419,13 @@ bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
 }
 
 void OobeUI::ConfigureOobeDisplay() {
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+  policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      g_browser_process->shared_url_loader_factory();
+
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
 
@@ -450,8 +457,8 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<ErrorScreenHandler>());
 
-  error_screen_ =
-      std::make_unique<ErrorScreen>(GetView<ErrorScreenHandler>()->AsWeakPtr());
+  error_screen_ = std::make_unique<ErrorScreen>(
+      local_state, GetView<ErrorScreenHandler>()->AsWeakPtr());
   ErrorScreen* error_screen = error_screen_.get();
 
   AddScreenHandler(std::make_unique<EnrollmentScreenHandler>());
@@ -495,12 +502,9 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<MarketingOptInScreenHandler>());
 
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(
-      g_browser_process->local_state(),
-      g_browser_process->platform_part()->browser_policy_connector_ash(),
-      g_browser_process->shared_url_loader_factory(), network_state_informer_,
-      error_screen));
+      local_state, browser_policy_connector_ash, shared_url_loader_factory,
+      network_state_informer_, error_screen));
 
   AddScreenHandler(std::make_unique<OnlineAuthenticationScreenHandler>());
 
@@ -625,9 +629,8 @@ void OobeUI::ConfigureOobeDisplay() {
     UpScaleOobe();
   }
 
-  // TODO(crbug.com/489929275): Avoid using g_browser_process.
   if (policy::EnrollmentRequisitionManager::IsMeetDevice(
-          CHECK_DEREF(g_browser_process->local_state()))) {
+          CHECK_DEREF(local_state))) {
     oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>(
         ash::Shell::Get()->cros_display_config());
   }

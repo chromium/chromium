@@ -14,6 +14,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -87,14 +88,17 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
 }
 
 void OobeTestAPIHandler::GetAdditionalParameters(base::DictValue* dict) {
+  // TODO(crbug.com/489929275): Avoid using g_browser_process.
+  PrefService* local_state = g_browser_process->local_state();
+
   login::NetworkStateHelper helper_;
   dict->Set("testapi_shouldSkipNetworkFirstShow",
             !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
                 helper_.IsConnectedToEthernet());
 
-  dict->Set(
-      "testapi_shouldSkipGuestTos",
-      StartupUtils::IsEulaAccepted() || !BUILDFLAG(GOOGLE_CHROME_BRANDING));
+  dict->Set("testapi_shouldSkipGuestTos",
+            StartupUtils::IsEulaAccepted(CHECK_DEREF(local_state)) ||
+                !BUILDFLAG(GOOGLE_CHROME_BRANDING));
 
   dict->Set("testapi_isFingerprintSupported",
             quick_unlock::IsFingerprintSupported());

@@ -190,8 +190,8 @@ void StartupUtils::RegisterOobeProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 // static
-bool StartupUtils::IsEulaAccepted() {
-  return g_browser_process->local_state()->GetBoolean(::prefs::kEulaAccepted);
+bool StartupUtils::IsEulaAccepted(const PrefService& local_state) {
+  return local_state.GetBoolean(::prefs::kEulaAccepted);
 }
 
 // static

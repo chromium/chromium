@@ -59,8 +59,9 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     network_handler_test_helper_->AddDefaultProfiles();
 
-    mock_error_screen_ =
-        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
+    mock_error_screen_ = std::make_unique<MockErrorScreen>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        mock_error_view_.AsWeakPtr());
 
     update_required_screen_ = std::make_unique<UpdateRequiredScreen>(
         TestingBrowserProcess::GetGlobal()

@@ -11,11 +11,15 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PrefService;
+
 namespace ash {
 
 class MockErrorScreen : public ErrorScreen {
  public:
-  explicit MockErrorScreen(base::WeakPtr<ErrorScreenView> view);
+  // `local_state` must be non-null and must outlive `this`.
+  MockErrorScreen(const PrefService* local_state,
+                  base::WeakPtr<ErrorScreenView> view);
   ~MockErrorScreen() override;
 
   void FixCaptivePortal() override;

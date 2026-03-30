@@ -91,7 +91,8 @@ class EnrollmentScreenBaseTest : public testing::Test {
 
  protected:
   EnrollmentScreenBaseTest()
-      : mock_error_screen_(mock_error_view_.AsWeakPtr()) {
+      : mock_error_screen_(TestingBrowserProcess::GetGlobal()->local_state(),
+                           mock_error_view_.AsWeakPtr()) {
     policy::EnrollmentRequisitionManager::Initialize(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(

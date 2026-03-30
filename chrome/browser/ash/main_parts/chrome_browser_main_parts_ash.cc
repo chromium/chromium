@@ -822,7 +822,8 @@ int ChromeBrowserMainPartsAsh::PreMainMessageLoopRun() {
 
   // Initialize NSS database for system token.
   system_token_certdb_initializer_ =
-      std::make_unique<SystemTokenCertDBInitializer>();
+      std::make_unique<SystemTokenCertDBInitializer>(
+          g_browser_process->local_state());
 
   system_token_key_permissions_manager_ = platform_keys::
       KeyPermissionsManagerImpl::CreateSystemTokenKeyPermissionsManager(

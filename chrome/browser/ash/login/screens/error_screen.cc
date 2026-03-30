@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/chrome_webui_url_constants.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -90,8 +91,10 @@ constexpr const char kUserActionCancel[] = "cancel";
 constexpr const char kUserActionContinueAppLaunch[] = "continue-app-launch";
 constexpr const char kUserActionOfflineLogin[] = "offline-login";
 
-ErrorScreen::ErrorScreen(base::WeakPtr<ErrorScreenView> view)
+ErrorScreen::ErrorScreen(const PrefService* local_state,
+                         base::WeakPtr<ErrorScreenView> view)
     : BaseScreen(ErrorScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)) {
   network_state_informer_ = new NetworkStateInformer();
   network_state_informer_->Init();
@@ -455,7 +458,7 @@ void ErrorScreen::StartGuestSessionAfterOwnershipCheck(
   }
 
   // If EULA was not accepted yet, Show the Guest ToS screen.
-  if (!StartupUtils::IsEulaAccepted()) {
+  if (!StartupUtils::IsEulaAccepted(local_state_.get())) {
     if (LoginDisplayHost::default_host()) {
       LoginDisplayHost::default_host()->ShowGuestTosScreen();
     } else {

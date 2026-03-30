@@ -72,8 +72,9 @@ class UpdateScreenUnitTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
-    mock_error_screen_ =
-        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
+    mock_error_screen_ = std::make_unique<MockErrorScreen>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        mock_error_view_.AsWeakPtr());
 
     network_handler_test_helper_->ConfigureWiFi(shill::kStateOnline);
 

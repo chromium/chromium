@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage_test_util.h"
@@ -34,7 +35,8 @@ class SystemTokenCertDbInitializerTest : public testing::Test {
     chromeos::TpmManagerClient::InitializeFake();
 
     system_token_cert_db_initializer_ =
-        std::make_unique<SystemTokenCertDBInitializer>();
+        std::make_unique<SystemTokenCertDBInitializer>(
+            TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   SystemTokenCertDbInitializerTest(

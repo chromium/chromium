@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -71,9 +72,9 @@ void GetSystemSlotOnIOThread(
 // uninitialized TPM after an interrupted OOBE process.
 // For Chromium builds, don't send it here. Instead, rely on this signal being
 // sent after each successful login.
-bool ShallAttemptTpmOwnership() {
+bool ShallAttemptTpmOwnership(const PrefService& local_state) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return StartupUtils::IsEulaAccepted();
+  return StartupUtils::IsEulaAccepted(local_state);
 #else
   return false;
 #endif
@@ -93,8 +94,10 @@ base::TimeDelta GetNextRequestDelay(base::TimeDelta last_delay) {
 constexpr base::TimeDelta
     SystemTokenCertDBInitializer::kMaxCertDbRetrievalDelay;
 
-SystemTokenCertDBInitializer::SystemTokenCertDBInitializer()
-    : tpm_request_delay_(kInitialRequestDelay),
+SystemTokenCertDBInitializer::SystemTokenCertDBInitializer(
+    const PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)),
+      tpm_request_delay_(kInitialRequestDelay),
       is_nss_slots_software_fallback_allowed_(
           kIsSystemSlotSoftwareFallbackAllowed) {
   // Only start loading the system token once cryptohome is available and only
@@ -186,7 +189,7 @@ void SystemTokenCertDBInitializer::OnGetTpmNonsensitiveStatus(
   if (reply.is_enabled() && !reply.is_owned()) {
     VLOG(1) << "SystemTokenCertDBInitializer: TPM is not ready - not loading "
                "system token.";
-    if (ShallAttemptTpmOwnership()) {
+    if (ShallAttemptTpmOwnership(local_state_.get())) {
       // Requests tpm manager to initialize TPM, if it haven't done that yet.
       // The previous request from EULA dialogue could have been lost if
       // initialization was interrupted. We don't care about the result, and

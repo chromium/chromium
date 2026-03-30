@@ -24,7 +24,7 @@ namespace ash {
 class StartupUtils {
  public:
   // Returns true if EULA has been accepted.
-  static bool IsEulaAccepted();
+  static bool IsEulaAccepted(const PrefService& local_state);
 
   // Returns OOBE completion status, i.e. whether the OOBE wizard should be run
   // on next boot.  This is NOT what causes the .oobe_completed flag file to be
