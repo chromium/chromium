@@ -233,6 +233,7 @@ public class StartupLoadingMetricsTest {
     /** Tests warm start metric for main icon launches recorded correctly. */
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/495503159")
     public void testWarmStartMainIntentTimeToFirstDrawRecordedCorrectly() throws Exception {
         // No records made for main intent cold starts.
         HistogramWatcher histogramWatcher =
