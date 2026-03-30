@@ -97,15 +97,17 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
                         perfetto::Flow::FromPointer(this));
 
     auto wrapped_callback = base::BindOnce(
-        [](GlicPreloadHandler* origin_this,
+        [](base::WeakPtr<GlicPreloadHandler> origin_this,
            mojom::GlicPreloadHandler::PrepareForClientCallback callback,
            mojom::PrepareForClientResult result) {
-          TRACE_EVENT_INSTANT(
-              "browser", "GlicPreloadHandler::PrepareForClient - Response",
-              perfetto::TerminatingFlow::FromPointer(origin_this));
+          if (origin_this) {
+            TRACE_EVENT_INSTANT(
+                "browser", "GlicPreloadHandler::PrepareForClient - Response",
+                perfetto::TerminatingFlow::FromPointer(origin_this.get()));
+          }
           std::move(callback).Run(std::move(result));
         },
-        base::Unretained(this), std::move(callback));
+        this->weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
     GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
         std::move(wrapped_callback));
@@ -125,6 +127,8 @@ class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
   mojo::Receiver<glic::mojom::GlicPreloadHandler> receiver_;
   mojo::Remote<glic::mojom::PreloadPage> preload_page_;
   std::vector<base::CallbackListSubscription> subscriptions_;
+
+  base::WeakPtrFactory<GlicPreloadHandler> weak_ptr_factory_{this};
 };
 
 // static

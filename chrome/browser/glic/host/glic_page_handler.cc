@@ -2500,15 +2500,17 @@ void GlicPageHandler::PrepareForClient(
                       perfetto::Flow::FromPointer(this));
 
   auto wrapped_callback = base::BindOnce(
-      [](GlicPageHandler* origin_this,
+      [](base::WeakPtr<GlicPageHandler> origin_this,
          base::OnceCallback<void(mojom::PrepareForClientResult)> callback,
          mojom::PrepareForClientResult result) {
-        TRACE_EVENT_INSTANT(
-            "browser", "GlicPageHandler::PrepareForClient - Response",
-            perfetto::TerminatingFlow::FromPointer(origin_this));
+        if (origin_this) {
+          TRACE_EVENT_INSTANT(
+              "browser", "GlicPageHandler::PrepareForClient - Response",
+              perfetto::TerminatingFlow::FromPointer(origin_this.get()));
+        }
         std::move(callback).Run(std::move(result));
       },
-      base::Unretained(this), std::move(callback));
+      this->weak_ptr_factory_.GetWeakPtr(), std::move(callback));
 
   GetGlicService()->GetAuthController().CheckAuthBeforeLoad(
       std::move(wrapped_callback));
