@@ -16516,9 +16516,9 @@
             ],
             "experiments": [
                 {
-                    "name": "enabled_without_strict_check_20260227",
+                    "name": "enabled_with_strict_check_20251212",
                     "params": {
-                        "strict-free-size-check": "false"
+                        "strict-free-size-check": "true"
                     },
                     "enable_features": [
                         "PartitionAllocFreeWithSize"
