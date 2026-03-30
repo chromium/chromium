@@ -23,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
 #include "components/user_education/webui/whats_new_registry.h"
@@ -38,12 +37,9 @@
 #include "url/gurl.h"
 
 namespace whats_new {
-const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
-const char kChromeWhatsNewRefreshURL[] =
+const char kChromeWhatsNewURL[] =
     "https://www.google.com/chrome/wn-2025/whats-new/";
 const char kChromeWhatsNewStagingURL[] =
-    "https://chrome-staging.corp.google.com/chrome/whats-new/";
-const char kChromeWhatsNewRefreshStagingURL[] =
     "https://chrome-staging.corp.google.com/chrome/wn-2025/whats-new/";
 
 const int64_t kMaxDownloadBytes = 1024 * 1024;
@@ -56,26 +52,12 @@ GURL AddVersionParameter(const WhatsNewRegistry& whats_new_registry,
           CHROME_VERSION_MAJOR)));
 }
 
-GURL GetServerLegacyURL(const WhatsNewRegistry& whats_new_registry,
-                        bool is_staging) {
-  const GURL base_url =
-      is_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
-  return AddVersionParameter(whats_new_registry, base_url);
-}
-
-GURL GetServerRefreshURL(const WhatsNewRegistry& whats_new_registry,
-                         bool is_staging) {
-  const GURL base_url = is_staging ? GURL(kChromeWhatsNewRefreshStagingURL)
-                                   : GURL(kChromeWhatsNewRefreshURL);
-  return AddVersionParameter(whats_new_registry, base_url);
-}
-
 GURL GetServerURL(const WhatsNewRegistry& whats_new_registry, bool is_staging) {
   const bool use_staging = is_staging || UseStagingOverrideEnabled();
 
-  return base::FeatureList::IsEnabled(features::kWhatsNewDesktopRefresh)
-             ? GetServerRefreshURL(whats_new_registry, use_staging)
-             : GetServerLegacyURL(whats_new_registry, use_staging);
+  const GURL base_url =
+      use_staging ? GURL(kChromeWhatsNewStagingURL) : GURL(kChromeWhatsNewURL);
+  return AddVersionParameter(whats_new_registry, base_url);
 }
 
 GURL GetServerURLForRender(const WhatsNewRegistry& whats_new_registry,

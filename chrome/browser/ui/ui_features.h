@@ -350,9 +350,6 @@ BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInBrowser);
 bool IsAndroidAnimatedProgressBarInBrowserEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Controls whether the updated What's New page is enabled.
-BASE_DECLARE_FEATURE(kWhatsNewDesktopRefresh);
-
 BASE_DECLARE_FEATURE(kAiOverlayDialog);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAiOverlayDialogApiKey);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAiOverlayDialogMockJsonPath);
