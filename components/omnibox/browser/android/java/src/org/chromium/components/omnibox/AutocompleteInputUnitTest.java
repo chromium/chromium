@@ -247,10 +247,13 @@ public class AutocompleteInputUnitTest {
                         PageClassification.OTHER_VALUE, //
                         PageClassification.OTHER_OMNIBOX_COMPOSEBOX_VALUE);
 
-        for (var requestType :
+        for (@AutocompleteRequestType
+        int requestType :
                 List.of(
                         AutocompleteRequestType.AI_MODE,
-                        AutocompleteRequestType.IMAGE_GENERATION)) {
+                        AutocompleteRequestType.IMAGE_GENERATION,
+                        AutocompleteRequestType.DEEP_SEARCH,
+                        AutocompleteRequestType.CANVAS)) {
             mInput.setRequestType(requestType);
             for (var givePageClass : PageClassification.values()) {
                 Integer wantPageClass = testCases.getOrDefault(givePageClass.getNumber(), null);

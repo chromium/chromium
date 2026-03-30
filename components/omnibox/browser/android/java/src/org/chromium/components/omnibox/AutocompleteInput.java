@@ -176,11 +176,9 @@ public class AutocompleteInput implements UserData {
 
     /** Returns the current page classification. */
     public int getPageClassification() {
-        return switch (mRequestTypeSupplier.get()) {
-            case AutocompleteRequestType.AI_MODE, AutocompleteRequestType.IMAGE_GENERATION ->
-                    getComposeboxEquivalentOfPageClassification();
-            default -> mPageClassification;
-        };
+        return ToolModeUtils.isAimRequest(mRequestTypeSupplier.get())
+                ? getComposeboxEquivalentOfPageClassification()
+                : mPageClassification;
     }
 
     /**
