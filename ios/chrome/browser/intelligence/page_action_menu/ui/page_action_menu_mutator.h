@@ -63,6 +63,9 @@ typedef NS_ENUM(NSInteger, PageActionMenuFeatureType);
 // Returns whether the AI entry points should be shown.
 - (BOOL)shouldShowFeatureEntryPoints;
 
+// Returns YES if the user is signed in.
+- (BOOL)isUserSignedIn;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PAGE_ACTION_MENU_UI_PAGE_ACTION_MENU_MUTATOR_H_

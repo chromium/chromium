@@ -136,11 +136,7 @@ const CGFloat kFeatureRowIconSize = 20;
   if (IsPageActionMenuAuthFlowEnabled()) {
     return YES;
   }
-  if (!_authenticationService) {
-    return NO;
-  }
-  return _authenticationService->HasPrimaryIdentity(
-      signin::ConsentLevel::kSignin);
+  return [self isUserSignedIn];
 }
 
 - (BOOL)isReaderModeActive {
@@ -153,6 +149,10 @@ const CGFloat kFeatureRowIconSize = 20;
 - (PageActionMenuContentEntryPoint*)geminiEntryPoint {
   if (!_geminiService || !_geminiTabHelper) {
     return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:NO];
+  }
+
+  if (IsPageActionMenuAuthFlowEnabled() && ![self isUserSignedIn]) {
+    return [[PageActionMenuContentEntryPoint alloc] initWithEnabled:YES];
   }
 
   std::optional<gemini::IneligibilityReasons> result =
@@ -701,6 +701,15 @@ std::string GetTargetLanguageCode(ChromeIOSTranslateClient* translate_client) {
   if (translateInfobar) {
     translateInfobar->set_accepted(accepted);
   }
+}
+
+// Returns true if the user is signed in.
+- (BOOL)isUserSignedIn {
+  if (!_authenticationService) {
+    return NO;
+  }
+  return _authenticationService->HasPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
 }
 
 @end
