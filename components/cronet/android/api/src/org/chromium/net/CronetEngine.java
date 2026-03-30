@@ -44,9 +44,6 @@ import javax.net.ssl.HttpsURLConnection;
 public abstract class CronetEngine {
     private static final String TAG = CronetEngine.class.getSimpleName();
 
-    static final String USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME =
-            "Cronet_UseScoreBasedProviderSelection";
-
     /** The value of the active request count is unknown */
     public static final int ACTIVE_REQUEST_COUNT_UNKNOWN = -1;
 
@@ -714,15 +711,10 @@ public abstract class CronetEngine {
                         "Unable to find any Cronet provider."
                                 + " Have you included all necessary jars?");
             }
-            var shouldUseSmartProviderLogic =
-                    HttpFlagsForApi.getHttpFlags(context)
-                            .flags()
-                            .get(USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME);
             CronetProvider.ProviderInfo cronetProvider =
-                    (shouldUseSmartProviderLogic == null
-                                    || !shouldUseSmartProviderLogic.getBoolValue())
-                            ? getPreferredCronetProviderUsingVersion(providers)
-                            : getPreferredCronetProviderUsingScore(providers);
+                    CronetProvider.shouldUseScoreBasedProviderSelection(context)
+                            ? getPreferredCronetProviderUsingScore(providers)
+                            : getPreferredCronetProviderUsingVersion(providers);
             if (cronetProvider == null) {
                 throw new RuntimeException(
                         "All available Cronet providers are disabled."

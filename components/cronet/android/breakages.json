@@ -16,6 +16,12 @@
     ],
   "breakages": [
     {
+      "bad_change_id": "I15c6d62b30a956900fd705d8354df79006b1b4c8",
+      "good_change_ids": ["Iaaa1d77dd8518d9910478051fba877e3c8182251"],
+      "bugs": ["b/496941667"],
+      "comment": "Accidentally added HttpEngine to automatic provider selection"
+    },
+    {
       "bad_change_id": "I42f1e374590d3f98cd27807e0091192d87121fc2",
       "good_change_ids": ["Ie2b5255ae892ff0a0a7f3ec6e6e52d2a82ed9b1d"],
       "bugs": ["b/494565814"],

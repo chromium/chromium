@@ -164,7 +164,7 @@ public class CronetEngineBuilderTest {
     @Flags(
             boolFlags = {
                 @BoolFlag(
-                        name = CronetEngine.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
+                        name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
                         value = true)
             })
     public void testSmartLogicSorting() {
@@ -202,7 +202,7 @@ public class CronetEngineBuilderTest {
     @Flags(
             boolFlags = {
                 @BoolFlag(
-                        name = CronetEngine.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
+                        name = CronetProvider.USE_SCORE_BASED_PROVIDER_SELECTION_HTTP_FLAG_NAME,
                         value = true)
             })
     public void testSmartLogicSortingShouldFetchFirstEnabledOnly() {
