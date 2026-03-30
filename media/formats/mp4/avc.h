@@ -49,9 +49,14 @@ class MEDIA_EXPORT AVC {
   // detecting keyframe-ness.
   // `subsamples` contains the information about what parts of the buffer are
   // encrypted and which parts are clear.
+  // `allow_bare_idr` indicates whether the analyzer should treat an IDR NAL
+  // unit without accompanying SPS/PPS parameter sets as sufficient to mark a
+  // frame as a keyframe. When true, the analyzer relies on a "bare" IDR NAL
+  // unit alone to determine keyframe-ness.
   static BitstreamConverter::AnalysisResult AnalyzeAnnexB(
       base::span<const uint8_t> buffer,
-      const std::vector<SubsampleEntry>& subsamples);
+      const std::vector<SubsampleEntry>& subsamples,
+      bool allow_bare_idr = true);
 
   // Given a `buffer` and `subsamples` information and `pts` pointer into the
   // `buffer` finds the index of the subsample `ptr` is pointing into.

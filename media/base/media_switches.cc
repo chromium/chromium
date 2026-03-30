@@ -1006,6 +1006,12 @@ BASE_FEATURE(kAutoPictureInPicturePageInfoDetails,
 // recovery point with `recovery_frame_cnt=0` has been found.
 BASE_FEATURE(kParseSEIRecoveryPoints, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, H.264 keyframe detection becomes stricter for samples whose avc
+// config does not provide SPS/PPS. In that case, an IDR alone is not
+// sufficient, SPS+PPS must appear in-band to mark it as a keyframe.
+BASE_FEATURE(kH264IDRKeyframeRequiresParameterSets,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows media to autoplay without a user gesture if the site has been
 // granted microphone or camera permissions.
 BASE_FEATURE(kAutoplayBypassForMicCamera, base::FEATURE_ENABLED_BY_DEFAULT);

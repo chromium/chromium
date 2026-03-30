@@ -528,6 +528,11 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAutoPictureInPicturePageInfoDetails);
 // `recovery_frame_cnt=0` as keyframes.
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kParseSEIRecoveryPoints);
 
+// When enabled, H.264 keyframe detection becomes stricter for samples whose avc
+// config does not provide SPS/PPS. In that case, an IDR alone is not
+// sufficient, SPS+PPS must appear in-band to mark it as a keyframe.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kH264IDRKeyframeRequiresParameterSets);
+
 // Based on a |command_line| and the current platform, returns the effective
 // autoplay policy. In other words, it will take into account the default policy
 // if none is specified via the command line and options passed for testing.

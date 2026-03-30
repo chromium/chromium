@@ -369,9 +369,13 @@ TEST_F(AVCConversionTest, ReservedNalUnitsIgnored) {
 }
 
 TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      kH264IDRKeyframeRequiresParameterSets);
+
   struct TestCases {
     const char* case_string;
     const bool is_keyframe;
+    const bool allow_bare_idr = true;
   };
   auto test_cases = std::to_array<TestCases>({
       {"I", true},
@@ -400,6 +404,11 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"SDA I", false},
       {"SDB I", false},
       {"SDC I", false},
+
+      // Verify IDR keyframe detection when param sets are not supplied upfront
+      // (e.g., avc3 with no SPS/PPS in avc config) and must appear in-band.
+      {"I", false, false},         // Bare IDR without param sets in config
+      {"SPS PPS I", true, false},  // In-band SPS+PPS before IDR -> keyframe
   });
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -410,8 +419,12 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
     expected.is_keyframe = test_cases[i].is_keyframe;
-    EXPECT_PRED2(AnalysesMatch, AVC::AnalyzeAnnexB(buf, subsamples), expected)
-        << "'" << test_cases[i].case_string << "' failed";
+    EXPECT_PRED2(
+        AnalysesMatch,
+        AVC::AnalyzeAnnexB(buf, subsamples, test_cases[i].allow_bare_idr),
+        expected)
+        << "'" << test_cases[i].case_string << "' failed "
+        << "(allow_bare_idr=" << test_cases[i].allow_bare_idr << ")";
   }
 }
 

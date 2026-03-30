@@ -192,7 +192,8 @@ bool AVC::ConvertConfigToAnnexB(const AVCDecoderConfigurationRecord& avc_config,
 // static
 BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
     base::span<const uint8_t> buffer,
-    const std::vector<SubsampleEntry>& subsamples) {
+    const std::vector<SubsampleEntry>& subsamples,
+    bool allow_bare_idr) {
   DVLOG(3) << __func__;
 
   BitstreamConverter::AnalysisResult result;
@@ -202,6 +203,10 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
     result.is_conformant = true;
     return result;
   }
+
+  // Track whether SPS/PPS exist
+  bool has_sps = false;
+  bool has_pps = false;
 
   H264Parser parser;
   parser.SetEncryptedStream(buffer, subsamples);
@@ -274,13 +279,29 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
           case H264NALU::kDPS:
           case H264NALU::kReserved17:
           case H264NALU::kReserved18:
-          case H264NALU::kPPS:
-          case H264NALU::kSPS:
             if (order_state > kBeforeFirstVCL) {
               DVLOG(1) << "Unexpected NALU type " << nalu.nal_unit_type
                        << " in order_state " << order_state;
               return result;
             }
+            order_state = kBeforeFirstVCL;
+            break;
+
+          case H264NALU::kPPS:
+            if (order_state > kBeforeFirstVCL) {
+              DVLOG(1) << "Unexpected PPS in order_state " << order_state;
+              return result;
+            }
+            has_pps = true;
+            order_state = kBeforeFirstVCL;
+            break;
+
+          case H264NALU::kSPS:
+            if (order_state > kBeforeFirstVCL) {
+              DVLOG(1) << "Unexpected SPS in order_state " << order_state;
+              return result;
+            }
+            has_sps = true;
             order_state = kBeforeFirstVCL;
             break;
 
@@ -300,10 +321,10 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
               DVLOG(1) << "Unexpected VCL in order_state " << order_state;
               return result;
             }
-
-            if (!result.is_keyframe.has_value())
-              result.is_keyframe = nalu.nal_unit_type == H264NALU::kIDRSlice;
-
+            if (!result.is_keyframe.has_value()) {
+              result.is_keyframe = nalu.nal_unit_type == H264NALU::kIDRSlice &&
+                                   (allow_bare_idr || (has_sps && has_pps));
+            }
             order_state = kAfterFirstVCL;
             break;
 
@@ -407,7 +428,11 @@ bool AVCBitstreamConverter::ConvertAndAnalyzeFrame(
 BitstreamConverter::AnalysisResult AVCBitstreamConverter::Analyze(
     base::span<const uint8_t> frame_buf,
     std::vector<SubsampleEntry>* subsamples) const {
-  return AVC::AnalyzeAnnexB(frame_buf, *subsamples);
+  const bool allow_bare_idr =
+      !base::FeatureList::IsEnabled(kH264IDRKeyframeRequiresParameterSets) ||
+      (!avc_config_->sps_list.empty() && !avc_config_->pps_list.empty());
+
+  return AVC::AnalyzeAnnexB(frame_buf, *subsamples, allow_bare_idr);
 }
 
 }  // namespace media::mp4
