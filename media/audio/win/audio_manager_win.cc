@@ -271,7 +271,7 @@ AudioOutputStream* AudioManagerWin::MakeLowLatencyOutputStream(
     const LogCallback& log_callback) {
   DCHECK_EQ(params.format(), AudioParameters::AUDIO_PCM_LOW_LATENCY);
 
-  if (params.channels() > kMaxConcurrentChannels) {
+  if (params.channels() > GetConcurrentMaxChannels()) {
     return nullptr;
   }
 

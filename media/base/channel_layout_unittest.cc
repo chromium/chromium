@@ -4,7 +4,9 @@
 
 #include "media/base/channel_layout.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "media/base/limits.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -83,7 +85,7 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_Guess) {
   EXPECT_EQ(CHANNEL_LAYOUT_5_1, six_channels.channel_layout());
   EXPECT_EQ(6, six_channels.channels());
 
-  constexpr int kLargeChannelCount = kMaxConcurrentChannels + 1;
+  const int kLargeChannelCount = GetConcurrentMaxChannels() + 1;
   auto large_layout = ChannelLayoutConfig::Guess(kLargeChannelCount);
   EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, large_layout.channel_layout());
   EXPECT_EQ(kLargeChannelCount, large_layout.channels());
@@ -179,6 +181,24 @@ TEST(ChannelLayoutTest, ChannelLayoutConfig_FromLayoutRuntime) {
       ChannelLayoutConfig::FromLayout(CHANNEL_LAYOUT_BITSTREAM);
   EXPECT_EQ(CHANNEL_LAYOUT_BITSTREAM, bitstream_layout.channel_layout());
   EXPECT_EQ(0, bitstream_layout.channels());
+}
+
+TEST(ChannelLayoutTest, GuessChannelLayout_HighChannelCount) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
+
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(9));
+  EXPECT_EQ(CHANNEL_LAYOUT_5_1_4, GuessChannelLayout(10));
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(11));
+  EXPECT_EQ(CHANNEL_LAYOUT_7_1_4, GuessChannelLayout(12));
+
+  base::test::ScopedFeatureList disable_feature;
+  disable_feature.InitAndDisableFeature(kEnableHighChannelLayouts);
+
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(9));
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(10));
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(11));
+  EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, GuessChannelLayout(12));
 }
 
 #if GTEST_HAS_DEATH_TEST
