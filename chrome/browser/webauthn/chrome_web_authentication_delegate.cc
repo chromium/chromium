@@ -149,43 +149,32 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
     return false;
   }
 
-  // An extension should be able to assert a WebAuthn RP ID if it has host
-  // permissions over any host that can assert that RP ID. This code duplicates
-  // some of the logic on content/public/browser/webauthn_security_utils.h.
-  // https://w3c.github.io/webauthn/#relying-party-identifier
-  for (const URLPattern& pattern :
-       extension.permissions_data()->active_permissions().explicit_hosts()) {
-    // Only https hosts and localhost are allowed to assert RP IDs. By design,
-    // this means extensions cannot claim RP IDs for other extensions.
-    if (!pattern.MatchesScheme(url::kHttpsScheme) &&
-        !(pattern.MatchesScheme(url::kHttpScheme) &&
-          net::HostStringIsLocalhost(pattern.host()))) {
-      continue;
-    }
-    // IP hosts are not allowed to assert RP IDs.
-    if (url::HostIsIPAddress(pattern.host())) {
-      continue;
-    }
-    // If the pattern matches the RP ID, then it is allowed to assert it.
-    // Pattern                   RP ID                     Allowed?
-    // *.com                     example.com               Yes
-    // example.com               example.com               Yes
-    // *.example.com             subdomain.example.com     Yes
-    if (pattern.MatchesHost(rp_id)) {
-      return true;
-    }
-    // If the pattern matchens any valid subdomain of the RP ID, then it is
-    // allowed to assert it, since subdomains can assert parent components up to
-    // eTLD+1 on WebAuthn.
-    // Pattern                   RP ID                     Allowed?
-    // subdomain.example.com     example.com               Yes
-    // *.subdomain.example.com   example.com               Yes
-    // example.com               subdomain.example.com     No
-    if (url::DomainIs(pattern.host(), rp_id)) {
-      return true;
-    }
+  // http origins are allowed to claim localhost, so this needs special
+  // handling.
+  if (rp_id == "localhost" && extension.permissions_data()->HasHostPermission(
+                                  GURL("http://localhost"))) {
+    return true;
   }
-  return false;
+
+  // Extension permissions logic operates on URLs. Convert the RP ID into a
+  // https URL, and make sure the host matches the rp_id (to disallow RP IDs
+  // like example.com/site).
+  GURL rp_id_url(
+      base::StrCat({url::kHttpsScheme, url::kStandardSchemeSeparator, rp_id}));
+  if (!rp_id_url.is_valid() || rp_id_url.host() != rp_id) {
+    return false;
+  }
+
+  // RP IDs must not be IP origins.
+  if (rp_id_url.HostIsIPAddress()) {
+    return false;
+  }
+
+  // Allow claiming an RP ID if an extension can access this page. This is more
+  // restrictive than WebAuthn on the web:
+  // * Subdomains are not allowed to claim domains up.
+  // * Non-default ports are not allowed to claim their domains.
+  return extension.permissions_data()->HasHostPermission(rp_id_url);
 }
 
 void DeleteUnacceptedPasskeys(
