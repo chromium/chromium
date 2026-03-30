@@ -120,24 +120,11 @@ GlicSidePanelCoordinatorDesktopAndroid::state() {
   return state_;
 }
 
-void GlicSidePanelCoordinatorDesktopAndroid::OnEntryWillHide(
+void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHiddenWithReason(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  pending_hide_reason_ = reason;
-}
-
-void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHideCancelled(
-    SidePanelEntry* entry) {
-  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  pending_hide_reason_.reset();
-}
-
-void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHidden(
-    SidePanelEntry* entry) {
-  CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  CHECK(pending_hide_reason_.has_value());
-  if (pending_hide_reason_ == SidePanelEntryHideReason::kBackgrounded) {
+  if (reason == SidePanelEntryHideReason::kBackgrounded) {
     SetState(State::kBackgrounded);
   } else {
     SetState(State::kClosed);

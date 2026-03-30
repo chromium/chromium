@@ -50,10 +50,8 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
 
  protected:
   // SidePanelEntryObserver:
-  void OnEntryWillHide(SidePanelEntry* entry,
-                       SidePanelEntryHideReason reason) override;
-  void OnEntryHideCancelled(SidePanelEntry* entry) override;
-  void OnEntryHidden(SidePanelEntry* entry) override;
+  void OnEntryHiddenWithReason(SidePanelEntry* entry,
+                               SidePanelEntryHideReason reason) override;
   void OnEntryShown(SidePanelEntry* entry) override;
 
  private:
@@ -78,8 +76,6 @@ class GlicSidePanelCoordinatorDesktopAndroid : public GlicSidePanelCoordinator,
   base::RepeatingCallbackList<void(State state)> state_changed_callbacks_;
 
   State state_ = State::kClosed;
-
-  std::optional<SidePanelEntryHideReason> pending_hide_reason_;
 
   std::unique_ptr<CoBrowseViewsBridge> cobrowse_views_bridge_;
   raw_ptr<content::WebContents> web_contents_ = nullptr;
