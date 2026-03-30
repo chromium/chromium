@@ -99,13 +99,16 @@ StringView TextAlignToString(ETextAlign align) {
   return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(align));
 }
 
-const String SerializeComputedStyleForProperty(const ComputedStyle& style,
-                                               CSSPropertyID id) {
+void AppendComputedStyleForProperty(const ComputedStyle& style,
+                                    CSSPropertyID id,
+                                    StringBuilder& builder) {
   const CSSProperty& property = CSSProperty::Get(id);
   const CSSValue* value = property.CSSValueFromComputedStyle(
       style, nullptr, false, CSSValuePhase::kResolvedValue);
-  return UNSAFE_TODO(String::Format("%s : %s;\n", property.GetPropertyName(),
-                                    value->CssText().Utf8().c_str()));
+  builder.Append(property.GetPropertyNameAtomicString());
+  builder.Append(" : ");
+  builder.Append(value->CssText());
+  builder.Append(";\n");
 }
 
 const String SerializeColorScheme(const ComputedStyle& style) {
@@ -592,8 +595,6 @@ void InternalPopupMenu::AppendOwnerElementPseudoStyles(
     const String& target,
     SegmentedBuffer& data,
     const ComputedStyle& style) {
-  PagePopupClient::AddString(StrCat({target, "{ \n"}), data);
-
   const CSSPropertyID serialize_targets[] = {
       CSSPropertyID::kDisplay,        CSSPropertyID::kBackgroundColor,
       CSSPropertyID::kWidth,          CSSPropertyID::kBorderBottom,
@@ -601,12 +602,15 @@ void InternalPopupMenu::AppendOwnerElementPseudoStyles(
       CSSPropertyID::kBorderTop,      CSSPropertyID::kBorderRadius,
       CSSPropertyID::kBackgroundClip, CSSPropertyID::kBoxShadow};
 
+  StringBuilder builder;
+  builder.Append(target);
+  builder.Append("{ \n");
   for (CSSPropertyID id : serialize_targets) {
-    PagePopupClient::AddString(SerializeComputedStyleForProperty(style, id),
-                               data);
+    AppendComputedStyleForProperty(style, id, builder);
   }
+  builder.Append("}\n");
 
-  PagePopupClient::AddString("}\n", data);
+  PagePopupClient::AddString(builder, data);
 }
 
 CSSFontSelector* InternalPopupMenu::CreateCSSFontSelector(
