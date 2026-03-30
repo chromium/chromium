@@ -4023,6 +4023,40 @@ TEST_F(LayerContextImplUpdateDisplayTreeMirrorLayerTest,
   EXPECT_EQ(layer_impl->mirrored_layer_id(), kMirroredLayerId2);
 }
 
+TEST_F(LayerContextImplUpdateDisplayTreeMirrorLayerTest,
+       UpdateMirroredLayerIdWithInvalidIdFails) {
+  constexpr int kMirrorLayerId = 2;
+  constexpr int kInvalidMirroredLayerId = 999;
+
+  // Initial update: Create MirrorLayer with default mirrored_layer_id (0).
+  auto update1 = CreateDefaultUpdate();
+  AddDefaultLayerToUpdate(update1.get(), cc::mojom::LayerType::kMirror,
+                          kMirrorLayerId);
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+
+  cc::MirrorLayerImpl* layer_impl =
+      GetMirrorLayerFromActiveTree(kMirrorLayerId);
+  ASSERT_NE(nullptr, layer_impl);
+  EXPECT_EQ(layer_impl->mirrored_layer_id(), 0);
+
+  // Second update: Try to mirror a non-existent layer.
+  auto update2 = CreateDefaultUpdate();
+  auto layer_props2 =
+      CreateManualLayer(kMirrorLayerId, cc::mojom::LayerType::kMirror);
+  auto& mirror_extra2 =
+      GetLayerExtra(layer_props2.get())->get_mirror_layer_extra();
+  mirror_extra2->mirrored_layer_id = kInvalidMirroredLayerId;
+  update2->layers.push_back(std::move(layer_props2));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid mirrored_layer_id");
+
+  // Verify the property remains unchanged.
+  EXPECT_EQ(layer_impl->mirrored_layer_id(), 0);
+}
+
 // Test fixture for ViewTransitionContentLayerImpl specific property updates.
 class LayerContextImplUpdateDisplayTreeViewTransitionContentLayerTest
     : public LayerContextImplLayerLifecycleTest {
