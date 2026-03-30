@@ -6,6 +6,7 @@
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service.h"
+#include "chrome/browser/policy/cloud/user_policy_signin_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -35,6 +36,8 @@ ProfileManagementDisclaimerServiceFactory::
     : ProfileKeyedServiceFactory("ProfileManagementDisclaimerService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(DiceWebSigninInterceptorFactory::GetInstance());
+  // This dependency is needed through `TurnSyncOnHelperPolicyFetchTracker`.
+  DependsOn(policy::UserPolicySigninServiceFactory::GetInstance());
 }
 
 ProfileManagementDisclaimerServiceFactory::
