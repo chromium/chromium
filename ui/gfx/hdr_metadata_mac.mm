@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "ui/gfx/hdr_metadata_mac.h"
-#include "ui/gfx/hdr_metadata.h"
 
 #include <simd/simd.h>
+
+#include "base/apple/scoped_cftyperef.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace gfx {
 
@@ -32,7 +33,7 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateContentLightLevelInfo(
       __builtin_bswap16(hdr_metadata.GetCLLI().getUint16MaxFALL());
 
   return base::apple::ScopedCFTypeRef<CFDataRef>(
-      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 4));
+      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), sizeof(sei)));
 }
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
@@ -81,7 +82,7 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
       __builtin_bswap32(md.fMinimumDisplayMasteringLuminance + 0.5f);
 
   return base::apple::ScopedCFTypeRef<CFDataRef>(
-      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 24));
+      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), sizeof(sei)));
 }
 
 base::apple::ScopedCFTypeRef<CFDataRef> GenerateAmbientViewingEnvironment() {
@@ -104,7 +105,7 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateAmbientViewingEnvironment() {
   sei.ambient_light_y = __builtin_bswap16(0x4042);        // 0.329
 
   return base::apple::ScopedCFTypeRef<CFDataRef>(
-      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 24));
+      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), sizeof(sei)));
 }
 
 }  // namespace gfx
