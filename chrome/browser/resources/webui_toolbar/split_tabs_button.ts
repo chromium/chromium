@@ -8,12 +8,13 @@ import './split_tabs_button_icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './split_tabs_button.css.js';
 import {getHtml} from './split_tabs_button.html.js';
-import {getClickSourceType, getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
+import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
 import {ContextMenuType, SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {SplitTabsControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -74,19 +75,42 @@ export class SplitTabsButtonElement extends CrLitElement {
     return loadTimeData.getString(labelId);
   }
 
-  protected onClick(e: Event) {
+  /**
+   * Pointer and mouse clicks should be handled by onPointerdown to trigger
+   * immediate response to match native Views behavior.
+   * @param e the PointerEvent associated with the click.
+   * @returns
+   */
+  protected onPointerdown(e: PointerEvent) {
+    // Only handle primary (left) clicks. Right clicks are handled by the
+    // @contextmenu listener. Split tabs button does not support middle click.
+    if (e.button !== BUTTON_LEFT) {
+      return;
+    }
+    this.handleAction_(getClickSourceType(e));
+  }
+
+  protected onClick(e: MouseEvent) {
+    // Only keyboard `click` (Enter/Space) are handled here, which triggers a
+    // left-click equivalent. Keyboard 'click' has detail === 0.
+    if (e.detail === 0) {
+      this.handleAction_(getClickSourceType(e));
+    }
+  }
+
+  private handleAction_(sourceType: MenuSourceType) {
     if (this.state.isCurrentTabSplit) {
       // If already split, show the action menu.
       this.browserProxy_.toolbarUIHandler.showContextMenu(
           ContextMenuType.kSplitTabsAction, getContextMenuPosition(this),
-          getClickSourceType(e));
+          sourceType);
     } else {
       // If not split, enters split view.
       this.browserProxy_.browserControlsHandler.splitActiveTab();
     }
   }
 
-  protected onContextmenu(e: MouseEvent) {
+  protected onContextmenu(e: PointerEvent) {
     e.preventDefault();
     this.browserProxy_.toolbarUIHandler.showContextMenu(
         ContextMenuType.kSplitTabsContext, getContextMenuPosition(this),

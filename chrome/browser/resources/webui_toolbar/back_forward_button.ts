@@ -54,9 +54,8 @@ export class BackForwardButtonElement extends CrLitElement {
         this.contextMenuType_, getContextMenuPosition(this), source);
   }
 
-  private onShortPress_(e: PointerEvent) {
+  private onShortPress_(e: MouseEvent) {
     const flags = getClickDispositionFlags(e);
-
     if (this.direction === 'back') {
       this.browserProxy_.browserControlsHandler.back(flags);
     } else {
@@ -79,6 +78,14 @@ export class BackForwardButtonElement extends CrLitElement {
   protected onPointerenter_() {
     if (this.direction === 'back') {
       this.browserProxy_.browserControlsHandler.backButtonHovered();
+    }
+  }
+
+  protected onClick_(e: MouseEvent) {
+    // Only handle keyboard 'click', which triggers a left-click equivalent.
+    // Other events like mouse 'click' are handled in onShortPress_.
+    if (e.detail === 0) {
+      this.onShortPress_(e);
     }
   }
 }

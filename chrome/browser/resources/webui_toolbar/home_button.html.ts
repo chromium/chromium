@@ -12,6 +12,7 @@ export function getHtml(this: HomeButtonElement) {
     @pointerdown="${this.pressHandler_.onPointerdown}"
     @pointerup="${this.pressHandler_.onPointerup}"
     @pointercancel="${this.pressHandler_.onPointercancel}"
+    @click="${this.onClick_}"
     @contextmenu="${this.pressHandler_.onContextmenu}"
     title="${this.tooltip_}" aria-label="${this.label_}"
     ?is-menu-open="${this.state.isContextMenuVisible}">

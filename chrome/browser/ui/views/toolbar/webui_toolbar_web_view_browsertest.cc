@@ -177,22 +177,32 @@ std::string DispatchEventScript(const std::string& selector,
       options.c_str());
 }
 
-// Simulates a full physical click cycle (press + release) using PointerEvents.
-// Required for back/forward buttons because they listen for 'pointerup'
-// to trigger navigation, which a standard 'element.click()' does not fire.
-std::string DispatchPointerClick(const std::string& selector,
-                                 const std::string& opts = "button: 0") {
+// Dispatches a pointerup or pointerdown event based on `event`name`.
+std::string DispatchPointerEvent(
+    const std::string& event_name,
+    const std::string& selector,
+    const std::string& pointer_type = "mouse",
+    const std::string& opts = "detail: 1, button: 0") {
   const std::string el = GetButtonIconJS(selector);
   return base::StringPrintf(
-      "%s.dispatchEvent(new PointerEvent('pointerdown', {%s}));"
-      "%s.dispatchEvent(new PointerEvent('pointerup', {%s}));",
-      el.c_str(), opts.c_str(), el.c_str(), opts.c_str());
+      "%s.dispatchEvent(new PointerEvent('%s', {bubbles: true, cancelable: "
+      "true, view: window, pointerType: '%s', %s}));",
+      el.c_str(), event_name.c_str(), pointer_type.c_str(), opts.c_str());
 }
 
-bool ClickButton(content::WebContents* web_contents,
-                 const std::string& selector) {
-  return content::ExecJs(
-      web_contents, base::StrCat({GetButtonIconJS(selector), "?.click();"}));
+// Simulates a full physical click cycle (press + release) using PointerEvents.
+std::string DispatchPointerClick(
+    const std::string& selector,
+    const std::string& pointer_type = "mouse",
+    const std::string& opts = "detail: 1, button: 0") {
+  const std::string el = GetButtonIconJS(selector);
+  return base::StringPrintf(
+      "%s.dispatchEvent(new PointerEvent('pointerdown', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', %s}));"
+      "%s.dispatchEvent(new PointerEvent('pointerup', {bubbles: true, "
+      "cancelable: true, view: window, pointerType: '%s', %s}));",
+      el.c_str(), pointer_type.c_str(), opts.c_str(), el.c_str(),
+      pointer_type.c_str(), opts.c_str());
 }
 
 class NavigationCounter : public content::WebContentsObserver {
@@ -752,43 +762,59 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                      browser()));
   PinButton(browser(), web_view, prefs::kShowForwardButton);
 
-  // Create navigation history.
-  GURL url1("chrome://version/");
-  GURL url2("chrome://flags/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
+  const struct {
+    const char* name;
+    std::string back_script;
+    std::string forward_script;
+  } test_cases[] = {
+      {"Mouse Click", DispatchPointerClick(kBackSelector),
+       DispatchPointerClick(kForwardSelector)},
+      {"Keyboard Click",
+       DispatchEventScript(kBackSelector, "MouseEvent", "click", "detail: 0"),
+       DispatchEventScript(kForwardSelector, "MouseEvent", "click",
+                           "detail: 0")}};
 
-  // Wait for the back button to be enabled.
-  ASSERT_TRUE(WaitForButtonEnabled(web_view->GetWebContents(), kBackSelector));
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    // Create navigation history.
+    GURL url1("chrome://version/");
+    GURL url2("chrome://flags/");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
 
-  // Click Back.
-  {
-    content::TestNavigationObserver nav_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
-                                DispatchPointerClick(kBackSelector)));
-    nav_observer.Wait();
-    EXPECT_EQ(url1, browser()
-                        ->tab_strip_model()
-                        ->GetActiveWebContents()
-                        ->GetLastCommittedURL());
-  }
+    // Wait for the back button to be enabled.
+    ASSERT_TRUE(
+        WaitForButtonEnabled(web_view->GetWebContents(), kBackSelector));
 
-  // Wait for the forward button to be enabled.
-  ASSERT_TRUE(
-      WaitForButtonEnabled(web_view->GetWebContents(), kForwardSelector));
+    // Click Back.
+    {
+      content::TestNavigationObserver nav_observer(
+          browser()->tab_strip_model()->GetActiveWebContents());
+      EXPECT_TRUE(
+          content::ExecJs(web_view->GetWebContents(), test_case.back_script));
+      nav_observer.Wait();
+      EXPECT_EQ(url1, browser()
+                          ->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+    }
 
-  // Click Forward.
-  {
-    content::TestNavigationObserver nav_observer(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
-                                DispatchPointerClick(kForwardSelector)));
-    nav_observer.Wait();
-    EXPECT_EQ(url2, browser()
-                        ->tab_strip_model()
-                        ->GetActiveWebContents()
-                        ->GetLastCommittedURL());
+    // Wait for the forward button to be enabled.
+    ASSERT_TRUE(
+        WaitForButtonEnabled(web_view->GetWebContents(), kForwardSelector));
+
+    // Click Forward.
+    {
+      content::TestNavigationObserver nav_observer(
+          browser()->tab_strip_model()->GetActiveWebContents());
+      EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                                  test_case.forward_script));
+      nav_observer.Wait();
+      EXPECT_EQ(url2, browser()
+                          ->tab_strip_model()
+                          ->GetActiveWebContents()
+                          ->GetLastCommittedURL());
+    }
   }
 }
 
@@ -818,7 +844,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   // On Mac, Ctrl+Click opens a context menu and does not navigate.
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kBackSelector, "button: 0, ctrlKey: true")));
+      DispatchPointerClick(kBackSelector, "mouse",
+                           "detail: 1, button: 0, ctrlKey: true")));
 
   auto* back_control = &webui_toolbar_view->back_control_;
   back_control->menu_runner_->Cancel();
@@ -837,7 +864,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kBackSelector, "button: 0, ctrlKey: true")));
+      DispatchPointerClick(kBackSelector, "mouse",
+                           "detail: 1, button: 0, ctrlKey: true")));
 
   nav_observer.Wait();
 
@@ -866,7 +894,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kForwardSelector, "button: 0, shiftKey: true")));
+      DispatchPointerClick(kForwardSelector, "mouse",
+                           "detail: 1, button: 0, shiftKey: true")));
 
   Browser* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);
@@ -1450,17 +1479,6 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest,
       "InitialWebUI.Toolbar.ParseFinishedToFirstUpdate", 1);
 }
 
-class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
- public:
-  WebUIReloadButtonBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ContextMenuPositionE2E) {
   // Setup the WebUI and wait for it to render.
   WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
@@ -1525,6 +1543,52 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewBrowserTest, ContextMenuPositionE2E) {
   run_loop.Run();
 
   EXPECT_EQ(captured_bounds, expected_screen_bounds);
+}
+
+class WebUIReloadButtonBrowserTest : public InProcessBrowserTest {
+ public:
+  WebUIReloadButtonBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {features::kInitialWebUI, features::kWebUIReloadButton}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, ClickReloadButton) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* webui_contents = web_view->GetWebContents();
+
+  EXPECT_TRUE(WaitForButtonVisible(webui_contents, kReloadButtonSelector));
+
+  const struct {
+    const char* name;
+    std::string script;
+  } test_cases[] = {
+      {"Mouse Click", DispatchPointerClick(kReloadButtonSelector)},
+      {"Keyboard Click",
+       DispatchEventScript(kReloadButtonSelector, "MouseEvent", "click",
+                           "detail: 0")}};
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    const std::string& script = test_case.script;
+    // Navigate to a known good URL before reloading to ensure a clean state
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
+
+    // Create a navigation observer on the active tab.
+    content::WebContents* active_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver nav_observer(active_contents);
+
+    EXPECT_TRUE(content::ExecJs(webui_contents, script));
+
+    nav_observer.Wait();
+    // If the navigation happened, it means the reload button was activated.
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIReloadButtonBrowserTest, NoCrashOnCommandUpdate) {
@@ -1601,17 +1665,11 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
        DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
                            "detail: 0"),
        ui::mojom::MenuSourceType::kKeyboard},
-      {"Mouse Click",
-       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
-                           "detail: 1"),
+      {"Mouse Click", DispatchPointerClick(kSplitTabsSelector),
        ui::mojom::MenuSourceType::kMouse},
-      {"Touch Click",
-       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "click",
-                           "pointerType: 'touch', detail: 1"),
+      {"Touch Click", DispatchPointerClick(kSplitTabsSelector, "touch"),
        ui::mojom::MenuSourceType::kTouch},
-      {"Pen Click",
-       DispatchEventScript(kSplitTabsSelector, "PointerEvent", "click",
-                           "pointerType: 'pen', detail: 1"),
+      {"Pen Click", DispatchPointerClick(kSplitTabsSelector, "pen"),
        ui::mojom::MenuSourceType::kTouch},
       {"Keyboard Context Menu",
        DispatchEventScript(kSplitTabsSelector, "MouseEvent", "contextmenu",
@@ -1635,10 +1693,17 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
     SCOPED_TRACE(test_case.name);
     EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), test_case.script));
     EXPECT_TRUE(base::test::RunUntil([&]() {
-      return split_tabs_control->last_source_type_for_testing_ ==
-             test_case.expected_source;
+      return split_tabs_control->last_source_type_for_testing_ !=
+             ui::mojom::MenuSourceType::kNone;
     }));
+    EXPECT_EQ(test_case.expected_source,
+              split_tabs_control->last_source_type_for_testing_);
     split_tabs_control->menu_runner_->Cancel();
+    // Reset last_source_type_for_testing_ to kNone to ensure the next
+    // iteration correctly checks for a new value instead of preserving
+    // the old one.
+    split_tabs_control->last_source_type_for_testing_ =
+        ui::mojom::MenuSourceType::kNone;
   }
 }
 
@@ -1650,15 +1715,41 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   EXPECT_TRUE(
       WaitForButtonVisible(web_view->GetWebContents(), kSplitTabsSelector));
 
-  // Ensure NOT in split view initially.
   auto* tab_strip_model = browser()->tab_strip_model();
-  EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 
-  EXPECT_TRUE(ClickButton(web_view->GetWebContents(), kSplitTabsSelector));
+  const struct {
+    const char* name;
+    std::string script;
+    std::string cleanup_script;
+  } test_cases[] = {
+      {"Mouse Click", DispatchPointerEvent("pointerdown", kSplitTabsSelector),
+       DispatchPointerEvent("pointerup", kSplitTabsSelector)},
+      {"Keyboard Click",
+       DispatchEventScript(kSplitTabsSelector, "MouseEvent", "click",
+                           "detail: 0"),
+       ""}};
 
-  // Verify entered split view. This might take a moment, so need to wait.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    // Ensure NOT in split view initially by opening a new tab.
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), GURL("chrome://version/"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
+
+    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), test_case.script));
+
+    // Verify entered split view. This might take a moment, so need to wait.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
+
+    if (!test_case.cleanup_script.empty()) {
+      // Dispatch cleanup script to complete the interaction cleanly.
+      EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(),
+                                  test_case.cleanup_script));
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
@@ -1675,10 +1766,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
       base::StrCat({GetButtonIconJS(kSplitTabsSelector),
                     "?.getAttribute('aria-haspopup') || 'false'"});
   EXPECT_EQ("false", content::EvalJs(web_contents, kGetAriaHasPopup));
-
-  EXPECT_TRUE(content::ExecJs(
-      web_contents, DispatchEventScript(kSplitTabsSelector, "MouseEvent",
-                                        "click", "detail: 1")));
+  EXPECT_TRUE(
+      content::ExecJs(web_contents, DispatchPointerClick(kSplitTabsSelector)));
 
   auto* tab_strip_model = browser()->tab_strip_model();
   ASSERT_TRUE(base::test::RunUntil(
@@ -1731,10 +1820,15 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return tab_strip_model->GetActiveTab()->IsSplit(); }));
 
-  // Click the button while in split mode.
-  EXPECT_TRUE(ClickButton(web_view->GetWebContents(), kSplitTabsSelector));
+  // Click the button while in split mode using ONLY pointerdown.
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchPointerEvent("pointerdown", kSplitTabsSelector)));
 
-  // Verify no crash.
+  // Verify no crash by ensuring we can cleanly dispatch the pointerup.
+  EXPECT_TRUE(
+      content::ExecJs(web_view->GetWebContents(),
+                      DispatchPointerEvent("pointerup", kSplitTabsSelector)));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
@@ -1873,22 +1967,32 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   GURL home_url = GetHomeURL();
 
-  // Navigate away so clicking home actually does something.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  const struct {
+    const char* name;
+    std::string script;
+  } test_cases[] = {
+      {"Mouse Click", DispatchPointerClick(kHomeSelector)},
+      {"Keyboard Click",
+       DispatchEventScript(kHomeSelector, "MouseEvent", "click", "detail: 0")}};
 
-  // Click the button.
-  content::TestNavigationObserver nav_observer(
-      browser()->tab_strip_model()->GetActiveWebContents());
-  EXPECT_TRUE(
-      content::ExecJs(web_view->GetWebContents(),
-                      DispatchPointerClick(kHomeSelector, "button: 0")));
-  nav_observer.Wait();
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.name);
+    const std::string& script = test_case.script;
+    // Navigate away so clicking home actually does something.
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
 
-  EXPECT_EQ(home_url, browser()
-                          ->tab_strip_model()
-                          ->GetActiveWebContents()
-                          ->GetLastCommittedURL());
+    // Click the button.
+    content::TestNavigationObserver nav_observer(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    EXPECT_TRUE(content::ExecJs(web_view->GetWebContents(), script));
+    nav_observer.Wait();
+
+    EXPECT_EQ(home_url, browser()
+                            ->tab_strip_model()
+                            ->GetActiveWebContents()
+                            ->GetLastCommittedURL());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
@@ -1949,8 +2053,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kHomeSelector,
-                           base::StrCat({"button: 0, ", kModifier}))));
+      DispatchPointerClick(
+          kHomeSelector, "mouse",
+          base::StrCat({"detail: 1, button: 0, ", kModifier}))));
 
   tab_add_waiter.Wait();
 
@@ -1985,9 +2090,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(
-          kHomeSelector,
-          base::StrCat({"button: 0, ", kModifier, ", shiftKey: true"}))));
+      DispatchPointerClick(kHomeSelector, "mouse",
+                           base::StrCat({"detail: 1, button: 0, ", kModifier,
+                                         ", shiftKey: true"}))));
 
   tab_add_waiter.Wait();
 
@@ -2052,7 +2157,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewHomeButtonBrowserTest,
 
   EXPECT_TRUE(content::ExecJs(
       web_view->GetWebContents(),
-      DispatchPointerClick(kHomeSelector, "button: 0, shiftKey: true")));
+      DispatchPointerClick(kHomeSelector, "mouse",
+                           "detail: 1, button: 0, shiftKey: true")));
 
   Browser* new_browser = new_browser_observer.Wait();
   ASSERT_TRUE(new_browser);

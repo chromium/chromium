@@ -34,13 +34,23 @@ export interface GetClickDispositionFlagsOptions {
  * HTML template, or called from within custom event listeners if the component
  * requires additional logic (like the reload button).
  *
+ * Important note on accessibility:
+ * `PressHandler` specifically manages pointer (mouse, touch, pen) interactions.
+ * Natively, `<cr-icon-button>` intercepts keyboard `Space` and `Enter` keys and
+ * synthesizes a standard `click` event (where `e.detail === 0`).
+ * To ensure your button is fully accessible to keyboard, you MUST also add an
+ * `@click` listener that explicitly intercepts these synthetic clicks and
+ * delegates them to your short press logic, while ignoring actual mouse clicks
+ * (which have `detail > 0` and are already handled here by `pointerup`).
+ *
  * Example of direct usage in .html.ts:
  * ```html
  * <cr-icon-button
  *   @pointerdown="${this.pressHandler_.onPointerdown}"
  *   @pointerup="${this.pressHandler_.onPointerup}"
  *   @pointercancel="${this.pressHandler_.onPointercancel}"
- *   @contextmenu="${this.pressHandler_.onContextmenu}">
+ *   @contextmenu="${this.pressHandler_.onContextmenu}"
+ *   @click="${this.onClick_}">
  * </cr-icon-button>
  * ```
  */
@@ -48,7 +58,7 @@ export class PressHandler {
   private isLongPressed_: boolean = false;
   private longPressTimer_: number = 0;
   private onLongPress_: (source: MenuSourceType) => void;
-  private onShortPress_: (e: PointerEvent) => void;
+  private onShortPress_: (e: MouseEvent) => void;
   // Whether to treat Mac Ctrl+LeftClick as a context menu trigger (long press)
   // instead of a short press. This is standard behavior for most buttons,
   // but some (like reload) need it disabled to handle Ctrl+Click differently.
@@ -56,7 +66,7 @@ export class PressHandler {
 
   constructor(
       onLongPress: (source: MenuSourceType) => void,
-      onShortPress: (e: PointerEvent) => void,
+      onShortPress: (e: MouseEvent) => void,
       enableMacContextClick: boolean = true) {
     this.onLongPress_ = onLongPress;
     this.onShortPress_ = onShortPress;
@@ -147,7 +157,8 @@ export function getClickSourceType(e: Event): MenuSourceType {
   }
   // Because `e` is a PointerEvent, we cannot check whether `e` is a
   // KeyboardEvent. Need to check e.detail instead, which is 0 for
-  // KeyboardEvent.
+  // KeyboardEvent. Note: Keyboard activations on `<cr-icon-button>` (Space or
+  // Enter) programmatically synthesize standard `click` events with `detail` 0.
   if (e instanceof MouseEvent && e.detail === 0) {
     return MenuSourceType.kKeyboard;
   }

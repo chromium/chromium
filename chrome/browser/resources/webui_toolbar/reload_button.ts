@@ -79,9 +79,10 @@ export class ReloadButtonElement extends CrLitElement {
     }
   }
 
-  private onShortPress_(e: PointerEvent) {
+  private onShortPress_(e: MouseEvent) {
+    const isLeftClick = e.button === BUTTON_LEFT;
     // Handle the visible state changes only for left-click.
-    if (e.button === BUTTON_LEFT && !e.metaKey) {
+    if (isLeftClick && !e.metaKey) {
       this.metricsRecorder_.onChangeVisibleMode(
           MetricsRecorder.getVisibleMode(this.state.isNavigationLoading),
           MetricsRecorder.getVisibleMode(!this.state.isNavigationLoading));
@@ -98,9 +99,17 @@ export class ReloadButtonElement extends CrLitElement {
               e, {ignoreCtrlKey: true, ignoreShiftKey: true}));
     }
 
-    if (e.button === BUTTON_LEFT && !e.metaKey) {
+    if (isLeftClick && !e.metaKey) {
       // Update the renderer in advance to avoid the delay.
       this.state.isNavigationLoading = !this.state.isNavigationLoading;
+    }
+  }
+
+  protected onClick_(e: MouseEvent) {
+    // Only keyboard `click` (Enter/Space) are handled here, which triggers a
+    // left-click equivalent. Keyboard 'click' has detail === 0.
+    if (e.detail === 0) {
+      this.onShortPress_(e);
     }
   }
 
@@ -154,20 +163,9 @@ export class ReloadButtonElement extends CrLitElement {
   }
 
   /**
-   * Handles the mouse click event.
-   * - If it's from the right mouse click, it's not handled from the Javascript.
-   * - If it's a single click:
-   *    - if the page is already in loading process, it should stop the process.
-   *    - if the page is not loading:
-   *        - if it's from the left mouse click, it should trigger the page
-   *          reload, so the loading state should be updated accordingly.
-   *        - if it's from the middle mouse click, it should open the same page
-   *          from another background tab, and the loading state of the current
-   *          tab remains unchanged.
-   * - If it's a long press with a duration longer than
-   *   `LONG_PRESS_TIMER_THRESHOLD_MS`, no matter it's a left click or middle
-   *   click, it should triggers the context menu display if the devtools is
-   *   open (see `onPointerdown_`).
+   * Handles pointer release. Records metrics and delegates to PressHandler
+   * to evaluate whether the interaction was a short or long press.
+   * If it's from the right mouse click, it's not handled from the Javascript.
    * @param e the PointerEvent associated with the click.
    * @returns
    */

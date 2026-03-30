@@ -53,9 +53,17 @@ export class HomeButtonElement extends CrLitElement {
         ContextMenuType.kHome, getContextMenuPosition(this), source);
   }
 
-  private onShortPress_(e: PointerEvent) {
+  private onShortPress_(e: MouseEvent) {
     const flags = getClickDispositionFlags(e);
     this.browserProxy_.browserControlsHandler.navigateHome(flags);
+  }
+
+  protected onClick_(e: MouseEvent) {
+    // Only keyboard `click` (Enter/Space) are handled here, which triggers a
+    // left-click equivalent. Keyboard 'click' has detail === 0.
+    if (e.detail === 0) {
+      this.onShortPress_(e);
+    }
   }
 }
 
