@@ -61,10 +61,11 @@ public class NQETest {
         mNativeTestServer =
                 NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
         mNativeTestServer.start();
-        // Use a large file (~20KB) to guarantee the response not to be contained
-        // within a single packet. This is necessary to guarantee a throughput
-        // observation even with a deferred observation window.
-        mUrl = mNativeTestServer.getFileURL("/laptop.png");
+        // Use a large file (300KB+) to guarantee the response not to be contained
+        // within a single packet and to exceed the socket read buffer size.
+        // This is necessary to guarantee a throughput observation even with a
+        // deferred observation window.
+        mUrl = mNativeTestServer.getFileURL("/large_image.png");
     }
 
     @After
@@ -221,9 +222,11 @@ public class NQETest {
         // Throughput observation is posted to the network quality estimator on the network thread
         // after the UrlRequest is completed. The observations are then eventually posted to
         // throughput listeners on the executor provided to network quality.
+        Log.i(TAG, "waitUntilFirstThroughputObservationReceived");
         throughputListener.waitUntilFirstThroughputObservationReceived();
 
         // Wait for RTT observation (at the URL request layer) to be posted.
+        Log.i(TAG, "waitUntilFirstUrlRequestRTTReceived");
         rttListener.waitUntilFirstUrlRequestRTTReceived();
 
         assertThat(throughputListener.throughputObservationCount()).isGreaterThan(0);
