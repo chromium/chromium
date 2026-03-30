@@ -16,8 +16,15 @@ class Profile;
 
 namespace chrome {
 
-// ShowFeedbackPage() uses |bwi| to determine the URL of the current tab.
-// |bwi| should be NULL if there are no currently open browser windows.
+// Returns whether the feedback page can be shown for the given `profile`.
+bool CanShowFeedback(const Profile* profile);
+
+// ShowFeedbackPage() uses `bwi` to determine the URL of the current tab.
+// `bwi` should be NULL if there are no currently open browser windows.
+//
+// This is a no-op if `CanShowFeedback` is false for the profile corresponding
+// to `bwi`. Callers should check `CanShowFeedback` before calling this
+// function.
 void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       feedback::FeedbackSource source,
                       const std::string& description_template,
@@ -28,6 +35,10 @@ void ShowFeedbackPage(BrowserWindowInterface* bwi,
                       base::DictValue ai_metadata = base::DictValue());
 
 // Displays the Feedback ui.
+//
+// This is a no-op if `CanShowFeedback` is false for the profile corresponding
+// to `profile`. Callers should check `CanShowFeedback` before calling this
+// function.
 void ShowFeedbackPage(const GURL& page_url,
                       Profile* profile,
                       feedback::FeedbackSource source,

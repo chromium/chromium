@@ -4082,6 +4082,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Feedback.NotAllowed.RequestSource" enum="FeedbackSource"
+    expires_after="2026-08-09">
+  <owner>jlebel@chromium.org</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    Recorded when the user attempts to submit feedback, but feedback submission
+    is not allowed for that user. This counts cases where the feedback entry
+    point was available, but the feedback dialog was blocked.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.RedactionTool" enum="PIIType"
     expires_after="2025-08-10">
   <owner>nikj@google.com</owner>
@@ -4166,7 +4177,10 @@ chromium-metrics-reviews@google.com.
     expires_after="2026-08-09">
   <owner>afakhry@chromium.org</owner>
   <owner>cros-device-enablement@google.com</owner>
-  <summary>Records the source that requested showing the feedback app.</summary>
+  <summary>
+    Records the source that requested showing the feedback app. Only recorded if
+    feedback submission is allowed.
+  </summary>
 </histogram>
 
 <histogram name="Feedback.TrustSafetySentiment.CallTriggerOccurred"

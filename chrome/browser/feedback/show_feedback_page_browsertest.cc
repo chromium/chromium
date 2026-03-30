@@ -51,6 +51,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
                            /*extra_diagnostics=*/unused,
                            /*autofill_metadata=*/base::DictValue());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+  histogram_tester.ExpectTotalCount("Feedback.NotAllowed.RequestSource", 0);
+
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                false);
   chrome::ShowFeedbackPage(browser(), feedback::kFeedbackSourceBrowserCommand,
@@ -60,6 +62,7 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
                            /*extra_diagnostics=*/unused,
                            /*autofill_metadata=*/base::DictValue());
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
+  histogram_tester.ExpectTotalCount("Feedback.NotAllowed.RequestSource", 1);
 }
 
 // Test that when the policy of UserFeedbackAllowed is true, feedback app is

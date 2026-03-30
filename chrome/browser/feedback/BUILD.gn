@@ -185,7 +185,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "report_unsafe_site_dialog_unittest.cc" ]
   if (!is_android) {
-    sources += [ "report_unsafe_site/screenshot_taker_unittest.cc" ]
+    sources += [
+      "report_unsafe_site/screenshot_taker_unittest.cc",
+      "show_feedback_page_unittest.cc",
+    ]
   }
   deps = [
     ":feedback_impl",
