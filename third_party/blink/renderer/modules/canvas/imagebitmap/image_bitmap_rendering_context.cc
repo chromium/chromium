@@ -222,7 +222,7 @@ bool ImageBitmapRenderingContext::PushFrame() {
 
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  resource_provider_for_offscreen_canvas_->Canvas().drawImage(
+  resource_provider_for_offscreen_canvas_->GetCanvasDeprecated().drawImage(
       image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
       &paint_flags);
   scoped_refptr<CanvasResource> resource =

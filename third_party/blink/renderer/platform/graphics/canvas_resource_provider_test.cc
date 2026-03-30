@@ -397,7 +397,7 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_EQ(resource, provider->ProduceCanvasResource());
   EXPECT_EQ(sync_token, GetSyncToken(resource.get()));
 
-  provider->Canvas().clear(SkColors::kWhite);
+  provider->GetCanvasDeprecated().clear(SkColors::kWhite);
   auto new_resource = provider->ProduceCanvasResource();
   EXPECT_NE(resource, new_resource);
   EXPECT_NE(GetSyncToken(resource.get()), GetSyncToken(new_resource.get()));
@@ -405,7 +405,7 @@ TEST_F(CanvasResourceProviderTest,
 
   EnsureResourceRecycled(provider.get(), std::move(resource));
 
-  provider->Canvas().clear(SkColors::kBlack);
+  provider->GetCanvasDeprecated().clear(SkColors::kBlack);
   auto resource_again = provider->ProduceCanvasResource();
   EXPECT_EQ(resource_ptr, resource_again);
   EXPECT_NE(sync_token, GetSyncToken(resource_again.get()));
@@ -686,7 +686,7 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
       gpu::SharedImageUsageSet());
 
-  MemoryManagedPaintCanvas& dst_canvas = dst_provider->Canvas();
+  MemoryManagedPaintCanvas& dst_canvas = dst_provider->GetCanvasDeprecated();
 
   PaintImage paint_image =
       src_provider->Snapshot()->PaintImageForCurrentFrame();
@@ -699,12 +699,13 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   EXPECT_TRUE(dst_canvas.IsCachingImage(src_content_id));
 
   // Modify the canvas to trigger OnFlushForImage
-  src_provider->Canvas().clear(SkColors::kWhite);
+  src_provider->GetCanvasDeprecated().clear(SkColors::kWhite);
   // So that all the cached draws are executed
   src_provider->ProduceCanvasResource();
 
   // The paint canvas may have moved
-  MemoryManagedPaintCanvas& new_dst_canvas = dst_provider->Canvas();
+  MemoryManagedPaintCanvas& new_dst_canvas =
+      dst_provider->GetCanvasDeprecated();
 
   // TODO(aaronhk): The resource on the src_provider should be the same before
   // and after the draw. Something about the program flow within

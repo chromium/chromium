@@ -107,7 +107,7 @@ void OffscreenCanvasPlaceholderTest::CreateDispatcher() {
 }
 
 void OffscreenCanvasPlaceholderTest::DrawSomething() {
-  resource_provider_->Canvas().clear(SkColors::kWhite);
+  resource_provider_->GetCanvasDeprecated().clear(SkColors::kWhite);
 }
 
 CanvasResource* OffscreenCanvasPlaceholderTest::DispatchOneFrame() {

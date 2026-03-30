@@ -2123,8 +2123,8 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   // ImageOrientation of the UnacceleratedStaticBitmapImage.
   ImageDrawOptions draw_options;
   draw_options.clamping_mode = Image::kDoNotClampImageToSourceRect;
-  image->Draw(&resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
-              gfx::RectF(src_rect), draw_options);
+  image->Draw(&resource_provider->GetCanvasDeprecated(), flags,
+              gfx::RectF(dest_rect), gfx::RectF(src_rect), draw_options);
   return true;
 }
 

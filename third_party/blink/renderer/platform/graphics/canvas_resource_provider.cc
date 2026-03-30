@@ -1017,7 +1017,7 @@ CanvasResourceProviderSharedImage::GetSharedImageUsageFlags() const {
 void CanvasNon2DResourceProviderSharedImage::ExternalCanvasDrawHelper(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
-  draw_callback(Canvas());
+  draw_callback(GetCanvasDeprecated());
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -1248,7 +1248,7 @@ void Canvas2DResourceProviderSharedImage::OnFlushForImage(
 
 void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (Canvas().IsCachingImage(content_id)) {
+  if (GetCanvasDeprecated().IsCachingImage(content_id)) {
     FlushCanvas(/*is_overwrite=*/false);
   }
   if (cached_snapshot_ &&
@@ -1851,7 +1851,8 @@ CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
   return recorder_for_canvas_2d_->getRecordingCanvas();
 }
 
-MemoryManagedPaintCanvas& CanvasNon2DResourceProviderSharedImage::Canvas() {
+MemoryManagedPaintCanvas&
+CanvasNon2DResourceProviderSharedImage::GetCanvasDeprecated() {
   return recorder_->getRecordingCanvas();
 }
 
