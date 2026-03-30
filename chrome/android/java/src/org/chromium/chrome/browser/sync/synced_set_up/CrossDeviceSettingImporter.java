@@ -91,7 +91,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     private static final Set<Integer> NOT_READY_YET_STATES =
             Set.of(
                     ServiceStatus.DEVICE_INFO_TRACKER_MISSING,
-                    ServiceStatus.LOCAL_DEVICE_INFO_MISSING);
+                    ServiceStatus.LOCAL_DEVICE_INFO_MISSING,
+                    ServiceStatus.SYNC_NOT_CONFIGURED_AND_LOCAL_DEVICE_INFO_MISSING,
+                    ServiceStatus.WAITING_FOR_INITIAL_SYNC);
 
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final NullableObservableSupplier<Tab> mActivityTabSupplier;
