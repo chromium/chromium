@@ -70,7 +70,7 @@ in Chromium. Please refer to
 
 ### Step 2: Ask a Chromium Git Admin to mirror the repository to Gerrit
 Create a Git Admin request
-[here](https://g-issues.chromium.org/issues/new?component=1456263&template=1923295).
+[here](https://issues.chromium.org/issues/new?component=1456263&template=1923295).
 Use the following template (feel free to copy the following Markdown snippet
 into the bug description):
 
@@ -98,7 +98,8 @@ You need to make a CL to add this dependency to Chromium. This CL typically cont
   * Files to integrate with Chromium, e.g. BUILD.gn, DEPS
   * Tests to verify the dependency works as intended and to detect breakages
 
-Please follow the instructions [here](https://chromium.googlesource.com/chromium/src/+/main/docs/dependencies.md#adding-dependencies).
+Please follow the instructions
+[here](https://chromium.googlesource.com/chromium/src/+/main/docs/dependencies.md#adding-dependencies).
 
 ### Step 4. Setup Skia Autoroller to auto-update the dependency
 
