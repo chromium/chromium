@@ -8,12 +8,10 @@ import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettin
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -88,8 +86,7 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      */
     public boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
-        return mSharedPreferencesManager.readBoolean(
-                getSettingsPreferenceKey(moduleType), !isNtpSimplificationDesktop());
+        return mSharedPreferencesManager.readBoolean(getSettingsPreferenceKey(moduleType), true);
     }
 
     /**
@@ -99,30 +96,14 @@ public class HomeModulesConfigManager {
      * @param enabled True is the module type is enabled.
      */
     public void setPrefModuleTypeEnabled(@ModuleType int moduleType, boolean enabled) {
-        mSharedPreferencesManager.writeBoolean(ChromePreferenceKeys.HOME_MODULE_CONFIGURED, true);
         mSharedPreferencesManager.writeBoolean(getSettingsPreferenceKey(moduleType), enabled);
         notifyModuleTypeUpdated(moduleType, enabled);
     }
 
-    /**
-     * Returns the user preference for whether all cards switch in NTP cards bottom sheet is
-     * checked.
-     */
-    public boolean getPrefAllCardsSwitchChecked() {
-        boolean defaultChecked = true;
-        // On Android desktop with NTP simplification, the magic stack is disabled by default,
-        // unless the user has manually configured it.
-        if (isNtpSimplificationDesktop()) {
-            defaultChecked =
-                    mSharedPreferencesManager.readBoolean(
-                            ChromePreferenceKeys.HOME_MODULE_CONFIGURED, false);
-        }
+    /** Returns the user preference for whether all cards in the magic stack are enabled. */
+    public boolean getPrefAllCardsEnabled() {
         return mSharedPreferencesManager.readBoolean(
-                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, defaultChecked);
-    }
-
-    private boolean isNtpSimplificationDesktop() {
-        return ChromeFeatureList.sNtpSimplification.isEnabled() && DeviceInfo.isDesktop();
+                ChromePreferenceKeys.HOME_MODULE_CARDS_ENABLED, true);
     }
 
     /**
