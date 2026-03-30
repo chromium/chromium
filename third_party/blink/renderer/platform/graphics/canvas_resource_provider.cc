@@ -1731,8 +1731,9 @@ CanvasResourceProvider::ReleaseRecorder() {
   return recorder;
 }
 
-void CanvasResourceProvider::SetRecorder(
+void CanvasResourceProvider::SetRecorderForCanvas2D(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
+  CHECK(IsCanvas2D());
   recorder->SetClient(this);
   recorder_ = std::move(recorder);
   DisableLineDrawingAsPathsIfNecessary();
