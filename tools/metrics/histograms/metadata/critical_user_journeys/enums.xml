@@ -17,9 +17,10 @@ This file defines enums used in Critical User Journey histograms.
 <enum name="CriticalUserJourneyResult">
   <int value="0" label="Completed"/>
   <int value="1" label="Aborted"/>
+  <int value="2" label="Timed Out"/>
 </enum>
 
-<!-- LINT.ThenChange(chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->
+<!-- LINT.ThenChange(//chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h:JourneyResult) -->
 
 <!-- Define the steps for your journeys below! -->
 

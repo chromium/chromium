@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
@@ -33,8 +34,9 @@ class CriticalUserJourneySessionTest : public testing::Test {
   CriticalUserJourneySessionTest() = default;
   ~CriticalUserJourneySessionTest() override = default;
 
- private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+ protected:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
@@ -140,6 +142,34 @@ TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
   el2.Show();
 
   EXPECT_TRUE(base::test::RunUntil([&]() { return done; }));
+}
+
+TEST_F(CriticalUserJourneySessionTest, JourneyTimeout) {
+  base::HistogramTester histogram_tester;
+  auto journey = CriticalUserJourney::Builder("Test Journey")
+                     .AddStep(kTestElementId1,
+                              ui::InteractionSequence::StepType::kShown, 1)
+                     .AddStep(kTestElementId2,
+                              ui::InteractionSequence::StepType::kShown, 2)
+                     .Build();
+
+  bool done = false;
+  auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
+  session->set_on_done_callback(
+      base::BindLambdaForTesting([&]() { done = true; }));
+
+  ui::test::TestElement el1(kTestElementId1, kTestContext);
+  el1.Show();
+
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
+
+  // Fast forward by 2 minutes to trigger the timeout.
+  task_environment_.FastForwardBy(base::Minutes(2));
+
+  EXPECT_TRUE(done);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalUserJourney.Test Journey.Result",
+      CriticalUserJourneySession::JourneyResult::kTimeout, 1);
 }
 
 }  // namespace metrics

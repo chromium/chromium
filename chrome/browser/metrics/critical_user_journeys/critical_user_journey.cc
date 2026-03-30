@@ -34,6 +34,7 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
   auto step = std::make_unique<CriticalUserJourneyStep>();
   step->metric_id = metric_id;
   step->type = type;
+  step->time_out_duration = base::Minutes(2);
 
   if (std::holds_alternative<ui::CustomElementEventType>(event)) {
     CHECK_EQ(type, ui::InteractionSequence::StepType::kCustomEvent)

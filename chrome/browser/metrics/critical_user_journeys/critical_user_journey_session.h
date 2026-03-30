@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace ui {
@@ -32,9 +33,10 @@ class CriticalUserJourneySession {
   enum class JourneyResult {
     kCompleted = 0,
     kAborted = 1,
-    kMaxValue = kAborted,
+    kTimeout = 2,
+    kMaxValue = kTimeout,
   };
-  // LINT.ThenChange(tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CriticalUserJourneyResult)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_user_journeys/enums.xml:CriticalUserJourneyResult)
 
   explicit CriticalUserJourneySession(const CriticalUserJourney* journey);
   ~CriticalUserJourneySession();
@@ -64,7 +66,8 @@ class CriticalUserJourneySession {
       ui::TrackedElement* initial_element);
 
   // Callbacks for InteractionSequence events.
-  void OnStepStarted(int metric_id);
+  void OnStepStarted(int metric_id, base::TimeDelta timeout);
+  void OnTimeout();
   void OnAborted(const ui::InteractionSequence::AbortedData& data);
   void OnCompleted();
 
@@ -73,6 +76,8 @@ class CriticalUserJourneySession {
   std::unique_ptr<ui::InteractionSequence> sequence_;
 
   int last_reached_metric_id_ = -1;
+  base::OneShotTimer timeout_timer_;
+  bool was_timeout_ = false;
 
   base::WeakPtrFactory<CriticalUserJourneySession> weak_factory_{this};
 };

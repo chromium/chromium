@@ -54,8 +54,8 @@ chromium-metrics-reviews@google.com.
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    Records the final outcome (Completed or Aborted) of the {JourneyName}
-    critical user journey.
+    Records the final outcome (Completed, Aborted, or Timed out) of the
+    {JourneyName} critical user journey.
   </summary>
   <token key="JourneyName">
     <variant name="ViewDownloadedFileFromAppMenuJourney"/>
