@@ -19,6 +19,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -456,14 +458,8 @@ class JournalHandler {
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             kGlicActorJournalLog);
     if (!path.empty()) {
-      path = base::GetUniquePathWithSuffixFormat(path, "_%d");
-      LOG(ERROR) << "Glic Journal: " << path;
-      file_journal_serializer_ =
-          std::make_unique<actor::AggregatedJournalFileSerializer>(
-              actor_keyed_service_->GetJournal());
-      file_journal_serializer_->Init(
-          path, base::BindOnce(&JournalHandler::FileInitDone,
-                               base::Unretained(this)));
+      GetUniquePath(path, base::BindOnce(&JournalHandler::OnUniquePathReceived,
+                                         base::Unretained(this)));
     }
   }
 
@@ -614,6 +610,25 @@ class JournalHandler {
             },
             std::move(feedback_data)));
 #endif
+  }
+
+  void GetUniquePath(const base::FilePath& file_path,
+                     base::OnceCallback<void(const base::FilePath&)> callback) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&base::GetUniquePathWithSuffixFormat, file_path,
+                       base::cstring_view("_%d")),
+        std::move(callback));
+  }
+
+  void OnUniquePathReceived(const base::FilePath& unique_path) {
+    LOG(ERROR) << "Glic Journal: " << unique_path;
+    file_journal_serializer_ =
+        std::make_unique<actor::AggregatedJournalFileSerializer>(
+            actor_keyed_service_->GetJournal());
+    file_journal_serializer_->Init(
+        unique_path,
+        base::BindOnce(&JournalHandler::FileInitDone, base::Unretained(this)));
   }
 
   void FileInitDone(bool success) {
