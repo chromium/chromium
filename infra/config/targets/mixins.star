@@ -267,8 +267,8 @@ targets.mixin(
 targets.mixin(
     name = "tfc-cq-tast",
     skylab = targets.skylab(
-        cros_test_tags = ["group:mainline", "dep:chrome", "group:cq-medium"],
-        cros_test_max_in_shard = 10,
+        cros_test_names_from_file = ["chromeos/tast_control_cq_tests.txt"],
+        cros_test_max_in_shard = 20,
     ),
 )
 
