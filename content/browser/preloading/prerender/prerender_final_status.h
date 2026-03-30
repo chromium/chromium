@@ -183,7 +183,7 @@ enum class PrerenderFinalStatus {
   kMaxValue = kPrerenderHostReused,
 };
 // LINT.ThenChange(
-//     //third_party/blink/public/devtools_protocol/browser_protocol.pdl,
+//     //third_party/blink/public/devtools_protocol/domains/Preload.pdl,
 //     //tools/metrics/histograms/enums.xml
 // )
 
