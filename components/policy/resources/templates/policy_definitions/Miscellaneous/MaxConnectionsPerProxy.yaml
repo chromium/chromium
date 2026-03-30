@@ -1,7 +1,7 @@
-caption: Maximal number of concurrent connections to the proxy server for non-WebSocket requests
+caption: Maximal number of concurrent connections per proxy server for non-WebSocket requests
 default: 32
 desc: |-
-  Setting the policy specifies the maximal number of simultaneous connections to the proxy server for non-WebSocket requests.
+  Setting the policy specifies the maximal number of simultaneous connections per proxy server for non-WebSocket requests.
 
   To modify WebSocket request limits, see <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME">MaxConnectionsPerProxyForWebSocket</ph>.
 
