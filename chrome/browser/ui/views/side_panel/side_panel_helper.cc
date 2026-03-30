@@ -27,9 +27,8 @@ void SidePanelHelper::PopulateGlobalEntries(
     Browser* browser,
     SidePanelRegistry* window_registry) {
   // Add reading list.
-  browser->browser_window_features()
-      ->reading_list_side_panel_coordinator()
-      ->CreateAndRegisterEntry(window_registry);
+  ReadingListSidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
+      window_registry);
 
   // Add bookmarks.
   browser->browser_window_features()

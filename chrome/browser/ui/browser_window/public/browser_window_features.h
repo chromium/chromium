@@ -408,10 +408,6 @@ class BrowserWindowFeatures {
   LocationBar* location_bar();
   const LocationBar* location_bar() const;
 
-  ReadingListSidePanelCoordinator* reading_list_side_panel_coordinator() {
-    return reading_list_side_panel_coordinator_.get();
-  }
-
   new_tab_footer::NewTabFooterController* new_tab_footer_controller() {
     return new_tab_footer_controller_.get();
   }

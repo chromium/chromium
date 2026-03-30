@@ -414,8 +414,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<SidePanelRegistry>(*browser, browser);
 
   reading_list_side_panel_coordinator_ =
-      std::make_unique<ReadingListSidePanelCoordinator>(
-          profile, browser->GetTabStripModel());
+      GetUserDataFactory().CreateInstance<ReadingListSidePanelCoordinator>(
+          *browser, browser, profile, browser->GetTabStripModel());
 
   bookmarks_side_panel_coordinator_ =
       std::make_unique<BookmarksSidePanelCoordinator>();

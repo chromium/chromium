@@ -8,7 +8,9 @@
 
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -24,11 +26,21 @@ std::unique_ptr<views::View> CreateReadingListWebView(
 }
 }  // namespace
 
+DEFINE_USER_DATA(ReadingListSidePanelCoordinator);
+
+// static
+ReadingListSidePanelCoordinator* ReadingListSidePanelCoordinator::From(
+    BrowserWindowInterface* interface) {
+  return Get(interface->GetUnownedUserDataHost());
+}
+
 ReadingListSidePanelCoordinator::ReadingListSidePanelCoordinator(
+    BrowserWindowInterface* interface,
     Profile* profile,
     TabStripModel* tab_strip_model)
     : profile_(CHECK_DEREF(profile)),
-      tab_strip_model_(CHECK_DEREF(tab_strip_model)) {}
+      tab_strip_model_(CHECK_DEREF(tab_strip_model)),
+      scoped_unowned_user_data_(interface->GetUnownedUserDataHost(), *this) {}
 
 ReadingListSidePanelCoordinator::~ReadingListSidePanelCoordinator() = default;
 
