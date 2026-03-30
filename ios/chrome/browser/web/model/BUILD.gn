@@ -291,7 +291,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/https_upgrades/model",
     "//ios/chrome/browser/infobars/ui_bundled/coordinators",
-    "//ios/chrome/browser/intelligence/actuation/model/tools:java_script_features",
+    "//ios/chrome/browser/intelligence/actor/tools/model:java_script_features",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers:page_context_extractor_feature",
     "//ios/chrome/browser/link_to_text/model",

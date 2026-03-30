@@ -5641,7 +5641,7 @@
     "expiry_milestone": 147
   },
   {
-    "name": "ios-actuation-tools",
+    "name": "ios-actor-tools",
     "owners": [ "ginnyhuang@chromium.org", "kaklilu@chromium.org" ],
     "expiry_milestone": 155
   },

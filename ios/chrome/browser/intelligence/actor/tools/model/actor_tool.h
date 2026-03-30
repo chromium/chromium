@@ -1,0 +1,57 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_
+#define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_
+
+#import "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
+#import "base/types/expected.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+
+struct ActorToolError;
+class Browser;
+class ProfileIOS;
+
+namespace web {
+class WebState;
+}
+
+// Abstract base class for all actor tools.
+class ActorTool {
+ public:
+  using ActorResult = base::expected<void, ActorToolError>;
+  using ActorCallback = base::OnceCallback<void(ActorResult)>;
+
+  // Result of resolving a tab ID to its associated objects.
+  struct TabResolutionResult {
+    TabResolutionResult();
+    TabResolutionResult(const TabResolutionResult&);
+    TabResolutionResult& operator=(const TabResolutionResult&);
+    ~TabResolutionResult();
+
+    // The browser containing the tab.
+    raw_ptr<Browser> browser = nullptr;
+    // The index of the tab in the browser's web state list.
+    int tab_index = WebStateList::kInvalidIndex;
+    // A weak pointer to the tab's WebState.
+    base::WeakPtr<web::WebState> web_state;
+  };
+
+  virtual ~ActorTool() = default;
+
+  // Executes the tool.
+  virtual void Execute(ActorCallback callback) = 0;
+
+ protected:
+  // Resolves the given `tab_id` to its associated objects in regular Browsers.
+  // Returns an ActorToolError if the tab or its associated objects are not
+  // found.
+  static base::expected<TabResolutionResult, ActorToolError> ResolveTab(
+      int32_t tab_id,
+      ProfileIOS* profile);
+};
+
+#endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_

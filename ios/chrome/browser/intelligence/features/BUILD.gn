@@ -16,7 +16,7 @@ source_set("features") {
     "//components/page_content_annotations/core",
     "//components/prefs",
     "//components/variations/service",
-    "//ios/chrome/browser/intelligence/actuation:actuation_util",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
   ]
@@ -28,7 +28,7 @@ source_set("unit_tests") {
   deps = [
     ":features",
     "//base/test:test_support",
-    "//ios/chrome/browser/intelligence/actuation:actuation_util",
+    "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//testing/gtest",
   ]
 }

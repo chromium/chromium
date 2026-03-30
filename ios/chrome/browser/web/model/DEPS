@@ -18,7 +18,7 @@ include_rules = [
   "+ios/chrome/browser/geolocation/model/geolocation_manager.h",
   "+ios/chrome/browser/https_upgrades/model",
   "+ios/chrome/browser/infobars/model",
-  "+ios/chrome/browser/intelligence/actuation/model/tools",
+  "+ios/chrome/browser/intelligence/actor/tools/model",
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h",

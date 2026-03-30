@@ -31,9 +31,9 @@
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/ai_prototyping/utils/json_action_parser.h"
 #import "ios/chrome/browser/ai_prototyping/utils/page_context_util.h"
-#import "ios/chrome/browser/intelligence/actuation/model/actuation_error.h"
-#import "ios/chrome/browser/intelligence/actuation/model/actuation_service.h"
-#import "ios/chrome/browser/intelligence/actuation/model/actuation_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_service_impl.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
@@ -544,13 +544,13 @@
 }
 
 - (void)executeActuationWithParams:(NSDictionary*)params {
-  ActuationService* actuationService =
-      ActuationServiceFactory::GetForProfile(ProfileIOS::FromBrowserState(
+  ActorService* actorService =
+      ActorServiceFactory::GetForProfile(ProfileIOS::FromBrowserState(
           _webStateList->GetActiveWebState()->GetBrowserState()));
 
-  if (!actuationService) {
-    [self.consumer updateQueryResult:@"Error: ActuationService not available."
-                          forFeature:AIPrototypingFeature::kActuationTools];
+  if (!actorService) {
+    [self.consumer updateQueryResult:@"Error: ActorService not available."
+                          forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
 
@@ -558,7 +558,7 @@
   NSString* jsonString = params[@"json"];
   if (jsonString.length == 0) {
     [self.consumer updateQueryResult:@"Error: No JSON provided."
-                          forFeature:AIPrototypingFeature::kActuationTools];
+                          forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
   std::optional<base::Value> jsonVal = base::JSONReader::Read(
@@ -566,32 +566,32 @@
 
   if (!jsonVal || !jsonVal->is_dict()) {
     [self.consumer updateQueryResult:@"Error: Invalid JSON."
-                          forFeature:AIPrototypingFeature::kActuationTools];
+                          forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
 
   // Try to parse the JSON to a known action optimization_guide::proto::Action.
   if (!ai_prototyping::ParseActionFromDict(jsonVal->GetDict(), &action)) {
     [self.consumer updateQueryResult:@"Error: Unknown action type in JSON."
-                          forFeature:AIPrototypingFeature::kActuationTools];
+                          forFeature:AIPrototypingFeature::kActorTools];
     return;
   }
 
   __weak __typeof(self) weakSelf = self;
-  actuationService->ExecuteAction(
-      action, base::BindOnce(^(ActuationTool::ActuationResult result) {
-        NSLog(@"[AIPrototypingMediator] Actuation callback executed.");
+  actorService->ExecuteAction(
+      action, base::BindOnce(^(ActorTool::ActorResult result) {
+        NSLog(@"[AIPrototypingMediator] Actor callback executed.");
         if (result.has_value()) {
           [weakSelf.consumer
               updateQueryResult:@"Action executed successfully."
-                     forFeature:AIPrototypingFeature::kActuationTools];
+                     forFeature:AIPrototypingFeature::kActorTools];
         } else {
           NSString* errorMsg = base::SysUTF8ToNSString(base::StringPrintf(
-              "Action failed: %s", GetActuationErrorMessage(result.error())));
+              "Action failed: %s", GetActorToolErrorMessage(result.error())));
           NSLog(@"[AIPrototypingMediator] %@", errorMsg);
           [weakSelf.consumer
               updateQueryResult:errorMsg
-                     forFeature:AIPrototypingFeature::kActuationTools];
+                     forFeature:AIPrototypingFeature::kActorTools];
         }
       }));
 }

@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
 
 #import "base/feature_list.h"
-#import "ios/chrome/browser/intelligence/actuation/actuation_util.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 
 namespace base {
 class TimeDelta;
@@ -308,12 +308,12 @@ bool IsGeminiResponseViewDynamicResizingEnabled();
 BASE_DECLARE_FEATURE(kGeminiDynamicSettings);
 bool IsGeminiDynamicSettingsEnabled();
 
-// Feature flag for Actuation tools.
-BASE_DECLARE_FEATURE(kActuationTools);
-bool IsActuationEnabled();
+// Feature flag for Actor tools.
+BASE_DECLARE_FEATURE(kActorTools);
+bool IsActorEnabled();
 
 // Returns true if the specified tool is disabled via the "DisabledTools"
-// feature parameter of the `kActuationTools` feature.
+// feature parameter of the `kActorTools` feature.
 bool IsToolDisabled(optimization_guide::proto::Action::ActionCase tool);
 
 // Feature flag for Model based page classification experiment.

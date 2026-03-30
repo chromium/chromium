@@ -1,0 +1,113 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+
+#import "base/functional/bind.h"
+#import "base/functional/callback.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/stringprintf.h"
+#import "base/types/expected.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+
+using ActorCallback = ActorTool::ActorCallback;
+
+ActorService::ActorService(ProfileIOS* profile)
+    : ActorService(profile, std::make_unique<ActorToolFactory>()) {}
+
+ActorService::ActorService(ProfileIOS* profile,
+                           std::unique_ptr<ActorToolFactory> tool_factory)
+    : profile_(profile),
+      tool_factory_(std::move(tool_factory)),
+      journal_(std::make_unique<AggregatedJournal>()) {
+  CHECK(tool_factory_);
+}
+
+ActorService::~ActorService() = default;
+
+void ActorService::Shutdown() {}
+
+void ActorService::ExecuteAction(
+    const optimization_guide::proto::Action& action,
+    ActorCallback callback) {
+  CHECK(IsActorEnabled());
+
+  if (action.action_case() ==
+      optimization_guide::proto::Action::ACTION_NOT_SET) {
+    std::move(callback).Run(base::unexpected(
+        ActorToolError{ActorToolErrorCode::kUnsupportedAction}));
+    return;
+  }
+
+  if (IsToolDisabled(action.action_case())) {
+    std::move(callback).Run(base::unexpected(
+        ActorToolError{ActorToolErrorCode::kToolDisabledByFeature}));
+    return;
+  }
+
+  std::string tool_name =
+      ActorActionCaseToToolName(action.action_case()).value_or("unknown tool");
+
+  // Log immediate attempt to create tool.
+  journal_->Log(
+      GURL(), TaskId{0},
+      base::StringPrintf("Attempting to create tool: %s", tool_name.c_str()),
+      {});
+
+  base::expected<std::unique_ptr<ActorTool>, ActorToolError>
+      create_tool_result = tool_factory_->CreateTool(action, profile_);
+
+  if (!create_tool_result.has_value()) {
+    // Log immediate failure to create tool.
+    journal_->Log(
+        GURL(), TaskId{0},
+        base::StringPrintf("Failed to create tool: %s", tool_name.c_str()),
+        {{"error", base::NumberToString(
+                       static_cast<int>(create_tool_result.error().code))}});
+    std::move(callback).Run(base::unexpected(create_tool_result.error()));
+    return;
+  }
+
+  // The `tool` is moved into the callback to ensure it stays alive until
+  // the async operation completes.
+  std::unique_ptr<ActorTool> tool = std::move(create_tool_result.value());
+  ActorTool* tool_ptr = tool.get();
+
+  // Start a Begin log when the Execute call starts.
+  std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry =
+      journal_->CreatePendingAsyncEntry(
+          GURL(), TaskId{0}, 0,
+          base::StringPrintf("Execute Tool: %s", tool_name.c_str()), {});
+
+  ActorCallback wrapped_callback = base::BindOnce(
+      [](std::unique_ptr<ActorTool> tool,
+         std::unique_ptr<AggregatedJournal::PendingAsyncEntry> entry,
+         ActorCallback callback, ActorTool::ActorResult result) {
+        std::vector<JournalDetails> details;
+        if (!result.has_value()) {
+          // Log if an error happens between Begin and End.
+          details.push_back({"error", base::NumberToString(static_cast<int>(
+                                          result.error().code))});
+        }
+        // End log when the Execute call finishes.
+        entry->EndEntry(std::move(details));
+
+        std::move(callback).Run(std::move(result));
+
+        // `tool` is destroyed here when the lambda finishes.
+        //
+        // The lifetime of `tool` will be better managed once we set up the
+        // orchestration layer.
+      },
+      std::move(tool), std::move(entry), std::move(callback));
+
+  tool_ptr->Execute(std::move(wrapped_callback));
+}

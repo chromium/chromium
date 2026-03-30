@@ -11,7 +11,7 @@
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_visual_data.h"
-#import "ios/chrome/browser/intelligence/actuation/tab_actions.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/tab_actions_utils.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"

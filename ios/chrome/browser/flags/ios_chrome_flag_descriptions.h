@@ -469,8 +469,8 @@ extern const char kHideToolbarsInOverflowMenuDescription[];
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 
-extern const char kIOSActuationToolsName[];
-extern const char kIOSActuationToolsDescription[];
+extern const char kIOSActorToolsName[];
+extern const char kIOSActorToolsDescription[];
 
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];

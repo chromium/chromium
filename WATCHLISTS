@@ -1461,7 +1461,7 @@
                   'ios/chrome/browser/resources/Settings.bundle/Experimental\.plist',
     },
     'ios_intelligence_actuation': {
-      'filepath': 'ios/chrome/browser/intelligence/actuation'
+      'filepath': 'ios/chrome/browser/intelligence/actor/tools'
     },
     'ios_ntp': {
       'filepath': 'ios/chrome/browser/ntp/',
