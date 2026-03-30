@@ -64,13 +64,6 @@ class StartupUtils {
   // Mark a device as requiring enrollment recovery.
   static void MarkEnrollmentRecoveryRequired(PrefService& local_state);
 
-  static void DisableHIDDetectionScreenForTests();
-
-  // If `local_state` is nullptr, it's taken from g_browser_process.
-  // TODO(crbug.com/393260347): Remove the g_browser_process dependency.
-  static bool IsHIDDetectionScreenDisabledForTests(
-      PrefService* local_state = nullptr);
-
   // Returns initial locale from local settings.
   static std::string GetInitialLocale();
 

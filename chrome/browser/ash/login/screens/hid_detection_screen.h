@@ -11,6 +11,9 @@
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_manager.h"
 
+class PrefService;
+class PrefRegistrySimple;
+
 namespace ash {
 
 // Representation independent class that controls screen showing warning about
@@ -24,7 +27,9 @@ class HIDDetectionScreen : public BaseScreen,
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
+  // `local_state` must be non-null and must outlive `this`.
+  HIDDetectionScreen(PrefService* local_state,
+                     base::WeakPtr<HIDDetectionView> view,
                      const ScreenExitCallback& exit_callback);
 
   HIDDetectionScreen(const HIDDetectionScreen&) = delete;
@@ -32,12 +37,16 @@ class HIDDetectionScreen : public BaseScreen,
 
   ~HIDDetectionScreen() override;
 
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  static bool IsDisabledForTests(const PrefService& local_state);
+
   static std::string GetResultString(Result result);
 
   // The HID detection screen is only allowed for form factors without built-in
   // inputs: Chromebases, Chromebits, and Chromeboxes (crbug.com/207038438).
   // Also different testing flags might forcefully skip the screen
-  static bool CanShowScreen();
+  static bool CanShowScreen(PrefService& local_state);
 
   // Checks if this screen should be displayed. `on_check_done` should be
   // invoked with the result; true if the screen should be displayed, false
@@ -55,6 +64,8 @@ class HIDDetectionScreen : public BaseScreen,
 
  private:
   friend class HIDDetectionScreenChromeboxTest;
+
+  static void DisableForTests(PrefService& local_state);
 
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -81,6 +92,8 @@ class HIDDetectionScreen : public BaseScreen,
   void SendTouchScreenDeviceNotification();
 
   void Exit(Result result);
+
+  const raw_ref<PrefService> local_state_;
 
   base::WeakPtr<HIDDetectionView> view_;
 

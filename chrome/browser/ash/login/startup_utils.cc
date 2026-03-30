@@ -44,9 +44,6 @@
 namespace ash {
 namespace {
 
-constexpr char kDisableHIDDetectionScreenForTests[] =
-    "oobe.disable_hid_detection_screen_for_tests";
-
 // Saves boolean "Local State" preference and forces its persistence to disk.
 void SaveBoolPreferenceForced(PrefService& local_state,
                               const char* pref_name,
@@ -112,7 +109,6 @@ void StartupUtils::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(ash::prefs::kDeviceRegistered, -1);
   registry->RegisterBooleanPref(ash::prefs::kEnrollmentRecoveryRequired, false);
   registry->RegisterStringPref(::prefs::kInitialLocale, "en-US");
-  registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
   registry->RegisterBooleanPref(prefs::kOobeGuestMetricsEnabled, false);
   registry->RegisterBooleanPref(prefs::kOobeCriticalUpdateCompleted, false);
   registry->RegisterBooleanPref(prefs::kOobeIsConsumerSegment, false);
@@ -310,21 +306,6 @@ void StartupUtils::MarkDeviceRegistered(PrefService& local_state,
 void StartupUtils::MarkEnrollmentRecoveryRequired(PrefService& local_state) {
   SaveBoolPreferenceForced(local_state, ash::prefs::kEnrollmentRecoveryRequired,
                            true);
-}
-
-// static
-void StartupUtils::DisableHIDDetectionScreenForTests() {
-  SaveBoolPreferenceForced(*g_browser_process->local_state(),
-                           kDisableHIDDetectionScreenForTests, true);
-}
-
-// static
-bool StartupUtils::IsHIDDetectionScreenDisabledForTests(
-    PrefService* local_state) {
-  if (!local_state) {
-    local_state = g_browser_process->local_state();
-  }
-  return local_state->GetBoolean(kDisableHIDDetectionScreenForTests);
 }
 
 // static

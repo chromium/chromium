@@ -542,7 +542,8 @@ void WizardController::Init(OobeScreenId first_screen) {
   }
 
   // Do not show the HID Detection screen if device is owned.
-  if (!StartupUtils::IsDeviceOwned() && HIDDetectionScreen::CanShowScreen() &&
+  if (!StartupUtils::IsDeviceOwned() &&
+      HIDDetectionScreen::CanShowScreen(local_state_.get()) &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     // TODO(https://crbug.com/1275960): Move logic into
     // HIDDetectionScreen::MaybeSkip.
@@ -786,8 +787,9 @@ WizardController::CreateScreens() {
         oobe_ui->GetView<ArcVmDataMigrationScreenHandler>()->AsWeakPtr()));
   }
 
-  if (HIDDetectionScreen::CanShowScreen()) {
+  if (HIDDetectionScreen::CanShowScreen(local_state_.get())) {
     append(std::make_unique<HIDDetectionScreen>(
+        &local_state_.get(),
         oobe_ui->GetView<HIDDetectionScreenHandler>()->AsWeakPtr(),
         base::BindRepeating(&WizardController::OnHidDetectionScreenExit,
                             weak_factory_.GetWeakPtr())));

@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
@@ -19,6 +19,8 @@
 #include "chromeos/ash/components/hid_detection/hid_detection_manager_impl.h"
 #include "chromeos/ash/components/hid_detection/hid_detection_utils.h"
 #include "chromeos/constants/devicetype.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,6 +32,9 @@
 namespace ash {
 
 namespace {
+
+constexpr char kDisableHIDDetectionScreenForTests[] =
+    "oobe.disable_hid_detection_screen_for_tests";
 
 // Possible ui-states for device-blocks.
 constexpr char kSearchingState[] = "searching";
@@ -73,6 +78,22 @@ bool IsInputConnected(
 }  // namespace
 
 // static
+void HIDDetectionScreen::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterBooleanPref(kDisableHIDDetectionScreenForTests, false);
+}
+
+// static
+bool HIDDetectionScreen::IsDisabledForTests(const PrefService& local_state) {
+  return local_state.GetBoolean(kDisableHIDDetectionScreenForTests);
+}
+
+// static
+void HIDDetectionScreen::DisableForTests(PrefService& local_state) {
+  local_state.SetBoolean(kDisableHIDDetectionScreenForTests, true);
+  local_state.CommitPendingWrite();
+}
+
+// static
 std::string HIDDetectionScreen::GetResultString(Result result) {
   // LINT.IfChange(UsageMetrics)
   switch (result) {
@@ -84,13 +105,13 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
 
-bool HIDDetectionScreen::CanShowScreen() {
-  if (StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
+bool HIDDetectionScreen::CanShowScreen(PrefService& local_state) {
+  if (IsDisabledForTests(local_state) ||
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableHIDDetectionOnOOBEForTesting)) {
     // Store the flag inside the local state so it persists restart for the
     // autoupdate tests.
-    StartupUtils::DisableHIDDetectionScreenForTests();
+    DisableForTests(local_state);
     return false;
   }
 
@@ -104,9 +125,11 @@ bool HIDDetectionScreen::CanShowScreen() {
   }
 }
 
-HIDDetectionScreen::HIDDetectionScreen(base::WeakPtr<HIDDetectionView> view,
+HIDDetectionScreen::HIDDetectionScreen(PrefService* local_state,
+                                       base::WeakPtr<HIDDetectionView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(HIDDetectionView::kScreenId, OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       view_(std::move(view)),
       exit_callback_(exit_callback) {
   const auto& hid_detection_manager_override =
@@ -138,7 +161,7 @@ void HIDDetectionScreen::CheckIsScreenRequired(
 }
 
 bool HIDDetectionScreen::MaybeSkip(WizardContext& context) {
-  if (!CanShowScreen()) {
+  if (!CanShowScreen(local_state_.get())) {
     // TODO(https://crbug.com/1275960): Introduce Result::SKIPPED.
     Exit(Result::SKIPPED_FOR_TESTS);
     return true;

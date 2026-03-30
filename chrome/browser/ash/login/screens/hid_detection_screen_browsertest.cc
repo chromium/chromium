@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/login/screens/hid_detection_screen.h"
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -16,14 +19,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
-#include "chrome/browser/ash/login/screens/hid_detection_screen.h"
-#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -94,7 +96,8 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
   ~HIDDetectionScreenChromeboxTest() override = default;
 
   void SetUpOnMainThread() override {
-    if (HIDDetectionScreen::CanShowScreen()) {
+    if (HIDDetectionScreen::CanShowScreen(
+            CHECK_DEREF(g_browser_process->local_state()))) {
       ASSERT_TRUE(WizardController::default_controller());
 
       hid_detection_screen_ = static_cast<HIDDetectionScreen*>(
@@ -369,7 +372,7 @@ class HIDDetectionScreenDisabledAfterRestartTest
     if (content::IsPreTest()) {
       // Pref should be false by default.
       EXPECT_FALSE(
-          StartupUtils::IsHIDDetectionScreenDisabledForTests(local_state));
+          HIDDetectionScreen::IsDisabledForTests(CHECK_DEREF(local_state)));
     }
   }
 };
@@ -378,7 +381,8 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
                        PRE_SkipToUpdate) {
   test::WaitForWelcomeScreen();
 
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+  EXPECT_TRUE(HIDDetectionScreen::IsDisabledForTests(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(WizardController::default_controller()->HasScreen(
       HIDDetectionView::kScreenId));
 }
@@ -387,7 +391,8 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
                        SkipToUpdate) {
   test::WaitForWelcomeScreen();
   // The pref should persist restart.
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+  EXPECT_TRUE(HIDDetectionScreen::IsDisabledForTests(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(WizardController::default_controller()->HasScreen(
       HIDDetectionView::kScreenId));
 }
