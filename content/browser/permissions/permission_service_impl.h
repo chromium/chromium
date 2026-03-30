@@ -43,8 +43,6 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
  private:
   friend class PermissionServiceImplTest;
 
-  using PermissionStatusCallback =
-      base::OnceCallback<void(blink::mojom::PermissionStatus)>;
   using InternalRequestPermissionsCallback =
       base::OnceCallback<void(const std::vector<PermissionResult>&)>;
 
@@ -71,7 +69,7 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       bool user_gesture,
       RequestPermissionsCallback callback) override;
   void RevokePermission(blink::mojom::PermissionDescriptorPtr permission,
-                        PermissionStatusCallback callback) override;
+                        RevokePermissionCallback callback) override;
   void AddPermissionObserver(
       blink::mojom::PermissionDescriptorPtr permission,
       blink::mojom::PermissionStatusWithDetailsPtr last_known_status,

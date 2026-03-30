@@ -452,7 +452,7 @@ void PermissionServiceImpl::HasPermission(PermissionDescriptorPtr permission,
 
 void PermissionServiceImpl::RevokePermission(
     PermissionDescriptorPtr permission,
-    PermissionStatusCallback callback) {
+    RevokePermissionCallback callback) {
   auto permission_type =
       blink::MaybePermissionDescriptorToPermissionType(permission);
   if (!permission_type) {
