@@ -197,11 +197,6 @@ def __step_config(ctx, step_config):
         # TODO(b/285225184): use precomputed subtree
         "third_party/rust-toolchain:toolchain",
     ]
-    rust_inputs = [
-        "build/action_helpers.py",
-        "build/gn_helpers.py",
-        "build/rust/gni_impl/rustc_wrapper.py",
-    ] + rust_toolchain
     rust_link_indirect_inputs = {
         "includes": [
             # https://crbug.com/488158799#comment21 explains why `rustc` requires
@@ -245,7 +240,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust_bin",
             "action": "(.*_)?rust_bin",
-            "inputs": rust_inputs + clang_inputs,
+            "inputs": rust_toolchain + clang_inputs,
             "indirect_inputs": rust_link_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
@@ -256,7 +251,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust_cdylib",
             "action": "(.*_)?rust_cdylib",
-            "inputs": rust_inputs + clang_inputs,
+            "inputs": rust_toolchain + clang_inputs,
             "indirect_inputs": rust_link_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
@@ -267,7 +262,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust_macro",
             "action": "(.*_)?rust_macro",
-            "inputs": rust_inputs + clang_inputs,
+            "inputs": rust_toolchain + clang_inputs,
             "indirect_inputs": rust_link_indirect_inputs,
             "handler": "rust_link_handler",
             "deps": "none",  # disable gcc scandeps
@@ -278,7 +273,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust_rlib",
             "action": "(.*_)?rust_rlib",
-            "inputs": rust_inputs,
+            "inputs": rust_toolchain,
             "indirect_inputs": rust_compile_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
@@ -288,7 +283,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust_staticlib",
             "action": "(.*_)?rust_staticlib",
-            "inputs": rust_inputs,
+            "inputs": rust_toolchain,
             "indirect_inputs": rust_compile_indirect_inputs,
             "deps": "none",  # disable gcc scandeps
             "remote": remote,
@@ -319,7 +314,7 @@ def __step_config(ctx, step_config):
         {
             "name": "rust/clippy",
             "command_prefix": "python3 ../../build/rust/gni_impl/clippy_wrapper.py",
-            "inputs": rust_inputs + [
+            "inputs": rust_toolchain + [
                 "third_party/rust-toolchain/bin/clippy-driver",
                 "build/rust/gni_impl/clippy_wrapper.py",
             ],
