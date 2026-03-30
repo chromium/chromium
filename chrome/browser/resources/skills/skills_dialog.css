@@ -266,6 +266,11 @@ textarea::placeholder {
   color: var(--cr-primary-text-color);
 }
 
+.emoji-trigger:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: 2px;
+}
+
 .emoji-trigger:hover {
   background-color: var(--cr-hover-background-color);
 }
