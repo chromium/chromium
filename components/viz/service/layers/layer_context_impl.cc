@@ -525,6 +525,17 @@ DeserializeStickyPositionData(
       return base::unexpected("Invalid scroll ancestor ID");
     }
 
+    if (!IsOptionalPropertyTreeIndexValid(
+            trees.transform_tree(), wire->nearest_node_shifting_sticky_box)) {
+      return base::unexpected("Invalid nearest_node_shifting_sticky_box");
+    }
+
+    if (!IsOptionalPropertyTreeIndexValid(
+            trees.transform_tree(),
+            wire->nearest_node_shifting_containing_block)) {
+      return base::unexpected("Invalid nearest_node_shifting_containing_block");
+    }
+
     cc::StickyPositionNodeData& data = sticky_position_node_data.emplace_back();
     data.x_scroll_ancestor = wire->x_scroll_ancestor;
     data.y_scroll_ancestor = wire->y_scroll_ancestor;

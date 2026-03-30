@@ -915,6 +915,42 @@ TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       StickyPositionDataInvalidNearestNodeShiftingStickyBox) {
+  auto update = CreateDefaultUpdate();
+  int scroll_node_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto sticky_data = mojom::StickyPositionNodeData::New();
+  sticky_data->x_scroll_ancestor = scroll_node_id;
+  sticky_data->y_scroll_ancestor = scroll_node_id;
+  sticky_data->nearest_node_shifting_sticky_box = 99;  // Invalid transform ID
+  tree_props->sticky_position_data.push_back(std::move(sticky_data));
+  update->transform_tree_update = std::move(tree_props);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid nearest_node_shifting_sticky_box");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
+       StickyPositionDataInvalidNearestNodeShiftingContainingBlock) {
+  auto update = CreateDefaultUpdate();
+  int scroll_node_id = AddScrollNode(update.get(), cc::kRootPropertyNodeId);
+
+  auto tree_props = mojom::TransformTreeUpdate::New();
+  auto sticky_data = mojom::StickyPositionNodeData::New();
+  sticky_data->x_scroll_ancestor = scroll_node_id;
+  sticky_data->y_scroll_ancestor = scroll_node_id;
+  sticky_data->nearest_node_shifting_containing_block = 99;  // Invalid ID
+  tree_props->sticky_position_data.push_back(std::move(sticky_data));
+  update->transform_tree_update = std::move(tree_props);
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), "Invalid nearest_node_shifting_containing_block");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeTransformNodeTest,
        InvalidAnchorPositionScrollDataId_EmptyData) {
   // Apply a default valid update. anchor_position_scroll_data will be empty by
   // default.
