@@ -238,8 +238,15 @@ void TileDisplayLayerImpl::GetContentsResourceId(
 
   *resource_id = *resource_id_opt;
   *resource_size = *resource_size_opt;
+  // |resource_uv_size| represents the range of UV coordinates that map to the
+  // content being drawn. Typically, we draw to the entire texture, so these
+  // coordinates are (1.0f, 1.0f). However, if we are rasterizing to an
+  // over-large texture, this size will be smaller, mapping to the subset of the
+  // texture being used.
   gfx::SizeF requested_tile_size =
-      gfx::SizeF(iter.CurrentTiling()->tile_size());
+      gfx::SizeF(iter.CurrentTiling()->tiling_rect().size());
+  DCHECK_LE(requested_tile_size.width(), resource_size->width());
+  DCHECK_LE(requested_tile_size.height(), resource_size->height());
   *resource_uv_size =
       gfx::SizeF(requested_tile_size.width() / resource_size->width(),
                  requested_tile_size.height() / resource_size->height());

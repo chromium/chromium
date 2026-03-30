@@ -347,6 +347,54 @@ TEST_F(TileDisplayLayerImplTest,
   EXPECT_EQ(mask_uv_size, gfx::SizeF(0.5f, 0.5f));
 }
 
+// Verifies that GetContentsResourceId() returns the correct mask UV size when
+// the tiling rect and max tile size differ.
+TEST_F(
+    TileDisplayLayerImplTest,
+    GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanMaxTileSize) {
+  constexpr gfx::Size kLayerBounds(100, 200);
+  constexpr gfx::Size kTileSize(200, 400);
+  constexpr gfx::Size kResourceSize(200, 400);
+  constexpr gfx::Rect kLayerRect(kLayerBounds);
+
+  auto layer = std::make_unique<TileDisplayLayerImpl>(
+      CHECK_DEREF(host_impl()->active_tree()), /*id=*/42);
+  auto* raw_layer = layer.get();
+  host_impl()->active_tree()->AddLayer(std::move(layer));
+
+  raw_layer->SetBounds(kLayerBounds);
+  raw_layer->SetIsBackdropFilterMask(true);
+
+  auto& tiling = raw_layer->GetOrCreateTilingFromScaleKey(1.0);
+  tiling.SetTileSize(kTileSize);
+  tiling.SetTilingRect(kLayerRect);
+
+  auto resource_id = host_impl()->resource_provider()->ImportResource(
+      viz::TransferableResource::Make(
+          gpu::ClientSharedImage::CreateForTesting(),
+          viz::TransferableResource::ResourceSource::kTest, gpu::SyncToken()),
+      base::DoNothing());
+  TileDisplayLayerImpl::TileContents contents =
+      TileDisplayLayerTileResource(resource_id, kResourceSize);
+  tiling.SetTileContents(TileIndex{0, 0}, contents, /*update_damage=*/true);
+
+  SetupRootProperties(host_impl()->active_tree()->root_layer());
+
+  viz::ResourceId mask_resource_id;
+  gfx::Size mask_texture_size;
+  gfx::SizeF mask_uv_size;
+  raw_layer->GetContentsResourceId(&mask_resource_id, &mask_texture_size,
+                                   &mask_uv_size);
+
+  EXPECT_EQ(mask_resource_id, resource_id);
+  EXPECT_EQ(mask_texture_size, kResourceSize);
+
+  // `mask_uv_size` is the ratio between the tiling's width/height (i.e., the
+  // content size) and that of the resource. Here, the tiling rect is half the
+  // size of the resource in each dimension.
+  EXPECT_EQ(mask_uv_size, gfx::SizeF(0.5f, 0.5f));
+}
+
 // Tests that GetContentsResourceId() returns viz::kInvalidResourceId if the
 // layer has more than one tiling, as masks are only supported if they fit on a
 // single tile.
