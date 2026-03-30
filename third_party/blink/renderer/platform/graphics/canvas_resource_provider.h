@@ -181,7 +181,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     CHECK(IsCanvas2D());
     return *recorder_;
   }
-  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorder();
+  std::unique_ptr<MemoryManagedPaintRecorder> ReleaseRecorderForCanvas2D();
   void SetRecorderForCanvas2D(
       std::unique_ptr<MemoryManagedPaintRecorder> recorder);
 

@@ -1468,7 +1468,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
     return;
   }
   std::unique_ptr<MemoryManagedPaintRecorder> recorder =
-      old_provider->ReleaseRecorder();
+      old_provider->ReleaseRecorderForCanvas2D();
   canvas()->ResetLayer();
   ReplaceResourceProvider(nullptr);
 

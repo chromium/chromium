@@ -1721,7 +1721,8 @@ CanvasResourceProvider::~CanvasResourceProvider() {
 }
 
 std::unique_ptr<MemoryManagedPaintRecorder>
-CanvasResourceProvider::ReleaseRecorder() {
+CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
+  CHECK(IsCanvas2D());
   // When releasing the recorder, we swap it with a new, valid one. This way,
   // the `recorder_` member is guarantied to be always valid.
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
