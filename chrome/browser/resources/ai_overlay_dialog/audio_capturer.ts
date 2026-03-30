@@ -192,10 +192,9 @@ export class BlobAudioCapturer implements AudioCapturer {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    // Send a period of silence (e.g., 2 seconds) to ensure the server's Voice
-    // Activity Detection (VAD) detects the end of speech, sent in realistic
-    // chunks rather than all at once.
-    const silenceDurationMs = 2000;
+    // Send 500ms of silence to ensure the server detects the end of speech,
+    // sent in realistic chunks rather than all at once.
+    const silenceDurationMs = 500;
     const silenceChunks = Math.ceil(silenceDurationMs / chunkMs);
     const silentChunk = new Float32Array(chunkSize);
     const silentBase64 = encodeFloat32ToPcmBase64(silentChunk);
