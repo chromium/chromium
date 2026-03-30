@@ -1069,7 +1069,6 @@ crbug.com/1375884 external/wpt/css/css-fonts/rlh-in-monospace.html [ Failure ]
 # Flaky layout tests
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
-crbug.com/448472314 external/wpt/css/css-anchor-position/anchor-scroll-chained-003.html [ Failure ]
 crbug.com/457967584 external/wpt/css/css-anchor-position/anchored-transition-display-none-001.html [ Pass Timeout ]
 crbug.com/457527725 external/wpt/css/css-anchor-position/position-area-inset-one-side-auto.tentative.html [ Failure ]
 crbug.com/431611648 external/wpt/css/css-anchor-position/position-area-percents-001.html [ Failure ]
@@ -1255,7 +1254,6 @@ crbug.com/369883705 external/wpt/css/css-shadow/has-slotted-functional-flattened
 crbug.com/359703395 external/wpt/css/css-shadow/host-has-001.tentative.html [ Failure ]
 crbug.com/359703395 external/wpt/css/css-shadow/host-has-002.tentative.html [ Failure ]
 crbug.com/359703395 external/wpt/css/css-shadow/host-has-003.tentative.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-shadow/part/animation-part.html [ Failure ]
 crbug.com/448972968 external/wpt/css/css-shadow/part/exportparts-layered.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-001.html [ Failure ]
 crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-002.html [ Failure ]
