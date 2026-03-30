@@ -11,6 +11,7 @@ export function getHtml(this: OmniboxAimAppElement) {
   return html`<!--_html_template_start_-->
 <div id="content">
   <cr-composebox id="composebox" searchbox-next-enabled
+      .submitButtonIconType="${'forward'}"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
       ?disable-composebox-animation="${this.disableComposeboxAnimation_}"
