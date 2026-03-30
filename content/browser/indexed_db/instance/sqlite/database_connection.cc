@@ -1201,22 +1201,27 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   // database that is too new (written by a future version of the browser),
   // which will be a fatal error.
   const auto current_data_format = IndexedDBDataFormatVersion::GetCurrent();
+  std::optional<IndexedDBDataFormatVersion> stored_data_format;
   if (!is_new_db) {
     int64_t data_format_version;
     if (!meta_table_->GetValue(kV8DataVersionKey, &data_format_version)) {
       return Fatal(Status::Corruption("Missing data format version"),
                    SpecificEvent::kV8FormatTooNewOrMissing);
     }
-    std::optional<IndexedDBDataFormatVersion> decoded =
+    stored_data_format =
         IndexedDBDataFormatVersion::Decode(data_format_version);
-    if (!decoded || !current_data_format.IsAtLeast(*decoded)) {
+    if (!stored_data_format ||
+        !current_data_format.IsAtLeast(*stored_data_format)) {
       return Fatal(
           Status::NotFound(
               "Unintelligible data format version: invalid or too new"),
           SpecificEvent::kV8FormatTooNewOrMissing);
     }
   }
-  meta_table_->SetValue(kV8DataVersionKey, current_data_format.Encode());
+  // The first write to the DB is SLOW, so we avoid it when possible.
+  if (stored_data_format != current_data_format) {
+    meta_table_->SetValue(kV8DataVersionKey, current_data_format.Encode());
+  }
 
   if (is_new_db) {
     // Store the creation timestamp. This may be used for heuristics-based
@@ -1256,8 +1261,7 @@ Status DatabaseConnection::Init(std::optional<std::u16string_view> name) {
   // remove blob references that were associated with active blobs. These may
   // have been left behind if Chromium crashed. Deleting the blob references
   // should also delete the blob if appropriate.
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
+  sql::Statement statement(db_->GetUniqueStatement(
       "DELETE FROM blob_references WHERE record_row_id IS NULL"));
   RETURN_STATUS_ON_ERROR(statement.Run());
 
