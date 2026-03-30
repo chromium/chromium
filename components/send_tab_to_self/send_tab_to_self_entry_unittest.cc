@@ -386,6 +386,24 @@ TEST(SendTabToSelfEntry, HistoryRoundTrip) {
                   Eq(1)));
 }
 
+TEST(SendTabToSelfEntry, HistoryNotSerializedIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSendTabToSelfPropagateNavigationHistory);
+
+  std::vector<sessions::SerializedNavigationEntry> navigations;
+  navigations.push_back(CreateNavigation("https://example.com/1"));
+
+  // Even if navigation history is provided during construction...
+  const SendTabToSelfEntry entry("1", GURL("https://example.com"), "title",
+                                 base::Time::FromTimeT(10), "device", "device2",
+                                 PageContext(),
+                                 NavigationHistory(std::move(navigations), 0));
+
+  // ...it shouldn't be serialized to proto if the feature is disabled.
+  const SendTabToSelfLocal local_proto = entry.AsLocalProto();
+  EXPECT_EQ(0, local_proto.specifics().navigation_size());
+}
+
 TEST(SendTabToSelfEntry, HistoryTruncation_Both) {
   base::test::ScopedFeatureList feature_list(
       kSendTabToSelfPropagateNavigationHistory);

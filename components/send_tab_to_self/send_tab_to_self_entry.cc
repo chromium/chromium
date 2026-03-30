@@ -30,8 +30,8 @@ NavigationHistory::NavigationHistory() = default;
 NavigationHistory::NavigationHistory(
     std::vector<sessions::SerializedNavigationEntry> navigations_in,
     int current_navigation_index_in) {
-  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory));
-  if (navigations_in.empty()) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory) ||
+      navigations_in.empty()) {
     return;
   }
   CHECK_GE(current_navigation_index_in, 0);
@@ -163,17 +163,19 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
   pb_entry->set_opened(IsOpened());
   pb_entry->set_notification_dismissed(GetNotificationDismissed());
 
-  pb_entry->mutable_navigation()->Reserve(
-      navigation_history_.navigations.size());
-  for (const sessions::SerializedNavigationEntry& navigation :
-       navigation_history_.navigations) {
-    *pb_entry->add_navigation() =
-        sync_sessions::SessionNavigationToSyncData(navigation);
-  }
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory)) {
+    pb_entry->mutable_navigation()->Reserve(
+        navigation_history_.navigations.size());
+    for (const sessions::SerializedNavigationEntry& navigation :
+         navigation_history_.navigations) {
+      *pb_entry->add_navigation() =
+          sync_sessions::SessionNavigationToSyncData(navigation);
+    }
 
-  if (navigation_history_.current_navigation_index.has_value()) {
-    pb_entry->set_current_navigation_index(
-        *navigation_history_.current_navigation_index);
+    if (navigation_history_.current_navigation_index.has_value()) {
+      pb_entry->set_current_navigation_index(
+          *navigation_history_.current_navigation_index);
+    }
   }
 
   sync_pb::PageContext pb_page_context = PageContextToProto(page_context_);
