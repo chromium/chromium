@@ -4,13 +4,13 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service_factory.h"
 
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
-#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 
 /// Factory
 BitmapFetcherService* BitmapFetcherServiceFactory::GetForBrowserContext(
-    content::BrowserContext* profile) {
+    content::BrowserContext* context) {
   return static_cast<BitmapFetcherService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance()->GetServiceForBrowserContext(context, true));
 }
 
 // static
@@ -37,7 +37,6 @@ BitmapFetcherServiceFactory::~BitmapFetcherServiceFactory() = default;
 std::unique_ptr<KeyedService>
 BitmapFetcherServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  Profile* profile = static_cast<Profile*>(context);
-  DCHECK(!profile->IsOffTheRecord());
-  return std::make_unique<BitmapFetcherService>(profile);
+  DCHECK(!context->IsOffTheRecord());
+  return std::make_unique<BitmapFetcherService>(context);
 }
