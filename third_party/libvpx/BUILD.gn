@@ -4,6 +4,7 @@
 
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//third_party/libvpx/libvpx_srcs.gni")
@@ -28,7 +29,7 @@ if (current_cpu == "x86") {
     cpu_arch_full = "arm-neon"
   }
 } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
-  if (is_win || is_chromeos || is_mac || is_ios) {
+  if (is_win || is_chromeos || is_mac || is_ios || is_desktop_android) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
     # os_category).
