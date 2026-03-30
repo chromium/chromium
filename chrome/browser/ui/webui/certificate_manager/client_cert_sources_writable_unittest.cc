@@ -42,7 +42,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -158,7 +157,6 @@ class ClientCertSourceWritableUnitTest
     test_nss_user_.FinishInit();
 
     ash::LoginState::Initialize();
-    crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
 #endif
 
     ChromeRenderViewHostTestHarness::SetUp();
@@ -188,7 +186,6 @@ class ClientCertSourceWritableUnitTest
     cert_source_.reset();
 #if BUILDFLAG(IS_CHROMEOS)
     fake_user_manager_.Reset();
-    crosapi_manager_.reset();
     ash::LoginState::Shutdown();
     kcer::KcerFactoryAsh::ClearNssTokenMapForTesting();
 #else
@@ -341,7 +338,6 @@ class ClientCertSourceWritableUnitTest
   crypto::ScopedTestSystemNSSKeySlot test_nss_system_slot_{
       /*simulate_token_loader=*/true};
 
-  std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
 #else
