@@ -33,6 +33,7 @@ per-file subprojects/chromium/try/tryserver.chromium.fuchsia.star=file://build/f
 
 # For Android configs
 per-file subprojects/chromium/ci/chromium.android*.star=wnwen@chromium.org
+per-file subprojects/chromium/ci/chromium.infra.star=wnwen@chromium.org
 per-file subprojects/chromium/try/tryserver.chromium.android*.star=wnwen@chromium.org
 
 # Autosharder owners
