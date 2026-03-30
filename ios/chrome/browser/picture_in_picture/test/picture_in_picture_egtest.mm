@@ -132,6 +132,10 @@ void EnsurePipControlsAreVisibleForWindow(XCUIElement* pipWindow,
 #if TARGET_OS_SIMULATOR
   EARL_GREY_TEST_DISABLED(@"This test is not supported on simulator.");
 #endif
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/497637049): Test is flaky on iPad.
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad.");
+  }
   OpenDefaultBrowserPictureInPicturePromo();
 
   XCUIApplication* springboard = SpringBoardApplication();
