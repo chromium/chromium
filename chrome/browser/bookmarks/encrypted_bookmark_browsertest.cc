@@ -3,13 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/bookmarks/common/bookmark_features.h"
@@ -94,6 +97,11 @@ void AddMoreBookmarks(BookmarkModel* bookmark_model) {
 MATCHER(HasAdditionalBookmarksCount, "") {
   return arg->bookmark_bar_node()->children().size() == 3 &&
          arg->account_bookmark_bar_node()->children().size() == 2;
+}
+
+MATCHER(HasNoBookmarks, "") {
+  return arg->bookmark_bar_node()->children().empty() &&
+         arg->account_bookmark_bar_node() == nullptr;
 }
 
 class BaseEncryptedBookmarkBrowserTest : public PlatformBrowserTest {
@@ -516,6 +524,78 @@ IN_PROC_BROWSER_TEST_F(MoveBackFromStage3Test, BookmarksStillAvailable) {
   EXPECT_TRUE(WaitUntilClearTextFilesExist(GetProfile()->GetPath()));
   EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
 }
+
+// Test when the encrypted files become corrupted.
+class CorruptedPrimaryEncryptedFileTest
+    : public BaseEncryptedBookmarkBrowserTest,
+      public testing::WithParamInterface<bookmarks::BookmarkEncryptionStage> {
+ public:
+  CorruptedPrimaryEncryptedFileTest() = default;
+
+  bool SetUpUserDataDirectory() override {
+    bool result = BaseEncryptedBookmarkBrowserTest::SetUpUserDataDirectory();
+    if (GetTestPreCount() == 1) {
+      base::FilePath user_data_dir;
+      base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+      base::FilePath profile_path =
+          user_data_dir.AppendASCII(TestingProfile::kTestUserProfileDir);
+      // Corrupt the encrypted files.
+      base::WriteFile(
+          profile_path.Append(kEncryptedLocalOrSyncableBookmarksFileName),
+          "corrupted local node");
+      base::WriteFile(profile_path.Append(kEncryptedAccountBookmarksFileName),
+                      "corrupted account node");
+    }
+
+    return result;
+  }
+
+  std::vector<bookmarks::BookmarkEncryptionStage>
+  GetEncryptionStagesForEachStep() override {
+    return {GetParam(), GetParam(), GetParam()};
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(CorruptedPrimaryEncryptedFileTest,
+                       PRE_PRE_OldBookmarksAreLostNewCanBeAdded) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(), GetParam());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  AddBookmarks(bookmark_model);
+
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+IN_PROC_BROWSER_TEST_P(CorruptedPrimaryEncryptedFileTest,
+                       PRE_OldBookmarksAreLostNewCanBeAdded) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(), GetParam());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+  // Files are corrupted, so no bookmarks are loaded.
+  EXPECT_THAT(bookmark_model, HasNoBookmarks());
+
+  // Add new bookmarks.
+  AddBookmarks(bookmark_model);
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+IN_PROC_BROWSER_TEST_P(CorruptedPrimaryEncryptedFileTest,
+                       OldBookmarksAreLostNewCanBeAdded) {
+  CHECK_EQ(GetCurrentBookmarkEncryptionStageForTesting(), GetParam());
+  BookmarkModel* bookmark_model = WaitForBookmarkModel(GetProfile());
+
+  // On next load, new bookmarks should be available.
+  EXPECT_THAT(bookmark_model, HasExpectedBookmarksCount());
+  EXPECT_TRUE(WaitUntilEncryptedFilesExist(GetProfile()->GetPath()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CorruptedPrimaryEncryptedFileTest,
+    CorruptedPrimaryEncryptedFileTest,
+    testing::Values(
+        bookmarks::BookmarkEncryptionStage::kWriteBothReadPreferEncrypted,
+        bookmarks::BookmarkEncryptionStage::
+            kWriteOnlyEncryptedReadPreferEncrypted));
 
 }  // namespace
 }  // namespace bookmarks
