@@ -20067,6 +20067,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "HappinessTrackingSurveysForDesktopSEHijacking",
                         "SearchEngineExplicitChoiceDialog",
                         "SearchEngineUnconditionalDialog"
                     ]
