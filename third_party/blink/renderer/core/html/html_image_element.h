@@ -133,6 +133,7 @@ class CORE_EXPORT HTMLImageElement
   virtual void EnsureCollapsedOrFallbackContent();
   virtual void EnsureFallbackForGeneratedContent();
   virtual void EnsurePrimaryContent();
+  void ResetLayoutDisposition();
   bool IsCollapsed() const;
   bool IsPrimaryContent() const;
 

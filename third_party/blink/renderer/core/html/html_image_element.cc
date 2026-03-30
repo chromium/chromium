@@ -1020,13 +1020,7 @@ void HTMLImageElement::SelectSourceURL(
     GetImageLoader().UpdateFromElement(behavior);
   }
 
-  // TODO(b/489469993): We will reset any active image replacement here. This
-  // might not make sense for all the callsites of this method (for example, if
-  // the viewport changes).
-  if (GetImageLoader().ImageIsPotentiallyAvailable())
-    EnsurePrimaryContent();
-  else
-    EnsureCollapsedOrFallbackContent();
+  ResetLayoutDisposition();
 }
 
 void HTMLImageElement::StartLoadingImageDocument(
@@ -1063,6 +1057,17 @@ void HTMLImageElement::EnsureCollapsedOrFallbackContent() {
 
 void HTMLImageElement::EnsurePrimaryContent() {
   SetLayoutDisposition(LayoutDisposition::kPrimaryContent);
+}
+
+void HTMLImageElement::ResetLayoutDisposition() {
+  // TODO(b/489469993): We will reset any active image replacement here. This
+  // might not make sense for all the callsites of this method (for example, if
+  // the viewport changes).
+  if (GetImageLoader().ImageIsPotentiallyAvailable()) {
+    EnsurePrimaryContent();
+  } else {
+    EnsureCollapsedOrFallbackContent();
+  }
 }
 
 bool HTMLImageElement::IsCollapsed() const {
