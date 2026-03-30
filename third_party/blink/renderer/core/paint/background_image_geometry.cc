@@ -268,6 +268,8 @@ SnappedAndUnsnappedOutsets BackgroundImageGeometry::ComputeDestRectAdjustments(
       break;
     }
     case EFillBox::kText:
+    case EFillBox::kBorderArea:
+    case EFillBox::kBorderAreaText:
       break;
   }
   return dest_adjust;
@@ -321,6 +323,8 @@ BackgroundImageGeometry::ComputePositioningAreaAdjustments(
       break;
     case EFillBox::kNoClip:
     case EFillBox::kText:
+    case EFillBox::kBorderArea:
+    case EFillBox::kBorderAreaText:
       // These are not supported mask-origin values.
       NOTREACHED();
   }
@@ -706,6 +710,8 @@ gfx::RectF BackgroundImageGeometry::ComputePositioningArea(
   switch (layer.Origin()) {
     case EFillBox::kNoClip:
     case EFillBox::kText:
+    case EFillBox::kBorderAreaText:
+    case EFillBox::kBorderArea:
       NOTREACHED();
     case EFillBox::kBorder:
     case EFillBox::kContent:
@@ -731,6 +737,8 @@ gfx::RectF BackgroundImageGeometry::ComputePaintingArea(
     case EFillBox::kFillBox:
     case EFillBox::kPadding:
       return positioning_area;
+    case EFillBox::kBorderArea:
+    case EFillBox::kBorderAreaText:
     case EFillBox::kStrokeBox:
     case EFillBox::kBorder:
       return paint_context.ReferenceBox(GeometryBox::kStrokeBox);

@@ -77,8 +77,10 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
 
   // Force full paint invalidation if the object has background-clip:text to
   // update the background on any change in the subtree.
-  if (object_.StyleRef().BackgroundClip() == EFillBox::kText)
+  if (object_.StyleRef().BackgroundClip() == EFillBox::kText ||
+      object_.StyleRef().BackgroundClip() == EFillBox::kBorderAreaText) {
     return PaintInvalidationReason::kBackground;
+  }
 
   // Incremental invalidation is only applicable to LayoutBoxes. Return
   // kIncremental. BoxPaintInvalidator may override this reason with a full

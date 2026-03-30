@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 20px; }
+  .test {
+    display: inline-block;
+    margin: 10px;
+    width: 200px;
+    height: 100px;
+    box-sizing: border-box;
+    border: 20px solid transparent;
+    background-clip: border-area;
+    background-image: linear-gradient(blue, blue);
+  }
+  /* Mixed: solid top, dashed right, dotted bottom, double left */
+  .mixed1 {
+    border-top-style: solid;
+    border-right-style: dashed;
+    border-bottom-style: dotted;
+    border-left-style: double;
+  }
+  /* All non-solid styles */
+  .mixed2 {
+    border-top-style: dashed;
+    border-right-style: dotted;
+    border-bottom-style: double;
+    border-left-style: dashed;
+  }
+  .rounded {
+    border-radius: 20px;
+  }
+</style>
+</head>
+<body>
+<div class="test mixed1"></div>
+<div class="test mixed1 rounded"></div>
+<div class="test mixed2"></div>
+<div class="test mixed2 rounded"></div>
+</body>
+</html>

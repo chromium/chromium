@@ -477,7 +477,11 @@ void AddBackgroundValue(CSSValue*& list, const CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenStream&);
 CSSValue* ConsumeBackgroundBlendMode(CSSParserTokenStream&);
 CSSValue* ConsumeBackgroundBox(CSSParserTokenStream&);
-CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenStream&);
+
+enum class AllowBorderAreaValue { kAllow, kForbid };
+CSSValue* ConsumeBackgroundClip(
+    CSSParserTokenStream&,
+    AllowBorderAreaValue = AllowBorderAreaValue::kAllow);
 CSSValue* ConsumeMaskComposite(CSSParserTokenStream&);
 CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenStream&);
 CSSValue* ConsumeMaskMode(CSSParserTokenStream&);

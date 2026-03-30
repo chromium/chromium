@@ -935,6 +935,11 @@
     "padding",
     "padding-box",
 
+    // background-clip: border-area (CSS Backgrounds Level 4)
+    // NOTE: This must be outside the kBorder..kPaddingBox range used by
+    // ConsumePrefixedBackgroundBox's ConsumeIdentRange.
+    "border-area",
+
     // CSS 3 SHAPES
     "margin-box",
 

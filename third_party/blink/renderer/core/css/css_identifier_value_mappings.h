@@ -371,6 +371,12 @@ inline CSSIdentifierValue::CSSIdentifierValue(EFillBox e)
     case EFillBox::kText:
       value_id_ = CSSValueID::kText;
       break;
+    case EFillBox::kBorderArea:
+      value_id_ = CSSValueID::kBorderArea;
+      break;
+    case EFillBox::kBorderAreaText:
+      // Combined value is serialized as a list, not a single identifier.
+      NOTREACHED();
     case EFillBox::kFillBox:
       value_id_ = CSSValueID::kFillBox;
       break;
@@ -400,6 +406,8 @@ inline EFillBox CSSIdentifierValue::ConvertTo() const {
       return EFillBox::kContent;
     case CSSValueID::kText:
       return EFillBox::kText;
+    case CSSValueID::kBorderArea:
+      return EFillBox::kBorderArea;
     case CSSValueID::kFillBox:
       return EFillBox::kFillBox;
     case CSSValueID::kStrokeBox:

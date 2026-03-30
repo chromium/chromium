@@ -612,12 +612,9 @@ crbug.com/378046059 virtual/gpu-rasterization/external/wpt/css/css-images/object
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-png.html [ Failure ]
 crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-size-near-zero-svg.html [ Failure ]
 # border-area tests
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-background-geometry.html [ Failure ]
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-border-image.html [ Failure ]
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-border-on-top.html [ Failure ]
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-box-decoration-break.html [ Failure ]
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-multiple-backgrounds.html [ Failure Timeout ]
-crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area.html [ Failure ]
+crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-multiple-backgrounds.html [ Failure ]
+# border-area clipping does not yet account for border-shape geometry
+crbug.com/329302543 external/wpt/css/css-backgrounds/background-clip/clip-border-area-border-shape.html [ Failure ]
 
 crbug.com/429459566 [ Mac ] external/wpt/css/css-image-animation/image-animation-img-running.tentative.html [ Failure Pass ]
 crbug.com/429459566 [ Mac ] external/wpt/css/css-image-animation/image-animation-img-running-to-normal.tentative.html [ Failure Pass ]
@@ -3782,9 +3779,7 @@ crbug.com/388063576 [ Mac14 ] external/wpt/webrtc-encoded-transform/idlharness.h
 crbug.com/388073800 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-parameterless.https.html?interop-2026 [ Timeout ]
 crbug.com/388073800 [ Mac13 ] external/wpt/webrtc/RTCPeerConnection-setLocalDescription-parameterless.https.html?rest [ Timeout ]
 crbug.com/387777047 external/wpt/css/css-align/blocks/align-content-block-012.html [ Failure ]
-crbug.com/387626415 external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
 crbug.com/387378128 external/wpt/css/css-text/line-breaking/segment-break-transformation-punctuation-001.html [ Failure ]
-crbug.com/387626415 virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-border-area-on-body-not-propagated-to-root.html [ Failure ]
 crbug.com/385918146 [ Win11 ] external/wpt/webrtc-encoded-transform/tentative/RTCEncodedVideoFrame-clone.https.html [ Timeout ]
 crbug.com/386128935 [ Mac12 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]
 crbug.com/386128935 [ Mac13 ] external/wpt/css/css-position/position-fixed-scroll-nested-fixed.html [ Failure ]

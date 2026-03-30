@@ -162,6 +162,16 @@ class BoxPainterBase {
                                  const PhysicalRect&,
                                  const PhysicalRect& scrolled_paint_rect,
                                  bool object_has_multiple_boxes);
+  void PaintFillLayerBorderAreaFillBox(const PaintInfo&,
+                                       const FillLayerInfo&,
+                                       Image*,
+                                       SkBlendMode composite_op,
+                                       const BackgroundImageGeometry&,
+                                       const PhysicalRect&,
+                                       const PhysicalRect& scrolled_paint_rect,
+                                       BackgroundBleedAvoidance,
+                                       bool include_text,
+                                       bool object_has_multiple_boxes);
   virtual void PaintTextClipMask(const PaintInfo&,
                                  const gfx::Rect& mask_rect,
                                  const PhysicalOffset& paint_offset,

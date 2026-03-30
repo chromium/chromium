@@ -4,8 +4,6 @@ This is a testharness.js-based test.
 [FAIL] all initial values
   assert_equals: expected "none" but got "padding-box border-box"
 [FAIL] border-area border-box
-  assert_equals: expected "border-area" but got ""
-[FAIL] border-area padding-box
-  assert_equals: expected "padding-box border-area" but got ""
+  assert_equals: expected "border-area" but got "border-box border-area"
 Harness: the test ran to completion.
 

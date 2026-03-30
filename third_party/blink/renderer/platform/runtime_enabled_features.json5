@@ -1450,6 +1450,10 @@
       name: "CSSAtRuleCounterStyleSpeakAsDescriptor",
       status: "test",
     },
+    {
+      name: "CSSBackgroundClipBorderArea",
+      status: "experimental",
+    },
     // https://chromestatus.com/feature/5459864205393920
     {
       // https://chromestatus.com/feature/5125388091260928

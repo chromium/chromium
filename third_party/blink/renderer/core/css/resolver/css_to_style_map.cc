@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_view_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -73,6 +74,11 @@ void CSSToStyleMap::MapFillClip(StyleResolverState&,
                                 const CSSValue& value) {
   if (value.IsInitialValue()) {
     layer->SetClip(FillLayer::InitialFillClip(layer->GetType()));
+    return;
+  }
+  // [ border-area || text ] parses as a CSSValuePair.
+  if (IsA<CSSValuePair>(value)) {
+    layer->SetClip(EFillBox::kBorderAreaText);
     return;
   }
   layer->SetClip(To<CSSIdentifierValue>(value).ConvertTo<EFillBox>());

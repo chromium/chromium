@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Non-standard CSS Backgrounds and Masking: prefixed background-box properties reject border-area</title>
+<link rel="author" title="Jason Leo" href="mailto:cgqaq@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-backgrounds/#background-clip">
+<link rel="help" href="https://drafts.fxtf.org/css-masking/#the-mask-clip">
+<meta name="assert" content="The legacy -webkit background-box properties reject border-area, which is only supported for the unprefixed background-clip feature.">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+</head>
+<body>
+<script>
+test_invalid_value("-webkit-background-clip", "border-area");
+test_invalid_value("-webkit-background-clip", "border-box, border-area");
+
+test_invalid_value("-webkit-mask-clip", "border-area");
+test_invalid_value("-webkit-mask-clip", "padding-box, border-area");
+
+test_invalid_value("-webkit-mask-origin", "border-area");
+test_invalid_value("-webkit-mask-origin", "content-box, border-area");
+</script>
+</body>
+</html>

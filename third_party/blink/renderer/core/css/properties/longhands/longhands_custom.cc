@@ -994,11 +994,17 @@ const CSSValue* BackgroundBlendMode::CSSValueFromComputedStyleInternal(
   return list;
 }
 
-const CSSValue* BackgroundClip::ParseSingleValue(CSSParserTokenStream& stream,
-                                                 const CSSParserContext&,
-                                                 CSSParserLocalContext&) const {
+const CSSValue* BackgroundClip::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext&,
+    CSSParserLocalContext& local_context) const {
+  // border-area is not supported for the -webkit-background-clip alias.
+  css_parsing_utils::AllowBorderAreaValue allow_border_area =
+      local_context.UseAliasParsing()
+          ? css_parsing_utils::AllowBorderAreaValue::kForbid
+          : css_parsing_utils::AllowBorderAreaValue::kAllow;
   return css_parsing_utils::ConsumeCommaSeparatedList(
-      css_parsing_utils::ConsumeBackgroundBoxOrText, stream);
+      css_parsing_utils::ConsumeBackgroundClip, stream, allow_border_area);
 }
 
 const CSSValue* BackgroundClip::CSSValueFromComputedStyleInternal(
@@ -1010,7 +1016,14 @@ const CSSValue* BackgroundClip::CSSValueFromComputedStyleInternal(
   const FillLayer* curr_layer = &style.BackgroundLayers();
   for (; curr_layer; curr_layer = curr_layer->Next()) {
     EFillBox box = curr_layer->Clip();
-    list->Append(*CSSIdentifierValue::Create(box));
+    if (box == EFillBox::kBorderAreaText) {
+      list->Append(*MakeGarbageCollected<CSSValuePair>(
+          CSSIdentifierValue::Create(CSSValueID::kBorderArea),
+          CSSIdentifierValue::Create(CSSValueID::kText),
+          CSSValuePair::kDropIdenticalValues));
+    } else {
+      list->Append(*CSSIdentifierValue::Create(box));
+    }
   }
   return list;
 }

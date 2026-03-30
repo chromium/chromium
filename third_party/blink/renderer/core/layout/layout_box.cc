@@ -1476,8 +1476,9 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
        cur = cur->Next()) {
     EFillBox current_clip = cur->Clip();
     if (rect_type == kBackgroundKnownOpaqueRect) {
-      if (current_clip == EFillBox::kText)
+      if (IsSpecialClipFillBox(current_clip)) {
         continue;
+      }
 
       if (cur->GetBlendMode() != BlendMode::kNormal ||
           cur->Composite() != kCompositeSourceOver)
@@ -1531,7 +1532,7 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
   if (!background_box)
     return PhysicalRect();
 
-  if (*background_box == EFillBox::kText) {
+  if (IsSpecialClipFillBox(*background_box)) {
     DCHECK_NE(rect_type, kBackgroundKnownOpaqueRect);
     *background_box = EFillBox::kBorder;
   }
@@ -4309,7 +4310,7 @@ bool LayoutBox::ComputeCanCompositeBackgroundAttachmentFixed() const {
   }
   // The fixed attachment background must be the only background layer.
   if (StyleRef().BackgroundLayers().Next() ||
-      StyleRef().BackgroundLayers().Clip() == EFillBox::kText) {
+      IsSpecialClipFillBox(StyleRef().BackgroundLayers().Clip())) {
     return false;
   }
   // To support box shadow, we'll need to paint the outset and inset box

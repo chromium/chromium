@@ -4959,9 +4959,44 @@ CSSValue* ConsumeBackgroundBox(CSSParserTokenStream& stream) {
                       CSSValueID::kContentBox>(stream);
 }
 
-CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenStream& stream) {
-  return ConsumeIdent<CSSValueID::kBorderBox, CSSValueID::kPaddingBox,
-                      CSSValueID::kContentBox, CSSValueID::kText>(stream);
+// <bg-clip> = <visual-box> | [ border-area || text ]
+CSSValue* ConsumeBackgroundClip(CSSParserTokenStream& stream,
+                                AllowBorderAreaValue allow_border_area) {
+  if (auto* value =
+          ConsumeIdent<CSSValueID::kBorderBox, CSSValueID::kPaddingBox,
+                       CSSValueID::kContentBox>(stream)) {
+    return value;
+  }
+  bool border_area_allowed =
+      allow_border_area == AllowBorderAreaValue::kAllow &&
+      RuntimeEnabledFeatures::CSSBackgroundClipBorderAreaEnabled();
+  // Parse [ border-area || text ]: either or both, in any order.
+  CSSIdentifierValue* text_value = nullptr;
+  CSSIdentifierValue* border_area_value = nullptr;
+  if (auto* value = ConsumeIdent<CSSValueID::kText>(stream)) {
+    text_value = value;
+  }
+  if (border_area_allowed) {
+    if (auto* value = ConsumeIdent<CSSValueID::kBorderArea>(stream)) {
+      border_area_value = value;
+    }
+  }
+  if (!text_value) {
+    if (auto* value = ConsumeIdent<CSSValueID::kText>(stream)) {
+      text_value = value;
+    }
+  }
+  if (text_value && border_area_value) {
+    return MakeGarbageCollected<CSSValuePair>(
+        border_area_value, text_value, CSSValuePair::kDropIdenticalValues);
+  }
+  if (text_value) {
+    return text_value;
+  }
+  if (border_area_value) {
+    return border_area_value;
+  }
+  return nullptr;
 }
 
 CSSValue* ConsumeMaskComposite(CSSParserTokenStream& stream) {
@@ -5118,7 +5153,7 @@ CSSValue* ConsumeBackgroundComponent(CSSPropertyID resolved_property,
                                      CSSParserLocalContext& local_context) {
   switch (resolved_property) {
     case CSSPropertyID::kBackgroundClip:
-      return ConsumeBackgroundBoxOrText(stream);
+      return ConsumeBackgroundClip(stream);
     case CSSPropertyID::kBackgroundAttachment:
       return ConsumeBackgroundAttachment(stream);
     case CSSPropertyID::kBackgroundOrigin:
@@ -5187,6 +5222,7 @@ bool ParseBackgroundOrMask(bool important,
   do {
     std::array<bool, 10> parsed_longhand = {false};
     CSSValue* origin_value = nullptr;
+    CSSValue* clip_value = nullptr;
     bool found_property;
     bool found_any = false;
     do {
@@ -5233,6 +5269,9 @@ bool ParseBackgroundOrMask(bool important,
               property.IDEquals(CSSPropertyID::kMaskOrigin)) {
             origin_value = value;
           }
+          if (property.IDEquals(CSSPropertyID::kBackgroundClip)) {
+            clip_value = value;
+          }
           parsed_longhand[i] = true;
           found_property = true;
           found_any = true;
@@ -5271,6 +5310,30 @@ bool ParseBackgroundOrMask(bool important,
             origin_value) {
           longhands[i].push_back(origin_value);
           continue;
+        }
+
+        // Per https://drafts.csswg.org/css-backgrounds-4/#propdef-background,
+        // "if a value is set that is only valid in background-clip, then it
+        // sets background-clip to that value and background-origin to
+        // border-box."
+        // See also
+        // https://github.com/w3c/csswg-drafts/issues/11167#issuecomment-2474360495
+        if (property.IDEquals(CSSPropertyID::kBackgroundOrigin) &&
+            !origin_value && clip_value) {
+          bool is_border_area_clip = false;
+          if (const auto* clip_ident =
+                  DynamicTo<CSSIdentifierValue>(clip_value)) {
+            is_border_area_clip =
+                clip_ident->GetValueID() == CSSValueID::kBorderArea;
+          } else if (IsA<CSSValuePair>(clip_value)) {
+            // [ border-area || text ] combined value.
+            is_border_area_clip = true;
+          }
+          if (is_border_area_clip) {
+            longhands[i].push_back(
+                CSSIdentifierValue::Create(CSSValueID::kBorderBox));
+            continue;
+          }
         }
 
         if (shorthand_id == CSSPropertyID::kMask) {

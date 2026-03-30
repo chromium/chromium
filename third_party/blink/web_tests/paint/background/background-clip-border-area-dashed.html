@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 20px; }
+  .test {
+    display: inline-block;
+    margin: 10px;
+    width: 200px;
+    height: 100px;
+    box-sizing: border-box;
+    border: 20px dashed transparent;
+    background-clip: border-area;
+    background-image: linear-gradient(blue, blue);
+  }
+  .rounded {
+    border-radius: 20px;
+  }
+  .thick {
+    border-width: 30px;
+  }
+</style>
+</head>
+<body>
+<div class="test"></div>
+<div class="test rounded"></div>
+<div class="test thick"></div>
+<div class="test thick rounded"></div>
+</body>
+</html>

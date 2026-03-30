@@ -1331,6 +1331,11 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       is_rounded_(false),
       has_transparency_(false) {
   style.GetBorderEdgeInfo(edges_, sides_to_include);
+  InitFromEdges(border_rect);
+  element_role_ = DarkModeFilter::ElementRole::kBorder;
+}
+
+void BoxBorderPainter::InitFromEdges(const PhysicalRect& border_rect) {
   ComputeBorderProperties();
 
   // No need to compute the rrects if we don't have any borders to draw.
@@ -1338,9 +1343,9 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
     return;
 
   outer_ = ContouredBorderGeometry::PixelSnappedContouredBorder(
-      style_, border_rect, sides_to_include);
+      style_, border_rect, sides_to_include_);
   inner_ = ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
-      style_, border_rect, sides_to_include);
+      style_, border_rect, sides_to_include_);
 
   // Make sure that the border width isn't larger than the border box, which
   // can pixel snap smaller.
@@ -1352,7 +1357,40 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
   Edge(BoxSide::kLeft).ClampWidth(max_width);
 
   is_rounded_ = outer_.IsRounded();
+}
 
+BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
+                                   const PhysicalRect& border_rect,
+                                   const ComputedStyle& style,
+                                   BackgroundBleedAvoidance bleed_avoidance,
+                                   PhysicalBoxSides sides_to_include,
+                                   BorderAreaMaskTag)
+    : context_(context),
+      border_rect_(border_rect),
+      style_(style),
+      bleed_avoidance_(bleed_avoidance),
+      sides_to_include_(sides_to_include),
+      visible_edge_count_(0),
+      first_visible_edge_(0),
+      visible_edge_set_(0),
+      is_uniform_style_(true),
+      is_uniform_width_(true),
+      is_uniform_color_(true),
+      is_rounded_(false),
+      has_transparency_(false) {
+  // Get the border edges, then override all colors to opaque black for use
+  // as a DstIn mask. This makes transparent borders visible in the mask and
+  // ignores the original border-color values. Per spec, border-area clips to
+  // the area where the border would paint based on style/width, regardless of
+  // color.
+  style.GetBorderEdgeInfo(edges_, sides_to_include);
+  for (auto& edge : edges_) {
+    edge = BorderEdge(edge.Width(), Color::kBlack, edge.BorderStyle(),
+                      edge.UsedWidth() > 0);
+  }
+  InitFromEdges(border_rect);
+  // Dark mode color inversion is harmless here because the result is used as
+  // a DstIn mask where only the alpha channel matters, not the RGB values.
   element_role_ = DarkModeFilter::ElementRole::kBorder;
 }
 

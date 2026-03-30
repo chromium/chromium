@@ -1,0 +1,24 @@
+<!doctype html>
+<style>
+div {
+    display: inline-block;
+    width: 200px;
+    height: 80px;
+    border-radius: 12px;
+    color: transparent;
+    border: 10px solid transparent;
+    font: bold 30px/60px monospace;
+}
+.test1 {
+    /* Test shorthand working as expected */
+    background: border-area text;
+    background-image: linear-gradient(blue, blue);
+}
+.test2 {
+    /* Test longhand working as expected */
+    background-clip: border-area text;
+    background-image: linear-gradient(blue, blue);
+}
+</style>
+<div class="test1">Hello</div>
+<div class="test2">Hello</div>

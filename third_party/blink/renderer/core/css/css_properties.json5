@@ -2130,7 +2130,7 @@
     {
       name: "background-clip",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["border-box", "padding-box", "content-box", "text"],
+      keywords: ["border-box", "padding-box", "content-box", "text", "border-area"],
       typedom_types: ["Keyword"],
       separator: " ",
       style_builder_template: "background_layer",

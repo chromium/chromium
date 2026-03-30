@@ -174,6 +174,8 @@ void PaintMaskLayer(const FillLayer& layer,
       break;
     case EFillBox::kStrokeBox:
     case EFillBox::kBorder:
+    case EFillBox::kBorderArea:
+    case EFillBox::kBorderAreaText:
       clip_box.emplace(GeometryBox::kStrokeBox);
       break;
     case EFillBox::kViewBox:

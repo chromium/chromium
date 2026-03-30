@@ -1491,6 +1491,18 @@ void BoxPainterBase::PaintFillLayer(
     return;
   }
 
+  if ((effective_clip == EFillBox::kBorderArea ||
+       effective_clip == EFillBox::kBorderAreaText) &&
+      RuntimeEnabledFeatures::CSSBackgroundClipBorderAreaEnabled()) {
+    DCHECK(!bg_paint_context.CanCompositeBackgroundAttachmentFixed());
+    bool include_text = effective_clip == EFillBox::kBorderAreaText;
+    PaintFillLayerBorderAreaFillBox(paint_info, fill_layer_info, image.get(),
+                                    composite_op, geometry, rect,
+                                    scrolled_paint_rect, bleed_avoidance,
+                                    include_text, object_has_multiple_boxes);
+    return;
+  }
+
   // We use BackgroundClip paint property when CanFastScrollFixedAttachment().
   std::optional<GraphicsContextStateSaver> background_clip_state_saver;
   if (!bg_paint_context.CanCompositeBackgroundAttachmentFixed()) {
@@ -1574,6 +1586,93 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
                     object_has_multiple_boxes);
 
   context.EndLayer();  // Text mask layer.
+  context.EndLayer();  // Background layer.
+}
+
+// Returns true if all border sides with nonzero width use effective styles that
+// completely fill the border area (i.e. no gaps). Uses BorderEdge (which
+// applies EffectiveStyle) for consistency with how borders are actually painted
+// (e.g. double with width < 3 becomes solid). Border color is intentionally
+// ignored because border-area clips based on the border style geometry
+// regardless of color/transparency. When true, a path-based clip (outer minus
+// inner border rect) can be used. When false, at least one side has gaps
+// (dashed, dotted, or double), and we must fall back to a mask-based approach.
+static bool AllBordersFillBorderArea(const ComputedStyle& style,
+                                     PhysicalBoxSides sides_to_include) {
+  BorderEdgeArray edges;
+  style.GetBorderEdgeInfo(edges, sides_to_include);
+  for (const auto& edge : edges) {
+    if (edge.UsedWidth() == 0) {
+      continue;
+    }
+    EBorderStyle effective = edge.BorderStyle();
+    if (effective == EBorderStyle::kDotted ||
+        effective == EBorderStyle::kDashed ||
+        effective == EBorderStyle::kDouble) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void BoxPainterBase::PaintFillLayerBorderAreaFillBox(
+    const PaintInfo& paint_info,
+    const BoxPainterBase::FillLayerInfo& info,
+    Image* image,
+    SkBlendMode composite_op,
+    const BackgroundImageGeometry& geometry,
+    const PhysicalRect& rect,
+    const PhysicalRect& scrolled_paint_rect,
+    BackgroundBleedAvoidance bleed_avoidance,
+    bool include_text,
+    bool object_has_multiple_boxes) {
+  GraphicsContext& context = paint_info.context;
+
+  if (AllBordersFillBorderArea(style_, info.sides_to_include) &&
+      !include_text) {
+    // For area-filling border styles (solid, inset, outset, groove, ridge),
+    // the border stroke area is simply the outer minus inner border contour.
+    // Clip to that path directly — no compositing layers needed.
+    ContouredRect outer = ContouredBorderGeometry::PixelSnappedContouredBorder(
+        style_, rect, info.sides_to_include);
+    ContouredRect inner =
+        ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+            style_, rect, info.sides_to_include);
+
+    GraphicsContextStateSaver clip_state_saver(context);
+    context.ClipContouredRect(outer);
+    context.ClipOutContouredRect(inner);
+
+    PaintFillLayerBackground(document_, context, info, node_, style_, image,
+                             composite_op, geometry, scrolled_paint_rect);
+    return;
+  }
+
+  // Paint the background into a compositing layer and use a DstIn mask to
+  // clip to where the border strokes paint (and optionally where text is).
+  gfx::Rect mask_rect = ToPixelSnappedRect(rect);
+
+  GraphicsContextStateSaver background_clip_state_saver(context);
+  context.Clip(mask_rect);
+  context.BeginLayer(composite_op);
+
+  PaintFillLayerBackground(document_, context, info, node_, style_, image,
+                           SkBlendMode::kSrcOver, geometry,
+                           scrolled_paint_rect);
+
+  // Build a union mask: paint both border-area and text shapes as opaque
+  // regions, then use DstIn to keep only where the mask has coverage.
+  context.BeginLayer(SkBlendMode::kDstIn);
+
+  BoxBorderPainter::PaintBorderArea(context, rect, style_, bleed_avoidance,
+                                    info.sides_to_include);
+
+  if (include_text) {
+    PaintTextClipMask(paint_info, mask_rect, scrolled_paint_rect.offset,
+                      object_has_multiple_boxes);
+  }
+
+  context.EndLayer();  // Mask layer.
   context.EndLayer();  // Background layer.
 }
 
