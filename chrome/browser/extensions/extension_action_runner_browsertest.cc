@@ -518,14 +518,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
                        DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/371432155): Requires chrome.tabs API.
 IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
                        ScriptsExecuteWhenNoPermissionsWithheld_ExecuteScripts) {
   RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
                        DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
 }
-#endif
 
 class ExtensionActionRunnerFencedFrameBrowserTest
     : public ExtensionActionRunnerBrowserTest {
