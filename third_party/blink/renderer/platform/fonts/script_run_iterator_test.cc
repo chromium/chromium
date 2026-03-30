@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
+#include <array>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -112,7 +113,7 @@ class MockScriptData : public ScriptData {
 
   static int TableLookup(int value) {
     for (int i = 0; i < 16; ++i) {
-      if (UNSAFE_TODO(kTable[i]) == value) {
+      if (kTable[i] == value) {
         return i;
       }
     }
@@ -264,7 +265,7 @@ class MockScriptData : public ScriptData {
   static const int kListShift = 2;
   static const int kListMask = 0x3;
   static const int kBracketDelta = kCodeBracketCloseBit;
-  static const int kTable[16];
+  static const std::array<int, 16> kTable;
 
   static const int kSawBracket = 0x1;
   static const int kSawSpecial = 0x2;
@@ -279,7 +280,7 @@ static const int kGreek2 = MockScriptData::kGreek << 2;
 static const int kLatin3 = MockScriptData::kLatin << 4;
 static const int kHan3 = MockScriptData::kHan << 4;
 static const int kGreek3 = MockScriptData::kGreek << 4;
-const int MockScriptData::kTable[] = {
+const std::array<int, 16> MockScriptData::kTable = {{
     0,
     kLatin,
     kHan,
@@ -296,7 +297,7 @@ const int MockScriptData::kTable[] = {
     kHan3 + kGreek2 + kLatin,
     kGreek3 + kLatin2 + kHan,
     kGreek3 + kHan2 + kLatin,
-};
+}};
 
 class ScriptRunIteratorTest : public testing::Test {
  protected:
