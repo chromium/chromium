@@ -24,6 +24,7 @@ source_set("content_settings") {
       "content_setting_bubble_model_delegate.h",
       "content_setting_image_model.h",
       "content_setting_image_model_states.h",
+      "content_setting_image_view_delegate.h",
     ]
     public_deps += [ "//chrome/app/vector_icons" ]
   }
