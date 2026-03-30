@@ -617,7 +617,6 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetProvider.java",
-    "java/src/org/chromium/net/impl/NativeCronetProviderSentinel.java",
     "java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java",
   ]
 
@@ -645,6 +644,11 @@ android_library("cronet_impl_native_java") {
   srcjar_deps += [ ":cronet_jni_headers" ]
   proguard_configs =
       [ "//components/cronet/android/cronet_impl_native_proguard.cfg" ]
+}
+
+android_library("cronet_impl_native_sentinel_java") {
+  sources =
+      [ "java/src/org/chromium/net/impl/NativeCronetProviderSentinel.java" ]
 }
 
 # httpengine_native_provider_java.jar - native implementation of Cronet engine
@@ -718,6 +722,7 @@ java_group("cronet_all_java") {
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_impl_native_java",
+    ":cronet_impl_native_sentinel_java",
     ":cronet_impl_platform_java",
     ":cronet_shared_java",
     ":httpengine_native_provider_java",
@@ -769,6 +774,7 @@ android_library("cronet_sample_apk_java") {
     ":package_httpengine_native_provider_java",
     ":package_impl_common_java",
     ":package_impl_native_java",
+    ":package_impl_native_sentinel_java",
     ":package_shared_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
@@ -936,6 +942,11 @@ android_java_prebuilt("package_impl_common_java") {
 android_java_prebuilt("package_impl_native_java") {
   jar_path = "$_package_dir/cronet_impl_native_java.jar"
   deps = [ ":repackage_native" ]
+}
+
+android_java_prebuilt("package_impl_native_sentinel_java") {
+  jar_path = "$_package_dir/cronet_impl_native_sentinel_java.jar"
+  deps = [ ":repackage_native_sentinel" ]
 }
 
 android_java_prebuilt("package_impl_util_java") {
@@ -1312,6 +1323,11 @@ android_java_prebuilt("repackage_native_java") {
   # processing step.
   enable_bytecode_checks = false
   deps = [ ":repackage_native_impl" ]
+}
+
+repackage_jars("repackage_native_sentinel") {
+  output = "$_package_dir/cronet_impl_native_sentinel_java.jar"
+  deps = [ ":cronet_impl_native_sentinel_java" ]
 }
 
 repackage_jars("repackage_impl_common") {
@@ -1726,6 +1742,7 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
            ":package_httpengine_native_provider_java",
            ":package_impl_common_java",
            ":package_impl_fake_java",
+           ":package_impl_native_sentinel_java",
            ":package_impl_platform_java",
            ":package_impl_util_java",
            ":package_shared_java",
@@ -1820,6 +1837,7 @@ instrumentation_test_apk(
            ":cronet_combine_proguard_flags",
            ":cronet_impl_common_java",
            ":cronet_impl_native_java",
+           ":cronet_impl_native_sentinel_java",
            ":cronet_impl_platform_java",
            ":cronet_shared_java",
            ":cronet_test_apk_java",
@@ -1899,6 +1917,7 @@ cronet_test("cronet_unittests_android") {
   deps = [
     ":cronet_base_feature_unittest",
     ":cronet_impl_native_java",
+    ":cronet_impl_native_sentinel_java",
     ":cronet_static",
     "//base",
     "//base/test:test_support",
@@ -2028,6 +2047,12 @@ jar_src("jar_cronet_impl_native_java_source") {
   ]
   excluded_patterns = _jar_excluded_patterns
   jar_path = "$_package_dir/cronet_impl_native_java-src.jar"
+}
+
+jar_src("jar_cronet_impl_native_sentinel_java_source") {
+  src_search_dirs = [ "//components/cronet/android/java/src" ]
+  source_deps = [ ":cronet_impl_native_sentinel_java" ]
+  jar_path = "$_package_dir/cronet_impl_native_sentinel_java-src.jar"
 }
 
 action("generate_licenses") {
@@ -2306,6 +2331,7 @@ group("cronet_non_test_package") {
     ":jar_cronet_impl_common_java_source",
     ":jar_cronet_impl_fake_java_source",
     ":jar_cronet_impl_native_java_source",
+    ":jar_cronet_impl_native_sentinel_java_source",
     ":jar_cronet_impl_platform_java_source",
     ":jar_cronet_sample_source",
     ":jar_cronet_shared_source",
@@ -2315,6 +2341,7 @@ group("cronet_non_test_package") {
     ":repackage_httpengine_native_provider",
     ":repackage_impl_common",
     ":repackage_native",
+    ":repackage_native_sentinel",
     ":repackage_platform",
     ":repackage_shared",
 
