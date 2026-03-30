@@ -28,7 +28,7 @@
   --disclaimer-border-color: var(--cr-fallback-color-surface-variant);
   --disclaimer-color: var(--google-grey-700);
   --gap-between-cards: 0.75rem;
-  --product-logo-size: 4.5rem;
+  --product-logo-size: 72px;
   align-items: center;
   box-sizing: border-box;
   color: var(--cr-primary-text-color);
@@ -55,7 +55,7 @@
     --card-description-font-size: 0.75rem;
     --card-title-font-size: 0.81rem;
     --card-width: 152px;
-    --product-logo-size: 60px;
+    --product-logo-size: 48px;
     gap: 1.5rem;
   }
 }
@@ -73,6 +73,12 @@
   }
 }
 
+@media screen and ((max-width: 900px) or (max-height: 650px)) {
+  .animation {
+    display: none;
+  }
+}
+
 @keyframes fade-in-animation {
   0% {
     opacity: 0;
@@ -86,8 +92,61 @@ p {
   margin: 0;
 }
 
+.animation {
+  position: fixed;
+  z-index: -1;
+  pointer-events: none;
+}
+
+#left-animation {
+  top: 35%;
+  /* Check how much space is between 50% of screen width and 50% of content
+   * width, then subtract 100% of the animation's size (arbitrary value) to push
+   * it to the edge of the content. If the result is positive, min it with 0 to
+   * prevent the animation from being pulled from left edge to the center. */
+  transform: translate(
+    min(0px, calc(50vw - var(--content-width) / 2 - 100%)),
+    -50%);
+  left: 0;
+  height: 62.5vh;
+  aspect-ratio: 288 / 620; /* To prevent cr-lottie from adding white padding. */
+}
+
+#right-animation {
+  top: 50%;
+  /* First push the animation by 70%  (arbitrary value) of its size and check
+   * how much space is between 50% of screen width and 50% of content width.
+   * Dividing by 2 makes the animation push out smoother, 1px of animation size
+   * for every 2px of space shrank.
+   * Everything is maxed with 0 to prevent the animation from being pulled
+   * from the right edge to the center of the screen. */
+  transform: translate(
+    max(0px, calc(70% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
+  right: 0;
+  height: 65vh;
+  width: auto;
+  aspect-ratio: 311 / 657;
+}
+
+#bottom-animation {
+  bottom: -5px;
+  left: 20%;
+  /* First push the animation by 50% of its size and check how much space is
+   * between 50% of screen height and 300px (arbitrary value, around half of
+   * the screen height we cut out the animations at).
+   * Dividing it by 2 makes the animation push out smoother, 1px of animation
+   * for every 2px of space shrank.
+   * Everything is maxed with 0 to prevent the animation from being
+   * pushed out of the bottom edge to the center of the screen. */
+  transform: translate(-50%, max(0px, calc(50% - (50vh - 300px) / 2)));
+  width: 40vw;
+  height: auto;
+  aspect-ratio: 600 / 215;
+}
+
 .title {
-  font-size: 3.75rem;
+  font-size: 2.5rem;
   font-weight: 700;
   margin: 0;
   max-width: var(--content-width);
@@ -108,8 +167,9 @@ h2 {
   animation: fade-in-animation 300ms ease-in-out;
 }
 
-#illustrationContainer {
-  display: flex;
+#product-logo-container {
+  width: var(--product-logo-size);
+  height: var(--product-logo-size);
 }
 
 #textContainer  {
@@ -122,7 +182,7 @@ h2 {
 
 @media screen and ((max-width: 780px) or (max-height: 600px)) {
   .title {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
   }
 
   h2 {
@@ -134,9 +194,16 @@ h2 {
   }
 }
 
-#productLogo {
-  height: var(--product-logo-size);
-  width: var(--product-logo-size);
+#product-logo-animation {
+  /* Because 50% of the svg file is the padding, we scale it by 2. */
+  height: calc(var(--product-logo-size) * 2);
+  width: calc(var(--product-logo-size) * 2);
+  /* Center the ball exactly in the middle of the parent container. */
+  transform: translate(-25%, -25%);
+}
+
+:host-context([dir=rtl]) #product-logo-animation {
+  transform: translate(25%, -25%);
 }
 
 #benefitCardsContainer {
