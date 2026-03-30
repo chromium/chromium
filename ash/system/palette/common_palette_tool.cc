@@ -5,6 +5,7 @@
 #include "ash/system/palette/common_palette_tool.h"
 
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -44,8 +45,10 @@ void CommonPaletteTool::OnViewClicked(views::View* sender) {
 }
 
 views::View* CommonPaletteTool::CreateDefaultView(const std::u16string& name) {
-  gfx::ImageSkia icon = CreateVectorIcon(GetPaletteIcon(), kMenuIconSize,
-                                         cros_tokens::kColorPrimary);
+  SkColor icon_color =
+      AshColorProvider::Get()->GetColor(cros_tokens::kColorPrimary);
+  gfx::ImageSkia icon =
+      CreateVectorIcon(GetPaletteIcon(), kMenuIconSize, icon_color);
   highlight_view_ = new HoverHighlightView(this);
   highlight_view_->AddIconAndLabel(icon, name);
   return highlight_view_;
