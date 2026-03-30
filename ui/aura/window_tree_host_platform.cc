@@ -375,7 +375,12 @@ int64_t WindowTreeHostPlatform::OnStateUpdate(
   if (old.bounds_dip != latest.bounds_dip || old.size_px != latest.size_px ||
       old.window_scale != latest.window_scale) {
     bool origin_changed = old.bounds_dip.origin() != latest.bounds_dip.origin();
+    auto weak_ref = GetWeakPtr();
     OnBoundsChanged({origin_changed});
+    // Notifying observers of the bounds change may delete this.
+    if (!weak_ref) {
+      return -1;
+    }
   }
 
   bool needs_frame = latest.WillProduceFrameOnUpdateFrom(old);

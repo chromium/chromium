@@ -49,6 +49,12 @@ class TestWindowTreeHost : public WindowTreeHostPlatform {
   ui::PlatformWindow* platform_window() {
     return WindowTreeHostPlatform::platform_window();
   }
+
+  int64_t OnStateUpdate(
+      const ui::PlatformWindowDelegate::State& old,
+      const ui::PlatformWindowDelegate::State& latest) override {
+    return WindowTreeHostPlatform::OnStateUpdate(old, latest);
+  }
 };
 
 // WindowTreeHostObserver that tracks calls to
@@ -152,6 +158,22 @@ TEST_F(WindowTreeHostPlatformTest, DeleteHostFromOnHostMovedInPixels) {
       std::make_unique<TestWindowTreeHost>();
   DeleteHostWindowTreeHostObserver observer(std::move(host));
   observer.host()->SetBoundsInPixels(gfx::Rect(1, 2, 3, 4));
+  EXPECT_EQ(nullptr, observer.host());
+}
+
+// Verifies WindowTreeHostPlatform can be safely deleted during OnStateUpdate.
+TEST_F(WindowTreeHostPlatformTest, DeleteHostFromOnStateUpdate) {
+  std::unique_ptr<TestWindowTreeHost> host =
+      std::make_unique<TestWindowTreeHost>();
+  TestWindowTreeHost* host_ptr = host.get();
+  DeleteHostWindowTreeHostObserver observer(std::move(host));
+
+  ui::PlatformWindowDelegate::State old_state;
+  ui::PlatformWindowDelegate::State new_state;
+  new_state.bounds_dip = gfx::Rect(1, 2, 3, 4);
+
+  // This should not crash.
+  EXPECT_EQ(-1, host_ptr->OnStateUpdate(old_state, new_state));
   EXPECT_EQ(nullptr, observer.host());
 }
 
