@@ -78,7 +78,8 @@ std::string GetModelSelector(omnibox::ModelMode model) {
 }
 
 const DeepQuery kRealbox = {"ntp-app", "ntp-searchbox", "#inputWrapper"};
-const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input"};
+const DeepQuery kRealboxInput = {"ntp-app", "ntp-searchbox", "#input",
+                                 "#input"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
                                          "#entrypointButton", "#entrypoint"};
 const DeepQuery kSearchboxContextMenuDialog = {
@@ -445,6 +446,34 @@ class NtpRealboxInteractiveTest : public NtpRealboxUiTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest, RealboxMultilineInputTest) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(crbug.com/496928186): Re-enable after de-flaking.
+  GTEST_SKIP() << "Flaky on ChromeOS";
+#endif
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMultilineInputEvent);
+  WebContentsInteractionTestUtil::StateChange multiline_input;
+  multiline_input.event = kMultilineInputEvent;
+  multiline_input.where = kRealboxInput;
+  multiline_input.test_function = "(el) => el && el.value === 'a\\nb'";
+
+  RunTestSequence(
+      // Load NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Wait for Realbox to render.
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Click on Realbox input.
+      ClickElement(kNtpElementId, kRealboxInput),
+      // Type 'a' into Realbox input.
+      SendKeyPress(kNtpElementId, ui::VKEY_A),
+      // Press Shift + Enter to add a newline.
+      SendKeyPress(kNtpElementId, ui::VKEY_RETURN, ui::EF_SHIFT_DOWN),
+      // Type 'b' into Realbox input.
+      SendKeyPress(kNtpElementId, ui::VKEY_B),
+      // Wait for Realbox input to have a newline between 'a' and 'b'.
+      WaitForStateChange(kNtpElementId, multiline_input));
+}
+
 IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
                        ContextualEntrypointMenuHasOptions) {
   const DeepQuery kImageUploadItem = {"ntp-app", "ntp-searchbox", "#context",
@@ -748,4 +777,47 @@ IN_PROC_BROWSER_TEST_P(NtpComposeboxDismissTest,
       TriggerDismissAction(),
       // Check that composebox dialog has been removed.
       WaitForComposeboxDialogClosed());
+}
+
+class NtpRealboxCyclingPlaceholderInteractiveTest
+    : public NtpRealboxUiTestBase {
+ public:
+  NtpRealboxCyclingPlaceholderInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> default_features =
+        GetEnabledFeatures();
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    for (const auto& feature_ref_and_params : default_features) {
+      if (feature_ref_and_params.feature->name ==
+          ntp_realbox::kNtpRealboxNext.name) {
+        base::FieldTrialParams new_params = feature_ref_and_params.params;
+        new_params[ntp_realbox::kCyclingPlaceholders.name] = "true";
+        enabled_features.emplace_back(*feature_ref_and_params.feature,
+                                      new_params);
+      } else {
+        enabled_features.push_back(feature_ref_and_params);
+      }
+    }
+    feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxCyclingPlaceholderInteractiveTest,
+                       PlaceholderCycles) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kPlaceholderCyclingEvent);
+  WebContentsInteractionTestUtil::StateChange placeholder_cycling;
+  placeholder_cycling.event = kPlaceholderCyclingEvent;
+  placeholder_cycling.where = kRealboxInput;
+  placeholder_cycling.test_function =
+      "(el) => el && el.getAnimations().length > 0";
+
+  RunTestSequence(
+      // Load NTP.
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      // Wait for Realbox to render.
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Wait and verify if placeholder text cycles.
+      WaitForStateChange(kNtpElementId, placeholder_cycling));
 }
