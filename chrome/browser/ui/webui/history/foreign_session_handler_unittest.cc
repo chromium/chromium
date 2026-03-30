@@ -9,10 +9,10 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -134,6 +134,34 @@ TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTab) {
 
   handler()->OpenForeignSessionTab("my_session_tag", 456,
                                    ui::mojom::ClickModifiers::New());
+}
+
+TEST_F(ForeignSessionHandlerTest, DeleteForeignSession) {
+  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
+              DeleteForeignSession("my_session_tag"))
+      .Times(testing::AtLeast(1));
+
+  handler()->DeleteForeignSession("my_session_tag");
+}
+
+TEST_F(ForeignSessionHandlerTest, SetForeignSessionCollapsed) {
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->GetDict(prefs::kNtpCollapsedForeignSessions)
+                   .FindBool("my_session_tag")
+                   .value_or(false));
+  handler()->SetForeignSessionCollapsed("my_session_tag", true);
+  EXPECT_TRUE(profile()
+                  ->GetPrefs()
+                  ->GetDict(prefs::kNtpCollapsedForeignSessions)
+                  .FindBool("my_session_tag")
+                  .value_or(false));
+  handler()->SetForeignSessionCollapsed("my_session_tag", false);
+  EXPECT_FALSE(profile()
+                   ->GetPrefs()
+                   ->GetDict(prefs::kNtpCollapsedForeignSessions)
+                   .FindBool("my_session_tag")
+                   .value_or(false));
 }
 
 }  // namespace browser_sync
