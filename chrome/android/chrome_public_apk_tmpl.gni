@@ -299,12 +299,9 @@ template("chrome_common_apk_or_module_tmpl") {
     _material_package = "com_google_android_material.*"
     resource_exclusion_regex += "|${_material_package}values-small"
 
-    # Used only by date picker (which chrome doesn't use).
-    resource_exclusion_regex += "|${_material_package}-(w480dp-port|w360dp-port|h480dp-land|h360dp-land)"
-
     # Material design layouts that cause views to be kept that we don't use.
     # Instead of manually filtering, unused resource removal would be better:
-    # https://crbug.com/636448
+    # https://crbug.com/362524381
     resource_exclusion_regex += "|${_material_package}/xml.*badge_"
 
     if (!is_java_debug) {
