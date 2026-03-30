@@ -44,42 +44,30 @@ struct EnumTraits<patch::mojom::ZucchiniStatus, zucchini::status::Code> {
     NOTREACHED();
   }
 
-  static bool FromMojom(patch::mojom::ZucchiniStatus input,
-                        zucchini::status::Code* out) {
+  static zucchini::status::Code FromMojom(patch::mojom::ZucchiniStatus input) {
     switch (input) {
       case patch::mojom::ZucchiniStatus::kStatusSuccess:
-        *out = kStatusSuccess;
-        return true;
+        return kStatusSuccess;
       case patch::mojom::ZucchiniStatus::kStatusInvalidParam:
-        *out = kStatusInvalidParam;
-        return true;
+        return kStatusInvalidParam;
       case patch::mojom::ZucchiniStatus::kStatusFileReadError:
-        *out = kStatusFileReadError;
-        return true;
+        return kStatusFileReadError;
       case patch::mojom::ZucchiniStatus::kStatusFileWriteError:
-        *out = kStatusFileWriteError;
-        return true;
+        return kStatusFileWriteError;
       case patch::mojom::ZucchiniStatus::kStatusPatchReadError:
-        *out = kStatusPatchReadError;
-        return true;
+        return kStatusPatchReadError;
       case patch::mojom::ZucchiniStatus::kStatusPatchWriteError:
-        *out = kStatusPatchWriteError;
-        return true;
+        return kStatusPatchWriteError;
       case patch::mojom::ZucchiniStatus::kStatusInvalidOldImage:
-        *out = kStatusInvalidOldImage;
-        return true;
+        return kStatusInvalidOldImage;
       case patch::mojom::ZucchiniStatus::kStatusInvalidNewImage:
-        *out = kStatusInvalidNewImage;
-        return true;
+        return kStatusInvalidNewImage;
       case patch::mojom::ZucchiniStatus::kStatusDiskFull:
-        *out = kStatusDiskFull;
-        return true;
+        return kStatusDiskFull;
       case patch::mojom::ZucchiniStatus::kStatusIoError:
-        *out = kStatusIoError;
-        return true;
+        return kStatusIoError;
       case patch::mojom::ZucchiniStatus::kStatusFatal:
-        *out = kStatusFatal;
-        return true;
+        return kStatusFatal;
     }
     NOTREACHED();
   }

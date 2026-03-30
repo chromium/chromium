@@ -84,8 +84,8 @@ struct EnumTraits<content_settings::mojom::ContentSetting, ContentSetting> {
   static content_settings::mojom::ContentSetting ToMojom(
       ContentSetting setting);
 
-  static bool FromMojom(content_settings::mojom::ContentSetting setting,
-                        ContentSetting* out);
+  static ContentSetting FromMojom(
+      content_settings::mojom::ContentSetting setting);
 };
 
 template <>

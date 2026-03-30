@@ -64,43 +64,31 @@ UsedToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<UsedToolMode, omnibox::ToolMode>::FromMojom(
-    UsedToolMode input,
-    omnibox::ToolMode* output) {
+omnibox::ToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::FromMojom(
+    UsedToolMode input) {
   switch (input) {
     case UsedToolMode::kUnspecified:
-      *output = omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_UNSPECIFIED;
     case UsedToolMode::kDeepSearch:
-      *output = omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH;
     case UsedToolMode::kCanvas:
-      *output = omnibox::ToolMode::TOOL_MODE_CANVAS;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_CANVAS;
     case UsedToolMode::kImageGen:
-      *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN;
     case UsedToolMode::kDeepBrowse:
-      *output = omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_DEEP_BROWSE;
     case UsedToolMode::kAim:
-      *output = omnibox::ToolMode::TOOL_MODE_AIM;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_AIM;
     case UsedToolMode::kAimGenPrompt:
-      *output = omnibox::ToolMode::TOOL_MODE_AIM_GEN_PROMPT;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_AIM_GEN_PROMPT;
     case UsedToolMode::kDisableSuggest:
-      *output = omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_DISABLE_SUGGEST;
     case UsedToolMode::kGeminiPro:
-      *output = omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_GEMINI_PRO;
     case UsedToolMode::kImageGenUpload:
-      *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_UPLOAD;
     case UsedToolMode::kImageGenSelfie:
-      *output = omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE;
-      return true;
+      return omnibox::ToolMode::TOOL_MODE_IMAGE_GEN_SELFIE;
   }
   NOTREACHED();
 }
@@ -130,25 +118,19 @@ UsedModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::ToMojom(
 }
 
 // static
-bool EnumTraits<UsedModelMode, omnibox::ModelMode>::FromMojom(
-    UsedModelMode input,
-    omnibox::ModelMode* output) {
+omnibox::ModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::FromMojom(
+    UsedModelMode input) {
   switch (input) {
     case UsedModelMode::kUnspecified:
-      *output = omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
-      return true;
+      return omnibox::ModelMode::MODEL_MODE_UNSPECIFIED;
     case UsedModelMode::kGeminiRegular:
-      *output = omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
-      return true;
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR;
     case UsedModelMode::kGeminiPro:
-      *output = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
-      return true;
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO;
     case UsedModelMode::kGeminiProAutoroute:
-      *output = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
-      return true;
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE;
     case UsedModelMode::kGeminiProNoGenUi:
-      *output = omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
-      return true;
+      return omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI;
   }
   NOTREACHED();
 }
@@ -176,22 +158,17 @@ UsedInputType EnumTraits<UsedInputType, omnibox::InputType>::ToMojom(
 }
 
 // static
-bool EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
-    UsedInputType input,
-    omnibox::InputType* output) {
+omnibox::InputType EnumTraits<UsedInputType, omnibox::InputType>::FromMojom(
+    UsedInputType input) {
   switch (input) {
     case UsedInputType::kUnspecified:
-      *output = omnibox::InputType::INPUT_TYPE_UNSPECIFIED;
-      return true;
+      return omnibox::InputType::INPUT_TYPE_UNSPECIFIED;
     case UsedInputType::kLensImage:
-      *output = omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
-      return true;
+      return omnibox::InputType::INPUT_TYPE_LENS_IMAGE;
     case UsedInputType::kLensFile:
-      *output = omnibox::InputType::INPUT_TYPE_LENS_FILE;
-      return true;
+      return omnibox::InputType::INPUT_TYPE_LENS_FILE;
     case UsedInputType::kBrowserTab:
-      *output = omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
-      return true;
+      return omnibox::InputType::INPUT_TYPE_BROWSER_TAB;
   }
   NOTREACHED();
 }
@@ -224,39 +201,29 @@ EnumTraits<UsedContextUploadStatus, contextual_search::ContextUploadStatus>::
 }
 
 // static
-bool EnumTraits<UsedContextUploadStatus,
-                contextual_search::ContextUploadStatus>::
-    FromMojom(UsedContextUploadStatus input,
-              contextual_search::ContextUploadStatus* output) {
+contextual_search::ContextUploadStatus
+EnumTraits<UsedContextUploadStatus, contextual_search::ContextUploadStatus>::
+    FromMojom(UsedContextUploadStatus input) {
   switch (input) {
     case UsedContextUploadStatus::kNotUploaded:
-      *output = contextual_search::ContextUploadStatus::kNotUploaded;
-      return true;
+      return contextual_search::ContextUploadStatus::kNotUploaded;
     case UsedContextUploadStatus::kProcessing:
-      *output = contextual_search::ContextUploadStatus::kProcessing;
-      return true;
+      return contextual_search::ContextUploadStatus::kProcessing;
     case UsedContextUploadStatus::kValidationFailed:
-      *output = contextual_search::ContextUploadStatus::kValidationFailed;
-      return true;
+      return contextual_search::ContextUploadStatus::kValidationFailed;
     case UsedContextUploadStatus::kUploadStarted:
-      *output = contextual_search::ContextUploadStatus::kUploadStarted;
-      return true;
+      return contextual_search::ContextUploadStatus::kUploadStarted;
     case UsedContextUploadStatus::kUploadSuccessful:
-      *output = contextual_search::ContextUploadStatus::kUploadSuccessful;
-      return true;
+      return contextual_search::ContextUploadStatus::kUploadSuccessful;
     case UsedContextUploadStatus::kUploadFailed:
-      *output = contextual_search::ContextUploadStatus::kUploadFailed;
-      return true;
+      return contextual_search::ContextUploadStatus::kUploadFailed;
     case UsedContextUploadStatus::kUploadExpired:
-      *output = contextual_search::ContextUploadStatus::kUploadExpired;
-      return true;
+      return contextual_search::ContextUploadStatus::kUploadExpired;
     case UsedContextUploadStatus::kProcessingSuggestSignalsReady:
-      *output = contextual_search::ContextUploadStatus::
+      return contextual_search::ContextUploadStatus::
           kProcessingSuggestSignalsReady;
-      return true;
     case UsedContextUploadStatus::kUploadReplaced:
-      *output = contextual_search::ContextUploadStatus::kUploadReplaced;
-      return true;
+      return contextual_search::ContextUploadStatus::kUploadReplaced;
   }
   NOTREACHED();
 }
@@ -286,35 +253,26 @@ EnumTraits<UsedContextUploadErrorType,
 }
 
 // static
-bool EnumTraits<UsedContextUploadErrorType,
-                contextual_search::ContextUploadErrorType>::
-    FromMojom(UsedContextUploadErrorType input,
-              contextual_search::ContextUploadErrorType* output) {
+contextual_search::ContextUploadErrorType
+EnumTraits<UsedContextUploadErrorType,
+           contextual_search::ContextUploadErrorType>::
+    FromMojom(UsedContextUploadErrorType input) {
   switch (input) {
     case UsedContextUploadErrorType::kUnknown:
-      *output = contextual_search::ContextUploadErrorType::kUnknown;
-      return true;
+      return contextual_search::ContextUploadErrorType::kUnknown;
     case UsedContextUploadErrorType::kBrowserProcessingError:
-      *output =
-          contextual_search::ContextUploadErrorType::kBrowserProcessingError;
-      return true;
+      return contextual_search::ContextUploadErrorType::kBrowserProcessingError;
     case UsedContextUploadErrorType::kNetworkError:
-      *output = contextual_search::ContextUploadErrorType::kNetworkError;
-      return true;
+      return contextual_search::ContextUploadErrorType::kNetworkError;
     case UsedContextUploadErrorType::kServerError:
-      *output = contextual_search::ContextUploadErrorType::kServerError;
-      return true;
+      return contextual_search::ContextUploadErrorType::kServerError;
     case UsedContextUploadErrorType::kServerSizeLimitExceeded:
-      *output =
-          contextual_search::ContextUploadErrorType::kServerSizeLimitExceeded;
-      return true;
+      return contextual_search::ContextUploadErrorType::
+          kServerSizeLimitExceeded;
     case UsedContextUploadErrorType::kAborted:
-      *output = contextual_search::ContextUploadErrorType::kAborted;
-      return true;
+      return contextual_search::ContextUploadErrorType::kAborted;
     case UsedContextUploadErrorType::kImageProcessingError:
-      *output =
-          contextual_search::ContextUploadErrorType::kImageProcessingError;
-      return true;
+      return contextual_search::ContextUploadErrorType::kImageProcessingError;
   }
   NOTREACHED();
 }

@@ -17,7 +17,7 @@ using NativeNodeType = enum tabs_api::NodeId::Type;
 template <>
 struct mojo::EnumTraits<MojoNodeIdType, NativeNodeType> {
   static MojoNodeIdType ToMojom(NativeNodeType input);
-  static bool FromMojom(MojoNodeIdType in, NativeNodeType* out);
+  static NativeNodeType FromMojom(MojoNodeIdType in);
 };
 
 using MojoNodeIdView = tabs_api::mojom::NodeIdDataView;

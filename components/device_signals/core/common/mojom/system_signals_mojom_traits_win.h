@@ -17,8 +17,8 @@ struct EnumTraits<device_signals::mojom::AntiVirusProductState,
                   device_signals::AvProductState> {
   static device_signals::mojom::AntiVirusProductState ToMojom(
       device_signals::AvProductState input);
-  static bool FromMojom(device_signals::mojom::AntiVirusProductState input,
-                        device_signals::AvProductState* output);
+  static device_signals::AvProductState FromMojom(
+      device_signals::mojom::AntiVirusProductState input);
 };
 
 template <>

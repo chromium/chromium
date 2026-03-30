@@ -39,29 +39,23 @@ EnumTraits<chromeos_camera::mojom::DecodeError,
 }
 
 // static
-bool EnumTraits<chromeos_camera::mojom::DecodeError,
-                chromeos_camera::MjpegDecodeAccelerator::Error>::
-    FromMojom(chromeos_camera::mojom::DecodeError error,
-              chromeos_camera::MjpegDecodeAccelerator::Error* out) {
+chromeos_camera::MjpegDecodeAccelerator::Error
+EnumTraits<chromeos_camera::mojom::DecodeError,
+           chromeos_camera::MjpegDecodeAccelerator::Error>::
+    FromMojom(chromeos_camera::mojom::DecodeError error) {
   switch (error) {
     case chromeos_camera::mojom::DecodeError::NO_ERRORS:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::NO_ERRORS;
     case chromeos_camera::mojom::DecodeError::INVALID_ARGUMENT:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::INVALID_ARGUMENT;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::INVALID_ARGUMENT;
     case chromeos_camera::mojom::DecodeError::UNREADABLE_INPUT:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::UNREADABLE_INPUT;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::UNREADABLE_INPUT;
     case chromeos_camera::mojom::DecodeError::PARSE_JPEG_FAILED:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::PARSE_JPEG_FAILED;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::PARSE_JPEG_FAILED;
     case chromeos_camera::mojom::DecodeError::UNSUPPORTED_JPEG:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::UNSUPPORTED_JPEG;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::UNSUPPORTED_JPEG;
     case chromeos_camera::mojom::DecodeError::PLATFORM_FAILURE:
-      *out = chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE;
-      return true;
+      return chromeos_camera::MjpegDecodeAccelerator::Error::PLATFORM_FAILURE;
   }
   NOTREACHED();
 }

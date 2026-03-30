@@ -23,8 +23,8 @@ struct EnumTraits<unexportable_keys::mojom::SignatureAlgorithm,
   static unexportable_keys::mojom::SignatureAlgorithm ToMojom(
       crypto::SignatureVerifier::SignatureAlgorithm algo);
 
-  static bool FromMojom(unexportable_keys::mojom::SignatureAlgorithm mojo_algo,
-                        crypto::SignatureVerifier::SignatureAlgorithm* out);
+  static crypto::SignatureVerifier::SignatureAlgorithm FromMojom(
+      unexportable_keys::mojom::SignatureAlgorithm mojo_algo);
 };
 
 template <>
@@ -33,9 +33,8 @@ struct EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
   static unexportable_keys::mojom::BackgroundTaskPriority ToMojom(
       unexportable_keys::BackgroundTaskPriority priority);
 
-  static bool FromMojom(
-      unexportable_keys::mojom::BackgroundTaskPriority mojo_priority,
-      unexportable_keys::BackgroundTaskPriority* out);
+  static unexportable_keys::BackgroundTaskPriority FromMojom(
+      unexportable_keys::mojom::BackgroundTaskPriority mojo_priority);
 };
 
 template <>
@@ -44,8 +43,8 @@ struct EnumTraits<unexportable_keys::mojom::ServiceError,
   static unexportable_keys::mojom::ServiceError ToMojom(
       unexportable_keys::ServiceError error);
 
-  static bool FromMojom(unexportable_keys::mojom::ServiceError mojo_error,
-                        unexportable_keys::ServiceError* out);
+  static unexportable_keys::ServiceError FromMojom(
+      unexportable_keys::mojom::ServiceError mojo_error);
 };
 
 template <>

@@ -20,8 +20,8 @@ struct EnumTraits<device_signals::mojom::PresenceValue,
                   device_signals::PresenceValue> {
   static device_signals::mojom::PresenceValue ToMojom(
       device_signals::PresenceValue input);
-  static bool FromMojom(device_signals::mojom::PresenceValue input,
-                        device_signals::PresenceValue* output);
+  static device_signals::PresenceValue FromMojom(
+      device_signals::mojom::PresenceValue input);
 };
 
 template <>

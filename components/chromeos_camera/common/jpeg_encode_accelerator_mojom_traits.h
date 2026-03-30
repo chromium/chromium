@@ -16,8 +16,8 @@ struct EnumTraits<chromeos_camera::mojom::EncodeStatus,
   static chromeos_camera::mojom::EncodeStatus ToMojom(
       chromeos_camera::JpegEncodeAccelerator::Status status);
 
-  static bool FromMojom(chromeos_camera::mojom::EncodeStatus input,
-                        chromeos_camera::JpegEncodeAccelerator::Status* out);
+  static chromeos_camera::JpegEncodeAccelerator::Status FromMojom(
+      chromeos_camera::mojom::EncodeStatus input);
 };
 
 }  // namespace mojo

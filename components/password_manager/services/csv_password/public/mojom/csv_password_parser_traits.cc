@@ -4,6 +4,7 @@
 
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser_traits.h"
 
+#include "base/notreached.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
@@ -24,22 +25,19 @@ EnumTraits<password_manager::mojom::CSVPassword_Status,
   NOTREACHED();
 }
 
-bool EnumTraits<password_manager::mojom::CSVPassword_Status,
-                password_manager::CSVPassword::Status>::
-    FromMojom(password_manager::mojom::CSVPassword_Status status,
-              password_manager::CSVPassword::Status* out) {
+password_manager::CSVPassword::Status
+EnumTraits<password_manager::mojom::CSVPassword_Status,
+           password_manager::CSVPassword::Status>::
+    FromMojom(password_manager::mojom::CSVPassword_Status status) {
   switch (status) {
     case password_manager::mojom::CSVPassword_Status::kOK:
-      *out = password_manager::CSVPassword::Status::kOK;
-      return true;
+      return password_manager::CSVPassword::Status::kOK;
     case password_manager::mojom::CSVPassword_Status::kSyntaxError:
-      *out = password_manager::CSVPassword::Status::kSyntaxError;
-      return true;
+      return password_manager::CSVPassword::Status::kSyntaxError;
     case password_manager::mojom::CSVPassword_Status::kSemanticError:
-      *out = password_manager::CSVPassword::Status::kSemanticError;
-      return true;
+      return password_manager::CSVPassword::Status::kSemanticError;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

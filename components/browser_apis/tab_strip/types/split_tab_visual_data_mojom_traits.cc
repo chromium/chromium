@@ -15,18 +15,16 @@ MojoSplitLayout mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::ToMojom(
   NOTREACHED();
 }
 
-bool mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::FromMojom(
-    MojoSplitLayout input,
-    NativeSplitLayout* out) {
+NativeSplitLayout
+mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout>::FromMojom(
+    MojoSplitLayout input) {
   switch (input) {
     case MojoSplitLayout::kVertical:
-      *out = NativeSplitLayout::kVertical;
-      return true;
+      return NativeSplitLayout::kVertical;
     case MojoSplitLayout::kHorizontal:
-      *out = NativeSplitLayout::kHorizontal;
-      return true;
+      return NativeSplitLayout::kHorizontal;
   }
-  return false;
+  NOTREACHED();
 }
 
 NativeSplitLayout mojo::StructTraits<

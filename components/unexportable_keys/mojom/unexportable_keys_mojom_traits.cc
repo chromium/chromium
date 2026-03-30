@@ -32,25 +32,21 @@ EnumTraits<unexportable_keys::mojom::SignatureAlgorithm,
   }
 }
 
-bool mojo::EnumTraits<unexportable_keys::mojom::SignatureAlgorithm,
-                      crypto::SignatureVerifier::SignatureAlgorithm>::
-    FromMojom(unexportable_keys::mojom::SignatureAlgorithm mojo_algo,
-              crypto::SignatureVerifier::SignatureAlgorithm* out) {
+crypto::SignatureVerifier::SignatureAlgorithm
+mojo::EnumTraits<unexportable_keys::mojom::SignatureAlgorithm,
+                 crypto::SignatureVerifier::SignatureAlgorithm>::
+    FromMojom(unexportable_keys::mojom::SignatureAlgorithm mojo_algo) {
   switch (mojo_algo) {
     case unexportable_keys::mojom::SignatureAlgorithm::RSA_PKCS1_SHA1:
-      *out = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1;
-      return true;
+      return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA1;
     case unexportable_keys::mojom::SignatureAlgorithm::RSA_PKCS1_SHA256:
-      *out = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
-      return true;
+      return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
     case unexportable_keys::mojom::SignatureAlgorithm::ECDSA_SHA256:
-      *out = crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-      return true;
+      return crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
     case unexportable_keys::mojom::SignatureAlgorithm::RSA_PSS_SHA256:
-      *out = crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
-      return true;
+      return crypto::SignatureVerifier::SignatureAlgorithm::RSA_PSS_SHA256;
   }
-  return false;
+  NOTREACHED();
 }
 
 unexportable_keys::mojom::BackgroundTaskPriority
@@ -67,22 +63,19 @@ EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
   }
 }
 
-bool EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
-                unexportable_keys::BackgroundTaskPriority>::
-    FromMojom(unexportable_keys::mojom::BackgroundTaskPriority mojo_priority,
-              unexportable_keys::BackgroundTaskPriority* out) {
+unexportable_keys::BackgroundTaskPriority
+EnumTraits<unexportable_keys::mojom::BackgroundTaskPriority,
+           unexportable_keys::BackgroundTaskPriority>::
+    FromMojom(unexportable_keys::mojom::BackgroundTaskPriority mojo_priority) {
   switch (mojo_priority) {
     case unexportable_keys::mojom::BackgroundTaskPriority::kBestEffort:
-      *out = unexportable_keys::BackgroundTaskPriority::kBestEffort;
-      return true;
+      return unexportable_keys::BackgroundTaskPriority::kBestEffort;
     case unexportable_keys::mojom::BackgroundTaskPriority::kUserVisible:
-      *out = unexportable_keys::BackgroundTaskPriority::kUserVisible;
-      return true;
+      return unexportable_keys::BackgroundTaskPriority::kUserVisible;
     case unexportable_keys::mojom::BackgroundTaskPriority::kUserBlocking:
-      *out = unexportable_keys::BackgroundTaskPriority::kUserBlocking;
-      return true;
+      return unexportable_keys::BackgroundTaskPriority::kUserBlocking;
   }
-  return false;
+  NOTREACHED();
 }
 
 unexportable_keys::mojom::ServiceError EnumTraits<
@@ -111,40 +104,31 @@ unexportable_keys::mojom::ServiceError EnumTraits<
   }
 }
 
-bool EnumTraits<unexportable_keys::mojom::ServiceError,
-                unexportable_keys::ServiceError>::
-    FromMojom(unexportable_keys::mojom::ServiceError input,
-              unexportable_keys::ServiceError* output) {
+unexportable_keys::ServiceError
+EnumTraits<unexportable_keys::mojom::ServiceError,
+           unexportable_keys::ServiceError>::
+    FromMojom(unexportable_keys::mojom::ServiceError input) {
   switch (input) {
     case unexportable_keys::mojom::ServiceError::kAlgorithmNotSupported:
-      *output = unexportable_keys::ServiceError::kAlgorithmNotSupported;
-      return true;
+      return unexportable_keys::ServiceError::kAlgorithmNotSupported;
     case unexportable_keys::mojom::ServiceError::kCryptoApiFailed:
-      *output = unexportable_keys::ServiceError::kCryptoApiFailed;
-      return true;
+      return unexportable_keys::ServiceError::kCryptoApiFailed;
     case unexportable_keys::mojom::ServiceError::kVerifySignatureFailed:
-      *output = unexportable_keys::ServiceError::kVerifySignatureFailed;
-      return true;
+      return unexportable_keys::ServiceError::kVerifySignatureFailed;
     case unexportable_keys::mojom::ServiceError::kKeyCollision:
-      *output = unexportable_keys::ServiceError::kKeyCollision;
-      return true;
+      return unexportable_keys::ServiceError::kKeyCollision;
     case unexportable_keys::mojom::ServiceError::kKeyNotFound:
-      *output = unexportable_keys::ServiceError::kKeyNotFound;
-      return true;
+      return unexportable_keys::ServiceError::kKeyNotFound;
     case unexportable_keys::mojom::ServiceError::kKeyNotReady:
-      *output = unexportable_keys::ServiceError::kKeyNotReady;
-      return true;
+      return unexportable_keys::ServiceError::kKeyNotReady;
     case unexportable_keys::mojom::ServiceError::kNoKeyProvider:
-      *output = unexportable_keys::ServiceError::kNoKeyProvider;
-      return true;
+      return unexportable_keys::ServiceError::kNoKeyProvider;
     case unexportable_keys::mojom::ServiceError::kOperationNotSupported:
-      *output = unexportable_keys::ServiceError::kOperationNotSupported;
-      return true;
+      return unexportable_keys::ServiceError::kOperationNotSupported;
     case unexportable_keys::mojom::ServiceError::kOperationCancelled:
-      *output = unexportable_keys::ServiceError::kOperationCancelled;
-      return true;
+      return unexportable_keys::ServiceError::kOperationCancelled;
   }
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<unexportable_keys::mojom::UnexportableKeyIdDataView,

@@ -26,14 +26,12 @@ struct EnumTraits<signin::mojom::AccountType, AccountType> {
     NOTREACHED();
   }
 
-  static bool FromMojom(signin::mojom::AccountType input, AccountType* out) {
+  static AccountType FromMojom(signin::mojom::AccountType input) {
     switch (input) {
       case signin::mojom::AccountType::UNKNOWN:
-        *out = AccountType::UNKNOWN;
-        return true;
+        return AccountType::UNKNOWN;
       case signin::mojom::AccountType::GOOGLE:
-        *out = AccountType::GOOGLE;
-        return true;
+        return AccountType::GOOGLE;
     }
     NOTREACHED();
   }

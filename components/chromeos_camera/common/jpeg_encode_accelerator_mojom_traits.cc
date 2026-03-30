@@ -33,35 +33,28 @@ EnumTraits<chromeos_camera::mojom::EncodeStatus,
 }
 
 // static
-bool EnumTraits<chromeos_camera::mojom::EncodeStatus,
-                chromeos_camera::JpegEncodeAccelerator::Status>::
-    FromMojom(chromeos_camera::mojom::EncodeStatus status,
-              chromeos_camera::JpegEncodeAccelerator::Status* out) {
+chromeos_camera::JpegEncodeAccelerator::Status
+EnumTraits<chromeos_camera::mojom::EncodeStatus,
+           chromeos_camera::JpegEncodeAccelerator::Status>::
+    FromMojom(chromeos_camera::mojom::EncodeStatus status) {
   switch (status) {
     case chromeos_camera::mojom::EncodeStatus::ENCODE_OK:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::ENCODE_OK;
-      return true;
+      return chromeos_camera::JpegEncodeAccelerator::Status::ENCODE_OK;
     case chromeos_camera::mojom::EncodeStatus::HW_JPEG_ENCODE_NOT_SUPPORTED:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::
+      return chromeos_camera::JpegEncodeAccelerator::Status::
           HW_JPEG_ENCODE_NOT_SUPPORTED;
-      return true;
     case chromeos_camera::mojom::EncodeStatus::THREAD_CREATION_FAILED:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::
+      return chromeos_camera::JpegEncodeAccelerator::Status::
           THREAD_CREATION_FAILED;
-      return true;
     case chromeos_camera::mojom::EncodeStatus::INVALID_ARGUMENT:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::INVALID_ARGUMENT;
-      return true;
+      return chromeos_camera::JpegEncodeAccelerator::Status::INVALID_ARGUMENT;
     case chromeos_camera::mojom::EncodeStatus::INACCESSIBLE_OUTPUT_BUFFER:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::
+      return chromeos_camera::JpegEncodeAccelerator::Status::
           INACCESSIBLE_OUTPUT_BUFFER;
-      return true;
     case chromeos_camera::mojom::EncodeStatus::PARSE_IMAGE_FAILED:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::PARSE_IMAGE_FAILED;
-      return true;
+      return chromeos_camera::JpegEncodeAccelerator::Status::PARSE_IMAGE_FAILED;
     case chromeos_camera::mojom::EncodeStatus::PLATFORM_FAILURE:
-      *out = chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE;
-      return true;
+      return chromeos_camera::JpegEncodeAccelerator::Status::PLATFORM_FAILURE;
   }
   NOTREACHED();
 }

@@ -24,22 +24,18 @@ EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
-    MojoTabNetworkState in,
-    NativeTabNetworkState* out) {
+NativeTabNetworkState
+EnumTraits<MojoTabNetworkState, NativeTabNetworkState>::FromMojom(
+    MojoTabNetworkState in) {
   switch (in) {
     case MojoTabNetworkState::kNone:
-      *out = NativeTabNetworkState::kNone;
-      return true;
+      return NativeTabNetworkState::kNone;
     case MojoTabNetworkState::kWaiting:
-      *out = NativeTabNetworkState::kWaiting;
-      return true;
+      return NativeTabNetworkState::kWaiting;
     case MojoTabNetworkState::kLoading:
-      *out = NativeTabNetworkState::kLoading;
-      return true;
+      return NativeTabNetworkState::kLoading;
     case MojoTabNetworkState::kError:
-      *out = NativeTabNetworkState::kError;
-      return true;
+      return NativeTabNetworkState::kError;
   }
   NOTREACHED();
 }
@@ -87,64 +83,46 @@ MojoTabAlertState EnumTraits<MojoTabAlertState, NativeTabAlertState>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
-    MojoTabAlertState in,
-    NativeTabAlertState* out) {
+NativeTabAlertState
+EnumTraits<MojoTabAlertState, NativeTabAlertState>::FromMojom(
+    MojoTabAlertState in) {
   switch (in) {
     case MojoTabAlertState::kMediaRecording:
-      *out = NativeTabAlertState::kMediaRecording;
-      return true;
+      return NativeTabAlertState::kMediaRecording;
     case MojoTabAlertState::kTabCapturing:
-      *out = NativeTabAlertState::kTabCapturing;
-      return true;
+      return NativeTabAlertState::kTabCapturing;
     case MojoTabAlertState::kAudioPlaying:
-      *out = NativeTabAlertState::kAudioPlaying;
-      return true;
+      return NativeTabAlertState::kAudioPlaying;
     case MojoTabAlertState::kAudioMuting:
-      *out = NativeTabAlertState::kAudioMuting;
-      return true;
+      return NativeTabAlertState::kAudioMuting;
     case MojoTabAlertState::kBluetoothConnected:
-      *out = NativeTabAlertState::kBluetoothConnected;
-      return true;
+      return NativeTabAlertState::kBluetoothConnected;
     case MojoTabAlertState::kBluetoothScanActive:
-      *out = NativeTabAlertState::kBluetoothScanActive;
-      return true;
+      return NativeTabAlertState::kBluetoothScanActive;
     case MojoTabAlertState::kUsbConnected:
-      *out = NativeTabAlertState::kUsbConnected;
-      return true;
+      return NativeTabAlertState::kUsbConnected;
     case MojoTabAlertState::kHidConnected:
-      *out = NativeTabAlertState::kHidConnected;
-      return true;
+      return NativeTabAlertState::kHidConnected;
     case MojoTabAlertState::kSerialConnected:
-      *out = NativeTabAlertState::kSerialConnected;
-      return true;
+      return NativeTabAlertState::kSerialConnected;
     case MojoTabAlertState::kPipPlaying:
-      *out = NativeTabAlertState::kPipPlaying;
-      return true;
+      return NativeTabAlertState::kPipPlaying;
     case MojoTabAlertState::kDesktopCapturing:
-      *out = NativeTabAlertState::kDesktopCapturing;
-      return true;
+      return NativeTabAlertState::kDesktopCapturing;
     case MojoTabAlertState::kVrPresentingInHeadset:
-      *out = NativeTabAlertState::kVrPresentingInHeadset;
-      return true;
+      return NativeTabAlertState::kVrPresentingInHeadset;
     case MojoTabAlertState::kAudioRecording:
-      *out = NativeTabAlertState::kAudioRecording;
-      return true;
+      return NativeTabAlertState::kAudioRecording;
     case MojoTabAlertState::kVideoRecording:
-      *out = NativeTabAlertState::kVideoRecording;
-      return true;
+      return NativeTabAlertState::kVideoRecording;
     case MojoTabAlertState::kActorAccessing:
-      *out = NativeTabAlertState::kActorAccessing;
-      return true;
+      return NativeTabAlertState::kActorAccessing;
     case MojoTabAlertState::kActorWaitingOnUser:
-      *out = NativeTabAlertState::kActorWaitingOnUser;
-      return true;
+      return NativeTabAlertState::kActorWaitingOnUser;
     case MojoTabAlertState::kGlicAccessing:
-      *out = NativeTabAlertState::kGlicAccessing;
-      return true;
+      return NativeTabAlertState::kGlicAccessing;
     case MojoTabAlertState::kGlicSharing:
-      *out = NativeTabAlertState::kGlicSharing;
-      return true;
+      return NativeTabAlertState::kGlicSharing;
   }
   NOTREACHED();
 }

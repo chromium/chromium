@@ -28,31 +28,21 @@ EnumTraits<device_signals::mojom::PresenceValue,
 }
 
 // static
-bool EnumTraits<device_signals::mojom::PresenceValue,
-                device_signals::PresenceValue>::
-    FromMojom(device_signals::mojom::PresenceValue input,
-              device_signals::PresenceValue* output) {
-  std::optional<device_signals::PresenceValue> parsed_value;
+device_signals::PresenceValue EnumTraits<device_signals::mojom::PresenceValue,
+                                         device_signals::PresenceValue>::
+    FromMojom(device_signals::mojom::PresenceValue input) {
   switch (input) {
     case device_signals::mojom::PresenceValue::kUnspecified:
-      parsed_value = device_signals::PresenceValue::kUnspecified;
-      break;
+      return device_signals::PresenceValue::kUnspecified;
     case device_signals::mojom::PresenceValue::kAccessDenied:
-      parsed_value = device_signals::PresenceValue::kAccessDenied;
-      break;
+      return device_signals::PresenceValue::kAccessDenied;
     case device_signals::mojom::PresenceValue::kNotFound:
-      parsed_value = device_signals::PresenceValue::kNotFound;
-      break;
+      return device_signals::PresenceValue::kNotFound;
     case device_signals::mojom::PresenceValue::kFound:
-      parsed_value = device_signals::PresenceValue::kFound;
-      break;
+      return device_signals::PresenceValue::kFound;
   }
 
-  if (parsed_value.has_value()) {
-    *output = parsed_value.value();
-    return true;
-  }
-  return false;
+  NOTREACHED();
 }
 
 // static

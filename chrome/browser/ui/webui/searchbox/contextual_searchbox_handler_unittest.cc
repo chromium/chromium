@@ -1870,10 +1870,9 @@ TEST_P(ContextualSearchboxHandlerContextUploadStatusTest,
   EXPECT_CALL(mock_searchbox_page_, OnInputStateChanged).Times(1);
 
   const auto expected_status = GetParam();
-  contextual_search::ContextUploadStatus status_cpp;
-  EXPECT_TRUE((mojo::EnumTraits<composebox_query::mojom::ContextUploadStatus,
-                                contextual_search::ContextUploadStatus>::
-                   FromMojom(expected_status, &status_cpp)));
+  contextual_search::ContextUploadStatus status_cpp = mojo::EnumTraits<
+      composebox_query::mojom::ContextUploadStatus,
+      contextual_search::ContextUploadStatus>::FromMojom(expected_status);
   base::UnguessableToken token = base::UnguessableToken::Create();
   handler().OnContextUploadStatusChanged(token, lens::MimeType::kPdf,
                                          status_cpp, std::nullopt);

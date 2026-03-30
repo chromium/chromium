@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/content_settings/core/common/content_settings_mojom_traits.h"
+
+#include "base/notreached.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
 
@@ -53,27 +55,22 @@ EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::ToMojom(
 }
 
 // static
-bool EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::
-    FromMojom(content_settings::mojom::ContentSetting setting,
-              ContentSetting* out) {
+ContentSetting
+EnumTraits<content_settings::mojom::ContentSetting, ContentSetting>::FromMojom(
+    content_settings::mojom::ContentSetting setting) {
   switch (setting) {
     case content_settings::mojom::ContentSetting::DEFAULT:
-      *out = CONTENT_SETTING_DEFAULT;
-      return true;
+      return CONTENT_SETTING_DEFAULT;
     case content_settings::mojom::ContentSetting::ALLOW:
-      *out = CONTENT_SETTING_ALLOW;
-      return true;
+      return CONTENT_SETTING_ALLOW;
     case content_settings::mojom::ContentSetting::BLOCK:
-      *out = CONTENT_SETTING_BLOCK;
-      return true;
+      return CONTENT_SETTING_BLOCK;
     case content_settings::mojom::ContentSetting::ASK:
-      *out = CONTENT_SETTING_ASK;
-      return true;
+      return CONTENT_SETTING_ASK;
     case content_settings::mojom::ContentSetting::SESSION_ONLY:
-      *out = CONTENT_SETTING_SESSION_ONLY;
-      return true;
+      return CONTENT_SETTING_SESSION_ONLY;
   }
-  return false;
+  NOTREACHED();
 }
 
 // static

@@ -29,22 +29,19 @@ namespace mojo {
 template <>
 struct EnumTraits<composebox_query::mojom::ToolMode, omnibox::ToolMode> {
   static composebox_query::mojom::ToolMode ToMojom(omnibox::ToolMode input);
-  static bool FromMojom(composebox_query::mojom::ToolMode input,
-                        omnibox::ToolMode* output);
+  static omnibox::ToolMode FromMojom(composebox_query::mojom::ToolMode input);
 };
 
 template <>
 struct EnumTraits<composebox_query::mojom::ModelMode, omnibox::ModelMode> {
   static composebox_query::mojom::ModelMode ToMojom(omnibox::ModelMode input);
-  static bool FromMojom(composebox_query::mojom::ModelMode input,
-                        omnibox::ModelMode* output);
+  static omnibox::ModelMode FromMojom(composebox_query::mojom::ModelMode input);
 };
 
 template <>
 struct EnumTraits<composebox_query::mojom::InputType, omnibox::InputType> {
   static composebox_query::mojom::InputType ToMojom(omnibox::InputType input);
-  static bool FromMojom(composebox_query::mojom::InputType input,
-                        omnibox::InputType* output);
+  static omnibox::InputType FromMojom(composebox_query::mojom::InputType input);
 };
 
 template <>
@@ -53,8 +50,8 @@ struct EnumTraits<composebox_query::mojom::ContextUploadStatus,
                   contextual_search::ContextUploadStatus> {
   static composebox_query::mojom::ContextUploadStatus ToMojom(
       contextual_search::ContextUploadStatus input);
-  static bool FromMojom(composebox_query::mojom::ContextUploadStatus input,
-                        contextual_search::ContextUploadStatus* output);
+  static contextual_search::ContextUploadStatus FromMojom(
+      composebox_query::mojom::ContextUploadStatus input);
 };
 
 template <>
@@ -62,8 +59,8 @@ struct EnumTraits<composebox_query::mojom::ContextUploadErrorType,
                   contextual_search::ContextUploadErrorType> {
   static composebox_query::mojom::ContextUploadErrorType ToMojom(
       contextual_search::ContextUploadErrorType input);
-  static bool FromMojom(composebox_query::mojom::ContextUploadErrorType input,
-                        contextual_search::ContextUploadErrorType* output);
+  static contextual_search::ContextUploadErrorType FromMojom(
+      composebox_query::mojom::ContextUploadErrorType input);
 };
 
 template <>

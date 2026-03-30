@@ -18,8 +18,8 @@ struct EnumTraits<chromeos_camera::mojom::DecodeError,
   static chromeos_camera::mojom::DecodeError ToMojom(
       chromeos_camera::MjpegDecodeAccelerator::Error error);
 
-  static bool FromMojom(chromeos_camera::mojom::DecodeError input,
-                        chromeos_camera::MjpegDecodeAccelerator::Error* out);
+  static chromeos_camera::MjpegDecodeAccelerator::Error FromMojom(
+      chromeos_camera::mojom::DecodeError input);
 };
 
 template <>

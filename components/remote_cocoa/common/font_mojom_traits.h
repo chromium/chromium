@@ -29,20 +29,17 @@ struct EnumTraits<remote_cocoa::mojom::SystemFont,
     NOTREACHED();
   }
 
-  static bool FromMojom(remote_cocoa::mojom::SystemFont input,
-                        gfx::PlatformFontMac::SystemFontType* out) {
+  static gfx::PlatformFontMac::SystemFontType FromMojom(
+      remote_cocoa::mojom::SystemFont input) {
     switch (input) {
       case remote_cocoa::mojom::SystemFont::kGeneral:
-        *out = gfx::PlatformFontMac::SystemFontType::kGeneral;
-        return true;
+        return gfx::PlatformFontMac::SystemFontType::kGeneral;
       case remote_cocoa::mojom::SystemFont::kMenu:
-        *out = gfx::PlatformFontMac::SystemFontType::kMenu;
-        return true;
+        return gfx::PlatformFontMac::SystemFontType::kMenu;
       case remote_cocoa::mojom::SystemFont::kToolTip:
-        *out = gfx::PlatformFontMac::SystemFontType::kToolTip;
-        return true;
+        return gfx::PlatformFontMac::SystemFontType::kToolTip;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -52,8 +49,7 @@ struct EnumTraits<remote_cocoa::mojom::FontWeight, gfx::Font::Weight> {
     return static_cast<remote_cocoa::mojom::FontWeight>(input);
   }
 
-  static bool FromMojom(remote_cocoa::mojom::FontWeight input,
-                        gfx::Font::Weight* out) {
+  static gfx::Font::Weight FromMojom(remote_cocoa::mojom::FontWeight input) {
     switch (input) {
       case remote_cocoa::mojom::FontWeight::kThin:
       case remote_cocoa::mojom::FontWeight::kExtraLight:
@@ -64,10 +60,9 @@ struct EnumTraits<remote_cocoa::mojom::FontWeight, gfx::Font::Weight> {
       case remote_cocoa::mojom::FontWeight::kBold:
       case remote_cocoa::mojom::FontWeight::kExtraBold:
       case remote_cocoa::mojom::FontWeight::kBlack:
-        *out = static_cast<gfx::Font::Weight>(input);
-        return true;
+        return static_cast<gfx::Font::Weight>(input);
     }
-    return false;
+    NOTREACHED();
   }
 };
 

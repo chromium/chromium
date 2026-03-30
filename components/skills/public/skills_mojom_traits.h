@@ -32,21 +32,16 @@ struct EnumTraits<skills::mojom::SkillSource, sync_pb::SkillSource> {
     NOTREACHED();
   }
 
-  static bool FromMojom(skills::mojom::SkillSource input,
-                        sync_pb::SkillSource* out) {
+  static sync_pb::SkillSource FromMojom(skills::mojom::SkillSource input) {
     switch (input) {
       case skills::mojom::SkillSource::kUnknown:
-        *out = sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
-        return true;
+        return sync_pb::SkillSource::SKILL_SOURCE_UNKNOWN;
       case skills::mojom::SkillSource::kFirstParty:
-        *out = sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
-        return true;
+        return sync_pb::SkillSource::SKILL_SOURCE_FIRST_PARTY;
       case skills::mojom::SkillSource::kUserCreated:
-        *out = sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
-        return true;
+        return sync_pb::SkillSource::SKILL_SOURCE_USER_CREATED;
       case skills::mojom::SkillSource::kDerivedFromFirstParty:
-        *out = sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
-        return true;
+        return sync_pb::SkillSource::SKILL_SOURCE_DERIVED_FROM_FIRST_PARTY;
     }
     NOTREACHED();
   }

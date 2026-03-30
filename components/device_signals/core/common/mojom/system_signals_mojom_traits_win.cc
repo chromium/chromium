@@ -4,8 +4,6 @@
 
 #include "components/device_signals/core/common/mojom/system_signals_mojom_traits_win.h"
 
-#include <optional>
-
 #include "base/notreached.h"
 
 namespace mojo {
@@ -28,31 +26,22 @@ device_signals::mojom::AntiVirusProductState EnumTraits<
 }
 
 // static
-bool EnumTraits<device_signals::mojom::AntiVirusProductState,
-                device_signals::AvProductState>::
-    FromMojom(device_signals::mojom::AntiVirusProductState input,
-              device_signals::AvProductState* output) {
-  std::optional<device_signals::AvProductState> parsed_state;
+device_signals::AvProductState
+EnumTraits<device_signals::mojom::AntiVirusProductState,
+           device_signals::AvProductState>::
+    FromMojom(device_signals::mojom::AntiVirusProductState input) {
   switch (input) {
     case device_signals::mojom::AntiVirusProductState::kOn:
-      parsed_state = device_signals::AvProductState::kOn;
-      break;
+      return device_signals::AvProductState::kOn;
     case device_signals::mojom::AntiVirusProductState::kOff:
-      parsed_state = device_signals::AvProductState::kOff;
-      break;
+      return device_signals::AvProductState::kOff;
     case device_signals::mojom::AntiVirusProductState::kSnoozed:
-      parsed_state = device_signals::AvProductState::kSnoozed;
-      break;
+      return device_signals::AvProductState::kSnoozed;
     case device_signals::mojom::AntiVirusProductState::kExpired:
-      parsed_state = device_signals::AvProductState::kExpired;
-      break;
+      return device_signals::AvProductState::kExpired;
   }
 
-  if (parsed_state.has_value()) {
-    *output = parsed_state.value();
-    return true;
-  }
-  return false;
+  NOTREACHED();
 }
 
 // static

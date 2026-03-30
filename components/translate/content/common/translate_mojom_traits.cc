@@ -4,6 +4,7 @@
 
 #include "components/translate/content/common/translate_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
@@ -43,46 +44,34 @@ translate::mojom::TranslateError EnumTraits<
   NOTREACHED();
 }
 
-bool EnumTraits<translate::mojom::TranslateError, translate::TranslateErrors>::
-    FromMojom(translate::mojom::TranslateError input,
-              translate::TranslateErrors* output) {
+translate::TranslateErrors
+EnumTraits<translate::mojom::TranslateError, translate::TranslateErrors>::
+    FromMojom(translate::mojom::TranslateError input) {
   switch (input) {
     case translate::mojom::TranslateError::NONE:
-      *output = translate::TranslateErrors::NONE;
-      return true;
+      return translate::TranslateErrors::NONE;
     case translate::mojom::TranslateError::NETWORK:
-      *output = translate::TranslateErrors::NETWORK;
-      return true;
+      return translate::TranslateErrors::NETWORK;
     case translate::mojom::TranslateError::INITIALIZATION_ERROR:
-      *output = translate::TranslateErrors::INITIALIZATION_ERROR;
-      return true;
+      return translate::TranslateErrors::INITIALIZATION_ERROR;
     case translate::mojom::TranslateError::UNKNOWN_LANGUAGE:
-      *output = translate::TranslateErrors::UNKNOWN_LANGUAGE;
-      return true;
+      return translate::TranslateErrors::UNKNOWN_LANGUAGE;
     case translate::mojom::TranslateError::UNSUPPORTED_LANGUAGE:
-      *output = translate::TranslateErrors::UNSUPPORTED_LANGUAGE;
-      return true;
+      return translate::TranslateErrors::UNSUPPORTED_LANGUAGE;
     case translate::mojom::TranslateError::IDENTICAL_LANGUAGES:
-      *output = translate::TranslateErrors::IDENTICAL_LANGUAGES;
-      return true;
+      return translate::TranslateErrors::IDENTICAL_LANGUAGES;
     case translate::mojom::TranslateError::TRANSLATION_ERROR:
-      *output = translate::TranslateErrors::TRANSLATION_ERROR;
-      return true;
+      return translate::TranslateErrors::TRANSLATION_ERROR;
     case translate::mojom::TranslateError::TRANSLATION_TIMEOUT:
-      *output = translate::TranslateErrors::TRANSLATION_TIMEOUT;
-      return true;
+      return translate::TranslateErrors::TRANSLATION_TIMEOUT;
     case translate::mojom::TranslateError::UNEXPECTED_SCRIPT_ERROR:
-      *output = translate::TranslateErrors::UNEXPECTED_SCRIPT_ERROR;
-      return true;
+      return translate::TranslateErrors::UNEXPECTED_SCRIPT_ERROR;
     case translate::mojom::TranslateError::BAD_ORIGIN:
-      *output = translate::TranslateErrors::BAD_ORIGIN;
-      return true;
+      return translate::TranslateErrors::BAD_ORIGIN;
     case translate::mojom::TranslateError::SCRIPT_LOAD_ERROR:
-      *output = translate::TranslateErrors::SCRIPT_LOAD_ERROR;
-      return true;
+      return translate::TranslateErrors::SCRIPT_LOAD_ERROR;
     case translate::mojom::TranslateError::TRANSLATE_ERROR_MAX:
-      *output = translate::TranslateErrors::TRANSLATE_ERROR_MAX;
-      return true;
+      return translate::TranslateErrors::TRANSLATE_ERROR_MAX;
   }
 
   NOTREACHED();

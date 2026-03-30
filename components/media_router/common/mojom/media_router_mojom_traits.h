@@ -33,17 +33,15 @@ struct EnumTraits<media_router::mojom::Issue_Severity,
     NOTREACHED() << "Unknown issue severity " << static_cast<int>(severity);
   }
 
-  static bool FromMojom(media_router::mojom::Issue_Severity input,
-                        media_router::IssueInfo::Severity* output) {
+  static media_router::IssueInfo::Severity FromMojom(
+      media_router::mojom::Issue_Severity input) {
     switch (input) {
       case media_router::mojom::Issue_Severity::WARNING:
-        *output = media_router::IssueInfo::Severity::WARNING;
-        return true;
+        return media_router::IssueInfo::Severity::WARNING;
       case media_router::mojom::Issue_Severity::NOTIFICATION:
-        *output = media_router::IssueInfo::Severity::NOTIFICATION;
-        return true;
+        return media_router::IssueInfo::Severity::NOTIFICATION;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -174,26 +172,21 @@ struct EnumTraits<media_router::mojom::SinkIconType,
     NOTREACHED() << "Unknown sink icon type " << static_cast<int>(icon_type);
   }
 
-  static bool FromMojom(media_router::mojom::SinkIconType input,
-                        media_router::SinkIconType* output) {
+  static media_router::SinkIconType FromMojom(
+      media_router::mojom::SinkIconType input) {
     switch (input) {
       case media_router::mojom::SinkIconType::CAST:
-        *output = media_router::SinkIconType::CAST;
-        return true;
+        return media_router::SinkIconType::CAST;
       case media_router::mojom::SinkIconType::CAST_AUDIO_GROUP:
-        *output = media_router::SinkIconType::CAST_AUDIO_GROUP;
-        return true;
+        return media_router::SinkIconType::CAST_AUDIO_GROUP;
       case media_router::mojom::SinkIconType::CAST_AUDIO:
-        *output = media_router::SinkIconType::CAST_AUDIO;
-        return true;
+        return media_router::SinkIconType::CAST_AUDIO;
       case media_router::mojom::SinkIconType::WIRED_DISPLAY:
-        *output = media_router::SinkIconType::WIRED_DISPLAY;
-        return true;
+        return media_router::SinkIconType::WIRED_DISPLAY;
       case media_router::mojom::SinkIconType::GENERIC:
-        *output = media_router::SinkIconType::GENERIC;
-        return true;
+        return media_router::SinkIconType::GENERIC;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -248,20 +241,17 @@ struct EnumTraits<media_router::mojom::RouteControllerType,
                  << static_cast<int>(controller_type);
   }
 
-  static bool FromMojom(media_router::mojom::RouteControllerType input,
-                        media_router::RouteControllerType* output) {
+  static media_router::RouteControllerType FromMojom(
+      media_router::mojom::RouteControllerType input) {
     switch (input) {
       case media_router::mojom::RouteControllerType::kNone:
-        *output = media_router::RouteControllerType::kNone;
-        return true;
+        return media_router::RouteControllerType::kNone;
       case media_router::mojom::RouteControllerType::kGeneric:
-        *output = media_router::RouteControllerType::kGeneric;
-        return true;
+        return media_router::RouteControllerType::kGeneric;
       case media_router::mojom::RouteControllerType::kMirroring:
-        *output = media_router::RouteControllerType::kMirroring;
-        return true;
+        return media_router::RouteControllerType::kMirroring;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

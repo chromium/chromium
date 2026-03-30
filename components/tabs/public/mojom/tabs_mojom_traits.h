@@ -19,7 +19,7 @@ using NativeTabNetworkState = enum tabs::TabNetworkState;
 template <>
 struct EnumTraits<MojoTabNetworkState, NativeTabNetworkState> {
   static MojoTabNetworkState ToMojom(NativeTabNetworkState input);
-  static bool FromMojom(MojoTabNetworkState in, NativeTabNetworkState* out);
+  static NativeTabNetworkState FromMojom(MojoTabNetworkState in);
 };
 
 using MojoTabAlertState = tabs::mojom::TabAlertState;
@@ -29,7 +29,7 @@ using NativeTabAlertState = enum tabs::TabAlert;
 template <>
 struct EnumTraits<MojoTabAlertState, NativeTabAlertState> {
   static MojoTabAlertState ToMojom(NativeTabAlertState input);
-  static bool FromMojom(MojoTabAlertState in, NativeTabAlertState* out);
+  static NativeTabAlertState FromMojom(MojoTabAlertState in);
 };
 
 }  // namespace mojo

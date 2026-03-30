@@ -20,8 +20,8 @@ struct EnumTraits<translate::mojom::TranslateError,
                   translate::TranslateErrors> {
   static translate::mojom::TranslateError ToMojom(
       translate::TranslateErrors input);
-  static bool FromMojom(translate::mojom::TranslateError input,
-                        translate::TranslateErrors* output);
+  static translate::TranslateErrors FromMojom(
+      translate::mojom::TranslateError input);
 };
 
 template <>

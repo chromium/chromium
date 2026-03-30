@@ -16,7 +16,7 @@ using NativeSplitLayout = split_tabs::SplitTabLayout;
 template <>
 struct mojo::EnumTraits<MojoSplitLayout, NativeSplitLayout> {
   static MojoSplitLayout ToMojom(NativeSplitLayout input);
-  static bool FromMojom(MojoSplitLayout input, NativeSplitLayout* out);
+  static NativeSplitLayout FromMojom(MojoSplitLayout input);
 };
 
 using MojoSplitTabVisualDataView = tabs_api::mojom::SplitTabVisualDataDataView;

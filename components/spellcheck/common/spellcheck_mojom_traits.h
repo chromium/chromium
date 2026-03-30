@@ -15,7 +15,7 @@ namespace mojo {
 template <>
 struct EnumTraits<spellcheck::mojom::Decoration, spellcheck::Decoration> {
   static spellcheck::mojom::Decoration ToMojom(spellcheck::Decoration);
-  static bool FromMojom(spellcheck::mojom::Decoration, spellcheck::Decoration*);
+  static spellcheck::Decoration FromMojom(spellcheck::mojom::Decoration);
 };
 
 template <>

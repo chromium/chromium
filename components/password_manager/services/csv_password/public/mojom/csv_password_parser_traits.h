@@ -20,8 +20,8 @@ struct EnumTraits<password_manager::mojom::CSVPassword_Status,
                   password_manager::CSVPassword::Status> {
   static password_manager::mojom::CSVPassword_Status ToMojom(
       password_manager::CSVPassword::Status status);
-  static bool FromMojom(password_manager::mojom::CSVPassword_Status status,
-                        password_manager::CSVPassword::Status* output);
+  static password_manager::CSVPassword::Status FromMojom(
+      password_manager::mojom::CSVPassword_Status status);
 };
 
 template <>

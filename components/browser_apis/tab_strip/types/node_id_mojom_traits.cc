@@ -20,22 +20,17 @@ MojoNodeIdType mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::ToMojom(
   NOTREACHED();
 }
 
-bool mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::FromMojom(
-    MojoNodeIdType in,
-    NativeNodeType* out) {
+NativeNodeType mojo::EnumTraits<MojoNodeIdType, NativeNodeType>::FromMojom(
+    MojoNodeIdType in) {
   switch (in) {
     case MojoNodeIdType::kWindow:
-      *out = NativeNodeType::kWindow;
-      return true;
+      return NativeNodeType::kWindow;
     case MojoNodeIdType::kContent:
-      *out = NativeNodeType::kContent;
-      return true;
+      return NativeNodeType::kContent;
     case MojoNodeIdType::kCollection:
-      *out = NativeNodeType::kCollection;
-      return true;
+      return NativeNodeType::kCollection;
     case MojoNodeIdType::kUnknown:
-      *out = NativeNodeType::kInvalid;
-      return true;
+      return NativeNodeType::kInvalid;
   }
 
   NOTREACHED();
