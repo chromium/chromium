@@ -63,6 +63,8 @@
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "chrome/common/chrome_switches.h"
@@ -141,7 +143,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -154,13 +155,17 @@
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/offscreen_document_host.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/unpacked_installer.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -173,11 +178,9 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
-#include "extensions/test/extension_test_message_listener.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 using content::DevToolsAgentHost;
@@ -272,7 +275,7 @@ void RunTestFunction(DevToolsWindow* window, const char* test_name) {
   DispatchOnTestSuite(window, test_name);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void SwitchToPanel(DevToolsWindow* window, const char* panel) {
   DispatchOnTestSuite(window, "switchToPanel", panel);
 }
@@ -287,6 +290,9 @@ void SwitchToExtensionPanel(DevToolsWindow* window,
                                       base::TRIM_TRAILING));
   SwitchToPanel(window, (prefix + panel_name).c_str());
 }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
 
 void DisallowDevToolsForForceInstalledExtenions(Browser* browser) {
   browser->profile()->GetPrefs()->SetInteger(
@@ -381,6 +387,9 @@ class DevToolsTest : public PlatformBrowserTest {
 
     window_ = DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(),
                                                             is_docked);
+    DevToolsWindowTesting::Get(window_.get())
+        ->SetCloseCallback(
+            base::BindLambdaForTesting([this]() { window_ = nullptr; }));
   }
 
   WebContents* GetInspectedTab() {
@@ -402,6 +411,29 @@ class DevToolsTest : public PlatformBrowserTest {
 
   WebContents* toolbox_web_contents() {
     return DevToolsWindowTesting::Get(window_)->toolbox_web_contents();
+  }
+
+  BrowserWindowInterface* browser_window_interface() {
+#if BUILDFLAG(IS_ANDROID)
+    std::vector<BrowserWindowInterface*> all_browsers =
+        GetAllBrowserWindowInterfaces();
+    return all_browsers.empty() ? nullptr : all_browsers.front();
+#else
+    return browser();
+#endif
+  }
+
+  bool NavigateToURL(content::WebContents* web_contents, const GURL& url) {
+    return chrome_test_utils::NavigateToURL(web_contents, url);
+  }
+
+  content::WebContents* GetActiveWebContents() {
+    if (!browser_window_interface()) {
+      return nullptr;
+    }
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser_window_interface())->GetActiveTab();
+    return active_tab ? active_tab->GetContents() : nullptr;
   }
 
   raw_ptr<DevToolsWindow> window_;
@@ -1105,10 +1137,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, TestDevToolsExtensionAPI) {
   RunTest("waitForTestResultsInConsole", kArbitraryPage);
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 class DevtoolsPanelForceUpdateTest : public DevToolsExtensionTest,
                                      public testing::WithParamInterface<bool> {
  public:
@@ -1136,7 +1164,7 @@ IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest,
                               extension->id().c_str()));
   ExtensionTestMessageListener extension_resource_loaded_listener(
       "extension_resource.html loaded");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_resource_url));
   {
     SCOPED_TRACE("waiting for extension resource to load");
     ASSERT_TRUE(extension_resource_loaded_listener.WaitUntilSatisfied());
@@ -1146,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest,
   bool force_update_service_workers = GetParam();
   content::ServiceWorkerContext* service_worker_context =
       extensions::service_worker_test_utils::GetServiceWorkerContext(
-          browser()->profile());
+          browser_window_interface()->GetProfile());
   ASSERT_TRUE(service_worker_context);
   service_worker_context->SetForceUpdateOnPageLoadForTesting(
       force_update_service_workers);
@@ -1176,7 +1204,7 @@ IN_PROC_BROWSER_TEST_P(DevtoolsPanelForceUpdateTest,
   ExtensionTestMessageListener
       extension_resource_loaded_after_devtools_listener(
           "extension_resource.html loaded");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_resource_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), extension_resource_url));
   {
     SCOPED_TRACE(
         "waiting for extension resource to load after loading devtools");
@@ -1191,6 +1219,10 @@ INSTANTIATE_TEST_SUITE_P(ForceUpdateOff,
 INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
                          DevtoolsPanelForceUpdateTest,
                          testing::Values(true));
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that http Iframes within the visible devtools panel for the devtools
 // extension are rendered in their own processes and not in the devtools process
