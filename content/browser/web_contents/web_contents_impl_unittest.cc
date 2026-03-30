@@ -47,6 +47,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -2183,6 +2185,60 @@ void HideOrOccludeWithCapturerTest(WebContentsImpl* contents,
 }
 
 }  // namespace
+
+// Tests that when
+// WebUIConfig::ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() is true, the
+// WebContents's visibility will not be OCCLUDED until the first visually
+// non-empty paint.
+class KeepVisibleWebUIConfig : public WebUIConfig {
+ public:
+  KeepVisibleWebUIConfig() : WebUIConfig("chrome", "keep-visible") {}
+  bool ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() override {
+    return true;
+  }
+  std::unique_ptr<WebUIController> CreateWebUIController(
+      WebUI* web_ui,
+      const GURL& url) override {
+    return std::make_unique<WebUIController>(web_ui);
+  }
+};
+
+TEST_F(WebContentsImplTest, KeepVisibleUntilFirstVisuallyNonEmptyPaint) {
+  TestRenderWidgetHostView* view = static_cast<TestRenderWidgetHostView*>(
+      contents()->GetRenderWidgetHostView());
+
+  EXPECT_FALSE(view->is_showing());
+
+  WebUIConfigMap::GetInstance().AddWebUIConfig(
+      std::make_unique<KeepVisibleWebUIConfig>());
+
+  const GURL kGURL("chrome://keep-visible/");
+  NavigationSimulator::NavigateAndCommitFromBrowser(contents(), kGURL);
+
+  contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  EXPECT_TRUE(view->is_showing());
+  EXPECT_FALSE(view->is_occluded());
+
+  contents()->UpdateWebContentsVisibility(Visibility::OCCLUDED);
+  // Still showing and NOT occluded, because it hasn't painted yet.
+  EXPECT_TRUE(view->is_showing());
+  EXPECT_FALSE(view->is_occluded());
+  // The visibility of WebContents is OCCLUDED, but the actual one passed
+  // down and returned by GetVisibility is VISIBLE because of our check.
+  EXPECT_EQ(Visibility::VISIBLE, contents()->GetVisibility());
+
+  // Simulate first non-empty paint.
+  main_test_rfh()->GetPage().OnFirstVisuallyNonEmptyPaint();
+
+  // Now an occlusion update should actually occlude.
+  contents()->UpdateWebContentsVisibility(Visibility::OCCLUDED);
+  EXPECT_TRUE(view->is_showing());
+  EXPECT_TRUE(view->is_occluded());
+  EXPECT_EQ(Visibility::OCCLUDED, contents()->GetVisibility());
+
+  // Cleanup WebUIConfigMap.
+  WebUIConfigMap::GetInstance().RemoveConfig(kGURL);
+}
 
 TEST_F(WebContentsImplTest, HideWithCapturer) {
   HideOrOccludeWithCapturerTest(contents(), Visibility::HIDDEN);

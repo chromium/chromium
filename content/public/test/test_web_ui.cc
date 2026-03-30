@@ -12,9 +12,12 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 
 namespace content {
 
@@ -127,6 +130,11 @@ void TestWebUI::CallJavascriptFunctionUnsafe(
     call_data_.back()->AppendArgument(arg.ToValue());
   }
   OnJavascriptCall(*call_data_.back());
+}
+
+WebUIConfig* TestWebUI::GetWebUIConfig() {
+  return WebUIConfigMap::GetInstance().GetConfig(
+      web_contents_->GetBrowserContext(), web_contents_->GetLastCommittedURL());
 }
 
 void TestWebUI::OnJavascriptCall(const CallData& call_data) {

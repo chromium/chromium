@@ -55,6 +55,12 @@ class CONTENT_EXPORT WebUIConfig {
   // builds only. Defaults to false.
   virtual bool ShouldCrashOnJavascriptErrorInDevelopmentBuild() const;
 
+  // Returns whether the WebUI should be kept marked as visible until the
+  // first visually non-empty paint has occurred. Defaults to false.
+  // The occlusion calculation can be expensive and block the first visually
+  // non-empty paint. This config option is an optimization for that.
+  virtual bool ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint();
+
   // Returns a WebUIController for WebUI and GURL.
   //
   // URLDataSource is usually created in the constructor of WebUIController. The

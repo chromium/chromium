@@ -75,6 +75,7 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
   void SetProperty(const std::string& name, const std::string& value);
 
   // WebUI implementation:
+  WebUIConfig* GetWebUIConfig() override;
   WebContents* GetWebContents() override;
   WebUIController* GetController() override;
   RenderFrameHost* GetRenderFrameHost() override;

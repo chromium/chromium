@@ -1947,6 +1947,10 @@ const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive{
 // has finished loading.
 const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow{
     &kWebUIReloadButton, "WebUIReloadButtonDeferBrowserViewShow", true};
+// When this is enabled, the reload button will be marked as visible until its
+// first non-empty paint.
+const base::FeatureParam<bool> kWebUIReloadButtonKeepVisibleUntilPaint{
+    &kWebUIReloadButton, "WebUIReloadButtonKeepVisibleUntilPaint", false};
 const base::FeatureParam<base::TimeDelta>
     kWebUIReloadButtonRestartUnresponsiveRenderersTimeout{
         &kWebUIReloadButton,

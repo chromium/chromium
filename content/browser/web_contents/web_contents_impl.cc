@@ -174,6 +174,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/browser/webui_config_map.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -11669,6 +11671,19 @@ void WebContentsImpl::UpdateWebContentsVisibility(Visibility visibility) {
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::UpdateWebContentsVisibility",
                         "visibility", visibility);
+
+  // For opt-in WebUIs, the WebContents's visibility will be kept VISIBLE until
+  // the first visually non-empty paint has occurred.
+  // This is an optimization to prevent the occlusion calculation from blocking
+  // the first visually non-empty paint.
+  WebUI* web_ui = GetWebUI();
+  WebUIConfig* webui_config = web_ui ? web_ui->GetWebUIConfig() : nullptr;
+  if (webui_config &&
+      webui_config->ShouldKeepVisibleUntilFirstVisuallyNonEmptyPaint() &&
+      !CompletedFirstVisuallyNonEmptyPaint()) {
+    visibility = Visibility::VISIBLE;
+  }
+
   // Occlusion is disabled when
   // |switches::kDisableBackgroundingOccludedWindowsForTesting| is specified on
   // the command line (to avoid flakiness in browser tests).
