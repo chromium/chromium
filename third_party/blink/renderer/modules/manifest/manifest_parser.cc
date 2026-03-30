@@ -1782,22 +1782,22 @@ HashMap<String, Vector<String>> ManifestParser::ParseFileHandlerAccept(
     }
 
     total_file_handler_extension_count_ += extensions.size();
-    int extension_overflow =
-        total_file_handler_extension_count_ - kExtensionLimit;
-    if (extension_overflow > 0) {
-      auto erase_iter = UNSAFE_TODO(extensions.end() - extension_overflow);
+    if (total_file_handler_extension_count_ > kExtensionLimit) {
+      const wtf_size_t overflow_count =
+          total_file_handler_extension_count_ - kExtensionLimit;
+      const wtf_size_t overflow_index = extensions.size() - overflow_count;
       AddErrorInfo(
           StrCat({"property 'accept': too many total file extensions, ignoring "
                   "extensions starting from \"",
-                  *erase_iter, "\""}));
-      extensions.erase(erase_iter, extensions.end());
+                  extensions[overflow_index], "\""}));
+      extensions.EraseAt(overflow_index, overflow_count);
     }
 
     if (!extensions.empty()) {
       result.Set(mimetype, std::move(extensions));
     }
 
-    if (extension_overflow > 0) {
+    if (total_file_handler_extension_count_ > kExtensionLimit) {
       break;
     }
   }
