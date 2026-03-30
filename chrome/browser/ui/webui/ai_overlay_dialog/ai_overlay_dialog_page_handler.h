@@ -46,26 +46,34 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   // AiOverlayDialogTools:
   void OpenUrl(const std::string& url,
                bool new_tab,
-               base::OnceCallback<void(bool)> callback) override;
-  void PerformSearch(const std::string& query,
-                     bool new_tab,
-                     base::OnceCallback<void(bool)> callback) override;
-  void SwitchTab(const std::string& query,
-                 base::OnceCallback<void(base::DictValue)> callback) override;
-  void CloseCurrentTab(base::OnceCallback<void(bool)> callback) override;
-  void GoBack(base::OnceCallback<void(bool)> callback) override;
-  void GoForward(base::OnceCallback<void(bool)> callback) override;
-  void ReloadPage(base::OnceCallback<void(bool)> callback) override;
+               base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void PerformSearch(
+      const std::string& query,
+      bool new_tab,
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void SwitchTab(
+      const std::string& query,
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void CloseCurrentTab(
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void GoBack(base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void GoForward(
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void ReloadPage(
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
   void FindAndHighlight(
       const std::string& query,
-      base::OnceCallback<void(base::DictValue)> callback) override;
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
   void Scroll(const std::string& direction,
               double magnitude,
-              base::OnceCallback<void(bool)> callback) override;
-  void PlayVideo(base::OnceCallback<void(bool)> callback) override;
-  void PauseVideo(base::OnceCallback<void(bool)> callback) override;
-  void SeekToTimestamp(const std::string& timecode,
-                       base::OnceCallback<void(bool)> callback) override;
+              base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void PlayVideo(
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void PauseVideo(
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
+  void SeekToTimestamp(
+      const std::string& timecode,
+      base::OnceCallback<void(AiOverlayToolResult)> callback) override;
 
  private:
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {
@@ -73,7 +81,7 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
     AnnotationTask(
         mojo::PendingReceiver<blink::mojom::AnnotationAgentHost> host_receiver,
         mojo::Remote<blink::mojom::AnnotationAgent> agent_remote,
-        base::OnceCallback<void(base::DictValue)> callback);
+        base::OnceCallback<void(AiOverlayToolResult)> callback);
     AnnotationTask(const AnnotationTask&) = delete;
     AnnotationTask& operator=(const AnnotationTask&) = delete;
     ~AnnotationTask() override;
@@ -81,12 +89,11 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
     void DidFinishAttachment(
         const gfx::Rect& document_relative_rect,
         blink::mojom::AttachmentResult attachment_result) override;
-    void ScrollIntoView();
 
    private:
     mojo::Receiver<blink::mojom::AnnotationAgentHost> receiver_;
     mojo::Remote<blink::mojom::AnnotationAgent> agent_remote_;
-    base::OnceCallback<void(base::DictValue)> callback_;
+    base::OnceCallback<void(AiOverlayToolResult)> callback_;
   };
 
   void OnAnnotationAgentDisconnected();
