@@ -102,7 +102,6 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kSaveToPhotosIos:
     case AccessPoint::kChromeSigninInterceptBubble:
     case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
-    case AccessPoint::kTabOrganization:
     case AccessPoint::kSaveToDriveIos:
     case AccessPoint::kTipsNotification:
     case AccessPoint::kNotificationsOptInScreenContentToggle:
@@ -646,10 +645,6 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromChromeSigninInterceptBubble"));
       break;
-    case AccessPoint::kTabOrganization:
-      base::RecordAction(
-          base::UserMetricsAction("Signin_Signin_FromTabOrganization"));
-      break;
     case AccessPoint::kTipsNotification:
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromTipsNotification"));
@@ -883,7 +878,6 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kReauthInfoBar:
     case AccessPoint::kAccountConsistencyService:
     case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
-    case AccessPoint::kTabOrganization:
     case AccessPoint::kProfileMenuSignoutConfirmationPrompt:
     case AccessPoint::kSettingsSignoutConfirmationPrompt:
     case AccessPoint::kOidcRedirectionInterception:

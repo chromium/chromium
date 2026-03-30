@@ -238,7 +238,6 @@ void ShowMandatoryReauthOptInPrompt(BrowserWindowInterface* browser);
 void SaveAutofillAddress(BrowserWindowInterface* browser);
 void ShowFilledCardInformationBubble(BrowserWindowInterface* browser);
 void ShowVirtualCardEnrollBubble(BrowserWindowInterface* browser);
-void StartTabOrganizationRequest(BrowserWindowInterface* browser);
 void ShowTranslateBubble(BrowserWindowInterface* bwi);
 void ManagePasswordsForPage(BrowserWindowInterface* bwi);
 bool CanSendTabToSelf(BrowserWindowInterface* bwi);

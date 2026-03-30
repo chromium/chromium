@@ -40,7 +40,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kReadingList,
     AccessPoint::kSetUpList,
     AccessPoint::kChromeSigninInterceptBubble,
-    AccessPoint::kTabOrganization,
     AccessPoint::kNotificationsOptInScreenContentToggle,
     AccessPoint::kAvatarBubbleSignInWithSyncPromo,
     AccessPoint::kProductSpecifications,
@@ -163,8 +162,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "ChromeSigninInterceptBubble";
       case AccessPoint::kRestorePrimaryAccountOnProfileLoad:
         return "RestorePrimaryAccountinfoOnProfileLoad";
-      case AccessPoint::kTabOrganization:
-        return "TabOrganization";
       case AccessPoint::kTipsNotification:
         return "TipsNotification";
       case AccessPoint::kNotificationsOptInScreenContentToggle:

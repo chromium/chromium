@@ -165,7 +165,6 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
     <variant name="Compose"/>
     <variant name="HistorySearch"/>
     <variant name="PasswordChange"/>
-    <variant name="TabOrganization"/>
   </token>
 </histogram>
 

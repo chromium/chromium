@@ -777,7 +777,7 @@ should be able to be added at any place in this file.
   <variant name="_TabGroupsYourTabsTogether"
       summary="For tab switcher with tab groups."/>
   <variant name="_TabOrganizationSuccess"
-      summary="For the tab organization feature."/>
+      summary="For the tab organization feature. (obsolete)"/>
   <variant name="_TabPinnedFeature" summary="For tab pinned overflow hint."/>
   <variant name="_TabSearch" summary="For the tab search feature."/>
   <variant name="_TabSearchComboButton"
@@ -923,7 +923,7 @@ should be able to be added at any place in this file.
   <variant name=".SyncAccountSettings"
       summary="Wallet integration in Autofill"/>
   <variant name=".TabGroupsSync" summary="Tab Groups Sync (obsolete)"/>
-  <variant name=".TabOrganizer" summary="Tab Organizer"/>
+  <variant name=".TabOrganizer" summary="Tab Organizer (obsolete)"/>
   <variant name=".TestDefaultModule" summary="Test default module"/>
   <variant name=".TestModule" summary="Test module"/>
   <variant name=".ToolbarPinning" summary="Toolbar Pinning"/>
@@ -41148,6 +41148,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.TabOrganization.LearnMoreClicked">
+  <obsolete>Deprecated 03/2026. Tab organization page was removed.</obsolete>
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -41158,6 +41159,9 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Settings.AiPage.TabOrganizationEntryPointClick">
+  <obsolete>
+    Deprecated 03/2026. Tab organization settings row was removed.
+  </obsolete>
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
@@ -46496,6 +46500,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Signin_Signin_FromTabOrganization">
+  <obsolete>No longer recorded.</obsolete>
   <owner>emshack@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <description>

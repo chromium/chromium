@@ -611,14 +611,6 @@ inline constexpr char kWallpaperSearchLearnMorePageURL[] =
 inline constexpr char kWalletPassesPageURL[] =
     "https://wallet.google.com/wallet/passes";
 
-// The URL for the "Learn more" page for Tab Organization.
-inline constexpr char kTabOrganizationLearnMorePageURL[] =
-    "https://support.google.com/chrome?p=auto_tab_group";
-
-// The URL for the "Learn more" page for Tab Organization for managed users.
-inline constexpr char kTabOrganizationLearnMorePageManagedURL[] =
-    "https://support.google.com/chrome/a?p=tab_organizer_settings";
-
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
 inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =

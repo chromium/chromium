@@ -55,8 +55,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SideBySideLinkMenuNewBadge"
       summary="Promotion for Split View in the render view context menu when
                right clicking a link."/>
-  <variant name="TabOrganization"
-      summary="Promotion for Organize Tabs in the app menu."/>
   <variant name="TabstripDeclutter"
       summary="Promotion for Close Unused Tabs in the app menu."/>
   <variant name="VerticalTabsNewBadge"
@@ -153,7 +151,8 @@ chromium-metrics-reviews@google.com.
       summary="the module for Wallet integration in Autofill"/>
   <variant name="TabGroupsSync"
       summary="the module for Tab Groups that Sync (obsolete)"/>
-  <variant name="TabOrganizer" summary="the module for Tab Organizer"/>
+  <variant name="TabOrganizer"
+      summary="the module for Tab Organizer (obsolete)"/>
   <variant name="TestDefaultModule"
       summary="the default module used for testing only"/>
   <variant name="TestModule" summary="the module used for testing only"/>

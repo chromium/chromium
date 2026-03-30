@@ -235,7 +235,7 @@ enum class AccessPoint : int {
   // Restore primary account info in case it was lost.
   kRestorePrimaryAccountOnProfileLoad = 55,
   // Access point for the tab organization UI within the tab search bubble.
-  kTabOrganization = 56,
+  // kTabOrganization = 56, no longer used.
   // Access point for the Save to Drive feature on iOS.
   kSaveToDriveIos = 57,
   // Access point for the Tips Notification on iOS.

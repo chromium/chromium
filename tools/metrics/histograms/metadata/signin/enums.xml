@@ -932,7 +932,7 @@ chromium-metrics-reviews@google.com.
   <int value="53" label="Save to photos (iOS only)"/>
   <int value="54" label="Chrome Sign-in intercept bubble."/>
   <int value="55" label="Restore primary account on profile load"/>
-  <int value="56" label="Tab organization"/>
+  <int value="56" label="(obsolete) Tab organization"/>
   <int value="57" label="Save to Drive (iOS only)"/>
   <int value="58" label="Tips Notification on (iOS only)"/>
   <int value="59" label="Notifications Opt-In Screen Content Toggle"/>
