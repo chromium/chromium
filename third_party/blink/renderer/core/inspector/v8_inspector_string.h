@@ -47,13 +47,13 @@ class CORE_EXPORT StringUtil {
   static const uint8_t* CharactersLatin1(const String& s) {
     if (!s.Is8Bit())
       return nullptr;
-    return UNSAFE_TODO(s.Characters8());
+    return s.Span8().data();
   }
   static const uint8_t* CharactersUTF8(const String& s) { return nullptr; }
   static const uint16_t* CharactersUTF16(const String& s) {
     if (s.Is8Bit())
       return nullptr;
-    return reinterpret_cast<const uint16_t*>(UNSAFE_TODO(s.Characters16()));
+    return s.SpanUint16().data();
   }
   static size_t CharacterCount(const String& s) { return s.length(); }
 };

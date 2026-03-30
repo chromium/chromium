@@ -189,16 +189,6 @@ class WTF_EXPORT StringImpl {
     return hash_and_flags_.load(std::memory_order_relaxed) & kIs8Bit;
   }
 
-  // Use Span8() instead.
-  UNSAFE_BUFFER_USAGE ALWAYS_INLINE const LChar* Characters8() const {
-    DCHECK(Is8Bit());
-    return reinterpret_cast<const LChar*>(this + 1);
-  }
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE ALWAYS_INLINE const UChar* Characters16() const {
-    DCHECK(!Is8Bit());
-    return reinterpret_cast<const UChar*>(this + 1);
-  }
   ALWAYS_INLINE base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
     return CharacterBuffer<LChar>();
@@ -420,9 +410,9 @@ class WTF_EXPORT StringImpl {
     // SAFETY: It's safe when i < length.
     UNSAFE_BUFFERS({
       if (Is8Bit()) {
-        return Characters8()[i];
+        return reinterpret_cast<const LChar*>(this + 1)[i];
       }
-      return Characters16()[i];
+      return reinterpret_cast<const UChar*>(this + 1)[i];
     });
   }
   UChar32 CodePointAtOrZero(size_type);

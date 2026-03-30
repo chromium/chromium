@@ -837,7 +837,7 @@ TEST_P(ParkableStringTest, ShouldPark) {
 
 TEST_P(ParkableStringTest, AsanPoisoningTest) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
-  const LChar* data = UNSAFE_TODO(parkable.ToString().Characters8());
+  const LChar* data = parkable.ToString().Span8().data();
   EXPECT_TRUE(ParkAndWait(parkable));
   UNSAFE_TODO(EXPECT_ASAN_DEATH(EXPECT_NE(0, data[10]), ""));
 }

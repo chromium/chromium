@@ -287,7 +287,8 @@ class WTF_EXPORT String {
   StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
 
-  // Prefer Span8() and Span16() to Characters8() and Characters16().
+  // Returns an LChar span of the underlying representation of the string.
+  // This function must only be called on 8-bit strings.
   base::span<const LChar> Span8() const {
     if (!impl_)
       return {};
@@ -295,6 +296,8 @@ class WTF_EXPORT String {
     return impl_->Span8();
   }
 
+  // Returns an UChar span of the underlying representation of the string.
+  // This function must only be called on 16-bit strings.
   base::span<const UChar> Span16() const {
     if (!impl_)
       return {};
@@ -302,6 +305,8 @@ class WTF_EXPORT String {
     return impl_->Span16();
   }
 
+  // Returns a uint16_t span of the underlying representation of the string.
+  // This function must only be called on 16-bit strings.
   base::span<const uint16_t> SpanUint16() const {
     if (!impl_) {
       return {};
@@ -318,22 +323,6 @@ class WTF_EXPORT String {
       return {};
     }
     return impl_->RawByteSpan();
-  }
-
-  // Use Span8() instead.
-  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
-    if (!impl_)
-      return nullptr;
-    DCHECK(impl_->Is8Bit());
-    return impl_->Characters8();
-  }
-
-  // Use Span16() instead.
-  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
-    if (!impl_)
-      return nullptr;
-    DCHECK(!impl_->Is8Bit());
-    return impl_->Characters16();
   }
 
   [[nodiscard]] std::string Ascii() const;
