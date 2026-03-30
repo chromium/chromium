@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 
@@ -20,13 +21,14 @@ namespace ui {
 // accessibility APIs like IAccessible2. Search forwards or backwards
 // (depending on |direction|) from the given |start_offset| until the
 // given boundary is found, and return the offset of that boundary,
-// using the vector of line break character offsets in |line_breaks|.
-AX_EXPORT size_t FindAccessibleTextBoundary(const std::u16string_view text,
-                                            const std::vector<int>& line_breaks,
-                                            ax::mojom::TextBoundary boundary,
-                                            size_t start_offset,
-                                            ax::mojom::MoveDirection direction,
-                                            ax::mojom::TextAffinity affinity);
+// using the line start offsets in |line_start_offsets|.
+AX_EXPORT size_t
+FindAccessibleTextBoundary(std::u16string_view text,
+                           base::span<const int> line_start_offsets,
+                           ax::mojom::TextBoundary boundary,
+                           size_t start_offset,
+                           ax::mojom::MoveDirection direction,
+                           ax::mojom::TextAffinity affinity);
 
 // Returns a string ID that corresponds to the name of the given action.
 AX_EXPORT std::u16string ActionVerbToLocalizedString(

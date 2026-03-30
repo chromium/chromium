@@ -44,11 +44,8 @@ base::i18n::BreakIterator::BreakType ICUBreakTypeForBoundaryType(
 
 }  // namespace
 
-// line_breaks is a Misnomer. Blink provides the start offsets of each line
-// not the line breaks.
-// TODO(nektar): Rename line_breaks a11y attribute and variable references.
-size_t FindAccessibleTextBoundary(const std::u16string_view text,
-                                  const std::vector<int>& line_breaks,
+size_t FindAccessibleTextBoundary(std::u16string_view text,
+                                  base::span<const int> line_start_offsets,
                                   ax::mojom::TextBoundary boundary,
                                   size_t start_offset,
                                   ax::mojom::MoveDirection direction,
@@ -71,25 +68,26 @@ size_t FindAccessibleTextBoundary(const std::u16string_view text,
 
   if (boundary == ax::mojom::TextBoundary::kLineStart) {
     if (direction == ax::mojom::MoveDirection::kForward) {
-      for (int line_break : line_breaks) {
-        size_t clamped_line_break =
-            static_cast<size_t>(std::max(0, line_break));
+      for (int line_start : line_start_offsets) {
+        size_t clamped_line_start =
+            static_cast<size_t>(std::max(0, line_start));
         if ((affinity == ax::mojom::TextAffinity::kDownstream &&
-             clamped_line_break > start_offset) ||
+             clamped_line_start > start_offset) ||
             (affinity == ax::mojom::TextAffinity::kUpstream &&
-             clamped_line_break >= start_offset)) {
-          return clamped_line_break;
+             clamped_line_start >= start_offset)) {
+          return clamped_line_start;
         }
       }
       return text_size;
     } else {
-      for (size_t j = line_breaks.size(); j != 0; --j) {
-        size_t line_break = line_breaks[j - 1] >= 0 ? line_breaks[j - 1] : 0;
+      for (size_t j = line_start_offsets.size(); j != 0; --j) {
+        size_t line_start =
+            line_start_offsets[j - 1] >= 0 ? line_start_offsets[j - 1] : 0;
         if ((affinity == ax::mojom::TextAffinity::kDownstream &&
-             line_break <= start_offset) ||
+             line_start <= start_offset) ||
             (affinity == ax::mojom::TextAffinity::kUpstream &&
-             line_break < start_offset)) {
-          return line_break;
+             line_start < start_offset)) {
+          return line_start;
         }
       }
       return 0;
