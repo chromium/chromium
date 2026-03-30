@@ -201,8 +201,7 @@
                   completion:
                       (void (^)(SearchInChromeIntentResponse*))completion {
   NSUserActivity* activity = [[NSUserActivity alloc]
-      initWithActivityType:NSStringFromClass(
-                               [SearchInChromeIntentResponse class])];
+      initWithActivityType:NSStringFromClass([intent class])];
 
   SearchInChromeIntentResponse* response = [[SearchInChromeIntentResponse alloc]
       initWithCode:SearchInChromeIntentResponseCodeContinueInApp
