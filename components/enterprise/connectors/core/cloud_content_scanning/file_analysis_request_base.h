@@ -118,6 +118,9 @@ class FileAnalysisRequestBase : public BinaryUploadRequest {
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Used to CHECK at most one register_on_got_hash_callback_ is called last.
+  bool register_cb_called_last = false;
+
   scoped_refptr<safe_browsing::FileOpeningJob> file_opening_job_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 

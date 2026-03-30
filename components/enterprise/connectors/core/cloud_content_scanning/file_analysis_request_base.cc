@@ -262,7 +262,7 @@ FileAnalysisRequestBase::~FileAnalysisRequestBase() {
   // If the object is going to be gone but there are still callbacks waiting for
   // hash, let them know some error occurred.
   if (!hash_notify_callbacks_.empty()) {
-    OnGotHash(std::string());
+    OnGotHash(cached_data_.hash);
   }
 }
 
@@ -330,9 +330,9 @@ void FileAnalysisRequestBase::RegisterOnGotHashCallback(
        enterprise_connectors::ScanRequestUploadResult::kUnknown)) {
     std::move(callback).Run(cached_data_.hash);
   } else {
-    // TODO(alxchn): Test that call_last will only be ever called once through
-    // an upload.
     if (call_last) {
+      CHECK(!register_cb_called_last);
+      register_cb_called_last = true;
       hash_notify_callbacks_.push_back(std::move(callback));
     } else {
       hash_notify_callbacks_.push_front(std::move(callback));
@@ -375,7 +375,9 @@ void FileAnalysisRequestBase::OnGotFileData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   scoped_file_access_.reset();
-  file_opening_job_.reset();
+  if (!register_on_got_hash_callback_) {
+    file_opening_job_.reset();
+  }
   if (result_and_data.first != ScanRequestUploadResult::kSuccess) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
