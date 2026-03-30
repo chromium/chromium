@@ -103,33 +103,11 @@ suite('AppTest', function() {
     });
 
     test('ContextMenuEntrypointHiddenWhenDisabled', async () => {
-      testProxy.page.updateAimEligibility(false);
+      testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
       const contextualEntrypoint = localApp.shadowRoot?.querySelector(
           'cr-composebox-contextual-entrypoint-button');
       assertFalse(!!contextualEntrypoint);
-    });
-
-    test('AiModePrefUpdatesContextualEntrypointVisibility', async () => {
-      let contextualEntrypoint = localApp.shadowRoot?.querySelector(
-          'cr-composebox-contextual-entrypoint-button');
-      assertTrue(!!contextualEntrypoint);
-      assertTrue(isVisible(contextualEntrypoint));
-
-      // Disable AI Mode Shortcuts.
-      testProxy.page.onShowAiModePrefChanged(false);
-      await microtasksFinished();
-      contextualEntrypoint = localApp.shadowRoot?.querySelector(
-          'cr-composebox-contextual-entrypoint-button');
-      assertFalse(!!contextualEntrypoint);
-
-      // Enable AI Mode Shortcuts.
-      testProxy.page.onShowAiModePrefChanged(true);
-      await microtasksFinished();
-      contextualEntrypoint = localApp.shadowRoot?.querySelector(
-          'cr-composebox-contextual-entrypoint-button');
-      assertTrue(!!contextualEntrypoint);
-      assertTrue(isVisible(contextualEntrypoint));
     });
 
     test('KeywordModeUpdatesContextualEntrypointVisibility', async () => {
@@ -213,9 +191,6 @@ suite('AppTest', function() {
     setup(async () => {
       // Use setup instead of suiteSetup to ensure a clean state for each test.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      loadTimeData.overrideValues({
-        omniboxAimPopupEnabled: true,
-      });
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
 
@@ -224,19 +199,19 @@ suite('AppTest', function() {
     });
 
     test('AimEligibility', async () => {
-      testProxy.page.updateAimEligibility(false);
+      testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
       let contextualEntrypoint = localApp.shadowRoot?.querySelector(
           'cr-composebox-contextual-entrypoint-button');
       assertFalse(isVisible(contextualEntrypoint));
 
-      testProxy.page.updateAimEligibility(true);
+      testProxy.page.updateAimPopupEligibility(true);
       await microtasksFinished();
       contextualEntrypoint = localApp.shadowRoot?.querySelector(
           'cr-composebox-contextual-entrypoint-button');
       assertTrue(isVisible(contextualEntrypoint));
 
-      testProxy.page.updateAimEligibility(false);
+      testProxy.page.updateAimPopupEligibility(false);
       await microtasksFinished();
       contextualEntrypoint = localApp.shadowRoot?.querySelector(
           'cr-composebox-contextual-entrypoint-button');
