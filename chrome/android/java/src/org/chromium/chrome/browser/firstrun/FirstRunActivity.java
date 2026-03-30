@@ -184,6 +184,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         void onExitFirstRun(FirstRunActivity caller);
     }
 
+    private static final String KEY_LAST_PAGER_INDEX = "LAST_PAGER_INDEX";
+    private static final String KEY_PROMO_DIALOG_TRIGGERED =
+            "DEFAULT_BROWSER_ROLE_MANAGER_DIALOG_TRIGGERED";
+
     private static final int TRANSITION_DELAY_MS = 450;
 
     private final BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
@@ -231,8 +235,33 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /** The pager adapter, which provides the pages to the view pager widget. */
     private FirstRunPagerAdapter mPagerAdapter;
 
+    /** Tracks if the role manager dialog has been shown in default browser promo. */
+    private boolean mPromoRoleManagerDialogTriggered;
+
     private boolean isFlowKnown() {
         return mFreProperties != null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+            // Called by Android right before the First Run Activity is destroyed (toggle dark mode,
+            // etc.). Before activity recreation, store which page the user was looking at.
+            outState.putInt(KEY_LAST_PAGER_INDEX, mPager.getCurrentItem());
+            outState.putBoolean(KEY_PROMO_DIALOG_TRIGGERED, mPromoRoleManagerDialogTriggered);
+        }
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public boolean getPromoRoleManagerDialogTriggered() {
+        return mPromoRoleManagerDialogTriggered;
+    }
+
+    @Override
+    public void setPromoRoleManagerDialogTriggered(boolean val) {
+        mPromoRoleManagerDialogTriggered = val;
     }
 
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
@@ -291,9 +320,24 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mPages.add(new FirstRunPage<>(HistorySyncFirstRunFragment.class, showHistorySync));
         mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
 
+        // TODO(crbug.com/486749302): Confirm if cached feature flags are reliable in FRE.
         if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+            int promoIndex = mPages.size();
             BooleanSupplier showDefaultBrowserPromo =
                     () -> {
+                        // When FRA gets destroyed and recreated (due to a theme change, etc.),
+                        // ViewPager2 gets temporarily reset (index is at 0 again) and the page
+                        // sequence is rebuilt. If the default browser promo fragment was showing
+                        // previously, it should be allowed to show again even though
+                        // #shouldShowRoleManagerPromoForFre will return false if the Role Manager
+                        // Dialog (RMD) was just shown. If RMD was showing, Android will
+                        // automatically re-display it after the recreation.
+                        Bundle savedState = getSavedInstanceState();
+                        if (savedState != null
+                                && savedState.getInt(KEY_LAST_PAGER_INDEX, -1) == promoIndex) {
+                            return true;
+                        }
+
                         // Skip CCT.
                         if (isLaunchedFromCct()) return false;
 
@@ -702,6 +746,18 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     /** Initialize local state from launch intent and from saved instance state. */
     private void initializeStateFromLaunchData() {
+        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+            // When a configuration change (like a theme toggle) occurs, the FirstRunActivity
+            // instance is destroyed and recreated. We restore the saved state from the previous
+            // instance's Bundle to ensure the user's progress in the FRE flow is preserved.
+            Bundle savedState = getSavedInstanceState();
+
+            if (savedState != null) {
+                mPromoRoleManagerDialogTriggered =
+                        savedState.getBoolean(KEY_PROMO_DIALOG_TRIGGERED, false);
+            }
+        }
+
         if (getIntent() != null) {
             mLaunchedFromChromeIcon =
                     getIntent().getBooleanExtra(EXTRA_COMING_FROM_CHROME_ICON, false);

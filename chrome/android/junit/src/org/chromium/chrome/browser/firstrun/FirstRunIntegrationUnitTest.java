@@ -308,4 +308,29 @@ public final class FirstRunIntegrationUnitTest {
         Activity firstRunActivity = createActivity(FirstRunActivity.class, new Intent());
         Assert.assertEquals(Color.BLACK, firstRunActivity.getWindow().getStatusBarColor());
     }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+    public void testDefaultBrowserPromoStatePersistence() {
+        FirstRunActivity activity =
+                (FirstRunActivity) createActivity(FirstRunActivity.class, new Intent());
+
+        // Initialize mPager.
+        activity.setContentView(activity.createContentView());
+
+        activity.setPromoRoleManagerDialogTriggered(true);
+
+        Assert.assertTrue(
+                "Getter failed for RMD shown", activity.getPromoRoleManagerDialogTriggered());
+
+        Bundle outState = new Bundle();
+        activity.onSaveInstanceState(outState);
+
+        Assert.assertTrue(
+                "onSaveInstanceState failed to save RMD state",
+                outState.getBoolean("DEFAULT_BROWSER_ROLE_MANAGER_DIALOG_TRIGGERED"));
+
+        Assert.assertEquals(
+                "Pager index should be saved", 0, outState.getInt("LAST_PAGER_INDEX", -1));
+    }
 }

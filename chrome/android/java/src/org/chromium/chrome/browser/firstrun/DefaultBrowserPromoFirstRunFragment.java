@@ -17,6 +17,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
 import org.chromium.build.annotations.NullMarked;
@@ -29,42 +31,74 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 @NullMarked
 public class DefaultBrowserPromoFirstRunFragment extends Fragment implements FirstRunFragment {
 
     // If we are not triggering the RMD, use a small delay (500ms) that is greater than 450ms
     // (TRANSITION_DELAY_MS).
     private static final int ADVANCE_TO_NEXT_PAGE_DELAY_MS = 500;
-    private static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
-    private static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
-    private static final String PRIMER_PROMOTIONAL_TEXT = "primer_promotional_text";
 
-    // To avoid redundant triggers occurring via onResume.
-    private boolean mHasTriggered;
+    static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
+    static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
+    static final String PRIMER_PROMOTIONAL_TEXT = "primer_promotional_text";
+
+    // Checks whether the Role Manager Dialog (RMD) has been shown. This local state is synchronized
+    // with the {@link FirstRunPageDelegate} to survive Fragment recreation.
+    @VisibleForTesting boolean mDialogHasTriggered;
+
+    @IntDef({
+        BehaviorType.RMD_DIRECT_INVOCATION,
+        BehaviorType.PRIMER_NO_INSTRUCTIONS,
+        BehaviorType.PRIMER_PROMOTIONAL_TEXT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BehaviorType {
+        int RMD_DIRECT_INVOCATION = 0;
+        int PRIMER_NO_INSTRUCTIONS = 1;
+        int PRIMER_PROMOTIONAL_TEXT = 2;
+    }
+
+    // TODO(https://crbug.com/494974037): Move the BehaviorType, InDef, and the selection logic into
+    // a dedicated helper class.
+    private @BehaviorType int getBehaviorType() {
+        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
+        if (PRIMER_NO_INSTRUCTIONS.equals(arm)) return BehaviorType.PRIMER_NO_INSTRUCTIONS;
+        if (PRIMER_PROMOTIONAL_TEXT.equals(arm)) return BehaviorType.PRIMER_PROMOTIONAL_TEXT;
+        // rmd_direct_invocation.
+        return BehaviorType.RMD_DIRECT_INVOCATION;
+    }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        // onResume -> Trigger RMD -> Call onResume the 2nd time to advance to the next page.
-        if (mHasTriggered) {
+        mDialogHasTriggered = assumeNonNull(getPageDelegate()).getPromoRoleManagerDialogTriggered();
+
+        // onResume -> Trigger RMD -> the user finishes the RMD and the OS returns focus to Chrome
+        // -> onResume is triggered the 2nd time -> advance to the next page.
+        if (mDialogHasTriggered) {
             assumeNonNull(getPageDelegate()).advanceToNextPage();
             return;
         }
 
-        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
         // Arm 1: Directly call the RMD without primers.
-        if (RMD_DIRECT_INVOCATION.equals(arm)) {
+        if (getBehaviorType() == BehaviorType.RMD_DIRECT_INVOCATION) {
             triggerRoleManagerDialog();
         }
         // Arm 2: Waits for the user to tap the CPA in the primer.
     }
 
     private void triggerRoleManagerDialog() {
-        assert !mHasTriggered : "triggerRoleManagerDialog should only be called once.";
-        mHasTriggered = true;
-
+        mDialogHasTriggered = true;
         FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
+
+        assert !delegate.getPromoRoleManagerDialogTriggered()
+                : "Role Manager Dialog should only be shown once.";
+        delegate.setPromoRoleManagerDialogTriggered(true);
+
         // Get the standard, non-incognito user profile.
         var profileProvider = assumeNonNull(delegate.getProfileProviderSupplier().get());
         Profile profile = profileProvider.getOriginalProfile();
@@ -99,12 +133,12 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
 
         FrameLayout rootView = new FrameLayout(getActivity());
 
-        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
-
         // Arm 1 (RMD_DIRECT_INVOCATION) : we return an empty FrameLayout and let onResume handle
         // the dialog.
         // Arm 2 (PRIMER_NO_INSTRUCTIONS) or arm 3 (PRIMER_PROMOTIONAL_TEXT): show the primer.
-        if (PRIMER_NO_INSTRUCTIONS.equals(arm) || PRIMER_PROMOTIONAL_TEXT.equals(arm)) {
+        @BehaviorType int armType = getBehaviorType();
+        if (armType == BehaviorType.PRIMER_NO_INSTRUCTIONS
+                || armType == BehaviorType.PRIMER_PROMOTIONAL_TEXT) {
             updateView(inflater, rootView);
         }
         return rootView;
@@ -118,9 +152,10 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
             // Remove the old view (e.g. the portrait/landscape version) that's still physically
             // inside the FrameLayout.
             rootView.removeAllViews();
-            String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
             // We don't call updateView for arm 1 since the fragment is just a blank page.
-            if (PRIMER_NO_INSTRUCTIONS.equals(arm) || PRIMER_PROMOTIONAL_TEXT.equals(arm)) {
+            @BehaviorType int armType = getBehaviorType();
+            if (armType == BehaviorType.PRIMER_NO_INSTRUCTIONS
+                    || armType == BehaviorType.PRIMER_PROMOTIONAL_TEXT) {
                 updateView(getLayoutInflater(), rootView);
             }
         }
@@ -143,10 +178,8 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
         // Manually add it to the FrameLayout wrapper.
         container.addView(view);
 
-        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
-
         // UI adjustments for arm 3.
-        if (PRIMER_PROMOTIONAL_TEXT.equals(arm)) {
+        if (getBehaviorType() == BehaviorType.PRIMER_PROMOTIONAL_TEXT) {
             ((TextView) view.findViewById(R.id.title)).setText(R.string.get_the_most_out_of_chrome);
             view.findViewById(R.id.subtitle).setVisibility(View.GONE);
             view.getContinueButtonView().setText(R.string.set_chrome_as_your_default);
@@ -237,8 +270,7 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
     @Override
     public void setInitialA11yFocus() {
         // Arm 1 doesn't have a dedicated primer, so it won't come with a R.id.title.
-        String arm = ChromeFeatureList.sDefaultBrowserPromoFreArm.getValue();
-        if (RMD_DIRECT_INVOCATION.equals(arm)) return;
+        if (getBehaviorType() == BehaviorType.RMD_DIRECT_INVOCATION) return;
 
         if (getView() == null) return;
         getView()

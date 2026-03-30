@@ -6,15 +6,20 @@ package org.chromium.chrome.browser.firstrun;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.testing.FragmentScenario;
 
 import org.junit.After;
@@ -30,6 +35,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -73,9 +79,6 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
     private FragmentScenario<CustomDefaultBrowserPromoFirstRunFragment> mScenario;
 
-    private static final String RMD_DIRECT_INVOCATION = "rmd_direct_invocation";
-    private static final String PRIMER_NO_INSTRUCTIONS = "primer_no_instructions";
-
     @Before
     public void setUp() {
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockUtils);
@@ -96,43 +99,56 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
         }
     }
 
-    @Test
-    public void testOnResume_DirectInvocationArm_TriggersRMDOnceThenAdvancesToNextPage() {
-        // Set the arm to something else so the first onResume called via launchInContainer does
-        // nothing.
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting("none");
+    private void launchFragment(String armValue) {
+        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(armValue);
 
         // LaunchInContainer creates a minimal activity and attaches our fragment to it and
         // moves the fragment through all the lifecycles (onAttach -> onCreate -> onCreateView ->
         // onResume).
         mScenario =
-                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+                FragmentScenario.launchInContainer(
+                        CustomDefaultBrowserPromoFirstRunFragment.class,
+                        Bundle.EMPTY,
+                        R.style.Theme_MaterialComponents,
+                        new FragmentFactory() {
+                            @NonNull
+                            @Override
+                            public Fragment instantiate(
+                                    @NonNull ClassLoader classLoader, @NonNull String className) {
+                                CustomDefaultBrowserPromoFirstRunFragment fragment =
+                                        new CustomDefaultBrowserPromoFirstRunFragment();
+                                // setPageDelegate before onResume is called to avoid
+                                // NullPointerErrors.
+                                fragment.setPageDelegate(mMockDelegate);
+                                return fragment;
+                            }
+                        });
+    }
 
-        // The perform() action is called as soon as the Fragment is ready and in the RESUMED
-        // state.
+    @Test
+    public void testOnResume_DirectInvocationArm_TriggersRMDOnceThenAdvancesToNextPage() {
+        when(mMockUtils.prepareLaunchPromoIfNeeded(
+                        any(),
+                        eq(mMockWindow),
+                        eq(mMockTracker),
+                        eq(DefaultBrowserPromoEntryPoint.FRE)))
+                .thenReturn(true);
+
+        when(mMockDelegate.getPromoRoleManagerDialogTriggered())
+                // For the first onResume (RMD direct invocation).
+                .thenReturn(false)
+                // Inside triggerRoleManagerDialog called from that onResume call.
+                .thenReturn(false)
+                // For the second onResume when the RMD is dismissed.
+                .thenReturn(true);
+
+        launchFragment(DefaultBrowserPromoFirstRunFragment.RMD_DIRECT_INVOCATION);
+
         mScenario.onFragment(
                 fragment -> {
-                    fragment.setPageDelegate(mMockDelegate);
-
-                    // Now that we set the delegate, we know it won't be null so we can set the arm
-                    // to the correct value.
-                    ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
-                            RMD_DIRECT_INVOCATION);
-
                     Activity activity = fragment.getActivity();
 
-                    when(mMockUtils.prepareLaunchPromoIfNeeded(
-                                    activity,
-                                    mMockWindow,
-                                    mMockTracker,
-                                    DefaultBrowserPromoEntryPoint.FRE))
-                            .thenReturn(true);
-
-                    // First onResume: Manually re-trigger to simulate entering the fragment and
-                    // showing the RMD.
-                    fragment.onResume();
-
-                    // The RMD should have been triggered once.
+                    // Verify RMD was triggered.
                     verify(mMockUtils, times(1))
                             .prepareLaunchPromoIfNeeded(
                                     activity,
@@ -143,52 +159,50 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
                     // Verify we haven't advanced yet.
                     verify(mMockDelegate, never()).advanceToNextPage();
 
-                    // 2. Second onResume: Simulate the user returning from the Role Manager Dialog.
+                    // Second onResume: Simulate the user returning from the Role Manager Dialog.
                     fragment.onResume();
 
-                    // Verify that because mHasTriggered is now true, we now advance.
+                    // Verify that because mDialogHasTriggered is now true, we now advance.
                     verify(mMockDelegate, times(1)).advanceToNextPage();
                 });
     }
 
     @Test(expected = AssertionError.class)
     public void testOnResume_RmdNotTriggered_ThrowsAssertionError() {
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting("none");
-        mScenario =
-                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+        // Set didTrigger to false.
+        when(mMockUtils.prepareLaunchPromoIfNeeded(
+                        any(),
+                        eq(mMockWindow),
+                        eq(mMockTracker),
+                        eq(DefaultBrowserPromoEntryPoint.FRE)))
+                .thenReturn(false);
 
-        mScenario.onFragment(
-                fragment -> {
-                    fragment.setPageDelegate(mMockDelegate);
-                    ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
-                            RMD_DIRECT_INVOCATION);
-
-                    Activity activity = fragment.getActivity();
-
-                    // Set didTrigger to false.
-                    when(mMockUtils.prepareLaunchPromoIfNeeded(
-                                    activity,
-                                    mMockWindow,
-                                    mMockTracker,
-                                    DefaultBrowserPromoEntryPoint.FRE))
-                            .thenReturn(false);
-
-                    // This call will hit 'assert false' and throw an AssertionError.
-                    fragment.onResume();
-                });
+        // This call will hit 'assert false' and throw an AssertionError.
+        launchFragment(DefaultBrowserPromoFirstRunFragment.RMD_DIRECT_INVOCATION);
     }
 
     @Test
     public void testArm2_InflatesPrimer_AndContinueTriggersRMD() {
-        // Set to arm 2.
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(PRIMER_NO_INSTRUCTIONS);
+        // Mock the RMD trigger to be successful.
+        when(mMockUtils.prepareLaunchPromoIfNeeded(
+                        any(),
+                        eq(mMockWindow),
+                        eq(mMockTracker),
+                        eq(DefaultBrowserPromoEntryPoint.FRE)))
+                .thenReturn(true);
 
-        mScenario =
-                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+        when(mMockDelegate.getPromoRoleManagerDialogTriggered())
+                // For the first onResume (when the primer is shown).
+                .thenReturn(false)
+                // Inside triggerRoleManagerDialog called by the button click.
+                .thenReturn(false)
+                // For the second onResume when the RMD is dismissed.
+                .thenReturn(true);
+
+        launchFragment(DefaultBrowserPromoFirstRunFragment.PRIMER_NO_INSTRUCTIONS);
 
         mScenario.onFragment(
                 fragment -> {
-                    fragment.setPageDelegate(mMockDelegate);
                     Activity activity = fragment.getActivity();
 
                     // Verify UI is inflated.
@@ -201,14 +215,6 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
                     DefaultBrowserPromoFirstRunView primerView =
                             (DefaultBrowserPromoFirstRunView) root.getChildAt(0);
                     View continueButton = primerView.getContinueButtonView();
-
-                    // Mock the RMD trigger to be successful.
-                    when(mMockUtils.prepareLaunchPromoIfNeeded(
-                                    activity,
-                                    mMockWindow,
-                                    mMockTracker,
-                                    DefaultBrowserPromoEntryPoint.FRE))
-                            .thenReturn(true);
 
                     // Click the Continue button.
                     continueButton.performClick();
@@ -234,26 +240,11 @@ public class DefaultBrowserPromoFirstRunFragmentTest {
 
     @Test
     public void testArm2_DismissButton_AdvancesToNextPage() {
-        // Set arm to "none" so initial onCreateView doesn't call updateView (which calls
-        // getPageDelegate).
-        ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting("none");
-
-        // launchInContainer runs a full lifecycle immediately.
-        mScenario =
-                FragmentScenario.launchInContainer(CustomDefaultBrowserPromoFirstRunFragment.class);
+        launchFragment(DefaultBrowserPromoFirstRunFragment.PRIMER_NO_INSTRUCTIONS);
 
         mScenario.onFragment(
                 fragment -> {
-                    fragment.setPageDelegate(mMockDelegate);
-                    // Now set the real arm since we set the mock delegate.
-                    ChromeFeatureList.sDefaultBrowserPromoFreArm.setForTesting(
-                            PRIMER_NO_INSTRUCTIONS);
-
-                    // onConfigurationChanged calls rootView.removeAllViews() and then updateView.
-                    // By calling updateView manually, we force the fragment to actually inflate the
-                    // layout.
-                    fragment.onConfigurationChanged(fragment.getResources().getConfiguration());
-
+                    // #launchFragment should have inflated the layout.
                     FrameLayout root = (FrameLayout) fragment.getView();
                     DefaultBrowserPromoFirstRunView primerView =
                             (DefaultBrowserPromoFirstRunView) root.getChildAt(0);
