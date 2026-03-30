@@ -720,8 +720,16 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   } else {
     DCHECK(IsMainThread());
 
-    // Allow focus if the request is coming from our opener window.
-    allow_focus = opener() && opener() != this && incumbent_window == opener();
+    if (incumbent_window == this) {
+      // Allow self-focus requests if the frame has appropriate privilege.
+      allow_focus =
+          originating_frame && originating_frame->GetSettings() &&
+          originating_frame->GetSettings()->GetAllowUnrestrictedWindowFocus();
+    } else {
+      // Allow focus if the request is coming from our opener window.
+      allow_focus =
+          opener() && opener() != this && incumbent_window == opener();
+    }
 
     // Also allow focus from a user activation on a document picture-in-picture
     // window opened by this window. In this case, we determine the originating

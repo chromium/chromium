@@ -31,18 +31,29 @@ content::RenderFrameHost* GetMainFrame(const Browser& browser) {
   return web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
 }
 
-bool WaitForFocusedFrame(content::RenderFrameHost& frame) {
-  return base::test::RunUntil([&frame]() -> bool {
-    content::RenderWidgetHostView* view = frame.GetView();
-    // Ensure the view exists before checking if it has focus.
+bool WaitForMainFrameToFocus(Browser* browser) {
+  return base::test::RunUntil([browser]() -> bool {
+    content::RenderFrameHost* frame = GetMainFrame(*browser);
+    if (!frame) {
+      return false;
+    }
+    content::RenderWidgetHostView* view = frame->GetView();
     return view != nullptr && view->HasFocus();
   });
 }
 
-bool IsFrameFocused(content::RenderFrameHost* frame) {
+bool IsMainFrameFocused(Browser* browser) {
+  content::RenderFrameHost* frame = GetMainFrame(*browser);
+  if (!frame) {
+    return false;
+  }
   return content::EvalJs(frame, "document.hasFocus()",
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE)
       .ExtractBool();
+}
+
+bool IsWindowActive(Browser* browser) {
+  return browser->window()->IsActive();
 }
 
 // Struct to make test parameterization clearer than std::tuple.
@@ -113,6 +124,46 @@ class IsolatedWebAppFocusBrowserTest
         blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
         blink::mojom::UserActivationNotificationType::kTest);
   }
+
+  testing::AssertionResult WindowHasFocus(Browser* browser) {
+    if (!WaitForMainFrameToFocus(browser)) {
+      return testing::AssertionFailure()
+             << "Timed out waiting for browser main frame to focus.";
+    }
+    if (!IsWindowActive(browser)) {
+      return testing::AssertionFailure()
+             << "Browser DOM is focused, but OS window is not active.";
+    }
+    if (!IsMainFrameFocused(browser)) {
+      return testing::AssertionFailure()
+             << "OS window is active, but Browser DOM is not focused.";
+    }
+    return testing::AssertionSuccess();
+  }
+
+  testing::AssertionResult WindowHasNoFocus(Browser* browser) {
+    if (IsWindowActive(browser)) {
+      return testing::AssertionFailure()
+             << "Expected no focus, but OS window is active.";
+    }
+    if (IsMainFrameFocused(browser)) {
+      return testing::AssertionFailure()
+             << "Expected no focus, but Browser DOM is focused.";
+    }
+    return testing::AssertionSuccess();
+  }
+
+  Browser* OpenPopup(content::RenderFrameHost* iwa_frame) {
+    ui_test_utils::BrowserCreatedObserver browser_observer;
+
+    EXPECT_TRUE(content::ExecJs(
+        iwa_frame, "window.newWinHandle = window.open('/popup.html');"));
+
+    Browser* new_browser = browser_observer.Wait();
+    EXPECT_TRUE(new_browser);
+
+    return new_browser;
+  }
 };
 
 // Tests that window.focus() can shift focus to a new window in an IWA
@@ -129,39 +180,22 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
 #endif
   IsolatedWebAppUrlInfo url_info =
       InstallIwa(IsWindowManagementPermissionDeclared());
-  // Launch the IWA.
   Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
   ASSERT_TRUE(iwa_browser);
+  SetWindowManagementContentSetting(url_info.origin().GetURL());
+
   content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
   ASSERT_TRUE(iwa_frame);
 
-  SetWindowManagementContentSetting(url_info.origin().GetURL());
+  Browser* new_browser = OpenPopup(iwa_frame);
 
-  // Open the new window via script and wait for it to load.
-  ui_test_utils::BrowserCreatedObserver browser_observer;
-  ASSERT_TRUE(content::ExecJs(
-      iwa_frame, "window.newWinHandle = window.open('/popup.html');"))
-      << "Failed to open new window or wait for load";
-  Browser* new_browser = browser_observer.Wait();
-  ASSERT_TRUE(new_browser);
-  content::RenderFrameHost* new_frame = GetMainFrame(*new_browser);
-  ASSERT_TRUE(new_frame);
+  EXPECT_TRUE(WindowHasFocus(new_browser));
+  EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
 
-  ASSERT_TRUE(WaitForFocusedFrame(*new_frame));
-  EXPECT_TRUE(IsFrameFocused(new_frame));
-
-  // Explicitly Activate the original IWA window.
+  // Explicitly activate the original IWA window to shift focus back to it.
   iwa_browser->window()->Activate();
-  ASSERT_TRUE(WaitForFocusedFrame(*iwa_frame));
-
-  EXPECT_TRUE(iwa_browser->window()->IsActive())
-      << "IWA browser should be active";
-  EXPECT_FALSE(new_browser->window()->IsActive())
-      << "New browser should NOT be active";
-
-  EXPECT_TRUE(IsFrameFocused(iwa_frame)) << "IWA document should have focus";
-  EXPECT_FALSE(IsFrameFocused(new_frame))
-      << "New window document should NOT have focus";
+  EXPECT_TRUE(WindowHasFocus(iwa_browser));
+  EXPECT_TRUE(WindowHasNoFocus(new_browser));
 
   ConsumeUserActivation(iwa_frame);
 
@@ -170,32 +204,51 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   if (ShouldFocusWithoutUserActivationWork()) {
-    // With permission, the focus() call should succeed.
-    ASSERT_TRUE(WaitForFocusedFrame(*new_frame));
-
-    // Check all states for the "permission granted" case.
-    EXPECT_TRUE(new_browser->window()->IsActive())
-        << "New window should be active.";
-    EXPECT_FALSE(iwa_browser->window()->IsActive())
-        << "IWA window should NOT be active.";
-
-    EXPECT_TRUE(IsFrameFocused(new_frame))
-        << "New window document should have focus.";
-    EXPECT_FALSE(IsFrameFocused(iwa_frame))
-        << "IWA document should NOT have focus.";
+    EXPECT_TRUE(WindowHasFocus(new_browser));
+    EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
   } else {
-    // Without permission, focus() is a no-op.
-    ASSERT_TRUE(WaitForFocusedFrame(*iwa_frame));
+    EXPECT_TRUE(WindowHasFocus(iwa_browser));
+    EXPECT_TRUE(WindowHasNoFocus(new_browser));
+  }
+}
 
-    // Check all states for the "permission denied" case.
-    EXPECT_FALSE(new_browser->window()->IsActive())
-        << "New window should NOT be active.";
-    EXPECT_TRUE(iwa_browser->window()->IsActive())
-        << "IWA window should be active.";
+// Tests that an IWA window can self-focus without user activation, if and only
+// if the window-management permission is declared and granted.
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppFocusBrowserTest,
+                       WindowCanFocusItselfWithNoUserActivation) {
+#if BUILDFLAG(IS_LINUX)
+  // Skip this test if running on Wayland.
+  if (views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
+    GTEST_SKIP() << "This test is not supported on Wayland due to the lack of "
+                    "Wayland support for window activation";
+  }
+#endif
+  IsolatedWebAppUrlInfo url_info =
+      InstallIwa(IsWindowManagementPermissionDeclared());
+  Browser* iwa_browser = LaunchWebAppBrowserAndWait(url_info.app_id());
+  ASSERT_TRUE(iwa_browser);
+  SetWindowManagementContentSetting(url_info.origin().GetURL());
 
-    EXPECT_FALSE(IsFrameFocused(new_frame))
-        << "New window document should NOT have focus.";
-    EXPECT_TRUE(IsFrameFocused(iwa_frame)) << "IWA document should have focus.";
+  content::RenderFrameHost* iwa_frame = GetMainFrame(*iwa_browser);
+  ASSERT_TRUE(iwa_frame);
+
+  Browser* new_browser = OpenPopup(iwa_frame);
+
+  EXPECT_TRUE(WindowHasFocus(new_browser));
+  EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
+
+  ConsumeUserActivation(iwa_frame);
+
+  // The background IWA window tries to focus itself.
+  ASSERT_TRUE(content::ExecJs(iwa_frame, "window.focus();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  if (ShouldFocusWithoutUserActivationWork()) {
+    EXPECT_TRUE(WindowHasFocus(iwa_browser));
+    EXPECT_TRUE(WindowHasNoFocus(new_browser));
+  } else {
+    EXPECT_TRUE(WindowHasFocus(new_browser));
+    EXPECT_TRUE(WindowHasNoFocus(iwa_browser));
   }
 }
 
