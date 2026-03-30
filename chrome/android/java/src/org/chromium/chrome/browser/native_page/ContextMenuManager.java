@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.tile.TileUtils;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
@@ -48,6 +49,7 @@ public class ContextMenuManager {
         ContextMenuItemId.OPEN_IN_NEW_TAB_IN_GROUP,
         ContextMenuItemId.OPEN_IN_INCOGNITO_TAB,
         ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW,
+        ContextMenuItemId.OPEN_IN_NEW_WINDOW,
         ContextMenuItemId.OPEN_IN_OTHER_WINDOW,
         ContextMenuItemId.OPEN_ALL,
         ContextMenuItemId.SAVE_FOR_OFFLINE,
@@ -71,20 +73,21 @@ public class ContextMenuManager {
         int OPEN_IN_NEW_TAB_IN_GROUP = 2;
         int OPEN_IN_INCOGNITO_TAB = 3;
         int OPEN_IN_INCOGNITO_WINDOW = 4;
-        int OPEN_IN_OTHER_WINDOW = 5;
-        int OPEN_ALL = 6;
-        int SAVE_FOR_OFFLINE = 7;
-        int ADD_TO_MY_APPS = 8;
-        int REMOVE = 9;
-        int REMOVE_ALL = 10;
-        int PIN_THIS_SHORTCUT = 11;
-        int EDIT_SHORTCUT = 12;
-        int UNPIN = 13;
-        int MOVE_UP = 14;
-        int MOVE_DOWN = 15;
-        int HIDE_ALL = 16;
+        int OPEN_IN_NEW_WINDOW = 5;
+        int OPEN_IN_OTHER_WINDOW = 6;
+        int OPEN_ALL = 7;
+        int SAVE_FOR_OFFLINE = 8;
+        int ADD_TO_MY_APPS = 9;
+        int REMOVE = 10;
+        int REMOVE_ALL = 11;
+        int PIN_THIS_SHORTCUT = 12;
+        int EDIT_SHORTCUT = 13;
+        int UNPIN = 14;
+        int MOVE_UP = 15;
+        int MOVE_DOWN = 16;
+        int HIDE_ALL = 17;
 
-        int NUM_ENTRIES = 17;
+        int NUM_ENTRIES = 18;
     }
 
     private final NativePageNavigationDelegate mNavigationDelegate;
@@ -349,11 +352,13 @@ public class ContextMenuManager {
             case ContextMenuItemId.OPEN_IN_INCOGNITO_TAB:
                 return mNavigationDelegate.isOpenInIncognitoEnabled()
                         && !IncognitoUtils.shouldOpenIncognitoAsWindow();
+            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+                return MultiWindowUtils.isLinkNavigationToNewWindowSupported();
             case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
                 return mNavigationDelegate.isOpenInIncognitoEnabled()
-                        && IncognitoUtils.shouldOpenIncognitoAsWindow();
+                        && MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported();
             case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
-                return mNavigationDelegate.isOpenInAnotherWindowEnabled();
+                return mNavigationDelegate.isOpenInOtherWindowEnabled();
             case ContextMenuItemId.OPEN_ALL:
                 return true;
             case ContextMenuItemId.SAVE_FOR_OFFLINE:
@@ -399,6 +404,8 @@ public class ContextMenuManager {
                 return R.string.contextmenu_open_in_incognito_tab;
             case ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW:
                 return R.string.contextmenu_open_in_incognito_window;
+            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
+                return R.string.contextmenu_open_in_new_window;
             case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
                 return R.string.contextmenu_open_in_other_window;
             case ContextMenuItemId.OPEN_ALL:
@@ -452,6 +459,7 @@ public class ContextMenuManager {
                 RecordUserAction.record(
                         mUserActionPrefix + ".ContextMenu.OpenItemInIncognitoWindow");
                 return true;
+            case ContextMenuItemId.OPEN_IN_NEW_WINDOW:
             case ContextMenuItemId.OPEN_IN_OTHER_WINDOW:
                 // TODO(crbug.com/450631766): Update WindowOpenDisposition to handle
                 // OPEN_IN_OTHER_WINDOW

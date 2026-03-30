@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.preferences.MultiInstanceSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
@@ -40,6 +41,31 @@ public class MultiWindowTestUtils {
                 instanceId, tabCount, /* incognitoTabCount= */ 0);
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);
+    }
+
+    /* package */ static void createInstances(
+            int numActive, int numInactive, @SupportedProfileType int profileType, int startId) {
+        int start = startId;
+        int end = start + numActive;
+        for (int i = start; i < end; i++) {
+            createInstance(
+                    /* instanceId= */ i,
+                    /* url= */ "www.example.com",
+                    /* tabCount= */ 2,
+                    /* taskId= */ i);
+            ChromeMultiInstancePersistentStore.writeProfileType(i, profileType);
+        }
+
+        start = startId + numActive;
+        end = start + numInactive;
+        for (int i = start; i < end; i++) {
+            createInstance(
+                    /* instanceId= */ i,
+                    /* url= */ "www.example.com",
+                    /* tabCount= */ 2,
+                    /* taskId= */ -1);
+            ChromeMultiInstancePersistentStore.writeProfileType(i, profileType);
+        }
     }
 
     /** Clears instance information. */

@@ -73,7 +73,7 @@ import java.util.Set;
         if (tabs.isEmpty()) return;
         Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
 
-        if (!MultiWindowUtils.canCreateNewWindow()) {
+        if (!MultiWindowUtils.isWithinInstanceLimit()) {
             var multiInstanceManager = getMultiInstanceManager(sourceActivity);
             if (multiInstanceManager != null) {
                 multiInstanceManager.showInstanceCreationLimitMessage();
@@ -182,7 +182,7 @@ import java.util.Set;
         // Check the number of instances that the url can be launched in.
         int instanceCount = MultiWindowUtils.getInstanceCount(instanceType);
         if (instanceCount <= 1 || preferNew) {
-            if (preferNew && !MultiWindowUtils.canCreateNewWindow()) {
+            if (preferNew && !MultiWindowUtils.isWithinInstanceLimit()) {
                 if (multiInstanceManager != null) {
                     multiInstanceManager.showInstanceCreationLimitMessage();
                 }

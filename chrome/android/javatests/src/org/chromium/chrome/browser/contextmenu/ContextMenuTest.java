@@ -20,6 +20,8 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 
@@ -914,9 +916,7 @@ public class ContextMenuTest {
         };
         expectedItems =
                 addItemsIf(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        mActivityTestRule.getActivity())
-                                && !DeviceInfo.isAutomotive(),
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
                         expectedItems,
                         new Integer[] {R.id.contextmenu_open_in_new_window});
         expectedItems =
@@ -1029,9 +1029,7 @@ public class ContextMenuTest {
         };
         expectedItems =
                 addItemsIf(
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                        mActivityTestRule.getActivity())
-                                && !DeviceInfo.isAutomotive(),
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
                         expectedItems,
                         new Integer[] {R.id.contextmenu_open_in_new_window});
         expectedItems =

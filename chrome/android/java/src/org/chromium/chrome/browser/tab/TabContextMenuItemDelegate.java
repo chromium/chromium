@@ -130,13 +130,9 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public boolean isOpenInOtherWindowSupported() {
-        return MultiWindowUtils.getInstance()
-                .isOpenInOtherWindowSupported(TabUtils.getActivity(mTab));
-    }
-
-    @Override
-    public boolean canEnterMultiWindowMode() {
-        return MultiWindowUtils.canEnterMultiWindowMode();
+        Activity activity = TabUtils.getActivity(mTab);
+        return activity != null
+                && MultiWindowUtils.getInstance().isLinkNavigationToOtherWindowSupported(activity);
     }
 
     @Override

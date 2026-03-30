@@ -162,9 +162,12 @@ public class BookmarkOpenerImpl implements BookmarkOpener {
     @Override
     public boolean isOpenInNewWindowSupported() {
         Activity activity = ContextUtils.activityFromContext(mContext);
-        return activity != null
-                && (MultiWindowUtils.getInstance().isOpenInOtherWindowSupported(activity)
-                        || MultiWindowUtils.isMultiInstanceApi31Enabled());
+        boolean supportedPreApi31 =
+                activity != null
+                        && !MultiWindowUtils.isMultiInstanceApi31Enabled()
+                        && MultiWindowUtils.getInstance()
+                                .isLinkNavigationToOtherWindowSupported(activity);
+        return MultiWindowUtils.isLinkNavigationToNewWindowSupported() || supportedPreApi31;
     }
 
     private Intent createBasicOpenIntent(BookmarkItem item, boolean incognito) {

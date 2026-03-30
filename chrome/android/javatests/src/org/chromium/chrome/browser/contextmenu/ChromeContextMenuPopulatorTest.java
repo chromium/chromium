@@ -31,6 +31,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -53,6 +55,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -72,6 +75,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -400,6 +404,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected2 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected2,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
@@ -457,6 +467,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link,
         };
+        expected7Tab1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected7Tab1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         int[] expected7Tab2 = {
             R.id.contextmenu_inspect_element,
         };
@@ -484,6 +500,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected);
     }
 
@@ -528,6 +550,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected2 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected2,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(Arrays.asList(R.id.contextmenu_save_link_as), expected2);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
@@ -614,6 +642,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected1);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
@@ -699,6 +733,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
+        expected1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected1);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, params);
@@ -995,6 +1035,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected2Tab1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected2Tab1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         int[] expected2Tab2 = {R.id.contextmenu_save_video};
         checkMenuOptions(expected2Tab1, expected2Tab2);
 
@@ -1044,6 +1090,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected6Tab1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected6Tab1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         int[] expected6Tab2 = {R.id.contextmenu_save_video};
         int[] expected6Tab3 = {R.id.contextmenu_inspect_element};
         checkMenuOptions(expected6Tab1, expected6Tab2, expected6Tab3);
@@ -1105,6 +1157,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected2Tab1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected2Tab1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         int[] expected2Tab2 = {R.id.contextmenu_save_video};
         checkMenuOptions(
                 Arrays.asList(R.id.contextmenu_save_link_as, R.id.contextmenu_save_video),
@@ -1386,6 +1444,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_save_link_as,
             R.id.contextmenu_share_link
         };
+        expected2Tab1 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected2Tab1,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         int[] expected2Tab2 = {
             R.id.contextmenu_open_image_in_new_tab,
             R.id.contextmenu_open_image_in_ephemeral_tab,
@@ -1568,6 +1632,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expected =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected);
 
         // Custom tab should include read later.
@@ -1646,6 +1716,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_copy_link_text,
             R.id.contextmenu_share_link
         };
+        expected5 =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expected5,
+                        R.id.contextmenu_open_in_new_window,
+                        3);
         checkMenuOptions(expected5);
     }
 
@@ -1688,6 +1764,12 @@ public class ChromeContextMenuPopulatorTest {
             R.id.contextmenu_read_later,
             R.id.contextmenu_share_link
         };
+        expectedIncognito =
+                addItemIf(
+                        VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive(),
+                        expectedIncognito,
+                        R.id.contextmenu_open_in_new_window,
+                        2);
         checkMenuOptions(expectedIncognito);
 
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NETWORK_BOUND_TAB, params);
@@ -1729,6 +1811,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
 
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
         when(mItemDelegate.isOpenInOtherWindowSupported()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         int[] expectedMultiWindow = {
@@ -1759,13 +1842,12 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testOpenInNewWindow() {
+    public void testOpenInIncognitoWindow() {
         FirstRunStatus.setFirstRunFlowComplete(true);
         ContextMenuParams params = getHttpLinkParams();
 
         when(mItemDelegate.isIncognito()).thenReturn(false);
         when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
-        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         doReturn(true).when(mPopulator).isTabletScreen();
 
@@ -1773,12 +1855,14 @@ public class ChromeContextMenuPopulatorTest {
         expectedItems.add(R.id.contextmenu_open_in_new_tab);
         expectedItems.add(R.id.contextmenu_open_in_new_tab_in_group);
 
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            expectedItems.add(R.id.contextmenu_open_in_new_window);
-            expectedItems.add(R.id.contextmenu_open_in_incognito_window);
-        } else {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(R.id.contextmenu_open_in_incognito_tab);
+        }
+        if (VERSION.SDK_INT >= VERSION_CODES.S && !DeviceInfo.isAutomotive()) {
             expectedItems.add(R.id.contextmenu_open_in_new_window);
+        }
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            expectedItems.add(R.id.contextmenu_open_in_incognito_window);
         }
 
         expectedItems.add(R.id.contextmenu_open_in_ephemeral_tab);
@@ -2955,5 +3039,23 @@ public class ChromeContextMenuPopulatorTest {
             }
         }
         return null;
+    }
+
+    /**
+     * Adds an item to the baseItems if the given condition is true.
+     *
+     * @param condition The condition to check for whether to add the item or not.
+     * @param baseItems The base list of items to add to.
+     * @param additionalItem The additional item to add.
+     * @param index The index to add the additional item at.
+     * @return An array of items that has the additional item added if the condition is true.
+     */
+    private int[] addItemIf(boolean condition, int[] baseItems, int additionalItem, int index) {
+        if (!condition) return baseItems;
+        int[] items = new int[baseItems.length + 1];
+        System.arraycopy(baseItems, 0, items, 0, index);
+        items[index] = additionalItem;
+        System.arraycopy(baseItems, index, items, index + 1, baseItems.length - index);
+        return items;
     }
 }

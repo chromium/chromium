@@ -28,6 +28,8 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPopupWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.ContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
@@ -70,10 +72,12 @@ public class ContextMenuManagerUnitTest {
     public void showListContextMenu() {
         doReturn(true).when(mDelegate).isItemSupported(anyInt());
         doReturn(false).when(mNavigationDelegate).isOpenInNewTabInGroupEnabled();
-        doReturn(false).when(mNavigationDelegate).isOpenInAnotherWindowEnabled();
+        doReturn(false).when(mNavigationDelegate).isOpenInOtherWindowEnabled();
         doReturn(false).when(mNavigationDelegate).isOpenInIncognitoEnabled();
         doReturn(null).when(mDelegate).getUrl();
         doReturn(true).when(mAnchorView).isAttachedToWindow();
+        // Disable navigation to new window.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
 
         assertTrue(
                 "showContextMenu failed since list is empty.",
@@ -112,5 +116,38 @@ public class ContextMenuManagerUnitTest {
         assertTrue(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
         AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
         assertFalse(mManager.shouldShowItem(ContextMenuItemId.MOVE_DOWN, mDelegate));
+    }
+
+    @Test
+    public void testShouldShowItem_MultiWindow() {
+        doReturn(true).when(mDelegate).isItemSupported(anyInt());
+
+        // New window supported.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_NEW_WINDOW, mDelegate));
+
+        // New window not supported.
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_NEW_WINDOW, mDelegate));
+
+        // Other window supported.
+        doReturn(true).when(mNavigationDelegate).isOpenInOtherWindowEnabled();
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_OTHER_WINDOW, mDelegate));
+
+        // Other window not supported.
+        doReturn(false).when(mNavigationDelegate).isOpenInOtherWindowEnabled();
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_OTHER_WINDOW, mDelegate));
+
+        // Incognito window supported.
+        doReturn(true).when(mNavigationDelegate).isOpenInIncognitoEnabled();
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW, mDelegate));
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, mDelegate));
+
+        // Incognito window not supported.
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        assertFalse(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_WINDOW, mDelegate));
+        assertTrue(mManager.shouldShowItem(ContextMenuItemId.OPEN_IN_INCOGNITO_TAB, mDelegate));
     }
 }

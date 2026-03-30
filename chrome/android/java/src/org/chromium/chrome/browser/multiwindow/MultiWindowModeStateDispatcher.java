@@ -63,13 +63,6 @@ public interface MultiWindowModeStateDispatcher {
     boolean isChromeRunningInAdjacentWindow();
 
     /**
-     * See {@link MultiWindowUtils#isOpenInOtherWindowSupported(Activity)}.
-     * @return Whether open in other window is supported for the activity associated with this
-     *         state dispatcher.
-     */
-    boolean isOpenInOtherWindowSupported();
-
-    /**
      * See {@link MultiWindowUtils#isMoveToOtherWindowSupported(Activity, TabModelSelector)}.
      *
      * @return Whether move to other window is supported for the activity associated with this state

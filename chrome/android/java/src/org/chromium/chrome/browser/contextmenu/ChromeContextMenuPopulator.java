@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -495,14 +496,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             && !shouldOpenIncognitoAsWindow()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }
-                    if (mItemDelegate.isOpenInOtherWindowSupported()) {
-                        linkGroup.add(createListItem(Item.OPEN_IN_OTHER_WINDOW));
-                    } else if (isTabletScreen() && mItemDelegate.canEnterMultiWindowMode()) {
+                    if (MultiWindowUtils.isLinkNavigationToNewWindowSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_NEW_WINDOW));
+                    } else if (mItemDelegate.isOpenInOtherWindowSupported()) {
+                        linkGroup.add(createListItem(Item.OPEN_IN_OTHER_WINDOW));
                     }
                     if (!mItemDelegate.isIncognito()
                             && mItemDelegate.isIncognitoSupported()
-                            && shouldOpenIncognitoAsWindow()) {
+                            && MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_WINDOW));
                     }
                 }

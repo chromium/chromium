@@ -13,9 +13,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 /** Interface exposing to the common methods to navigate to content shown in native page UIs. */
 @NullMarked
 public interface NativePageNavigationDelegate {
-    /**
-     * @return Whether context menus should allow the option to open a link in incognito.
-     */
+    /** Returns whether context menus should allow the option to open a link in incognito. */
     boolean isOpenInIncognitoEnabled();
 
     /**
@@ -25,14 +23,11 @@ public interface NativePageNavigationDelegate {
         return true;
     }
 
-    /**
-     * @return Whether context menus should allow the option to open a link in a new or different
-     *     window.
-     */
-    boolean isOpenInAnotherWindowEnabled();
+    /** Returns whether context menus should allow the option to open a link in another window. */
+    boolean isOpenInOtherWindowEnabled();
 
     /**
-     * Opens an URL with the desired disposition.
+     * Opens a URL with the desired disposition.
      *
      * @return The tab where the URL is being loaded, if it is accessible. Cases where no tab is
      *     returned include opening incognito tabs or opening the URL in a new window.
@@ -40,12 +35,12 @@ public interface NativePageNavigationDelegate {
     @Nullable Tab openUrl(int windowOpenDisposition, LoadUrlParams loadUrlParams);
 
     /**
-     * Opens an URL with the desired disposition in a tab in group.
+     * Opens a URL with the desired disposition in a tab in group.
      *
      * @return The tab where the URL is being loaded.
      */
     @Nullable Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams);
 
-    /** Initialize AndroidPrerenderManager JNI interface. */
+    /** Initializes AndroidPrerenderManager JNI interface. */
     void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
 }

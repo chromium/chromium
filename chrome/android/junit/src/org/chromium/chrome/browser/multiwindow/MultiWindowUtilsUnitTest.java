@@ -106,10 +106,7 @@ public class MultiWindowUtilsUnitTest {
     private static final GURL TEST_GURL = new GURL("https://youtube.com/");
 
     private MultiWindowUtils mUtils;
-    private boolean mIsInMultiWindowMode;
     private boolean mIsInMultiDisplayMode;
-    private boolean mIsMultipleInstanceRunning;
-    private Boolean mOverrideOpenInNewWindowSupported;
 
     @Mock TabModelSelector mTabModelSelector;
     @Mock TabGroupModelFilter mTabGroupModelFilter;
@@ -133,32 +130,8 @@ public class MultiWindowUtilsUnitTest {
         mUtils =
                 new MultiWindowUtils() {
                     @Override
-                    public boolean isInMultiWindowMode(Activity activity) {
-                        return mIsInMultiWindowMode;
-                    }
-
-                    @Override
                     public boolean isInMultiDisplayMode(Activity activity) {
                         return mIsInMultiDisplayMode;
-                    }
-
-                    @Override
-                    public boolean areMultipleChromeInstancesRunning(Context context) {
-                        return mIsMultipleInstanceRunning;
-                    }
-
-                    @Override
-                    public Class<? extends Activity> getOpenInOtherWindowActivity(
-                            Activity current) {
-                        return Activity.class;
-                    }
-
-                    @Override
-                    public boolean isOpenInOtherWindowSupported(Activity activity) {
-                        if (mOverrideOpenInNewWindowSupported != null) {
-                            return mOverrideOpenInNewWindowSupported;
-                        }
-                        return super.isOpenInOtherWindowSupported(activity);
                     }
                 };
 
@@ -278,24 +251,259 @@ public class MultiWindowUtilsUnitTest {
     }
 
     @Test
-    public void testIsOpenInOtherWindowEnabled() {
-        for (int i = 0; i < 8; ++i) {
-            mIsInMultiWindowMode = ((i >> 0) & 1) == 1;
-            mIsInMultiDisplayMode = ((i >> 1) & 1) == 1;
-            mIsMultipleInstanceRunning = ((i >> 2) & 1) == 1;
+    public void testIsLinkNavigationToNewWindowSupported_invalidParams() {
+        // No support on automotive devices.
+        mOverrideContextWrapperTestRule.setIsAutomotive(true);
+        assertFalse(MultiWindowUtils.isLinkNavigationToNewWindowSupported());
 
-            // 'openInOtherWindow' is supported if we are already in multi-window/display mode.
-            boolean openInOtherWindow = (mIsInMultiWindowMode || mIsInMultiDisplayMode);
-            assertEquals(
-                    "multi-window: "
-                            + mIsInMultiWindowMode
-                            + " multi-display: "
-                            + mIsInMultiDisplayMode
-                            + " multi-instance: "
-                            + mIsMultipleInstanceRunning,
-                    openInOtherWindow,
-                    mUtils.isOpenInOtherWindowSupported(mock(Activity.class)));
-        }
+        // No support when multi-instance Api31 feature is disabled.
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        assertFalse(MultiWindowUtils.isLinkNavigationToNewWindowSupported());
+    }
+
+    @Test
+    public void testIsLinkNavigationToNewWindowSupported_withinInstanceLimit() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 1 active regular window, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_1);
+
+        assertTrue(MultiWindowUtils.isLinkNavigationToNewWindowSupported());
+    }
+
+    @Test
+    public void testIsLinkNavigationToNewWindowSupported_atInstanceLimit() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        // Create 1 active regular window, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_1);
+
+        assertFalse(MultiWindowUtils.isLinkNavigationToNewWindowSupported());
+    }
+
+    @Test
+    public void testIsLinkNavigationToIncognitoWindowSupported_invalidParams() {
+        // No support on automotive devices.
+        mOverrideContextWrapperTestRule.setIsAutomotive(true);
+        assertFalse(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+
+        // No support when incognito windowing is disabled.
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(false);
+        assertFalse(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+
+        // No support when multi-instance Api31 feature is disabled.
+        mOverrideContextWrapperTestRule.setIsAutomotive(false);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        assertFalse(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+    }
+
+    @Test
+    public void testIsLinkNavigationToIncognitoWindowSupported_withinInstanceLimit() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 1 active regular window, 1 inactive regular window, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 1,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_2);
+
+        assertTrue(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+    }
+
+    @Test
+    public void
+            testIsLinkNavigationToIncognitoWindowSupported_atInstanceLimitWithOtherActiveIncognitoWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 2 active regular windows, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 2,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_2);
+
+        assertTrue(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+    }
+
+    @Test
+    public void
+            testIsLinkNavigationToIncognitoWindowSupported_atInstanceLimitWithNoOtherActiveIncognitoWindow() {
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        // Create 2 active regular windows, and 1 inactive incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 2,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 0,
+                /* numInactive= */ 1,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_2);
+
+        assertFalse(MultiWindowUtils.isLinkNavigationToIncognitoWindowSupported());
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_automotiveDevice() {
+        Activity activity = addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+        mOverrideContextWrapperTestRule.setIsAutomotive(true);
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(activity));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_withinInstanceLimit() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Activity activity = addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 1 active regular window, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_1);
+
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(activity));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_atInstanceLimit_regularWindow() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        Activity activity = addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 2 active regular windows, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 2,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_2);
+
+        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(activity));
+    }
+
+    @Test
+    public void
+            testIsLinkNavigationToOtherWindowSupported_atInstanceLimit_regularWindow_noOtherWindow() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        Activity activity = addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+        MultiWindowUtils.setMaxInstancesForTesting(2);
+        // Create 1 active regular window, and 1 active incognito window.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_1);
+
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(activity));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_atInstanceLimit_incognitoWindow() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
+        var activity =
+                (ChromeTabbedActivity)
+                        addActivity(/* windowId= */ INSTANCE_ID_0, /* tabbedActivity= */ true);
+        when(activity.isIncognitoWindow()).thenReturn(true);
+        MultiWindowUtils.setMaxInstancesForTesting(3);
+        // Create 1 active regular window, and 2 active incognito windows.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 2,
+                /* numInactive= */ 0,
+                SupportedProfileType.OFF_THE_RECORD,
+                /* startId= */ INSTANCE_ID_0);
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 1,
+                /* numInactive= */ 0,
+                SupportedProfileType.REGULAR,
+                /* startId= */ INSTANCE_ID_2);
+
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(activity));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_preApi31_invalidParams() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
+
+        // No support when not in multi-window or multi-display mode.
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(false);
+        mIsInMultiDisplayMode = false;
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
+
+        // No support when other window activity is null.
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        assertFalse(mUtils.isLinkNavigationToOtherWindowSupported(mock(Activity.class)));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_preApi31_inMultiWindowMode() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
+        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
+    }
+
+    @Test
+    public void testIsLinkNavigationToOtherWindowSupported_preApi31_inMultiDisplayMode() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(false);
+        mIsInMultiDisplayMode = true;
+        assertTrue(mUtils.isLinkNavigationToOtherWindowSupported(tabbedActivity));
     }
 
     @Test
@@ -444,31 +652,34 @@ public class MultiWindowUtilsUnitTest {
     @Test
     @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
     public void
-            testIsMoveOtherWindowSupported_InstanceSwitcherDisabledAndOpenInOtherWindowAllowed_ReturnsTrue() {
-        mOverrideOpenInNewWindowSupported = true;
+            testIsMoveOtherWindowSupported_InstanceSwitcherDisabledAndInMultiWindowMode_ReturnsTrue() {
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(2);
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true on Android Q with multiple tabs.",
-                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
     }
 
     @Test
     public void testIsMoveOtherWindowSupported_HasOneTabWithHomePageDisabled_ReturnsTrue() {
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mHomepageManager.isHomepageEnabled()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
-        mOverrideOpenInNewWindowSupported = true;
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true when called for last tab with homepage disabled.",
-                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
     }
 
     @Test
     public void testIsMoveOtherWindowSupported_HasOneTabWithHomePageEnabledAsNtp_ReturnsTrue() {
-        mOverrideOpenInNewWindowSupported = true;
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(1);
+        when(tabbedActivity.isInMultiWindowMode()).thenReturn(true);
         assertTrue(
                 "Should return true when called for last tab with homepage enabled as NTP.",
-                mUtils.isMoveToOtherWindowSupported(null, mTabModelSelector));
+                mUtils.isMoveToOtherWindowSupported(tabbedActivity, mTabModelSelector));
     }
 
     @Test

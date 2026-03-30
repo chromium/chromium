@@ -60,8 +60,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
     }
 
     /**
-     * Creates a tab in another window in multi-window mode. This will only work if {@link
-     * MultiWindowUtils#isOpenInOtherWindowSupported(Activity)} is true for the given activity.
+     * Creates a tab in another window in multi-window mode.
      *
      * <p>The window in which the tab will be opened will depend on the following criteria:
      *

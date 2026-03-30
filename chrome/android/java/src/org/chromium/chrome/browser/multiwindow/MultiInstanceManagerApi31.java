@@ -413,7 +413,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // current activity so that it subsequently finishes. This is useful when multiple
             // windows race to be restored near the limit (e.g. as a result of keyboard presses in
             // quick succession).
-            if (!MultiWindowUtils.canCreateNewWindow()) {
+            if (!MultiWindowUtils.isWithinInstanceLimit()) {
                 profileType = getProfileType(instanceIdForTask, isIncognitoIntent);
                 return new AllocatedIdInfo(
                         instanceIdForTask, InstanceAllocationType.INVALID_INSTANCE, profileType);
@@ -450,7 +450,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             // this case, we want to avoid allocating an available id in the new range if we are at
             // or over instance limit, so that we avoid allowing successful creation of the current
             // activity in this scenario.
-            if (MultiWindowUtils.canCreateNewWindow()) {
+            if (MultiWindowUtils.isWithinInstanceLimit()) {
                 for (int i = 0; i < TabWindowManager.MAX_SELECTORS_1000; ++i) {
                     if (!ChromeMultiInstancePersistentStore.hasInstance(i)) {
                         logNewInstanceId(i);
@@ -1208,7 +1208,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void moveTabGroupToNewWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
         boolean openAdjacently = MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
-        if (!MultiWindowUtils.canCreateNewWindow()) {
+        if (!MultiWindowUtils.isWithinInstanceLimit()) {
             showInstanceCreationLimitMessage();
         } else {
             mTabReparentingDelegate.reparentTabGroupToNewWindow(
