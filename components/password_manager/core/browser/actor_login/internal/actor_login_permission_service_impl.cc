@@ -34,10 +34,8 @@ namespace {
 // The maximum number of retries for the `SimpleURLLoader` requests.
 const size_t kMaxRetries = 1;
 
-// TODO(crbug.com/491035927): Update to prod URL when available.
 const char kActorLoginPermissionServiceUrlBase[] =
-    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
-    "permissions:";
+    "https://agenticpermission.pa.googleapis.com/v1/permissions:";
 
 constexpr net::NetworkTrafficAnnotationTag
     kActorLoginPermissionTrafficAnnotation =

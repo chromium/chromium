@@ -23,14 +23,12 @@ namespace actor_login {
 
 namespace {
 const char kTestListUrl[] =
-    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
-    "permissions:list";
+    "https://agenticpermission.pa.googleapis.com/v1/permissions:list";
 const char kTestDeleteUrl[] =
-    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
-    "permissions:delete";
+    "https://agenticpermission.pa.googleapis.com/v1/permissions:delete";
 const char kTestUpdateUrl[] =
-    "https://staging-agenticpermission.pa.sandbox.googleapis.com/v1/"
-    "permissions:update?allow_missing=true";
+    "https://agenticpermission.pa.googleapis.com/v1/permissions:update"
+    "?allow_missing=true";
 
 FederatedPermission CreateValidPermission() {
   FederatedPermission permission;
