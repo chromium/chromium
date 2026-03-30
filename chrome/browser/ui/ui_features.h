@@ -327,6 +327,10 @@ bool IsWebUIPinnedToolbarActionsEnabled();
 
 bool IsWebUISplitTabsButtonEnabled();
 
+// Controls whether the WebUI version of the Avatar Button is used.
+BASE_DECLARE_FEATURE(kWebUIAvatarButton);
+bool IsWebUIAvatarButtonEnabled();
+
 bool IsWebUILocationBarEnabled();
 
 bool IsWebUIToolbarEnabled();

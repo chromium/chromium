@@ -390,6 +390,8 @@ bool IsNewTabAddsToActiveGroupEnabled() {
   return base::FeatureList::IsEnabled(kNewTabAddsToActiveGroup);
 }
 
+BASE_FEATURE(kWebUIAvatarButton, base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsWebUIReloadButtonEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUIReloadButton);
@@ -415,6 +417,11 @@ bool IsWebUISplitTabsButtonEnabled() {
          base::FeatureList::IsEnabled(features::kWebUISplitTabsButton);
 }
 
+bool IsWebUIAvatarButtonEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUIAvatarButton);
+}
+
 bool IsWebUILocationBarEnabled() {
   return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
          base::FeatureList::IsEnabled(features::kWebUILocationBar);
@@ -424,7 +431,7 @@ bool IsWebUIToolbarEnabled() {
   return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
          IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
          IsWebUIBackForwardButtonEnabled() ||
-         IsWebUIPinnedToolbarActionsEnabled();
+         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
