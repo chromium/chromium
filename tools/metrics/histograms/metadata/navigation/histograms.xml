@@ -909,6 +909,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame"
+    enum="BeforeUnloadExecutionMode" expires_after="2027-02-04">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Records the execution mode of beforeunload handlers for a navigation.
+    Recorded at the time of navigation commit for cross-document outermost main
+    frame navigations. Only recorded for HTTP or HTTPS schemes.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.BlurTransitionAnimation.ExitReason"
     enum="BlurTransitionExitReason" expires_after="2026-06-01">
   <owner>evanluo@google.com</owner>

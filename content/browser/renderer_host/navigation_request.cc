@@ -1233,6 +1233,20 @@ bool ResponseContainsConnectionAllowlist(
               .has_value());
 }
 
+const char* BeforeUnloadExecutionModeToString(
+    NavigationHandle::BeforeUnloadExecutionMode mode) {
+  switch (mode) {
+    case NavigationHandle::BeforeUnloadExecutionMode::kNotBlocked:
+      return "NotBlocked";
+    case NavigationHandle::BeforeUnloadExecutionMode::kForLegacy:
+      return "ForLegacy";
+    case NavigationHandle::BeforeUnloadExecutionMode::kSync:
+      return "Sync";
+    case NavigationHandle::BeforeUnloadExecutionMode::kAsync:
+      return "Async";
+  }
+}
+
 // The sampling rate for UKM.
 constexpr double kUkmSamplingRate = 0.001;
 
@@ -8817,6 +8831,16 @@ void NavigationRequest::DidCommitNavigation(
           pending_commit_metrics_.blocked_commit_count);
     }
   }
+
+  if (!IsSameDocument() && IsInOutermostMainFrame() &&
+      params.url.SchemeIsHTTPOrHTTPS()) {
+    base::UmaHistogramEnumeration(
+        "Navigation.BeforeUnloadExecutionMode.IsInOutermostMainFrame",
+        GetBeforeUnloadExecutionMode());
+  }
+  TRACE_EVENT_INSTANT(
+      "navigation", "BeforeUnloadExecutionMode", "BeforeUnloadExecutionMode",
+      BeforeUnloadExecutionModeToString(GetBeforeUnloadExecutionMode()));
 
   // DO NOT ADD CODE after this.
   // UnblockPendingSubframeNavigationRequestsIfNeeded() resumes throttles, which
