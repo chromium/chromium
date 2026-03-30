@@ -40,6 +40,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 #import "ios/chrome/common/intents/OpenInChromeIncognitoIntent.h"
+#import "ios/chrome/common/intents/OpenInChromeIntent.h"
 #import "net/base/apple/url_conversions.h"
 
 namespace {
@@ -291,6 +292,13 @@ std::vector<GURL> GetURLsFromOpenInIncognitoIntent(INIntent* intent) {
   return GURLVectorWithNSURLArray(incognito_intent.url);
 }
 
+// Returns the list of URLs from an `OpenInChromeIntent`.
+std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
+  OpenInChromeIntent* typed_intent =
+      base::apple::ObjCCastStrict<OpenInChromeIntent>(intent);
+  return GURLVectorWithNSURLArray(typed_intent.url);
+}
+
 }  // namespace
 
 @implementation TaskRequestForUserActivity {
@@ -349,7 +357,8 @@ std::vector<GURL> GetURLsFromOpenInIncognitoIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kOpenInChrome:
-      // TODO(crbug.com/492115056): Add implementation.
+      webpageGURLs =
+          GetURLsFromOpenInChromeIntent(_userActivity.interaction.intent);
       break;
     case UserActivityType::kOpenInIncognito:
       webpageGURLs =
