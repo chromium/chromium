@@ -19,16 +19,16 @@ namespace {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Internal builds add two extra accelerator for the Feedback app.
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 104;
+constexpr int kChromeAcceleratorsTotalNum = 105;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "cd3987311946a85ceb55a17a52adc771f057f3701eb6b557830fc714a198aa2b";
+    "f9d7f900b63a438a59a11c96a40884fdb65560d9694f3024b66aa1080666c066";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
-constexpr int kChromeAcceleratorsTotalNum = 102;
+constexpr int kChromeAcceleratorsTotalNum = 103;
 // The hash of Chrome accelerators (available on Chrome OS).
 constexpr char kChromeAcceleratorsHash[] =
-    "9fddbbf49ce00ef73e227d0edc81d05286533e356da4d9fd0ce298b260954019";
+    "de0dd50490136cec2ef226c1b3818273f0104d9cc38853f50b5552837d0a5484";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char kCommonMessage[] =

@@ -384,6 +384,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ToggleImmersiveFromKeyboardShortcut) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  AssertOverlayVisibility(/*visible=*/false);
+
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_KEYBOARD);
+  EmitWebUIShowEvent();
+
+  AssertOverlayVisibility(/*visible=*/true);
+
+  chrome::ExecuteCommand(browser(), IDC_SHOW_READING_MODE_KEYBOARD);
+
+  AssertOverlayVisibility(/*visible=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
                        ShowImmersiveFromContextMenu) {
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);

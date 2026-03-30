@@ -23940,6 +23940,7 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="Opened via tab switch"/>
   <int value="6"
       label="Opened via toggle presentation button in Reading mode settings"/>
+  <int value="7" label="Opened via keyboard shortcut"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/read_anything/read_anything_enums.h:ReadAnythingOpenTrigger) -->
@@ -25057,6 +25058,8 @@ Called by update_net_error_codes.py.-->
   </int>
 </enum>
 
+<!-- LINT.IfChange(SidePanelOpenTrigger) -->
+
 <enum name="SidePanelOpenTrigger">
   <int value="0" label="Opened from toolbar button"/>
   <int value="1" label="Opened from lens context menu"/>
@@ -25087,7 +25090,10 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="Opened from Read Anything omnibox chip"/>
   <int value="25"
       label="Opened from Immersive Reading Mode toggle presentation button"/>
+  <int value="26" label="Opened from the Reading Mode keyboard shortcut"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/side_panel/side_panel_enums.h:SidePanelOpenTrigger) -->
 
 <enum name="SignedExchangeLoadResult">
   <int value="0" label="Loaded successfully"/>

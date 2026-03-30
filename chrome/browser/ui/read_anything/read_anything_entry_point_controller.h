@@ -64,10 +64,13 @@ class ReadAnythingEntryPointController {
   static int CheckCountForTesting();
   static void ResetCheckCountForTesting();
 
- private:
+  // Toggles Reading Mode between shown and hidden. ToggleUI will close Reading
+  // Mode if it is already open. Skips ActionInvocationContext processing and
+  // receives a ReadAnythingOpenTrigger directly.
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);
 
+ private:
   // Returns false if the reading mode suggestion should be hidden immediately
   // for the current page. This check uses very basic information about the
   // browser and checks for any explicitly blocked sites.

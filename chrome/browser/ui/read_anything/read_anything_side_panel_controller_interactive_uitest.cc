@@ -7,6 +7,7 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -20,8 +21,10 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/accessibility/reading/distillable_pages.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -30,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace {
 constexpr char kDocumentWithNamedElement[] = "/select.html";
@@ -236,3 +240,115 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingCUJTest, ShowAndHideIphAfterNavigation) {
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
+
+class ReadAnythingSidePanelControllerInteractiveTest
+    : public InteractiveBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ReadAnythingSidePanelControllerInteractiveTest() {
+    scoped_feature_list_.InitWithFeatureState(features::kImmersiveReadAnything,
+                                              GetParam());
+  }
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+  }
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    ReadAnythingSidePanelControllerInteractiveTest,
+    OpenImmersiveChangeToSidePanelAndCloseWithKeyboardShortcut) {
+  if (!GetParam()) {
+    // Only applies to immersive mode flag enabled
+    return;
+  }
+
+  ui::Accelerator reading_mode_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, embedded_test_server()->GetURL(
+                                          kDocumentWithNamedElement)),
+
+      // Use the keyboard shortcut command to open the immersive overlay
+      SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
+
+      // Verify that presentation state is Immersive
+      CheckResult(
+          [this]() {
+            return ReadAnythingController::From(
+                       browser()->tab_strip_model()->GetActiveTab())
+                ->GetPresentationState();
+          },
+          ReadAnythingController::PresentationState::kInImmersiveOverlay),
+
+      // Change presentation to Side Panel
+      Do([this]() {
+        auto* controller = ReadAnythingController::From(
+            browser()->tab_strip_model()->GetActiveTab());
+        controller->ShowSidePanelUI(
+            SidePanelOpenTrigger::kReadAnythingTogglePresentationButton);
+      }),
+      WaitForShow(kSidePanelElementId),
+
+      // Verify that presentation state is Side Panel
+      CheckResult(
+          [this]() {
+            return ReadAnythingController::From(
+                       browser()->tab_strip_model()->GetActiveTab())
+                ->GetPresentationState();
+          },
+          ReadAnythingController::PresentationState::kInSidePanel),
+
+      // Use the keyboard shortcut command again to close the side panel
+      SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
+      WaitForHide(kSidePanelElementId),
+
+      // Verify that presentation state is Inactive
+      CheckResult(
+          [this]() {
+            return ReadAnythingController::From(
+                       browser()->tab_strip_model()->GetActiveTab())
+                ->GetPresentationState();
+          },
+          ReadAnythingController::PresentationState::kInactive));
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerInteractiveTest,
+                       OpenAndCloseWithKeyboardShortcut) {
+  ui::Accelerator reading_mode_accelerator;
+  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->GetAccelerator(
+      IDC_SHOW_READING_MODE_KEYBOARD, &reading_mode_accelerator));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  RunTestSequence(
+      InstrumentTab(kActiveTab),
+      NavigateWebContents(kActiveTab, embedded_test_server()->GetURL(
+                                          kDocumentWithNamedElement)),
+
+      // Use the keyboard shortcut command to open the reading mode.
+      SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
+      WaitForShow(kSidePanelElementId),
+
+      // Use the keyboard shortcut command again to close the read mode.
+      SendAccelerator(kBrowserViewElementId, reading_mode_accelerator),
+      WaitForHide(kSidePanelElementId));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReadAnythingSidePanelControllerInteractiveTest,
+                         testing::Bool());

@@ -234,6 +234,8 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_D, ui::EF_ALT_DOWN, IDC_FOCUS_LOCATION},
     {ui::VKEY_E, ui::EF_CONTROL_DOWN, IDC_FOCUS_SEARCH},
     {ui::VKEY_K, ui::EF_CONTROL_DOWN, IDC_FOCUS_SEARCH},
+    {ui::VKEY_R, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
+     IDC_SHOW_READING_MODE_KEYBOARD},
     {ui::VKEY_T, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, IDC_FOCUS_TOOLBAR},
     {ui::VKEY_RIGHT, ui::EF_ALT_DOWN, IDC_FORWARD},
     {ui::VKEY_RIGHT, ui::EF_ALTGR_DOWN, IDC_FORWARD},

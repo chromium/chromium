@@ -9,6 +9,7 @@
 // numeric values should never be reused. SidePanelOpenTrigger in
 // tools/metrics/histograms/enums.xml should also be updated when changed
 // here.
+// LINT.IfChange(SidePanelOpenTrigger)
 enum class SidePanelOpenTrigger {
   kToolbarButton = 0,
   kMinValue = kToolbarButton,
@@ -36,8 +37,10 @@ enum class SidePanelOpenTrigger {
   kNewTabPageAutomaticCustomizeChrome = 23,
   kReadAnythingOmniboxChip = 24,
   kReadAnythingTogglePresentationButton = 25,
-  kMaxValue = kReadAnythingTogglePresentationButton,
+  kReadAnythingKeyboardShortcut = 26,
+  kMaxValue = kReadAnythingKeyboardShortcut,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelOpenTrigger)
 
 enum class SidePanelContentState {
   // Content is ready to show and will influence side panel visibility.

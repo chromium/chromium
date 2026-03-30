@@ -21,7 +21,8 @@ enum class ReadAnythingOpenTrigger {
   kOmniboxChip = 4,
   kTabSwitch = 5,
   kReadAnythingTogglePresentationButton = 6,
-  kMaxValue = kReadAnythingTogglePresentationButton,
+  kKeyboardShortcut = 7,
+  kMaxValue = kKeyboardShortcut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:ReadAnythingOpenTrigger)
 
@@ -73,6 +74,8 @@ inline SidePanelOpenTrigger ReadAnythingToSidePanelOpenTrigger(
       return SidePanelOpenTrigger::kTabChanged;
     case ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton:
       return SidePanelOpenTrigger::kReadAnythingTogglePresentationButton;
+    case ReadAnythingOpenTrigger::kKeyboardShortcut:
+      return SidePanelOpenTrigger::kReadAnythingKeyboardShortcut;
   }
 }
 
@@ -93,6 +96,8 @@ SidePanelToReadAnythingOpenTrigger(SidePanelOpenTrigger trigger) {
       return ReadAnythingOpenTrigger::kTabSwitch;
     case SidePanelOpenTrigger::kReadAnythingTogglePresentationButton:
       return ReadAnythingOpenTrigger::kReadAnythingTogglePresentationButton;
+    case SidePanelOpenTrigger::kReadAnythingKeyboardShortcut:
+      return ReadAnythingOpenTrigger::kKeyboardShortcut;
     default:
       return std::optional<ReadAnythingOpenTrigger>();
   }

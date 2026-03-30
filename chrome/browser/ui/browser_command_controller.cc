@@ -1322,6 +1322,12 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       break;
     }
 
+    case IDC_SHOW_READING_MODE_KEYBOARD: {
+      read_anything::ReadAnythingEntryPointController::ToggleUI(
+          browser_, ReadAnythingOpenTrigger::kKeyboardShortcut);
+      break;
+    }
+
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL: {
       ShowCustomizeChromeSidePanel(SidePanelOpenTrigger::kAppMenu,
                                    CustomizeChromeSection::kAppearance);
@@ -1636,6 +1642,7 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_FIND_AND_EDIT_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SAVE_AND_SHARE_MENU, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_READING_MODE_SIDE_PANEL, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_READING_MODE_KEYBOARD, true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL,
                                         true);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_CUSTOMIZE_CHROME_TOOLBAR,
