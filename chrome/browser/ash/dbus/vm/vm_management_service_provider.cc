@@ -28,13 +28,23 @@ namespace ash {
 
 namespace {
 
-void SendResponse(dbus::MethodCall* method_call,
-                  dbus::ExportedObject::ResponseSender response_sender,
-                  bool answer) {
+void SendBoolResponse(dbus::MethodCall* method_call,
+                      dbus::ExportedObject::ResponseSender response_sender,
+                      bool answer) {
   std::unique_ptr<dbus::Response> response =
       dbus::Response::FromMethodCall(method_call);
   dbus::MessageWriter writer(response.get());
   writer.AppendBool(answer);
+  std::move(response_sender).Run(std::move(response));
+}
+
+void SendIntResponse(dbus::MethodCall* method_call,
+                     dbus::ExportedObject::ResponseSender response_sender,
+                     int answer) {
+  std::unique_ptr<dbus::Response> response =
+      dbus::Response::FromMethodCall(method_call);
+  dbus::MessageWriter writer(response.get());
+  writer.AppendInt32(answer);
   std::move(response_sender).Run(std::move(response));
 }
 
@@ -112,7 +122,7 @@ void VmManagementServiceProvider::GetCrostiniVmType(
     }
   }
 
-  SendResponse(method_call, std::move(response_sender), vm_type);
+  SendIntResponse(method_call, std::move(response_sender), vm_type);
 }
 
 void VmManagementServiceProvider::SetCrostiniVmType(
@@ -171,7 +181,7 @@ void VmManagementServiceProvider::SetCrostiniVmType(
   bool set_vm_type = guest_os::UpdateContainerVmType(
       profile, vm_type, crostini::kCrostiniDefaultVmName);
 
-  SendResponse(method_call, std::move(response_sender), set_vm_type);
+  SendBoolResponse(method_call, std::move(response_sender), set_vm_type);
 }
 
 }  // namespace ash
