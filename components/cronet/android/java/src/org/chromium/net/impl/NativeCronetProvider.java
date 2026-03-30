@@ -60,6 +60,16 @@ public class NativeCronetProvider extends CronetProvider {
 
     @Override
     public boolean isEnabled() {
+        // Check for the presence of the NativeCronetProviderSentinel class. See the comments on
+        // NativeCronetProviderSentinel for why we do this.
+        try {
+            Class.forName(
+                    this.getClass().getName() + "Sentinel",
+                    /* initialize= */ false,
+                    this.getClass().getClassLoader());
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
         return true;
     }
 

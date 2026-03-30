@@ -617,6 +617,7 @@ android_library("cronet_impl_native_java") {
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetEngineBuilderWithLibraryLoaderImpl.java",
     "java/src/org/chromium/net/impl/NativeCronetProvider.java",
+    "java/src/org/chromium/net/impl/NativeCronetProviderSentinel.java",
     "java/src/org/chromium/net/impl/ProxyCallbackRequestImpl.java",
   ]
 
@@ -1640,6 +1641,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/impl/CronetAdaptiveRequestContextTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetLoggerTest.java",
     "test/javatests/src/org/chromium/net/impl/CronetManifestTest.java",
+    "test/javatests/src/org/chromium/net/impl/NativeCronetProviderTest.java",
     "test/javatests/src/org/chromium/net/impl/UserAgentIntegrationTest.java",
     "test/javatests/src/org/chromium/net/impl/UserAgentTest.java",
     "test/javatests/src/org/chromium/net/impl/UserAgentTestUtil.java",
