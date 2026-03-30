@@ -13,6 +13,19 @@
 
 namespace glic {
 
+namespace {
+base::OnceCallback<gfx::Point(ui::TrackedElement*)> MoveMouseToCallback(
+    gfx::Vector2d offset) {
+  return base::BindOnce(
+      [](gfx::Vector2d offset, ui::TrackedElement* el) {
+        auto* view =
+            views::test::InteractiveViewsTestApi::AsView<views::View>(el);
+        return view->GetBoundsInScreen().origin() + offset;
+      },
+      std::move(offset));
+}
+}  // namespace
+
 class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
  public:
   SelectionOverlayInteractiveTest() {
@@ -148,6 +161,42 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       InAnyContext(SendKeyPress(test::kGlicHostElementId, ui::VKEY_ESCAPE)),
       InAnyContext(WaitForHide(test::kGlicHostElementId)),
       WaitForHide(OverlayBaseController::kOverlayId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       FocusBackToGlicAfterSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
+                                      kGlicHasFocus);
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
+                                                    "glic-selection-overlay"}),
+      CheckResult(
+          [this]() {
+            auto* instance = GetGlicInstanceImpl();
+            return instance && instance->HasFocus();
+          },
+          false),
+      PollState(kGlicHasFocus,
+                [this]() {
+                  auto* instance = GetGlicInstanceImpl();
+                  return instance && instance->HasFocus();
+                }),
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  MoveMouseToCallback(gfx::Vector2d(10, 10))),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  MoveMouseToCallback(gfx::Vector2d(100, 100))),
+      WaitForState(kGlicHasFocus, true));
 }
 
 }  // namespace glic

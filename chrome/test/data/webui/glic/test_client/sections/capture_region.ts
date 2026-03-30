@@ -28,7 +28,7 @@ function onCaptureRegionClick() {
   if (captureRegionSubscription) {
     // If capture is in progress, cancel it.
     captureRegionSubscription.unsubscribe();
-    // The error handler in the subscription will clean up.
+    resetCaptureButton();
   } else {
     // Start capturing.
     if (!browser.captureRegion) {

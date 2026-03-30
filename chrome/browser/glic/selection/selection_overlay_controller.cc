@@ -420,6 +420,13 @@ void SelectionOverlayController::RenderRegions() {
       GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
   service->SendAdditionalContext(tab_->GetHandle(),
                                  std::move(additional_context));
+  if (GlicInstance* instance = service->GetInstanceForTab(tab_);
+      instance && instance->IsActive()) {
+    if (content::WebContents* web_contents =
+            instance->host().webui_contents()) {
+      web_contents->Focus();
+    }
+  }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
