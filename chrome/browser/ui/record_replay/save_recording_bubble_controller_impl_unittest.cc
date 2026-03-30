@@ -15,10 +15,11 @@ namespace record_replay {
 class MockRecordingDataManager : public RecordingDataManager {
  public:
   MOCK_METHOD(void, AddRecording, (Recording recording), (override));
-  MOCK_METHOD(base::optional_ref<const Recording>,
-              GetRecording,
-              (const std::string& url),
-              (const, override));
+  MOCK_METHOD(void,
+              GetRecordingsByUrl,
+              (std::string url,
+               base::OnceCallback<void(std::vector<Recording>)> callback),
+              (override));
 };
 
 class SaveRecordingBubbleControllerImplTest : public testing::Test {};

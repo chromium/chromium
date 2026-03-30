@@ -9,7 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
-#include "components/leveldb_proto/public/proto_database_provider.h"
+#include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,33 +17,51 @@ namespace record_replay {
 
 namespace {
 
+Recording CreateLoginRecording() {
+  Recording r;
+  r.set_url("https://foo.com");
+  r.set_name("Login Recording");
+  r.set_screenshot("fake_screenshot_data_for_login");
+  r.set_start_time(1337);
+  Recording::Action* action = r.add_actions();
+  action->set_delta(8);
+  action->set_element_selector("#username");
+  action->mutable_click_specifics();
+  action = r.add_actions();
+  action->set_delta(14);
+  action->set_element_selector("#password");
+  action->mutable_click_specifics();
+  return r;
+}
+
+Recording CreateAppointmentRecording() {
+  Recording r;
+  r.set_url("https://bar.com");
+  r.set_name("Appointment Recording");
+  r.set_screenshot("fake_screenshot_data_for_appointment");
+  r.set_start_time(8008);
+  Recording::Action* action = r.add_actions();
+  action->set_delta(11);
+  action->set_element_selector("#book");
+  action->mutable_click_specifics();
+  return r;
+}
+
 using ::base::test::EqualsProto;
-using ::testing::Optional;
 
 class RecordingDataManagerImplTest : public ::testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    db_provider_ = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
-        temp_dir_.GetPath());
-    RecreateCache();
+    data_manager_ =
+        std::make_unique<RecordingDataManagerImpl>(temp_dir_.GetPath());
+    WaitForDatabaseOperations();
   }
 
   void TearDown() override {
     data_manager_.reset();
-    db_provider_.reset();
-    // Wait for destruction on a different sequence.
     WaitForDatabaseOperations();
-  }
-
-  // Simulates restart of the browser by recreating the cache.
-  void RecreateCache() {
-    // Process remaining operations.
-    WaitForDatabaseOperations();
-    data_manager_ = std::make_unique<RecordingDataManagerImpl>(
-        db_provider_.get(), temp_dir_.GetPath());
-    // Wait until database has loaded.
-    WaitForDatabaseOperations();
+    ASSERT_TRUE(temp_dir_.Delete());
   }
 
   void WaitForDatabaseOperations() { task_environment_.RunUntilIdle(); }
@@ -53,106 +71,75 @@ class RecordingDataManagerImplTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> db_provider_;
   std::unique_ptr<RecordingDataManagerImpl> data_manager_;
+  base::ScopedTempDir temp_dir_;
 };
 
+TEST_F(RecordingDataManagerImplTest, AddAndRetrieveRecording) {
+  const Recording recording = CreateLoginRecording();
+
+  data_manager().AddRecording(recording);
+  WaitForDatabaseOperations();
+
+  base::test::TestFuture<std::vector<Recording>> future;
+  data_manager().GetRecordingsByUrl(recording.url(), future.GetCallback());
+  std::vector<Recording> recordings = future.Get();
+  ASSERT_EQ(recordings.size(), 1u);
+  EXPECT_THAT(recordings[0], EqualsProto(recording));
+}
+
 // Tests that recordings can be added and retrieved from the database.
-TEST_F(RecordingDataManagerImplTest, AddAndGetRecording) {
-  const Recording r1 = [] {
-    Recording r;
-    r.set_url("https://foo.com");
-    r.set_start_time(123);
-    Recording::Action* action = r.add_actions();
-    action->set_delta(8);
-    action->set_element_selector("#foo");
-    action->mutable_click_specifics();
-    return r;
-  }();
-  const Recording r2 = [] {
-    Recording r;
-    r.set_url("https://bar.com");
-    r.set_start_time(456);
-    Recording::Action* action = r.add_actions();
-    action->set_delta(9);
-    action->set_element_selector("#bar");
-    action->mutable_click_specifics();
-    return r;
-  }();
-
-  EXPECT_FALSE(data_manager().GetRecording("https://foo.com"));
-  EXPECT_FALSE(data_manager().GetRecording("https://bar.com"));
-
-  data_manager().AddRecording(r1);
-  WaitForDatabaseOperations();
-
-  EXPECT_THAT(data_manager().GetRecording("https://foo.com"),
-              Optional(EqualsProto(r1)));
-  EXPECT_FALSE(data_manager().GetRecording("https://bar.com"));
-
-  data_manager().AddRecording(r2);
-  WaitForDatabaseOperations();
-
-  EXPECT_THAT(data_manager().GetRecording("https://foo.com"),
-              Optional(EqualsProto(r1)));
-  EXPECT_THAT(data_manager().GetRecording("https://bar.com"),
-              Optional(EqualsProto(r2)));
-}
-
-TEST_F(RecordingDataManagerImplTest, AddRecordingWithName) {
-  Recording r;
-  r.set_url("https://foo.com");
-  r.set_name("My Recording");
-
-  data_manager().AddRecording(r);
+TEST_F(RecordingDataManagerImplTest, AddMultipleRecordings) {
+  const Recording login_recording = CreateLoginRecording();
+  const Recording appointment_recording = CreateAppointmentRecording();
 
   {
-    auto recording = data_manager().GetRecording("https://foo.com");
-    ASSERT_TRUE(recording.has_value());
-    EXPECT_EQ(recording->name(), "My Recording");
+    base::test::TestFuture<std::vector<Recording>> login_future;
+    base::test::TestFuture<std::vector<Recording>> appointment_future;
+    data_manager().GetRecordingsByUrl(login_recording.url(),
+                                      login_future.GetCallback());
+    data_manager().GetRecordingsByUrl(appointment_recording.url(),
+                                      appointment_future.GetCallback());
+    EXPECT_TRUE(login_future.Get().empty());
+    EXPECT_TRUE(appointment_future.Get().empty());
   }
 
-  RecreateCache();
-  auto recording = data_manager().GetRecording("https://foo.com");
-  ASSERT_TRUE(recording.has_value());
-  EXPECT_EQ(recording->name(), "My Recording");
-}
-
-TEST_F(RecordingDataManagerImplTest, AddRecordingWithScreenshot) {
-  Recording r;
-  r.set_url("https://foo.com");
-  r.set_screenshot("fake_screenshot_data");
-
-  data_manager().AddRecording(r);
+  data_manager().AddRecording(appointment_recording);
+  data_manager().AddRecording(login_recording);
+  WaitForDatabaseOperations();
 
   {
-    auto recording = data_manager().GetRecording("https://foo.com");
-    ASSERT_TRUE(recording.has_value());
-    EXPECT_EQ(recording->screenshot(), "fake_screenshot_data");
+    base::test::TestFuture<std::vector<Recording>> login_future;
+    base::test::TestFuture<std::vector<Recording>> appointment_future;
+    data_manager().GetRecordingsByUrl(login_recording.url(),
+                                      login_future.GetCallback());
+    data_manager().GetRecordingsByUrl(appointment_recording.url(),
+                                      appointment_future.GetCallback());
+    std::vector<Recording> login_recordings = login_future.Get();
+    std::vector<Recording> appointment_recordings = appointment_future.Get();
+    ASSERT_EQ(login_recordings.size(), 1u);
+    ASSERT_EQ(appointment_recordings.size(), 1u);
+    EXPECT_THAT(login_recordings[0], EqualsProto(login_recording));
+    EXPECT_THAT(appointment_recordings[0], EqualsProto(appointment_recording));
   }
-
-  RecreateCache();
-  auto recording = data_manager().GetRecording("https://foo.com");
-  ASSERT_TRUE(recording.has_value());
-  EXPECT_EQ(recording->screenshot(), "fake_screenshot_data");
 }
 
-// Tests that RecordingDataManagerImpl handles a race condition in LevelDB:
-// TODO(crbug.com/483687781): Remove this test once the the issue fixed.
-TEST(RecordingDataManagerImplTest_LevelDbRaceCondition, AvoidDcheck) {
-  base::test::TaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto db_provider = std::make_unique<leveldb_proto::ProtoDatabaseProvider>(
-      temp_dir.GetPath());
-  auto data_manager = std::make_unique<RecordingDataManagerImpl>(
-      db_provider.get(), temp_dir.GetPath());
-  for (int i = 0; i < 12; ++i) {
-    data_manager->AddRecording(Recording());
-  }
-  task_environment.RunUntilIdle();
+TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
+  const Recording first_recording = CreateLoginRecording();
+  const Recording second_recording = CreateLoginRecording();
+
+  data_manager().AddRecording(first_recording);
+  data_manager().AddRecording(first_recording);
+  WaitForDatabaseOperations();
+
+  base::test::TestFuture<std::vector<Recording>> future;
+  data_manager().GetRecordingsByUrl(first_recording.url(),
+                                    future.GetCallback());
+  std::vector<Recording> recordings = future.Get();
+  ASSERT_EQ(recordings.size(), 2u);
+  // Ensure the newest recording is first since the UI currently uses that.
+  EXPECT_THAT(recordings[0], EqualsProto(second_recording));
+  EXPECT_THAT(recordings[1], EqualsProto(first_recording));
 }
 
 }  // namespace

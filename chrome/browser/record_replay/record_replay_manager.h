@@ -103,6 +103,7 @@ class RecordReplayManager : public autofill::AutofillManager::Observer {
   raw_ref<RecordReplayClient> client_;
   std::optional<Recorder> recorder_;
   std::optional<Replayer> replayer_;
+
   autofill::ScopedAutofillManagersObservation autofill_observation_{this};
   base::WeakPtrFactory<RecordReplayManager> weak_ptr_factory_{this};
 };

@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_RECORD_REPLAY_RECORDING_DATA_MANAGER_H_
 
 #include <string>
+#include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/types/optional_ref.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/record_replay/recording.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -26,9 +26,13 @@ class RecordingDataManager : public KeyedService {
   RecordingDataManager& operator=(RecordingDataManager&&) = delete;
   ~RecordingDataManager() override = default;
 
+  // Adds a recording to the database.
   virtual void AddRecording(Recording recording) = 0;
-  virtual base::optional_ref<const Recording> GetRecording(
-      const std::string& url) const LIFETIME_BOUND = 0;
+
+  // Retrieves every Recording that matches the given `url`.
+  virtual void GetRecordingsByUrl(
+      std::string url,
+      base::OnceCallback<void(std::vector<Recording>)> callback) = 0;
 };
 
 }  // namespace record_replay

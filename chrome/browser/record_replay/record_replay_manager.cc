@@ -193,23 +193,37 @@ void RecordReplayManager::GetMatchingRecording(
         FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
     return;
   }
-  base::optional_ref<const Recording> recording =
-      rdm->GetRecording(client_->GetPrimaryMainFrameUrl().spec());
-  if (!recording || recording->actions().empty()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
-    return;
-  }
 
-  GetMatchingElements(
-      Selector(recording->actions(0).element_selector()),
-      base::BindOnce(
-          [](Recording recording, std::vector<ElementId> matches) {
-            return matches.size() == 1 ? std::optional(std::move(recording))
-                                       : std::nullopt;
-          },
-          *recording)
-          .Then(std::move(cb)));
+  auto invoke_with_matching_recording =
+      [](base::WeakPtr<RecordReplayManager> self,
+         base::OnceCallback<void(std::optional<Recording>)> cb,
+         std::vector<Recording> recordings) {
+        if (!self || recordings.empty() || recordings[0].actions().empty()) {
+          std::move(cb).Run(std::nullopt);
+          return;
+        }
+
+        auto invoke_only_with_exact_match = base::BindOnce(
+            [](base::OnceCallback<void(std::optional<Recording>)> cb,
+               Recording recording, std::vector<ElementId> matches) {
+              if (matches.size() != 1) {
+                std::move(cb).Run(std::nullopt);
+                return;
+              }
+              std::move(cb).Run(std::move(recording));
+            });
+
+        Recording recording = std::move(recordings[0]);
+        Selector selector(recording.actions(0).element_selector());
+        self->GetMatchingElements(
+            std::move(selector),
+            base::BindOnce(std::move(invoke_only_with_exact_match),
+                           std::move(cb), std::move(recording)));
+      };
+
+  rdm->GetRecordingsByUrl(client_->GetPrimaryMainFrameUrl().spec(),
+                          base::BindOnce(invoke_with_matching_recording,
+                                         GetWeakPtr(), std::move(cb)));
 }
 
 void RecordReplayManager::StartReplay() {
