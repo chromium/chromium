@@ -4,6 +4,5 @@ This component manages the data models and synchronization logic for user accoun
 
 ## High Level Structure
 The component primarily manages:
-- **AccountSettingService**: Interface for reading and writing account settings.
+- **AccountSettingService**: Interface for reading account settings and observing changes.
 - **AccountSettingSyncBridge**: Sync integration for user settings.
-- **AccountSettingSyncUtil**: Utility helpers for sync model operations.
