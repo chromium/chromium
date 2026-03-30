@@ -1691,6 +1691,10 @@ const FeatureEntry::FeatureParam kNtpNextShowSimplificationUIWithDismissal[] = {
     {"NtpNextShowDismissalUIParam", "true"},
 };
 
+const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
+    {"NtpNextDisablementContextMenuParam", "true"},
+};
+
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
     {"- Show Deep Dive Suggestions", kNtpNextShowDeepDiveSuggestions, nullptr},
     {"- Show Row UI With Deep Dive", kNtpNextShowSimplificationUIWithDeepDive,
@@ -1720,6 +1724,7 @@ const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
      kNtpNextShowSimplificationUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
      nullptr},
     {"- Show Dismissal UI", kNtpNextShowSimplificationUIWithDismissal, nullptr},
+    {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpFeatureOptimizationModuleRemovalDefault[] =
