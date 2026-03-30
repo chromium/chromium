@@ -49,6 +49,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
@@ -275,7 +276,6 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_ExpandCollapse() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -295,6 +295,8 @@ public class HistoryTest {
         mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
+        KeyboardUtils.hideAndroidSoftKeyboard(
+                mActivityTestRule.getActivity().getWindow().getDecorView());
 
         // Initial state: cluster is collapsed. "One" and "Two" should not be displayed.
         onViewWaiting(withText(domain)).check(matches(isDisplayed()));
@@ -334,7 +336,6 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_RemoveItem() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -354,6 +355,8 @@ public class HistoryTest {
         mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
+        KeyboardUtils.hideAndroidSoftKeyboard(
+                mActivityTestRule.getActivity().getWindow().getDecorView());
 
         // Expand the cluster.
         onViewWaiting(
@@ -388,7 +391,6 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/493318914")
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
     public void testHistoryClustering_RemoveCluster() throws Exception {
         mActivityTestRule.startOnBlankPage();
@@ -408,6 +410,8 @@ public class HistoryTest {
         mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
+        KeyboardUtils.hideAndroidSoftKeyboard(
+                mActivityTestRule.getActivity().getWindow().getDecorView());
 
         // Verify the cluster is created.
         onViewWaiting(withText(domain)).check(matches(isDisplayed()));
