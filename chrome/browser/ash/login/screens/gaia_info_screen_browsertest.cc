@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "content/public/test/browser_test.h"
@@ -135,7 +137,8 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
                        ForwardFlowUserEntersQuickStart) {
   // Showing GAIA Info screen after exiting quick start screen requires OOBE to
   // be completed.
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
   ShowGaiaInfoScreen();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 

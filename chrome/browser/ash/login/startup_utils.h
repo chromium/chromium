@@ -35,9 +35,7 @@ class StartupUtils {
   static void MarkEulaAccepted(PrefService& local_state);
 
   // Marks OOBE process as completed.
-  // If `local_state` is nullptr, it's taken from g_browser_process.
-  // TODO(crbug.com/393260347): Remove the g_browser_process dependency.
-  static void MarkOobeCompleted(PrefService* local_state = nullptr);
+  static void MarkOobeCompleted(PrefService& local_state);
 
   // Stores the next pending OOBE screen in case it will need to be resumed.
   static void SaveOobePendingScreen(const std::string& screen);

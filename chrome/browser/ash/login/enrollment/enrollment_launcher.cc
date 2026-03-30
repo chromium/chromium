@@ -407,6 +407,9 @@ void EnrollmentLauncherImpl::OnTokenFetched(
 
 void EnrollmentLauncherImpl::OnEnrollmentFinished(
     policy::EnrollmentStatus status) {
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   // Regardless how enrollment has finished, |enrollment_handler_| is expired.
   // |client| might still be needed to connect the manager.
   auto client = enrollment_handler_->ReleaseClient();
@@ -448,9 +451,8 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
 
   // TODO(crbug.com/454136007): Investigate why OOBE is marked completed here
   if (!features::IsOobeAutoEnrollmentCheckForcedEnabled() ||
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kAutoEnrollmentCheckExited)) {
-    StartupUtils::MarkOobeCompleted();
+      local_state.GetBoolean(prefs::kAutoEnrollmentCheckExited)) {
+    StartupUtils::MarkOobeCompleted(local_state);
   }
 
   status_consumer_->OnDeviceEnrolled();

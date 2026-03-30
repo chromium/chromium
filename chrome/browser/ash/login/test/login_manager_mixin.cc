@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -192,7 +193,7 @@ void LoginManagerMixin::SetUpLocalStatePrefService(PrefService* local_state) {
     }
   }
 
-  StartupUtils::MarkOobeCompleted(local_state);
+  StartupUtils::MarkOobeCompleted(CHECK_DEREF(local_state));
 }
 
 void LoginManagerMixin::SetUpOnMainThread() {

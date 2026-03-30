@@ -6,6 +6,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_event_observer_test_api.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
@@ -68,7 +69,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, PRE_BrowserActive) {
                                               GaiaId(test::kTestGaiaId)));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
@@ -103,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest,
                                               GaiaId(test::kTestGaiaId)));
   EXPECT_EQ(session_manager::SessionState::OOBE,
             session_manager::SessionManager::Get()->session_state());
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserLoginTest,

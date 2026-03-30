@@ -9,6 +9,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/system_tray_test_api.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -265,7 +266,8 @@ IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
 
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy,
                        PRE_UnifiedTrayLabelsText) {
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenButtonsLocalePolicy, UnifiedTrayLabelsText) {

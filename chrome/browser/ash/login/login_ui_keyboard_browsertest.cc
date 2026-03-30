@@ -138,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, PRE_CheckPODSwitches) {
   RegisterUser(test_users_[1]);
   RegisterUser(test_users_[2]);
   InitUserLastInputMethod();
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIUserAddingKeyboardTest, CheckPODSwitches) {
@@ -187,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, PRE_CheckPODScreenDefault) {
   RegisterUser(test_users_[0]);
   RegisterUser(test_users_[1]);
 
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 // Check default IME initialization, when there is no IME configuration in
@@ -210,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, PRE_CheckPODScreenWithUsers) {
 
   InitUserLastInputMethod();
 
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
@@ -318,7 +321,8 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,
 
   InitUserLastInputMethod();
 
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
 }
 
 IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTestWithUsersAndOwner,

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
@@ -66,7 +67,7 @@ class InterruptedAutoStartEnrollmentTest : public OobeBaseTest {
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     OobeBaseTest::SetUpLocalStatePrefService(local_state);
 
-    StartupUtils::MarkOobeCompleted(local_state);
+    StartupUtils::MarkOobeCompleted(CHECK_DEREF(local_state));
     local_state->SetBoolean(ash::prefs::kDeviceEnrollmentAutoStart, true);
     local_state->SetBoolean(ash::prefs::kDeviceEnrollmentCanExit, false);
   }

@@ -2146,7 +2146,7 @@ void WizardController::SkipToLoginForTesting() {
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
   if (features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
-    StartupUtils::MarkOobeCompleted();
+    StartupUtils::MarkOobeCompleted(local_state_.get());
   }
   OnDeviceDisabledChecked(/*device_disabled=*/false);
 }
@@ -3320,7 +3320,7 @@ void WizardController::PerformOOBECompletedActions(
     }
   }
 
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(local_state_.get());
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordPreLoginOobeComplete(
       flow_type);
 

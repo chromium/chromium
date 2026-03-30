@@ -8,11 +8,13 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sessions/exit_type_service.h"
@@ -171,7 +173,8 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(PostLoginDeferredTaskTest, PRE_PRE_Basic) {
   if (ShouldPerformLogin()) {
     EXPECT_EQ(SessionState::OOBE, session_state());
-    StartupUtils::MarkOobeCompleted();
+    StartupUtils::MarkOobeCompleted(
+        CHECK_DEREF(g_browser_process->local_state()));
   }
 
   // This needs to happen before UserManager is created.

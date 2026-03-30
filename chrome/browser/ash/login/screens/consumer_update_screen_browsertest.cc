@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "ash/constants/ash_features.h"
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_test_helpers.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -140,7 +142,8 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
 
     if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
       // Showing the GAIA screen requires OOBE to be marked complete.
-      StartupUtils::MarkOobeCompleted();
+      StartupUtils::MarkOobeCompleted(
+          CHECK_DEREF(g_browser_process->local_state()));
     }
 
     LoginDisplayHost::default_host()

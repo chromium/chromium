@@ -205,23 +205,19 @@ void StartupUtils::MarkEulaAccepted(PrefService& local_state) {
 }
 
 // static
-void StartupUtils::MarkOobeCompleted(PrefService* local_state) {
-  if (!local_state) {
-    local_state = g_browser_process->local_state();
-  }
-
+void StartupUtils::MarkOobeCompleted(PrefService& local_state) {
   // Forcing the second pref will force this one as well. Even if this one
   // doesn't end up synced it is only going to eat up a couple of bytes with no
   // side-effects.
-  SaveBoolPreferenceForced(*local_state, prefs::kOobeComplete, true);
+  SaveBoolPreferenceForced(local_state, prefs::kOobeComplete, true);
 
   // Successful enrollment implies that recovery is not required.
-  SaveBoolPreferenceForced(*local_state,
-                           ash::prefs::kEnrollmentRecoveryRequired, false);
+  SaveBoolPreferenceForced(local_state, ash::prefs::kEnrollmentRecoveryRequired,
+                           false);
 
   // If `kOobeComplete` is already true, the `kAutoEnrollmentCheckExited` pref
   // is no longer needed as its purpose is to potentially block OOBE completion.
-  local_state->ClearPref(prefs::kAutoEnrollmentCheckExited);
+  local_state.ClearPref(prefs::kAutoEnrollmentCheckExited);
 }
 
 // static

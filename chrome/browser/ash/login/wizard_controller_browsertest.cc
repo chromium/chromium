@@ -972,7 +972,8 @@ class WizardControllerUpdateAfterCompletedOobeTest
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     WizardControllerFlowTest::SetUpLocalStatePrefService(local_state);
-    StartupUtils::MarkOobeCompleted(local_state);  // Pretend OOBE was complete.
+    StartupUtils::MarkOobeCompleted(
+        CHECK_DEREF(local_state));  // Pretend OOBE was complete.
   }
 };
 
@@ -2452,7 +2453,7 @@ class WizardControllerRemoteActivityNotificationTest
 
   void SetUpLocalStatePrefService(PrefService* local_state) override {
     WizardControllerTest::SetUpLocalStatePrefService(local_state);
-    StartupUtils::MarkOobeCompleted(local_state);
+    StartupUtils::MarkOobeCompleted(CHECK_DEREF(local_state));
   }
 
   void SetPref(const std::string& pref, bool value) {
@@ -2841,7 +2842,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
 
 IN_PROC_BROWSER_TEST_F(WizardControllerFlowWithAutoEnrollmentCheckForcedTest,
                        NoFatalErrorOnGaiaAdvanceWhenOobeComplete) {
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
   WaitForOobeUI();
 
   WizardController::default_controller()->AdvanceToScreen(GaiaView::kScreenId);

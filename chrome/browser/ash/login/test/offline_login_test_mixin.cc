@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/test/offline_login_test_mixin.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -64,7 +65,8 @@ void OfflineLoginTestMixin::TearDownOnMainThread() {
 }
 
 void OfflineLoginTestMixin::PrepareOfflineLogin() {
-  StartupUtils::MarkOobeCompleted();
+  StartupUtils::MarkOobeCompleted(
+      CHECK_DEREF(g_browser_process->local_state()));
   DeviceSettingsProvider(CrosSettingsProvider::NotifyObserversCallback(),
                          DeviceSettingsService::Get(),
                          g_browser_process->local_state())
