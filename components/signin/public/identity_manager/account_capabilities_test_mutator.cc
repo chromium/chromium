@@ -119,7 +119,19 @@ void AccountCapabilitiesTestMutator::set_can_use_edu_features(bool value) {
 #endif
 
 void AccountCapabilitiesTestMutator::set_can_use_gemini_in_chrome(bool value) {
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          switches::kReadContextualAccountCapabilities)) {
+    capabilities_
+        ->capabilities_map_[kCanContextuallyUseGeminiInChromeCapabilityName] =
+        value;
+  } else {
+    capabilities_->capabilities_map_[kCanUseGeminiInChromeCapabilityName] =
+        value;
+  }
+#else
   capabilities_->capabilities_map_[kCanUseGeminiInChromeCapabilityName] = value;
+#endif
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

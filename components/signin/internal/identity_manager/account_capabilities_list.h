@@ -164,6 +164,13 @@ ACCOUNT_CAPABILITY_F(
 #endif
 
 #if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kCanContextuallyUseGeminiInChromeCapabilityName,
+                     CAN_CONTEXTUALLY_USE_GEMINI_IN_CHROME_NAME,
+                     "accountcapabilities/giztmobnmnqxa",
+                     switches::kReadContextualAccountCapabilities)
+#endif
+
+#if BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY_F(kCanContextuallyUseModelExecutionFeaturesName,
                      CAN_CONTEXTUALLY_USE_MODEL_EXECUTION_FEATURES_NAME,
                      "accountcapabilities/giztinznmnqxa",
