@@ -25,6 +25,7 @@ class MockContextualSearchContextController
   ~MockContextualSearchContextController() override;
 
   MOCK_METHOD(void, InitializeIfNeeded, (), (override));
+  MOCK_METHOD(void, SetIsBackgrounded, (bool backgrounded), (override));
   MOCK_METHOD(
       void,
       CreateSearchUrl,

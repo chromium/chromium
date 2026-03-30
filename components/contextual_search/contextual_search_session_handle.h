@@ -71,6 +71,9 @@ class ContextualSearchSessionHandle {
   // Notifies the session handle that the session has started.
   virtual void NotifySessionStarted();
 
+  // Sets whether or not the session is backgrounded.
+  virtual void SetIsBackgrounded(bool backgrounded);
+
   // Notifies the session handle that the session has been abandoned.
   void NotifySessionAbandoned();
 

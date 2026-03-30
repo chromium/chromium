@@ -627,6 +627,49 @@ TEST_F(ComposeboxQueryControllerTest,
       /*expected_state=*/QueryControllerState::kClusterInfoInvalid);
 }
 
+TEST_F(ComposeboxQueryControllerTest, SetIsBackgroundedSuspendsPolling) {
+  // Act: Initialize session and immediately background.
+  controller().InitializeIfNeeded();
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller().query_controller_state());
+
+  controller().SetIsBackgrounded(true);
+
+  // Assert: Moves to invalid state (polling broken).
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller().query_controller_state());
+
+  task_environment().FastForwardBy(base::Seconds(30));
+
+  // Assert: Remains invalid (no new poll).
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller().query_controller_state());
+
+  // Act: Foreground.
+  controller().SetIsBackgrounded(false);
+
+  // Assert: Resumes polling.
+  EXPECT_EQ(QueryControllerState::kAwaitingClusterInfoResponse,
+            controller().query_controller_state());
+}
+
+TEST_F(ComposeboxQueryControllerTest, SetIsBackgroundedAfterSuccessBreaksLoop) {
+  // Act: Initialize and wait for success.
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();  // Moves to kClusterInfoReceived
+
+  controller().SetIsBackgrounded(true);
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller().query_controller_state());
+
+  // Fast forward past lifetime (e.g. 1 hour).
+  task_environment().FastForwardBy(base::Hours(24));
+
+  // Assert: Remains invalid (no new poll triggered by delayed task).
+  EXPECT_EQ(QueryControllerState::kClusterInfoInvalid,
+            controller().query_controller_state());
+}
+
 TEST_F(ComposeboxQueryControllerTest, ClusterInfoFailureFailsActiveUploads) {
   // Arrange: Simulate an error in the cluster info request.
   controller().set_next_cluster_info_request_should_return_error(true);
