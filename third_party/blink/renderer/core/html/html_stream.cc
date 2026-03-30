@@ -146,6 +146,13 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (!target->IsElementNode() && !target->IsShadowRoot()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kHierarchyRequestError,
+                                      "Cannot stream before/after a node that "
+                                      "is not an element or shadow root");
+    return nullptr;
+  }
+
   std::optional<FragmentParserOptions> trusted_options =
       sanitizer_mode == Sanitizer::Mode::kSafe
           ? std::make_optional(options)
