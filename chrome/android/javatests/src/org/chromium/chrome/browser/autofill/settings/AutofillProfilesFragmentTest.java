@@ -1089,7 +1089,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)
     public void testDisabledWalletDataSharingDataCard_shownWhenDisabled() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1153,7 +1153,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)
     public void testDisabledWalletDataSharingDataCard_notShownWhenFeatureDisabled()
             throws Exception {
         ThreadUtils.runOnUiThreadBlocking(

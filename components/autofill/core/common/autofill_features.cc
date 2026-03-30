@@ -290,6 +290,11 @@ BASE_FEATURE_PARAM(bool,
 
 // If enabled, AutofillAi supports shipment entities.
 BASE_FEATURE(kAutofillAiShipment, base::FEATURE_DISABLED_BY_DEFAULT);
+// Controls whether a banner is shown in settings when wallet data sharing is
+// disabled.
+
+BASE_FEATURE(kAutofillAiShowWalletDisabledBanner,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, the client may trigger the server model for AutofillAI type
 // predictions using Private AI Compute.
