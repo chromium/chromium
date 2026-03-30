@@ -1134,18 +1134,6 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
         ResolveMaxInlineLength(space, style, border_padding, MinMaxSizesFunc,
                                style.LogicalMaxWidth())};
 
-    // Transfer the block min/max sizes if applicable.
-    if (style.LogicalWidth().HasAuto() &&
-        space.InlineAutoBehavior() != AutoSizeBehavior::kStretchExplicit) {
-      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
-      inline_min_max_sizes.min_size =
-          std::max(inline_min_max_sizes.min_size,
-                   std::min(transferred_min_max_sizes.min_size,
-                            inline_min_max_sizes.max_size));
-      inline_min_max_sizes.max_size = std::min(
-          inline_min_max_sizes.max_size, transferred_min_max_sizes.max_size);
-    }
-
     // Ensure the max-size encompasses the min-size.
     inline_min_max_sizes.max_size =
         std::max(inline_min_max_sizes.min_size, inline_min_max_sizes.max_size);
@@ -1165,6 +1153,17 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
         replaced_inline =
             inline_min_max_sizes.ClampSizeToMinAndMax(inline_size);
       }
+    }
+
+    // Transfer the block min/max sizes if we didn't resolve our main size.
+    if (!replaced_inline) {
+      // https://drafts.csswg.org/css-sizing-4/#aspect-ratio-size-transfers
+      inline_min_max_sizes.min_size =
+          std::max(inline_min_max_sizes.min_size,
+                   std::min(transferred_min_max_sizes.min_size,
+                            inline_min_max_sizes.max_size));
+      inline_min_max_sizes.max_size = std::min(
+          inline_min_max_sizes.max_size, transferred_min_max_sizes.max_size);
     }
   }
 
