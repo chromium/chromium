@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/form_filling_helper.h"
@@ -110,11 +111,7 @@ ChangePasswordFormFillingSubmissionHelper::
     : creation_time_(base::Time::Now()),
       web_contents_(web_contents),
       client_(client),
-      callback_(base::BindOnce(&LogError).Then(std::move(callback))) {
-  capture_annotated_page_content_ =
-      base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
-                     GetAIPageContentOptions());
-}
+      callback_(base::BindOnce(&LogError).Then(std::move(callback))) {}
 
 ChangePasswordFormFillingSubmissionHelper::
     ChangePasswordFormFillingSubmissionHelper(
@@ -127,22 +124,6 @@ ChangePasswordFormFillingSubmissionHelper::
                                                 std::move(callback)) {
   CHECK(logs_uploader);
   logs_uploader_ = logs_uploader;
-}
-
-ChangePasswordFormFillingSubmissionHelper::
-    ChangePasswordFormFillingSubmissionHelper(
-        base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>,
-        content::WebContents* web_contents,
-        password_manager::PasswordManagerClient* client,
-        ModelQualityLogsUploader* logs_uploader,
-        base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-            capture_annotated_page_content,
-        base::OnceCallback<void(SubmissionResult)> result_callback)
-    : ChangePasswordFormFillingSubmissionHelper(web_contents,
-                                                client,
-                                                logs_uploader,
-                                                std::move(result_callback)) {
-  capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
 ChangePasswordFormFillingSubmissionHelper::
@@ -324,9 +305,9 @@ void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
            generated_password_);
   form_manager_->UpdateBackupPassword(stored_password_);
 
-  CHECK(capture_annotated_page_content_);
-  std::move(capture_annotated_page_content_)
-      .Run(base::BindOnce(
+  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+      web_contents_, GetAIPageContentOptions(),
+      base::BindOnce(
           &ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived,
           weak_ptr_factory_.GetWeakPtr()));
 }

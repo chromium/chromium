@@ -12,6 +12,7 @@
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -91,9 +92,7 @@ void PostResponse(
   auto result = optimization_guide::OptimizationGuideModelExecutionResult(
       optimization_guide::AnyWrapProto(response),
       /*execution_info=*/nullptr);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
-                                /*log_entry=*/nullptr));
+  std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
 }
 
 void CheckOpenFormStatus(const optimization_guide::proto::LogAiDataRequest& log,
@@ -205,9 +204,6 @@ class ChangePasswordFormFinderTest : public ChromeRenderViewHostTestHarness,
 
   password_manager::FakeFormFetcher& form_fetcher() { return form_fetcher_; }
 
-  base::PassKey<class ChangePasswordFormFinderTest> pass_key() {
-    return base::PassKey<class ChangePasswordFormFinderTest>();
-  }
 
   MockOptimizationGuideKeyedService* optimization_service() {
     return static_cast<MockOptimizationGuideKeyedService*>(
@@ -234,20 +230,15 @@ TEST_P(ChangePasswordFormFinderTest, PasswordChangeFormFound) {
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  ChangePasswordFormFinder form_finder(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+  ChangePasswordFormFinder form_finder(web_contents(), client(), &logs_uploader,
+                                       completion_callback.Get(),
+                                       base::DoNothing());
 
   if (!form_finder.form_waiter()) {
     form_finder.TriggerPageStabilityForTesting();
   }
 
   ASSERT_TRUE(form_finder.form_waiter());
-  EXPECT_CALL(capture_annotated_page_content, Run).Times(0);
   EXPECT_CALL(completion_callback, Run(form_manager));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       form_finder.form_waiter())
@@ -265,13 +256,9 @@ TEST_P(ChangePasswordFormFinderTest, ChangePasswordFormNotDetected) {
       completion_callback;
   base::MockOnceCallback<void(ChangePasswordFormFinder::ErrorCase)>
       error_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  ChangePasswordFormFinder form_finder(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), error_callback.Get(),
-      capture_annotated_page_content.Get());
+  ChangePasswordFormFinder form_finder(web_contents(), client(), &logs_uploader,
+                                       completion_callback.Get(),
+                                       error_callback.Get());
 
   if (!form_finder.form_waiter()) {
     form_finder.TriggerPageStabilityForTesting();
@@ -299,13 +286,9 @@ TEST_P(ChangePasswordFormFinderTest,
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  ChangePasswordFormFinder form_finder(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+  ChangePasswordFormFinder form_finder(web_contents(), client(), &logs_uploader,
+                                       completion_callback.Get(),
+                                       base::DoNothing());
 
   if (!form_finder.form_waiter()) {
     form_finder.TriggerPageStabilityForTesting();
@@ -323,14 +306,10 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
       completion_callback;
   base::MockOnceCallback<void(ChangePasswordFormFinder::ErrorCase)>
       error_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), error_callback.Get(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      error_callback.Get());
 
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
@@ -342,12 +321,11 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
-
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -373,14 +351,10 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelModelFailedWhenFormNotFound) {
 TEST_P(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      base::DoNothing());
 
   GURL test_url("https://example.com/change-password");
   std::u16string test_title = u"Change Your Password";
@@ -415,12 +389,11 @@ TEST_P(ChangePasswordFormFinderTest, ExecuteModelOpenFormRequestHasArgs) {
 
             PostResponse<true>(std::move(callback));
           });
-
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   CheckOpenFormStatus(
       logs_uploader.GetFinalLog(),
@@ -433,14 +406,10 @@ TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
       completion_callback;
   base::MockOnceCallback<void(ChangePasswordFormFinder::ErrorCase)>
       error_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), error_callback.Get(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      error_callback.Get());
 
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
@@ -453,11 +422,11 @@ TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedButFailed) {
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -479,15 +448,9 @@ TEST_P(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
   base::MockOnceCallback<void(ChangePasswordFormFinder::ErrorCase)>
       error_callback;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(base::unexpected("Failure")));
-
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
-      error_callback.Get(), capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, base::DoNothing(),
+      error_callback.Get());
 
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
@@ -496,13 +459,11 @@ TEST_P(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
   ASSERT_TRUE(form_finder->form_waiter());
   static_cast<content::WebContentsObserver*>(form_finder->form_waiter())
       ->DidStopLoading();
-
-  EXPECT_CALL(
-      error_callback,
-      Run(ChangePasswordFormFinder::ErrorCase::kFailedToCapturePageContent));
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(base::unexpected("Failure"));
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.PasswordChange.FailedCapturingPageContent",
@@ -512,14 +473,10 @@ TEST_P(ChangePasswordFormFinderTest, FailsCapturingAnnotatedPageContent) {
 TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      base::DoNothing());
 
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
@@ -532,11 +489,11 @@ TEST_P(ChangePasswordFormFinderTest, ButtonClickRequestedAndSucceeded) {
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -566,14 +523,10 @@ TEST_P(ChangePasswordFormFinderTest,
        ButtonClickRequestedAndSucceeded_InvisibleFormNotIgnored) {
   base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.Get(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, completion_callback.Get(),
+      base::DoNothing());
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
   }
@@ -585,11 +538,11 @@ TEST_P(ChangePasswordFormFinderTest,
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -620,14 +573,10 @@ TEST_P(ChangePasswordFormFinderTest,
        ButtonClickRequested_FormFound_ButtonClickSucceeded) {
   base::test::TestFuture<password_manager::PasswordFormManager*>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader,
-      completion_callback.GetCallback(), base::DoNothing(),
-      capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader,
+      completion_callback.GetCallback(), base::DoNothing());
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
   }
@@ -639,11 +588,11 @@ TEST_P(ChangePasswordFormFinderTest,
 
   EXPECT_CALL(*optimization_service(), ExecuteModel)
       .WillOnce(WithArg<3>(&PostResponse<true>));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   // Since ExecuteModel() call was successful, `form_finder` is now attempting
   // to click an underlying button.
@@ -678,8 +627,8 @@ TEST_P(ChangePasswordFormFinderTest, DurationRecordedOnDestruction) {
       capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
-      base::DoNothing(), capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, base::DoNothing(),
+      base::DoNothing());
 
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
@@ -698,13 +647,10 @@ TEST_P(ChangePasswordFormFinderTest, DurationRecordedOnDestruction) {
 TEST_P(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
   base::test::TestFuture<ChangePasswordFormFinder::ErrorCase>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
-      completion_callback.GetCallback(), capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, base::DoNothing(),
+      completion_callback.GetCallback());
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
   }
@@ -729,9 +675,11 @@ TEST_P(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
             FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
                                       /*log_entry=*/nullptr));
       }));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
+  task_environment()->FastForwardBy(
+      ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   EXPECT_EQ(completion_callback.Get(),
             ChangePasswordFormFinder::ErrorCase::kNoButtonToClick);
 
@@ -746,13 +694,10 @@ TEST_P(ChangePasswordFormFinderTest, InterventionNeededPageCausesFailure) {
       password_manager::features::kUserInterventionForPasswordChange);
   base::test::TestFuture<ChangePasswordFormFinder::ErrorCase>
       completion_callback;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_annotated_page_content;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());
   auto form_finder = std::make_unique<ChangePasswordFormFinder>(
-      pass_key(), web_contents(), client(), &logs_uploader, base::DoNothing(),
-      completion_callback.GetCallback(), capture_annotated_page_content.Get());
+      web_contents(), client(), &logs_uploader, base::DoNothing(),
+      completion_callback.GetCallback());
   if (!form_finder->form_waiter()) {
     form_finder->TriggerPageStabilityForTesting();
   }
@@ -776,11 +721,11 @@ TEST_P(ChangePasswordFormFinderTest, InterventionNeededPageCausesFailure) {
             FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
                                       /*log_entry=*/nullptr));
       }));
-  EXPECT_CALL(capture_annotated_page_content, Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   task_environment()->FastForwardBy(
       ChangePasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+  ASSERT_TRUE(form_finder->capturer());
+  form_finder->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   EXPECT_EQ(completion_callback.Get(),
             ChangePasswordFormFinder::ErrorCase::kInterruptionDetected);
 

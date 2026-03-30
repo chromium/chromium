@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -105,9 +106,6 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
   failure_callback_ =
       base::BindOnce(&LogFormNotFoundMetric).Then(std::move(failure_callback));
   CHECK(logs_uploader_);
-  capture_annotated_page_content_ =
-      base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
-                     GetAIPageContentOptions());
 
   if (base::FeatureList::IsEnabled(
           password_manager::features::kAwaitPageStabilityForPasswordChange)) {
@@ -123,23 +121,6 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
   timeout_timer_.Start(FROM_HERE, kFormWaitingTimeout,
                        base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
                                       weak_ptr_factory_.GetWeakPtr()));
-}
-
-ChangePasswordFormFinder::ChangePasswordFormFinder(
-    base::PassKey<class ChangePasswordFormFinderTest>,
-    content::WebContents* web_contents,
-    password_manager::PasswordManagerClient* client,
-    ModelQualityLogsUploader* logs_uploader,
-    ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
-    FailureCallback failure_callback,
-    base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-        capture_annotated_page_content)
-    : ChangePasswordFormFinder(web_contents,
-                               client,
-                               logs_uploader,
-                               std::move(success_callback),
-                               std::move(failure_callback)) {
-  capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
 ChangePasswordFormFinder::~ChangePasswordFormFinder() {
@@ -167,10 +148,10 @@ void ChangePasswordFormFinder::OnFormNotFoundInitially() {
         Logger::STRING_PASSWORD_CHANGE_INITIAL_FORM_WAITING_RESULT, false);
   }
 
-  CHECK(capture_annotated_page_content_);
-  std::move(capture_annotated_page_content_)
-      .Run(base::BindOnce(&ChangePasswordFormFinder::OnPageContentReceived,
-                          weak_ptr_factory_.GetWeakPtr()));
+  capturer_ = std::make_unique<AnnotatedPageContentCapturer>(
+      web_contents_, GetAIPageContentOptions(),
+      base::BindOnce(&ChangePasswordFormFinder::OnPageContentReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ChangePasswordFormFinder::OnFormFoundInitially(

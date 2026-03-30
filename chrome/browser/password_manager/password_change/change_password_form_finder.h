@@ -23,6 +23,7 @@ namespace content {
 class WebContents;
 }
 
+class AnnotatedPageContentCapturer;
 class ButtonClickHelper;
 class ModelQualityLogsUploader;
 class PasswordChangePageStabilityWaiter;
@@ -59,16 +60,6 @@ class ChangePasswordFormFinder {
       ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
       FailureCallback failure_callback);
 
-  ChangePasswordFormFinder(
-      base::PassKey<class ChangePasswordFormFinderTest>,
-      content::WebContents* web_contents,
-      password_manager::PasswordManagerClient* client,
-      ModelQualityLogsUploader* logs_uploader,
-      ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback,
-      FailureCallback failure_callback,
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-          capture_annotated_page_content);
-
   ~ChangePasswordFormFinder();
 
 #if defined(UNIT_TEST)
@@ -80,6 +71,7 @@ class ChangePasswordFormFinder {
 
   ChangePasswordFormWaiter* form_waiter() { return form_waiter_.get(); }
   ButtonClickHelper* click_helper() { return click_helper_.get(); }
+  AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
 #endif
 
  private:
@@ -114,8 +106,7 @@ class ChangePasswordFormFinder {
   FailureCallback failure_callback_;
   ChangePasswordFormWaiter::PasswordFormFoundCallback success_callback_;
 
-  base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
-      capture_annotated_page_content_;
+  std::unique_ptr<AnnotatedPageContentCapturer> capturer_;
 
   std::unique_ptr<ChangePasswordFormWaiter> form_waiter_;
   std::unique_ptr<PasswordChangePageStabilityWaiter> page_stability_waiter_;

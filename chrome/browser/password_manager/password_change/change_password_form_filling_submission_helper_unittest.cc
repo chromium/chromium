@@ -171,9 +171,7 @@ void PostResponseForUserIntervention(
   auto result = optimization_guide::OptimizationGuideModelExecutionResult(
       optimization_guide::AnyWrapProto(response),
       /*execution_info=*/nullptr);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(result),
-                                /*log_entry=*/nullptr));
+  std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
 }
 
 }  // namespace
@@ -218,10 +216,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
     existing_credential_.in_store =
         password_manager::PasswordForm::Store::kProfileStore;
     existing_credential_.scheme = password_manager::PasswordForm::Scheme::kHtml;
-
-    ON_CALL(capture_content_for_submit_form_step_, Run)
-        .WillByDefault(base::test::RunOnceCallback<0>(
-            optimization_guide::AIPageContentResult()));
   }
 
   void TearDown() override {
@@ -260,9 +254,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
       password_manager::PasswordFormManager* manager,
       base::OnceCallback<void(SubmissionResult)> result_callback) {
     auto verifier = std::make_unique<ChangePasswordFormFillingSubmissionHelper>(
-        base::PassKey<class ChangePasswordFormFillingSubmissionHelperTest>(),
         web_contents(), client(), logs_uploader_.get(),
-        capture_content_for_submit_form_step_.Get(),
         std::move(result_callback));
     return verifier;
   }
@@ -301,6 +293,9 @@ class ChangePasswordFormFillingSubmissionHelperTest
                   std::move(callback).Then(run_loop.QuitClosure()));
             }));
     CompleteFormFilling(manager, verifier, CreateFilledTestPasswordFormData());
+    ASSERT_TRUE(verifier->capturer());
+    verifier->capturer()->ReplyWithContent(
+        optimization_guide::AIPageContentResult());
     run_loop.Run();
   }
 
@@ -327,12 +322,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
     return password_store_.get();
   }
 
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>*
-  capture_content_for_submit_form_step() {
-    return &capture_content_for_submit_form_step_;
-  }
-
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
@@ -346,9 +335,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
   std::unique_ptr<ModelQualityLogsUploader> logs_uploader_;
   MockStubPasswordManagerDriver driver_;
   password_manager::PasswordForm existing_credential_;
-  base::MockCallback<
-      base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>>
-      capture_content_for_submit_form_step_;
   std::vector<std::unique_ptr<password_manager::PasswordFormManager>> managers_;
 };
 
@@ -434,6 +420,9 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
                       testing::SaveArg<0>(&presaved_generated_password_form)));
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   run_loop.Run();
 
   EXPECT_EQ(presaved_generated_password_form.username_value,
@@ -454,14 +443,16 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 
   auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
 
-  EXPECT_CALL(*capture_content_for_submit_form_step(), Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          base::unexpected("APC Capture Failed")));
-
   // Execution isn't triggered because page content capture failed.
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
+
+  EXPECT_FALSE(completion_future.IsReady());
+
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      base::unexpected("APC Capture Failed"));
 
   EXPECT_EQ(completion_future.Get().error(),
             SubmissionError::kFailedToCaptureContent);
@@ -537,7 +528,6 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
 
   auto verifier = CreateVerifier(form_manager, base::DoNothing());
 
-  EXPECT_CALL(*capture_content_for_submit_form_step(), Run).Times(0);
   // Expect a call to FillChangePasswordForm, although the returned form is
   // empty.
   CompleteFormFilling(form_manager, verifier.get(),
@@ -555,9 +545,6 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
         .WillOnce(
             base::test::RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   }
-  EXPECT_CALL(*capture_content_for_submit_form_step(), Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
@@ -567,11 +554,16 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
     ASSERT_TRUE(verifier->form_filler());
     verifier->form_filler()->SimulateFillingResult(
         CreateFilledTestPasswordFormData());
+  } else {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return verifier->capturer() != nullptr; }));
   }
+
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   task_environment()->RunUntilIdle();
 }
-
-
 
 TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
        ClickingSubmitButtonWorks) {
@@ -606,6 +598,10 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonNotFound) {
 
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
+
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_FALSE(verifier->click_helper());
 
@@ -643,7 +639,6 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 
   base::test::TestFuture<SubmissionResult> completion_future;
   auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
-  EXPECT_CALL(*capture_content_for_submit_form_step(), Run).Times(0);
   CompleteFormFilling(form_manager, verifier.get(), std::nullopt);
 
   CheckSubmitFormStatus(
@@ -661,9 +656,6 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
         .WillOnce(
             base::test::RunOnceCallback<5>(CreateFilledTestPasswordFormData()));
   }
-  EXPECT_CALL(*capture_content_for_submit_form_step(), Run)
-      .WillOnce(base::test::RunOnceCallback<0>(
-          optimization_guide::AIPageContentResult()));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
@@ -673,7 +665,14 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
     ASSERT_TRUE(verifier->form_filler());
     verifier->form_filler()->SimulateFillingResult(
         CreateFilledTestPasswordFormData());
+  } else {
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return verifier->capturer() != nullptr; }));
   }
+
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   task_environment()->RunUntilIdle();
 }
 
@@ -691,6 +690,9 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
       .WillOnce(WithArg<3>(&PostResponseForUserIntervention));
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
 
   EXPECT_EQ(completion_future.Get().error(),
             SubmissionError::kInterventionDetected);
@@ -711,6 +713,9 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
+  ASSERT_TRUE(verifier->capturer());
+  verifier->capturer()->ReplyWithContent(
+      optimization_guide::AIPageContentResult());
   EXPECT_EQ(completion_future.Get().error(),
             SubmissionError::kSubmitButtonNotFound);
   EXPECT_FALSE(verifier->click_helper());
