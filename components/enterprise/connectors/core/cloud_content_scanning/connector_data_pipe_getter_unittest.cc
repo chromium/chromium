@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -140,6 +141,24 @@ TEST_F(ConnectorDataPipeGetterTest, InvalidPage) {
   ASSERT_EQ(nullptr, ConnectorDataPipeGetter::CreateResumablePipeGetter(
                          base::ReadOnlySharedMemoryRegion()));
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(ConnectorDataPipeGetterTest, InternalMemoryMappedFileDestructor) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+
+  std::optional<base::File> file = CreateFile("test content");
+  ASSERT_TRUE(file);
+
+  auto mm_file =
+      std::make_unique<ConnectorDataPipeGetter::InternalMemoryMappedFile>();
+  ASSERT_TRUE(mm_file->Initialize(std::move(*file)));
+
+  // Destroying mm_file should post a task to the ThreadPool.
+  mm_file.reset();
+}
+#endif
 
 // Parametrization to share tests between:
 // 1. the file and page implementations.

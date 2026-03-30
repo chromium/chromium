@@ -50,7 +50,7 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
     InternalMemoryMappedFile(const InternalMemoryMappedFile&) = delete;
     InternalMemoryMappedFile& operator=(const InternalMemoryMappedFile&) =
         delete;
-    ~InternalMemoryMappedFile() { CloseHandles(); }
+    ~InternalMemoryMappedFile();
 
     [[nodiscard]] bool Initialize(base::File file);
     size_t length() const { return length_; }
@@ -68,6 +68,7 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
    private:
     bool DoInitialize();
     void CloseHandles();
+    void CloseHandlesAsync();
 
     base::File file_;
 

@@ -8,10 +8,14 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "net/base/net_errors.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -31,6 +35,17 @@ constexpr size_t kMaxSize = 32 * 1024;
 }  // namespace
 
 #if BUILDFLAG(IS_POSIX)
+namespace {
+void CloseFileAndMap(base::File file, uint8_t* data, size_t length) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  if (data) {
+    munmap(data, length);
+  }
+  file.Close();
+}
+}  // namespace
+
 bool ConnectorDataPipeGetter::InternalMemoryMappedFile::Initialize(
     base::File file) {
   if (IsValid()) {
@@ -85,15 +100,31 @@ bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
 }
 
 void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  if (data_) {
-    munmap(data_, length_);
-  }
+  CloseFileAndMap(std::move(file_), data_, length_);
   data_ = nullptr;
   length_ = 0;
-  file_.Close();
+}
+
+void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandlesAsync() {
+  // Bounce the blocking CloseHandles() call to a background thread
+  // so it never blocks the UI thread if destroyed unexpectedly.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&CloseFileAndMap, std::move(file_), data_, length_));
+
+  // Prevent CloseHandles() from running again synchronously
+  data_ = nullptr;
+  length_ = 0;
+}
+
+ConnectorDataPipeGetter::InternalMemoryMappedFile::~InternalMemoryMappedFile() {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis) ||
+      !IsValid()) {
+    return;
+  }
+
+  CloseHandlesAsync();
 }
 
 #endif  // BUILDFLAG(IS_POSIX)
