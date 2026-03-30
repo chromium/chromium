@@ -35,7 +35,7 @@ class CommentsSidePanelCoordinator
       public tab_groups::TabGroupSyncService::Observer {
  public:
   // TODO(crbug.com/434203413): Remove dependency on BrowserView by implementing
-  // a PinnedToolbarActionsController.
+  // a PinnedToolbarActions.
   explicit CommentsSidePanelCoordinator(BrowserWindowInterface* browser);
   ~CommentsSidePanelCoordinator() override;
 

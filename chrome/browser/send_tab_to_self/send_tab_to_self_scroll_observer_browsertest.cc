@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -45,8 +45,8 @@ void SimulateOpeningReceivedTab(Browser* browser,
           ->send_tab_to_self_toolbar_bubble_controller();
 
   if (!controller->IsBubbleShowing()) {
-    PinnedToolbarActionsController* pinned_controller =
-        browser->browser_window_features()->pinned_toolbar_actions_controller();
+    PinnedToolbarActions* pinned_controller =
+        browser->browser_window_features()->pinned_toolbar_actions();
     pinned_controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf,
                                                       true);
     auto anchor = pinned_controller->GetBubbleAnchor(kActionSendTabToSelf);

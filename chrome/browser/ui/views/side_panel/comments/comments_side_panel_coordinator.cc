@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/comments/comments_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -126,8 +126,8 @@ bool CommentsSidePanelCoordinator::ShouldShowCommentsAction(
 
 void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
     bool should_show_comments_action) {
-  PinnedToolbarActionsController* controller =
-      browser_->GetFeatures().pinned_toolbar_actions_controller();
+  PinnedToolbarActions* controller =
+      browser_->GetFeatures().pinned_toolbar_actions();
   if (!controller) {
     return;
   }

@@ -70,7 +70,7 @@ class InitialWebUIManager;
 class InitialWebUIWindowMetricsManager;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
-class PinnedToolbarActionsController;
+class PinnedToolbarActions;
 class ProfileMenuCoordinator;
 class ProjectsPanelStateController;
 class ReadingListSidePanelCoordinator;
@@ -297,8 +297,8 @@ class BrowserWindowFeatures {
     return glic_iph_controller_.get();
   }
 
-  PinnedToolbarActionsController* pinned_toolbar_actions_controller() {
-    return pinned_toolbar_actions_controller_.get();
+  PinnedToolbarActions* pinned_toolbar_actions() {
+    return pinned_toolbar_actions_;
   }
 
   // TODO(crbug.com/346158959): For historical reasons, side_panel_ui is an
@@ -580,8 +580,7 @@ class BrowserWindowFeatures {
   std::unique_ptr<CommentsSidePanelCoordinator>
       comments_side_panel_coordinator_;
 
-  std::unique_ptr<PinnedToolbarActionsController>
-      pinned_toolbar_actions_controller_;
+  raw_ptr<PinnedToolbarActions> pinned_toolbar_actions_ = nullptr;
 
   std::unique_ptr<ExtensionInstalledWatcher> extension_installed_watcher_;
 

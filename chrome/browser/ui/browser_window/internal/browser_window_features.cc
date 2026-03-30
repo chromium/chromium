@@ -135,7 +135,7 @@
 #include "chrome/browser/ui/views/tabs/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
@@ -562,15 +562,10 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
     if (browser_view) {
-      // The controller should only be created if the
-      // PinnedToolbarActions exists for the browser, this might not be
-      // the case for browsers with a custom tab toolbar.
-      if (auto* pinned_toolbar_actions = browser_view->toolbar_button_provider()
-                                             ->GetPinnedToolbarActions()) {
-        pinned_toolbar_actions_controller_ =
-            std::make_unique<PinnedToolbarActionsController>(
-                pinned_toolbar_actions);
-      }
+      // Get the PinnedToolbarActions for the browser; it might not exist for
+      // browsers with a custom tab toolbar.
+      pinned_toolbar_actions_ =
+          browser_view->toolbar_button_provider()->GetPinnedToolbarActions();
     }
 
     // TODO(crbug.com/350508658): Ideally, we don't pass in a reference to
@@ -1035,9 +1030,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
   // Destroy fullscreen control host before exclusive access manager.
   fullscreen_control_host_.reset();
 
-  if (pinned_toolbar_actions_controller_) {
-    pinned_toolbar_actions_controller_->TearDown();
-  }
+  pinned_toolbar_actions_ = nullptr;
 
   // TODO(crbug.com/423956131): Update reset order once FindBarController is
   // deterministically constructed.

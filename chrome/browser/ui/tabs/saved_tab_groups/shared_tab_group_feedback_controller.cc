@@ -16,7 +16,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
@@ -54,8 +54,8 @@ void SharedTabGroupFeedbackController::TearDown() {
 
 void SharedTabGroupFeedbackController::UpdateFeedbackButtonVisibility(
     bool should_show_button) {
-  PinnedToolbarActionsController* controller =
-      browser_->GetFeatures().pinned_toolbar_actions_controller();
+  PinnedToolbarActions* controller =
+      browser_->GetFeatures().pinned_toolbar_actions();
   if (!controller) {
     // Can be null when dragging a tab / group into a new window.
     return;

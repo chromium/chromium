@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/send_tab_to_self/features.h"
@@ -188,7 +188,7 @@ void SendTabToSelfToolbarBubbleView::Hide() {
       ->GetReceivingUiHandler()
       ->DismissEntries(std::vector<std::string>({entry_.GetGUID()}));
   browser_->GetFeatures()
-      .pinned_toolbar_actions_controller()
+      .pinned_toolbar_actions()
       ->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, false);
 }
 

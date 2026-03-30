@@ -23,7 +23,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_item_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_view_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -270,7 +270,7 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
     browser_view()
         ->browser()
         ->GetFeatures()
-        .pinned_toolbar_actions_controller()
+        .pinned_toolbar_actions()
         ->ShowActionEphemerallyInToolbar(kActionShowChromeLabs, true);
 
     std::unique_ptr<ChromeLabsBubbleView> bubble_view =

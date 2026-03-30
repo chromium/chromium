@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
-#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "components/media_router/browser/media_router.h"
@@ -197,7 +197,7 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
         // TODO(webium): make an pinned toolbar actions container for
         // WebUIBrowser.
         if (auto* controller =
-                browser->GetFeatures().pinned_toolbar_actions_controller()) {
+                browser->GetFeatures().pinned_toolbar_actions()) {
           controller->ShowActionEphemerallyInToolbar(kActionRouteMedia,
                                                      ShouldEnableAction());
         }
