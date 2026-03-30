@@ -421,8 +421,13 @@ CodePointIterator StringView::end() const {
   return CodePointIterator::End(*this);
 }
 
+StringView StringView::substr(size_type offset) const {
+  // `offset` checked by StringView constructor.
+  return StringView(*this, offset);
+}
+
 StringView StringView::substr(size_type offset, size_type len) const {
-  CHECK_LE(offset, length());
+  // `offset` checked by StringView constructor.
   return StringView(*this, offset, std::min(len, length() - offset));
 }
 
