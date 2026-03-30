@@ -186,9 +186,8 @@ void ContentProtectionManager::KillTasks() {
   // being killed.
   base::queue<std::unique_ptr<Task>> tasks;
   tasks.swap(tasks_);
+  DCHECK(tasks_.empty());
   tasks = {};
-
-  CHECK(tasks_.empty());
 
   ToggleDisplaySecurityPolling();
 }
