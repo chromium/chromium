@@ -3073,7 +3073,7 @@
     'ios_credential_provider': ['rkgibson+watch@chromium.org'],
     'ios_enterprise': ['eic+watch@google.com'],
     'ios_flags': ['noyau+watch@chromium.org'],
-    'ios_intelligence_actuation': ['bling-ai-foundations+reviews@google.com'],
+    'ios_intelligence_actuation': ['bling-ai-foundations-reviews@google.com'],
     'ios_ntp': ['thegreenfrog+watch@chromium.org'],
     'ios_payments_autofill': ['slobodan+watch@chromium.org'],
     'ios_transactions': ['tmartino+transactions-watch@chromium.org'],
