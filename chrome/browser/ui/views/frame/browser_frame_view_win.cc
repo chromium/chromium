@@ -374,7 +374,7 @@ int BrowserFrameViewWin::NonClientHitTest(const gfx::Point& point) {
   constexpr int kResizeCornerWidth = 16;
 
   const int top_border_thickness =
-      GetBrowserView()->GetIsWebAppType()
+      (GetBrowserView()->GetIsWebAppType() || IsFrameCondensed())
           ? FrameTopBorderThickness(false)
           : GetLayoutConstant(LayoutConstant::kTabStripPadding);
 

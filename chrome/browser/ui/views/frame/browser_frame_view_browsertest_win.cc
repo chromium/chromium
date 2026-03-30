@@ -9,6 +9,8 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -535,4 +537,45 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserFrameViewWinWindowControlsOverlayTest,
   // right container to consume the full width of the WebAppFrameToolbarView.
   EXPECT_EQ(web_app_frame_toolbar->width(),
             web_app_frame_toolbar->get_right_container_for_testing()->width());
+}
+
+// Test that clicking the very top edge of a maximized DevTools window does not
+// return a resize component, which would prevent drag-to-restore.
+IN_PROC_BROWSER_TEST_F(BrowserFrameViewWinTest,
+                       MaximizedDevToolsTopEdgeHitTest) {
+  // Open undocked DevTools window.
+  DevToolsWindow* devtools_window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(browser(), false);
+  DevToolsWindowTesting* devtools_testing =
+      DevToolsWindowTesting::Get(devtools_window);
+
+  // Get the BrowserView and frame view for the DevTools window.
+  BrowserWindowInterface* devtools_browser = devtools_testing->browser();
+  EXPECT_EQ(devtools_browser->GetType(),
+            BrowserWindowInterface::Type::TYPE_DEVTOOLS);
+
+  BrowserView* devtools_browser_view =
+      BrowserView::GetBrowserViewForBrowser(devtools_browser);
+  views::FrameView* frame_view =
+      devtools_browser_view->GetWidget()->non_client_view()->frame_view();
+  auto* devtools_frame_view = static_cast<BrowserFrameViewWin*>(frame_view);
+
+  // Maximize the DevTools window.
+  devtools_frame_view->browser_widget()->Maximize();
+  devtools_browser_view->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Hit test at the very top center edge (y=0). For a maximized window, this
+  // should NOT return HTTOP (resize).
+  const gfx::Point top_center(devtools_frame_view->width() / 2, 0);
+  EXPECT_NE(devtools_frame_view->NonClientHitTest(top_center), HTTOP);
+
+  // Hit test at the top-left corner (y=0, x=0). Should not return HTTOPLEFT.
+  const gfx::Point top_left(0, 0);
+  EXPECT_NE(devtools_frame_view->NonClientHitTest(top_left), HTTOPLEFT);
+
+  // Hit test at the top-right corner. Should not return HTTOPRIGHT.
+  const gfx::Point top_right(devtools_frame_view->width() - 1, 0);
+  EXPECT_NE(devtools_frame_view->NonClientHitTest(top_right), HTTOPRIGHT);
+
+  DevToolsWindowTesting::CloseDevToolsWindowSync(devtools_window);
 }
