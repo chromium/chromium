@@ -11091,38 +11091,6 @@
             ]
         }
     ],
-    "GlicTrustFirstOnboarding": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "linux",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_TrustFirst_Arm2_WelcomeScreen",
-                    "params": {
-                        "arm": "2"
-                    },
-                    "enable_features": [
-                        "GlicTrustFirstOnboarding",
-                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
-                    ]
-                },
-                {
-                    "name": "Enabled_TrustFirst_Arm1_StartChat",
-                    "params": {
-                        "arm": "1"
-                    },
-                    "enable_features": [
-                        "GlicTrustFirstOnboarding",
-                        "IPH_GlicTrustFirstOnboardingShortcutSnoozePromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "GlicTryItUnlaunch": [
         {
             "platforms": [
