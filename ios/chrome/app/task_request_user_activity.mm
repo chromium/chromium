@@ -397,8 +397,7 @@ void AddBookmarkToChromeWithIntent(INIntent* intent,
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kInvalid:
-      // TODO(crbug.com/492115056): Add implementation.
-      break;
+      return;
   }
 
   if (!webpageGURL.is_valid()) {
