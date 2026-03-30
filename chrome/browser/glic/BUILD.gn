@@ -83,7 +83,10 @@ source_set("glic") {
       "widget/glic_widget.h",
     ]
   } else {  # is_android
-    sources += [ "public/widget/glic_side_panel_coordinator_android.h" ]
+    sources += [
+      "public/widget/glic_side_panel_coordinator_android.h",
+      "public/widget/glic_side_panel_coordinator_desktop_android.h",
+    ]
   }
   public_deps = [
     ":enum",
@@ -129,6 +132,7 @@ source_set("glic") {
   }
 
   deps = [
+    "//chrome/browser/ui/side_panel",
     "//chrome/common",
     "//components/skills/public:mojo_bindings",
     "//components/tabs:public",
@@ -140,7 +144,6 @@ source_set("glic") {
     deps += [
       "//chrome/browser:primitives",
       "//chrome/browser/actor:types",
-      "//chrome/browser/ui/side_panel",
     ]
   } else {  # is_android
     deps += [
@@ -347,6 +350,7 @@ source_set("impl") {
       "widget/glic_inactive_side_panel_ui_android.cc",
       "widget/glic_inactive_side_panel_ui_android.h",
       "widget/glic_side_panel_coordinator_android.cc",
+      "widget/glic_side_panel_coordinator_desktop_android.cc",
       "widget/glic_side_panel_ui_android.cc",
       "widget/glic_side_panel_ui_android.h",
     ]
@@ -457,8 +461,10 @@ source_set("impl") {
   } else {  # is_android
     deps += [
       ":actor_types_for_migration",
-      "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
       "//chrome/browser/glic/android",
+      "//chrome/browser/glic/android:jni_bridges",
+      "//chrome/browser/ui/side_panel:side_panel_ui_provider",
+      "//chrome/browser/ui/side_panel/android",
       "//ui/android",
     ]
   }

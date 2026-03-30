@@ -70,6 +70,20 @@ android_library("java") {
   ]
 }
 
+source_set("jni_bridges") {
+  sources = [
+    "co_browse_views_bridge.cc",
+    "co_browse_views_bridge.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/context_sharing/tab_bottom_sheet/android:jni_headers",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//ui/android",
+  ]
+}
+
 source_set("android") {
   sources = [
     "glic_keyed_service_android.cc",

@@ -62,6 +62,7 @@ public class CoBrowseViews {
     }
 
     /** Returns the view for the co-browse content. */
+    @CalledByNative
     public View getView() {
         return mView;
     }

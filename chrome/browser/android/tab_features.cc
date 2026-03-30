@@ -10,8 +10,10 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
+#include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_desktop_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
@@ -73,9 +75,16 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   glic_instance_helper_ =
       GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
-  glic_side_panel_coordinator_ =
-      GetUserDataFactory()
-          .CreateInstance<glic::GlicSidePanelCoordinatorAndroid>(*tab, tab);
+  if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel)) {
+    glic_side_panel_coordinator_ =
+        GetUserDataFactory()
+            .CreateInstance<glic::GlicSidePanelCoordinatorDesktopAndroid>(
+                *tab, tab, tab_scoped_side_panel_registry_.get(), profile);
+  } else {
+    glic_side_panel_coordinator_ =
+        GetUserDataFactory()
+            .CreateInstance<glic::GlicSidePanelCoordinatorAndroid>(*tab, tab);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;
