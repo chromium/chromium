@@ -27,6 +27,10 @@
   --cr-icon-image: url(//resources/images/icon_arrow_upward.svg);
 }
 
+.icon-arrow-forward {
+  --cr-icon-image: url(//resources/images/icon_arrow_forward.svg);
+}
+
 .icon-cancel {
   --cr-icon-image: url(//resources/images/icon_cancel.svg);
 }

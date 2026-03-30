@@ -75,6 +75,11 @@ export function isTerminalState(status: ContextUploadStatus): boolean {
   }
 }
 
+export enum SubmitButtonIconType {
+  FORWARD = 'forward',
+  UPWARD = 'upward',
+}
+
 const DEBOUNCE_TIMEOUT_MS: number = 20;
 
 function debounce(context: Object, func: () => void, delay: number) {
@@ -209,6 +214,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       searchboxNextEnabled: {
         type: Boolean,
         reflect: true,
+      },
+      submitButtonIconType: {
+        type: String,
       },
       tabSuggestions_: {type: Array},
       lensButtonDisabled: {
@@ -370,6 +378,19 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       loadTimeData.valueExists('queryZpsOnLoad') :
       true;
   private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
+  accessor submitButtonIconType: SubmitButtonIconType =
+      SubmitButtonIconType.UPWARD;
+
+  get submitButtonIconClass_(): string {
+    switch (this.submitButtonIconType) {
+      case SubmitButtonIconType.FORWARD:
+        return 'icon-arrow-forward';
+      case SubmitButtonIconType.UPWARD:
+        return 'icon-arrow-upward';
+      default:
+        assertNotReachedCase(this.submitButtonIconType);
+    }
+  }
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
