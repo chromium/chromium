@@ -91,9 +91,6 @@ extern base::TimeDelta GetIdleTimeBeforeHeavyweightPromo();
 // Returns the polling interval for the promo controller for User Education 2.5.
 extern base::TimeDelta GetPromoControllerPollingInterval();
 
-// Returns how long the NTP Setup List module is snoozed for.
-extern base::TimeDelta GetNtpSetupListSnoozeTime();
-
 // Advertises browser features in New Tab Page promos.
 BASE_DECLARE_FEATURE(kEnableNtpBrowserPromos);
 
@@ -116,7 +113,7 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kNtpBrowserPromoSuppressList);
 
 // The number of sessions a promo may stay in the top spot before being
 // rotated out.
-BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoMaxTopSpotSessions);
+BASE_DECLARE_FEATURE_PARAM(int, kNtpBrowserPromoMaxSessionsPerTerm);
 
 // How long a promo is hidden after being clicked.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
@@ -128,7 +125,8 @@ BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 
 // Accessors for `kEnableNtpBrowserPromos` parameters.
 extern std::vector<std::string> GetNtpBrowserPromoSuppressList();
-extern int GetNtpBrowserPromoMaxTopSpotSessions();
+extern int GetNtpBrowserPromoMaxSessionsPerTerm();
+extern int GetNtpBrowserPromoMaxTerms();
 extern base::TimeDelta GetNtpBrowserPromoClickedHideDuration();
 extern base::TimeDelta GetNtpBrowserPromosSnoozedHideDuration();
 

@@ -449,9 +449,15 @@ auto GetNtpPromoData(
   }();
   result.emplace_back(FormatDemoPageData("Eligibility:", eligibility));
   result.emplace_back(
-      FormatDemoPageData("Last top spot session:", data.last_top_spot_session));
-  result.emplace_back(FormatDemoPageData("Top spot session count:",
-                                         data.top_spot_session_count));
+      FormatDemoPageData("Last top spot session:", data.last_session));
+  result.emplace_back(FormatDemoPageData(
+      "Number of sessions shown in current term:", data.session_count_in_term));
+  result.emplace_back(
+      FormatDemoPageData("Number of terms shown:", data.term_count));
+  result.emplace_back(
+      FormatDemoPageData("Term start time", data.term_start_time));
+  result.emplace_back(
+      FormatDemoPageData("Is dismissed", !data.dismissed_time.is_null()));
   result.emplace_back(FormatDemoPageData("Last clicked at", data.last_clicked));
   result.emplace_back(
       FormatDemoPageData("First seen completed at", data.completed));

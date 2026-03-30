@@ -76,7 +76,7 @@ NtpPromoHandler::~NtpPromoHandler() = default;
 void NtpPromoHandler::RequestPromos() {
   CheckBackend(promo_controller_, ue_context_);
   const auto showable = promo_controller_->GenerateShowablePromo(ue_context_);
-  remote_client_->SetPromo(showable.promo);
+  remote_client_->SetPromo(showable);
 }
 
 void NtpPromoHandler::OnPromoClicked(const std::string& promo_id) {

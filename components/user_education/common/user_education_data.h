@@ -167,12 +167,22 @@ struct NtpPromoData {
   base::Time completed;
 
   // The session in which this promo was last shown in the top spot.
-  int last_top_spot_session = 0;
+  int last_session = 0;
 
   // The number of session this promo has been shown in the top spot, since
   // it most recently claimed the top spot. When reclaiming top spot,
   // this value must be reset.
-  int top_spot_session_count = 0;
+  int session_count_in_term = 0;
+
+  // The number of times this promo has started a run of sessions in the top
+  // spot.
+  int term_count = 0;
+
+  // Timestamp of when the promo started a run of sessions in the top spot.
+  base::Time term_start_time;
+
+  // Time at which the promo was dismissed by the user.
+  base::Time dismissed_time;
 };
 
 using KeyedNtpPromoDataMap = std::map<std::string, NtpPromoData>;

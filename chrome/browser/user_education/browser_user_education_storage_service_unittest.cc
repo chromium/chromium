@@ -433,8 +433,11 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoData) {
   user_education::NtpPromoData data;
   data.last_clicked = base::Time::FromSecondsSinceUnixEpoch(1);
   data.completed = base::Time::FromSecondsSinceUnixEpoch(2);
-  data.last_top_spot_session = 2;
-  data.top_spot_session_count = 3;
+  data.last_session = 3;
+  data.session_count_in_term = 4;
+  data.term_count = 5;
+  data.term_start_time = base::Time::FromSecondsSinceUnixEpoch(6);
+  data.dismissed_time = base::Time::FromSecondsSinceUnixEpoch(7);
   service().SaveNtpPromoData(kNtpPromoId, data);
   EXPECT_EQ(data, service().ReadNtpPromoData(kNtpPromoId).value());
 }
@@ -446,7 +449,7 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataNotPresent) {
 
 TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataReset) {
   user_education::NtpPromoData data;
-  data.last_top_spot_session = 3;
+  data.last_session = 3;
   service().SaveNtpPromoData(kNtpPromoId, data);
   service().SaveNtpPromoData(kNtpPromo2Id, data);
   service().ResetNtpPromoData(kNtpPromoId);

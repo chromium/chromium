@@ -56,7 +56,7 @@ class MockController : public user_education::NtpPromoController {
   using user_education::NtpPromoController::NtpPromoController;
   ~MockController() override = default;
 
-  MOCK_METHOD(user_education::NtpShowablePromos,
+  MOCK_METHOD(std::optional<user_education::NtpShowablePromo>,
               GenerateShowablePromo,
               (const user_education::UserEducationContextPtr&));
   MOCK_METHOD(void, OnPromoShown, (const user_education::NtpPromoIdentifier&));
@@ -80,11 +80,9 @@ class NtpPromoHandlerTest : public testing::Test {
     return mock_context_;
   }
 
-  user_education::NtpShowablePromos GetShowablePromo() {
-    user_education::NtpShowablePromos promos;
-    promos.promo = user_education::NtpShowablePromo(kPromo1Id, kPromo1Icon,
-                                                    kPromo1Text, kPromo1Button);
-    return promos;
+  std::optional<user_education::NtpShowablePromo> GetShowablePromo() {
+    return user_education::NtpShowablePromo(kPromo1Id, kPromo1Icon, kPromo1Text,
+                                            kPromo1Button);
   }
 
   void VerifyShowablePromo(

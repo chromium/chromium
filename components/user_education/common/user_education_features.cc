@@ -62,9 +62,12 @@ inline constexpr std::array<base::FeatureParam<NtpBrowserPromoType>::Option, 2U>
 
 inline constexpr char kNtpBrowserPromoSuppressListName[] = "suppress-list";
 
-inline constexpr char kNtpBrowserPromoMaxTopSpotSessionsName[] =
+inline constexpr char kNtpBrowserPromoMaxSessionsPerTermName[] =
     "session-rotation";
-inline constexpr int kDefaultNtpBrowserPromoMaxTopSpotSessions = 3;
+
+inline constexpr char kNtpBrowserPromoMaxTermsName[] = "max-terms";
+inline constexpr int kDefaultNtpBrowserPromoMaxTerms = 3;
+inline constexpr int kDefaultNtpBrowserPromoMaxSessionsPerTerm = 3;
 
 inline constexpr char kNtpBrowserPromoClickedHideDurationName[] =
     "clicked-duration";
@@ -191,10 +194,16 @@ BASE_FEATURE_PARAM(std::string,
                    "");
 
 BASE_FEATURE_PARAM(int,
-                   kNtpBrowserPromoMaxTopSpotSessions,
+                   kNtpBrowserPromoMaxSessionsPerTerm,
                    &kEnableNtpBrowserPromos,
-                   kNtpBrowserPromoMaxTopSpotSessionsName,
-                   kDefaultNtpBrowserPromoMaxTopSpotSessions);
+                   kNtpBrowserPromoMaxSessionsPerTermName,
+                   kDefaultNtpBrowserPromoMaxSessionsPerTerm);
+
+BASE_FEATURE_PARAM(int,
+                   kNtpBrowserPromoMaxTerms,
+                   &kEnableNtpBrowserPromos,
+                   kNtpBrowserPromoMaxTermsName,
+                   kDefaultNtpBrowserPromoMaxTerms);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kNtpBrowserPromoClickedHideDuration,
@@ -214,8 +223,12 @@ std::vector<std::string> GetNtpBrowserPromoSuppressList() {
                            base::SPLIT_WANT_NONEMPTY);
 }
 
-int GetNtpBrowserPromoMaxTopSpotSessions() {
-  return kNtpBrowserPromoMaxTopSpotSessions.Get();
+int GetNtpBrowserPromoMaxSessionsPerTerm() {
+  return kNtpBrowserPromoMaxSessionsPerTerm.Get();
+}
+
+int GetNtpBrowserPromoMaxTerms() {
+  return kNtpBrowserPromoMaxTerms.Get();
 }
 
 base::TimeDelta GetNtpBrowserPromoClickedHideDuration() {
