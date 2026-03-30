@@ -77,7 +77,7 @@ void AccessTokenFetchServiceError(
   crosapi::mojom::AccessTokenResultPtr result =
       crosapi::mojom::AccessTokenResult::NewError(
           account_manager::ToMojoGoogleServiceAuthError(
-              GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR)));
+              GoogleServiceAuthError::FromServiceError(std::string())));
   std::move(callback).Run(std::move(result));
 }
 
@@ -737,7 +737,8 @@ TEST_F(AccountManagerFacadeImplTest, AccessTokenFetchErrorResponse) {
   account_manager().SetMockAccessTokenFetcher(
       std::move(mock_access_token_fetcher));
   MockOAuthConsumer consumer;
-  GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_ERROR);
+  GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromServiceError(std::string());
   EXPECT_CALL(consumer, OnGetTokenFailure(Eq(error)));
 
   std::unique_ptr<OAuth2AccessTokenFetcher> access_token_fetcher =
