@@ -194,12 +194,14 @@
         <template is="dom-if" if="[[showTabSearchEnabled_]]">
           <settings-toggle-button id="showTabSearchButton" class="hr"
               pref="{{prefs.tab_search.pinned_to_tabstrip}}"
-              label="$i18n{showTabSearchButton}">
+              label="$i18n{showTabSearchButton}"
+              on-change="onShowTabSearchButtonChange_">
           </settings-toggle-button>
           <template is="dom-if" if="[[showProjectsPanelEnabled_]]">
             <settings-toggle-button id="showProjectsPanelButton" class="hr"
                 pref="{{prefs.projects_panel.pinned_to_tabstrip}}"
-                label="$i18n{showProjectsPanelButton}">
+                label="$i18n{showProjectsPanelButton}"
+                on-change="onShowProjectsPanelButtonChange_">
             </settings-toggle-button>
           </template>
           <template is="dom-if"
@@ -207,7 +209,8 @@
                   showProjectsPanelEnabled_, showEverythingMenuEnabled_)]]">
             <settings-toggle-button id="showEverythingMenuButton" class="hr"
                 pref="{{prefs.everything_menu.pinned_to_tabstrip}}"
-                label="$i18n{showEverythingMenuButton}">
+                label="$i18n{showEverythingMenuButton}"
+                on-change="onShowEverythingMenuButtonChange_">
             </settings-toggle-button>
           </template>
         </template>
