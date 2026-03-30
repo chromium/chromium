@@ -3900,7 +3900,7 @@
       field_template: "keyword",
       keywords: [
         "auto", "optimizespeed", "optimizequality",
-        "-webkit-optimize-contrast", "pixelated"
+        "-webkit-optimize-contrast", "pixelated", "crisp-edges"
       ],
       typedom_types: ["Keyword"],
       default_value: "auto",

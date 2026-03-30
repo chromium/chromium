@@ -1258,7 +1258,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
     case CSSPropertyID::kImageRendering:
       return value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kWebkitOptimizeContrast ||
-             value_id == CSSValueID::kPixelated;
+             value_id == CSSValueID::kPixelated ||
+             value_id == CSSValueID::kCrispEdges;
     case CSSPropertyID::kInterpolateSize:
       return value_id == CSSValueID::kNumericOnly ||
              value_id == CSSValueID::kAllowKeywords;

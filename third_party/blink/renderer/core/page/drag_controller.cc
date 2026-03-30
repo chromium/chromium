@@ -1150,8 +1150,12 @@ std::unique_ptr<DragImage> DragImageForImage(
     return nullptr;
 
   InterpolationQuality interpolation_quality = GetDefaultInterpolationQuality();
-  if (layout_image->StyleRef().ImageRendering() == EImageRendering::kPixelated)
+  if (layout_image->StyleRef().ImageRendering() ==
+          EImageRendering::kPixelated ||
+      layout_image->StyleRef().ImageRendering() ==
+          EImageRendering::kCrispEdges) {
     interpolation_quality = kInterpolationNone;
+  }
 
   gfx::Vector2dF image_scale =
       DragImage::ClampedImageScale(image_size, image_element_size_in_pixels,

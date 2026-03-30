@@ -23,8 +23,10 @@ InterpolationQuality InterpolationQualityForCanvas(const ComputedStyle& style) {
   if (style.ImageRendering() == EImageRendering::kWebkitOptimizeContrast)
     return kInterpolationLow;
 
-  if (style.ImageRendering() == EImageRendering::kPixelated)
+  if (style.ImageRendering() == EImageRendering::kPixelated ||
+      style.ImageRendering() == EImageRendering::kCrispEdges) {
     return kInterpolationNone;
+  }
 
   return CanvasDefaultInterpolationQuality;
 }

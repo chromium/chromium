@@ -1727,13 +1727,16 @@ bool HTMLCanvasElement::StyleChangeNeedsDidDraw(
   return old_style &&
          old_style->ImageRendering() != new_style.ImageRendering() &&
          (old_style->ImageRendering() == EImageRendering::kPixelated ||
-          new_style.ImageRendering() == EImageRendering::kPixelated);
+          old_style->ImageRendering() == EImageRendering::kCrispEdges ||
+          new_style.ImageRendering() == EImageRendering::kPixelated ||
+          new_style.ImageRendering() == EImageRendering::kCrispEdges);
 }
 
 void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
                                        const ComputedStyle& new_style) {
   const auto new_filter_quality =
-      (new_style.ImageRendering() == EImageRendering::kPixelated)
+      (new_style.ImageRendering() == EImageRendering::kPixelated ||
+       new_style.ImageRendering() == EImageRendering::kCrispEdges)
           ? cc::PaintFlags::FilterQuality::kNone
           : cc::PaintFlags::FilterQuality::kLow;
   const auto new_dynamic_range_limit = new_style.GetDynamicRangeLimit();

@@ -1021,7 +1021,8 @@ void HTMLVideoElement::SetCcLayer(cc::Layer* cc_layer) {
 void HTMLVideoElement::StyleDidChange(const ComputedStyle* old_style,
                                       const ComputedStyle& new_style) {
   const auto new_filter_quality =
-      (new_style.ImageRendering() == EImageRendering::kPixelated)
+      (new_style.ImageRendering() == EImageRendering::kPixelated ||
+       new_style.ImageRendering() == EImageRendering::kCrispEdges)
           ? cc::PaintFlags::FilterQuality::kNone
           : cc::PaintFlags::FilterQuality::kLow;
   const auto new_dynamic_range_limit = new_style.GetDynamicRangeLimit();

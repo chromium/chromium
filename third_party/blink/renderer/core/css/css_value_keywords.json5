@@ -1145,6 +1145,7 @@
     //optimizespeed
     "optimizequality",
     "pixelated",
+    "crisp-edges",
     "-webkit-optimize-contrast",
 
     // image-orientation

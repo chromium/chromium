@@ -1378,7 +1378,8 @@ bool ComputedStyle::RequireTransformOrigin(
 }
 
 InterpolationQuality ComputedStyle::GetInterpolationQuality() const {
-  if (ImageRendering() == EImageRendering::kPixelated) {
+  if (ImageRendering() == EImageRendering::kPixelated ||
+      ImageRendering() == EImageRendering::kCrispEdges) {
     return kInterpolationNone;
   }
 
