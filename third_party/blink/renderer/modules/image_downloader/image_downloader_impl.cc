@@ -325,11 +325,17 @@ void ImageDownloaderImpl::Trace(Visitor* visitor) const {
 }
 
 void ImageDownloaderImpl::ContextDestroyed() {
-  for (const auto& fetcher : image_fetchers_) {
+  // Calling `Dispose()` will end up calling back synchronously into
+  // DidFetchImage(). To avoid `image_fetchers_` being mutated while it's being
+  // iterated over, move its contents to a temporary var before doing the
+  // iteration.
+  auto fetchers = std::move(image_fetchers_);
+  image_fetchers_.clear();
+
+  for (const auto& fetcher : fetchers) {
     // Will run callbacks with an empty image vector.
     fetcher->Dispose();
   }
-  image_fetchers_.clear();
 }
 
 }  // namespace blink
