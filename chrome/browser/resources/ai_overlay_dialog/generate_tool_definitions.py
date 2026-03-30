@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''
-Reads ai_overlay_dialog_tools.h and outputs generated tool definitions to
+Reads ai_overlay_dialog_page_handler.h and outputs generated tool definitions to
 generated_tool_definitions.h.
 '''
 
@@ -40,8 +40,8 @@ def GenerateToolsJson(header_path):
     with open(header_path, 'r', encoding='utf-8') as f:
         text = f.read()
 
-    start_marker = "// --- AI OVERLAY TOOLS START ---"
-    end_marker = "// --- AI OVERLAY TOOLS END ---"
+    start_marker = "// --- TOOLS START ---"
+    end_marker = "// --- TOOLS END ---"
     start_idx = text.find(start_marker)
     end_idx = text.find(end_marker)
     if start_idx != -1 and end_idx != -1:
@@ -97,8 +97,9 @@ def GenerateToolsJson(header_path):
     output.write("// Use of this source code is governed by a BSD-style "
                  "license that can be\n")
     output.write("// found in the LICENSE file.\n\n")
-    output.write("// THIS FILE IS GENERATED FROM ai_overlay_dialog_tools.h. "
-                 "DO NOT EDIT.\n\n")
+    output.write(
+        "// THIS FILE IS GENERATED FROM ai_overlay_dialog_page_handler.h. "
+        "DO NOT EDIT.\n\n")
     output.write("#ifndef CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_"
                  "TOOL_DEFINITIONS_H_\n")
     output.write("#define CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_"
@@ -108,7 +109,7 @@ def GenerateToolsJson(header_path):
     output.write("/**\n")
     output.write(" * Returns the built-in tool definitions for the Gemini "
                  "Live API based on the\n")
-    output.write(" * AiOverlayDialogTools C++ header.\n")
+    output.write(" * AiOverlayDialogPageHandler C++ header.\n")
     output.write(" */\n")
     output.write("inline constexpr std::string_view "
                  "kBuiltInToolDefinitions =\n")
@@ -147,7 +148,7 @@ def Main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--in-file',
                         required=True,
-                        help='Path to ai_overlay_dialog_tools.h')
+                        help='Path to ai_overlay_dialog_page_handler.h')
     parser.add_argument('--out-file',
                         required=True,
                         help='Path to write generated_tool_definitions.h')

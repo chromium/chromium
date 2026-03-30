@@ -13,7 +13,7 @@ mojom("mojo_bindings") {
 
 action("generate_tool_definitions") {
   script = "//chrome/browser/resources/ai_overlay_dialog/generate_tool_definitions.py"
-  sources = [ "ai_overlay_dialog_tools.h" ]
+  sources = [ "ai_overlay_dialog_page_handler.h" ]
   outputs = [ "$target_gen_dir/generated_tool_definitions.h" ]
   args = [
     "--in-file",
@@ -27,7 +27,6 @@ source_set("ai_overlay_dialog") {
   sources = [
     "ai_overlay_dialog_page_handler.cc",
     "ai_overlay_dialog_page_handler.h",
-    "ai_overlay_dialog_tools.h",
     "ai_overlay_dialog_untrusted_ui.cc",
     "ai_overlay_dialog_untrusted_ui.h",
     "markdown_builder.cc",

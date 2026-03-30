@@ -8,10 +8,10 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog.mojom.h"
-#include "chrome/browser/ui/webui/ai_overlay_dialog/ai_overlay_dialog_tools.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,8 +21,21 @@
 
 class BrowserWindowInterface;
 
-class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
-                                   public AiOverlayDialogTools {
+struct ToolResponse {
+  base::DictValue data;
+  bool is_silent = false;
+
+  static ToolResponse Silent() {
+    ToolResponse response;
+    response.is_silent = true;
+    return response;
+  }
+};
+
+using ToolResult = base::expected<ToolResponse, std::string>;
+
+class AiOverlayDialogPageHandler
+    : public ai_overlay_dialog::mojom::PageHandler {
  public:
   AiOverlayDialogPageHandler(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::PageHandler> receiver,
@@ -43,28 +56,49 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void UpdateCurrentPageContext(const std::u16string& title,
                                 const std::string& content);
 
-  // AiOverlayDialogTools:
+  // --- TOOLS START ---
+  // Open a URL.
   void OpenUrl(const std::string& url,
                bool new_tab,
-               base::OnceCallback<void(ToolResult)> callback) override;
+               base::OnceCallback<void(ToolResult)> callback);
+  // Search using the default search engine.
   void PerformSearch(const std::string& query,
                      bool new_tab,
-                     base::OnceCallback<void(ToolResult)> callback) override;
+                     base::OnceCallback<void(ToolResult)> callback);
+  // Switch to another open tab by fuzzy matching name or URL.
   void SwitchTab(const std::string& query,
-                 base::OnceCallback<void(ToolResult)> callback) override;
-  void CloseCurrentTab(base::OnceCallback<void(ToolResult)> callback) override;
-  void GoBack(base::OnceCallback<void(ToolResult)> callback) override;
-  void GoForward(base::OnceCallback<void(ToolResult)> callback) override;
-  void ReloadPage(base::OnceCallback<void(ToolResult)> callback) override;
+                 base::OnceCallback<void(ToolResult)> callback);
+  // Close the current browser tab.
+  void CloseCurrentTab(base::OnceCallback<void(ToolResult)> callback);
+  // Go back to the previous page in history.
+  void GoBack(base::OnceCallback<void(ToolResult)> callback);
+  // Go forward to the next page in history.
+  void GoForward(base::OnceCallback<void(ToolResult)> callback);
+  // Refresh the current page.
+  void ReloadPage(base::OnceCallback<void(ToolResult)> callback);
+  // --- General DOM Tools ---
+
+  // Highlight and scroll to specific text on the page.
   void FindAndHighlight(const std::string& query,
-                        base::OnceCallback<void(ToolResult)> callback) override;
+                        base::OnceCallback<void(ToolResult)> callback);
+
+  // Scroll the viewport in a specific direction.
   void Scroll(const std::string& direction,
               double magnitude,
-              base::OnceCallback<void(ToolResult)> callback) override;
-  void PlayVideo(base::OnceCallback<void(ToolResult)> callback) override;
-  void PauseVideo(base::OnceCallback<void(ToolResult)> callback) override;
+              base::OnceCallback<void(ToolResult)> callback);
+
+  // --- Media Tools (YouTube) ---
+
+  // Resume video playback.
+  void PlayVideo(base::OnceCallback<void(ToolResult)> callback);
+
+  // Pause video playback.
+  void PauseVideo(base::OnceCallback<void(ToolResult)> callback);
+
+  // Jump the video to a specific timecode (e.g. '1:45').
   void SeekToTimestamp(const std::string& timecode,
-                       base::OnceCallback<void(ToolResult)> callback) override;
+                       base::OnceCallback<void(ToolResult)> callback);
+  // --- TOOLS END ---
 
  private:
   class AnnotationTask : public blink::mojom::AnnotationAgentHost {
