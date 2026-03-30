@@ -8,7 +8,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

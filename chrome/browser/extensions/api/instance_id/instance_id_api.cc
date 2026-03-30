@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/api/instance_id/instance_id_api.h"
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"

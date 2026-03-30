@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/desk_template.h"
 #include "ash/wm/desks/desks_controller.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"

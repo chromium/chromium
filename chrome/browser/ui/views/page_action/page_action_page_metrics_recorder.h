@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"

@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/stl_util.h"

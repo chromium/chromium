@@ -18,7 +18,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/observer_list.h"
 #include "base/one_shot_event.h"
@@ -77,6 +76,7 @@
 #endif
 
 #if BUILDFLAG(IS_LINUX)
+#include "base/time/time.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_factory.h"
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck

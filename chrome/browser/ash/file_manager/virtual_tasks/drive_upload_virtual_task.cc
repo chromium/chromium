@@ -9,7 +9,6 @@
 
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"

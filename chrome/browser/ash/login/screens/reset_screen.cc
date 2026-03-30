@@ -16,7 +16,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"

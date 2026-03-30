@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
@@ -25,6 +24,7 @@
 #include "third_party/blink/public/mojom/autoplay/autoplay.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"

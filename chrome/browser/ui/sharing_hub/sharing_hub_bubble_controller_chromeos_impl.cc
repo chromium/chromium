@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller_chromeos_impl.h"
 
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"

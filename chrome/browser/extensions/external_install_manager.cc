@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager_factory.h"
 #include "chrome/browser/extensions/managed_installation_mode.h"

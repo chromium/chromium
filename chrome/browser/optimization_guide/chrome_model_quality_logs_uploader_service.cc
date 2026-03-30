@@ -5,7 +5,6 @@
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/strings/strcat.h"
 #include "build/buildflag.h"

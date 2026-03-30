@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

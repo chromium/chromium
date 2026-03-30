@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
 #include "chrome/browser/notifications/notification_common.h"

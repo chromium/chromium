@@ -11,7 +11,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "components/search_provider_logos/logo_observer.h"

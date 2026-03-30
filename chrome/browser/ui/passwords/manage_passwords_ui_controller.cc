@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
@@ -105,6 +104,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #elif BUILDFLAG(IS_MAC)
+#include "base/time/time.h"
 #include "chrome/browser/password_manager/password_manager_util_mac.h"
 #endif
 

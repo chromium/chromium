@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/app_list/search/ranking/constants.h"
 

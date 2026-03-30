@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/tab_metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/features.h"

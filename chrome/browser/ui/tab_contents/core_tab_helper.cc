@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
@@ -53,6 +52,7 @@
 #include "ui/gfx/image/image_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"

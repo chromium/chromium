@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

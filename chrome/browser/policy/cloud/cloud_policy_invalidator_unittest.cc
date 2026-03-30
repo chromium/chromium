@@ -11,7 +11,7 @@
 #include <string>
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/sample_map.h"
 #include "base/metrics/statistics_recorder.h"

@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/observer_list.h"
 #include "base/time/default_tick_clock.h"

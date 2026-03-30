@@ -8,7 +8,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/pass_key.h"
@@ -61,6 +60,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/private_ai/private_ai_service.h"

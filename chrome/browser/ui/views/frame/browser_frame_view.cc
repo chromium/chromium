@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"

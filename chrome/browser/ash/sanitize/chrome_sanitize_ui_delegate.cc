@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 
 #include "ash/constants/ash_features.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"

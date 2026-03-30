@@ -6,7 +6,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/prefs/pref_metrics_service.h"
 #include "chrome/browser/profiles/profile.h"

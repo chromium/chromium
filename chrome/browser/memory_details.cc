@@ -11,7 +11,6 @@
 #include "base/containers/adapters.h"
 #include "base/file_version_info.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"

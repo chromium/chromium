@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -24,6 +23,7 @@
 #include "services/preferences/tracked/tracked_persistent_pref_store_factory.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "chrome/install_static/install_util.h"
 #endif
 

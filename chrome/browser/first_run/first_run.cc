@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/one_shot_event.h"
@@ -56,6 +55,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/time/time.h"
 #include "chrome/browser/browser_features.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/pref_names.h"

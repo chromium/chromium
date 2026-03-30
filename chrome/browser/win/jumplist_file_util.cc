@@ -8,7 +8,6 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_restrictions.h"
 
 void DeleteFiles(const base::FilePath& path,

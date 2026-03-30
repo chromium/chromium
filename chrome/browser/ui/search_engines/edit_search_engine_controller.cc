@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/search_engines/edit_search_engine_controller.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

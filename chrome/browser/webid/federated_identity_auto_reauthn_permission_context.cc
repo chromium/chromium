@@ -4,7 +4,7 @@
 
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context.h"
 
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"

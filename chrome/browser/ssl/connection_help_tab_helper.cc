@@ -5,7 +5,6 @@
 #include "chrome/browser/ssl/connection_help_tab_helper.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/security_interstitials/content/urls.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"

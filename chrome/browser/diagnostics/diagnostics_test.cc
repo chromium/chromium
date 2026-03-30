@@ -9,8 +9,8 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_constants.h"

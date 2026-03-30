@@ -6,8 +6,6 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/metrics/histogram_macros.h"
-
 namespace {
 
 // The possible values of the setting "Screens Have Separate Spaces".

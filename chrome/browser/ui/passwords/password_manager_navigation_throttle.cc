@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"

@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/i18n/file_util_icu.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"

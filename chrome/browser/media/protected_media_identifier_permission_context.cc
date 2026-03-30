@@ -28,7 +28,6 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
-#include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/constants/dbus_switches.h"

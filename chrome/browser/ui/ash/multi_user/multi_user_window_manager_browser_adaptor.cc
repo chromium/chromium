@@ -10,7 +10,6 @@
 #include "ash/multi_user/multi_user_window_manager.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_fetcher_factory.h"

@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/launch.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"

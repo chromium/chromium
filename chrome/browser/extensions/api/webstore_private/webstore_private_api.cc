@@ -20,7 +20,6 @@
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
@@ -89,6 +88,7 @@
 #endif  //! BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "base/time/time.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 

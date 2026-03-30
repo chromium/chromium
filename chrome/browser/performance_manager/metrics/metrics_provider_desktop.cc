@@ -6,7 +6,6 @@
 
 #include "base/byte_count.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/power_monitor/cpu_frequency_utils.h"
 #include "base/process/process_metrics.h"
@@ -26,6 +25,7 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "base/win/registry.h"
 #endif
 

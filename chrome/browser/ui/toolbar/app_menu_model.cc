@@ -17,7 +17,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -169,6 +168,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/gpu_data_manager.h"

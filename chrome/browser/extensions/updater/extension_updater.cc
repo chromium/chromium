@@ -18,7 +18,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -64,6 +63,7 @@
 #include "extensions/common/manifest_url_handlers.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/time/time.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"

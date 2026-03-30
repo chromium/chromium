@@ -20,7 +20,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
