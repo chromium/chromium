@@ -14114,6 +14114,25 @@
             ]
         }
     ],
+    "LazyBrowserInterfaceBroker": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LazyBrowserInterfaceBroker"
+                    ]
+                }
+            ]
+        }
+    ],
     "LegacyKeyRepeatSynthesis": [
         {
             "platforms": [
@@ -14254,17 +14273,12 @@
     "LoadAllTabsAtStartup": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "LazyBrowserInterfaceBroker",
                         "LoadAllTabsAtStartup"
                     ]
                 }
