@@ -78,9 +78,6 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
                    WindowOpenDisposition disposition,
                    omnibox::ChromeAimEntryPoint aim_entrypoint,
                    std::map<std::string, std::string> additional_params);
-  // SearchboxHandler:
-  std::string AutocompleteIconToResourceName(
-      const gfx::VectorIcon& icon) const override;
 
   virtual void ClearSessionHandle();
 
