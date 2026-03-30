@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -90,8 +92,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)setupBottomSaveButton {
   ChromeButton* saveButton =
       [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  // TODO(crbug.com/480933727): Use i18n string.
-  saveButton.title = @"Save";
+  saveButton.title =
+      l10n_util::GetNSString(IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT);
   saveButton.translatesAutoresizingMaskIntoConstraints = NO;
   [saveButton addTarget:self
                  action:@selector(didTapSaveNewEntity)

@@ -6500,6 +6500,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE" desc="The message indicating that Chrome crashed for an unknown reason. [Length: 140em]">
         Something went really wrong. We'll work on that.
       </message>
+      <message name="IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT" desc="Button text used to save an Autofill AI entity (such as vehicle information) in settings.">
+        Save
+      </message>
       <message name="IDS_IOS_SAVE_IMAGE_ERROR" desc="Message informing the user that the image could not be saved because there was an error.">
         Error saving image.
       </message>
