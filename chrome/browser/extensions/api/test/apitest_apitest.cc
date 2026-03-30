@@ -741,4 +741,100 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, RunTestsSuccessiveAwaits) {
   EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
+// Note: these enums are the same, but are distinct for type safety and so they
+// self-document when used to construct test cases.
+enum class StandardizedOutcome {
+  kPass,
+  kFail,
+};
+
+enum class NonstandardizedOutcome {
+  kPass,
+  kFail,
+};
+
+// Allows testing the W3C browser.test proposal behavior
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md)
+// ("standardized") vs existing "non-standardized" chrome.test API behavior.
+class TestStandardizedAPITest : public TestAPITest,
+                                public testing::WithParamInterface<bool> {
+ protected:
+  std::string SetUseStandardizedApiBehaviorForTesting(
+      bool standardized_behavior_enabled) const {
+    return base::StringPrintf(
+        "chrome.test.setUseStandardizedApiBehaviorForTesting(%s);",
+        standardized_behavior_enabled ? "true" : "false");
+  }
+};
+
+// Tests the differences between assertEq. The standardized version uses
+// Object.is() more extensively.
+IN_PROC_BROWSER_TEST_P(TestStandardizedAPITest, assertEq) {
+  bool standardized_behavior_enabled = GetParam();
+  std::string set_api_behavior =
+      SetUseStandardizedApiBehaviorForTesting(standardized_behavior_enabled);
+
+  struct {
+    std::string title;
+    std::string test_case;
+    StandardizedOutcome should_pass_standardized;
+    NonstandardizedOutcome should_pass_non_standardized;
+  } cases[] = {
+      {"Primitives", "chrome.test.assertEq(1, 1);", StandardizedOutcome::kPass,
+       NonstandardizedOutcome::kPass},
+      {"NaN", "chrome.test.assertEq(NaN, NaN);", StandardizedOutcome::kPass,
+       NonstandardizedOutcome::kPass},
+      {"0 vs -0", "chrome.test.assertNe(0, -0);", StandardizedOutcome::kPass,
+       NonstandardizedOutcome::kFail},
+      {"Arrays", "chrome.test.assertEq([1], [1]);", StandardizedOutcome::kPass,
+       NonstandardizedOutcome::kPass},
+      {"Plain Objects", "chrome.test.assertEq({a: 1}, {a: 1});",
+       StandardizedOutcome::kPass, NonstandardizedOutcome::kPass},
+      {"Primitive Wrappers",
+       "chrome.test.assertEq(new Number(1), new Number(1));",
+       StandardizedOutcome::kFail, NonstandardizedOutcome::kPass},
+      {"Functions",
+       "chrome.test.assertEq(function() { return 1; }, function() { return 1; "
+       "});",
+       StandardizedOutcome::kFail, NonstandardizedOutcome::kPass},
+      {"Dates", "chrome.test.assertEq(new Date(100), new Date(100));",
+       StandardizedOutcome::kFail, NonstandardizedOutcome::kPass},
+      {"Maps", "chrome.test.assertEq(new Map(), new Map());",
+       StandardizedOutcome::kFail, NonstandardizedOutcome::kPass},
+      {"Sets", "chrome.test.assertEq(new Set(), new Set());",
+       StandardizedOutcome::kFail, NonstandardizedOutcome::kPass},
+  };
+
+  for (const auto& c : cases) {
+    SCOPED_TRACE(base::StringPrintf("Case: %s", c.title.c_str()));
+    ResultCatcher result_catcher;
+    std::string script = base::StringPrintf(
+        R"(%s
+           chrome.test.runTests([
+             function test() {
+               %s
+               chrome.test.succeed();
+             }
+           ]);)",
+        set_api_behavior.c_str(), c.test_case.c_str());
+
+    ASSERT_TRUE(LoadExtensionWithScript(script.c_str()));
+
+    bool expected_pass =
+        standardized_behavior_enabled
+            ? c.should_pass_standardized == StandardizedOutcome::kPass
+            : c.should_pass_non_standardized == NonstandardizedOutcome::kPass;
+    if (expected_pass) {
+      EXPECT_TRUE(result_catcher.GetNextResult())
+          << "Expected pass for " << c.title;
+    } else {
+      EXPECT_FALSE(result_catcher.GetNextResult())
+          << "Expected fail for " << c.title;
+      EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All, TestStandardizedAPITest, testing::Bool());
+
 }  // namespace extensions

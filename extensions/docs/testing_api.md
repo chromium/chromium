@@ -147,6 +147,12 @@ Asserts that the given condition strictly evaluates to the boolean `true` (or
 `false`), printing out the optional error message if it is not.
 
 #### assertEq/assertNe(expected, actual, message?)
+
+```js
+chrome.test.assertEq(expected, actual, /*optional*/ message);
+chrome.test.assertNe(expected, actual, /*optional*/ message);
+```
+
 Asserts that the provided value matches (or doesn't match) the expected value
 via `checkDeepEq(expected, actual)`. If the expected value does not match (or
 unexpectedly matches) the actual value, this will print out the expected and/or

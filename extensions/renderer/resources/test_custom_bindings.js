@@ -15,8 +15,92 @@ const logging = requireNative('logging');
 
 const GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 
+// A flag to determine adapt testing behavior to comply with the W3C
+// browser.test proposal
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md).
+let useStandardizedApiBehavior = false;
+
 function handleException(message, error) {
   bindingUtil.handleException(message || 'Unknown error', error);
+}
+
+// The quotes in the function are from the W3C browser.test.assertEq proposal
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md).
+function isPlainObject(obj) {
+  // "2. Plain objects (with prototype Object.prototype or null)""
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+  let proto = $Object.getPrototypeOf(obj);
+  // test_custom_bindings.js is only used in a testing context, so we don't
+  // need to worry about malicious or buggy extension scripts clobbering the
+  // global Object. Therefore, it's safe to use the strict `Object.prototype`
+  // equality check.
+  return proto === null || proto === Object.prototype;
+}
+
+// The quotes in the function are from the W3C browser.test.assertEq proposal
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md).
+function checkPlainObject(expected, actual) {
+  if (!isPlainObject(actual)) {
+    return false;
+  }
+
+  // "2.1) Only own enumerable properties are considered, unordered."
+  let expectedProps = Object.keys(expected);
+  let actualProps = Object.keys(actual);
+
+  // "2) Plain objects ... are also compared recursively."
+  if (!checkEq(expectedProps, actualProps)) {
+    return false;
+  }
+
+  for (let prop of expectedProps) {
+    if (!checkEq(expected[prop], actual[prop])) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// The quotes in the function are from the W3C browser.test.assertEq proposal
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md).
+function checkArray(expected, actual) {
+  // "1) Plain arrays (Array.isArray() returns `true`) are compared for deep
+  // equality."
+  if (!$Array.isArray(actual)) {
+    return false;
+  }
+
+  // "1.1) Their length and all items are recursively compared by these same
+  // rules."
+  if (expected.length !== actual.length) {
+    return false;
+  }
+  for (let i = 0; i < expected.length; ++i) {
+    if (!checkEq(expected[i], actual[i])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// The quotes in the function are from the W3C browser.test.assertEq proposal
+// (github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md).
+function checkEqStandardized(expected, actual) {
+  if ($Array.isArray(expected)) {
+    return checkArray(expected, actual);
+  }
+
+  // "2) Plain objects (with prototype Object.prototype or null) are also
+  // compared recursively."
+  if (isPlainObject(expected)) {
+    return checkPlainObject(expected, actual);
+  }
+
+  // "3) Everything else is compared using Object.is() same value algorithm"
+  return Object.is(expected, actual);
 }
 
 /**
@@ -64,13 +148,7 @@ function checkCollectionEq(expected, actual, isMap) {
   return true;
 }
 
-/**
- * Checks if two values are deeply equal.
- * @param expected The expected value.
- * @param actual The actual value.
- * @return True if the values are equal.
- */
-function checkEq(expected, actual) {
+function checkEqNonStandard(expected, actual) {
   if ((expected === null) != (actual === null)) {
     return false;
   }
@@ -186,6 +264,21 @@ function checkEq(expected, actual) {
   }
 
   return true;
+}
+
+/**
+ * Checks if two values are deeply equal.
+ * @param expected The expected value.
+ * @param actual The actual value.
+ * @return True if the values are equal.
+ */
+function checkEq(expected, actual) {
+  // TODO(crbug.com/493946949): merge these two impls together once more types
+  // are supported.
+  if (useStandardizedApiBehavior) {
+    return checkEqStandardized(expected, actual);
+  }
+  return checkEqNonStandard(expected, actual);
 }
 
 apiBridge.registerCustomHook(function(api) {
@@ -605,6 +698,13 @@ apiBridge.registerCustomHook(function(api) {
       runNextTest();
     });
   });
+
+  // TODO(crbug.com/493947412): Instead of a setter, initialize this from the
+  // C++ test harness. For now this allows us to test the new behavior.
+  apiFunctions.setHandleRequest(
+      'setUseStandardizedApiBehaviorForTesting', function(enabled) {
+        useStandardizedApiBehavior = enabled;
+      });
 
   apiFunctions.setHandleRequest('getApiDefinitions', function() {
     return GetExtensionAPIDefinitionsForTest();

@@ -240,6 +240,15 @@ chrome.test.callbackFail = function(expectedError, func) {};
 chrome.test.runTests = function(tests) {};
 
 /**
+ * Sets whether to diverge behavior to support the browser.test proposal (true)
+ * from
+ * (https://github.com/w3c/webextensions/blob/main/proposals/browser_test_api.md) or maintain existing behavior (false). For testing purposes only.
+ * @param {boolean} enabled
+ * @see https://developer.chrome.com/extensions/test#method-setUseStandardizedApiBehaviorForTesting
+ */
+chrome.test.setUseStandardizedApiBehaviorForTesting = function(enabled) {};
+
+/**
  * @see https://developer.chrome.com/extensions/test#method-getApiFeatures
  */
 chrome.test.getApiFeatures = function() {};
