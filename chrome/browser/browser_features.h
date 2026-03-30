@@ -105,8 +105,6 @@ extern const base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kAutoDeElevate);
 #endif
 
-BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
-
 BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 
 // WARNING: do not add new entries here. If a feature is only used in one

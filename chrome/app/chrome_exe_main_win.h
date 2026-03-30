@@ -15,12 +15,6 @@ extern "C" {
 #define CHROME_EXE_MAIN_EXPORT
 #endif
 
-// Returns the SHA-256 hashes of the specified .pak files.
-CHROME_EXE_MAIN_EXPORT __cdecl void GetPakFileHashes(
-    const uint8_t** resources_pak,
-    const uint8_t** chrome_100_pak,
-    const uint8_t** chrome_200_pak);
-
 #undef CHROME_EXE_MAIN_EXPORT
 
 }  // extern "C"

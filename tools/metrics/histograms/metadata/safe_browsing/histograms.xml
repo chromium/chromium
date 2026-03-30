@@ -2497,23 +2497,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.PakIntegrity.{PakFile}" enum="BooleanSuccess"
-    expires_after="2026-05-03">
-  <owner>drubery@chromium.org</owner>
-  <owner>rsesek@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Reports whether the {PakFile} file's SHA-256 hash matches the digest
-    produced at build-time. This detects on-disk corruption of the .pak file.
-    Recorded at startup on Linux, Mac, and Windows.
-  </summary>
-  <token key="PakFile">
-    <variant name="Chrome100" summary="chrome_100_percent.pak"/>
-    <variant name="Chrome200" summary="chrome_200_percent.pak"/>
-    <variant name="Resources" summary="resources.pak"/>
-  </token>
-</histogram>
-
 <histogram name="SafeBrowsing.PhishySite.{UserEvent}" units="count"
     expires_after="2026-03-29">
   <owner>skrakowi@chromium.org</owner>

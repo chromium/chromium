@@ -7723,7 +7723,6 @@ test("unit_tests") {
 
     deps += [
       "//chrome:other_version",
-      "//chrome:packed_resources_integrity_header",
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
@@ -8330,7 +8329,6 @@ test("unit_tests") {
       "../browser/resource_coordinator/tab_memory_metrics_reporter_unittest.cc",
       "../browser/resource_coordinator/test_lifecycle_unit.cc",
       "../browser/resource_coordinator/test_lifecycle_unit.h",
-      "../browser/resources_integrity_unittest.cc",
       "../browser/safe_browsing/generated_safe_browsing_pref_unittest.cc",
       "../browser/safe_browsing/generated_security_settings_bundle_pref_unittest.cc",
       "../browser/search/background/ntp_custom_background_service_unittest.cc",
@@ -8782,7 +8780,7 @@ test("unit_tests") {
     # TODO(crbug.com/417513088): Maybe merge with the non-android `deps` declaration above?
     deps += [
       "../browser/screen_ai:screen_ai_install_state",
-      "//chrome:packed_resources_integrity_header",
+      "//chrome:packed_resources",
       "//chrome/browser/apps:icon_standardizer",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/app_service:app_registry_cache_waiter",

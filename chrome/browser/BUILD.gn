@@ -3821,8 +3821,6 @@ static_library("browser") {
       "resource_coordinator/tab_manager.h",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.cc",
       "resource_coordinator/tab_manager_resource_coordinator_signal_observer.h",
-      "resources_integrity.cc",
-      "resources_integrity.h",
       "safe_browsing/generated_safe_browsing_pref.cc",
       "safe_browsing/generated_safe_browsing_pref.h",
       "safe_browsing/generated_security_settings_bundle_pref.cc",
@@ -4472,9 +4470,7 @@ static_library("browser") {
     }
 
     if (!is_win) {
-      # On Windows, the hashes are embedded in //chrome:chrome_initial rather
-      # than here in :chrome_dll.
-      deps += [ "//chrome:packed_resources_integrity_header" ]
+      deps += [ "//chrome:packed_resources" ]
       sources += [
         "certificate_viewer_stub.cc",
         "chrome_browser_main_posix.cc",
