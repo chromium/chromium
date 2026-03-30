@@ -197,7 +197,15 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
     return;
   }
   _isTabGridVisible = tabGridVisible;
+  _backgroundView.hideColorBackground = tabGridVisible;
   [self updateTabGridButtonForTabGridVisibility];
+}
+
+- (void)setIncognito:(BOOL)incognito {
+  if (_backgroundView.incognito == incognito) {
+    return;
+  }
+  _backgroundView.incognito = incognito;
 }
 
 - (void)setInTabGroup:(BOOL)inTabGroup {

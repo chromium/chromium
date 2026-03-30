@@ -607,6 +607,7 @@
     }
   }
   [self.consumer setButtonsEnabled:enableButtons];
+  [self.consumer setIncognito:isIncognitoContentVisible];
 }
 
 // Updates the consumer with the latest state of the assistant button.

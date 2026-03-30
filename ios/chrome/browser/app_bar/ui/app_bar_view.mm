@@ -7,6 +7,13 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
+namespace {
+// Animation duration for color transition.
+CGFloat kColorTransitionDuration = 0.2;
+
+}  // namespace
 
 @implementation AppBarView {
   CAShapeLayer* _maskLayer;
@@ -20,7 +27,7 @@
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
-    self.backgroundColor = [UIColor.purpleColor colorWithAlphaComponent:1.0];
+    [self updateBackgroundColor];
     [self updateMask];
   }
   return self;
@@ -39,7 +46,43 @@
   return [_maskPath containsPoint:point];
 }
 
+- (void)setIncognito:(BOOL)incognito {
+  if (_incognito == incognito) {
+    return;
+  }
+  _incognito = incognito;
+  [UIView animateWithDuration:kColorTransitionDuration
+                   animations:^{
+                     [self updateBackgroundColor];
+                   }];
+}
+
+- (void)setHideColorBackground:(BOOL)hideColorBackground {
+  if (_hideColorBackground == hideColorBackground) {
+    return;
+  }
+  _hideColorBackground = hideColorBackground;
+  [UIView animateWithDuration:kColorTransitionDuration
+                   animations:^{
+                     [self updateBackgroundColor];
+                   }];
+}
+
 #pragma mark - Private
+
+// Updates the background color of the app bar.
+- (void)updateBackgroundColor {
+  if (self.hideColorBackground) {
+    self.backgroundColor = [UIColor clearColor];
+    return;
+  }
+  if (self.incognito) {
+    self.backgroundColor = [UIColor colorNamed:kAppBarIncognitoColor];
+    return;
+  }
+
+  self.backgroundColor = [UIColor colorNamed:kAppBarColor];
+}
 
 // Updates the cut out mask if the shape of the app bar changed.
 - (void)updateMask {

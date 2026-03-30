@@ -11,6 +11,12 @@
 // corners and touch transparency for the background area.
 @interface AppBarView : UIView
 
+// Whether the app bar is in incognito mode.
+@property(nonatomic, assign) BOOL incognito;
+
+// Hides any color background if YES.
+@property(nonatomic, assign) BOOL hideColorBackground;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_VIEW_H_

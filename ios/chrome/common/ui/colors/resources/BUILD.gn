@@ -10,6 +10,8 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/Contents.json",
     "Assets.xcassets/aim_composebox_button_background_color.colorset/Contents.json",
     "Assets.xcassets/aim_input_item_top_background_color.colorset/Contents.json",
+    "Assets.xcassets/app_bar.colorset/Contents.json",
+    "Assets.xcassets/app_bar_incognito.colorset/Contents.json",
     "Assets.xcassets/background_color.colorset/Contents.json",
     "Assets.xcassets/background_shadow_color.colorset/Contents.json",
     "Assets.xcassets/blue_100_color.colorset/Contents.json",

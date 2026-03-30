@@ -541,6 +541,43 @@ TEST_F(AppBarMediatorTest, TestInTabGroup) {
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that the consumer is updated with the incognito state.
+TEST_F(AppBarMediatorTest, TestIncognitoState) {
+  tab_grid_state_.tabGridVisible = NO;
+  incognito_state_.incognitoContentVisible = NO;
+
+  // Initial state should be non-incognito.
+  OCMExpect([consumer_ setIncognito:NO]);
+  [mediator_ updateConsumer];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switch to incognito.
+  OCMExpect([consumer_ setIncognito:YES]);
+  incognito_state_.incognitoContentVisible = YES;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switch back to regular.
+  OCMExpect([consumer_ setIncognito:NO]);
+  incognito_state_.incognitoContentVisible = NO;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the consumer is updated with the incognito state in the tab grid.
+TEST_F(AppBarMediatorTest, TestIncognitoStateTabGrid) {
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+
+  // Initial state in regular tab grid should be non-incognito.
+  OCMExpect([consumer_ setIncognito:NO]);
+  [mediator_ updateConsumer];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switch to incognito page in tab grid.
+  OCMExpect([consumer_ setIncognito:YES]);
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 // Tests that the assistant button is in the signed out state when not signed
 // in and not location eligible.
 TEST_F(AppBarMediatorTest, TestAssistantButtonStateSignedOut) {

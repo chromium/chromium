@@ -50,6 +50,9 @@ enum class AppBarAssistantButtonState {
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
                          avatar:(UIImage*)avatar;
 
+// Sets whether the incognito mode is active.
+- (void)setIncognito:(BOOL)incognito;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSUMER_H_
