@@ -3727,12 +3727,6 @@ class IntegrationTestUserInSystem : public IntegrationTest {
           /*event_logging_url=*/{}, base::Minutes(5), base::Seconds(2),
           base::Seconds(10),
           /*event_logging_permission_provider=*/std::nullopt);
-      commands->EnterTestMode(
-          test_server_->update_url(), test_server_->crash_upload_url(),
-          /*app_logo_url=*/{},
-          /*event_logging_url=*/{}, base::Minutes(5), base::Seconds(2),
-          base::Seconds(10),
-          /*event_logging_permission_provider=*/std::nullopt);
     }
   }
 
