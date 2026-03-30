@@ -485,6 +485,7 @@ component("chrome_features") {
     ":buildflags",
     ":non_code_constants",
     "//base",
+    "//build:android_buildflags",
     "//components/offline_pages/buildflags",
     "//content/public/common:buildflags",
     "//device/vr/buildflags",

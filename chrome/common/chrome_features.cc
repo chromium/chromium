@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
@@ -905,7 +906,11 @@ BASE_FEATURE(kGlicButtonAltLabel, base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kGlicButtonAltLabelVariant{
     &kGlicButtonAltLabel, "glic-button-alt-label-variant", 0};
 
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_FEATURE(kGlicDaisyChainNewTabs, base::FEATURE_DISABLED_BY_DEFAULT);
+#else
 BASE_FEATURE(kGlicDaisyChainNewTabs, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_ENABLED_BY_DEFAULT);
 
