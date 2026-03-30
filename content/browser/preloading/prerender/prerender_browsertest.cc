@@ -7169,7 +7169,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMojoBinderPolicy);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester_ should log
-  // PrerenderCancelledInterface::kUnkown here.
+  // PrerenderCancelledInterface::kUnknown here.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
@@ -7215,7 +7215,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   ExpectFinalStatusForSpeculationRule(PrerenderFinalStatus::kMojoBinderPolicy);
   // `TestInterfaceForCancel` doesn't have a enum value because it is not used
   // in production, so histogram_tester_ should log
-  // PrerenderCancelledInterface::kUnkown here.
+  // PrerenderCancelledInterface::kUnknown here.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderCancelledInterface.SpeculationRule",
       PrerenderCancelledInterface::kUnknown, 1);
