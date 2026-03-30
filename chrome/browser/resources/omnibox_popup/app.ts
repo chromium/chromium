@@ -168,6 +168,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private callbackRouter_: SearchboxPageCallbackRouter;
   private eventTracker_ = new EventTracker();
+  private hideContextButton_: boolean =
+      loadTimeData.getBoolean('hideClassicContextButton');
   private listenerIds_: number[] = [];
   private pageHandler_: SearchboxPageHandlerInterface;
   private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
@@ -207,10 +209,6 @@ export class OmniboxPopupAppElement extends I18nMixinLit
           (eligible: boolean) => {
             this.isLensSearchEligible_ = this.isLensSearchEnabled_ && eligible;
           }),
-      this.callbackRouter_.updateAimPopupEligibility.addListener(
-          (eligible: boolean) => {
-            this.isAimPopupEligible_ = eligible;
-          }),
       this.callbackRouter_.updateContentSharingPolicy.addListener(
           (enabled: boolean) => {
             this.isContentSharingEnabled_ = enabled;
@@ -220,6 +218,13 @@ export class OmniboxPopupAppElement extends I18nMixinLit
             this.inputState_ = inputState;
           }),
     ];
+    if (!this.hideContextButton_) {
+      this.listenerIds_.push(
+          this.callbackRouter_.updateAimPopupEligibility.addListener(
+              (eligible: boolean) => {
+                this.isAimPopupEligible_ = eligible;
+              }));
+    }
     if (this.webuiOmniboxPopupSelectionControlEnabled_) {
       this.listenerIds_.push(
           this.callbackRouter_.stepSelection.addListener(
@@ -293,14 +298,20 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   }
 
   private computeShowContextEntrypoint_(): boolean {
-    const isTallSearchbox = this.searchboxLayoutMode_.startsWith('Tall');
-    const showRecentTabChip = this.computeShowRecentTabChip_();
-    const showContextualChips = showRecentTabChip || this.isLensSearchEligible_;
-    const showContextualChipsInCompactMode =
-        showContextualChips && this.searchboxLayoutMode_ === 'Compact';
-    return this.isAimPopupEligible_ &&
-        (isTallSearchbox || showContextualChipsInCompactMode) &&
-        !this.isInKeywordMode_;
+    if (this.hideContextButton_ || !this.isAimPopupEligible_ ||
+        this.isInKeywordMode_) {
+      return false;
+    }
+
+    if (this.searchboxLayoutMode_.startsWith('Tall')) {
+      return true;
+    }
+
+    if (this.searchboxLayoutMode_ === 'Compact') {
+      return this.computeShowRecentTabChip_() || this.isLensSearchEligible_;
+    }
+
+    return false;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
