@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
 import org.chromium.components.segmentation_platform.ClassificationResult;
@@ -16,6 +17,7 @@ import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformConstants;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
 
@@ -36,12 +38,15 @@ public class AppRatingPromoController {
 
     /** Entry point to potentially trigger the app rating prompt. */
     public void maybeShowPromo() {
-        if (!ChromeFeatureList.sAndroidAppRatingPrompt.isEnabled()) {
+        if (!ChromeFeatureList.sAndroidAppRatingPrompt.isEnabled()
+                || !UserPrefs.areNativePrefsLoaded(mProfile)) {
             return;
         }
 
-        // TODO(crbug.com/493340627): Check the syncable user lifetime preference to ensure
-        // the prompt is only shown once across all devices.
+        // Ensure the prompt is only shown once
+        if (UserPrefs.get(mProfile).getBoolean(Pref.APP_RATING_PROMPT_SHOWN)) {
+            return;
+        }
 
         // TODO(crbug.com/493342419): Implement a 72-hour Clank-wide cooldown check to ensure
         // that no other promotional UI has been shown recently.
@@ -86,10 +91,17 @@ public class AppRatingPromoController {
     }
 
     private void triggerAppRatingReviewFlow(Activity activity) {
+        // The Play Store In-App Review API is a black box that fails silently if the user has
+        // already rated the app or seen the prompt too recently.
+        // It does not inform us if the UI was actually shown.
+        // To strictly avoid spamming users, we record the attempt as a success.
+        UserPrefs.get(mProfile).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
         AppRatingManager manager = AppRatingManagerFactory.create();
         manager.requestAndShowReviewFlow(
                 activity,
                 () -> {
+                    // This callback only indicates that the API flow has finished (or failed
+                    // silently). It does NOT mean the user saw the dialog or provided a rating.
                     // TODO(crbug.com/493340627): Log or update metrics */
                 });
     }

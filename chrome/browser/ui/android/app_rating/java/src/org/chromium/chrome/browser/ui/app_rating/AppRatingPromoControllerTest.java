@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
@@ -28,13 +29,16 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.PredictionOptions;
 import org.chromium.components.segmentation_platform.SegmentationPlatformConstants;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
+import org.chromium.components.user_prefs.UserPrefs;
 
 /** Unit tests for {@link AppRatingPromoController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -45,6 +49,7 @@ public class AppRatingPromoControllerTest {
     @Mock private Profile mProfile;
     @Mock private SegmentationPlatformService mSegmentationService;
     @Mock private AppRatingManager mAppRatingManager;
+    @Mock private PrefService mPrefService;
     @Captor private ArgumentCaptor<Callback<ClassificationResult>> mCallbackCapturer;
 
     private Activity mActivity;
@@ -52,6 +57,8 @@ public class AppRatingPromoControllerTest {
 
     @Before
     public void setUp() {
+        UserPrefs.setPrefServiceForTesting(mPrefService);
+
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         SegmentationPlatformServiceFactory.setForTests(mSegmentationService);
         AppRatingManagerFactory.setInstanceForTesting(mAppRatingManager);
@@ -64,6 +71,14 @@ public class AppRatingPromoControllerTest {
         mController.maybeShowPromo();
         verify(mSegmentationService, never()).getClassificationResult(any(), any(), any(), any());
         verify(mAppRatingManager, never()).requestAndShowReviewFlow(any(), any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
+    public void testMaybeShowPromo_AlreadyShown() {
+        when(mPrefService.getBoolean(Pref.APP_RATING_PROMPT_SHOWN)).thenReturn(true);
+        mController.maybeShowPromo();
+        verify(mSegmentationService, never()).getClassificationResult(any(), any(), any(), any());
     }
 
     @Test
@@ -94,6 +109,7 @@ public class AppRatingPromoControllerTest {
         mCallbackCapturer.getValue().onResult(result);
 
         // Verify the review flow is triggered for high engagement users.
+        verify(mPrefService).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
         verify(mAppRatingManager).requestAndShowReviewFlow(eq(mActivity), any());
     }
 
