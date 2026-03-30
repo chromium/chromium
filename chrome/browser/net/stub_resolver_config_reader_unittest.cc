@@ -235,7 +235,7 @@ TEST_F(StubResolverConfigReaderTest,
        Doh_Automatic_DohFallbackForceSetByFeatureFlag) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
-      safe_browsing::kForceSecureDnsDohFallback);
+      net::features::kForceSecureDnsDohFallback);
   local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
   local_state_.SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -264,8 +264,8 @@ TEST_F(StubResolverConfigReaderTest,
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {safe_browsing::kBundledSecuritySettingsSecureDnsV2,
-       safe_browsing::kForceSecureDnsDohFallback},
-       {});
+       net::features::kForceSecureDnsDohFallback},
+      {});
   local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
   local_state_.SetString(prefs::kDnsOverHttpsMode,
                          SecureDnsConfig::kModeAutomatic);
@@ -307,7 +307,7 @@ TEST_F(StubResolverConfigReaderTest,
        Doh_Automatic_DohFallbackForced_FeatureDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {safe_browsing::kForceSecureDnsDohFallback},
+      {net::features::kForceSecureDnsDohFallback},
       {safe_browsing::kBundledSecuritySettingsSecureDnsV2});
   local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
   safe_browsing::SetSafeBrowsingState(
@@ -339,7 +339,7 @@ TEST_F(
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {safe_browsing::kBundledSecuritySettingsSecureDnsV2,
-       safe_browsing::kForceSecureDnsDohFallback},
+       net::features::kForceSecureDnsDohFallback},
       {});
   local_state_.SetBoolean(prefs::kBuiltInDnsClientEnabled, true);
   safe_browsing::SetSafeBrowsingState(

@@ -177,7 +177,7 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
   // The feature needs to be checked last, because checking the feature
   // activates the field trial and marks the client as active in a study group.
   return base::FeatureList::IsEnabled(
-      safe_browsing::kForceSecureDnsDohFallback);
+      net::features::kForceSecureDnsDohFallback);
 }
 
 }  // namespace
