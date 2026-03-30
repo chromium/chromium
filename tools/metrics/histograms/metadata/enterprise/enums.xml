@@ -2388,6 +2388,8 @@ chromium-metrics-reviews@google.com.
   <int value="1435" label="SharedWorkerExtendedLifetimeEnabled"/>
   <int value="1436" label="MaxConnectionsPerProxyForWebSocket"/>
   <int value="1437" label="KrispNoiseCancellationEnabled"/>
+  <int value="1438" label="MetricsReportingLevel"/>
+  <int value="1439" label="DeviceMetricsReportingLevel"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

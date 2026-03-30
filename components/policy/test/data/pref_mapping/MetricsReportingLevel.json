@@ -1,0 +1,47 @@
+[
+  {
+    "can_be_recommended": true,
+    "official_only": true,
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "MetricsReportingLevel": 0
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "MetricsReportingLevel": 1
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "MetricsReportingLevel": 2
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_level": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]
