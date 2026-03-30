@@ -147,10 +147,10 @@ public class NewTabPage
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ObserverList<MostVisitedTileClickObserver> mMostVisitedTileClickObservers;
     private final BottomSheetController mBottomSheetController;
-    private FeedSurfaceProvider mFeedSurfaceProvider;
+    private final NewTabPageLayout mNewTabPageLayout;
+    private final NewTabPageCoordinator mNewTabPageCoordinator;
 
-    private NewTabPageLayout mNewTabPageLayout;
-    private NewTabPageCoordinator mNewTabPageCoordinator;
+    private FeedSurfaceProvider mFeedSurfaceProvider;
     private @Nullable TabObserver mTabObserver;
     private @Nullable LifecycleObserver mLifecycleObserver;
     protected boolean mSearchProviderHasLogo;
@@ -488,7 +488,30 @@ public class NewTabPage
         mActivityLifecycleDispatcher.register(mLifecycleObserver);
 
         updateSearchProvider();
-        initializeMainView(
+
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
+        Log.d(TAG, "NewTabPageLayout inflate");
+        mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
+        mNewTabPageCoordinator =
+                new NewTabPageCoordinator(
+                        mNewTabPageManager,
+                        activity,
+                        mNewTabPageLayout,
+                        mTab,
+                        tabModelSelector,
+                        moduleRegistrySupplier,
+                        mTab.getProfile(),
+                        windowAndroid,
+                        activityResultTracker,
+                        bottomSheetController,
+                        modalDialogManager,
+                        snackbarManager,
+                        mIsTablet,
+                        mTabStripHeightSupplier,
+                        homeSurfaceTracker);
+
+        initializeFeedSurfaceProvider(
                 activity,
                 windowAndroid,
                 activityResultTracker,
@@ -500,8 +523,7 @@ public class NewTabPage
                 edgeToEdgeControllerSupplier,
                 startupMetricsTracker,
                 tabModelSelector,
-                moduleRegistrySupplier,
-                homeSurfaceTracker);
+                moduleRegistrySupplier);
 
         View view = getView();
         view.addOnAttachStateChangeListener(
@@ -548,14 +570,6 @@ public class NewTabPage
                 mFeedSurfaceProvider.getTouchEnabledDelegate(),
                 mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher,
-                mTab.getProfile(),
-                windowAndroid,
-                activityResultTracker,
-                bottomSheetController,
-                modalDialogManager,
-                snackbarManager,
-                mIsTablet,
-                mTabStripHeightSupplier,
                 () -> assumeNonNull(mTemplateUrlService.getComposeplateUrl()));
 
         sTotalCount++;
@@ -565,7 +579,7 @@ public class NewTabPage
     }
 
     /**
-     * Create and initialize the main view contained in this NewTabPage.
+     * Create and initialize the FeedSurfaceProvider of this NewTabPage.
      *
      * @param activity The activity used to initialize the view.
      * @param windowAndroid Provides the current active tab.
@@ -577,8 +591,8 @@ public class NewTabPage
      * @param edgeToEdgeControllerSupplier The supplier to {@link EdgeToEdgeController}.
      * @param startupMetricsTracker Used to record NTP startup metric.
      */
-    @EnsuresNonNull({"mNewTabPageCoordinator", "mNewTabPageLayout", "mFeedSurfaceProvider"})
-    protected void initializeMainView(
+    @EnsuresNonNull({"mFeedSurfaceProvider"})
+    protected void initializeFeedSurfaceProvider(
             Activity activity,
             WindowAndroid windowAndroid,
             ActivityResultTracker activityResultTracker,
@@ -590,23 +604,8 @@ public class NewTabPage
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             StartupMetricsTracker startupMetricsTracker,
             TabModelSelector tabModelSelector,
-            OneshotSupplier<ModuleRegistry> moduleRegistrySupplier,
-            @Nullable HomeSurfaceTracker homeSurfaceTracker) {
+            OneshotSupplier<ModuleRegistry> moduleRegistrySupplier) {
         Profile profile = mTab.getProfile();
-
-        LayoutInflater inflater = LayoutInflater.from(activity);
-        // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
-        Log.i(TAG, "NewTabPageLayout inflate");
-        mNewTabPageLayout = (NewTabPageLayout) inflater.inflate(R.layout.new_tab_page_layout, null);
-        mNewTabPageCoordinator =
-                new NewTabPageCoordinator(
-                        mNewTabPageManager,
-                        activity,
-                        mNewTabPageLayout,
-                        mTab,
-                        tabModelSelector,
-                        moduleRegistrySupplier,
-                        homeSurfaceTracker);
 
         FeedSurfaceCoordinator.ActionDelegateFactory createActionDelegate =
                 () ->
@@ -1037,10 +1036,7 @@ public class NewTabPage
 
         mCallbackController.destroy();
 
-        if (mNewTabPageCoordinator != null) {
-            mNewTabPageCoordinator.destroy();
-        }
-
+        mNewTabPageCoordinator.destroy();
         mNewTabPageManager.onDestroy();
         mTileGroupDelegate.destroy();
         mTemplateUrlService.removeObserver(this);

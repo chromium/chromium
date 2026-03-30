@@ -289,6 +289,14 @@ public class NewTabPageCoordinatorUnitTest {
                         mTab,
                         mTabModelSelector,
                         mModuleRegistrySupplier,
+                        mProfile,
+                        mWindowAndroid,
+                        mActivityResultTracker,
+                        mBottomSheetController,
+                        mModalDialogManager,
+                        mSnackbarManager,
+                        /* isTablet= */ false,
+                        mTabStripHeightSupplier,
                         mHomeSurfaceTracker);
 
         mCoordinator.initialize(
@@ -299,14 +307,6 @@ public class NewTabPageCoordinatorUnitTest {
                 mTouchEnabledDelegate,
                 mUiConfig,
                 mLifecycleDispatcher,
-                mProfile,
-                mWindowAndroid,
-                mActivityResultTracker,
-                mBottomSheetController,
-                mModalDialogManager,
-                mSnackbarManager,
-                /* isTablet= */ false,
-                mTabStripHeightSupplier,
                 mComposeplateUrlSupplier);
     }
 
