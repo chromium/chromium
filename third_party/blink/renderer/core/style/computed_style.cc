@@ -255,16 +255,16 @@ static bool PseudoElementStylesEqual(const ComputedStyle& old_style,
 
 static bool DiffAffectsContainerQueries(const ComputedStyle& old_style,
                                         const ComputedStyle& new_style) {
+  if (!base::ValuesEquivalent(old_style.ContainerName(),
+                              new_style.ContainerName()) ||
+      old_style.ContainerType() != new_style.ContainerType()) {
+    return true;
+  }
   if (!old_style.IsContainerForSizeContainerQueries() &&
       !new_style.IsContainerForSizeContainerQueries() &&
       !old_style.IsContainerForScrollStateContainerQueries() &&
       !new_style.IsContainerForScrollStateContainerQueries()) {
     return false;
-  }
-  if (!base::ValuesEquivalent(old_style.ContainerName(),
-                              new_style.ContainerName()) ||
-      (old_style.ContainerType() != new_style.ContainerType())) {
-    return true;
   }
   if (new_style.Display() != old_style.Display()) {
     if (new_style.Display() == EDisplay::kNone ||
