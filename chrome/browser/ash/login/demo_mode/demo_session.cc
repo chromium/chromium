@@ -177,10 +177,11 @@ std::vector<LocaleInfo> GetSupportedLocales() {
   return supported_locales;
 }
 
-void RecordDemoModeDimensions() {
-  SYSLOG(INFO) << "Demo mode country: " << demo_mode::Country();
-  SYSLOG(INFO) << "Demo mode retailer: " << demo_mode::RetailerName();
-  SYSLOG(INFO) << "Demo mode store: " << demo_mode::StoreNumber();
+void RecordDemoModeDimensions(PrefService& local_state) {
+  SYSLOG(INFO) << "Demo mode country: " << demo_mode::Country(local_state);
+  SYSLOG(INFO) << "Demo mode retailer: "
+               << demo_mode::RetailerName(local_state);
+  SYSLOG(INFO) << "Demo mode store: " << demo_mode::StoreNumber(local_state);
 }
 
 GURL GetDemoDemoAppUrl(const growth::Payload* model) {
@@ -656,7 +657,7 @@ void DemoSession::OnSessionStateChanged() {
       break;
   }
 
-  RecordDemoModeDimensions();
+  RecordDemoModeDimensions(local_state_.get());
 }
 
 base::FilePath DemoSession::GetDemoAppComponentPath() {

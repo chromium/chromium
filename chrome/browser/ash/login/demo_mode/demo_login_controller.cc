@@ -359,22 +359,22 @@ policy::DeviceCloudPolicyManagerAsh* GetDeviceCloudPolicyManager() {
   return policy_connector_ash->GetDeviceCloudPolicyManager();
 }
 
-base::DictValue GetDeviceInfo() {
+base::DictValue GetDeviceInfo(PrefService& local_state) {
   // Full ChromeOS version, for example: R127-15919.0.0_stable-channel.
   const std::string version = demo_mode::GetChromeOSVersionString();
 
   // This field "country" is intended to be used to control region specific
   // behaviors, including TOS agreement, focus backend services and etc.
-  const std::string country = demo_mode::Country();
+  const std::string country = demo_mode::Country(local_state);
 
-  const std::string retailer = demo_mode::RetailerName();
-  const std::string store_id = demo_mode::StoreNumber();
+  const std::string retailer = demo_mode::RetailerName(local_state);
+  const std::string store_id = demo_mode::StoreNumber(local_state);
 
   const std::string board = demo_mode::Board();
   const std::string_view model = demo_mode::Model();
 
   // This field "locale" is used to set the language of the demo account.
-  const std::string locale = demo_mode::Locale();
+  const std::string locale = demo_mode::Locale(local_state);
 
   return base::DictValue()
       .Set(kBuildVersion, version)
@@ -489,7 +489,7 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
                                          std::move(device_identifier.value()));
 
   if (features::IsSendDeviceInfoToDemoServerEnabled()) {
-    base::DictValue device_info = GetDeviceInfo();
+    base::DictValue device_info = GetDeviceInfo(local_state_.get());
     post_data.Set(kDeviceInfo, std::move(device_info));
   }
 

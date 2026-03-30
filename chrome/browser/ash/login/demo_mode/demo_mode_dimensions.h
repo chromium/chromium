@@ -10,18 +10,20 @@
 #include "base/version.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
+class PrefService;
+
 namespace ash {
 namespace demo_mode {
 
 // User-selected country, returned as two-letter country code.
-std::string Country();
+std::string Country(PrefService& local_state);
 
 // User-entered (canonicalized) name of the retailer that the demo device is
 // running in.
-std::string RetailerName();
+std::string RetailerName(const PrefService& local_state);
 
 // User-entered number identifying the store that a demo device is running in.
-std::string StoreNumber();
+std::string StoreNumber(const PrefService& local_state);
 
 // Whether the demo device falls under the Cloud Gaming device branding
 // category.
@@ -32,10 +34,10 @@ bool IsCloudGamingDevice();
 bool IsFeatureAwareDevice();
 
 // The demo mode app component version.
-base::Version AppVersion();
+base::Version AppVersion(const PrefService& local_state);
 
 // The demo mode resources component version.
-base::Version ResourcesVersion();
+base::Version ResourcesVersion(const PrefService& local_state);
 
 // Construct the full version string. It has the format
 // R{Chrome Browser Milestone}-{Platform Version}_{Channel}, e.g.
@@ -51,11 +53,12 @@ std::string Board();
 std::string_view Model();
 
 // The locale of the demo session.
-std::string Locale();
+std::string Locale(const PrefService& local_state);
 
 // Builds and returns a DemoModeDimensions proto from the individual dimension
 // values
-enterprise_management::DemoModeDimensions GetDemoModeDimensions();
+enterprise_management::DemoModeDimensions GetDemoModeDimensions(
+    PrefService& local_state);
 }  // namespace demo_mode
 }  // namespace ash
 

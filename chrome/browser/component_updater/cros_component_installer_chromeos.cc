@@ -8,6 +8,7 @@
 #include <map>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -231,10 +232,15 @@ void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
 
 update_client::InstallerAttributes
 DemoAppInstallerPolicy::GetInstallerAttributes() const {
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   update_client::InstallerAttributes demo_app_installer_attributes;
-  demo_app_installer_attributes["retailer_id"] = ash::demo_mode::RetailerName();
-  demo_app_installer_attributes["store_id"] = ash::demo_mode::StoreNumber();
-  demo_app_installer_attributes["demo_country"] = ash::demo_mode::Country();
+  demo_app_installer_attributes["retailer_id"] =
+      ash::demo_mode::RetailerName(local_state);
+  demo_app_installer_attributes["store_id"] =
+      ash::demo_mode::StoreNumber(local_state);
+  demo_app_installer_attributes["demo_country"] =
+      ash::demo_mode::Country(local_state);
   demo_app_installer_attributes["is_cloud_gaming_device"] =
       base::ToString(ash::demo_mode::IsCloudGamingDevice());
   demo_app_installer_attributes["is_feature_aware_device"] =

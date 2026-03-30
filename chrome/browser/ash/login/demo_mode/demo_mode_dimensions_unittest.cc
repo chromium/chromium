@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_chromeos_version_info.h"
@@ -41,22 +42,30 @@ class DemoModeDimensionsTest : public testing::Test {
 TEST_F(DemoModeDimensionsTest, Country) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kDemoModeCountry, "DE");
-  ASSERT_EQ(ash::demo_mode::Country(), "DE");
+  ASSERT_EQ(ash::demo_mode::Country(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            "DE");
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kDemoModeCountry, "ca");
-  ASSERT_EQ(ash::demo_mode::Country(), "CA");
+  ASSERT_EQ(ash::demo_mode::Country(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            "CA");
 }
 
 TEST_F(DemoModeDimensionsTest, RetailerName) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kDemoModeRetailerId, "retailer");
-  ASSERT_EQ(ash::demo_mode::RetailerName(), "retailer");
+  ASSERT_EQ(ash::demo_mode::RetailerName(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            "retailer");
 }
 
 TEST_F(DemoModeDimensionsTest, StoreNumber) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kDemoModeStoreId, "1234");
-  ASSERT_EQ(ash::demo_mode::StoreNumber(), "1234");
+  ASSERT_EQ(ash::demo_mode::StoreNumber(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            "1234");
 }
 
 TEST_F(DemoModeDimensionsTest, IsCloudGamingDevice) {
@@ -156,7 +165,9 @@ TEST_F(DemoModeDimensionsTest, Model) {
 TEST_F(DemoModeDimensionsTest, Locale) {
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       language::prefs::kApplicationLocale, "fr-CA");
-  ASSERT_EQ(ash::demo_mode::Locale(), "fr-CA");
+  ASSERT_EQ(ash::demo_mode::Locale(
+                CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())),
+            "fr-CA");
 }
 
 TEST_F(DemoModeDimensionsTest, GetDemoModeDimensions) {
@@ -181,7 +192,8 @@ TEST_F(DemoModeDimensionsTest, GetDemoModeDimensions) {
       enterprise_management::DemoModeDimensions::FEATURE_AWARE_DEVICE);
 
   enterprise_management::DemoModeDimensions actual =
-      ash::demo_mode::GetDemoModeDimensions();
+      ash::demo_mode::GetDemoModeDimensions(
+          CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
   ash::test::AssertDemoDimensionsEqual(actual, expected);
 }
 

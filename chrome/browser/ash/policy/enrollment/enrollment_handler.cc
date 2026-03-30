@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -214,14 +215,17 @@ EnrollmentHandler::EnrollmentHandler(
   CHECK_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
   CHECK_EQ(dm_auth_.empty(), enrollment_config_.is_mode_attestation());
   CHECK(enrollment_config_.is_mode_attestation() || attestation_flow_);
+
+  // TODO(crbug.com/404133022): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   register_params_ =
       std::make_unique<CloudPolicyClient::RegistrationParameters>(
           em::DeviceRegisterRequest::DEVICE,
           EnrollmentModeToRegistrationFlavor(enrollment_config.mode));
-  register_params_->psm_execution_result =
-      GetPsmExecutionResult(*g_browser_process->local_state());
+  register_params_->psm_execution_result = GetPsmExecutionResult(local_state);
   register_params_->psm_determination_timestamp =
-      GetPsmDeterminationTimestamp(*g_browser_process->local_state());
+      GetPsmDeterminationTimestamp(local_state);
   // License type is set only if terminal license is used. Unset field is
   // treated as enterprise license.
   if (enrollment_config_.license_type == LicenseType::kTerminal) {
@@ -233,7 +237,7 @@ EnrollmentHandler::EnrollmentHandler(
 
   if (requisition == EnrollmentRequisitionManager::kDemoRequisition) {
     register_params_->demo_mode_dimensions =
-        ash::demo_mode::GetDemoModeDimensions();
+        ash::demo_mode::GetDemoModeDimensions(local_state);
   }
 
   store_->AddObserver(this);

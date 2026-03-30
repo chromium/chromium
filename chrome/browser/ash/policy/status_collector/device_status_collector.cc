@@ -25,6 +25,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
@@ -1599,7 +1600,7 @@ SampledData::SampledData() = default;
 SampledData::~SampledData() = default;
 
 DeviceStatusCollector::DeviceStatusCollector(
-    PrefService* pref_service,
+    PrefService* local_state,
     ReportingUserTracker* reporting_user_tracker,
     ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service,
@@ -1614,7 +1615,7 @@ DeviceStatusCollector::DeviceStatusCollector(
     const CrashReportInfoFetcher& crash_report_info_fetcher,
     base::Clock* clock)
     : StatusCollector(provider, ash::CrosSettings::Get(), clock),
-      pref_service_(pref_service),
+      local_state_(CHECK_DEREF(local_state)),
       reporting_user_tracker_(reporting_user_tracker),
       firmware_fetch_error_(kFirmwareNotInitialized),
       volume_info_fetcher_(volume_info_fetcher),
@@ -1768,25 +1769,25 @@ DeviceStatusCollector::DeviceStatusCollector(
                      weak_factory_.GetWeakPtr()));
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service_);
+  pref_change_registrar_->Init(&local_state_.get());
   pref_change_registrar_->Add(
       prefs::kReportingUsers,
       base::BindRepeating(&DeviceStatusCollector::ReportingUsersChanged,
                           weak_factory_.GetWeakPtr()));
 
-  DCHECK(pref_service_->GetInitializationStatus() !=
+  DCHECK(local_state_->GetInitializationStatus() !=
          PrefService::INITIALIZATION_STATUS_WAITING);
   activity_storage_ = std::make_unique<EnterpriseActivityStorage>(
-      pref_service_, prefs::kDeviceActivityTimes);
+      &local_state_.get(), prefs::kDeviceActivityTimes);
 }
 
 DeviceStatusCollector::DeviceStatusCollector(
-    PrefService* pref_service,
+    PrefService* local_state,
     ReportingUserTracker* reporting_user_tracker,
     ash::system::StatisticsProvider* provider,
     ManagedSessionService* managed_session_service)
     : DeviceStatusCollector(
-          pref_service,
+          local_state,
           reporting_user_tracker,
           provider,
           managed_session_service,
@@ -2248,7 +2249,7 @@ void DeviceStatusCollector::OnProbeDataFetched(
 
 void DeviceStatusCollector::ReportingUsersChanged() {
   std::vector<std::string> reporting_users;
-  for (auto& value : pref_service_->GetList(prefs::kReportingUsers)) {
+  for (auto& value : local_state_->GetList(prefs::kReportingUsers)) {
     if (value.is_string()) {
       reporting_users.push_back(value.GetString());
     }
@@ -2773,7 +2774,7 @@ bool DeviceStatusCollector::GetDemoModeDimensions(
   bool anything_reported = ash::demo_mode::IsDeviceInDemoMode();
   if (anything_reported) {
     *status->mutable_demo_mode_dimensions() =
-        ash::demo_mode::GetDemoModeDimensions();
+        ash::demo_mode::GetDemoModeDimensions(local_state_.get());
   }
   return anything_reported;
 }

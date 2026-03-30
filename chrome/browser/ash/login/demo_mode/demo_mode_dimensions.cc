@@ -11,7 +11,6 @@
 #include "base/version.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -27,30 +26,27 @@ bool AreDemoDimensionsAccessible() {
          DemoSetupController::IsOobeDemoSetupFlowInProgress();
 }
 
-std::string Country() {
+std::string Country(PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
   // TODO(b/328305607): Remove this conversion part once all
   // prefs::kDemoModeCountry are converted.
-  const std::string country =
-      g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  const std::string country = local_state.GetString(prefs::kDemoModeCountry);
   std::string country_uppercase = base::ToUpperASCII(country);
   // if country is in lowercase, convert it to uppercase.
   if (country_uppercase != country) {
-    g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
-                                                country_uppercase);
+    local_state.SetString(prefs::kDemoModeCountry, country_uppercase);
   }
-  return g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
+  return local_state.GetString(prefs::kDemoModeCountry);
 }
 
-std::string RetailerName() {
+std::string RetailerName(const PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
-  return g_browser_process->local_state()->GetString(
-      prefs::kDemoModeRetailerId);
+  return local_state.GetString(prefs::kDemoModeRetailerId);
 }
 
-std::string StoreNumber() {
+std::string StoreNumber(const PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
-  return g_browser_process->local_state()->GetString(prefs::kDemoModeStoreId);
+  return local_state.GetString(prefs::kDemoModeStoreId);
 }
 
 bool IsCloudGamingDevice() {
@@ -63,16 +59,14 @@ bool IsFeatureAwareDevice() {
   return ash::features::IsFeatureAwareDeviceDemoModeEnabled();
 }
 
-base::Version AppVersion() {
+base::Version AppVersion(const PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
-  return base::Version(
-      g_browser_process->local_state()->GetString(prefs::kDemoModeAppVersion));
+  return base::Version(local_state.GetString(prefs::kDemoModeAppVersion));
 }
 
-base::Version ResourcesVersion() {
+base::Version ResourcesVersion(const PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
-  return base::Version(g_browser_process->local_state()->GetString(
-      prefs::kDemoModeResourcesVersion));
+  return base::Version(local_state.GetString(prefs::kDemoModeResourcesVersion));
 }
 
 std::string GetChromeOSVersionString() {
@@ -119,17 +113,17 @@ std::string_view Model() {
   return model.value_or("");
 }
 
-std::string Locale() {
+std::string Locale(const PrefService& local_state) {
   DCHECK(AreDemoDimensionsAccessible());
-  return g_browser_process->local_state()->GetString(
-      language::prefs::kApplicationLocale);
+  return local_state.GetString(language::prefs::kApplicationLocale);
 }
 
-enterprise_management::DemoModeDimensions GetDemoModeDimensions() {
+enterprise_management::DemoModeDimensions GetDemoModeDimensions(
+    PrefService& local_state) {
   enterprise_management::DemoModeDimensions dimensions;
-  dimensions.set_country(Country());
-  dimensions.set_retailer_name(RetailerName());
-  dimensions.set_store_number(StoreNumber());
+  dimensions.set_country(Country(local_state));
+  dimensions.set_retailer_name(RetailerName(local_state));
+  dimensions.set_store_number(StoreNumber(local_state));
   if (IsCloudGamingDevice()) {
     dimensions.add_customization_facets(
         enterprise_management::DemoModeDimensions::CLOUD_GAMING_DEVICE);
