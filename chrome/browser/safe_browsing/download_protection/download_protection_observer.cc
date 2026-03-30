@@ -18,6 +18,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/simple_download_manager_coordinator.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
@@ -146,31 +147,30 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
   if (!profile)
     return;
 
-  ReferrerChain referrer_chain;
-  if (base::FeatureList::IsEnabled(kEnhancedFieldsForSecOps)) {
-    referrer_chain = GetOrIdentifyReferrerChainForEnterprise(*download);
-  }
-
   enterprise_connectors::ScanResult* stored_result =
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
 
+  auto* router =
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+          profile);
+
   enterprise_connectors::DownloadContentAreaUserProvider info(*download);
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
-      ReportAnalysisConnectorWarningBypass(
-          profile, info, "", "", metadata.filename, metadata.sha256,
+      enterprise_connectors::ReportAnalysisConnectorWarningBypass(
+          router, &info, "", "", metadata.filename, metadata.sha256,
           metadata.mime_type,
           enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
-          metadata.size, referrer_chain, metadata.scan_response,
+          metadata.size, metadata.scan_response,
           stored_result->user_justification);
     }
   } else {
-    ReportAnalysisConnectorWarningBypass(
-        profile, info, "", "", download->GetTargetFilePath().AsUTF8Unsafe(),
+    enterprise_connectors::ReportAnalysisConnectorWarningBypass(
+        router, &info, "", "", download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), download->GetMimeType(),
         enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
-        download->GetTotalBytes(), referrer_chain,
+        download->GetTotalBytes(),
         enterprise_connectors::ContentAnalysisResponse(),
         /*user_justification=*/std::nullopt);
   }

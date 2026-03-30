@@ -102,13 +102,13 @@ PagePrintRequestHandler::PagePrintRequestHandler(
 void PagePrintRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      profile_, *content_analysis_info_, /*source*/ "",
+      ReportingEventRouterFactory::GetForBrowserContext(profile_),
+      content_analysis_info_.get(), /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
-      /*content_size*/ -1, content_analysis_info_->referrer_chain(), response_,
-      user_justification);
+      /*content_size*/ -1, response_, user_justification);
 }
 
 void PagePrintRequestHandler::UploadForDeepScanning(

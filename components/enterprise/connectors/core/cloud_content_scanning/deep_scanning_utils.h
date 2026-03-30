@@ -34,6 +34,24 @@ void MaybeReportDeepScanningVerdict(
     const ContentAnalysisResponse& response,
     EventResult event_result);
 
+// Helper function to report the user bypassed a warning to the enterprise
+// admin. This is split from MaybeReportDeepScanningVerdict since it happens
+// after getting a response. |download_digest_sha256| must be encoded using
+// base::HexEncode.
+void ReportAnalysisConnectorWarningBypass(
+    ReportingEventRouter* reporting_event_router,
+    const ContentAnalysisInfoBase* content_analysis_info,
+    const std::string& source,
+    const std::string& destination,
+    const std::string& file_name,
+    const std::string& download_digest_sha256,
+    const std::string& mime_type,
+    const std::string& trigger,
+    const std::string& content_transfer_method,
+    const int64_t content_size,
+    const ContentAnalysisResponse& response,
+    std::optional<std::u16string> user_justification);
+
 // Returns true for consumer scans and not on enterprise scans.
 bool IsConsumerScanRequest(const BinaryUploadRequest& request);
 

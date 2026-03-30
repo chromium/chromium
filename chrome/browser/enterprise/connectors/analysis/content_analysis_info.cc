@@ -175,8 +175,10 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
                     &download_item)
                     ->GetWeakPtr()
               : nullptr) {
-  referrer_chain_ =
-      safe_browsing::GetOrIdentifyReferrerChainForEnterprise(download_item);
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    referrer_chain_ =
+        safe_browsing::GetOrIdentifyReferrerChainForEnterprise(download_item);
+  }
 }
 
 DownloadContentAreaUserProvider::~DownloadContentAreaUserProvider() = default;

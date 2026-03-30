@@ -12,7 +12,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 
@@ -120,44 +119,6 @@ void AddCustomMessageRule(
 }
 
 }  // namespace
-
-void ReportAnalysisConnectorWarningBypass(
-    Profile* profile,
-    const enterprise_connectors::ContentAnalysisInfoBase& content_analysis_info,
-    const std::string& source,
-    const std::string& destination,
-    const std::string& file_name,
-    const std::string& download_digest_sha256,
-    const std::string& mime_type,
-    const std::string& trigger,
-    const std::string& content_transfer_method,
-    const int64_t content_size,
-    const safe_browsing::ReferrerChain& referrer_chain,
-    const enterprise_connectors::ContentAnalysisResponse& response,
-    std::optional<std::u16string> user_justification) {
-  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
-  auto* reporting_event_router =
-      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
-          profile);
-  if (!reporting_event_router) {
-    return;
-  }
-
-  for (const auto& result : response.results()) {
-    // Only report results with triggered rules.
-    if (result.triggered_rules().empty())
-      continue;
-
-    reporting_event_router->OnSensitiveDataEvent(
-        GURL(content_analysis_info.url()), content_analysis_info.tab_url(),
-        source, destination, file_name, download_digest_sha256, mime_type,
-        trigger, response.request_token(), content_transfer_method,
-        /*source_email=*/"", content_analysis_info.GetContentAreaAccountEmail(),
-        user_justification, result, content_size, referrer_chain,
-        content_analysis_info.frame_url_chain(),
-        enterprise_connectors::EventResult::BYPASSED);
-  }
-}
 
 enterprise_connectors::DeepScanAccessPoint AccessPointFromRequest(
     enterprise_connectors::AnalysisConnector connector,

@@ -92,15 +92,15 @@ ClipboardRequestHandler::ClipboardRequestHandler(
 void ClipboardRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      profile_, *content_analysis_info_,
+      ReportingEventRouterFactory::GetForBrowserContext(profile_),
+      content_analysis_info_.get(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
-      content_size_, content_analysis_info_->referrer_chain(), response_,
-      user_justification);
+      content_size_, response_, user_justification);
 }
 
 void ClipboardRequestHandler::UploadForDeepScanning(
