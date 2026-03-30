@@ -56,8 +56,6 @@ float PagePopupClient::ScaledZoomFactor() {
   return ZoomFactor() / scale_factor;
 }
 
-#define addLiteral(literal, data) data.Append(base::span_from_cstring(literal))
-
 void PagePopupClient::AddJavaScriptString(const StringView& str,
                                           SegmentedBuffer& data) {
   StringBuilder builder;
@@ -90,73 +88,70 @@ void PagePopupClient::AddProperty(std::string_view name,
                                   const StringView& value,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": ", data);
+  AddLiteral(": ", data);
   AddJavaScriptString(value, data);
-  addLiteral(",\n", data);
+  AddLiteral(",\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   int value,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": ", data);
+  AddLiteral(": ", data);
   AddString(String::Number(value), data);
-  addLiteral(",\n", data);
+  AddLiteral(",\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   unsigned value,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": ", data);
+  AddLiteral(": ", data);
   AddString(String::Number(value), data);
-  addLiteral(",\n", data);
+  AddLiteral(",\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   bool value,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": ", data);
-  if (value)
-    addLiteral("true", data);
-  else
-    addLiteral("false", data);
-  addLiteral(",\n", data);
+  AddLiteral(": ", data);
+  AddLiteral(value ? "true" : "false", data);
+  AddLiteral(",\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   double value,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": ", data);
+  AddLiteral(": ", data);
   AddString(String::Number(value), data);
-  addLiteral(",\n", data);
+  AddLiteral(",\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   const Vector<String>& values,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": [", data);
+  AddLiteral(": [", data);
   for (unsigned i = 0; i < values.size(); ++i) {
     if (i)
-      addLiteral(",", data);
+      AddLiteral(",", data);
     AddJavaScriptString(values[i], data);
   }
-  addLiteral("],\n", data);
+  AddLiteral("],\n", data);
 }
 
 void PagePopupClient::AddProperty(std::string_view name,
                                   const gfx::Rect& rect,
                                   SegmentedBuffer& data) {
   data.Append(name);
-  addLiteral(": {", data);
+  AddLiteral(": {", data);
   AddProperty("x", rect.x(), data);
   AddProperty("y", rect.y(), data);
   AddProperty("width", rect.width(), data);
   AddProperty("height", rect.height(), data);
-  addLiteral("},\n", data);
+  AddLiteral("},\n", data);
 }
 
 void PagePopupClient::AddLocalizedProperty(std::string_view name,
