@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -470,7 +471,17 @@ CGFloat HorizontalMargin() {
         _pageActionMenuEntrypointBeforeDoneConstraint.active = YES;
         _searchButton.hidden = NO;
         _pageControl.hidden = NO;
-        _doneButton.hidden = NO;
+        if (IsChromeNextIaEnabled() &&
+            ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+          // When the App Bar is available, there should not be a "Done" button
+          // to exit the Tab Grid. The grid is dismissed with the Tab Grid
+          // button in the App Bar.
+          _overflowMenuConstraint.active = YES;
+          _overflowMenuBeforeDoneConstraint.active = NO;
+          _doneButton.hidden = YES;
+        } else {
+          _doneButton.hidden = NO;
+        }
         break;
       }
       case TabGridMode::kSearch:
