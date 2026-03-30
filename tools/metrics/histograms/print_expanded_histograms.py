@@ -11,6 +11,7 @@ import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.utf8_encoding as utf8_encoding
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
@@ -59,7 +60,9 @@ def main(argv=sys.argv[1:]):
       default=None,
       help=('Path to histograms.xml file. If omitted, all Chromium '
             'histograms.xml files are processed.'))
+  logging_utils.parser_add_argument(parser)
   args = parser.parse_args(argv)
+  logging_utils.config_logging(args)
 
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 

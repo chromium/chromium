@@ -14,6 +14,7 @@ import sys
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 
 
 def get_names(xml_content):
@@ -83,7 +84,9 @@ def main(argv):
   parser.add_argument('--diff',
                       type=str,
                       help='Git revision to diff against (e.g. HEAD~)')
+  logging_utils.parser_add_argument(parser)
   args = parser.parse_args(argv[1:])
+  logging_utils.config_logging(args)
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:

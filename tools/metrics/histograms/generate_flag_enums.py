@@ -13,6 +13,7 @@ import typing
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 # Import the shared codegen library for its hashing function, which is the
 # same hashing function as used for flag names.
 import chromium_src.tools.metrics.common.codegen_shared as codegen_shared
@@ -86,7 +87,9 @@ def main():
       "will determine it by building and running `unit_tests "
       "AboutFlagsHistogramTest.CheckHistograms`. If provided, there's no use "
       "also providing `outdir`, as nothing needs to be built.")
+  logging_utils.parser_add_argument(parser)
   args = parser.parse_args()
+  logging_utils.config_logging(args)
 
   if args.feature:
     entries = get_entries_from_feature_string(args.feature)

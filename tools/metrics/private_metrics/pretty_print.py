@@ -8,6 +8,7 @@ import argparse
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
 import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
@@ -36,8 +37,9 @@ def main():
   parser.add_argument('--cleanup',
                       action="store_true",
                       help="Remove the backup file after a successful run.")
-
+  logging_utils.parser_add_argument(parser)
   args = parser.parse_args()
+  logging_utils.config_logging(args)
 
   filepath = args.filepath
 

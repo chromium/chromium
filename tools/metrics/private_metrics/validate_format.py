@@ -10,6 +10,7 @@ from xml.dom import minidom
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.private_metrics.private_metrics_validations as private_metrics_validations
 
 
@@ -18,8 +19,10 @@ def main():
   parser.add_argument('filepath', help="relative path to XML file")
   # The following optional flags are used by common/presubmit_util.py
   parser.add_argument('--presubmit', action="store_true")
+  logging_utils.parser_add_argument(parser)
 
   args = parser.parse_args()
+  logging_utils.config_logging(args)
 
   filepath = args.filepath
 

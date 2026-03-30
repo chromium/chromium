@@ -13,6 +13,7 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
 from chromium_src.tools.metrics.structured.sync import model
 
@@ -21,10 +22,12 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--input', help='Path to structured.xml')
 parser.add_argument('--cros_input', help='Path to structured_chromiumos.xml')
 parser.add_argument('--output', help='Path to generated files.')
+logging_utils.parser_add_argument(parser)
 
 
 def main():
   args = parser.parse_args()
+  logging_utils.config_logging(args)
   structured = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
 
   if args.cros_input is not None:

@@ -15,6 +15,7 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
 import chromium_src.tools.metrics.ukm.builders_template as builders_template
 import chromium_src.tools.metrics.ukm.decode_template as decode_template
@@ -22,10 +23,12 @@ import chromium_src.tools.metrics.ukm.decode_template as decode_template
 parser = argparse.ArgumentParser(description='Generate UKM entry builders')
 parser.add_argument('--input', help='Path to ukm.xml')
 parser.add_argument('--output', help='Path to generated files.')
+logging_utils.parser_add_argument(parser)
 
 
 def main(argv):
   args = parser.parse_args()
+  logging_utils.config_logging(args)
   data = ReadFilteredData(args.input)
   relpath = 'services/metrics/public/cpp/'
   builders_template.WriteFiles(args.output, relpath, data)

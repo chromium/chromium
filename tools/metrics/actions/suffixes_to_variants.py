@@ -13,6 +13,7 @@ from xml.dom import minidom
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.actions_model as actions_model
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.path_util as path_util
 
 ACTIONS_PATH = path_util.GetInputFile('tools/metrics/actions/actions.xml')
@@ -295,7 +296,9 @@ if __name__ == '__main__':
   parser.add_argument('--end',
                       help='End migration at a certain character (inclusive).',
                       default='z')
+  logging_utils.parser_add_argument(parser)
   args = parser.parse_args()
+  logging_utils.config_logging(args)
   assert len(args.start) == 1 and len(args.end) == 1, (
       'start and end flag should only contain a single letter.')
   SuffixesToVariantsMigration(args)

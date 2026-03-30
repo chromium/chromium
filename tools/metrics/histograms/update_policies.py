@@ -17,6 +17,7 @@ from xml.dom import minidom
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.third_party.pyyaml as pyyaml
 import chromium_src.tools.metrics.common.diff_util as diff_util
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
@@ -82,7 +83,9 @@ def main():
       action='store_true',
       help='Skip confirmation before diffing.',
   )
+  logging_utils.parser_add_argument(args_parser)
   args = args_parser.parse_args()
+  logging_utils.config_logging(args)
 
   with open(os.path.join(POLICY_LIST_PATH), encoding='utf-8') as f:
     policy_list_content = pyyaml.safe_load(f)

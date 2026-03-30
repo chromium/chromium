@@ -8,6 +8,7 @@ import argparse
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 import chromium_src.tools.metrics.common.utf8_encoding as utf8_encoding
 import chromium_src.tools.metrics.ukm.ukm_model as ukm_model
@@ -34,7 +35,9 @@ def main():
   parser.add_argument('--cleanup',
                       action="store_true",
                       help="Remove the backup file after a successful run.")
+  logging_utils.parser_add_argument(parser)
 
+  logging_utils.config_logging(parser.parse_args())
   utf8_encoding.setup_stdout_and_stderr_utf8_encoding()
 
   presubmit_util.DoPresubmitMain(sys.argv, 'ukm.xml', 'ukm.old.xml',
