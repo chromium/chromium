@@ -45,6 +45,9 @@ const int kQuitAllAppsButtonIndex = 0;
 const int kDontShowAgainButtonIndex = 1;
 
 void CloseNotification(Profile* profile) {
+  if (!profile || profile->ShutdownStarted()) {
+    return;
+  }
   NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT,
       QuitWithAppsController::kQuitWithAppsNotificationID);
@@ -159,6 +162,14 @@ bool QuitWithAppsController::ShouldQuit() {
     CloseNotification(notification_profile_);
   }
   notification_profile_ = profiles[0];
+
+  // If the profile's keyed services have been torn down during shutdown,
+  // accessing NotificationDisplayServiceFactory will crash. Allow quit instead.
+  if (notification_profile_->ShutdownStarted()) {
+    notification_profile_ = nullptr;
+    return true;
+  }
+
   NotificationDisplayServiceFactory::GetForProfile(notification_profile_)
       ->Display(NotificationHandler::Type::TRANSIENT, *notification_,
                 /*metadata=*/nullptr);
