@@ -103,6 +103,10 @@ const DeepQuery kCanvasItem = {
 const DeepQuery kToolChipButton = {"ntp-app", "cr-composebox", "#context",
                                    "cr-composebox-tool-chip",
                                    "#toolEnabledButton"};
+const DeepQuery kScrim = {"ntp-app", "#scrim"};
+const DeepQuery kSearchboxDropdown = {"ntp-app", "ntp-searchbox",
+                                      "cr-searchbox-dropdown"};
+const DeepQuery kNtpLogo = {"ntp-app", "#logo"};
 
 // Contains variables on which these tests may be parameterized. This approach
 // makes it easy to build sets of relevant tests, vs. the brute-force
@@ -275,6 +279,18 @@ class NtpRealboxUiTestBase
     state_change.where = where;
     state_change.test_function =
         expected_open ? "(el) => el && el.open" : "(el) => el && !el.open";
+    return WaitForStateChange(kNtpElementId, state_change);
+  }
+
+  auto WaitForElementVisibilityChange(const DeepQuery& where,
+                                      bool expected_visible) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kEvent);
+    WebContentsInteractionTestUtil::StateChange state_change;
+    state_change.event = kEvent;
+    state_change.where = where;
+    state_change.test_function =
+        expected_visible ? "(el) => el && !el.hasAttribute('hidden')"
+                         : "(el) => el && el.hasAttribute('hidden')";
     return WaitForStateChange(kNtpElementId, state_change);
   }
 
@@ -820,4 +836,40 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxCyclingPlaceholderInteractiveTest,
       WaitForElementToRender(kNtpElementId, kRealboxInput),
       // Wait and verify if placeholder text cycles.
       WaitForStateChange(kNtpElementId, placeholder_cycling));
+}
+
+IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
+                       ScrimAndDropdownAppearAndDisappear) {
+  const DeepQuery kRealboxMatch = {"ntp-app", "ntp-searchbox",
+                                   "cr-searchbox-dropdown",
+                                   "cr-searchbox-match", "#suggestion"};
+
+  RunTestSequence(
+      AddInstrumentedTab(kNtpElementId, GURL(chrome::kChromeUINewTabURL)),
+      WaitForElementToRender(kNtpElementId, kRealboxInput),
+      // Seed history results to ensure the dropdown is populated when typing in
+      // to the realbox.
+      SeedSearchboxResult("chrome"),
+      // Verify that scrim is initially hidden.
+      CheckJsResultAt(kNtpElementId, kScrim,
+                      "(el) => el && el.hasAttribute('hidden')"),
+      // Click realbox input to focus it and trigger the dropdown/scrim.
+      ClickElement(kNtpElementId, kRealboxInput),
+      // Verify scrim is shown.
+      WaitForElementVisibilityChange(kScrim, /*expected_visible=*/true),
+      // Verify dropdown is shown.
+      WaitForElementVisibilityChange(kSearchboxDropdown,
+                                     /*expected_visible=*/true),
+      // Wait for the verbatim match to actually render, guaranteeing
+      // suggestions are visible before we click away.
+      WaitForVerbatimMatch(kNtpElementId, kRealboxMatch, "chrome"),
+      // Click outside to dismiss. The scrim itself covers everything, so
+      // clicking it works. We click the logo to ensure we don't accidentally
+      // click the dropdown or searchbox which are centered.
+      MoveMouseTo(kNtpElementId, kNtpLogo), ClickMouse(),
+      // Verify scrim is hidden.
+      WaitForElementVisibilityChange(kScrim, /*expected_visible=*/false),
+      // Verify dropdown is hidden.
+      WaitForElementVisibilityChange(kSearchboxDropdown,
+                                     /*expected_visible=*/false));
 }
