@@ -197,14 +197,6 @@ public class OverlayPanel extends OverlayPanelAnimation
     /** Sequence number for peekPanel() calls to distinguish stale from fresh. */
     private int mLastPeekSequence;
 
-    /**
-     * Cache the viewport width and height of the screen to filter SceneOverlay#onSizeChanged
-     * events.
-     */
-    private float mViewportWidth;
-
-    private float mViewportHeight;
-
     // ============================================================================================
     // Constructor
     // ============================================================================================
@@ -685,7 +677,8 @@ public class OverlayPanel extends OverlayPanelAnimation
             setBasePageTextControlsVisibility(false);
         }
         if (mContent != null) {
-            mContent.setPanelTopOffset((int) ((mViewportHeight - getHeight()) / mPxToDp));
+            mContent.setPanelLeftOffset((int) (getLayoutMarginX() / mPxToDp));
+            mContent.setPanelTopOffset((int) ((getViewportHeight() - getHeight()) / mPxToDp));
         }
     }
 
@@ -1011,14 +1004,7 @@ public class OverlayPanel extends OverlayPanelAnimation
     @Override
     public void onSizeChanged(
             float width, float height, float visibleViewportOffsetY, int orientation) {
-        // Filter events that don't change the viewport width or height.
-        if (height != mViewportHeight || width != mViewportWidth) {
-            // We only care if the orientation is changing or we're shifting in/out of multi-window.
-            // In either case the screen's viewport width or height will certainly change.
-            mViewportWidth = width;
-            mViewportHeight = height;
-
-            onLayoutChanged(width, height, visibleViewportOffsetY);
+        if (onLayoutChanged(width, height, visibleViewportOffsetY)) {
             resizePanelContentView();
         }
     }

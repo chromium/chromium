@@ -13,6 +13,7 @@ import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -135,7 +136,10 @@ public class OverlayPanelContent {
     /** The height of the bar at the top of the OverlayPanel in pixels. */
     private final int mBarHeightPx;
 
-    /** Sets the top offset of the overlay panel in pixel. 0 when fully expanded. */
+    /** Sets the left offset of the overlay panel in pixels. */
+    private int mPanelLeftOffsetPx;
+
+    /** Sets the top offset of the overlay panel in pixels. 0 when fully expanded. */
     private int mPanelTopOffsetPx;
 
     private class OverlayViewDelegate extends ViewAndroidDelegate {
@@ -154,8 +158,9 @@ public class OverlayPanelContent {
                 int topMargin) {
             super.setViewPosition(view, x, y, width, height, leftMargin, topMargin);
 
-            // Applies top offset depending on the overlay panel state.
+            // Applies offsets depending on the overlay panel state and layout margins.
             MarginLayoutParams lp = (MarginLayoutParams) view.getLayoutParams();
+            lp.leftMargin += mPanelLeftOffsetPx;
             lp.topMargin += mPanelTopOffsetPx + mBarHeightPx;
         }
     }
@@ -380,11 +385,20 @@ public class OverlayPanelContent {
     }
 
     /**
+     * Sets the horizontal offset of the overlay panel.
+     *
+     * @param offset Left offset in pixels.
+     */
+    public void setPanelLeftOffset(@Px int offset) {
+        mPanelLeftOffsetPx = offset;
+    }
+
+    /**
      * Sets the top offset of the overlay panel that varies as the panel state changes.
      *
-     * @param offset Top offset in pixel.
+     * @param offset Top offset in pixels.
      */
-    public void setPanelTopOffset(int offset) {
+    public void setPanelTopOffset(@Px int offset) {
         mPanelTopOffsetPx = offset;
     }
 

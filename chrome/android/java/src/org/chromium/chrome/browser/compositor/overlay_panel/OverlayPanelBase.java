@@ -287,9 +287,14 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     // Layout Integration
     // ============================================================================================
 
+    private float mViewportWidth;
+    private float mViewportHeight;
+
     private float mLayoutWidth;
-    private float mLayoutHeight;
     private float mLayoutYOffset;
+
+    private float mLayoutMarginStart;
+    private float mLayoutMarginEnd;
 
     private float mMaximumWidth;
     private float mMaximumHeight;
@@ -297,30 +302,60 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     private boolean mIsFullWidthSizePanelForTesting;
     private boolean mOverrideIsFullWidthSizePanelForTesting;
 
+    protected float getViewportWidth() {
+        return mViewportWidth;
+    }
+
+    protected float getViewportHeight() {
+        return mViewportHeight;
+    }
+
+    /** Sets the margins "containing" the overlay panel and its scrim layer. */
+    public void setLayoutMargins(float layoutMarginStart, float layoutMarginEnd) {
+        mLayoutMarginStart = layoutMarginStart;
+        mLayoutMarginEnd = layoutMarginEnd;
+        onLayoutChanged(mViewportWidth, mViewportHeight, mLayoutYOffset);
+    }
+
+    /**
+     * Returns the horizontal margin offsetting the layout with both the overlay panel and its scrim
+     * layer.
+     */
+    public float getLayoutMarginX() {
+        return LocalizationUtils.isLayoutRtl() ? mLayoutMarginEnd : mLayoutMarginStart;
+    }
+
     /**
      * Called when the layout has changed.
      *
-     * @param width The new width in dp.
-     * @param height The new height in dp.
+     * @param width The new viewport width in dp.
+     * @param height The new viewport height in dp.
      * @param visibleViewportOffsetY The Y offset of the content in dp.
+     * @return Whether the height or width of the layout has changed.
      */
-    public void onLayoutChanged(float width, float height, float visibleViewportOffsetY) {
-        if (width == mLayoutWidth
-                && height == mLayoutHeight
-                && visibleViewportOffsetY == mLayoutYOffset) {
-            return;
+    public boolean onLayoutChanged(float width, float height, float visibleViewportOffsetY) {
+        float newLayoutWidth = width - mLayoutMarginStart - mLayoutMarginEnd;
+
+        boolean heightAndWidthAreUnchanged =
+                width == mViewportWidth
+                        && height == mViewportHeight
+                        && newLayoutWidth == mLayoutWidth;
+        if (heightAndWidthAreUnchanged && visibleViewportOffsetY == mLayoutYOffset) {
+            return false;
         }
 
         float previousLayoutWidth = mLayoutWidth;
 
-        mLayoutWidth = width;
-        mLayoutHeight = height;
+        mViewportWidth = width;
+        mViewportHeight = height;
+        mLayoutWidth = newLayoutWidth;
         mLayoutYOffset = visibleViewportOffsetY;
 
         mMaximumWidth = calculateOverlayPanelWidth();
         mMaximumHeight = getPanelHeightFromState(PanelState.MAXIMIZED);
 
-        handleSizeChanged(width, height, previousLayoutWidth);
+        handleSizeChanged(mLayoutWidth, mViewportHeight, previousLayoutWidth);
+        return !heightAndWidthAreUnchanged;
     }
 
     /**
@@ -328,7 +363,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      */
     @Override
     public boolean isFullWidthSizePanel() {
-        return doesMatchFullWidthCriteria(getFullscreenWidth());
+        return doesMatchFullWidthCriteria(getLayoutWidth());
     }
 
     /**
@@ -347,7 +382,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     protected float calculateOverlayPanelX() {
         return isFullWidthSizePanel()
                 ? 0.f
-                : Math.round((getFullscreenWidth() - calculateOverlayPanelWidth()) / 2.f);
+                : Math.round((getLayoutWidth() - calculateOverlayPanelWidth()) / 2.f);
     }
 
     /**
@@ -402,7 +437,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The current width of the Overlay Panel.
      */
     protected float calculateOverlayPanelWidth() {
-        return isFullWidthSizePanel() ? getFullscreenWidth() : SMALL_PANEL_WIDTH_DP;
+        return isFullWidthSizePanel() ? getLayoutWidth() : SMALL_PANEL_WIDTH_DP;
     }
 
     /**
@@ -428,9 +463,12 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
     }
 
     /**
-     * @return The fullscreen width.
+     * @return The width of the layout containing the overlay panel and the scrim showing behind it.
+     *     The overlay panel is centered horizontally in this layout. By default, this width matches
+     *     the viewport width, but it can be different (e.g. when side UI sets a horizontal margin
+     *     on the layout).
      */
-    public float getFullscreenWidth() {
+    public float getLayoutWidth() {
         return mLayoutWidth;
     }
 
@@ -438,7 +476,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
      * @return The height of the tab the panel is displayed on top of.
      */
     public float getTabHeight() {
-        return mLayoutHeight - heightForNeverHideBrowserControls();
+        return mViewportHeight - heightForNeverHideBrowserControls();
     }
 
     /**
@@ -526,10 +564,10 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
             ObservableSuppliers.createNonNull(false);
 
     /**
-     * @return The horizontal offset of the Overlay Panel in DPs.
+     * @return The total horizontal offset of the Overlay Panel from the viewport in DPs.
      */
     public float getOffsetX() {
-        return mOffsetX;
+        return mOffsetX + getLayoutMarginX();
     }
 
     /**
