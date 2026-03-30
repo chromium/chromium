@@ -50,14 +50,17 @@ using UserSiteSetting = PermissionsManager::UserSiteSetting;
 constexpr char kAllHostsScheme[] = "*://*/*";
 constexpr char kExplicitHostsScheme[] = "http://127.0.0.1/*";
 constexpr char kBackgroundScript[] =
-    R"("background": {"scripts": ["script.js"], "persistent": true})";
+    R"("background": {"service_worker": "script.js"})";
 
 constexpr char kBackgroundScriptSource[] =
     R"(var listener = function(tabId) {
          chrome.tabs.onUpdated.removeListener(listener);
-         chrome.tabs.executeScript(tabId, {
-           code: "chrome.test.sendMessage('inject succeeded');"
-         });
+         chrome.scripting.executeScript({
+           target: {tabId: tabId},
+           func: () => { chrome.test.sendMessage('inject succeeded'); }
+         // The catch here is used to suppress unrelated JS errors,
+         // and it shouldn't affect whether the tests pass.
+         }).catch(() => {});
        };
        chrome.tabs.onUpdated.addListener(listener);
        chrome.test.sendMessage('ready');)";
@@ -98,7 +101,6 @@ bool DidInjectScript(content::WebContents& web_contents) {
 
 using ContextType = extensions::browser_test_util::ContextType;
 
-// TODO(crbug.com/393179880): Port to desktop Android.
 class ExtensionActionRunnerBrowserTest : public ExtensionBrowserTest {
  public:
   explicit ExtensionActionRunnerBrowserTest(
@@ -142,8 +144,9 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
   const char* const permission_scheme =
       host_type == ALL_HOSTS ? kAllHostsScheme : kExplicitHostsScheme;
 
-  std::string permissions =
-      base::StringPrintf(R"("permissions": ["tabs", "%s"])", permission_scheme);
+  std::string permissions = R"("permissions": ["tabs", "scripting"])";
+  std::string host_permissions =
+      base::StringPrintf(R"("host_permissions": ["%s"])", permission_scheme);
 
   std::string scripts;
   std::string script_source;
@@ -163,11 +166,13 @@ const Extension* ExtensionActionRunnerBrowserTest::CreateExtension(
       R"({
            "name": "%s",
            "version": "1.0",
-           "manifest_version": 2,
+           "manifest_version": 3,
+           %s,
            %s,
            %s
          })",
-      name.c_str(), permissions.c_str(), scripts.c_str());
+      name.c_str(), permissions.c_str(), host_permissions.c_str(),
+      scripts.c_str());
 
   TestExtensionDir dir;
   dir.WriteManifest(manifest);
@@ -255,40 +260,18 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
   EXPECT_FALSE(runner->WantsToRun(extension));
 }
 
-class ExtensionActionRunnerBrowserTestWithContextType
-    : public ExtensionActionRunnerBrowserTest,
-      public testing::WithParamInterface<ContextType> {
- public:
-  ExtensionActionRunnerBrowserTestWithContextType()
-      : ExtensionActionRunnerBrowserTest(GetParam()) {}
-
-  ExtensionActionRunnerBrowserTestWithContextType(
-      const ExtensionActionRunnerBrowserTestWithContextType&) = delete;
-  ExtensionActionRunnerBrowserTestWithContextType& operator=(
-      const ExtensionActionRunnerBrowserTestWithContextType&) = delete;
-};
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         ExtensionActionRunnerBrowserTestWithContextType,
-                         ::testing::Values(ContextType::kPersistentBackground));
-// These tests use chrome.tabs.executeScript, which is not available in MV3 and
-// above. See crbug.com/332328868.
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         ExtensionActionRunnerBrowserTestWithContextType,
-                         ::testing::Values(ContextType::kServiceWorkerMV2));
-
 // Load up different combinations of extensions, and verify that script
 // injection is properly withheld and indicated to the user.
 // NOTE: Though these could be parameterized test cases, there's enough
 // bits here that just having a helper method is quite a bit more readable.
-IN_PROC_BROWSER_TEST_P(
-    ExtensionActionRunnerBrowserTestWithContextType,
+IN_PROC_BROWSER_TEST_F(
+    ExtensionActionRunnerBrowserTest,
     ActiveScriptsAreDisplayedAndDelayExecution_ExecuteScripts_AllHosts) {
   RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
                        WITHHOLD_PERMISSIONS, REQUIRES_CONSENT);
 }
-IN_PROC_BROWSER_TEST_P(
-    ExtensionActionRunnerBrowserTestWithContextType,
+IN_PROC_BROWSER_TEST_F(
+    ExtensionActionRunnerBrowserTest,
     ActiveScriptsAreDisplayedAndDelayExecution_ExecuteScripts_ExplicitHosts) {
   RunActiveScriptsTest("execute_scripts_explicit_hosts", EXPLICIT_HOSTS,
                        EXECUTE_SCRIPT, WITHHOLD_PERMISSIONS, REQUIRES_CONSENT);
