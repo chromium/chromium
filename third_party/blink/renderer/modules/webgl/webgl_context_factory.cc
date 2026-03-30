@@ -104,6 +104,9 @@ CanvasRenderingContext* WebGLContextFactory::CreateInternal(
   };
 
   // Report WebDXFeatures and use counters.
+  UseCounter::CountWebDXFeature(execution_context, is_webgl2_
+                                                       ? WebDXFeature::kWebgl2
+                                                       : WebDXFeature::kWebgl);
   if (attribs.desynchronized) {
     UseCounter::Count(execution_context,
                       WebFeature::kHTMLCanvasElementLowLatency_WebGL);
