@@ -667,6 +667,7 @@ void DemoSetupController::OnDeviceEnrolled() {
   UMA_HISTOGRAM_ENUMERATION(kDemoSetupErrorHistogram, ErrorCode::kSuccess);
   VLOG(1) << "Marking device registered";
   StartupUtils::MarkDeviceRegistered(
+      local_state_.get(),
       base::BindOnce(&DemoSetupController::OnDeviceRegistered,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/startup_utils.h"
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
@@ -36,7 +37,9 @@ TEST_F(StartupUtilsTest, MarkDeviceRegisteredDeletesFlexConfig) {
   enrollment_test_helper_.SetUpFlexDevice();
   enrollment_test_helper_.SetUpEnrollmentTokenConfig();
 
-  ash::StartupUtils::MarkDeviceRegistered(base::DoNothing());
+  ash::StartupUtils::MarkDeviceRegistered(
+      CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+      base::DoNothing());
 
   const std::string* enrollment_token =
       enrollment_test_helper_.GetEnrollmentTokenFromOobeConfiguration();

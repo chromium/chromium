@@ -57,11 +57,9 @@ class StartupUtils {
   // to the system by writing the .oobe_completed flag file.
   static bool IsDeviceRegistered(PrefService& local_state);
 
-  // clear specific oobe preference from Local state.
-  static void ClearSpecificOobePrefs();
-
   // Marks device registered. i.e. second part of OOBE is completed.
-  static void MarkDeviceRegistered(base::OnceClosure done_callback);
+  static void MarkDeviceRegistered(PrefService& local_state,
+                                   base::OnceClosure done_callback);
 
   // Mark a device as requiring enrollment recovery.
   static void MarkEnrollmentRecoveryRequired();

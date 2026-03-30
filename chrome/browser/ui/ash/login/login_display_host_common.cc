@@ -320,7 +320,7 @@ void LoginDisplayHostCommon::StartSignInScreen() {
   if (!StartupUtils::IsDeviceRegistered(local_state_.get()) && !users.empty()) {
     VLOG(1) << "Mark device registered because there are remembered users: "
             << users.size();
-    StartupUtils::MarkDeviceRegistered(base::OnceClosure());
+    StartupUtils::MarkDeviceRegistered(local_state_.get(), base::OnceClosure());
   }
 
   // Initiate device policy fetching.

@@ -735,10 +735,12 @@ void EnrollmentScreen::OnDeviceAttributeUpdatePermission(bool granted) {
   // Show attribute prompt screen
   if (granted && !WizardController::skip_enrollment_prompts_for_testing()) {
     StartupUtils::MarkDeviceRegistered(
+        local_state_.get(),
         base::BindOnce(&EnrollmentScreen::ShowAttributePromptScreen,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     StartupUtils::MarkDeviceRegistered(
+        local_state_.get(),
         base::BindOnce(&EnrollmentScreen::ShowEnrollmentStatusOnSuccess,
                        weak_ptr_factory_.GetWeakPtr()));
   }

@@ -273,28 +273,22 @@ bool StartupUtils::IsDeviceRegistered(PrefService& local_state) {
   }
 }
 
-void StartupUtils::ClearSpecificOobePrefs() {
-  g_browser_process->local_state()->ClearPref(prefs::kOobeScreenPending);
-  g_browser_process->local_state()->ClearPref(prefs::kOobeIsConsumerSegment);
-  g_browser_process->local_state()->ClearPref(
-      prefs::kOobeConsumerUpdateCompleted);
-  g_browser_process->local_state()->ClearPref(
-      prefs::kOobeScreenAfterConsumerUpdate);
-  g_browser_process->local_state()->ClearPref(
-      prefs::kOobeCriticalUpdateCompleted);
-}
-
 // static
-void StartupUtils::MarkDeviceRegistered(base::OnceClosure done_callback) {
-  SaveIntegerPreferenceForced(*g_browser_process->local_state(),
-                              ash::prefs::kDeviceRegistered, 1);
+void StartupUtils::MarkDeviceRegistered(PrefService& local_state,
+                                        base::OnceClosure done_callback) {
+  SaveIntegerPreferenceForced(local_state, ash::prefs::kDeviceRegistered, 1);
 
   auto* host = LoginDisplayHost::default_host();
   if (host) {
     host->GetOobeMetricsHelper()->RecordDeviceRegistered();
   }
 
-  ClearSpecificOobePrefs();
+  // clear specific oobe preference from Local state.
+  local_state.ClearPref(prefs::kOobeScreenPending);
+  local_state.ClearPref(prefs::kOobeIsConsumerSegment);
+  local_state.ClearPref(prefs::kOobeConsumerUpdateCompleted);
+  local_state.ClearPref(prefs::kOobeScreenAfterConsumerUpdate);
+  local_state.ClearPref(prefs::kOobeCriticalUpdateCompleted);
 
   if (policy::GetEnrollmentToken(OobeConfiguration::Get()).has_value()) {
     VLOG(0) << "Clearing Flex OOBE config after enrollment.";

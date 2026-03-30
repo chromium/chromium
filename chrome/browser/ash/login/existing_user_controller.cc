@@ -989,7 +989,7 @@ void ExistingUserController::OnOffTheRecordAuthSuccess() {
 
   // Mark the device as registered., i.e. the second part of OOBE as completed.
   if (!StartupUtils::IsDeviceRegistered(local_state_.get())) {
-    StartupUtils::MarkDeviceRegistered(base::OnceClosure());
+    StartupUtils::MarkDeviceRegistered(local_state_.get(), base::OnceClosure());
   }
 
   UserSessionManager::GetInstance()->CompleteGuestSessionLogin(guest_mode_url_);

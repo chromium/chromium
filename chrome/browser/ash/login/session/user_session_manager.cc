@@ -1916,7 +1916,7 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
   // Mark the device as registered., i.e. the second part of OOBE as
   // completed.
   if (!StartupUtils::IsDeviceRegistered(local_state)) {
-    StartupUtils::MarkDeviceRegistered(base::OnceClosure());
+    StartupUtils::MarkDeviceRegistered(local_state, base::OnceClosure());
   }
 
   if (LoginDisplayHost::default_host() &&
