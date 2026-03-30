@@ -5256,9 +5256,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_ENTER_KEY" desc="This string is the enter key annotation to educate users how to accept a personal information suggestion.">
     Enter
   </message>
-  <message name="IDS_SUGGESTION_EMOJI_CHOSEN" desc="String announced by screenreader when users selected an emoji in the pop-up.">
-    <ph name="EMOJI_NAME">$1<ex>Party popper</ex></ph>. <ph name="EMOJI_INDEX">$2<ex>5</ex></ph> of <ph name="EMOJI_COUNT">$3<ex>5</ex></ph>.
-  </message>
   <message name="IDS_SUGGESTION_DIACRITICS_OPEN" desc="String announced by screenreader when diacritics suggestion pops up.">
     Accent marks menu open. Press left, right, or number keys to navigate and enter to insert.
   </message>
@@ -5268,17 +5265,8 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SUGGESTION_DIACRITICS_DISMISSED" desc="String announced by screenreader when diacritics are dismissed.">
     Accent marks menu dismissed.
   </message>
-  <message name="IDS_SUGGESTION_DISMISSED" desc="String announced by screenreader when suggestion pop-up disappears.">
-    Suggestion dismissed
-  </message>
-  <message name="IDS_SUGGESTION_EMOJI_INSERTED" desc="String announced by screenreader when an emoji suggestion is inserted.">
-    Emoji inserted
-  </message>
   <message name="IDS_SUGGESTION_INSERTED" desc="String announced by screenreader when a suggestion is inserted.">
     Suggestion inserted
-  </message>
-  <message name="IDS_SUGGESTION_AUTOCORRECT_UNDONE" desc="String announced by screenreader when an autocorrected word is reverted. Example, user types 'hllo', system autocorrects to 'hello' but then that autocorrection is manually undone by the user.">
-    correction undone
   </message>
   <message name="IDS_SUGGESTION_AUTOCORRECT_UNDO_TEXT" desc="Label for autocorrect undo button in undo window.">
     Undo
