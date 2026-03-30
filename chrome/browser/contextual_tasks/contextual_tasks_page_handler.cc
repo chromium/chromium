@@ -487,7 +487,7 @@ void ContextualTasksPageHandler::UpdateContextForTask(
     return;
   }
   contextual_tasks_service_->GetContextForTask(
-      task_id, {contextual_tasks::ContextualTaskContextSource::kTabStrip},
+      task_id, {},
       std::make_unique<contextual_tasks::ContextDecorationParams>(),
       base::BindOnce(
           [](base::WeakPtr<ContextualTasksPageHandler> self,

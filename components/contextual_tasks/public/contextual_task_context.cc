@@ -47,9 +47,6 @@ std::u16string UrlAttachment::GetTitle() const {
   if (!decorator_data_.contextual_search_context_data.title.empty()) {
     return decorator_data_.contextual_search_context_data.title;
   }
-  if (!decorator_data_.tab_strip_data.title.empty()) {
-    return decorator_data_.tab_strip_data.title;
-  }
   if (!decorator_data_.history_data.title.empty()) {
     return decorator_data_.history_data.title;
   }
@@ -58,10 +55,6 @@ std::u16string UrlAttachment::GetTitle() const {
 
 gfx::Image UrlAttachment::GetFavicon() const {
   return decorator_data_.favicon_data.image;
-}
-
-bool UrlAttachment::IsOpen() const {
-  return decorator_data_.tab_strip_data.is_open_in_tab_strip;
 }
 
 SessionID UrlAttachment::GetTabSessionId() const {

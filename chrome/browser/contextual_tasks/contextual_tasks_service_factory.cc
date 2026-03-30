@@ -32,7 +32,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
-#include "chrome/browser/contextual_tasks/tab_strip_context_decorator.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
@@ -137,12 +136,6 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::map<ContextualTaskContextSource, std::unique_ptr<ContextDecorator>>
       additional_decorators;
-
-#if !BUILDFLAG(IS_ANDROID)
-  additional_decorators.emplace(
-      ContextualTaskContextSource::kTabStrip,
-      std::make_unique<TabStripContextDecorator>(profile));
-#endif
 
   bool supports_ephemeral_only =
       profile->IsOffTheRecord() || profile->IsGuestSession();

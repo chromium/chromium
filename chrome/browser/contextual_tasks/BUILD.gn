@@ -75,8 +75,6 @@ source_set("impl") {
     "contextual_tasks_context_signal_utils.h",
     "contextual_tasks_service_factory.cc",
     "contextual_tasks_utils.cc",
-    "tab_strip_context_decorator.cc",
-    "tab_strip_context_decorator.h",
   ]
 
   if (is_android) {
@@ -400,7 +398,6 @@ source_set("unit_tests") {
     "contextual_tasks_cookie_synchronizer_unittest.cc",
     "contextual_tasks_service_factory_unittest.cc",
     "contextual_tasks_tab_visit_tracker_unittest.cc",
-    "tab_strip_context_decorator_unittest.cc",
   ]
 
   if (!is_android) {
