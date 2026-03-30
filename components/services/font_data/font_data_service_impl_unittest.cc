@@ -99,6 +99,23 @@ TEST_F(FontDataServiceImplUnitTest, FamiliesThatRequireMatchingStyles) {
   };
 
   for (const auto& family : kFamiliesWithRequiredStyles) {
+    // If the host system doesn't have a regular face for this family, verify
+    // that our new logic correctly rejects the family for both Normal and Bold
+    // requests.
+    sk_sp<SkTypeface> regular =
+        skia::DefaultFontMgr()->matchFamilyStyle(family.c_str(), SkFontStyle());
+    if (!regular || regular->fontStyle() != SkFontStyle::Normal()) {
+      // Even if we find a "closest match" face (like Ultra Bold), it should be
+      // rejected because the family is missing its Regular anchor.
+      if (regular) {
+        EXPECT_FALSE(impl_.CheckMatchesRequiredStyleForTesting(
+            regular->fontStyle(), family, SkFontStyle::Normal()));
+        EXPECT_FALSE(impl_.CheckMatchesRequiredStyleForTesting(
+            regular->fontStyle(), family, SkFontStyle::Bold()));
+      }
+      continue;
+    }
+
     // A matching style is always valid.
     EXPECT_TRUE(impl_.CheckMatchesRequiredStyleForTesting(
         SkFontStyle::Normal(), family, SkFontStyle::Normal()));
