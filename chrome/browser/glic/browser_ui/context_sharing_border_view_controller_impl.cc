@@ -114,15 +114,10 @@ void ContextSharingBorderViewControllerImpl::OnActorBorderGlowUpdated(
   actor_border_glow_enabled_ = enabled;
 
   if (actor_border_glow_enabled_) {
-    // Force the border to show, regardless of other states. This gives the
-    // actor priority over other signals.
+    // Force the border to hide, regardless of other states. This gives the
+    // actor priority over other signals since it provides its own standalone
+    // border glow.
     border_view_->StopShowing();
-    // If the standalone border glow param is enabled, don't actually just
-    // suppress the glic_border_view from showing, as it is controlled by a
-    // different component.
-    if (!features::kGlicActorUiStandaloneBorderGlow.Get()) {
-      border_view_->Show();
-    }
   } else {
     // Revert to the last known state based on other signals like tab focus
     // or context access.

@@ -45,8 +45,6 @@ export class ActorOverlayAppElement extends CrLitElement {
   private shouldShowCursor_: boolean =
       loadTimeData.getBoolean('isMagicCursorEnabled');
   private isCursorInitialized_: boolean = false;
-  private isStandaloneBorderGlowEnabled_: boolean =
-      loadTimeData.getBoolean('isStandaloneBorderGlowEnabled');
   // Timer to start the loading state animation after cursor clicks and
   // movements.
   private loadingTimerId_: number|null = null;
@@ -147,7 +145,7 @@ export class ActorOverlayAppElement extends CrLitElement {
   }
 
   private setBorderGlowVisibility(isVisible: boolean) {
-    this.borderGlowVisible_ = this.isStandaloneBorderGlowEnabled_ && isVisible;
+    this.borderGlowVisible_ = isVisible;
   }
 
   private setTheme(theme: Theme) {

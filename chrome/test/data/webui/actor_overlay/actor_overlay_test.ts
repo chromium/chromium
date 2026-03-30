@@ -129,7 +129,6 @@ suite('BorderGlow', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isMagicCursorEnabled: false,
-      isStandaloneBorderGlowEnabled: true,
     });
     const testBrowserProxy = new TestActorOverlayBrowserProxy();
     ActorOverlayBrowserProxy.setInstance(testBrowserProxy);
@@ -181,23 +180,6 @@ suite('BorderGlow', function() {
         pageWithGlow.shadowRoot.querySelector<HTMLElement>('#border-glow');
     assertTrue(!!borderGlow);
     assertFalse(borderGlow.parentElement!.hidden);
-  });
-
-  test('DoesNotShowBorderGlowWhenFeatureIsDisabled', async function() {
-    loadTimeData.overrideValues({isStandaloneBorderGlowEnabled: false});
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    const pageWithoutGlow = document.createElement('actor-overlay-app');
-    document.body.appendChild(pageWithoutGlow);
-    await microtasksFinished();
-
-    const borderGlow =
-        pageWithoutGlow.shadowRoot.querySelector<HTMLElement>('#border-glow');
-    assertTrue(!!borderGlow);
-    assertTrue(borderGlow.parentElement!.hidden);
-
-    testRemote.setBorderGlowVisibility(true);
-    await microtasksFinished();
-    assertTrue(borderGlow.parentElement!.hidden);
   });
 });
 

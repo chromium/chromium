@@ -36,8 +36,6 @@ ActorOverlayUI::ActorOverlayUI(content::WebUI* web_ui)
   source->AddBoolean(
       "isMagicCursorEnabled",
       base::FeatureList::IsEnabled(features::kGlicActorUiMagicCursor));
-  source->AddBoolean("isStandaloneBorderGlowEnabled",
-                     features::kGlicActorUiStandaloneBorderGlow.Get());
   source->AddResourcePath("magic_cursor.svg", IDR_ACTOR_OVERLAY_MAGIC_CURSOR);
   source->AddDouble("magicCursorSpeed",
                     features::kGlicActorUiMagicCursorSpeed.Get());

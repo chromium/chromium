@@ -215,8 +215,6 @@ extern const base::FeatureParam<bool>(kGlicActorUiTabIndicator);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiBorderGlow);
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<bool>(kGlicActorUiStandaloneBorderGlow);
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(kGlicActorUiDebounceTimer);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>(
