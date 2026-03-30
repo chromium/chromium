@@ -1377,7 +1377,7 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
       }
       case kPseudoHighlight: {
         builder.Append('(');
-        builder.Append(Argument());
+        SerializeIdentifier(Argument(), builder);
         builder.Append(')');
         break;
       }
