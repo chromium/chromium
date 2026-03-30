@@ -228,8 +228,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
     bool load_media_source,
     DataSource::Preload preload,
     bool needs_first_frame,
-    DemuxerManager::DemuxerCreatedCB on_demuxer_created,
-    base::flat_map<std::string, std::string> headers) {
+    DemuxerManager::DemuxerCreatedCB on_demuxer_created) {
   // TODO(crbug.com/40243452) return a better error
   if (!client_) {
     return DEMUXER_ERROR_COULD_NOT_OPEN;

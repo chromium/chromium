@@ -114,12 +114,10 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Returns a forwarded error/success from |on_demuxer_created|, or an error
   // if a demuxer couldn't be created.
-  PipelineStatus CreateDemuxer(
-      bool load_media_source,
-      DataSource::Preload preload,
-      bool needs_first_frame,
-      DemuxerCreatedCB on_demuxer_created,
-      base::flat_map<std::string, std::string> headers);
+  PipelineStatus CreateDemuxer(bool load_media_source,
+                               DataSource::Preload preload,
+                               bool needs_first_frame,
+                               DemuxerCreatedCB on_demuxer_created);
 
   // Methods that help manage or access |data_source_|
   DataSource* GetDataSourceForTesting() const;
