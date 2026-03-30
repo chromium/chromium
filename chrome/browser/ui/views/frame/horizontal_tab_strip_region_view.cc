@@ -242,7 +242,6 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
   GetViewAccessibility().SetIsMultiselectable(true);
 
-  tab_strip_ = AddChildView(CreateTabStrip(this, browser_view));
   BrowserWindowInterface* const browser = browser_view->browser();
 
   if (browser &&
@@ -302,6 +301,8 @@ HorizontalTabStripRegionView::HorizontalTabStripRegionView(
     // extra spacing.
     tab_search_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   }
+
+  tab_strip_ = AddChildView(CreateTabStrip(this, browser_view));
 
   // Allow the |tab_strip_| to grow into the free space available in
   // the HorizontalTabStripRegionView.
