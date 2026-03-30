@@ -212,6 +212,7 @@ struct MockConfig {
   std::string metrics_endpoint;
   std::string idp_login_url;
   std::string disconnect_endpoint;
+  std::string vc_issuance_endpoint;
   std::optional<SkColor> brand_background_color;
   std::optional<SkColor> brand_text_color;
   std::string requested_label;
@@ -376,6 +377,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.client_metadata = GURL(config.client_metadata_endpoint);
     endpoints.metrics = GURL(config.metrics_endpoint);
     endpoints.disconnect = GURL(config.disconnect_endpoint);
+    endpoints.issuance = GURL(config.vc_issuance_endpoint);
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = provider;
@@ -993,6 +995,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
          kMetricsEndpoint,
          kIdpLoginUrl,
          kIdpDisconnectUrl,
+         /*vc_issuance_endpoint=*/"",
          /*brand_background_color=*/std::nullopt,
          /*brand_text_color=*/std::nullopt},
         kDefaultClientMetadata,
@@ -1170,6 +1173,7 @@ class RequestServiceTest : public RenderViewHostImplTestHarness {
                          "https://idp2.example/metrics",
                          "https://idp2.example/login_url",
                          "https://idp2.example/disconnect",
+                         /*vc_issuance_endpoint=*/"",
                          /*brand_background_color=*/std::nullopt,
                          /*brand_text_color=*/std::nullopt},
                         kDefaultClientMetadata,
@@ -2132,6 +2136,57 @@ TEST_F(RequestServiceTest, MissingTokenEndpoint) {
       "\"id_assertion_endpoint\"\n",
       messages[0]);
   EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
+}
+
+// Test that request fails if config has a cross-origin vc_issuance_endpoint.
+TEST_F(RequestServiceTest, InvalidVcIssuanceEndpoint) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmDelegation);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.vc_issuance_endpoint =
+      "https://cross-origin.idp.example/issuance";
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      FederatedAuthRequestResult::kConfigInvalidResponse,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
+
+  std::vector<std::string> messages =
+      RenderFrameHostTester::For(main_rfh())->GetConsoleMessages();
+  ASSERT_EQ(2U, messages.size());
+  EXPECT_EQ(
+      "Config file is missing or has an invalid URL for the following:\n"
+      "\"vc_issuance_endpoint\"\n",
+      messages[0]);
+  EXPECT_EQ("Provider's FedCM config file is invalid.", messages[1]);
+}
+
+// Test that request succeeds if config has a same-origin vc_issuance_endpoint.
+TEST_F(RequestServiceTest, ValidVcIssuanceEndpoint) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmDelegation);
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.vc_issuance_endpoint =
+      "https://idp.example/issuance";
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
+}
+
+// Test that request succeeds if config has a cross-origin vc_issuance_endpoint,
+// but delegation is disabled.
+TEST_F(RequestServiceTest, CrossOriginVcIssuanceEndpointDisabledDelegation) {
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.idp_info[kProviderUrlFull].config.vc_issuance_endpoint =
+      "https://cross-origin.idp.example/issuance";
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+  EXPECT_TRUE(DidFetchWellKnownAndConfig());
+  EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
 // Test that request fails if config is missing accounts endpoint.
@@ -7909,6 +7964,7 @@ TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSite) {
   idp_info.config.metrics_endpoint = "";
   idp_info.config.idp_login_url = "https://idp.example.org/login";
   idp_info.config.disconnect_endpoint = "";
+  idp_info.config.vc_issuance_endpoint = "";
 
   // We make the request from rp.example to idp.example, so it should
   // only succeed despite the well-known failure if the flag is on.

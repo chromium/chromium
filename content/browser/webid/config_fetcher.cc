@@ -255,6 +255,10 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
 
   bool is_token_valid = IsEndpointSameOrigin(
       result.identity_provider_config_url, result.endpoints.token);
+  bool is_vc_endpoint_valid =
+      !IsDelegationEnabled() || result.endpoints.issuance.is_empty() ||
+      IsEndpointSameOrigin(result.identity_provider_config_url,
+                           result.endpoints.issuance);
   bool is_accounts_valid =
       IsEndpointSameOrigin(result.identity_provider_config_url,
                            result.endpoints.accounts) ||
@@ -265,7 +269,8 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
       IsEndpointSameOrigin(result.identity_provider_config_url,
                            result.metadata->idp_login_url);
 
-  if (!is_token_valid || !is_accounts_valid || !is_login_url_valid) {
+  if (!is_token_valid || !is_accounts_valid || !is_login_url_valid ||
+      !is_vc_endpoint_valid) {
     std::string console_message =
         "Config file is missing or has an invalid URL for the following:\n";
     if (!is_token_valid) {
@@ -276,6 +281,9 @@ void ConfigFetcher::ValidateAndMaybeSetError(FetchResult& result) {
     }
     if (!is_login_url_valid) {
       console_message += "\"login_url\"\n";
+    }
+    if (!is_vc_endpoint_valid) {
+      console_message += "\"vc_issuance_endpoint\"\n";
     }
 
     SetError(result, FederatedAuthRequestResult::kConfigInvalidResponse,
