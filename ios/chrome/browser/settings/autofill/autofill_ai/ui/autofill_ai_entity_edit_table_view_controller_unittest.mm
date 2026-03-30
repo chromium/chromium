@@ -105,7 +105,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapSaveNewEntity) {
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.startInEditMode = YES;
+  view_controller.mode = AutofillAIEntityEditMode::kCreate;
   [view_controller loadViewIfNeeded];
 
   // Expect the mutator to save and the delegate to close.
@@ -124,7 +124,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapCancel) {
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.startInEditMode = YES;
+  view_controller.mode = AutofillAIEntityEditMode::kCreate;
   [view_controller loadViewIfNeeded];
 
   // Expect the delegate to close the view controller.
@@ -142,7 +142,7 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest,
       base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
           controller());
 
-  view_controller.startInEditMode = YES;
+  view_controller.mode = AutofillAIEntityEditMode::kCreate;
   [view_controller loadViewIfNeeded];
 
   // Verify that the top right Done button is hidden and edit button isn't

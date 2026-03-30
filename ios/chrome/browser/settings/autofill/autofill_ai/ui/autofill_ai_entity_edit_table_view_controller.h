@@ -11,6 +11,14 @@
 @protocol AutofillAIEntityEditTableViewControllerDelegate;
 @protocol AutofillAIEntityEditMutator;
 
+// Defines the presentation and behavioral mode of the view controller.
+enum class AutofillAIEntityEditMode {
+  // Used when viewing an existing entity.
+  kViewAndEdit,
+  // Used when creating a new entity from scratch.
+  kCreate,
+};
+
 @interface AutofillAIEntityEditTableViewController
     : AutofillEditTableViewController <AutofillAIEntityEditConsumer,
                                        UITextFieldDelegate>
@@ -21,8 +29,8 @@
 // Mutator for this view controller.
 @property(nonatomic, weak) id<AutofillAIEntityEditMutator> mutator;
 
-// Whether to start in edit mode.
-@property(nonatomic, assign) BOOL startInEditMode;
+// The mode in which this view controller operates.
+@property(nonatomic, assign) AutofillAIEntityEditMode mode;
 
 @end
 

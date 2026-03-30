@@ -86,7 +86,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   AutofillAIEntityCountryItem* _countryItemBeingEdited;
 
   // Denotes if a new entity is being added or an existing one is edited.
-  BOOL _isNewEntity;
+  AutofillAIEntityEditMode _editMode;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -100,7 +100,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   if (self) {
     _baseNavigationController = navigationController;
     _entityID = entityID;
-    _isNewEntity = NO;
+    _editMode = AutofillAIEntityEditMode::kViewAndEdit;
   }
   return self;
 }
@@ -115,7 +115,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   if (self) {
     _baseNavigationController = navigationController;
     _entityType = entityType;
-    _isNewEntity = YES;
+    _editMode = AutofillAIEntityEditMode::kCreate;
   }
   return self;
 }
@@ -141,12 +141,12 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
   _viewController.mutator = _mediator;
-  _viewController.startInEditMode = _isNewEntity;
+  _viewController.mode = _editMode;
 
   _mediator.consumer = _viewController;
 
   CHECK(_baseNavigationController);
-  if (_isNewEntity) {
+  if (_editMode == AutofillAIEntityEditMode::kCreate) {
     // Present modally for creating a new entity.
     UINavigationController* navController = [[UINavigationController alloc]
         initWithRootViewController:_viewController];
@@ -165,7 +165,7 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
   if (_viewController) {
     _viewController.delegate = nil;
 
-    if (_isNewEntity) {
+    if (_editMode == AutofillAIEntityEditMode::kCreate) {
       [_viewController.navigationController dismissViewControllerAnimated:YES
                                                                completion:nil];
     } else if (_viewController.navigationController) {

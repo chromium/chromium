@@ -42,7 +42,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.shouldShowDeleteButtonInToolbar = YES;
   self.tableView.allowsSelectionDuringEditing = YES;
 
-  if (self.startInEditMode) {
+  if (self.mode == AutofillAIEntityEditMode::kCreate) {
     [self setEditing:YES animated:NO];
     self.shouldHideDoneButton = YES;
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
@@ -118,7 +118,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - SettingsRootTableViewController
 
 - (BOOL)shouldShowEditButton {
-  if (self.startInEditMode) {
+  if (self.mode == AutofillAIEntityEditMode::kCreate) {
     return NO;
   }
   return _editingAllowed || _isServerWalletItem;
@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (BOOL)shouldShowEditDoneButton {
   // Only show the top right Done button if we are editing an existing entity.
-  return !self.startInEditMode;
+  return self.mode == AutofillAIEntityEditMode::kViewAndEdit;
 }
 
 #pragma mark - AutofillAIEntityEditConsumer
@@ -193,7 +193,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)didTapSaveNewEntity {
-  CHECK(self.startInEditMode);
+  CHECK(self.mode == AutofillAIEntityEditMode::kCreate);
   [self.mutator saveEntityInstance];
   [self.delegate didTapCloseButton:self];
 }
