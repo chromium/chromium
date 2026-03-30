@@ -83,6 +83,7 @@ class WaapUIMetricsService : public KeyedService {
   // the first time in a new window.
   void OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
       waap::NewWindowCreationSource source,
+      bool with_existing_window,
       base::TimeTicks browser_window_paint_time,
       base::TimeTicks reload_button_paint_time);
 

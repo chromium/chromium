@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_service.h"
 #include "ui/base/base_window.h"
@@ -26,7 +27,10 @@ DEFINE_USER_DATA(InitialWebUIWindowMetricsManager);
 InitialWebUIWindowMetricsManager::InitialWebUIWindowMetricsManager(
     BrowserWindowInterface* browser)
     : waap_service_(WaapUIMetricsService::Get(browser->GetProfile())),
-      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this) {}
+      scoped_data_holder_(browser->GetUnownedUserDataHost(), *this),
+      was_created_with_existing_windows_(
+          ProfileBrowserCollection::GetForProfile(browser->GetProfile())
+              ->GetSize() > 0) {}
 
 InitialWebUIWindowMetricsManager::~InitialWebUIWindowMetricsManager() = default;
 
@@ -204,8 +208,8 @@ void InitialWebUIWindowMetricsManager::RecordPaintDeltaIfAvailable() {
     // Handle New Window metrics once per window.
     new_window_delta_recorded_ = true;
     waap_service_->OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
-        creation_source_, *browser_window_first_paint_time_,
-        *reload_button_first_paint_time_);
+        creation_source_, was_created_with_existing_windows_,
+        *browser_window_first_paint_time_, *reload_button_first_paint_time_);
   }
 }
 

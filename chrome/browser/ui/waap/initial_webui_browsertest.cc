@@ -10,7 +10,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher_impl.h"
@@ -308,6 +311,55 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, RecordPageLoadUKM) {
   // 5) Verify UKM recording.
   auto entries = ukm_recorder().GetEntriesByName(PageLoad::kEntryName);
   EXPECT_FALSE(entries.empty());
+}
+
+// Verifies that when a new browser window is created while another window
+// already exists, the `FirstPaintGap metrics with the "WithExistingWindow"
+// dimension are recorded.
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       RecordsFirstPaintGapDeltaWithExistingWindow) {
+  base::HistogramTester histogram_tester;
+
+  // The test harness automatically creates a default browser window on startup.
+  // Wait for the new window metric to be recorded.
+  // The metric expects "WithExistingWindow" when the new browser has prior
+  // windows. Evaluate the actual state to avoid hardcoding test assumptions on
+  // platforms where the default browser might not match desktop norms
+  // perfectly.
+  const std::string expected_metric =
+      base::StrCat({"InitialWebUI.NewWindow.AllSources.",
+                    chrome::GetBrowserCount(browser()->profile()) > 0
+                        ? "WithExistingWindow"
+                        : "WithoutExistingWindow",
+                    ".BrowserWindowToReloadButton.FirstPaintGap"});
+  base::StatisticsRecorder::HistogramWaiter waiter(expected_metric);
+
+  // Create a new browser window without actively showing/painting it yet.
+  Browser::CreateParams params(browser()->profile(), true);
+  Browser* new_browser = Browser::Create(params);
+
+  if (auto* manager = InitialWebUIWindowMetricsManager::From(new_browser)) {
+    manager->SkipStartupForTesting();
+    manager->SetWindowCreationInfo(
+        waap::NewWindowCreationSource::kBrowserInitiated,
+        base::TimeTicks::Now());
+
+    base::TimeTicks t1 = base::TimeTicks::Now();
+    manager->OnBrowserWindowFirstPresentation(t1);
+    manager->OnReloadButtonFirstPaint(t1 + base::Milliseconds(50));
+  }
+
+  AddBlankTabAndShow(new_browser);
+  waiter.Wait();
+
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.AllSources.WithExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "InitialWebUI.NewWindow.BrowserInitiated.WithExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
+      1);
 }
 
 class InitialWebUIMetricsMappingBrowserTest

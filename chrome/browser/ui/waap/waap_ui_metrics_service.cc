@@ -171,6 +171,32 @@ void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
                               start_time, paint_time);
 }
 
+// Records a new window paint metric which differentiates whether the new window
+// is for a profile with or without existing browser window for the given
+// `paint_metric_base`.
+void RecordNewWindowPaintMetric(std::string_view paint_metric_base,
+                                waap::NewWindowCreationSource source,
+                                bool with_existing_window,
+                                base::TimeTicks start_time,
+                                base::TimeTicks paint_time) {
+  const std::string_view with_existing_window_str =
+      with_existing_window ? "WithExistingWindow" : "WithoutExistingWindow";
+  // Record aggregated metric.
+  EmitHistogramWithTraceEvent(
+      base::StrCat({"InitialWebUI.NewWindow.AllSources.",
+                    with_existing_window_str, ".", paint_metric_base})
+          .c_str(),
+      start_time, paint_time);
+
+  // Record source-sliced metric.
+  std::string_view source_str = CreationSourceToString(source);
+  EmitHistogramWithTraceEvent(
+      base::StrCat({"InitialWebUI.NewWindow", source_str, ".",
+                    with_existing_window_str, ".", paint_metric_base})
+          .c_str(),
+      start_time, paint_time);
+}
+
 }  // namespace
 
 WaapUIMetricsService::WaapUIMetricsService(
@@ -320,10 +346,11 @@ void WaapUIMetricsService::OnStartupBrowserWindowToReloadButtonFirstPaintGap(
 
 void WaapUIMetricsService::OnNewWindowBrowserWindowToReloadButtonFirstPaintGap(
     waap::NewWindowCreationSource source,
+    bool with_existing_window,
     base::TimeTicks browser_window_paint_time,
     base::TimeTicks reload_button_paint_time) {
   RecordNewWindowPaintMetric(
-      "BrowserWindowToReloadButton.FirstPaintGap", source,
+      "BrowserWindowToReloadButton.FirstPaintGap", source, with_existing_window,
       browser_window_paint_time, reload_button_paint_time);
 }
 

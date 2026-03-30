@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/waap/waap_utils.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
-class Profile;
 class WaapUIMetricsService;
 class BrowserWindowInterface;
 
@@ -86,6 +85,9 @@ class InitialWebUIWindowMetricsManager {
   static void ResetForTesting();
 
  private:
+  // Helper to emit the delta metric once both timestamps are available.
+  void RecordPaintDeltaIfAvailable();
+
   // The service used to record metrics. May be null if the feature is disabled.
   const raw_ptr<WaapUIMetricsService> waap_service_;
 
@@ -117,10 +119,8 @@ class InitialWebUIWindowMetricsManager {
   // Track the first time a request to show the window was made.
   std::optional<base::TimeTicks> window_show_first_requested_time_;
 
-  // Helper to emit the delta metric once both timestamps are available.
-  void RecordPaintDeltaIfAvailable();
-
   bool skip_startup_metrics_for_testing_ = false;
+  bool was_created_with_existing_windows_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_INITIAL_WEBUI_WINDOW_METRICS_MANAGER_H_

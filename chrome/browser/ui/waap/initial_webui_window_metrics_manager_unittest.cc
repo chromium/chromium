@@ -96,12 +96,12 @@ TEST_F(InitialWebUIWindowMetricsManagerTest, RecordsFirstPaintGapDelta) {
 
   // Now the gap metric should be emitted with the correct delta
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
-      "FirstPaintGap",
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
       webui_delay, 1);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.BrowserInitiated.BrowserWindowToReloadButton."
-      "FirstPaintGap",
+      "InitialWebUI.NewWindow.BrowserInitiated.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
       webui_delay, 1);
 }
 
@@ -232,7 +232,7 @@ TEST_F(InitialWebUIWindowMetricsManagerTest,
   tester.ExpectTotalCount(
       "InitialWebUI.Startup.BrowserWindowToReloadButton.FirstPaintGap", 0);
   tester.ExpectUniqueTimeSample(
-      "InitialWebUI.NewWindow.AllSources.BrowserWindowToReloadButton."
-      "FirstPaintGap",
+      "InitialWebUI.NewWindow.AllSources.WithoutExistingWindow."
+      "BrowserWindowToReloadButton.FirstPaintGap",
       webui_delay, 1);
 }
