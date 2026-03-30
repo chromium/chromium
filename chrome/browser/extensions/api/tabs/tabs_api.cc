@@ -2016,6 +2016,22 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
     create_if_needed = true;
   }
 
+  // TODO(crbug.com/491910697): This is a short-term solution for Android to
+  // ensure new tabs are routed to a tabbed browser when the current browser
+  // is non-NORMAL (e.g., a PWA). The long-term goal is to unify this with
+  // the cross-platform logic below by making the tab creation process
+  // (specifically OpenTabHelper::OpenTab) asynchronous, which is required
+  // on Android when a new window needs to be created.
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
+  // in C++ browser tests on Android. Add tests once that's supported.
+  if (browser && browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
+    browser = nullptr;
+    fallback_to_tabbed_browser = true;
+    create_if_needed = true;
+  }
+#endif
+
   // This check (for the opener) comes last. It will fail (by design) if
   // we're intending to create a new browser; that's good, because the new
   // browser would never match the one with the opener.
