@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_GlicProfileManagerUiTest, ConsistentPreload) {
       // client, so it should not yet be warmed).
       CheckWarmedAndSized(true, false),
       // This stores a pointer to the web client contents so that we can check
-      // that the the shown contents match (otherwise, we've warmed for no
+      // that the shown contents match (otherwise, we've warmed for no
       // reason).
       CacheClientContents(/*primary_profile=*/true),
       DeprecatedOpenGlicWindow(GlicWindowMode::kAttached),
