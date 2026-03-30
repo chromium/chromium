@@ -6,6 +6,21 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions_core)
 
+source_set("stream_info") {
+  sources = [
+    "stream_info.cc",
+    "stream_info.h",
+  ]
+  public_deps = [
+    "//content/public/browser",
+    "//extensions/common:mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  deps = [
+    ":stream_container",
+    "//base",
+  ]
+}
 source_set("stream_container") {
   sources = [
     "stream_container.cc",

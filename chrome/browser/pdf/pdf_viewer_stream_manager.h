@@ -5,18 +5,14 @@
 #ifndef CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
 #define CHROME_BROWSER_PDF_PDF_VIEWER_STREAM_MANAGER_H_
 
-#include <stdint.h>
-
 #include <map>
 #include <memory>
 #include <optional>
 
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "extensions/common/mojom/guest_view.mojom.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "extensions/browser/mime_handler/stream_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
@@ -216,115 +212,18 @@ class PdfViewerStreamManager
       content::FrameTreeNodeId frame_tree_node_id);
 
  protected:
-  // Stream container stored for a single PDF navigation.
-  class StreamInfo {
-   public:
-    StreamInfo(const std::string& embed_internal_id,
-               std::unique_ptr<extensions::StreamContainer> stream_container);
-
-    StreamInfo(const StreamInfo&) = delete;
-    StreamInfo& operator=(const StreamInfo&) = delete;
-
-    ~StreamInfo();
-
-    const std::string& internal_id() const { return internal_id_; }
-
-    extensions::StreamContainer* stream() { return stream_.get(); }
-
-    bool did_extension_finish_navigation() const {
-      return did_extension_finish_navigation_;
-    }
-
-    const mojo::AssociatedRemote<
-        extensions::mojom::MimeHandlerViewContainerManager>&
-    mime_handler_view_container_manager() const {
-      return container_manager_;
-    }
-
-    void set_mime_handler_view_container_manager(
-        mojo::AssociatedRemote<
-            extensions::mojom::MimeHandlerViewContainerManager>
-            container_manager) {
-      container_manager_ = std::move(container_manager);
-    }
-
-    int32_t instance_id() const { return instance_id_; }
-
-    void SetDidExtensionFinishNavigation();
-
-    bool DidPdfExtensionStartNavigation() const;
-
-    bool DidPdfContentNavigate() const;
-
-    content::FrameTreeNodeId extension_host_frame_tree_node_id() const {
-      return extension_host_frame_tree_node_id_;
-    }
-
-    void set_extension_host_frame_tree_node_id(
-        content::FrameTreeNodeId frame_tree_node_id) {
-      extension_host_frame_tree_node_id_ = frame_tree_node_id;
-    }
-
-    content::FrameTreeNodeId content_host_frame_tree_node_id() const {
-      return content_host_frame_tree_node_id_;
-    }
-
-    void set_content_host_frame_tree_node_id(
-        content::FrameTreeNodeId frame_tree_node_id) {
-      content_host_frame_tree_node_id_ = frame_tree_node_id;
-    }
-
-    bool plugin_can_save() const { return plugin_can_save_; }
-
-    void set_plugin_can_save(bool plugin_can_save) {
-      plugin_can_save_ = plugin_can_save;
-    }
-
-   private:
-    // A unique ID for the PDF viewer instance. Used to set up postMessage
-    // support for the full-page PDF viewer.
-    const std::string internal_id_;
-
-    // A container for the PDF stream. Holds data needed to load the PDF in the
-    // PDF viewer.
-    const std::unique_ptr<extensions::StreamContainer> stream_;
-
-    // True if the extension host has finished navigating to the PDF extension
-    // URL.
-    bool did_extension_finish_navigation_ = false;
-
-    // The container manager used to provide postMessage support.
-    mojo::AssociatedRemote<extensions::mojom::MimeHandlerViewContainerManager>
-        container_manager_;
-
-    // The frame tree node ID of the extension host. Initialized when the
-    // initial about:blank navigation commits in the extension frame.
-    content::FrameTreeNodeId extension_host_frame_tree_node_id_;
-
-    // The frame tree node ID of the content host. Initialized when the
-    // navigation to the stream URL starts.
-    content::FrameTreeNodeId content_host_frame_tree_node_id_;
-
-    // A unique ID for this instance. Used for postMessage support to identify
-    // `extensions::MimeHandlerViewFrameContainer` objects.
-    int32_t instance_id_;
-
-    // True if the PDF plugin should handle save events.
-    bool plugin_can_save_ = false;
-  };
-
   // Use `Create()` to create an instance instead.
   explicit PdfViewerStreamManager(content::WebContents* contents);
 
   // Returns the stream info claimed by `embedder_host`, or nullptr if there's
   // no existing stream.
-  StreamInfo* GetClaimedStreamInfo(
+  extensions::StreamInfo* GetClaimedStreamInfo(
       const content::RenderFrameHost* embedder_host);
-  const StreamInfo* GetClaimedStreamInfo(
+  const extensions::StreamInfo* GetClaimedStreamInfo(
       const content::RenderFrameHost* embedder_host) const;
 
   // Returns the stream info for a PDF content navigation.
-  StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
+  extensions::StreamInfo* GetClaimedStreamInfoFromPdfContentNavigation(
       content::NavigationHandle* navigation_handle);
 
   // Navigates the FrameTreeNode with ID `extension_host_frame_tree_node_id` to
@@ -338,14 +237,11 @@ class PdfViewerStreamManager
   // frame, can be used to get the other parameters safely.
   virtual void NavigateToPdfExtensionUrl(
       content::FrameTreeNodeId extension_host_frame_tree_node_id,
-      StreamInfo* stream_info,
+      extensions::StreamInfo* stream_info,
       content::SiteInstance* source_site_instance,
       content::GlobalRenderFrameHostId global_id);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(PdfViewerStreamManagerTest,
-                           AddAndGetStreamContainer);
-
   friend class content::WebContentsUserData<PdfViewerStreamManager>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
@@ -353,7 +249,8 @@ class PdfViewerStreamManager
   // `embedder_host` as claimed by `embedder_host`. Returns a pointer to the
   // claimed stream info. Callers must ensure such a stream info exists with
   // `ContainsUnclaimedStreamInfo()` before calling this.
-  StreamInfo* ClaimStreamInfo(content::RenderFrameHost* embedder_host);
+  extensions::StreamInfo* ClaimStreamInfo(
+      content::RenderFrameHost* embedder_host);
 
   // Deletes the claimed stream info associated with `embedder_host`, and
   // deletes `this` if there are no remaining stream infos.
@@ -395,7 +292,8 @@ class PdfViewerStreamManager
           before_unload_control_remote);
 
   // Stores stream info by embedder host info.
-  std::map<EmbedderHostInfo, std::unique_ptr<StreamInfo>> stream_infos_;
+  std::map<EmbedderHostInfo, std::unique_ptr<extensions::StreamInfo>>
+      stream_infos_;
 
   // Needed to avoid use-after-free when setting up beforeunload API support.
   base::WeakPtrFactory<PdfViewerStreamManager> weak_factory_{this};

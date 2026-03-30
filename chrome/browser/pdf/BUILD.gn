@@ -22,6 +22,7 @@ source_set("pdf") {
     "//base",
     "//components/pdf/browser",
     "//content/public/browser",
+    "//extensions/browser/mime_handler:stream_info",
     "//extensions/common/api",
     "//mojo/public/cpp/bindings",
     "//pdf:buildflags",

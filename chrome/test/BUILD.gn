@@ -10439,6 +10439,7 @@ test("unit_tests") {
       "//chrome/browser/pdf:pdf_test_utils",
       "//extensions/browser",
       "//extensions/browser/mime_handler:stream_container",
+      "//extensions/browser/mime_handler:stream_info",
       "//net",
       "//pdf:content_restriction",
       "//pdf:features",
