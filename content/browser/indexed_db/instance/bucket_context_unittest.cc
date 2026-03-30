@@ -30,7 +30,8 @@ class BucketContextTest : public IndexedDBTestBase {
 
   void SetUp() override {
     IndexedDBTestBase::SetUp();
-    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
+    bucket_context_ = InitBucketContext(GetOrCreateBucket(GetTestStorageKey()),
+                                        /*create_backing_store=*/false);
   }
 
   void SetQuotaLeft(int64_t quota_manager_response) {
@@ -290,11 +291,10 @@ TEST_F(BucketContextTest, OverrideShouldUseSqliteForTesting) {
   }
   int bucket_counter = 0;
   auto is_sqlite_used_by_new_bucket = [&]() {
-    BucketContext& ctx =
-        InitBucketContext(blink::StorageKey::CreateFromStringForTesting(
+    storage::BucketInfo info =
+        GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
             base::StringPrintf("https://test%d.example/", bucket_counter++)));
-    std::ignore = ctx.InitBackingStore(/*create_if_missing=*/true);
-    return ctx.IsUsingSqlite();
+    return InitBucketContext(info)->IsUsingSqlite();
   };
   bucket_context_->InitBackingStore(/*create_if_missing=*/true);
   {

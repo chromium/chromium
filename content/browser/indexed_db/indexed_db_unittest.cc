@@ -52,7 +52,6 @@
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
-#include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -66,7 +65,6 @@
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_test_base.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
@@ -249,27 +247,28 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
 
   void SetUpStorageKeysForSessionOnlyTests() {
     kNormalFirstPartyBucketLocator =
-        InitBucket(
+        GetOrCreateBucket(
             blink::StorageKey::CreateFromStringForTesting("http://normal.com/"))
             .ToBucketLocator();
 
     kSessionOnlyFirstPartyBucketLocator =
-        InitBucket(blink::StorageKey::CreateFromStringForTesting(
-                       "http://session-only.com/"))
+        GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
+                              "http://session-only.com/"))
             .ToBucketLocator();
 
     kNormalThirdPartyBucketLocator =
-        InitBucket(blink::StorageKey::Create(
-                       url::Origin::Create(GURL("http://normal.com/")),
-                       net::SchemefulSite(GURL("http://rando.com/")),
-                       blink::mojom::AncestorChainBit::kCrossSite))
+        GetOrCreateBucket(blink::StorageKey::Create(
+                              url::Origin::Create(GURL("http://normal.com/")),
+                              net::SchemefulSite(GURL("http://rando.com/")),
+                              blink::mojom::AncestorChainBit::kCrossSite))
             .ToBucketLocator();
 
     kSessionOnlyThirdPartyBucketLocator =
-        InitBucket(blink::StorageKey::Create(
-                       url::Origin::Create(GURL("http://session-only.com/")),
-                       net::SchemefulSite(GURL("http://rando.com/")),
-                       blink::mojom::AncestorChainBit::kCrossSite))
+        GetOrCreateBucket(
+            blink::StorageKey::Create(
+                url::Origin::Create(GURL("http://session-only.com/")),
+                net::SchemefulSite(GURL("http://rando.com/")),
+                blink::mojom::AncestorChainBit::kCrossSite))
             .ToBucketLocator();
   }
 
@@ -297,7 +296,7 @@ class IndexedDBTestBaseWithExtras : public IndexedDBTestBase {
   // connection was forced closed.
   void VerifyForcedClosedCalled(base::OnceClosure action,
                                 storage::BucketInfo* out_info = nullptr) {
-    storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+    storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
     if (out_info) {
       *out_info = bucket_info;
     }
@@ -439,6 +438,12 @@ class IndexedDBTest : public IndexedDBTestBaseWithExtras,
   IndexedDBTest()
       : IndexedDBTestBaseWithExtras(/*use_default_buckets=*/true,
                                     /*use_sqlite=*/GetParam()) {}
+
+  // Running tasks on the BucketContext will trigger the start of the close
+  // timer if there are no open databases (among other conditions).
+  void NudgeBackingStoreCloseLogic(BucketContext* bucket_context) {
+    bucket_context->RunTasks();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -795,8 +800,7 @@ TEST_P(IndexedDBTest, InvalidObjectStoreId) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
+  const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
   BindFactory(std::move(checker_remote),
               bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
@@ -868,8 +872,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBListChanged) {
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
+  const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
   BindFactory(std::move(checker_remote),
               bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
@@ -1091,8 +1094,7 @@ TEST_P(IndexedDBTest, NotifyIndexedDBContentChanged) {
       checker_remote;
   mojo::Remote<blink::mojom::IDBFactory> bounded_factory_remote;
 
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  const BucketLocator& bucket_locator = bucket_context_handle->bucket_locator();
+  const BucketLocator bucket_locator = InitBucketContext()->bucket_locator();
   BindFactory(std::move(checker_remote),
               bounded_factory_remote.BindNewPipeAndPassReceiver(),
               ToBucketInfo(bucket_locator));
@@ -1345,7 +1347,7 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
       blink::StorageKey::CreateFromStringForTesting(
           "http://subdomain.session-only.com/");
   storage::BucketInfo bucket_info =
-      InitBucket(session_only_subdomain_first_party_storage_key);
+      GetOrCreateBucket(session_only_subdomain_first_party_storage_key);
   BucketLocator session_only_subdomain_first_party_bucket_locator =
       bucket_info.ToBucketLocator();
 
@@ -1354,7 +1356,8 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
           url::Origin::Create(GURL("http://subdomain.session-only.com/")),
           net::SchemefulSite(GURL("http://rando.com/")),
           blink::mojom::AncestorChainBit::kCrossSite);
-  bucket_info = InitBucket(session_only_subdomain_third_party_storage_key);
+  bucket_info =
+      GetOrCreateBucket(session_only_subdomain_third_party_storage_key);
   BucketLocator session_only_subdomain_third_party_bucket_locator =
       bucket_info.ToBucketLocator();
 
@@ -1362,7 +1365,7 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
       blink::StorageKey::Create(url::Origin::Create(GURL("http://rando.com/")),
                                 net::SchemefulSite(GURL("http://normal.com/")),
                                 blink::mojom::AncestorChainBit::kCrossSite);
-  bucket_info = InitBucket(inverted_normal_third_party_storage_key);
+  bucket_info = GetOrCreateBucket(inverted_normal_third_party_storage_key);
   BucketLocator inverted_normal_third_party_bucket_locator =
       bucket_info.ToBucketLocator();
 
@@ -1371,7 +1374,8 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
           url::Origin::Create(GURL("http://rando.com/")),
           net::SchemefulSite(GURL("http://session-only.com/")),
           blink::mojom::AncestorChainBit::kCrossSite);
-  bucket_info = InitBucket(inverted_session_only_third_party_storage_key);
+  bucket_info =
+      GetOrCreateBucket(inverted_session_only_third_party_storage_key);
   BucketLocator inverted_session_only_third_party_bucket_locator =
       bucket_info.ToBucketLocator();
 
@@ -1380,8 +1384,8 @@ TEST_P(IndexedDBTest, ClearSessionOnlyDatabases) {
           url::Origin::Create(GURL("http://rando.com/")),
           net::SchemefulSite(GURL("http://subdomain.session-only.com/")),
           blink::mojom::AncestorChainBit::kCrossSite);
-  bucket_info =
-      InitBucket(inverted_session_only_subdomain_third_party_storage_key);
+  bucket_info = GetOrCreateBucket(
+      inverted_session_only_subdomain_third_party_storage_key);
   BucketLocator inverted_session_only_subdomain_third_party_bucket_locator =
       bucket_info.ToBucketLocator();
 
@@ -1509,7 +1513,7 @@ TEST_P(IndexedDBTest, SetForceKeepSessionState) {
 }
 
 TEST_P(IndexedDBTest, Bug464999826) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   quota_manager_->HoldBackResults();
 
@@ -1589,7 +1593,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteDatabase) {
 
 // Regression test for https://crbug.com/446722008
 TEST_P(IndexedDBTest, AvoidCrashAfterForceCloseDbAndThenOpen) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
@@ -1693,20 +1697,11 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
   ASSERT_TRUE(base::WriteFile(file_5, std::string(20000, 'a')));
   EXPECT_NE(file_5.DirName(), file_1.DirName());
 
-  GetOrCreateBucketContext(bucket_1, context()->GetDataPath(bucket_locator_1))
-      .InitBackingStore(true);
-
-  GetOrCreateBucketContext(bucket_2, context()->GetDataPath(bucket_locator_2))
-      .InitBackingStore(true);
-
-  GetOrCreateBucketContext(bucket_3, context()->GetDataPath(bucket_locator_3))
-      .InitBackingStore(true);
-
-  GetOrCreateBucketContext(bucket_4, context()->GetDataPath(bucket_locator_4))
-      .InitBackingStore(true);
-
-  GetOrCreateBucketContext(bucket_5, context()->GetDataPath(bucket_locator_5))
-      .InitBackingStore(true);
+  InitBucketContext(bucket_1);
+  InitBucketContext(bucket_2);
+  InitBucketContext(bucket_3);
+  InitBucketContext(bucket_4);
+  InitBucketContext(bucket_5);
 
   int64_t bucket_size_1 = base::ComputeDirectorySize(file_1.DirName());
   int64_t bucket_size_4 = base::ComputeDirectorySize(file_4.DirName());
@@ -1727,43 +1722,45 @@ TEST_P(IndexedDBTest, BasicFactoryCreationAndTearDown) {
 }
 
 TEST_P(IndexedDBTest, CloseSequenceStarts) {
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
   const storage::BucketLocator bucket_locator =
-      bucket_context_handle->bucket_locator();
-  bucket_context_handle.Release();
+      bucket_context->bucket_locator();
+  NudgeBackingStoreCloseLogic(bucket_context.get());
 
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/true);
-  EXPECT_TRUE(GetBucketContext(bucket_locator.id)->IsClosing());
+  EXPECT_TRUE(bucket_context->IsClosing());
 
   context_->ForceClose(bucket_locator.id, {}, base::DoNothing());
   VerifyBucketContextWaitIfNeeded(bucket_locator,
                                   /*expected_context_exists=*/false);
+  EXPECT_FALSE(bucket_context);
 }
 
 // Similar to the above, but installs a receiver which prevents the bucket
 // context from being destroyed.
 TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   // Create bucket context.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
   const storage::BucketLocator bucket_locator =
-      bucket_context_handle->bucket_locator();
+      bucket_context->bucket_locator();
   // Connect an IDBFactory mojo client.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
-  bucket_context_handle->AddReceiver(
-      storage::BucketClientInfo{}, std::move(checker_remote),
-      factory_remote.BindNewPipeAndPassReceiver());
+  bucket_context->AddReceiver(storage::BucketClientInfo{},
+                              std::move(checker_remote),
+                              factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/true);
 
-  // The last handle to the bucket context is released and the grace period
+  // Something triggers starting the close sequence and the grace period
   // elapses.
-  bucket_context_handle.Release();
-  task_environment_.FastForwardBy(base::Seconds(2));
+  NudgeBackingStoreCloseLogic(bucket_context.get());
+  task_environment_.FastForwardBy(
+      BucketContext::GetBackingStoreGracePeriodForTesting());
 
   // This destroys the backing store, but the bucket context itself still
   // exists...
@@ -1775,22 +1772,22 @@ TEST_P(IndexedDBTest, CloseWithReceiversActive) {
   task_environment_.RunUntilIdle();
 
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/false);
+  EXPECT_FALSE(bucket_context);
 }
 
 // Similar to the above, but reverses the order of receiver disconnection and
-// handle destruction.
+// backing store destruction.
 TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
-  // Create bucket context.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
+  base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
   const storage::BucketLocator bucket_locator =
-      bucket_context_handle->bucket_locator();
+      bucket_context->bucket_locator();
   // Connect an IDBFactory mojo client.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
-  bucket_context_handle->AddReceiver(
-      storage::BucketClientInfo{}, std::move(checker_remote),
-      factory_remote.BindNewPipeAndPassReceiver());
+  bucket_context->AddReceiver(storage::BucketClientInfo{},
+                              std::move(checker_remote),
+                              factory_remote.BindNewPipeAndPassReceiver());
 
   // The bucket context and the backing store should exist.
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
@@ -1804,12 +1801,13 @@ TEST_P(IndexedDBTest, CloseWithReceiversInactive) {
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/true);
 
-  // The last handle to the bucket context is released and the grace period
-  // elapses.
-  bucket_context_handle.Release();
-  task_environment_.FastForwardBy(base::Seconds(2));
+  // Something triggers backing store shutdown and the grace period elapses.
+  NudgeBackingStoreCloseLogic(bucket_context.get());
+  task_environment_.FastForwardBy(
+      BucketContext::GetBackingStoreGracePeriodForTesting());
 
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/false);
+  EXPECT_FALSE(bucket_context);
 }
 
 TEST_P(IndexedDBTest, PreCloseTasksStart) {
@@ -1822,18 +1820,18 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   {
     // Open a connection & immediately release it to cause the closing sequence
     // to start.
-    BucketContextHandle bucket_context_handle = CreateBucketHandle();
-    storage::BucketLocator bucket_locator =
-        bucket_context_handle->bucket_locator();
+    base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
+    const storage::BucketLocator bucket_locator =
+        bucket_context->bucket_locator();
 
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
     mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
         checker_remote;
     BindFactory(std::move(checker_remote),
                 factory_remote.BindNewPipeAndPassReceiver(),
-                ToBucketInfo(bucket_context_handle->bucket_locator()));
+                bucket_context->bucket_info());
 
-    bucket_context_handle.Release();
+    NudgeBackingStoreCloseLogic(bucket_context.get());
 
     VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                         /*expected_backing_store_exists=*/true);
@@ -1842,11 +1840,13 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     EXPECT_EQ(BucketContext::ClosingState::kPreCloseGracePeriod,
               GetBucketContext(bucket_locator.id)->closing_stage());
 
-    task_environment_.FastForwardBy(base::Seconds(2));
+    task_environment_.FastForwardBy(
+        BucketContext::GetBackingStoreGracePeriodForTesting());
 
     // The factory should be closed, as the pre close tasks are delayed.
     VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                         /*expected_backing_store_exists=*/false);
+    EXPECT_FALSE(bucket_context);
   }
 
   // Move the clock to run the tasks in the next close sequence.
@@ -1859,14 +1859,11 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   // using a future to get the bucket context, the bucket context will be
   // destroyed. For that reason, the bucket context pointer is stored in
   // `bucket_context`.
-  BucketContext* bucket_context = nullptr;
+  base::WeakPtr<BucketContext> bucket_context;
 
   {
-    // Open a connection & immediately release it to cause the closing sequence
-    // to start again.
-    BucketContextHandle bucket_context_handle = CreateBucketHandle();
-    bucket_context = bucket_context_handle.bucket_context();
-    bucket_context_handle.Release();
+    bucket_context = InitBucketContext();
+    NudgeBackingStoreCloseLogic(bucket_context.get());
 
     // Manually execute the timer so that the PreCloseTaskList task doesn't also
     // run.
@@ -1878,10 +1875,9 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   }
 
   {
-    // Stop sweep by opening a connection.
-    BucketContextHandle bucket_context_handle(*bucket_context);
-    storage::BucketLocator bucket_locator =
-        bucket_context_handle->bucket_locator();
+    // Stop sweep by simulating a request.
+    auto scoper = bucket_context->ScopedHandlingRequest();
+    storage::BucketLocator bucket_locator = bucket_context->bucket_locator();
     EXPECT_NE(BucketContext::ClosingState::kRunningPreCloseTasks,
               bucket_context->closing_stage());
 
@@ -1889,7 +1885,7 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
     // sweep minimum, so no tasks should execute.
     task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
 
-    bucket_context_handle.Release();
+    scoper.RunAndReset();
     EXPECT_EQ(BucketContext::ClosingState::kPreCloseGracePeriod,
               bucket_context->closing_stage());
 
@@ -1904,13 +1900,12 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   }
 
   {
-    //  Finally, move the clock forward so the storage key should allow a sweep.
+    // Finally, move the clock forward so the storage key should allow a sweep.
     task_environment_.FastForwardBy(kMaxBucketSweepDelay);
-    BucketContextHandle bucket_context_handle = CreateBucketHandle();
-    bucket_context = bucket_context_handle.bucket_context();
-    storage::BucketLocator bucket_locator =
-        bucket_context_handle->bucket_locator();
-    bucket_context_handle.Release();
+    bucket_context = InitBucketContext();
+    storage::BucketLocator bucket_locator = bucket_context->bucket_locator();
+    auto scoper = bucket_context->ScopedHandlingRequest();
+    scoper.RunAndReset();
     bucket_context->close_timer()->FireNow();
 
     ASSERT_TRUE(context_->BucketContextExists(bucket_locator));
@@ -1922,14 +1917,13 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   SetUpInMemoryContext();
 
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
+  base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
+  BucketLocator bucket_locator = bucket_context->bucket_locator();
 
-  EXPECT_TRUE(bucket_context_handle->in_memory());
-  BucketContext* bucket_context = bucket_context_handle.bucket_context();
-  bucket_context_handle.Release();
-  RunPostedTasks();
-
+  // In-memory backing stores can't shut down before the entire profile is
+  // destroyed.
+  EXPECT_TRUE(bucket_context->in_memory());
+  NudgeBackingStoreCloseLogic(bucket_context.get());
   EXPECT_TRUE(context_->BucketContextExists(bucket_locator));
   EXPECT_FALSE(bucket_context->IsClosing());
 
@@ -1969,35 +1963,39 @@ TEST_P(IndexedDBTest, TooLongOrigin) {
       storage::BucketInitParams::ForDefaultBucket(too_long_storage_key));
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
-  BucketContextHandle bucket_context_handle(GetOrCreateBucketContext(
-      ToBucketInfo(bucket_locator), context()->GetDataPath(bucket_locator)));
+  base::WeakPtr<BucketContext> bucket_context =
+      InitBucketContext(bucket_info, /*create_backing_store=*/false);
   Status s;
-  std::tie(s, std::ignore, std::ignore) =
-      bucket_context_handle->InitBackingStore(
-          /*create_if_missing=*/true);
+  std::tie(s, std::ignore, std::ignore) = bucket_context->InitBackingStore(
+      /*create_if_missing=*/true);
 
   EXPECT_TRUE(s.IsIOError());
 }
 
 TEST_P(IndexedDBTest, FactoryForceClose) {
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
+  base::WeakPtr<BucketContext> bucket_context = InitBucketContext();
+  BucketLocator bucket_locator = bucket_context->bucket_locator();
 
-  bucket_context_handle->ForceClose(
+  bucket_context->ForceClose(
       /*doom=*/false, "The database is force-closed for testing.");
-  BucketContext* bucket_context = bucket_context_handle.bucket_context();
-  bucket_context_handle.Release();
+  // Weak pointer is immediately invalidated.
+  EXPECT_FALSE(bucket_context);
 
+  // The destruction task is immediately *posted* to the owning context's
+  // sequence, so it doesn't run synchronously.
   ASSERT_TRUE(context_->BucketContextExists(bucket_locator));
-  EXPECT_TRUE(!!bucket_context->backing_store());
-  VerifyBucketContextWaitIfNeeded(bucket_locator,
-                                  /*expected_context_exists=*/false);
+  // A single pump of the owning context's sequence should run the destruction
+  // task. If the destruction task was posted after an async delay, then this
+  // would not be enough to pass the next check.
+  RunPostedTasks();
+  VerifyBucketContext(bucket_locator,
+                      /*expected_context_exists=*/false);
 }
 
 // This test aims to verify the behavior of
 // BucketContext::Delegate::on_receiver_bounced.
 TEST_P(IndexedDBTest, CloseThenAddReceiver) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Trigger the bucket context to be created.
@@ -2043,7 +2041,7 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 // Tests that the backing store is closed when the connection is closed during
 // upgrade.
 TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2082,7 +2080,7 @@ TEST_P(IndexedDBTest, ConnectionCloseDuringUpgrade) {
 // Verifies that opening an existing database that is not currently open in the
 // backing store works as expected.
 TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2114,7 +2112,8 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
   }
 
   // Fast forward by the grace period so that the backing store gets closed.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(
+      BucketContext::GetBackingStoreGracePeriodForTesting());
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/false);
 
@@ -2140,7 +2139,7 @@ TEST_P(IndexedDBTestWithBucketType, OpenExistingDatabase) {
 }
 
 TEST_P(IndexedDBTest, DeleteDatabase) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2205,7 +2204,7 @@ TEST_P(IndexedDBTest, DeleteDatabase) {
 // Verifies that deleting an existing database that is not currently open in the
 // backing store works as expected.
 TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2226,7 +2225,8 @@ TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
   }
 
   // Fast forward by the grace period so that the backing store gets closed.
-  task_environment_.FastForwardBy(base::Seconds(2));
+  task_environment_.FastForwardBy(
+      BucketContext::GetBackingStoreGracePeriodForTesting());
   VerifyBucketContext(bucket_locator, /*expected_context_exists=*/true,
                       /*expected_backing_store_exists=*/false);
 
@@ -2261,7 +2261,7 @@ TEST_P(IndexedDBTestWithBucketType, DeleteDatabase_Cold) {
 // Verifies the behavior when several delete requests for the same database are
 // queued together.
 TEST_P(IndexedDBTest, DeleteDatabase_DuplicateRequests) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -2306,9 +2306,9 @@ TEST_P(IndexedDBTest, DeleteDatabase_DuplicateRequests) {
       "IndexedDB.BackendDuration.DeleteDatabase.OnDisk", 1);
 }
 
-TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames_NoFactory) {
+TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames) {
   base::HistogramTester histogram_tester;
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.
@@ -2332,25 +2332,15 @@ TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames_NoFactory) {
         "IndexedDB.BackendDuration.GetDatabaseInfo.OnDisk", 0);
   }
 
-  // Now create a database and thus the backing store.
-  MockMojoFactoryClient client;
-  MockMojoDatabaseCallbacks database_callbacks;
-  base::RunLoop run_loop;
-  // It's necessary to hang onto the database connection or the connection
-  // will shut itself down and the backing store will close on its own.
-  mojo::PendingAssociatedRemote<blink::mojom::IDBDatabase> pending_database;
-  EXPECT_CALL(client, MockedUpgradeNeeded)
-      .WillOnce(
-          testing::DoAll(MoveArgPointee<0>(&pending_database),
-                         ::base::test::RunClosure(run_loop.QuitClosure())));
-  mojo::AssociatedRemote<blink::mojom::IDBTransaction> transaction_remote;
-  factory_remote->Open(client.CreateInterfacePtrAndBind(),
-                       database_callbacks.CreateInterfacePtrAndBind(), u"db",
-                       blink::IndexedDBDatabaseMetadata::NO_VERSION,
-                       transaction_remote.BindNewEndpointAndPassReceiver(),
-                       /*transaction_id=*/1, /*priority=*/0);
-  run_loop.Run();
-  // GetDatabaseInfo didn't create the factory, so it shouldn't close it.
+  // Now create a database and thus the backing store. It's necessary to hang
+  // onto the database connection or the connection will shut itself down and
+  // the backing store will close on its own.
+  mojo::AssociatedRemote<blink::mojom::IDBDatabase> database_remote =
+      CreateDatabase(factory_remote, u"db", /*transaction_id=*/1);
+
+  // GetDatabaseInfo is called, it wasn't the trigger to create the backing
+  // store and there's still an attached connection. Thus calling this shouldn't
+  // initiate backing store shutdown.
   {
     base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
                            blink::mojom::IDBErrorPtr>
@@ -2367,11 +2357,29 @@ TEST_P(IndexedDBTestWithBucketType, GetDatabaseNames_NoFactory) {
     histogram_tester.ExpectTotalCount(
         "IndexedDB.BackendDuration.GetDatabaseInfo.OnDisk", 1);
   }
+
+  // Let the backing store close by disconnecting the connection and waiting for
+  // the grace period to elapse.
+  database_remote.reset();
+  factory_remote.FlushForTesting();
+  task_environment_.FastForwardBy(
+      BucketContext::GetBackingStoreGracePeriodForTesting());
+  EXPECT_FALSE(GetBucketContext(bucket_locator.id)->backing_store());
+
+  // GetDatabaseInfo opens the backing store, so it *should* close it.
+  {
+    base::test::TestFuture<std::vector<blink::mojom::IDBNameAndVersionPtr>,
+                           blink::mojom::IDBErrorPtr>
+        info_future;
+    factory_remote->GetDatabaseInfo(info_future.GetCallback());
+    EXPECT_TRUE(info_future.Wait());
+    EXPECT_TRUE(GetBucketContext(bucket_locator.id)->IsClosing());
+  }
 }
 
 // Regression test for crbug.com/376461709
 TEST_P(IndexedDBTest, UpdatePriorityAfterForceClose) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -2412,7 +2420,7 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
   constexpr int64_t kObjectStoreId = 1;
   int64_t transaction_id = 0;
 
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   // Bind the IDBFactory.
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -2577,7 +2585,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
   }
 
   // Bind the IDBFactory.
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
       checker_remote;
@@ -2646,7 +2654,7 @@ TEST_P(IndexedDBTest, QuotaErrorOnDbOpenError) {
 }
 
 TEST_P(IndexedDBTest, DatabaseFailedOpen) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   // Bind the IDBFactory.
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -2687,7 +2695,7 @@ TEST_P(IndexedDBTest, DatabaseFailedOpen) {
 
 // Test for `IndexedDBDataFormatVersion`.
 TEST_P(IndexedDBTestWithBucketType, DataLoss) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
   const std::u16string db_name(u"test_db");
 
@@ -2747,11 +2755,11 @@ class IndexedDBTestForSqliteMigration
   ~IndexedDBTestForSqliteMigration() override = default;
 
   void SetUp() override {
-    buckets_[StoreType::kNone] = InitBucket(
+    buckets_[StoreType::kNone] = GetOrCreateBucket(
         blink::StorageKey::CreateFromStringForTesting("http://none.com"));
 
     {
-      storage::BucketInfo bucket_info = InitBucket(
+      storage::BucketInfo bucket_info = GetOrCreateBucket(
           blink::StorageKey::CreateFromStringForTesting("http://leveldb.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2760,7 +2768,7 @@ class IndexedDBTestForSqliteMigration
     }
 
     {
-      storage::BucketInfo bucket_info = InitBucket(
+      storage::BucketInfo bucket_info = GetOrCreateBucket(
           blink::StorageKey::CreateFromStringForTesting("http://sqlite.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseSqliteOnly);
@@ -2772,7 +2780,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://empty_leveldb_directory.com"));
       base::FilePath leveldb_dir_path =
           GetFilePathForTesting(bucket_info.ToBucketLocator());
@@ -2782,7 +2790,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://leveldb_with_corruption_info.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2793,7 +2801,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://leveldb_current_missing.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2807,7 +2815,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://leveldb_files_missing.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2830,7 +2838,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://leveldb_internal_corruption.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2849,7 +2857,7 @@ class IndexedDBTestForSqliteMigration
 
     {
       storage::BucketInfo bucket_info =
-          InitBucket(blink::StorageKey::CreateFromStringForTesting(
+          GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
               "http://leveldb_backing_store_corruption.com"));
       auto [factory_remote, bucket_context] = BindFactoryAndOverrideStage(
           bucket_info, SqliteRolloutStage::kUseLevelDbOnly);
@@ -2967,7 +2975,8 @@ class IndexedDBTestForSqliteMigration
   }
 
   void CloseAllBackingStores() {
-    task_environment_.FastForwardBy(base::Seconds(2));
+    task_environment_.FastForwardBy(
+        BucketContext::GetBackingStoreGracePeriodForTesting());
   }
 
  private:
@@ -3154,7 +3163,7 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
   base::HistogramTester histograms;
 
   // Open with a normal length origin; success.
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   {
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -3191,7 +3200,7 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
   }
 
   // Open with a super long origin; error.
-  bucket_info = InitBucket(blink::StorageKey::CreateFromStringForTesting(
+  bucket_info = GetOrCreateBucket(blink::StorageKey::CreateFromStringForTesting(
       std::string("https://") + std::string(230, 'a') + ".com:81"));
   {
     mojo::Remote<blink::mojom::IDBFactory> factory_remote;
@@ -3236,7 +3245,7 @@ TEST_P(IndexedDBTest, FilePathLengthLogging) {
 
 // Regression test for crbug.com/484647042.
 TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -3302,7 +3311,7 @@ TEST_P(IndexedDBTest, ForceCloseWithQueuedDelete) {
 
 TEST_P(IndexedDBTest, IdleTasksHistograms) {
   const base::TimeDelta kTimeout = BucketContext::GetIdleTimeoutForTesting();
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
 
   mojo::Remote<blink::mojom::IDBFactory> factory_remote;
   mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -3378,7 +3387,7 @@ TEST_F(IndexedDBSqliteTest, BlobReadPutsOffIdleWork) {
   const std::string kBlobData =
       base::RandBytesAsString(TestBlobConsumer::kPipeCapacity * 3);
 
-  storage::BucketInfo bucket_info = InitBucket(GetTestStorageKey());
+  storage::BucketInfo bucket_info = GetOrCreateBucket(GetTestStorageKey());
   BucketLocator bucket_locator = bucket_info.ToBucketLocator();
 
   // Bind the IDBFactory.

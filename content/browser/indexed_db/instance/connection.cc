@@ -153,7 +153,7 @@ Connection::Connection(BucketContext& bucket_context,
                        base::UnguessableToken client_token,
                        int scheduling_priority)
     : id_(g_next_indexed_db_connection_id++),
-      bucket_context_handle_(bucket_context),
+      bucket_context_(&bucket_context),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
       on_close_(std::move(on_close)),
@@ -163,8 +163,8 @@ Connection::Connection(BucketContext& bucket_context,
       scheduling_priority_(scheduling_priority) {
   IncrementNumConnections();
 
-  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
-      bucket_context_handle_->bucket_locator(), base::Time::Now());
+  bucket_context_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_->bucket_locator(), base::Time::Now());
 }
 
 Connection::~Connection() {
@@ -192,8 +192,8 @@ Transaction* Connection::CreateVersionChangeTransaction(
       blink::mojom::IDBTransactionMode::VersionChange);
   return (transactions_[id] = std::make_unique<Transaction>(
               id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
-              blink::mojom::IDBTransactionDurability::Strict,
-              bucket_context_handle_, std::move(backing_store_transaction)))
+              blink::mojom::IDBTransactionDurability::Strict, *bucket_context_,
+              std::move(backing_store_transaction)))
       .get();
 }
 
@@ -257,7 +257,7 @@ void Connection::RemoveTransaction(int64_t id) {
     base::UmaHistogramTimes("IndexedDB.RemoveTransactionLongTimes", duration);
     base::UmaHistogramCounts100000(
         "IndexedDB.RemoveTransactionRequestQueueSize",
-        bucket_context_handle_->lock_manager().RequestsWaitingForMetrics());
+        bucket_context_->lock_manager().RequestsWaitingForMetrics());
     base::UmaHistogramCounts100000(
         "IndexedDB.RemoveTransactionConnectionTxnCount", transactions_.size());
   }
@@ -339,7 +339,7 @@ void Connection::CreateTransaction(
   Transaction* transaction =
       (transactions_[transaction_id] = std::make_unique<Transaction>(
            transaction_id, this, std::move(scope), mode, durability,
-           bucket_context_handle_,
+           *bucket_context_,
            database_->backing_store_db()->CreateTransaction(durability, mode)))
           .get();
 
@@ -714,13 +714,11 @@ void Connection::UpdatePriority(int new_priority) {
 }
 
 const storage::BucketInfo& Connection::GetBucketInfo() {
-  CHECK(bucket_context());
-  return bucket_context()->bucket_info();
+  return bucket_context_->bucket_info();
 }
 
 storage::BucketLocator Connection::GetBucketLocator() {
-  CHECK(bucket_context());
-  return bucket_context()->bucket_locator();
+  return bucket_context_->bucket_locator();
 }
 
 Transaction* Connection::GetTransaction(int64_t id) const {
@@ -789,13 +787,13 @@ std::unique_ptr<DatabaseCallbacks> Connection::AbortTransactionsAndClose(
   AbortAllTransactions(error);
 
   std::unique_ptr<DatabaseCallbacks> callbacks = std::move(callbacks_);
-  std::move(on_close_).Run(*this);
   for (auto& remotes : client_keep_active_remotes_) {
     remotes.reset();
   }
-  bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
-      bucket_context_handle_->bucket_locator(), base::Time::Now());
-  bucket_context_handle_.Release();
+  bucket_context_->quota_manager()->NotifyBucketAccessed(
+      bucket_context_->bucket_locator(), base::Time::Now());
+  bucket_context_ = nullptr;
+  std::move(on_close_).Run(*this);
   return callbacks;
 }
 

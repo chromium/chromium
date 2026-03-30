@@ -40,8 +40,6 @@ source_set("indexed_db") {
     "instance/blob_reader.h",
     "instance/bucket_context.cc",
     "instance/bucket_context.h",
-    "instance/bucket_context_handle.cc",
-    "instance/bucket_context_handle.h",
     "instance/callback_helpers.h",
     "instance/connection.cc",
     "instance/connection.h",

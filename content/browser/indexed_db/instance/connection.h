@@ -19,7 +19,6 @@
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/database.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "content/common/content_export.h"
@@ -213,16 +212,11 @@ class CONTENT_EXPORT Connection : public blink::mojom::IDBDatabase {
 
   void AbortAllTransactions(const DatabaseError& error);
 
-  BucketContext* bucket_context() {
-    return bucket_context_handle_.bucket_context();
-  }
-
   void RecordCreateTransactionHistograms(blink::mojom::IDBTransactionMode mode);
 
   const int32_t id_;
 
-  // Keeps the factory for this bucket alive.
-  BucketContextHandle bucket_context_handle_;
+  raw_ptr<BucketContext> bucket_context_;
 
   base::WeakPtr<Database> database_;
   base::RepeatingClosure on_version_change_ignored_;

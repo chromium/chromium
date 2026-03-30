@@ -430,7 +430,7 @@ void IndexedDBContextImpl::BindIndexedDBImpl(
     bucket = bucket_info.value();
   }
   if (bucket) {
-    EnsureBucketContext(*bucket, GetDataPath(bucket->ToBucketLocator()));
+    EnsureBucketContext(*bucket);
     auto iter = bucket_contexts_.find(bucket->ToBucketLocator());
     CHECK(iter != bucket_contexts_.end());
     iter->second.AsyncCall(&BucketContext::AddReceiver)
@@ -1134,8 +1134,7 @@ void IndexedDBContextImpl::DestroyBucketContext(
 }
 
 void IndexedDBContextImpl::EnsureBucketContext(
-    const storage::BucketInfo& bucket,
-    const base::FilePath& data_directory) {
+    const storage::BucketInfo& bucket) {
   TRACE_EVENT0("IndexedDB", "indexed_db::EnsureBucketContext");
 
   const BucketLocator bucket_locator = bucket.ToBucketLocator();
@@ -1202,7 +1201,7 @@ void IndexedDBContextImpl::EnsureBucketContext(
       base::SequenceBound<BucketContext>(
           force_single_thread_ ? idb_task_runner()
                                : std::move(bucket_task_runner),
-          bucket, data_directory, std::move(bucket_delegate),
+          bucket, GetDataPath(bucket_locator), std::move(bucket_delegate),
           quota_manager_proxy_, std::move(cloned_blob_storage_context),
           std::move(fsa_context)));
   CHECK(inserted);

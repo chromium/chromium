@@ -239,8 +239,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       storage::mojom::IdbBucketMetadataPtr info,
       base::OnceCallback<void(storage::mojom::IdbBucketMetadataPtr)> result);
 
-  void EnsureBucketContext(const storage::BucketInfo& bucket,
-                           const base::FilePath& data_directory);
+  void EnsureBucketContext(const storage::BucketInfo& bucket);
 
   void CompactBackingStoreForTesting(
       const storage::BucketLocator& bucket_locator);

@@ -50,7 +50,6 @@ class QuotaManagerProxy;
 namespace content::indexed_db {
 
 class BackingStore;
-class BucketContextHandle;
 class Database;
 
 // Used as a feature param by `kIdbSqliteOnDiskRollout`. Adding, removing and
@@ -77,7 +76,7 @@ enum class SqliteRolloutStage {
 // context like the backing store and lock manager.
 //
 // BucketContext will keep its backing store around while any of these is true:
-// * There are handles referencing the bucket context,
+// * There are `Database` objects,
 // * There are outstanding blob references to this database's blob files, or
 // * The bucket context is in-memory (i.e. an incognito profile).
 //
@@ -183,6 +182,7 @@ class CONTENT_EXPORT BucketContext
   // crbug.com/340398745.
   static void InsertTeardownStepForTesting(base::OnceClosure on_teardown);
 
+  static base::TimeDelta GetBackingStoreGracePeriodForTesting();
   static base::TimeDelta GetIdleTimeoutForTesting();
 
   // Whether the backing store is using SQLite. `CHECK`s that the backing store
@@ -324,14 +324,15 @@ class CONTENT_EXPORT BucketContext
   bool in_memory() const { return data_path_.empty(); }
 
  private:
-  friend BucketContextHandle;
   friend class BackingStoreTestBase;
   friend class DatabaseTest;
+  friend class IndexedDBTest;
   friend class IndexedDBTestBase;
   friend class IndexedDBTestForSqliteMigration;
   friend class TransactionTestBase;
 
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionKillSwitchWorks);
+  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, PreCloseTasksStart);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TooLongOrigin);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, BasicFactoryCreationAndTearDown);
   FRIEND_TEST_ALL_PREFIXES(IndexedDBSqliteTest, BlobReadPutsOffIdleWork);
@@ -366,16 +367,21 @@ class CONTENT_EXPORT BucketContext
 
   Database* CreateAndAddDatabase(const std::u16string& name);
 
-  void OnHandleCreated();
-  void OnHandleDestruction();
-
-  // Returns true if this bucket context can be closed (no references, no blobs,
+  // Returns true if the backing store can be closed (no references, no blobs,
   // and not persisting for incognito).
   bool CanClose();
 
+  // This should be called any time `this` begins handling an `IDBFactory`
+  // message. It resets the backing store close timer and prevents the backing
+  // store from closing, then potentially initiates the pre-close period when
+  // the message handler completes.
+  [[nodiscard]] base::ScopedClosureRunner ScopedHandlingRequest();
+
+  // Starts the pre-close grace period for the backing store, if appropriate.
   void MaybeStartClosing();
-  void StartClosing();
-  void CloseNow();
+  void MaybeStopClosing();
+  // Queues closing the backing store.
+  void CloseSoon();
   void StartPreCloseTasks();
   void RunTasks();
 
@@ -431,7 +437,6 @@ class CONTENT_EXPORT BucketContext
   // True if there are blobs referencing this backing store that are still
   // alive. This is used as closing criteria for this object, see CanClose.
   bool has_blobs_outstanding_ = false;
-  bool skip_closing_sequence_ = false;
 
   bool running_tasks_ = false;
 
@@ -451,10 +456,6 @@ class CONTENT_EXPORT BucketContext
   // Database objects. The backing store may have other databases which
   // have not yet been loaded.
   DBMap databases_;
-  // This is the refcount for the number of BucketContextHandle's given out for
-  // this bucket context using OpenReference. This is used as closing criteria
-  // for this object, see CanClose.
-  int64_t open_handles_ = 0;
 
   // A queue of callbacks representing `CheckCanUseDiskSpace()` requests.
   std::queue<std::tuple<int64_t /*space_requested*/,
@@ -482,9 +483,6 @@ class CONTENT_EXPORT BucketContext
       file_reader_map_;
 
   Delegate delegate_;
-
-  // In-memory contexts will not self-close until this bit is flipped to true.
-  bool is_doomed_ = false;
 
   // True if there's already a task queued to call `RunTasks()`.
   bool task_run_queued_ = false;

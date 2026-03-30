@@ -60,8 +60,7 @@ class DatabaseTest : public IndexedDBTestBase,
   void SetUp() override {
     IndexedDBTestBase::SetUp();
 
-    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
-    bucket_context_->InitBackingStore(/*create_if_missing=*/true);
+    bucket_context_ = InitBucketContext();
     db_ = bucket_context_->CreateAndAddDatabase(u"db");
   }
 

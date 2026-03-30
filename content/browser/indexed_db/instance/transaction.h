@@ -28,7 +28,6 @@
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -36,6 +35,7 @@
 
 namespace content::indexed_db {
 
+class BucketContext;
 class Connection;
 class Cursor;
 class Database;
@@ -60,7 +60,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
       const std::set<int64_t>& object_store_ids,
       blink::mojom::IDBTransactionMode mode,
       blink::mojom::IDBTransactionDurability durability,
-      BucketContextHandle bucket_context,
+      BucketContext& bucket_context,
       std::unique_ptr<BackingStore::Transaction> backing_store_transaction);
   ~Transaction() override;
 
@@ -192,7 +192,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
 
   base::WeakPtr<Transaction> AsWeakPtr() { return ptr_factory_.GetWeakPtr(); }
 
-  BucketContext* bucket_context() { return bucket_context_.bucket_context(); }
+  BucketContext& bucket_context() { return *bucket_context_; }
 
   const base::flat_set<PartitionedLockId> lock_ids() const { return lock_ids_; }
   PartitionedLockHolder* mutable_locks_receiver() { return &locks_receiver_; }
@@ -300,7 +300,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   base::WeakPtr<Connection> connection_;
   base::WeakPtr<Database> database_;
 
-  BucketContextHandle bucket_context_;
+  raw_ptr<BucketContext> bucket_context_;
 
   base::CheckedNumeric<size_t> in_flight_memory_ = 0;
 

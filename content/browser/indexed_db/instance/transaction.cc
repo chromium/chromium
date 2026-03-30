@@ -38,7 +38,6 @@
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/cursor.h"
@@ -120,14 +119,14 @@ Transaction::Transaction(
     const std::set<int64_t>& object_store_ids,
     blink::mojom::IDBTransactionMode mode,
     blink::mojom::IDBTransactionDurability durability,
-    BucketContextHandle bucket_context,
+    BucketContext& bucket_context,
     std::unique_ptr<BackingStore::Transaction> backing_store_transaction)
     : id_(id),
       object_store_ids_(object_store_ids),
       mode_(mode),
       durability_(durability),
       connection_(connection->GetWeakPtr()),
-      bucket_context_(std::move(bucket_context)),
+      bucket_context_(&bucket_context),
       backing_store_transaction_(std::move(backing_store_transaction)),
       receiver_(this) {
   TRACE_EVENT_BEGIN("IndexedDB", "Transaction::lifetime",
@@ -217,6 +216,7 @@ void Transaction::ScheduleTask(blink::mojom::IDBTaskType type,
 
 void Transaction::Abort(const DatabaseError& error) {
   if (state_ == FINISHED) {
+    bucket_context_ = nullptr;
     return;
   }
 
@@ -243,7 +243,7 @@ void Transaction::Abort(const DatabaseError& error) {
   connection()->callbacks()->OnAbort(*this, error);
 
   bucket_context_->QueueRunTasks();
-  bucket_context_.Release();
+  bucket_context_ = nullptr;
 }
 
 bool Transaction::IsTaskQueueEmpty() const {
@@ -461,7 +461,7 @@ void Transaction::Put(int64_t object_store_id,
   preliminary_size_estimate_ +=
       input_value->bits.size() + key.size_estimate() + total_blob_size;
   // Warm up the disk space cache.
-  bucket_context()->CheckCanUseDiskSpace(preliminary_size_estimate_, {});
+  bucket_context_->CheckCanUseDiskSpace(preliminary_size_estimate_, {});
 
   IndexedDBValue value;
   value.bits = std::move(input_value->bits);
@@ -605,7 +605,7 @@ Status Transaction::DoPut(int64_t object_store_id,
         blink::mojom::IDBTransactionPutResult::NewKey(std::move(key)));
   }
 
-  bucket_context()->delegate().on_content_changed.Run(
+  bucket_context().delegate().on_content_changed.Run(
       connection()->database()->name(), object_store->name);
   return Status::OK();
 }
@@ -730,7 +730,7 @@ void Transaction::Commit(int64_t num_errors_handled) {
     return;
   }
 
-  bucket_context()->CheckCanUseDiskSpace(
+  bucket_context_->CheckCanUseDiskSpace(
       preliminary_size_estimate_, base::BindOnce(&Transaction::OnQuotaCheckDone,
                                                  ptr_factory_.GetWeakPtr()));
 }
@@ -893,7 +893,7 @@ Status Transaction::DoPendingCommit() {
                     token_remote.Clone(
                         token_clone.InitWithNewPipeAndPassReceiver());
                     transaction->bucket_context()
-                        ->file_system_access_context()
+                        .file_system_access_context()
                         ->SerializeHandle(std::move(token_clone),
                                           std::move(deliver_serialized_token));
                   },

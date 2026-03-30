@@ -126,19 +126,29 @@ storage::BucketInfo IndexedDBTestBase::GetOrCreateBucket(
   return future.Take().value();
 }
 
-storage::BucketInfo IndexedDBTestBase::InitBucket(
+storage::BucketInfo IndexedDBTestBase::GetOrCreateBucket(
     const blink::StorageKey& storage_key) {
-  return GetOrCreateBucket(
-      UseDefaultBuckets()
-          ? storage::BucketInitParams::ForDefaultBucket(storage_key)
-          : storage::BucketInitParams(storage_key, "non_default"));
+  return GetOrCreateBucket(BucketParamsForStorageKey(storage_key));
 }
 
-BucketContext& IndexedDBTestBase::InitBucketContext(
+storage::BucketInitParams IndexedDBTestBase::BucketParamsForStorageKey(
     const blink::StorageKey& storage_key) {
-  storage::BucketInfo bucket_info = InitBucket(storage_key);
-  return GetOrCreateBucketContext(
-      bucket_info, context()->GetDataPath(bucket_info.ToBucketLocator()));
+  return use_default_buckets_
+             ? storage::BucketInitParams::ForDefaultBucket(storage_key)
+             : storage::BucketInitParams(storage_key, "non_default");
+}
+
+base::WeakPtr<BucketContext> IndexedDBTestBase::InitBucketContext(
+    std::optional<storage::BucketInfo> maybe_bucket,
+    bool create_backing_store) {
+  storage::BucketInfo bucket_info = maybe_bucket.value_or(
+      GetOrCreateBucket(BucketParamsForStorageKey(GetTestStorageKey())));
+  context_->EnsureBucketContext(bucket_info);
+  BucketContext& bucket_context = *GetBucketContext(bucket_info.id);
+  if (create_backing_store) {
+    bucket_context.InitBackingStore(/*create_if_missing=*/true);
+  }
+  return bucket_context.AsWeakPtr();
 }
 
 void IndexedDBTestBase::BindFactory(
@@ -155,13 +165,6 @@ blink::StorageKey IndexedDBTestBase::GetTestStorageKey() {
   return blink::StorageKey::CreateFromStringForTesting("http://test/");
 }
 
-BucketContext& IndexedDBTestBase::GetOrCreateBucketContext(
-    const storage::BucketInfo& bucket,
-    const base::FilePath& data_directory) {
-  context_->EnsureBucketContext(bucket, data_directory);
-  return *GetBucketContext(bucket.id);
-}
-
 BucketContext* IndexedDBTestBase::GetBucketContext(storage::BucketId id) {
   base::SequenceBound<BucketContext>* sequence_bound =
       context_->GetBucketContextForTesting(id);
@@ -172,13 +175,6 @@ BucketContext* IndexedDBTestBase::GetBucketContext(storage::BucketId id) {
   sequence_bound->AsyncCall(&BucketContext::GetReferenceForTesting)
       .Then(future.GetCallback());
   return future.Get();
-}
-
-BucketContextHandle IndexedDBTestBase::CreateBucketHandle() {
-  BucketContext& bucket_context = InitBucketContext(GetTestStorageKey());
-  BucketContextHandle bucket_context_handle(bucket_context);
-  bucket_context_handle->InitBackingStore(/*create_if_missing=*/true);
-  return bucket_context_handle;
 }
 
 }  // namespace content::indexed_db

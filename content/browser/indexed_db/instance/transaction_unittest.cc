@@ -69,8 +69,7 @@ class TransactionTestBase : public IndexedDBTestBase {
   }
 
   void SetUpBucketContext() {
-    bucket_context_ = InitBucketContext(GetTestStorageKey()).AsWeakPtr();
-    bucket_context_->InitBackingStore(/*create_if_missing=*/true);
+    bucket_context_ = InitBucketContext();
     SetDatabaseUnderTest(u"db");
   }
 
@@ -121,8 +120,7 @@ class TransactionTestBase : public IndexedDBTestBase {
 
     std::unique_ptr<Transaction> transaction = std::make_unique<Transaction>(
         id, connection, object_store_ids, mode,
-        blink::mojom::IDBTransactionDurability::Relaxed,
-        BucketContextHandle(*bucket_context()),
+        blink::mojom::IDBTransactionDurability::Relaxed, *bucket_context_,
         std::make_unique<FakeTransaction>(
             commit_phase_two_error_status,
             db_->backing_store_db()->CreateTransaction(

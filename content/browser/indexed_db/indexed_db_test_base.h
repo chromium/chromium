@@ -15,7 +15,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/mock_blob_storage_context.h"
 #include "content/browser/indexed_db/instance/mock_file_system_access_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,7 +41,6 @@ class IndexedDBTestBase : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  bool UseDefaultBuckets() const { return use_default_buckets_; }
   bool IsSqliteBackingStoreEnabled() const { return use_sqlite_; }
   IndexedDBContextImpl* context() const { return context_.get(); }
 
@@ -53,22 +51,27 @@ class IndexedDBTestBase : public testing::Test {
   void RunPostedTasks(
       std::optional<storage::BucketLocator> bucket_locator = std::nullopt);
 
+  // Asks the (fake) quota manager to make a bucket.
   storage::BucketInfo GetOrCreateBucket(
       const storage::BucketInitParams& params);
-  storage::BucketInfo InitBucket(const blink::StorageKey& storage_key);
-  BucketContext& InitBucketContext(const blink::StorageKey& storage_key);
+  // Asks the (fake) quota manager to make a bucket for `storage_key`, the type
+  // depending on `use_default_buckets_`.
+  storage::BucketInfo GetOrCreateBucket(const blink::StorageKey& storage_key);
+  // If `maybe_bucket` is not provided, this will create a bucket for
+  // `GetTestStorageKey()`.
+  base::WeakPtr<BucketContext> InitBucketContext(
+      std::optional<storage::BucketInfo> maybe_bucket = std::nullopt,
+      bool create_backing_store = true);
   void BindFactory(
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           checker_remote,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
   blink::StorageKey GetTestStorageKey();
-  BucketContext& GetOrCreateBucketContext(const storage::BucketInfo& bucket,
-                                          const base::FilePath& data_directory);
   BucketContext* GetBucketContext(storage::BucketId id);
 
-  // TODO(crbug.com/489361938): remove.
-  BucketContextHandle CreateBucketHandle();
+  storage::BucketInitParams BucketParamsForStorageKey(
+      const blink::StorageKey& storage_key);
 
  protected:
   base::AutoReset<std::optional<bool>> sqlite_override_;

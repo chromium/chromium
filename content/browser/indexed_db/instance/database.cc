@@ -37,7 +37,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
-#include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
 #include "content/browser/indexed_db/instance/connection.h"
 #include "content/browser/indexed_db/instance/cursor.h"
@@ -707,8 +706,6 @@ Status Database::GetAllOperation(
   }
 
   if (!cursor.has_value()) {
-    DLOG(ERROR) << "Unable to open cursor operation: "
-                << cursor.error().ToString();
     result_sink->SendError(CreateIDBErrorPtr(
         blink::mojom::IDBException::kUnknownError,
         "Corruption detected, unable to continue", transaction));
@@ -846,8 +843,6 @@ Status Database::OpenCursorOperation(
   }
 
   if (!backing_store_cursor.has_value()) {
-    DLOG(ERROR) << "Unable to open cursor operation: "
-                << backing_store_cursor.error().ToString();
     return backing_store_cursor.error();
   }
 

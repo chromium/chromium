@@ -83,7 +83,7 @@ Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
                Type type,
                blink::mojom::IDBTaskType task_type,
                base::WeakPtr<Transaction> transaction)
-    : bucket_locator_(transaction->bucket_context()->bucket_locator()),
+    : bucket_locator_(transaction->bucket_context().bucket_locator()),
       type_(std::move(type)),
       task_type_(task_type),
       transaction_(std::move(transaction)),
@@ -391,7 +391,7 @@ void Cursor::PrefetchReset(int used_prefetches) {
     // The error is reported explicitly since this method is not part of the
     // transaction task queue. Resetting `cursor_` is not necessary because
     // `this` will be destroyed.
-    transaction_->bucket_context()->OnDatabaseError(
+    transaction_->bucket_context().OnDatabaseError(
         transaction_->connection()->database().get(), status, {});
   };
 
