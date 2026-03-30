@@ -13,6 +13,7 @@ import platform
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from typing import cast, Tuple
 
@@ -948,6 +949,27 @@ supervised_user_refresh_token_fetcher\t\tSupervised Users\tFetches an OAuth2 ref
     errors = self.auditor.run_all_checks(path_filter, True,
                                          Exporter.GROUPING_XML_PATH)
     self.assertFalse(errors)
+
+  def test_get_gn_file_mtime_max(self):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      tmp_path = Path(tmp_dir)
+      # Mock SRC_DIR
+      with mock.patch("auditor.SRC_DIR", tmp_path):
+        self.auditor.file_filter.git_files = [
+            Path("BUILD.gn"), Path("foo.gni"),
+            Path("src.cc")
+        ]
+        (tmp_path / "BUILD.gn").write_text("")
+        # sleep briefly to ensure mtimes are different
+        time.sleep(0.01)
+        (tmp_path / "foo.gni").write_text("")
+        (tmp_path / "src.cc").write_text("")
+
+        mtime1 = os.path.getmtime(tmp_path / "BUILD.gn")
+        mtime2 = os.path.getmtime(tmp_path / "foo.gni")
+
+        self.assertEqual(max(mtime1, mtime2),
+                         self.auditor._get_gn_file_mtime_max())
 
 
 if __name__ == "__main__":

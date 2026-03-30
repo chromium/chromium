@@ -1466,6 +1466,17 @@ class Auditor:
 
     return extractor.extract_annotations(absolute_path, file_contents)
 
+  def _get_gn_file_mtime_max(self) -> float:
+    """Returns the maximum mtime of all BUILD.gn and *.gni files."""
+    start_time = time.perf_counter()
+    gn_files = self.file_filter.get_filtered_files(['.gn', '.gni'], {}, '')
+    # For some reason, os.path.getmtime() is faster than
+    # pathlib.Path.stat().st_mtime
+    max_mtime = max(os.path.getmtime(SRC_DIR / f) for f in gn_files)
+    logger.debug("_get_gn_file_mtime_max() took %.3f seconds",
+                 time.perf_counter() - start_time)
+    return max_mtime
+
   def run_extractor(self, build_path: Path, path_filters: List[str],
                     skip_compdb: bool) -> List[extractor.Annotation]:
     """Run the extractor on the codebase.
@@ -1485,34 +1496,40 @@ class Auditor:
     """
     safe_list = self._get_safe_list()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-      # TODO(nicolaso): Move FileFilter and `git ls-files` logic to
-      # extractor.py, or maybe a separate file?
-      logger.info("Getting list of files from git.")
-      files_future = executor.submit(self.file_filter.get_files_from_git)
-
-      # Skip compdb generation while testing to speed up tests.
-      if self.file_filter.git_file_for_testing is not None:
-        compdb_files_future = None
-      else:
-        logger.info("Generating compile_commands.json")
-        tools = NetworkTrafficAnnotationTools(str(build_path))
-
-        def get_compdb_timed():
-          start_time = time.perf_counter()
-          res = tools.GetCompDBFiles(not skip_compdb)
-          logger.debug("Generating compile_commands.json took %.3f seconds",
-                       time.perf_counter() - start_time)
-          return res
-
-        compdb_files_future = executor.submit(get_compdb_timed)
-
-      _ = files_future.result()
-      compdb_files = compdb_files_future.result(
-      ) if compdb_files_future else None
-
+    # TODO(nicolaso): Move FileFilter and `git ls-files` logic to
+    # extractor.py, or maybe a separate file?
+    logger.info("Getting list of files from git.")
+    self.file_filter.get_files_from_git()
     files = self.file_filter.get_filtered_files(self.accepted_suffixes,
                                                 safe_list, "")
+
+    if self.file_filter.git_file_for_testing is not None:
+      compdb_files = None
+    else:
+      tools = NetworkTrafficAnnotationTools(str(build_path))
+
+      should_generate = False
+      compdb_path = build_path / "compile_commands.json"
+      if skip_compdb:
+        pass
+      elif not compdb_path.exists():
+        # compile_commands.json doesn't exist, generate one.
+        should_generate = True
+      else:
+        # Only generate compile_commands.json if it's stale.
+        gn_mtime_max = self._get_gn_file_mtime_max()
+        should_generate = compdb_path.stat().st_mtime < gn_mtime_max
+        if not should_generate:
+          logger.info("compile_commands.json is up-to-date, "
+                      "skipping generation.")
+
+      verb = "Generating" if should_generate else "Parsing"
+      logger.info("%s compile_commands.json", verb)
+      start_time = time.perf_counter()
+      compdb_files = tools.GetCompDBFiles(should_generate)
+      logger.debug("%s compile_commands.json took %.3f seconds", verb,
+                   time.perf_counter() - start_time)
+
     suffixes = '/'.join(self.accepted_suffixes)
     if path_filters:
       logger.info("Parsing valid {} files in the Chromium repository, "
