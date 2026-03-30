@@ -56,6 +56,8 @@ class BnplManagerTestApi {
 
   void Reset() { bnpl_manager_->Reset(); }
 
+  void CancelOngoingRequests() { bnpl_manager_->CancelOngoingRequests(); }
+
   void OnIssuerAccepted(BnplIssuer selected_issuer) {
     bnpl_manager_->OnIssuerAccepted(selected_issuer);
   }

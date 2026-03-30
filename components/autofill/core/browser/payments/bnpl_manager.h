@@ -175,6 +175,10 @@ class BnplManager : public AutofillManager::Observer {
   void OnVcnDetailsFetched(PaymentsAutofillClient::PaymentsRpcResult result,
                            const BnplFetchVcnResponseDetails& response_details);
 
+  // Cancels in-progress requests to `PaymentsNetworkInterface` and invalidates
+  // `BnplManager` weak pointers from the factory.
+  void CancelOngoingRequests();
+
   // Cancels in-progress requests to `PaymentsNetworkInterface` and resets the
   // BNPL flow state. Also invalidates `BnplManager` weak pointers from the
   // factory.

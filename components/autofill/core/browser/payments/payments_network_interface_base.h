@@ -43,7 +43,7 @@ class PaymentsRequest;
 class PaymentsNetworkInterfaceBase {
  public:
   // Cancels and clears the current `request_`.
-  void CancelRequest();
+  virtual void CancelRequest();
 
   // Exposed for testing.
   void set_url_loader_factory_for_testing(

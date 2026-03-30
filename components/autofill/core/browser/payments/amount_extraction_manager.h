@@ -202,7 +202,7 @@ class AmountExtractionManager {
 
   // Cancels in-progress requests and resets the state. Also invalidates
   // `AmountExtractionManager` weak pointers from the factory.
-  void Reset();
+  virtual void Reset();
 
   // Logs the result of the AI-based amount extraction, but only if a result
   // has not been logged already.

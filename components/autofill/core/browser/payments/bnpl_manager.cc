@@ -519,14 +519,18 @@ void BnplManager::FetchVcnDetails(GURL url) {
                          weak_factory_.GetWeakPtr()));
 }
 
-void BnplManager::Reset() {
+void BnplManager::CancelOngoingRequests() {
   payments_autofill_client().GetPaymentsNetworkInterface()->CancelRequest();
   browser_autofill_manager_->GetAmountExtractionManager().Reset();
-  ongoing_flow_state_.reset();
+  weak_factory_.InvalidateWeakPtrs();
+}
+
+void BnplManager::Reset() {
+  CancelOngoingRequests();
   autofill_suggestion_trigger_source_.reset();
   update_suggestions_callback_.Reset();
   user_has_seen_bnpl_ai_terms_before_.reset();
-  weak_factory_.InvalidateWeakPtrs();
+  ongoing_flow_state_.reset();
 }
 
 void BnplManager::OnVcnDetailsFetched(

@@ -122,6 +122,7 @@ class MockAmountExtractionManager : public AmountExtractionManager {
       : AmountExtractionManager(autofill_manager) {}
 
   MOCK_METHOD(void, TriggerCheckoutAmountExtractionWithAi, (), (override));
+  MOCK_METHOD(void, Reset, (), (override));
 };
 
 class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
@@ -167,6 +168,7 @@ class PaymentsNetworkInterfaceMock : public PaymentsNetworkInterface {
        base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                                std::string context_token,
                                LegalMessageLines)>));
+  MOCK_METHOD(void, CancelRequest, (), (override));
 };
 
 class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
@@ -1020,6 +1022,20 @@ TEST_F(BnplManagerTest, FetchVcnDetails_Reset) {
   test_api(*bnpl_manager_).Reset();
 
   EXPECT_EQ(test_api(*bnpl_manager_).GetOngoingFlowState(), nullptr);
+}
+
+TEST_F(BnplManagerTest, CancelOngoingRequests) {
+  EXPECT_CALL(*payments_network_interface_, CancelRequest);
+  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
+
+  test_api(*bnpl_manager_).CancelOngoingRequests();
+}
+
+TEST_F(BnplManagerTest, Reset_CallsCancelOngoingRequests) {
+  EXPECT_CALL(*payments_network_interface_, CancelRequest);
+  EXPECT_CALL(*mock_amount_extraction_manager_, Reset);
+
+  test_api(*bnpl_manager_).Reset();
 }
 
 // Tests that `OnDidGetLegalMessageFromServer` set the BNPL manager state if the
