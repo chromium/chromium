@@ -6,7 +6,6 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +28,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/widget/widget.h"
@@ -37,7 +37,7 @@ namespace glic {
 
 namespace {
 // The minimum amount of time to wait between processing selection changes.
-constexpr base::TimeDelta kSelectionProcessingDelay = base::Milliseconds(300);
+constexpr base::TimeDelta kSelectionProcessingDelay = base::Milliseconds(200);
 
 // The maximum length of the selection text sent as a suggested prompt.
 // Selections longer than this are ignored.
@@ -71,12 +71,14 @@ GlicSelectionObserver::GlicSelectionObserver(content::WebContents* web_contents)
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   glic_keyed_service_ = GlicKeyedService::Get(profile);
 
-  web_contents->ForEachRenderFrameHost(
-      [this](content::RenderFrameHost* render_frame_host) {
-        if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
-          rwh->AddInputEventObserver(this);
-        }
-      });
+  if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+    web_contents->ForEachRenderFrameHost(
+        [this](content::RenderFrameHost* render_frame_host) {
+          if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
+            rwh->AddInputEventObserver(this);
+          }
+        });
+  }
 }
 
 GlicSelectionObserver::~GlicSelectionObserver() {
@@ -96,6 +98,9 @@ GlicSelectionObserver::~GlicSelectionObserver() {
 
 void GlicSelectionObserver::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+    return;
+  }
   if (auto* rwh = render_frame_host->GetRenderWidgetHost()) {
     rwh->AddInputEventObserver(this);
   }
@@ -121,14 +126,24 @@ void GlicSelectionObserver::PrimaryPageChanged(content::Page& page) {
   }
 }
 
+void GlicSelectionObserver::OnWebContentsLostFocus(
+    content::RenderWidgetHost* render_widget_host) {
+  // If the web contents loses focus, process any pending selection immediately.
+  if (selection_debounce_timer_.IsRunning()) {
+    selection_debounce_timer_.Stop();
+    ProcessPendingSelection();
+  }
+}
+
 void GlicSelectionObserver::OnInputEvent(
     const content::RenderWidgetHost& host,
     const blink::WebInputEvent& event,
     content::RenderWidgetHost::InputEventObserver::InputEventSource source) {
-  if (event.GetType() == blink::WebInputEvent::Type::kMouseDown) {
-    is_mouse_down_ = true;
-    is_key_selection_ = false;
-    bounds_retry_count_ = 0;
+  if (!base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+    return;
+  }
+
+  auto dismiss_ui = [this]() {
     if (selection_widget_) {
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
@@ -144,34 +159,73 @@ void GlicSelectionObserver::OnInputEvent(
         }
       }
     }
-  } else if (event.GetType() == blink::WebInputEvent::Type::kMouseUp ||
-             event.GetType() == blink::WebInputEvent::Type::kMouseLeave) {
-    is_mouse_down_ = false;
-    ProcessPendingSelection();
-  } else if (event.GetType() ==
-                 blink::WebInputEvent::Type::kGestureScrollBegin ||
-             event.GetType() == blink::WebInputEvent::Type::kMouseWheel ||
-             event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
-             event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-    if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
-        event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
+  };
+
+  switch (event.GetType()) {
+    case blink::WebInputEvent::Type::kMouseDown:
+    case blink::WebInputEvent::Type::kPointerDown:
+    case blink::WebInputEvent::Type::kGestureTapDown:
+    case blink::WebInputEvent::Type::kTouchStart: {
+      bool is_left_click_or_touch = true;
+      if (event.GetType() == blink::WebInputEvent::Type::kMouseDown ||
+          event.GetType() == blink::WebInputEvent::Type::kPointerDown) {
+        const auto& mouse_event =
+            static_cast<const blink::WebMouseEvent&>(event);
+        if (mouse_event.button != blink::WebPointerProperties::Button::kLeft) {
+          is_left_click_or_touch = false;
+        }
+      }
+
+      is_key_selection_ = false;
+      bounds_retry_count_ = 0;
+      dismiss_ui();
+
+      // Workaround for a bug in Blink: when a user single-clicks directly on
+      // top of an existing selection, Blink collapses the selection on MouseUp
+      // but fails to send the corresponding OnTextSelectionChanged(empty) IPC.
+      // Since any left-click or touch tap invalidates the current static text
+      // selection (by either placing the caret, clearing the selection, or
+      // initiating a new drag), we preemptively clear the context here to
+      // ensure it is not left hanging.
+      if (is_left_click_or_touch) {
+        pending_selection_text_.reset();
+        if (selection_debounce_timer_.IsRunning()) {
+          selection_debounce_timer_.Stop();
+        }
+        if (has_sent_selection_context_) {
+          UpdateSelectionState(std::u16string());
+        }
+      }
+      break;
+    }
+
+    case blink::WebInputEvent::Type::kMouseUp:
+    case blink::WebInputEvent::Type::kPointerUp:
+    case blink::WebInputEvent::Type::kPointerCancel:
+    case blink::WebInputEvent::Type::kTouchEnd:
+    case blink::WebInputEvent::Type::kTouchCancel:
+    case blink::WebInputEvent::Type::kGestureTapCancel:
+      // If the user lifts their finger/mouse and we have a pending selection
+      // timer, trigger it instantly so the UI feels perfectly responsive.
+      if (selection_debounce_timer_.IsRunning()) {
+        selection_debounce_timer_.Stop();
+        ProcessPendingSelection();
+      }
+      break;
+
+    case blink::WebInputEvent::Type::kRawKeyDown:
+    case blink::WebInputEvent::Type::kKeyDown:
       is_key_selection_ = true;
-    }
-    if (selection_widget_) {
-      selection_widget_->CloseWithReason(
-          views::Widget::ClosedReason::kLostFocus);
-    }
-    if (auto* tab_interface =
-            tabs::TabInterface::MaybeGetFromContents(web_contents())) {
-      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-        if (auto* controller = bwi->GetFeatures().glic_nudge_controller()) {
-          controller->UpdateNudgeLabel(web_contents(), "", std::nullopt,
-                                       /*anchored_message_text=*/std::string(),
-                                       GlicNudgeActivity::kNudgeDismissed,
-                                       base::DoNothing());
-        }
-      }
-    }
+      dismiss_ui();
+      break;
+
+    case blink::WebInputEvent::Type::kGestureScrollBegin:
+    case blink::WebInputEvent::Type::kMouseWheel:
+      dismiss_ui();
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -200,33 +254,15 @@ void GlicSelectionObserver::OnTextSelectionChanged(
     last_selection_frame_id_ = render_frame_host->GetGlobalId();
   }
 
-  base::TimeTicks now = base::TimeTicks::Now();
-  base::TimeDelta time_since_last_process =
-      now - last_selection_processing_time_;
-
-  // Stop any existing timer. We will restart it if needed.
-  selection_debounce_timer_.Stop();
-
-  bool is_clearing = pending_selection_text_->empty();
-
-  // If clearing, always debounce to avoid rapid clear-then-show sequences.
-  if (is_clearing) {
-    selection_debounce_timer_.Start(
-        FROM_HERE, kSelectionProcessingDelay, this,
-        &GlicSelectionObserver::ProcessPendingSelection);
-    return;
-  }
-
-  // If showing, debounce if we processed another selection recently.
-  if (time_since_last_process < kSelectionProcessingDelay) {
-    selection_debounce_timer_.Start(
-        FROM_HERE, kSelectionProcessingDelay - time_since_last_process, this,
-        &GlicSelectionObserver::ProcessPendingSelection);
-    return;
-  }
-
-  // Process immediately.
-  ProcessPendingSelection();
+  // Always debounce selection changes. If the user is actively dragging,
+  // this timer will be continually pushed back until they pause or release
+  // the mouse. If the mouse is released cleanly, OnInputEvent intercepts the
+  // MouseUp and triggers ProcessPendingSelection instantly. If the OS drops
+  // the MouseUp event, the timer will naturally fire 200ms after they stop
+  // dragging.
+  selection_debounce_timer_.Start(
+      FROM_HERE, kSelectionProcessingDelay, this,
+      &GlicSelectionObserver::ProcessPendingSelection);
 }
 
 void GlicSelectionObserver::ProcessPendingSelection() {
@@ -234,17 +270,9 @@ void GlicSelectionObserver::ProcessPendingSelection() {
     return;
   }
 
-  // Copy the text rather than std::move. If the user drags for >300ms, this
-  // method runs while the mouse is down, and we need the text to remain intact
-  // in the optional so it can be processed again on mouse-up.
-  std::u16string selected_text = *pending_selection_text_;
-  if (!is_mouse_down_) {
-    pending_selection_text_.reset();
-  }
-
-  if (!selected_text.empty()) {
-    last_selection_processing_time_ = base::TimeTicks::Now();
-  }
+  std::u16string selected_text = std::move(*pending_selection_text_);
+  pending_selection_text_.reset();
+  selection_debounce_timer_.Stop();
 
   UpdateSelectionState(selected_text);
 }
@@ -285,15 +313,17 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         text_length);
   }
 
-  if (web_contents) {
-    if (auto* tab_interface =
-            tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
-      if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
-        Profile* profile =
-            Profile::FromBrowserContext(web_contents->GetBrowserContext());
-        if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
-          glic_keyed_service->ToggleUI(
-              bwi, false, mojom::InvocationSource::kNudge, prompt_text);
+  if (is_widget) {
+    if (web_contents) {
+      if (auto* tab_interface =
+              tabs::TabInterface::MaybeGetFromContents(web_contents.get())) {
+        if (auto* bwi = tab_interface->GetBrowserWindowInterface()) {
+          Profile* profile =
+              Profile::FromBrowserContext(web_contents->GetBrowserContext());
+          if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
+            glic_keyed_service->ToggleUI(
+                bwi, false, mojom::InvocationSource::kNudge, prompt_text);
+          }
         }
       }
     }
@@ -406,67 +436,56 @@ void GlicSelectionObserver::ShowSelectionAffordance(
 
     if (!features::kGlicSelectionPromptUseWidget.Get()) {
       // Show selection nudge
-      if (!is_mouse_down_) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({"Glic.Selection.Action", histogram_suffix}),
+          GlicSelectionAction::kNudgeShown);
+      auto invoke_glic = base::BindRepeating(
+          &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
+          base::UTF16ToUTF8(selected_text), selected_text.length(),
+          /*is_widget=*/false, web_contents()->GetWeakPtr());
+      controller->UpdateNudgeLabel(web_contents(), base::UTF16ToUTF8(label),
+                                   std::make_optional(base::UTF16ToUTF8(title)),
+                                   /*anchored_message_text=*/std::string(),
+                                   std::nullopt, std::move(invoke_glic));
+    } else {
+      // Show selection widget
+      // Find the RenderFrameHost that has the selection.
+      content::RenderFrameHost* selected_frame =
+          content::RenderFrameHost::FromID(last_selection_frame_id_);
+      std::optional<gfx::Rect> bounds =
+          web_contents()->GetTextSelectionBounds(selected_frame);
+      if (bounds.has_value() && !bounds->IsEmpty()) {
+        if (selection_widget_) {
+          selection_widget_->CloseWithReason(
+              views::Widget::ClosedReason::kLostFocus);
+        }
+
         base::UmaHistogramEnumeration(
             base::StrCat({"Glic.Selection.Action", histogram_suffix}),
-            GlicSelectionAction::kNudgeShown);
+            GlicSelectionAction::kWidgetShown);
         auto invoke_glic = base::BindRepeating(
             &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
             base::UTF16ToUTF8(selected_text), selected_text.length(),
-            /*is_widget=*/false, web_contents()->GetWeakPtr());
-        controller->UpdateNudgeLabel(
-            web_contents(), base::UTF16ToUTF8(label),
-            std::make_optional(base::UTF16ToUTF8(title)),
-            /*anchored_message_text=*/std::string(), std::nullopt,
-            base::BindRepeating(
-                [](base::RepeatingCallback<void(GlicNudgeActivity)>
-                       invoke_glic_cb,
-                   GlicNudgeActivity activity) {
-                  invoke_glic_cb.Run(activity);
-                },
-                std::move(invoke_glic)));
-      }
-    } else {
-      // Show selection widget
-      if (!is_mouse_down_) {
-        // Find the RenderFrameHost that has the selection.
-        content::RenderFrameHost* selected_frame =
-            content::RenderFrameHost::FromID(last_selection_frame_id_);
-        std::optional<gfx::Rect> bounds =
-            web_contents()->GetTextSelectionBounds(selected_frame);
-        if (bounds.has_value() && !bounds->IsEmpty()) {
-          if (selection_widget_) {
-            selection_widget_->CloseWithReason(
-                views::Widget::ClosedReason::kLostFocus);
-          }
+            /*is_widget=*/true, web_contents()->GetWeakPtr(),
+            GlicNudgeActivity::kNudgeClicked);
 
-          base::UmaHistogramEnumeration(
-              base::StrCat({"Glic.Selection.Action", histogram_suffix}),
-              GlicSelectionAction::kWidgetShown);
-          auto invoke_glic = base::BindRepeating(
-              &GlicSelectionObserver::InvokeGlicFromSelectionAffordance,
-              base::UTF16ToUTF8(selected_text), selected_text.length(),
-              /*is_widget=*/true, web_contents()->GetWeakPtr(),
-              GlicNudgeActivity::kNudgeClicked);
-
-          selection_widget_ =
-              GlicSelectionWidgetDelegate::Show(
-                  web_contents(), *bounds,
-                  base::BindRepeating(
-                      [](base::RepeatingCallback<void()> invoke_glic_cb) {
-                        invoke_glic_cb.Run();
-                      },
-                      std::move(invoke_glic)))
-                  ->GetWeakPtr();
-        } else if (bounds_retry_count_ < 5) {
-          // Retry showing the widget, bounds might not be available yet due
-          // to IPC timing (especially on double click).
-          bounds_retry_count_++;
-          pending_selection_text_ = selected_text;
-          selection_debounce_timer_.Start(
-              FROM_HERE, base::Milliseconds(100), this,
-              &GlicSelectionObserver::ProcessPendingSelection);
-        }
+        selection_widget_ =
+            GlicSelectionWidgetDelegate::Show(
+                web_contents(), *bounds,
+                base::BindRepeating(
+                    [](base::RepeatingCallback<void()> invoke_glic_cb) {
+                      invoke_glic_cb.Run();
+                    },
+                    std::move(invoke_glic)))
+                ->GetWeakPtr();
+      } else if (bounds_retry_count_ < 5) {
+        // Retry showing the widget, bounds might not be available yet due
+        // to IPC timing (especially on double click).
+        bounds_retry_count_++;
+        pending_selection_text_ = selected_text;
+        selection_debounce_timer_.Start(
+            FROM_HERE, base::Milliseconds(100), this,
+            &GlicSelectionObserver::ProcessPendingSelection);
       }
     }
   }

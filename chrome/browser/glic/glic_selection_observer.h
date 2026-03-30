@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -54,6 +53,8 @@ class GlicSelectionObserver
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryPageChanged(content::Page& page) override;
+  void OnWebContentsLostFocus(
+      content::RenderWidgetHost* render_widget_host) override;
 
   // content::RenderWidgetHost::InputEventObserver:
   void OnInputEvent(
@@ -77,9 +78,6 @@ class GlicSelectionObserver
 
   raw_ptr<GlicKeyedService> glic_keyed_service_;
 
-  // Time when the last selection was processed.
-  base::TimeTicks last_selection_processing_time_;
-
   // Timer to process the selection after a timeout.
   base::OneShotTimer selection_debounce_timer_;
 
@@ -88,7 +86,6 @@ class GlicSelectionObserver
 
   content::GlobalRenderFrameHostId last_selection_frame_id_;
 
-  bool is_mouse_down_ = false;
   bool is_key_selection_ = false;
   int bounds_retry_count_ = 0;
 
