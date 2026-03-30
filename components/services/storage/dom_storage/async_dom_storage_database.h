@@ -100,11 +100,24 @@ class AsyncDomStorageDatabase {
   std::string GetHistogram(std::string_view operation) const;
   std::string GetDurationHistogram(std::string_view operation) const;
 
+  // Runs `db_task` on the DB sequence, recording status and duration
+  // histograms named after `operation`. Posts `callback` back to the calling
+  // sequence.
+  void RunTaskOnDbSequenceAndRecordHistograms(
+      std::string_view operation,
+      base::OnceCallback<DbStatus(DomStorageDatabase*)> db_task,
+      StatusCallback callback);
+
+  // Overload for operations returning StatusOr<T>.
+  template <typename T>
+  void RunTaskOnDbSequenceAndRecordHistograms(
+      std::string_view operation,
+      base::OnceCallback<StatusOr<T>(DomStorageDatabase*)> db_task,
+      base::OnceCallback<void(StatusOr<T>)> callback);
+
   // Sets `is_database_opened_` to true when `open_status` is ok.  Then runs
   // `callback` with `open_status`.
-  void OnDatabaseOpened(StatusCallback callback,
-                        base::TimeTicks open_start_time,
-                        DbStatus open_status);
+  void OnDatabaseOpened(StatusCallback callback, DbStatus open_status);
 
   // `database_` must not be used until `is_database_opened_` is true.
   bool is_database_opened_ = false;

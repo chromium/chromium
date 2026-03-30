@@ -470,10 +470,11 @@ TEST_P(LocalStorageImplTest, Basic) {
 
   // Verify duration histograms were recorded for the commit and read
   // operations.
+  histograms.ExpectTotalCount("Storage.LocalStorage.Duration.UpdateMaps.OnDisk",
+                              1);
+  // The Put and WaitForMapEntries each trigger a ReadMapKeyValues.
   histograms.ExpectTotalCount(
-      "Storage.LocalStorage.Duration.InitiateCommit.OnDisk", 1);
-  // The Put and WaitForMapEntries each trigger a ReadMapKeyValues/GetAll.
-  histograms.ExpectTotalCount("Storage.LocalStorage.Duration.GetAll.OnDisk", 2);
+      "Storage.LocalStorage.Duration.ReadMapKeyValues.OnDisk", 2);
 }
 
 TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -681,6 +682,8 @@ TEST_P(LocalStorageImplTest, GetStorageUsage_Data) {
   // GetStorageUsageSync() results in a ReadAllMetadata call.
   histograms.ExpectUniqueSample("Storage.LocalStorage.ReadAllMetadata.OnDisk",
                                 0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.ReadAllMetadata.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
@@ -723,6 +726,8 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
     // Verify PurgeOrigins histogram is recorded during shutdown.
     purge_histograms.ExpectUniqueSample(
         "Storage.LocalStorage.PurgeOrigins.OnDisk", /*sample=*/0, 1);
+    purge_histograms.ExpectTotalCount(
+        "Storage.LocalStorage.Duration.PurgeOrigins.OnDisk", 1);
   }
   base::Time after_metadata = base::Time::Now();
 
@@ -766,7 +771,10 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
                                 /*sample=*/0, 1);
   // Verify the OpenDatabase duration histogram was recorded.
   histograms.ExpectTotalCount(
-      "Storage.LocalStorage.Duration.OpenDatabase.OnDisk", 1);
+      "Storage.LocalStorage.Duration.OpenDatabase2.OnDisk", 1);
+  // PutMetadata duration fires for the last_accessed update during shutdown.
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.PutMetadata.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {
@@ -813,6 +821,8 @@ TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {
   // `CleanUpStorage()` must succeed.
   histograms.ExpectUniqueSample("Storage.LocalStorage.CleanUpStaleData.OnDisk",
                                 /*sample=*/0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.CleanUpStaleData.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {
@@ -876,6 +886,8 @@ TEST_P(LocalStorageImplTest, DeleteStorage) {
 
   histograms.ExpectUniqueSample(
       "Storage.LocalStorage.DeleteStorageKeysFromSession.OnDisk", 0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.LocalStorage.Duration.DeleteStorageKeysFromSession.OnDisk", 1);
 }
 
 TEST_P(LocalStorageImplTest, DeleteStorageWithoutConnection) {

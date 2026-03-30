@@ -254,7 +254,7 @@ TEST_P(SessionStorageImplTest, CommitRecordsUpdateMapsHistogram) {
 
   // Verify duration histograms were recorded for the commit operations.
   histograms.ExpectTotalCount(
-      "Storage.SessionStorage.Duration.InitiateCommit.OnDisk", 1);
+      "Storage.SessionStorage.Duration.UpdateMaps.OnDisk", 1);
 }
 
 TEST_P(SessionStorageImplTest, StartupShutdownSave) {
@@ -334,10 +334,16 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
 
   // Verify duration histograms. OpenDatabase duration fires for each open.
   histograms.ExpectTotalCount(
-      "Storage.SessionStorage.Duration.OpenDatabase.OnDisk", 3);
-  // GetAll duration fires for each ReadMapKeyValues async round-trip.
-  histograms.ExpectTotalCount("Storage.SessionStorage.Duration.GetAll.OnDisk",
-                              1);
+      "Storage.SessionStorage.Duration.OpenDatabase2.OnDisk", 3);
+  // GetAllSync after the first restart triggers a ReadMapKeyValues call.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.ReadMapKeyValues.OnDisk", 1);
+  // ReadAllMetadata duration fires for each database open.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.ReadAllMetadata.OnDisk", 3);
+  // PutMetadata duration fires for each BindStorageArea.
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.PutMetadata.OnDisk", 2);
 }
 
 TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
@@ -455,6 +461,8 @@ TEST_P(SessionStorageImplTest, Cloning) {
   WaitForDatabaseTasks();
   histograms.ExpectUniqueSample("Storage.SessionStorage.CloneMap.OnDisk",
                                 /*sample=*/0, 1);
+  histograms.ExpectTotalCount("Storage.SessionStorage.Duration.CloneMap.OnDisk",
+                              1);
 }
 
 TEST_P(SessionStorageImplTest, ImmediateCloning) {
@@ -1457,6 +1465,8 @@ TEST_P(SessionStorageImplTest, DeleteStorage) {
   WaitForDatabaseTasks();
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.DeleteStorageKeysFromSession.OnDisk", 0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.DeleteStorageKeysFromSession.OnDisk", 1);
 
   // Run `CleanUpStorage()` to remove any traces of deleted data.
   base::RunLoop run_loop;
@@ -1467,6 +1477,8 @@ TEST_P(SessionStorageImplTest, DeleteStorage) {
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.CleanUpStaleData.OnDisk",
       /*sample=*/0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.CleanUpStaleData.OnDisk", 1);
 }
 
 TEST_P(SessionStorageImplTest, PurgeInactiveWrappers) {
@@ -1935,6 +1947,8 @@ TEST_P(SessionStorageImplTest, DeleteSessionsHistogram) {
   WaitForDatabaseTasks();
   histograms.ExpectUniqueSample("Storage.SessionStorage.DeleteSessions.OnDisk",
                                 0, 1);
+  histograms.ExpectTotalCount(
+      "Storage.SessionStorage.Duration.DeleteSessions.OnDisk", 1);
 }
 
 }  // namespace storage

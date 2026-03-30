@@ -3004,21 +3004,38 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Records the duration of {Operation} operations in {DomStorageType} using
-    {DomStorageBackingStoreLifetime} database. This helps compare latency
-    between the LevelDB and SQLite backends.
+    {DomStorageBackingStoreLifetime} database. Measured on the DB sequence
+    around the actual database call, which excludes task-queue delays. This
+    helps compare latency between the LevelDB and SQLite backends.
   </summary>
   <token key="Operation">
-    <variant name="GetAll"
-        summary="reading all key-value pairs for a storage area via the async
-                 ReadMapKeyValues round-trip"/>
-    <variant name="InitiateCommit"
-        summary="the end-to-end async commit round-trip from collecting
-                 pending map updates through the single UpdateMaps call to
-                 receiving the result callback"/>
-    <variant name="OpenDatabase"
-        summary="the end-to-end async open round-trip from initiating the
-                 DomStorageDatabase::Open call to receiving the result
-                 callback"/>
+    <variant name="CleanUpStaleData"
+        summary="removing all traces of deleted data from the backing storage"/>
+    <variant name="CloneMap"
+        summary="deep-copying a map's key-value pairs from one session to
+                 another"/>
+    <variant name="DeleteSessions"
+        summary="deleting metadata and optionally map data for one or more
+                 sessions"/>
+    <variant name="DeleteStorageKeysFromSession"
+        summary="deleting metadata and optionally map data for specific
+                 storage keys in a session"/>
+    <variant name="OpenDatabase2"
+        summary="opening the database via DomStorageDatabase::Open"/>
+    <variant name="PurgeOrigins"
+        summary="purging origins marked for cleanup on shutdown"/>
+    <variant name="PutMetadata"
+        summary="writing map metadata such as access timestamps or
+                 session-to-map associations"/>
+    <variant name="ReadAllMetadata"
+        summary="reading all map locators. For local storage this includes
+                 size and usage metadata, for session storage this includes
+                 the next map id"/>
+    <variant name="ReadMapKeyValues"
+        summary="reading all key-value pairs for a storage area via
+                 ReadMapKeyValues"/>
+    <variant name="UpdateMaps"
+        summary="committing pending map updates via UpdateMaps"/>
   </token>
 </histogram>
 
