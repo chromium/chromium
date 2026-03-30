@@ -61,12 +61,17 @@
 // TODO(https://crbug.com/40157665): gfx::NativeCursor is ui::Cursor in Aura;
 // perhaps remove gfx::NativeCursor and use ui::Cursor everywhere?
 
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
+namespace ui {
+class Cursor;
+}
+#endif
+
 #if defined(USE_AURA)
 namespace aura {
 class Window;
 }
 namespace ui {
-class Cursor;
 class Event;
 namespace mojom {
 enum class CursorType;
@@ -110,8 +115,11 @@ using AtkObject = struct _AtkObject;
 
 namespace gfx {
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) || BUILDFLAG(IS_ANDROID)
 using NativeCursor = ui::Cursor;
+#endif
+
+#if defined(USE_AURA)
 using NativeView = aura::Window*;
 using NativeWindow = aura::Window*;
 using NativeEvent = ui::Event*;
@@ -174,7 +182,6 @@ class COMPONENT_EXPORT(GFX) NativeWindow : public base::apple::WeakNSWindow {
   uintptr_t pointer_bits_ = 0;
 };
 #elif BUILDFLAG(IS_ANDROID)
-using NativeCursor = void*;
 using NativeView = ui::ViewAndroid*;
 using NativeWindow = ui::WindowAndroid*;
 using NativeEvent = base::android::ScopedJavaGlobalRef<jobject>;

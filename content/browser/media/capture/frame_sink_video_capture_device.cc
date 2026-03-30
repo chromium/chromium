@@ -33,7 +33,7 @@
 #include "media/capture/video_capture_types.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 #endif
 
@@ -47,7 +47,7 @@ namespace content {
 
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 constexpr int32_t kMouseCursorStackingIndex = 1;
 #endif
 
@@ -156,7 +156,7 @@ class ContextProviderObserver : viz::ContextLostObserver {
   base::WeakPtrFactory<ContextProviderObserver> weak_factory_{this};
 };
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
 FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice()
     : cursor_controller_(
           RescopeToUIThread(std::make_unique<MouseCursorOverlayController>())) {
@@ -337,7 +337,7 @@ void FrameSinkVideoCaptureDevice::AllocateCapturer(
     capturer_->ChangeTarget(target_, sub_capture_version_);
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&MouseCursorOverlayController::Start,
@@ -417,7 +417,7 @@ void FrameSinkVideoCaptureDevice::StopAndDeAllocate() {
     wake_lock_.reset();
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MouseCursorOverlayController::Stop,
                                 cursor_controller_->GetWeakPtr()));
@@ -489,11 +489,11 @@ void FrameSinkVideoCaptureDevice::OnFrameCaptured(
   }
   const BufferId buffer_id = static_cast<BufferId>(index);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   info->metadata.interactive_content =
       cursor_controller_->IsUserInteractingWithView();
 #else
-  // Since we don't have a cursor controller, on Android we'll just always
+  // Since we don't have a cursor controller, on iOS we'll just always
   // assume the user is interacting with the view.
   info->metadata.interactive_content = true;
 #endif

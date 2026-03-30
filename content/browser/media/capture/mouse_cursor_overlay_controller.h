@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"

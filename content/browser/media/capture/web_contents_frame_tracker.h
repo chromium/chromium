@@ -161,9 +161,7 @@ class CONTENT_EXPORT WebContentsFrameTracker final
   // UI thread. This is not guaranteed to be valid and must be checked before
   // use.
   // https://crbug.com/1480152
-#if !BUILDFLAG(IS_ANDROID)
   const base::WeakPtr<MouseCursorOverlayController> cursor_controller_;
-#endif
 
   // We may not have a frame sink ID target at all times.
   std::unique_ptr<Context> context_;
