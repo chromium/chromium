@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
-#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_tracker.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/interaction/element_identifier.h"

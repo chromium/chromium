@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_group_accessibility.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 
 #include "base/check.h"
 #include "base/strings/string_util.h"

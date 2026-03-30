@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
@@ -18,7 +18,7 @@ class VerticalTabStripStateController;
 namespace views {
 class ScrollView;
 class Widget;
-}
+}  // namespace views
 
 // Tracks whether the editor bubble is open. At most one can be open
 // at once.
@@ -54,4 +54,4 @@ class TabGroupEditorBubbleTracker : public views::WidgetObserver {
   base::CallbackListSubscription scroll_view_subscription_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_TAB_GROUP_EDITOR_BUBBLE_TRACKER_H_

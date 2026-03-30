@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_TABS_COLOR_PICKER_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_TABS_COLOR_PICKER_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_COLOR_PICKER_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_COLOR_PICKER_VIEW_H_
 
 #include <optional>
 #include <utility>
@@ -11,7 +11,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/tabs/tab_group_editor_bubble_view.h"
+#include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_view.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -62,4 +62,4 @@ class ColorPickerView : public views::View {
   std::vector<raw_ptr<ColorPickerElementView, VectorExperimental>> elements_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_TABS_COLOR_PICKER_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_COLOR_PICKER_VIEW_H_
