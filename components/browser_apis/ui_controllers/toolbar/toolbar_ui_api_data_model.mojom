@@ -20,9 +20,10 @@ enum ContextMenuType {
   kHome,
 };
 
-struct ButtonState {
+struct BackForwardButtonState {
   bool enabled;
   bool visible;
+  bool is_context_menu_visible;
 };
 
 enum SplitTabActiveLocation {
@@ -53,8 +54,8 @@ struct SplitTabsControlState {
 };
 
 struct BackForwardControlState {
-  ButtonState back_button_state;
-  ButtonState forward_button_state;
+  BackForwardButtonState back_button_state;
+  BackForwardButtonState forward_button_state;
   int32 back_button_leading_margin;
 };
 

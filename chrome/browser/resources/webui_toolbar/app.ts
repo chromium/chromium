@@ -90,8 +90,10 @@ export class ToolbarAppElement extends CrLitElement {
       isContextMenuVisible: false,
     },
     backForwardControlState: {
-      backButtonState: {enabled: false, visible: true},
-      forwardButtonState: {enabled: false, visible: true},
+      backButtonState:
+          {enabled: false, visible: true, isContextMenuVisible: false},
+      forwardButtonState:
+          {enabled: false, visible: true, isContextMenuVisible: false},
       backButtonLeadingMargin: 0,
     },
     homeControlState: {

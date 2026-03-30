@@ -15,6 +15,7 @@ export function getHtml(this: BackForwardButtonElement) {
     aria-label="${this.ariaLabel_}"
     title="${this.tooltip_}"
     style="margin-inline-start: ${this.leadingMargin}px"
+    ?is-menu-open="${this.state.isContextMenuVisible}"
     @pointerdown="${this.pressHandler_.onPointerdown}"
     @pointerup="${this.pressHandler_.onPointerup}"
     @pointercancel="${this.pressHandler_.onPointercancel}"

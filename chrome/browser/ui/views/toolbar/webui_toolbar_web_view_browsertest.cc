@@ -569,6 +569,123 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       CheckBackButtonColor) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarBackButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  gfx::Rect control_rect = element->GetScreenBounds();
+  gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+
+  // Wait for the back button to finish laying out.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    control_rect = element->GetScreenBounds();
+    return control_rect.width() >=
+           GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  }));
+
+  control_rect.Offset(-view_rect.OffsetFromOrigin());
+
+  // Sample a point in the background area (e.g. 5,5 from top-left).
+  gfx::Rect background_probe_rect(control_rect.x() + 5, control_rect.y() + 5, 1,
+                                  1);
+
+  // Verify back button background is transparent when not highlighted.
+  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
+
+  // Show back button context menu.
+  webui_toolbar_view->HandleContextMenu(
+      toolbar_ui_api::mojom::ContextMenuType::kBack, gfx::RectF(control_rect),
+      ui::mojom::MenuSourceType::kMouse);
+
+  // Verify back button state updates.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetButtonAppJS(kBackSelector),
+                                         ".state.isContextMenuVisible"}))
+        .ExtractBool();
+  }));
+
+  // Verify back button is now highlighted.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) !=
+           SK_ColorTRANSPARENT;
+  }));
+
+  // Close back button context menu.
+  webui_toolbar_view->back_control_.menu_runner_->Cancel();
+
+  // Verify back button background returns to transparent.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
+                       CheckForwardButtonColor) {
+  ui::TrackedElement* element = nullptr;
+  WebUIToolbarWebView* webui_toolbar_view = nullptr;
+  views::WebView* web_view = nullptr;
+  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kToolbarForwardButtonElementId, &element,
+                                     &webui_toolbar_view, &web_view,
+                                     browser()));
+
+  gfx::Rect control_rect = element->GetScreenBounds();
+  gfx::Rect view_rect = webui_toolbar_view->GetBoundsInScreen();
+
+  // Wait for the back button to finish laying out, which should
+  // push the forward button over by at least one button width.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    control_rect = element->GetScreenBounds();
+    return (control_rect.x() - view_rect.x()) >=
+           GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  }));
+
+  control_rect.Offset(-view_rect.OffsetFromOrigin());
+
+  // Sample a point in the background area (e.g. 5,5 from top-left).
+  gfx::Rect background_probe_rect(control_rect.x() + 5, control_rect.y() + 5, 1,
+                                  1);
+
+  // Verify forward button background is transparent when not highlighted.
+  EXPECT_EQ(GetCenterPixelColor(web_view, background_probe_rect),
+            SK_ColorTRANSPARENT);
+
+  // Show forward button context menu.
+  webui_toolbar_view->HandleContextMenu(
+      toolbar_ui_api::mojom::ContextMenuType::kForward,
+      gfx::RectF(control_rect), ui::mojom::MenuSourceType::kMouse);
+
+  // Verify forward button state updates.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_view->GetWebContents(),
+                           base::StrCat({GetButtonAppJS(kForwardSelector),
+                                         ".state.isContextMenuVisible"}))
+        .ExtractBool();
+  }));
+
+  // Verify forward button is now highlighted.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) !=
+           SK_ColorTRANSPARENT;
+  }));
+
+  // Close forward button context menu.
+  webui_toolbar_view->forward_control_.menu_runner_->Cancel();
+
+  // Verify forward button background returns to transparent.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return GetCenterPixelColor(web_view, background_probe_rect) ==
+           SK_ColorTRANSPARENT;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                        CheckHomeButtonColor) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kShowHomeButton, true);
 

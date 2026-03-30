@@ -39,9 +39,13 @@ class WebUIBackForwardControl {
   bool GetVisible() const;
   void SetLeadingMargin(int margin);
 
-  toolbar_ui_api::mojom::ButtonStatePtr GetButtonState() const;
+  toolbar_ui_api::mojom::BackForwardButtonStatePtr GetButtonState() const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           CheckBackButtonColor);
+  FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
+                           CheckForwardButtonColor);
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarWebViewPixelBrowserTest,
                            BackForwardButtonsModifierClick);
 
