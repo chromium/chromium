@@ -13,11 +13,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /**
- * Manages the Finds opt-in flow on startup. Listens to {@link FindsService} and shows the opt-in UI
- * when criteria are fulfilled.
+ * Manages the Finds flow on startup. Listens to {@link FindsService} and shows the UI when criteria
+ * are fulfilled.
  */
 @NullMarked
-public class FindsOptInManager implements FindsService.Observer {
+public class FindsManager implements FindsService.Observer {
     private final Context mContext;
     private final Profile mProfile;
     private final BottomSheetController mBottomSheetController;
@@ -31,7 +31,7 @@ public class FindsOptInManager implements FindsService.Observer {
      * @param snackbarManager The system SnackbarManager.
      * @param findsService The FindsService to observe.
      */
-    public FindsOptInManager(
+    public FindsManager(
             Context context,
             Profile profile,
             BottomSheetController bottomSheetController,
@@ -43,6 +43,7 @@ public class FindsOptInManager implements FindsService.Observer {
         mSnackbarManager = snackbarManager;
         mFindsService = findsService;
         mFindsService.addObserver(this);
+        mFindsService.maybeRescheduleNotifications();
 
         if (ChromeFindsUtils.shouldAlwaysShowOptInPromo()) {
             onOptInCriteriaFulfilled();

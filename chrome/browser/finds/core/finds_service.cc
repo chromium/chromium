@@ -20,6 +20,7 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_utils.h"
+#include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_schedule_service.h"
@@ -284,6 +285,16 @@ void FindsService::RecordThemeURLVisited(
   }
 }
 
+void FindsService::MaybeRescheduleNotifications() {
+  if (!notification_schedule_service_) {
+    return;
+  }
+  notification_schedule_service_->GetClientOverview(
+      notifications::SchedulerClientType::kChromeFinds,
+      base::BindOnce(&FindsService::OnGetClientOverview,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 bool FindsService::ScheduleNotificationForInternalsPage() {
   // Mock a suggestion model response and schedule notification.
   optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme theme;
@@ -405,6 +416,25 @@ void FindsService::OnModelExecutionComplete(
       std::move(callback),
       {Result::Status::kSuccess,
        FindsSuggestionResponseToHumanReadableString(*response)});
+}
+
+void FindsService::OnGetClientOverview(notifications::ClientOverview overview) {
+  if (overview.scheduled_notifications.empty()) {
+    return;
+  }
+
+  // There should only ever be 1 notification scheduled at a time for finds.
+  DCHECK_EQ(overview.scheduled_notifications.size(), 1u);
+  const auto* entry = overview.scheduled_notifications[0];
+  notifications::NotificationData data = entry->notification_data;
+  notifications::ScheduleParams params = GetCurrentScheduleParams();
+
+  notification_schedule_service_->DeleteNotifications(
+      notifications::SchedulerClientType::kChromeFinds);
+  notification_schedule_service_->Schedule(
+      std::make_unique<notifications::NotificationParams>(
+          notifications::SchedulerClientType::kChromeFinds, std::move(data),
+          std::move(params)));
 }
 
 bool FindsService::ScheduleNotificationWithModelResult(

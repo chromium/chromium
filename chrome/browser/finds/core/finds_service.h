@@ -25,6 +25,7 @@ class QueryResults;
 
 namespace notifications {
 class NotificationScheduleService;
+struct ClientOverview;
 }  // namespace notifications
 
 class OptimizationGuideKeyedService;
@@ -88,6 +89,8 @@ class FindsService : public KeyedService, public base::SupportsUserData {
   void RecordThemeURLVisited(
       optimization_guide::proto::FindsMetadata::ThemeType theme_type);
 
+  // Potentially requests that pending notifications be rescheduled.
+  void MaybeRescheduleNotifications();
   // Schedules a test notification using mocked data, bypassing model execution.
   // This is intended for use by the chrome-finds-internals page only. Do not
   // use in production code.
@@ -103,6 +106,7 @@ class FindsService : public KeyedService, public base::SupportsUserData {
       base::OnceCallback<void(Result)> callback,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  void OnGetClientOverview(notifications::ClientOverview overview);
   bool ScheduleNotificationWithModelResult(
       const optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme&
           theme);

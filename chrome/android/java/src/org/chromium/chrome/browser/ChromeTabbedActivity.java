@@ -193,7 +193,7 @@ import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.notifications.finds.FindsOptInManager;
+import org.chromium.chrome.browser.notifications.finds.FindsManager;
 import org.chromium.chrome.browser.notifications.scheduler.TipsNotificationsFeatureType;
 import org.chromium.chrome.browser.notifications.tips.TipsPromoCoordinator;
 import org.chromium.chrome.browser.notifications.tips.TipsUtils;
@@ -689,7 +689,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private TipsPromoCoordinator mTipsPromoCoordinator;
     private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
-    private FindsOptInManager mFindsOptInManager;
+    private FindsManager mFindsManager;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -1560,8 +1560,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
                 FindsService findsService = FindsService.getForProfile(profile);
                 if (findsService != null) {
-                    mFindsOptInManager =
-                            new FindsOptInManager(
+                    mFindsManager =
+                            new FindsManager(
                                     this,
                                     profile,
                                     mRootUiCoordinator.getBottomSheetController(),
@@ -4817,9 +4817,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mAcceleratorManager.destroy();
         }
 
-        if (mFindsOptInManager != null) {
-            mFindsOptInManager.destroy();
-            mFindsOptInManager = null;
+        if (mFindsManager != null) {
+            mFindsManager.destroy();
+            mFindsManager = null;
         }
 
         super.onDestroyInternal();

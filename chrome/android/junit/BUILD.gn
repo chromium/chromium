@@ -884,7 +884,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/notifications/finds/ChromeFindsMetricsUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/finds/ChromeFindsOptInCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/finds/ChromeFindsUtilsUnitTest.java",
-      "src/org/chromium/chrome/browser/notifications/finds/FindsOptInManagerUnitTest.java",
+      "src/org/chromium/chrome/browser/notifications/finds/FindsManagerUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/scheduler/DisplayAgentUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinatorUnitTest.java",

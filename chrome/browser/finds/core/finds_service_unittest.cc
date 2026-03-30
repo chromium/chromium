@@ -12,6 +12,7 @@
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_utils.h"
+#include "chrome/browser/notifications/scheduler/public/notification_entry.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/notifications/scheduler/test/mock_notification_schedule_service.h"
@@ -777,6 +778,37 @@ TEST_F(FindsServiceTest, ScheduleNotificationForInternalsPage) {
   EXPECT_EQ("https://www.google.com",
             scheduled_params->notification_data
                 .custom_data[notifications::kChromeFindsNotificationsUrl]);
+}
+
+TEST_F(FindsServiceTest, MaybeRescheduleNotifications_Empty_NoOp) {
+  EXPECT_CALL(*notification_schedule_service_, GetClientOverview(_, _))
+      .WillOnce(
+          [](notifications::SchedulerClientType client_type,
+             base::OnceCallback<void(notifications::ClientOverview)> callback) {
+            std::move(callback).Run(notifications::ClientOverview());
+          });
+
+  EXPECT_CALL(*notification_schedule_service_, DeleteNotifications(_)).Times(0);
+  EXPECT_CALL(*notification_schedule_service_, Schedule(_)).Times(0);
+
+  service_->MaybeRescheduleNotifications();
+}
+
+TEST_F(FindsServiceTest, MaybeRescheduleNotifications_Reschedules) {
+  notifications::NotificationEntry entry;
+  notifications::ClientOverview overview;
+  overview.scheduled_notifications.push_back(&entry);
+
+  EXPECT_CALL(*notification_schedule_service_, GetClientOverview(_, _))
+      .WillOnce(
+          [&](notifications::SchedulerClientType client_type,
+              base::OnceCallback<void(notifications::ClientOverview)>
+                  callback) { std::move(callback).Run(std::move(overview)); });
+
+  EXPECT_CALL(*notification_schedule_service_, DeleteNotifications(_)).Times(1);
+  EXPECT_CALL(*notification_schedule_service_, Schedule(_)).Times(1);
+
+  service_->MaybeRescheduleNotifications();
 }
 
 }  // namespace finds

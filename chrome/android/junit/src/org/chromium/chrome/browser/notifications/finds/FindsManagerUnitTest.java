@@ -28,10 +28,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
-/** Unit tests for {@link FindsOptInManager}. */
+/** Unit tests for {@link FindsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class FindsOptInManagerUnitTest {
+public class FindsManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
@@ -39,7 +39,7 @@ public class FindsOptInManagerUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private FindsService mFindsService;
 
-    private FindsOptInManager mManager;
+    private FindsManager mManager;
     private Activity mActivity;
 
     @Before
@@ -48,7 +48,7 @@ public class FindsOptInManagerUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         mManager =
-                new FindsOptInManager(
+                new FindsManager(
                         mActivity,
                         mProfile,
                         mBottomSheetController,
@@ -59,6 +59,11 @@ public class FindsOptInManagerUnitTest {
     @Test
     public void testConstructionRegistersObserver() {
         verify(mFindsService).addObserver(mManager);
+    }
+
+    @Test
+    public void testConstructionReschedulesNotifications() {
+        verify(mFindsService).maybeRescheduleNotifications();
     }
 
     @Test

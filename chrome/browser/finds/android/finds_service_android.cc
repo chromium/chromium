@@ -7,6 +7,7 @@
 #include <jni.h>
 
 #include "base/android/jni_android.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/finds/finds_service_factory.h"
@@ -56,6 +57,11 @@ FindsServiceAndroid::~FindsServiceAndroid() {
 void FindsServiceAndroid::OnOptInCriteriaFulfilled() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FindsService_onOptInCriteriaFulfilled(env, GetJavaObject());
+}
+
+void FindsServiceAndroid::MaybeRescheduleNotifications(JNIEnv* env) {
+  CHECK(service_);
+  service_->MaybeRescheduleNotifications();
 }
 
 base::android::ScopedJavaLocalRef<jobject>

@@ -31,6 +31,9 @@ class FindsServiceAndroid : public FindsService::Observer,
   // FindsService::Observer implementation:
   void OnOptInCriteriaFulfilled() override;
 
+  // JNI method called by Java to potentially reschedule pending notifications.
+  void MaybeRescheduleNotifications(JNIEnv* env);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:

@@ -78,6 +78,12 @@ public class FindsService {
         mObservers.removeObserver(observer);
     }
 
+    /** Reschedules notifications if any are pending. */
+    public void maybeRescheduleNotifications() {
+        if (mNativeFindsServiceAndroid == 0) return;
+        FindsServiceJni.get().maybeRescheduleNotifications(mNativeFindsServiceAndroid);
+    }
+
     @CalledByNative
     private void onOptInCriteriaFulfilled() {
         for (Observer observer : mObservers) {
@@ -106,6 +112,8 @@ public class FindsService {
 
     @NativeMethods
     interface Natives {
+        void maybeRescheduleNotifications(long nativeFindsServiceAndroid);
+
         void onCheckAreFindsNotificationsEnabled(long callbackId, boolean result);
     }
 }
