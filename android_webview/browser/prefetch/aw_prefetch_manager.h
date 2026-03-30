@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
+#include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ref.h"
@@ -24,23 +25,6 @@
 #include "url/gurl.h"
 
 namespace android_webview {
-
-using AwPrefetchKey = int;
-
-// The default TTL value in `//content` is 10 minutes which is too long for most
-// of WebView cases. This value here can change in the future and that shouldn't
-// affect the `//content` TTL default value.
-inline constexpr int kDefaultTtlInSec = 60;
-// The MaxPrefetches number is not present in the `//content` layer, so it is
-// specific to WebView.
-inline constexpr size_t kDefaultMaxPrefetches = 10;
-// This is the source of truth for the absolute maximum number of prefetches
-// that can ever be cached in WebView. It can override the number set by the
-// AndroidX API.
-inline constexpr size_t kAbsoluteMaxPrefetches = 20;
-// Returned from `AwPrefetchManager::StartPrefetchRequest` if the prefetch
-// request was unsuccessful (i.e. there is no key for the prefetch).
-inline constexpr AwPrefetchKey NO_PREFETCH_KEY = -1;
 
 // The suffix used for generating `//content` prefetch internal histogram names
 // recorded per trigger.
@@ -90,63 +74,20 @@ class AwPrefetchManager {
   void CancelPrefetch(JNIEnv* env, AwPrefetchKey prefetch_key);
 
   // Updates Time-To-Live (TTL) for the prefetched content in seconds.
-  void SetTtlInSec(JNIEnv* env, std::optional<int> ttl_in_sec) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    int sanitized_ttl_in_sec = ttl_in_sec.value_or(kDefaultTtlInSec);
-
-    CHECK_GT(sanitized_ttl_in_sec, 0);
-    ttl_in_sec_ = sanitized_ttl_in_sec;
-  }
+  void SetTtlInSec(JNIEnv* env, std::optional<int> ttl_in_sec);
 
   // Updates the maximum number of allowed prefetches in cache
-  void SetMaxPrefetches(JNIEnv* env, std::optional<int> max_prefetches) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-    size_t sanitized_max_prefetches = kDefaultMaxPrefetches;
-    if (max_prefetches) {
-      CHECK_GT(max_prefetches.value(), 0);
-      sanitized_max_prefetches = static_cast<size_t>(max_prefetches.value());
-    }
-
-    max_prefetches_ =
-        std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches);
-  }
+  void SetMaxPrefetches(JNIEnv* env, std::optional<int> max_prefetches);
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
-  int GetTtlInSecForTesting(JNIEnv* env) const { return ttl_in_sec_; }
+  int GetTtlInSecForTesting(JNIEnv* env) const;
 
   // Returns the maximum number of allowed prefetches in cache.
-  size_t GetMaxPrefetchesForTesting(JNIEnv* env) const {
-    return max_prefetches_;
-  }
+  size_t GetMaxPrefetchesForTesting(JNIEnv* env) const;
 
-  // Returns the key associated with the prefetch handle inside of
-  // `all_prefetches_map_`.
-  AwPrefetchKey AddPrefetchHandle(
-      std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper) {
-    CHECK(prefetch_handle_wrapper);
-    CHECK(max_prefetches_ > 0u);
-    CHECK(all_prefetches_map_.size() < max_prefetches_);
+  std::vector<AwPrefetchKey> GetAllPrefetchKeysForTesting() const;
 
-    const AwPrefetchKey new_prefetch_key = GetNextPrefetchKey();
-    all_prefetches_map_[new_prefetch_key] = std::move(prefetch_handle_wrapper);
-    UpdateLastPrefetchKey(new_prefetch_key);
-    return new_prefetch_key;
-  }
-
-  std::vector<AwPrefetchKey> GetAllPrefetchKeysForTesting() const {
-    std::vector<AwPrefetchKey> prefetch_keys;
-    prefetch_keys.reserve(all_prefetches_map_.size());
-    for (const auto& prefetch_pair : all_prefetches_map_) {
-      prefetch_keys.push_back(prefetch_pair.first);
-    }
-    return prefetch_keys;
-  }
-
-  AwPrefetchKey GetLastPrefetchKeyForTesting() const {
-    return last_prefetch_key_;
-  }
+  AwPrefetchKey GetLastPrefetchKeyForTesting() const;
 
   bool GetIsPrefetchInCacheForTesting(JNIEnv* env,
                                       AwPrefetchKey prefetch_key) const;
@@ -164,33 +105,13 @@ class AwPrefetchManager {
   static void SetOrClearExternalPrefetchExperiment(
       std::optional<int> variations_id);
 
-  bool IsPrefetchDuplicate(const GURL& url,
-                           const std::optional<net::HttpNoVarySearchData>&
-                               expected_no_vary_search) const;
+  const raw_ref<content::BrowserContext> browser_context_;
 
-  AwPrefetchKey GetNextPrefetchKey() const { return last_prefetch_key_ + 1; }
-
-  void UpdateLastPrefetchKey(AwPrefetchKey new_key) {
-    CHECK(new_key > last_prefetch_key_);
-    last_prefetch_key_ = new_key;
-  }
-
-  raw_ref<content::BrowserContext> browser_context_;
-
-  int ttl_in_sec_ = kDefaultTtlInSec;
-
-  size_t max_prefetches_ = kDefaultMaxPrefetches;
-
-  std::map<AwPrefetchKey, std::unique_ptr<AwPrefetchHandleWrapper>>
-      all_prefetches_map_;
+  // Manages all the mutable states of `this`.
+  AwPrefetchManagerData aw_prefetch_manager_data_;
 
   // Java object reference.
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-
-  // Should only be incremented. Acts as an "order added" mechanism
-  // inside of `all_prefetches_map_` since `std::map` stores keys
-  // in a sorted order.
-  AwPrefetchKey last_prefetch_key_ = -1;
 };
 
 }  // namespace android_webview

@@ -9,6 +9,7 @@
 
 #include "android_webview/browser/metrics/aw_metrics_service_accessor.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
+#include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 #include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/common/aw_features.h"
 #include "base/android/jni_string.h"
@@ -172,7 +173,19 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
   // the purpose of deduping prefetch requests on the application's behalf.
   // TODO(crbug.com/393344309): Apply deduping to all prefetch requests (not
   // just WebView).
-  if (IsPrefetchDuplicate(pf_url, expected_no_vary_search)) {
+  bool is_prefetch_duplicate = [&]() {
+    if (!base::FeatureList::IsEnabled(
+            features::kWebViewPrefetchOffTheMainThread)) {
+      DCHECK_CURRENTLY_ON(BrowserThread::UI);
+      return browser_context_->IsPrefetchDuplicate(pf_url,
+                                                   expected_no_vary_search);
+    } else {
+      return aw_prefetch_manager_data_.IsPrefetchDuplicate(
+          pf_url, expected_no_vary_search);
+    }
+  }();
+
+  if (is_prefetch_duplicate) {
     if (request_status_listener) {
       request_status_listener->OnPrefetchStartFailedDuplicate();
     }
@@ -189,21 +202,9 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
   // from performance perspective. Please see
   // https://docs.google.com/document/d/1OylSDdS_RTOkG_E_PXJ0aPI1QrygMjGkgSs5JcTrFlE/edit?tab=t.0#bookmark=id.rcr0rfweiz90
   // for more information.
-  // TODO(crbug.com/426404355?): After parallel prefetching being enabled
-  // for WV.prefetch, perhaps we no longer need this. Revisit and verify.
-  if (all_prefetches_map_.size() >= max_prefetches_) {
-    int num_prefetches_to_evict =
-        all_prefetches_map_.size() - max_prefetches_ + 1;
-    auto it = all_prefetches_map_.begin();
-
-    while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
-      // Because the keys should be sequential based on when the prefetch
-      // associated with it was added, a standard iteration should always
-      // prioritize removing the oldest entry.
-      it = all_prefetches_map_.erase(it);
-      num_prefetches_to_evict--;
-    }
-  }
+  // TODO(crbug.com/426404355): After parallel prefetching being enabled for
+  // WV.prefetch, perhaps we no longer need this. Revisit and verify.
+  aw_prefetch_manager_data_.MayEvictOldestPrefetchHandleForANewRequest();
 
   std::unique_ptr<content::PrefetchHandle> prefetch_handle =
       browser_context_->StartBrowserPrefetchRequest(
@@ -215,35 +216,20 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
               ? std::optional(content::PrefetchPriority::kHighest)
               : std::nullopt,
           additional_headers, std::move(request_status_listener),
-          base::Seconds(ttl_in_sec_),
+          base::Seconds(aw_prefetch_manager_data_.GetTtlInSec()),
           /*should_append_variations_header=*/false,
           base::FeatureList::IsEnabled(
               kWebViewPrefetchDisableBlockUntilHeadTimeout),
           should_bypass_http_cache);
 
   if (prefetch_handle) {
-    return AddPrefetchHandle(std::make_unique<AwPrefetchHandleWrapper>(
-        pf_url, std::move(expected_no_vary_search),
-        std::move(prefetch_handle)));
+    return aw_prefetch_manager_data_.AddPrefetchHandle(
+        std::make_unique<AwPrefetchHandleWrapper>(
+            pf_url, std::move(expected_no_vary_search),
+            std::move(prefetch_handle)));
   } else {
     return NO_PREFETCH_KEY;
   }
-}
-
-bool AwPrefetchManager::IsPrefetchDuplicate(
-    const GURL& url,
-    const std::optional<net::HttpNoVarySearchData>& expected_no_vary_search)
-    const {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebViewPrefetchOffTheMainThread)) {
-    return browser_context_->IsPrefetchDuplicate(url, expected_no_vary_search);
-  }
-  std::vector<const content::PrefetchDeduplicationEntry*> candidates;
-  candidates.reserve(all_prefetches_map_.size());
-  for (const auto& [_, prefetch_handle_wrapper] : all_prefetches_map_) {
-    candidates.push_back(prefetch_handle_wrapper.get());
-  }
-  return content::IsPrefetchDuplicate(candidates, url, expected_no_vary_search);
 }
 
 void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
@@ -254,18 +240,56 @@ void AwPrefetchManager::CancelPrefetch(JNIEnv* env,
     // no-op.
     return;
   }
+  aw_prefetch_manager_data_.CancelPrefetch(prefetch_key);
+}
 
-  auto it = all_prefetches_map_.find(prefetch_key);
-  if (it != all_prefetches_map_.end()) {
-    all_prefetches_map_.erase(it);
+void AwPrefetchManager::SetTtlInSec(JNIEnv* env,
+                                    std::optional<int> ttl_in_sec) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  int sanitized_ttl_in_sec = ttl_in_sec.value_or(kDefaultTtlInSec);
+  CHECK_GT(sanitized_ttl_in_sec, 0);
+
+  aw_prefetch_manager_data_.SetTtlInSec(sanitized_ttl_in_sec);
+}
+
+void AwPrefetchManager::SetMaxPrefetches(JNIEnv* env,
+                                         std::optional<int> max_prefetches) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  size_t sanitized_max_prefetches = kDefaultMaxPrefetches;
+  if (max_prefetches) {
+    CHECK_GT(max_prefetches.value(), 0);
+    sanitized_max_prefetches = static_cast<size_t>(max_prefetches.value());
   }
+
+  aw_prefetch_manager_data_.SetMaxPrefetches(
+      std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches));
+}
+
+int AwPrefetchManager::GetTtlInSecForTesting(JNIEnv* env) const {
+  return aw_prefetch_manager_data_.GetTtlInSec();
+}
+
+size_t AwPrefetchManager::GetMaxPrefetchesForTesting(JNIEnv* env) const {
+  return aw_prefetch_manager_data_.GetMaxPrefetchesForTesting();  // IN-TEST
+}
+
+std::vector<AwPrefetchKey>
+AwPrefetchManager::GetAllPrefetchKeysForTesting()  // IN-TEST
+    const {
+  return aw_prefetch_manager_data_.GetAllPrefetchKeysForTesting();  // IN-TEST
+}
+
+AwPrefetchKey AwPrefetchManager::GetLastPrefetchKeyForTesting() const {
+  return aw_prefetch_manager_data_.GetLastPrefetchKeyForTesting();  // IN-TEST
 }
 
 bool AwPrefetchManager::GetIsPrefetchInCacheForTesting(  // IN-TEST
     JNIEnv* env,
     AwPrefetchKey prefetch_key) const {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
+  return aw_prefetch_manager_data_.GetIsPrefetchInCacheForTesting(  // IN-TEST
+      prefetch_key);
 }
 
 static AwPrefetchKey JNI_AwPrefetchManager_GetNoPrefetchKey(JNIEnv* env) {

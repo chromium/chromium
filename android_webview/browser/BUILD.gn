@@ -196,6 +196,8 @@ source_set("browser") {
     "prefetch/aw_prefetch_handle_wrapper.h",
     "prefetch/aw_prefetch_manager.cc",
     "prefetch/aw_prefetch_manager.h",
+    "prefetch/aw_prefetch_manager_data.cc",
+    "prefetch/aw_prefetch_manager_data.h",
     "prefetch/aw_prefetch_service_delegate.cc",
     "prefetch/aw_prefetch_service_delegate.h",
     "prefetch/aw_preloading_utils.cc",
