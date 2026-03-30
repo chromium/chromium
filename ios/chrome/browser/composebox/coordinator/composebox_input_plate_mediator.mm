@@ -14,6 +14,7 @@
 #import <utility>
 
 #import "base/apple/foundation_util.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/ios/block_types.h"
@@ -111,7 +112,14 @@ ComposeboxModelOption ModelOptionForModelMode(omnibox::ModelMode model_mode) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return ComposeboxModelOption::kThinkingNoGenUI;
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
+    case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
+      return ComposeboxModelOption::kRegular;
     default:
+      // `ModelMode` is an open enum and prohibits exhaustive switch statements.
+      // See https://protobuf.dev/programming-guides/enum/
+      //
+      // Dump without crashing if the received model is not interpreted iOS.
+      base::debug::DumpWithoutCrashing();
       return ComposeboxModelOption::kRegular;
   }
 }
