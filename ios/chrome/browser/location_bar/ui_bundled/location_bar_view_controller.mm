@@ -944,7 +944,15 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxAvailable() && IsSplitToolbarMode(self)) {
+  BOOL canShowMoveAddressBarAction = NO;
+  if (IsChromeNextIaEnabled()) {
+    canShowMoveAddressBarAction = IsBottomOmniboxAvailable();
+  } else {
+    canShowMoveAddressBarAction =
+        IsBottomOmniboxAvailable() && IsSplitToolbarMode(self);
+  }
+
+  if (canShowMoveAddressBarAction) {
     NSString* title = nil;
     UIImage* image = nil;
     ToolbarType targetToolbarType;
