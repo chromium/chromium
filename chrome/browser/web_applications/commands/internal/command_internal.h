@@ -7,7 +7,9 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -161,6 +163,21 @@ class CommandWithLock : public CommandBase {
   std::unique_ptr<LockType> initial_lock_;
   base::WeakPtrFactory<CommandWithLock<LockType>> weak_factory_{this};
 };
+
+// Binds a tuple of arguments to a callback, returning a OnceClosure.
+template <typename Callback, typename Tuple>
+auto BindTupleToOnceClosure(Callback cb, Tuple t) {
+  if constexpr (std::tuple_size_v<Tuple> == 0) {
+    return std::move(cb);
+  } else {
+    return std::apply(
+        [cb = std::move(cb)](auto&&... args) mutable {
+          return base::BindOnce(std::move(cb),
+                                std::forward<decltype(args)>(args)...);
+        },
+        std::move(t));
+  }
+}
 
 }  // namespace internal
 }  // namespace web_app
