@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -162,9 +163,16 @@ class ContextualTasksContextService
       page_content_extraction_service_;
   raw_ptr<const base::TickClock> tick_clock_;
 
-  absl::flat_hash_map<
-      int64_t,
-      base::OnceCallback<void(std::vector<content::WebContents*>)>>
+  struct PendingRequest {
+    PendingRequest(
+        passage_embeddings::Embedder::TaskId task_id,
+        base::OnceCallback<void(std::vector<content::WebContents*>)> callback);
+    ~PendingRequest();
+
+    passage_embeddings::Embedder::TaskId task_id;
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback;
+  };
+  absl::flat_hash_map<int64_t, std::unique_ptr<PendingRequest>>
       pending_requests_;
   int64_t next_request_id_ = 0;
 

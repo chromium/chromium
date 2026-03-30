@@ -179,10 +179,14 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
     return;
   }
 
-  int64_t request_id = next_request_id_++;
-  pending_requests_[request_id] = std::move(callback);
+  // Force active tab embedding to be processed.
+  page_embeddings_service_->ProcessEmbeddingsOnDemand();
 
-  if (options.tab_selection_timeout) {
+  AUTO_CONTEXT_LOG("Submitted query to embedder");
+  int64_t request_id = next_request_id_++;
+
+  if (options.tab_selection_timeout &&
+      options.tab_selection_timeout->is_positive()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ContextualTasksContextService::OnRequestTimedOut,
@@ -190,17 +194,16 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
         *options.tab_selection_timeout);
   }
 
-  // Force active tab embedding to be processed.
-  page_embeddings_service_->ProcessEmbeddingsOnDemand();
-
-  AUTO_CONTEXT_LOG("Submitted query to embedder");
   // TODO: crbug.com/452036470 - De-couple embeddings and recency signal
   // computation.
-  embedder_->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kUrgent, {query},
-      base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
-                     weak_ptr_factory_.GetWeakPtr(), query, options, now,
-                     explicit_urls, request_id));
+  passage_embeddings::Embedder::TaskId task_id =
+      embedder_->ComputePassagesEmbeddings(
+          passage_embeddings::PassagePriority::kUrgent, {query},
+          base::BindOnce(&ContextualTasksContextService::OnQueryEmbeddingReady,
+                         weak_ptr_factory_.GetWeakPtr(), query, options, now,
+                         explicit_urls, request_id));
+  pending_requests_[request_id] =
+      std::make_unique<PendingRequest>(task_id, std::move(callback));
 }
 
 void ContextualTasksContextService::EmbedderMetadataUpdated(
@@ -235,7 +238,7 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   }
 
   base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
-      std::move(request_it->second);
+      std::move(request_it->second->callback);
   pending_requests_.erase(request_id);
 
   // Query embedding was not successfully generated.
@@ -322,8 +325,10 @@ void ContextualTasksContextService::OnRequestTimedOut(int64_t request_id) {
     return;
   }
 
+  passage_embeddings::Embedder::TaskId task_id = request_it->second->task_id;
+  embedder_->TryCancel(task_id);
   base::OnceCallback<void(std::vector<content::WebContents*>)> callback =
-      std::move(request_it->second);
+      std::move(request_it->second->callback);
   pending_requests_.erase(request_id);
   RecordContextDeterminationStatus(ContextDeterminationStatus::kTimedOut);
   std::move(callback).Run({});
@@ -519,5 +524,11 @@ bool ContextualTasksContextService::ShouldAddTabToSelection(
 
   return is_eligible_for_server_upload && !is_sensitive;
 }
+
+ContextualTasksContextService::PendingRequest::PendingRequest(
+    passage_embeddings::Embedder::TaskId task_id,
+    base::OnceCallback<void(std::vector<content::WebContents*>)> callback)
+    : task_id(task_id), callback(std::move(callback)) {}
+ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
 
 }  // namespace contextual_tasks
