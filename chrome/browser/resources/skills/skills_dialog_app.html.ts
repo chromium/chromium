@@ -69,10 +69,11 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
             $i18n{instructions}
           </div>
           <div id="textareaWrapper" ?loading="${this.isRefineLoading_}"
-            ?error="${this.hasPromptError_()}">
+            ?error="${this.hasPromptError_()}"
+            ?refinement-enabled="${this.isRefinementEnabled_}">
             ${this.isRefineLoading_ ? html`
               <cr-loading-gradient id="instructionsLoader">
-                <svg width="100%" height="175">
+                <svg width="100%" height="100%">
                   <clipPath>
                     <rect x="10" y="14" width="90%" height="12" rx="4"></rect>
                     <rect x="10" y="38" width="90%" height="12" rx="4"></rect>
@@ -89,24 +90,28 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                   @input="${this.onInstructionsInput_}">
               </textarea>
             `}
-            <div class="textarea-actions">
-              <cr-icon-button id="iconUndo" iron-icon="skills:undo"
-                  class="refine-icon" title="$i18n{undo}"
-                  aria-label="$i18n{undo}" ?disabled="${this.isUndoDisabled_()}"
-                  @click="${this.onUndoClick_}">
-              </cr-icon-button>
-              <cr-icon-button id="iconRedo" iron-icon="skills:redo"
-                  class="refine-icon" title="$i18n{redo}"
-                  aria-label="$i18n{redo}" ?disabled="${this.isRedoDisabled_()}"
-                  @click="${this.onRedoClick_}">
-              </cr-icon-button>
-              <cr-icon-button id="iconRefine" iron-icon="skills:refine"
-                  class="refine-icon" title="$i18n{refine}"
-                  aria-label="$i18n{refine}"
-                  ?disabled="${this.isRefineDisabled_()}"
-                  @click="${this.onRefineClick_}">
-              </cr-icon-button>
-            </div>
+            ${this.isRefinementEnabled_ ? html`
+              <div class="textarea-actions">
+                <cr-icon-button id="iconUndo" iron-icon="skills:undo"
+                    class="refine-icon" title="$i18n{undo}"
+                    aria-label="$i18n{undo}"
+                    ?disabled="${this.isUndoDisabled_()}"
+                    @click="${this.onUndoClick_}">
+                </cr-icon-button>
+                <cr-icon-button id="iconRedo" iron-icon="skills:redo"
+                    class="refine-icon" title="$i18n{redo}"
+                    aria-label="$i18n{redo}"
+                    ?disabled="${this.isRedoDisabled_()}"
+                    @click="${this.onRedoClick_}">
+                </cr-icon-button>
+                <cr-icon-button id="iconRefine" iron-icon="skills:refine"
+                    class="refine-icon" title="$i18n{refine}"
+                    aria-label="$i18n{refine}"
+                    ?disabled="${this.isRefineDisabled_()}"
+                    @click="${this.onRefineClick_}">
+                </cr-icon-button>
+              </div>
+            ` : ''}
           </div>
           <div id="errorMessage" class="error-message"
               ?hidden="${!this.hasPromptError_()}">
