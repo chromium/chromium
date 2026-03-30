@@ -144,7 +144,8 @@
                 "pageset_repeat": 11
             },
             "rendering.desktop.notracing": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,

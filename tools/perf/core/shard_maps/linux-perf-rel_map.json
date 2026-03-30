@@ -3,7 +3,8 @@
         "benchmarks": {
             "system_health.common_desktop": {
                 "end": 39,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "executables": {
@@ -23,7 +24,8 @@
         "benchmarks": {
             "system_health.common_desktop": {
                 "begin": 39,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "executables": {

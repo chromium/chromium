@@ -455,6 +455,24 @@ def _speedometer3_crossbench(estimated_runtime: int = 60,
                           flags=flags)
 
 
+@_register('browser_startup.crossbench')
+def _browser_startup_crossbench(estimated_runtime: int = 60,
+                                flags: tuple[str, ...] = ()):
+  """Browser startup benchmark for InitialWebUI vs Baseline."""
+  flags += (
+      '--browser-config',
+      'config/benchmark/browser_startup/browser.config.hjson',
+      '--probe-config',
+      'config/benchmark/browser_startup/probe.hjson',
+      '--page-config',
+      'config/benchmark/browser_startup/story.hjson',
+  )
+  return CrossbenchConfig('browser_startup.crossbench',
+                          'loading',
+                          estimated_runtime=estimated_runtime,
+                          flags=flags)
+
+
 @_register('speedometer_main.crossbench')
 def _speedometer_main_crossbench(estimated_runtime: int = 60,
                                  flags: tuple[str, ...] = ()):

@@ -2,13 +2,16 @@
     "0": {
         "benchmarks": {
             "media.mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "v8.browsing_mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },

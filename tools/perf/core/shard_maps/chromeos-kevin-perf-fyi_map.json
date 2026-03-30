@@ -3,7 +3,8 @@
         "benchmarks": {
             "rendering.desktop": {
                 "end": 87,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -12,7 +13,8 @@
             "rendering.desktop": {
                 "begin": 87,
                 "end": 174,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -21,7 +23,8 @@
             "rendering.desktop": {
                 "begin": 174,
                 "end": 262,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -29,7 +32,8 @@
         "benchmarks": {
             "rendering.desktop": {
                 "begin": 262,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },

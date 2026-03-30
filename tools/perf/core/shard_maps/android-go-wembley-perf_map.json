@@ -2,10 +2,12 @@
     "0": {
         "benchmarks": {
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "startup.mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -18,7 +20,8 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -35,10 +38,12 @@
                         "end": 72
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -59,14 +64,17 @@
                         "end": 76
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "system_health.memory_mobile": {
                 "end": 8,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -75,7 +83,8 @@
             "system_health.memory_mobile": {
                 "begin": 8,
                 "end": 15,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -88,10 +97,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -100,7 +111,8 @@
             "system_health.memory_mobile": {
                 "begin": 15,
                 "end": 23,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -113,10 +125,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -125,7 +139,8 @@
             "system_health.memory_mobile": {
                 "begin": 23,
                 "end": 29,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -138,10 +153,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -150,7 +167,8 @@
             "system_health.memory_mobile": {
                 "begin": 29,
                 "end": 41,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -163,10 +181,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -175,7 +195,8 @@
             "system_health.memory_mobile": {
                 "begin": 41,
                 "end": 53,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -188,10 +209,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -200,7 +223,8 @@
             "system_health.memory_mobile": {
                 "begin": 53,
                 "end": 66,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -213,10 +237,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -225,7 +251,8 @@
             "system_health.memory_mobile": {
                 "begin": 66,
                 "end": 74,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.common_mobile": {
                 "sections": [
@@ -238,10 +265,12 @@
                         "end": 43
                     }
                 ],
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -249,13 +278,16 @@
         "benchmarks": {
             "system_health.memory_mobile": {
                 "begin": 74,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.webview_startup": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 20
             },
             "v8.browsing_mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },

@@ -2,17 +2,21 @@
     "0": {
         "benchmarks": {
             "speedometer3": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "startup.mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "system_health.common_mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "system_health.memory_mobile": {
                 "end": 13,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             }
         }
     },
@@ -21,7 +25,8 @@
             "system_health.memory_mobile": {
                 "begin": 13,
                 "end": 34,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             }
         }
     },
@@ -30,7 +35,8 @@
             "system_health.memory_mobile": {
                 "begin": 34,
                 "end": 69,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             }
         }
     },
@@ -38,14 +44,17 @@
         "benchmarks": {
             "system_health.memory_mobile": {
                 "begin": 69,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 3
             },
             "system_health.webview_startup": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 20
             },
             "v8.browsing_mobile": {
                 "end": 7,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -53,7 +62,8 @@
         "benchmarks": {
             "v8.browsing_mobile": {
                 "begin": 7,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },

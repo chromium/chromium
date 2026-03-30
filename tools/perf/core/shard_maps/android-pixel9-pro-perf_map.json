@@ -2,7 +2,8 @@
     "0": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "executables": {
@@ -47,7 +48,8 @@
     "1": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "crossbench": {
@@ -78,7 +80,8 @@
     "2": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "crossbench": {
@@ -116,7 +119,8 @@
     "3": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "crossbench": {

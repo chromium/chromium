@@ -2,10 +2,12 @@
     "0": {
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -32,10 +34,12 @@
         },
         "benchmarks": {
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -47,13 +51,16 @@
         "benchmarks": {
             "rendering.mobile": {
                 "end": 81,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -66,13 +73,16 @@
             "rendering.mobile": {
                 "begin": 81,
                 "end": 159,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -85,13 +95,16 @@
             "rendering.mobile": {
                 "begin": 159,
                 "end": 238,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "jetstream2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -104,7 +117,8 @@
             "rendering.mobile": {
                 "begin": 238,
                 "end": 322,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -116,10 +130,12 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 322,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer2": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             },
             "speedometer3": {
                 "abridged": false,
@@ -134,7 +150,8 @@
                 "pageset_repeat": 16
             },
             "system_health.common_mobile": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "crossbench": {

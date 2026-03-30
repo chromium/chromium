@@ -3,7 +3,8 @@
         "benchmarks": {
             "rendering.mobile": {
                 "end": 102,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -12,7 +13,8 @@
             "rendering.mobile": {
                 "begin": 102,
                 "end": 145,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -21,7 +23,8 @@
             "rendering.mobile": {
                 "begin": 145,
                 "end": 188,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -30,7 +33,8 @@
             "rendering.mobile": {
                 "begin": 188,
                 "end": 245,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -39,7 +43,8 @@
             "rendering.mobile": {
                 "begin": 245,
                 "end": 303,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -48,7 +53,8 @@
             "rendering.mobile": {
                 "begin": 303,
                 "end": 347,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
@@ -56,7 +62,8 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 347,
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         },
         "crossbench": {

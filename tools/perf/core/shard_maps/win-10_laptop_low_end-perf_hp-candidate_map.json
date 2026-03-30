@@ -2,10 +2,12 @@
     "0": {
         "benchmarks": {
             "rendering.desktop": {
-                "abridged": true
+                "abridged": true,
+                "pageset_repeat": 1
             },
             "v8.browsing_desktop": {
-                "abridged": false
+                "abridged": false,
+                "pageset_repeat": 1
             }
         }
     },
