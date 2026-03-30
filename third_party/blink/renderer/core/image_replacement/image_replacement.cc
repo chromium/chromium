@@ -101,6 +101,7 @@ void ImageReplacement::StartReplacement(
   // when `CreateImageReplacement()` was called, we would have already called
   // `Reset()`.
   CHECK(image_element_->IsPrimaryContent());
+  original_image_source_url_ = image_element_->ImageSourceURL();
   image_element_->StartImageReplacement();
 
   ShadowRoot* shadow_root = image_element_->UserAgentShadowRoot();

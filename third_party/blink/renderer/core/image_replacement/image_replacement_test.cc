@@ -563,4 +563,57 @@ TEST_F(ImageReplacementSimTest, ImageReplacementCreateWithFailedLoadFails) {
   EXPECT_FALSE(result.has_value());
 }
 
+TEST_F(ImageReplacementSimTest, ImageReplacementResetAfterSrcChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImageReplacement);
+  SimRequest main_resource("https://example.com/index.html", "text/html");
+  LoadURL("https://example.com/index.html");
+  main_resource.Complete(R"(
+    <img src="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+         id="target"></img>
+  )");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  HTMLImageElement* img = To<HTMLImageElement>(
+      GetDocument().getElementById(AtomicString("target")));
+  ASSERT_TRUE(img);
+
+  auto result = ImageReplacement::CreateAndBindReceiver(*img);
+  ASSERT_TRUE(result.has_value());
+
+  mojo::Remote<mojom::blink::ImageReplacement> replacement_remote(
+      std::move(result.value()));
+  MockImageReplacementHost mock_host;
+  replacement_remote->StartReplacement(
+      mock_host.receiver().BindNewPipeAndPassRemote());
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(img->HasImageReplacement());
+
+  // Update src to the same value.
+  img->setAttribute(
+      html_names::kSrcAttr,
+      AtomicString(
+          "data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAAB"
+          "AAEAAAICTAEAOw=="));
+  test::RunPendingTasks();
+
+  // Replacement should not be reset.
+  EXPECT_TRUE(img->HasImageReplacement());
+
+  // Update src to a different value.
+  img->setAttribute(
+      html_names::kSrcAttr,
+      AtomicString(
+          "data:image/"
+          "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
+          "9AAAAFUlEQVR42mP8r8ZQz0AEYBxVSF+FAF4REHM0zJumAAAAAElFTkSuQmCC"));
+  test::RunPendingTasks();
+
+  // Replacement should be reset.
+  EXPECT_FALSE(img->HasImageReplacement());
+}
+
 }  // namespace blink

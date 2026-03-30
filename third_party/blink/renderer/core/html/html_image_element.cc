@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/image_replacement/document_image_replacements.h"
 #include "third_party/blink/renderer/core/image_replacement/image_replacement.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -1060,9 +1061,23 @@ void HTMLImageElement::EnsurePrimaryContent() {
 }
 
 void HTMLImageElement::ResetLayoutDisposition() {
-  // TODO(b/489469993): We will reset any active image replacement here. This
-  // might not make sense for all the callsites of this method (for example, if
-  // the viewport changes).
+  // If the element has an image replacement, and the source URL hasn't changed
+  // since the image replacement was created, then we don't need to reset the
+  // layout disposition.
+  // TODO(b/489469993): Reconsider if resetting the replacement is necessary
+  // after the source URL changes in value.
+  if (HasImageReplacement()) {
+    if (DocumentImageReplacements* replacements =
+            DocumentImageReplacements::FromIfExists(GetDocument())) {
+      if (ImageReplacement* replacement =
+              replacements->GetImageReplacement(this)) {
+        if (replacement->OriginalImageSourceURL() == ImageSourceURL()) {
+          return;
+        }
+      }
+    }
+  }
+
   if (GetImageLoader().ImageIsPotentiallyAvailable()) {
     EnsurePrimaryContent();
   } else {
