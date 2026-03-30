@@ -17,14 +17,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/display/display_observer.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/native_frame_view.h"
-
-namespace display {
-enum class TabletState;
-}  // namespace display
 
 namespace chromeos {
 class FrameCaptionButtonContainerView;
@@ -48,8 +43,7 @@ class FrameViewAshImmersiveHelper;
 class ASH_EXPORT FrameViewAsh
     : public views::NativeFrameView,
       public chromeos::FrameContextMenuController::Delegate,
-      public aura::WindowObserver,
-      public display::DisplayObserver {
+      public aura::WindowObserver {
   METADATA_HEADER(FrameViewAsh, views::NativeFrameView)
 
  public:
@@ -143,9 +137,6 @@ class ASH_EXPORT FrameViewAsh
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
-  // display::DisplayObserver:
-  void OnDisplayTabletStateChanged(display::TabletState state) override;
-
  protected:
   class OverlayView;
 
@@ -197,8 +188,6 @@ class ASH_EXPORT FrameViewAsh
       widget_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&FrameViewAsh::PaintAsActiveChanged,
                               base::Unretained(this)));
-
-  display::ScopedDisplayObserver display_observer_{this};
 
   base::WeakPtrFactory<FrameViewAsh> weak_factory_{this};
 };

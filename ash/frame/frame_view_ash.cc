@@ -518,21 +518,6 @@ void FrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
 }
 
-void FrameViewAsh::OnDisplayTabletStateChanged(display::TabletState state) {
-  switch (state) {
-    case display::TabletState::kEnteringTabletMode:
-    case display::TabletState::kExitingTabletMode:
-      break;
-    case display::TabletState::kInTabletMode:
-    case display::TabletState::kInClamshellMode:
-      // Without this, Layout is not guaranteed to be called when the tablet
-      // state changes. Layout must be called so that the header view can hide
-      // or unhide as appropriate.
-      InvalidateLayout();
-      break;
-  }
-}
-
 void FrameViewAsh::UpdateWindowRoundedCorners() {
   if (!GetWidget()) {
     return;
