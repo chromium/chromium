@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

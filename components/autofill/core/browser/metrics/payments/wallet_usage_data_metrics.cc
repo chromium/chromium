@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/metrics/payments/wallet_usage_data_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 
 namespace autofill::autofill_metrics {
 

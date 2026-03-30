@@ -8,7 +8,6 @@
 #include <string_view>
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/default_tick_clock.h"
 

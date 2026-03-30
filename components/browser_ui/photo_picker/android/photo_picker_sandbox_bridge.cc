@@ -5,7 +5,6 @@
 #include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/metrics/histogram_macros.h"
 #include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/sandbox_buildflags.h"
 

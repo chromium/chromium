@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "components/metrics/histogram_subscriber.h"

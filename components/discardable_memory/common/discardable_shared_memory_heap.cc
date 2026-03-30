@@ -17,7 +17,6 @@
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 

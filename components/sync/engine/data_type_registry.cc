@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/engine/data_type_worker.h"

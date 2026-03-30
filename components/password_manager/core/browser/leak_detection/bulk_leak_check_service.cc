@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"

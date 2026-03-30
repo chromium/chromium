@@ -36,7 +36,6 @@
 #include "base/json/string_escape.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -75,6 +74,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "base/time/time.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace download {

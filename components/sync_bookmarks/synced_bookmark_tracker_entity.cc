@@ -11,7 +11,6 @@
 #include "base/hash/hash.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"

@@ -13,7 +13,6 @@
 #include <utility>
 
 #include "base/metrics/field_trial.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -29,6 +28,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "base/time/time.h"
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
 

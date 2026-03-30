@@ -36,7 +36,7 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #endif
 
 namespace discardable_memory {

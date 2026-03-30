@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
@@ -47,6 +46,7 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "base/time/time.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif

@@ -15,7 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/state_transitions.h"
 #include "base/strings/string_util.h"

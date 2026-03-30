@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/safe_browsing/core/common/features.h"

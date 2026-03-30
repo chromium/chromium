@@ -17,7 +17,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

@@ -16,7 +16,6 @@
 #include "base/containers/queue.h"
 #include "base/debug/crash_logging.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -31,6 +30,8 @@
 
 #if DCHECK_IS_ON()
 #include <sstream>
+
+#include "base/time/time.h"
 #endif
 
 namespace viz {

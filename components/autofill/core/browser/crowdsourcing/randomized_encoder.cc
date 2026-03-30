@@ -12,7 +12,6 @@
 #include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"

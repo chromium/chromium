@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/webapps/browser/webapps_client.h"
 

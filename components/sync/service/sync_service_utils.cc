@@ -5,7 +5,6 @@
 #include "components/sync/service/sync_service_utils.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"

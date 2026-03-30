@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "components/metrics/dwa/dwa_recorder.h"
 #include "components/metrics/dwa/dwa_service.h"

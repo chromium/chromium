@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"

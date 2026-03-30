@@ -8,9 +8,9 @@
 
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/levenshtein_distance.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"

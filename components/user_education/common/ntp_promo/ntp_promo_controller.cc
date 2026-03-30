@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/user_education/common/ntp_promo/ntp_promo_identifier.h"

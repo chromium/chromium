@@ -9,7 +9,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"

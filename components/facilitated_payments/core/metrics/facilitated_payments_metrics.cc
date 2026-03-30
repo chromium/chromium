@@ -5,7 +5,6 @@
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/facilitated_payments/core/mojom/pix_code_validator.mojom.h"

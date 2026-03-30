@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,6 +30,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/time/time.h"
 #include "net/android/network_library.h"
 #endif
 

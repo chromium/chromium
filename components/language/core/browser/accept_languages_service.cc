@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/language/core/common/language_util.h"

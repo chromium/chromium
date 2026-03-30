@@ -36,7 +36,6 @@
 
 #include "base/apple/owned_objc.h"
 #include "base/mac/mac_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"

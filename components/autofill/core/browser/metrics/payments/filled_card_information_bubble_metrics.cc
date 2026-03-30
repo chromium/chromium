@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/metrics/payments/filled_card_information_bubble_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 
 namespace autofill::autofill_metrics {
 

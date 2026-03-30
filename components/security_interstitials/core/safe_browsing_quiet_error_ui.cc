@@ -5,8 +5,8 @@
 #include "components/security_interstitials/core/safe_browsing_quiet_error_ui.h"
 
 #include "base/i18n/time_formatting.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
+#include "base/time/time.h"
 #include "components/google/core/common/google_util.h"
 #include "components/grit/components_resources.h"
 #include "components/security_interstitials/core/common_string_util.h"

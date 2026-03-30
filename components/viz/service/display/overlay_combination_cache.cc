@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
-#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_strategy.h"

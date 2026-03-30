@@ -12,7 +12,6 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"

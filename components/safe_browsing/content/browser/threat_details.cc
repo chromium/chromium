@@ -19,7 +19,6 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"

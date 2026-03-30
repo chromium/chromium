@@ -8,8 +8,8 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

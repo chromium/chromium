@@ -8,7 +8,6 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "components/subresource_filter/core/common/time_measurements.h"

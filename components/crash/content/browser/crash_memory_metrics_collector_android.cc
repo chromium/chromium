@@ -9,7 +9,6 @@
 
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/remote.h"

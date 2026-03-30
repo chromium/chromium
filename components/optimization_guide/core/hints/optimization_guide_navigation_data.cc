@@ -6,7 +6,7 @@
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/hints/hints_processing_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"

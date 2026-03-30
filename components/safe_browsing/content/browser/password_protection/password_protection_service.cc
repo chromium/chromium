@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"

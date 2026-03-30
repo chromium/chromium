@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_api.pb.h"
 #include "components/affiliations/core/browser/affiliation_fetcher_interface.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"

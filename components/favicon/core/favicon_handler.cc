@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/favicon/core/core_favicon_service.h"
 #include "components/favicon_base/favicon_util.h"

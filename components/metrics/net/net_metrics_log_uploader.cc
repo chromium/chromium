@@ -12,7 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

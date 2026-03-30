@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "components/grit/components_resources.h"
 #include "components/prefs/pref_service.h"

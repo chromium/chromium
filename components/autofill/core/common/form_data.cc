@@ -11,7 +11,6 @@
 
 #include "base/base64.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"

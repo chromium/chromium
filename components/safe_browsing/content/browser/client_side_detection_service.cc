@@ -17,7 +17,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"

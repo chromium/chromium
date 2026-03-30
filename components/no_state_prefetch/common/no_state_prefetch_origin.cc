@@ -5,8 +5,9 @@
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
 
 #include <array>
+#include <iterator>
 
-#include "base/metrics/histogram_macros.h"
+#include "base/check.h"
 
 namespace prerender {
 

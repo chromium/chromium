@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/tick_clock.h"
 #include "build/build_config.h"
@@ -22,6 +21,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/time/time.h"
 #include "base/win/windows_version.h"
 #endif
 

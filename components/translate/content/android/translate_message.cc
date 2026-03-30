@@ -19,7 +19,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/language_detection/core/constants.h"
 #include "components/messages/android/message_enums.h"

@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/metrics/payments/manage_cards_prompt_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 
 namespace autofill {
 
