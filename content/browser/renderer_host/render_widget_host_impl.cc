@@ -850,7 +850,7 @@ void RenderWidgetHostImpl::WasHidden() {
 }
 
 void RenderWidgetHostImpl::WasShown(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr
+    std::optional<blink::RecordContentToVisibleTimeRequest>
         record_tab_switch_time_request) {
   // The page should never be visible during prerendering.
   CHECK(!frame_tree_ || !frame_tree_->is_prerendering());
@@ -932,9 +932,8 @@ void RenderWidgetHostImpl::WasShown(
 }
 
 void RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+    blink::RecordContentToVisibleTimeRequest visible_time_request) {
   CHECK(!is_hidden_);
-  CHECK(visible_time_request);
   if (waiting_for_init_) {
     // This method should only be called if the RWHI is already visible, meaning
     // there will be a WasShown call that's queued until init. Update that with
@@ -956,7 +955,7 @@ void RenderWidgetHostImpl::CancelSuccessfulPresentationTimeRequest() {
     // there will be a WasShown call that's queued until init. Update that to
     // clear any request that was set.
     CHECK(pending_show_params_);
-    pending_show_params_->visible_time_request = nullptr;
+    pending_show_params_->visible_time_request.reset();
     return;
   }
   CHECK(!pending_show_params_);
@@ -4013,7 +4012,8 @@ RenderWidgetHostImpl::MainFramePropagationProperties::
 
 RenderWidgetHostImpl::PendingShowParams::PendingShowParams(
     bool is_evicted,
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
+    std::optional<blink::RecordContentToVisibleTimeRequest>
+        visible_time_request)
     : is_evicted(is_evicted),
       visible_time_request(std::move(visible_time_request)) {}
 

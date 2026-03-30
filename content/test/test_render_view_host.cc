@@ -292,7 +292,8 @@ void TestRenderWidgetHostView::OverrideDisplayFeatureForEmulation(
 }
 
 void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
+    std::optional<blink::RecordContentToVisibleTimeRequest>
+        visible_time_request) {
   // Should only be called if the view was not already shown.
   EXPECT_TRUE(!is_showing_ || is_occluded_);
   switch (page_visibility_) {
@@ -309,14 +310,13 @@ void TestRenderWidgetHostView::NotifyHostAndDelegateOnWasShown(
   if (host()->IsHidden()) {
     // Do not pass on `visible_time_request` because there is no compositing to
     // measure.
-    host()->WasShown({});
+    host()->WasShown(std::nullopt);
   }
 }
 
 void TestRenderWidgetHostView::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
-        blink::mojom::RecordContentToVisibleTimeRequestPtr
-            visible_time_request) {
+        blink::RecordContentToVisibleTimeRequest visible_time_request) {
   // Should only be called if the view was already shown.
 #if !BUILDFLAG(IS_ANDROID)
   // TODO(jonross): Update the constructor to determine showing state
@@ -332,7 +332,6 @@ void TestRenderWidgetHostView::
 #endif
   EXPECT_FALSE(is_occluded_);
   EXPECT_EQ(page_visibility_, PageVisibilityState::kVisible);
-  EXPECT_TRUE(visible_time_request);
 }
 
 void TestRenderWidgetHostView::

@@ -932,7 +932,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     // captured, so it should not be included in visibility time metrics.
     NotifyHostAndDelegateOnWasShown(
         web_contents_is_visible ? visible_time_request_trigger.TakeRequest()
-                                : nullptr);
+                                : std::nullopt);
     return;
   }
 
@@ -945,7 +945,7 @@ void RenderWidgetHostViewBase::OnShowWithPageVisibility(
     if (auto visible_time_request =
             visible_time_request_trigger.TakeRequest()) {
       RequestSuccessfulPresentationTimeFromHostOrDelegate(
-          std::move(visible_time_request));
+          std::move(*visible_time_request));
     }
     return;
   }

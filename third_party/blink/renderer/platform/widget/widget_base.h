@@ -20,9 +20,9 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom-blink.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
@@ -156,11 +156,10 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
   void WasShown(bool was_evicted,
-                mojom::blink::RecordContentToVisibleTimeRequestPtr
+                const std::optional<RecordContentToVisibleTimeRequest>&
                     record_tab_switch_time_request) override;
   void RequestSuccessfulPresentationTimeForNextFrame(
-      mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request)
-      override;
+      const RecordContentToVisibleTimeRequest& visible_time_request) override;
   void CancelSuccessfulPresentationTimeRequest() override;
   void SetupBrowserRenderInputRouterConnections(
       mojo::PendingReceiver<mojom::blink::RenderInputRouterClient>

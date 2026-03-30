@@ -671,7 +671,8 @@ void RenderWidgetHostViewAura::EnsurePlatformVisibility(
 }
 
 void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state) {
+    std::optional<blink::RecordContentToVisibleTimeRequest>
+        tab_switch_start_state) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   CHECK(host_->IsHidden());
   CHECK_NE(visibility_, Visibility::VISIBLE);
@@ -687,11 +688,9 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
 
   // No need to check for saved frames for the case of bfcache restore.
   if (show_reason_bfcache_restore) {
-    host()->WasShown(tab_switch_start_state.Clone());
+    host()->WasShown(tab_switch_start_state);
   } else {
-    host()->WasShown(has_saved_frame
-                         ? blink::mojom::RecordContentToVisibleTimeRequestPtr()
-                         : tab_switch_start_state.Clone());
+    host()->WasShown(has_saved_frame ? std::nullopt : tab_switch_start_state);
   }
   aura::Window* root = window_->GetRootWindow();
   if (root) {
@@ -706,8 +705,7 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
   // tab-switching time is the presentation time for the browser-compositor.
   delegated_frame_host_->WasShown(
       GetLocalSurfaceId(), window_->bounds().size(),
-      has_saved_frame ? std::move(tab_switch_start_state)
-                      : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+      has_saved_frame ? std::move(tab_switch_start_state) : std::nullopt);
 
 #if BUILDFLAG(IS_WIN)
   UpdateLegacyWin();
@@ -760,19 +758,16 @@ void RenderWidgetHostViewAura::WasOccluded() {
 
 void RenderWidgetHostViewAura::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
-        blink::mojom::RecordContentToVisibleTimeRequestPtr
-            visible_time_request) {
+        blink::RecordContentToVisibleTimeRequest visible_time_request) {
   CHECK(delegated_frame_host_) << "Cannot be invoked during destruction.";
   CHECK(!host_->IsHidden());
   CHECK_EQ(visibility_, Visibility::VISIBLE);
-  CHECK(visible_time_request);
 
   bool has_saved_frame = delegated_frame_host_->HasSavedFrame();
 
   // No need to check for saved frames for the case of bfcache restore.
-  if (visible_time_request->show_reason_bfcache_restore || !has_saved_frame) {
-    host()->RequestSuccessfulPresentationTimeForNextFrame(
-        visible_time_request.Clone());
+  if (visible_time_request.show_reason_bfcache_restore || !has_saved_frame) {
+    host()->RequestSuccessfulPresentationTimeForNextFrame(visible_time_request);
   }
 
   // If the frame for the renderer is already available, then the

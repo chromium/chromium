@@ -59,7 +59,6 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
 #include "third_party/blink/public/mojom/leak_detector/leak_detector.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -533,8 +532,7 @@ void RenderViewTest::SetUp() {
   RenderFrameWasShownWaiter waiter(
       RenderFrame::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame()));
   render_widget_host_->widget_remote_for_testing()->WasShown(
-      /*was_evicted=*/false,
-      blink::mojom::RecordContentToVisibleTimeRequestPtr());
+      /*was_evicted=*/false, std::nullopt);
   waiter.Wait();
 }
 

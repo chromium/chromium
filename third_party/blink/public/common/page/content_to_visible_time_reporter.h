@@ -5,11 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PAGE_CONTENT_TO_VISIBLE_TIME_REPORTER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
 namespace viz {
 class FrameTimingDetails;
@@ -47,14 +49,7 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // callback to invoke the next time a frame is presented for this tab.
   SuccessfulPresentationTimeCallback TabWasShown(
       bool has_saved_frames,
-      mojom::RecordContentToVisibleTimeRequestPtr start_state);
-
-  SuccessfulPresentationTimeCallback TabWasShown(
-      bool has_saved_frames,
-      base::TimeTicks event_start_time,
-      bool destination_is_loaded,
-      bool show_reason_tab_switching,
-      bool show_reason_bfcache_restore);
+      RecordContentToVisibleTimeRequest start_state);
 
   // Called when the device is unfolded and the activity is recreated. Returns
   // a callback to invoke the next time a frame is presented.
@@ -81,21 +76,21 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
   // Saves the given `state` and `has_saved_frames`, and invalidates all
   // existing callbacks that might reference the old state.
   void OverwriteTabSwitchStartState(
-      mojom::RecordContentToVisibleTimeRequestPtr state,
+      std::optional<RecordContentToVisibleTimeRequest> state,
       bool has_saved_frames);
 
   // Clears state and invalidates all existing callbacks that might reference
   // the old state.
   void ResetTabSwitchStartState() {
-    OverwriteTabSwitchStartState(nullptr, false);
+    OverwriteTabSwitchStartState(std::nullopt, false);
   }
 
   // Whether there was a saved frame for the last tab switch.
   bool has_saved_frames_;
 
-  // The information about the last tab switch request, or nullptr if there is
+  // The information about the last tab switch request, or nullopt if there is
   // no incomplete tab switch.
-  mojom::RecordContentToVisibleTimeRequestPtr tab_switch_start_state_;
+  std::optional<RecordContentToVisibleTimeRequest> tab_switch_start_state_;
 
   base::WeakPtrFactory<ContentToVisibleTimeReporter> weak_ptr_factory_{this};
 };

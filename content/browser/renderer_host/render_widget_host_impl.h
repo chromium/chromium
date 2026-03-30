@@ -61,6 +61,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-forward.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom.h"
@@ -68,7 +69,6 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
@@ -479,14 +479,14 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Called to notify the RenderWidget that it has been hidden or restored from
   // having been hidden.
   void WasHidden();
-  void WasShown(blink::mojom::RecordContentToVisibleTimeRequestPtr
+  void WasShown(std::optional<blink::RecordContentToVisibleTimeRequest>
                     record_tab_switch_time_request);
 
   // Called to request the presentation time for the next frame or cancel any
   // requests when the RenderWidget's visibility state is not changing. If the
   // visibility state is changing call WasHidden or WasShown instead.
   void RequestSuccessfulPresentationTimeForNextFrame(
-      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
+      blink::RecordContentToVisibleTimeRequest visible_time_request);
   void CancelSuccessfulPresentationTimeRequest();
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1550,7 +1550,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // RequestSuccessfulPresentationTimeForNextFrame is called while waiting.
   struct PendingShowParams {
     PendingShowParams(bool is_evicted,
-                      blink::mojom::RecordContentToVisibleTimeRequestPtr
+                      std::optional<blink::RecordContentToVisibleTimeRequest>
                           visible_time_request);
     ~PendingShowParams();
 
@@ -1558,7 +1558,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     PendingShowParams& operator=(const PendingShowParams&) = delete;
 
     bool is_evicted;
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request;
+    std::optional<blink::RecordContentToVisibleTimeRequest>
+        visible_time_request;
   };
   std::optional<PendingShowParams> pending_show_params_;
 

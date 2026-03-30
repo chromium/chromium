@@ -44,7 +44,7 @@ specific_include_rules = {
   ],
   ".*delegated_frame_host_android\.(cc|h)": [
     "+third_party/blink/public/common/page/content_to_visible_time_reporter.h",
-    "+third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h",
+    "+third_party/blink/public/common/page/content_to_visible_time_request.h",
   ],
   ".*overscroll_refresh\.(cc|h)": [
     "+third_party/blink/public/common/input/web_gesture_device.h",

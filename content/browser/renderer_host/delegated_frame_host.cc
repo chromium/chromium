@@ -30,7 +30,6 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -92,7 +91,7 @@ void DelegatedFrameHost::RemoveObserverForTesting(Observer* observer) {
 void DelegatedFrameHost::WasShown(
     const viz::LocalSurfaceId& new_local_surface_id,
     const gfx::Size& new_dip_size,
-    blink::mojom::RecordContentToVisibleTimeRequestPtr
+    std::optional<blink::RecordContentToVisibleTimeRequest>
         record_tab_switch_time_request) {
   // Cancel any pending frame eviction and unpause it if paused.
   SetFrameEvictionStateAndNotifyObservers(FrameEvictionState::kNotStarted);
@@ -102,7 +101,7 @@ void DelegatedFrameHost::WasShown(
     compositor_->RequestSuccessfulPresentationTimeForNextFrame(
         tab_switch_time_recorder_.TabWasShown(
             true /* has_saved_frames */,
-            std::move(record_tab_switch_time_request)));
+            std::move(*record_tab_switch_time_request)));
   }
 
   // Use the default deadline to synchronize web content with browser UI.
@@ -118,8 +117,7 @@ void DelegatedFrameHost::WasShown(
 }
 
 void DelegatedFrameHost::RequestSuccessfulPresentationTimeForNextFrame(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {
-  CHECK(visible_time_request);
+    blink::RecordContentToVisibleTimeRequest visible_time_request) {
   if (!compositor_)
     return;
   // Tab was shown while widget was already painting, eg. due to being

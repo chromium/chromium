@@ -4,74 +4,45 @@
 
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
 
+#include <optional>
 #include <tuple>
 #include <utility>
 
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
 namespace content {
 
 namespace {
 
-class VisibleTimeRequestTriggerTest : public testing::Test {
- protected:
-  using RecordContentToVisibleTimeRequest =
-      blink::mojom::RecordContentToVisibleTimeRequest;
-  using RecordContentToVisibleTimeRequestPtr =
-      blink::mojom::RecordContentToVisibleTimeRequestPtr;
+using ::testing::Optional;
 
+class VisibleTimeRequestTriggerTest : public ::testing::Test {
+ protected:
   // Converts a base::TimeDelta into a base::TimeTicks value suitable for
   // storing in the `event_start_time` field of a
   // RecordContentToVisibleTimeRequest.
   static base::TimeTicks StartTimeFromDelta(base::TimeDelta delta) {
     return base::TimeTicks() + delta;
   }
-
-  // Returns a request with the given `start_time`, which is given as a delta
-  // from 0 since callers don't have an easy way to create base::TimeTicks
-  // directly.
-  static RecordContentToVisibleTimeRequestPtr CreateRequestPtr(
-      base::TimeDelta start_time,
-      bool destination_is_loaded = false,
-      bool show_reason_tab_switching = false,
-      bool show_reason_bfcache_restore = false,
-      bool show_reason_unfolding = false) {
-    return RecordContentToVisibleTimeRequest::New(
-        StartTimeFromDelta(start_time), destination_is_loaded,
-        show_reason_tab_switching, show_reason_bfcache_restore,
-        show_reason_unfolding);
-  }
-
-  // Expects that all fields of `request` and `expected` match.
-  static void ExpectEqualRequests(
-      RecordContentToVisibleTimeRequestPtr request,
-      const RecordContentToVisibleTimeRequest& expected) {
-    ASSERT_TRUE(request);
-    EXPECT_EQ(request->event_start_time, expected.event_start_time);
-    EXPECT_EQ(request->destination_is_loaded, expected.destination_is_loaded);
-    EXPECT_EQ(request->show_reason_tab_switching,
-              expected.show_reason_tab_switching);
-    EXPECT_EQ(request->show_reason_bfcache_restore,
-              expected.show_reason_bfcache_restore);
-  }
 };
 
 TEST_F(VisibleTimeRequestTriggerTest, MergeEmpty) {
-  EXPECT_TRUE(
-      VisibleTimeRequestTrigger::ConsumeAndMergeRequests(nullptr, nullptr)
-          .is_null());
-  ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                          nullptr, RecordContentToVisibleTimeRequest::New()),
-                      {});
-  ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                          RecordContentToVisibleTimeRequest::New(), nullptr),
-                      {});
-  ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                          RecordContentToVisibleTimeRequest::New(),
-                          RecordContentToVisibleTimeRequest::New()),
-                      {});
+  EXPECT_EQ(blink::ConsumeAndMergeContentToVisibleTimeRequests(std::nullopt,
+                                                               std::nullopt),
+            std::nullopt);
+  EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                  std::nullopt, blink::RecordContentToVisibleTimeRequest{}),
+              Optional(blink::RecordContentToVisibleTimeRequest{}));
+  EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                  blink::RecordContentToVisibleTimeRequest{}, std::nullopt),
+              Optional(blink::RecordContentToVisibleTimeRequest{}));
+  EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                  blink::RecordContentToVisibleTimeRequest{},
+                  blink::RecordContentToVisibleTimeRequest{}),
+              Optional(blink::RecordContentToVisibleTimeRequest{}));
 }
 
 TEST_F(VisibleTimeRequestTriggerTest, MergeStartTimes) {
@@ -84,9 +55,12 @@ TEST_F(VisibleTimeRequestTriggerTest, MergeStartTimes) {
                                      base::TimeDelta expected_time) {
     SCOPED_TRACE(::testing::Message() << "Merging requests with start times "
                                       << left_time << " and " << right_time);
-    RecordContentToVisibleTimeRequestPtr merged_request =
-        VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-            CreateRequestPtr(left_time), CreateRequestPtr(right_time));
+    std::optional<blink::RecordContentToVisibleTimeRequest> merged_request =
+        blink::ConsumeAndMergeContentToVisibleTimeRequests(
+            blink::RecordContentToVisibleTimeRequest{
+                .event_start_time = StartTimeFromDelta(left_time)},
+            blink::RecordContentToVisibleTimeRequest{
+                .event_start_time = StartTimeFromDelta(right_time)});
     ASSERT_TRUE(merged_request);
     EXPECT_EQ(merged_request->event_start_time,
               StartTimeFromDelta(expected_time));
@@ -144,21 +118,22 @@ TEST_F(VisibleTimeRequestTriggerTest, MergeRequests) {
   };
 
   auto request_with_params = [](const ParamTuple& params) {
-    return CreateRequestPtr(base::TimeDelta(), std::get<0>(params),
-                            std::get<1>(params), std::get<2>(params));
+    return blink::RecordContentToVisibleTimeRequest{
+        .event_start_time = StartTimeFromDelta(base::TimeDelta()),
+        .destination_is_loaded = std::get<0>(params),
+        .show_reason_tab_switching = std::get<1>(params),
+        .show_reason_bfcache_restore = std::get<2>(params)};
   };
 
   auto request_with_union_of_params = [](const ParamTuple& params1,
                                          const ParamTuple& params2) {
-    const bool destination_is_loaded =
-        std::get<0>(params1) || std::get<0>(params2);
-    const bool show_reason_tab_switching =
-        std::get<1>(params1) || std::get<1>(params2);
-    const bool show_reason_bfcache_restore =
-        std::get<2>(params1) || std::get<2>(params2);
-    return CreateRequestPtr(base::TimeDelta(), destination_is_loaded,
-                            show_reason_tab_switching,
-                            show_reason_bfcache_restore);
+    return blink::RecordContentToVisibleTimeRequest{
+        .event_start_time = StartTimeFromDelta(base::TimeDelta()),
+        .destination_is_loaded = std::get<0>(params1) || std::get<0>(params2),
+        .show_reason_tab_switching =
+            std::get<1>(params1) || std::get<1>(params2),
+        .show_reason_bfcache_restore =
+            std::get<2>(params1) || std::get<2>(params2)};
   };
 
   for (const ParamTuple& params : kRequestParams) {
@@ -171,18 +146,15 @@ TEST_F(VisibleTimeRequestTriggerTest, MergeRequests) {
       // or both of the requests.
       const auto expected = request_with_params(params);
 
-      ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                              RecordContentToVisibleTimeRequest::New(),
-                              request_with_params(params)),
-                          *expected);
-      ExpectEqualRequests(VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-                              request_with_params(params),
-                              RecordContentToVisibleTimeRequest::New()),
-                          *expected);
-      ExpectEqualRequests(
-          VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
-              request_with_params(params), request_with_params(params)),
-          *expected);
+      EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                      std::nullopt, request_with_params(params)),
+                  Optional(expected));
+      EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                      request_with_params(params), std::nullopt),
+                  Optional(expected));
+      EXPECT_THAT(blink::ConsumeAndMergeContentToVisibleTimeRequests(
+                      request_with_params(params), request_with_params(params)),
+                  Optional(expected));
     }
 
     // Check that when these fields are combined with another set of fields,
@@ -192,41 +164,43 @@ TEST_F(VisibleTimeRequestTriggerTest, MergeRequests) {
                    << "Combining with params " << std::get<0>(params2) << ","
                    << std::get<1>(params2) << "," << std::get<2>(params2));
       const auto expected = request_with_union_of_params(params, params2);
-      ExpectEqualRequests(
-          VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
+      EXPECT_THAT(
+          blink::ConsumeAndMergeContentToVisibleTimeRequests(
               request_with_params(params), request_with_params(params2)),
-          *expected);
-      ExpectEqualRequests(
-          VisibleTimeRequestTrigger::ConsumeAndMergeRequests(
+          Optional(expected));
+      EXPECT_THAT(
+          blink::ConsumeAndMergeContentToVisibleTimeRequests(
               request_with_params(params2), request_with_params(params)),
-          *expected);
+          Optional(expected));
     }
   }
 }
 
 TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
   VisibleTimeRequestTrigger trigger;
-  EXPECT_TRUE(trigger.TakeRequest().is_null());
+  EXPECT_EQ(trigger.TakeRequest(), std::nullopt);
 
   // Calling Update then Take should clear the stored request.
   {
-    const auto expected =
-        CreateRequestPtr(base::Seconds(1), /*destination_is_loaded=*/false,
-                         /*show_reason_tab_switching=*/true);
+    const auto expected = blink::RecordContentToVisibleTimeRequest{
+        .event_start_time = StartTimeFromDelta(base::Seconds(1)),
+        .destination_is_loaded = false,
+        .show_reason_tab_switching = true};
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(1)),
                           /*destination_is_loaded=*/false,
                           /*show_reason_tab_switching=*/true,
                           /*show_reason_bfcache_restore=*/false);
-    ExpectEqualRequests(trigger.TakeRequest(), *expected);
-    EXPECT_TRUE(trigger.TakeRequest().is_null());
+    EXPECT_THAT(trigger.TakeRequest(), Optional(expected));
+    EXPECT_EQ(trigger.TakeRequest(), std::nullopt);
   }
 
   // Calling Update twice should merge the requests.
   {
-    const auto expected =
-        CreateRequestPtr(base::Seconds(2), /*destination_is_loaded=*/true,
-                         /*show_reason_tab_switching=*/true,
-                         /*show_reason_bfcache_restore=*/true);
+    const auto expected = blink::RecordContentToVisibleTimeRequest{
+        .event_start_time = StartTimeFromDelta(base::Seconds(2)),
+        .destination_is_loaded = true,
+        .show_reason_tab_switching = true,
+        .show_reason_bfcache_restore = true};
     trigger.UpdateRequest(StartTimeFromDelta(base::Seconds(2)),
                           /*destination_is_loaded=*/true,
                           /*show_reason_tab_switching=*/true,
@@ -235,8 +209,8 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
                           /*destination_is_loaded=*/false,
                           /*show_reason_tab_switching=*/false,
                           /*show_reason_bfcache_restore=*/true);
-    ExpectEqualRequests(trigger.TakeRequest(), *expected);
-    EXPECT_TRUE(trigger.TakeRequest().is_null());
+    EXPECT_THAT(trigger.TakeRequest(), Optional(expected));
+    EXPECT_EQ(trigger.TakeRequest(), std::nullopt);
   }
 }
 

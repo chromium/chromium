@@ -17,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 
 namespace blink {
 
@@ -153,11 +154,10 @@ TEST_P(ContentToVisibleTimeReporterTest, TimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/false,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true});
   const auto end = start + kDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;
@@ -185,11 +185,10 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
   const auto start1 = base::TimeTicks::Now();
   auto callback1 = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start1, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/false,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start1,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true});
 
   task_environment_.FastForwardBy(kDuration);
   tab_switch_time_recorder_.TabWasHidden();
@@ -212,11 +211,10 @@ TEST_P(ContentToVisibleTimeReporterTest, HideBeforePresentFrame) {
   const auto start2 = base::TimeTicks::Now();
   auto callback2 = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start2, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/false,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start2,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true});
   const auto end2 = start2 + kOtherDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end2;
@@ -249,11 +247,10 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
   const auto start1 = base::TimeTicks::Now();
   auto callback1 = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start1, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/false,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start1,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true});
 
   task_environment_.FastForwardBy(kDuration);
 
@@ -262,11 +259,10 @@ TEST_P(ContentToVisibleTimeReporterTest, MissingTabWasHidden) {
   const auto start2 = base::TimeTicks::Now();
   auto callback2 = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start2, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/false,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start2,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true});
   const auto end2 = start2 + kOtherDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end2;
@@ -301,11 +297,11 @@ TEST_P(ContentToVisibleTimeReporterTest, BfcacheRestoreTimeIsRecorded) {
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/false,
-          /*show_reason_bfcache_restore=*/true,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = false,
+          .show_reason_bfcache_restore = true});
   const auto end = start + kDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;
@@ -325,11 +321,11 @@ TEST_P(ContentToVisibleTimeReporterTest,
   const auto start = base::TimeTicks::Now();
   auto callback = tab_switch_time_recorder_.TabWasShown(
       tab_state_.has_saved_frames,
-      blink::mojom::RecordContentToVisibleTimeRequest::New(
-          start, tab_state_.destination_is_loaded,
-          /*show_reason_tab_switching=*/true,
-          /*show_reason_bfcache_restore=*/true,
-          /*show_reason_unfold=*/false));
+      RecordContentToVisibleTimeRequest{
+          .event_start_time = start,
+          .destination_is_loaded = tab_state_.destination_is_loaded,
+          .show_reason_tab_switching = true,
+          .show_reason_bfcache_restore = true});
   const auto end = start + kDuration;
   viz::FrameTimingDetails details;
   details.presentation_feedback.timestamp = end;

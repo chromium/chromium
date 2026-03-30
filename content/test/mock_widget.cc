@@ -74,16 +74,16 @@ void MockWidget::WasHidden() {
     std::move(shown_hidden_callback_).Run();
 }
 
-void MockWidget::WasShown(bool was_evicted,
-                          blink::mojom::RecordContentToVisibleTimeRequestPtr
-                              record_tab_switch_time_request) {
+void MockWidget::WasShown(
+    bool was_evicted,
+    const std::optional<blink::RecordContentToVisibleTimeRequest>&) {
   is_hidden_ = false;
   if (shown_hidden_callback_)
     std::move(shown_hidden_callback_).Run();
 }
 
 void MockWidget::RequestSuccessfulPresentationTimeForNextFrame(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request) {}
+    const blink::RecordContentToVisibleTimeRequest&) {}
 
 void MockWidget::CancelSuccessfulPresentationTimeRequest() {}
 

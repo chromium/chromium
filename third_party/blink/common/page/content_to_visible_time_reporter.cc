@@ -16,7 +16,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -28,7 +28,7 @@ using TabSwitchResult = ContentToVisibleTimeReporter::TabSwitchResult;
 
 const char* GetHistogramSuffix(
     bool has_saved_frames,
-    const mojom::RecordContentToVisibleTimeRequest& start_state) {
+    const RecordContentToVisibleTimeRequest& start_state) {
   if (has_saved_frames)
     return "WithSavedFrames";
 
@@ -131,11 +131,11 @@ ContentToVisibleTimeReporter::~ContentToVisibleTimeReporter() = default;
 ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
 ContentToVisibleTimeReporter::TabWasShown(
     bool has_saved_frames,
-    mojom::RecordContentToVisibleTimeRequestPtr start_state) {
-  DCHECK(!start_state->event_start_time.is_null());
+    RecordContentToVisibleTimeRequest start_state) {
+  DCHECK(!start_state.event_start_time.is_null());
   if (tab_switch_start_state_ &&
       tab_switch_start_state_->show_reason_tab_switching &&
-      start_state->show_reason_tab_switching) {
+      start_state.show_reason_tab_switching) {
     // Missed a tab hide, so record an incomplete tab switch. As a side effect
     // this will reset the state.
     //
@@ -167,19 +167,6 @@ ContentToVisibleTimeReporter::TabWasShown(
       weak_ptr_factory_.GetWeakPtr(), TabSwitchResult::kSuccess,
       tab_switch_start_state_->show_reason_tab_switching,
       tab_switch_start_state_->show_reason_bfcache_restore);
-}
-
-ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
-ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
-                                          base::TimeTicks event_start_time,
-                                          bool destination_is_loaded,
-                                          bool show_reason_tab_switching,
-                                          bool show_reason_bfcache_restore) {
-  return TabWasShown(
-      has_saved_frames,
-      mojom::RecordContentToVisibleTimeRequest::New(
-          event_start_time, destination_is_loaded, show_reason_tab_switching,
-          show_reason_bfcache_restore, /*show_reason_unfold=*/false));
 }
 
 ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
@@ -277,7 +264,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
 }
 
 void ContentToVisibleTimeReporter::OverwriteTabSwitchStartState(
-    mojom::RecordContentToVisibleTimeRequestPtr state,
+    std::optional<RecordContentToVisibleTimeRequest> state,
     bool has_saved_frames) {
   if (tab_switch_start_state_) {
     // Invalidate previously issued callbacks, to avoid accessing

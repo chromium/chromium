@@ -36,10 +36,10 @@
 #include "content/public/common/widget_type.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_request.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-forward.h"
@@ -596,7 +596,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // DelegatedFrameHost::WasShown if there is a saved frame or
   // RenderWidgetHostImpl if not.
   virtual void NotifyHostAndDelegateOnWasShown(
-      blink::mojom::RecordContentToVisibleTimeRequestPtr
+      std::optional<blink::RecordContentToVisibleTimeRequest>
           visible_time_request) = 0;
 
   // Each platform should override this to pass `visible_time_request`, which
@@ -606,8 +606,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   // RenderWidgetHostImpl::RequestSuccessfulPresentationTimeForNextFrame if not,
   // after doing and platform-specific bookkeeping needed.
   virtual void RequestSuccessfulPresentationTimeFromHostOrDelegate(
-      blink::mojom::RecordContentToVisibleTimeRequestPtr
-          visible_time_request) = 0;
+      blink::RecordContentToVisibleTimeRequest visible_time_request) = 0;
 
   // Each platform should override this to call
   // DelegatedFrameHost::CancelSuccessfulPresentationTimeRequest and

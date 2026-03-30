@@ -396,13 +396,13 @@ void RenderWidgetHostViewChildFrame::OverrideDisplayFeatureForEmulation(
 }
 
 void RenderWidgetHostViewChildFrame::NotifyHostAndDelegateOnWasShown(
-    blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+    std::optional<blink::RecordContentToVisibleTimeRequest>) {
   NOTREACHED();
 }
 
 void RenderWidgetHostViewChildFrame::
     RequestSuccessfulPresentationTimeFromHostOrDelegate(
-        blink::mojom::RecordContentToVisibleTimeRequestPtr) {
+        blink::RecordContentToVisibleTimeRequest) {
   NOTREACHED();
 }
 

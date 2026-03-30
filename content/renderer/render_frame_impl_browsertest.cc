@@ -58,7 +58,6 @@
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
-#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -316,8 +315,7 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(&child_frame());
 
   widget_remote()->WasShown(
-      /* was_evicted=*/false,
-      blink::mojom::RecordContentToVisibleTimeRequestPtr());
+      /* was_evicted=*/false, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(frame_widget()->IsHidden());

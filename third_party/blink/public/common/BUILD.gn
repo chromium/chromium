@@ -259,6 +259,7 @@ source_set("headers") {
     "page/color_provider_color_maps.h",
     "page/color_provider_color_maps_mojom_traits.h",
     "page/content_to_visible_time_reporter.h",
+    "page/content_to_visible_time_request.h",
     "page/drag_mojom_traits.h",
     "page/drag_operation.h",
     "page/launching_process_state.h",

@@ -465,6 +465,16 @@ mojom("mojom_platform") {
     {
       types = [
         {
+          mojom = "blink.mojom.RecordContentToVisibleTimeRequest"
+          cpp = "::blink::RecordContentToVisibleTimeRequest"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/page/content_to_visible_time_request_mojom_traits.h" ]
+      traits_public_deps = [ "//third_party/blink/public/common:headers" ]
+    },
+    {
+      types = [
+        {
           mojom = "blink.mojom.VisualProperties"
           cpp = "::blink::VisualProperties"
         },

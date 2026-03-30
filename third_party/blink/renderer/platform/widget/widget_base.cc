@@ -577,9 +577,10 @@ void WidgetBase::WasHidden() {
   client_->WasHidden();
 }
 
-void WidgetBase::WasShown(bool was_evicted,
-                          mojom::blink::RecordContentToVisibleTimeRequestPtr
-                              record_tab_switch_time_request) {
+void WidgetBase::WasShown(
+    bool was_evicted,
+    const std::optional<RecordContentToVisibleTimeRequest>&
+        record_tab_switch_time_request) {
   // The frame must be attached to the frame tree (which makes it no longer
   // provisional) before changing visibility.
   DCHECK(!IsForProvisionalFrame());
@@ -591,41 +592,33 @@ void WidgetBase::WasShown(bool was_evicted,
 
   if (record_tab_switch_time_request) {
     LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-        tab_switch_time_recorder_.TabWasShown(
-            false /* has_saved_frames */,
-            record_tab_switch_time_request->event_start_time,
-            record_tab_switch_time_request->destination_is_loaded,
-            record_tab_switch_time_request->show_reason_tab_switching,
-            record_tab_switch_time_request->show_reason_bfcache_restore));
+        tab_switch_time_recorder_.TabWasShown(false /* has_saved_frames */,
+                                              *record_tab_switch_time_request));
   }
 
   client_->WasShown(was_evicted);
 }
 
 void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
-    mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
-  DCHECK(visible_time_request);
+    const RecordContentToVisibleTimeRequest& visible_time_request) {
   if (is_hidden_) {
     return;
   }
   TRACE_EVENT0("renderer",
                "WidgetBase::RequestSuccessfulPresentationTimeForNextFrame");
 
-  if (visible_time_request->show_reason_unfolding) {
+  if (visible_time_request.show_reason_unfolding) {
     LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
         tab_switch_time_recorder_.GetCallbackForNextFrameAfterUnfold(
-            visible_time_request->event_start_time));
+            visible_time_request.event_start_time));
     return;
   }
 
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-      tab_switch_time_recorder_.TabWasShown(
-          false /* has_saved_frames */, visible_time_request->event_start_time,
-          visible_time_request->destination_is_loaded,
-          visible_time_request->show_reason_tab_switching,
-          visible_time_request->show_reason_bfcache_restore));
+      tab_switch_time_recorder_.TabWasShown(false /* has_saved_frames */,
+                                            visible_time_request));
 }
 
 void WidgetBase::CancelSuccessfulPresentationTimeRequest() {
