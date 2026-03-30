@@ -14,6 +14,12 @@
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
   NSMutableArray<NSNumber*>* screens = [NSMutableArray array];
+  // For now, skip all post-FRE screens if the interactive promo is enabled, as
+  // the interactive promo makes the FRE longer.
+  if (IsBestOfAppLensInteractivePromoEnabled()) {
+    [screens addObject:@(kStepsCompleted)];
+    return [super initWithScreens:screens];
+  }
   if (IsSyncedSetUpEnabled()) {
     [screens addObject:@(kSyncedSetUp)];
   }

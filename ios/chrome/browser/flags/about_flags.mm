@@ -968,7 +968,7 @@ const FeatureEntry::FeatureParam kBestOfAppFREArm4Upload[] = {
 
 const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
     {" - Variant A: Lens Interactive Promo", kBestOfAppFREArm1, nullptr},
-    {" - Variant A: Lens Animated Promo", kBestOfAppFREArm2, nullptr},
+    {" - Variant B: Lens Animated Promo", kBestOfAppFREArm2, nullptr},
     {" - Variant D: Guided Tour", kBestOfAppFREArm4, nullptr},
     {" - Variant D: Guided Tour with manual metric upload",
      kBestOfAppFREArm4Upload, nullptr},
