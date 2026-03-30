@@ -895,14 +895,20 @@ public class SettingsIndexData {
         List<String> immediateKeys = mChildFragmentToParentKeys.get(fragmentClass);
         if (immediateKeys == null) return null;
 
-        boolean isAmbiguous = immediateKeys.size() > 1;
-
-        // Find the first matching parent
+        List<Entry> validEntries = new ArrayList<>();
         for (String key : immediateKeys) {
             Entry entry = mEntries.get(key);
+            if (entry != null && TextUtils.equals(entry.fragment, fragmentClass)) {
+                validEntries.add(entry);
+            }
+        }
 
-            if (entry == null || !TextUtils.equals(entry.fragment, fragmentClass)) continue;
+        if (validEntries.isEmpty()) return null;
 
+        boolean isAmbiguous = validEntries.size() > 1;
+
+        // Find the first matching parent
+        for (Entry entry : validEntries) {
             if (isMatchingEntry(entry, arguments, isAmbiguous)) {
                 List<Entry> path = new ArrayList<>();
                 path.add(entry);
