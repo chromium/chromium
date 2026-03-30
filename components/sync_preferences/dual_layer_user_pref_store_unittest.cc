@@ -3337,6 +3337,40 @@ TEST_F(DualLayerUserPrefStoreAccountScopedTest,
   EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kAccountScopedPref));
 }
 
+TEST_F(DualLayerUserPrefStoreAccountScopedTest,
+       ClearAccountScopedPrefsFromLocalStore) {
+  // Directly write account-scoped pref to the local store (simulating a bug or
+  // old state).
+  local_store()->SetValueSilently(kAccountScopedPref,
+                                  base::Value("account_scoped_value"), 0);
+
+  // Directly write a regular pref to the local store to ensure it's NOT
+  // cleared.
+  local_store()->SetValueSilently(kPrefName, base::Value("local_value"), 0);
+
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kAccountScopedPref,
+                             "account_scoped_value"));
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kPrefName, "local_value"));
+
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  // The account-scoped pref is cleared only after all data types are disabled.
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kAccountScopedPref,
+                             "account_scoped_value"));
+
+  store()->DisableTypeAndClearAccountStore(syncer::PRIORITY_PREFERENCES);
+#if BUILDFLAG(IS_CHROMEOS)
+  store()->DisableTypeAndClearAccountStore(syncer::OS_PREFERENCES);
+  store()->DisableTypeAndClearAccountStore(syncer::OS_PRIORITY_PREFERENCES);
+#endif
+
+  // The account-scoped pref should have been cleared from the local store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kAccountScopedPref));
+
+  // The regular pref should still be there.
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kPrefName, "local_value"));
+}
+
 class DualLayerUserPrefStoreAccountScopedDisabledTest
     : public DualLayerUserPrefStoreTest {
  public:

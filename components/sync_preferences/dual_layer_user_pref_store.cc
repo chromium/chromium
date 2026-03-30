@@ -690,6 +690,18 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
 #if BUILDFLAG(IS_CHROMEOS)
     SetInterestingUserSelectedOsTypes(syncer::UserSelectableOsTypeSet());
 #endif  // BUILDFLAG(IS_CHROMEOS)
+    // Clear any account-only prefs from the local store. There shouldn't be any
+    // such prefs in the local store, but if there are due to some bug, this
+    // will clear them.
+    if (base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
+      for (const std::string& pref_name :
+           GetSyncablePrefNamesInStore(local_pref_store_.get())) {
+        if (!ShouldSetValueInLocalStore(pref_name)) {
+          local_pref_store_->RemoveValue(
+              pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+        }
+      }
+    }
   }
 }
 
