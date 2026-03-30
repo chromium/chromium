@@ -6,6 +6,8 @@ import argparse
 import json
 import os
 import sys
+import tempfile
+import contextlib
 
 import utils.command_util as command
 import utils.constants as const
@@ -106,7 +108,29 @@ def FindTestTargets(target_cache: TargetCache,
         '--all',
         '--relation=source',
         '--relation=input',
-    ] + paths
+    ]
+
+    response_file = None
+    if len(paths) > 100:
+      cm = tempfile.NamedTemporaryFile(mode='w', delete=False)
+    else:
+      cm = contextlib.nullcontext()
+      cmd.extend(paths)
+
+    with cm as tmp_file:
+      if tmp_file:
+        tmp_file.write('\n'.join(paths))
+        cmd.append(f'@{tmp_file.name}')
+
+      targets: list[str] = _ParseRefsOutput(command.RunCommand(cmd))
+      test_targets = _TestTargetsFromGnRefs(targets)
+
+      # If no targets were identified as tests by looking at their names, ask GN
+      # if any are executables.
+      if not test_targets and targets:
+        test_targets = _ParseRefsOutput(
+            command.RunCommand(cmd + ['--type=executable']))
+
     targets: list[str] = _ParseRefsOutput(command.RunCommand(cmd))
     test_targets = _TestTargetsFromGnRefs(targets)
 
