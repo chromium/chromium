@@ -42,8 +42,8 @@ export const MAX_PROMPT_CHAR_COUNT =
 // The amount of pixels the user can be from the very bottom of the skills
 // dialog before the gradient is removed.
 export const BOTTOM_SCROLL_OFFSET_PX = 5;
-
-const REFINE_SKILL_TIMEOUT_MS = 5000;
+export const REFINE_SKILL_TIMEOUT_MS = 5000;
+export const AUTOCOMPLETE_MIN_CHARS = 20;
 
 let windowProxyInstance: WindowProxy | null = null;
 
@@ -91,6 +91,8 @@ export interface SkillsDialogAppElement {
     saveButton: CrButtonElement,
     saveErrorContainer: HTMLElement,
     textareaWrapper: HTMLElement,
+    generatedPlaceholder: HTMLElement,
+    generatedNameText: HTMLElement,
   };
 }
 
@@ -109,19 +111,23 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      skill_: { type: Object },
-      dialogTitle_: { type: String },
-      canUndoRefine_: { type: Boolean },
-      canRedoRefine_: { type: Boolean },
-      shouldShowErrorPage_: { type: Boolean },
-      signedInEmail_: { type: String },
-      promptError_: { type: Number },
-      isRefineLoading_: { type: Boolean },
-      isAutoGenerationLoading_: { type: Boolean },
-      hasSaveError_: { type: Boolean },
-      hasNameCharLimitError_: { type: Boolean },
-      isAddDialog_: { type: Boolean },
-      showEmojiPicker_: { type: Boolean },
+      skill_: {type: Object},
+      dialogTitle_: {type: String},
+      canUndoRefine_: {type: Boolean},
+      canRedoRefine_: {type: Boolean},
+      shouldShowErrorPage_: {type: Boolean},
+      signedInEmail_: {type: String},
+      promptError_: {type: Number},
+      isRefineLoading_: {type: Boolean},
+      isAutoGenerationLoading_: {type: Boolean},
+      hasSaveError_: {type: Boolean},
+      hasNameCharLimitError_: {type: Boolean},
+      isAddDialog_: {type: Boolean},
+      showEmojiPicker_: {type: Boolean},
+      generatedName_: {type: String},
+      generatedIcon_: {type: String},
+      isNameInputFocused_: {type: Boolean},
+      hasSeenGeneratedSuggestion_: {type: Boolean},
     };
   }
 
@@ -153,6 +159,10 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor isRefineLoading_: boolean = false;
   protected accessor isAutoGenerationLoading_: boolean = false;
   protected accessor isAddDialog_: boolean = true;
+  protected accessor generatedName_: string = '';
+  protected accessor generatedIcon_: string = '';
+  protected accessor isNameInputFocused_: boolean = false;
+  protected accessor hasSeenGeneratedSuggestion_: boolean = false;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -382,6 +392,10 @@ export class SkillsDialogAppElement extends CrLitElement {
     this.refinedPrompt_ = '';
 
     this.skill_ = { ...this.skill_, prompt: newValue };
+
+    // Clear generated suggestions as the user changed the prompt manually
+    this.generatedName_ = '';
+    this.generatedIcon_ = '';
   }
 
   protected onUndoClick_() {
@@ -495,6 +509,53 @@ export class SkillsDialogAppElement extends CrLitElement {
     SkillsDialogBrowserProxy.getInstance().handler.closeDialog();
   }
 
+  protected onNameFocus_() {
+    this.isNameInputFocused_ = true;
+    if (this.generatedName_ || this.generatedIcon_) {
+      this.hasSeenGeneratedSuggestion_ = true;
+    } else if (
+        this.skill_.prompt.length >= AUTOCOMPLETE_MIN_CHARS &&
+        !this.skill_.name && !this.skill_.icon &&
+        !this.hasSeenGeneratedSuggestion_) {
+      this.generateAutocompleteNameAndIcon_();
+    }
+  }
+
+  protected onNameBlur_() {
+    this.isNameInputFocused_ = false;
+  }
+
+  protected onNameKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Tab' && (this.generatedName_ || this.generatedIcon_)) {
+      this.skill_ = {
+        ...this.skill_,
+        name: this.skill_.name || this.generatedName_,
+        icon: this.skill_.icon || this.generatedIcon_,
+      };
+      this.generatedName_ = '';
+      this.generatedIcon_ = '';
+      e.preventDefault();
+    }
+  }
+
+  private generateAutocompleteNameAndIcon_() {
+    this.requestGenerateNameAndEmojiWithTimeout_(this.skill_)
+        .then(({refinedSkill}) => {
+          // Check again that no name was entered during the request
+          if (refinedSkill && !this.skill_.name && !this.skill_.icon) {
+            this.generatedName_ = refinedSkill.name;
+            this.generatedIcon_ = refinedSkill.icon;
+            if (this.isNameInputFocused_) {
+              this.hasSeenGeneratedSuggestion_ = true;
+            }
+          }
+        })
+        .catch(
+            () => {
+                // Silently fail, do not show error on UI
+            });
+  }
+
   protected autoPopulateNameAndIcon_() {
     if (!this.skill_.prompt || this.skill_.name) {
       return;
@@ -547,6 +608,10 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   private requestGenerateNameAndEmojiWithTimeout_(skillToRefine: Skill) {
+    if (!loadTimeData.getBoolean('isAutocompleteEnabled')) {
+      return Promise.resolve({refinedSkill: null});
+    }
+
     const generateRequest =
       SkillsDialogBrowserProxy.getInstance().handler.generateNameAndEmoji(
         skillToRefine);
@@ -558,6 +623,34 @@ export class SkillsDialogAppElement extends CrLitElement {
     });
 
     return Promise.race([generateRequest, timeout]);
+  }
+
+  protected shouldShowGeneratedPlaceholder_(): boolean {
+    return this.isNameInputFocused_ && !!this.generatedName_ &&
+        !this.skill_.name;
+  }
+
+  protected getNamePlaceholder_(): string {
+    return this.isNameInputFocused_ && this.generatedName_ ?
+        '' :
+        loadTimeData.getString('namePlaceholder');
+  }
+
+  protected shouldHideEmojiZeroState_(): boolean {
+    return !!this.skill_.icon ||
+        !!(this.isNameInputFocused_ && this.generatedIcon_);
+  }
+
+  protected getEmojiTriggerClass_(): string {
+    return this.isNameInputFocused_ && this.generatedIcon_ &&
+            !this.skill_.icon ?
+        'placeholder-icon' :
+        '';
+  }
+
+  protected getEmojiTriggerValue_(): string {
+    return this.skill_.icon ||
+        (this.isNameInputFocused_ ? this.generatedIcon_ : '');
   }
 }
 

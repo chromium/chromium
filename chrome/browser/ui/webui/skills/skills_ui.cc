@@ -46,6 +46,9 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
 
   content::URLDataSource::Add(profile,
                               std::make_unique<SanitizedImageSource>(profile));
+  source->AddBoolean(
+      "isAutocompleteEnabled",
+      base::FeatureList::IsEnabled(features::kSkillsAutocomplete));
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
       {"edit", IDS_EDIT2},

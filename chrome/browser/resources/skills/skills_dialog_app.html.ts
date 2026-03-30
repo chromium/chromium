@@ -34,21 +34,32 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
             `
             : html`
             <cr-input class="stroked" id="nameText" type="text"
-                placeholder="$i18n{namePlaceholder}"
+                placeholder="${this.getNamePlaceholder_()}"
                 .value="${this.skill_.name}"
                 @value-changed="${this.onNameValueChanged_}"
+                @keydown="${this.onNameKeydown_}"
+                @focus="${this.onNameFocus_}"
+                @blur="${this.onNameBlur_}"
                 aria-labelledby="nameLabel"
                 maxlength="${MAX_NAME_CHAR_COUNT}"
                 ?invalid="${this.hasNameCharLimitError_}">
               <div class="emoji-prefix-container" slot="inline-prefix">
-                <cr-icon id="emojiZeroStateIcon" icon="skills:add-reaction"
-                    ?hidden="${this.skill_.icon}" aria-hidden="true">
+                <cr-icon id="emojiZeroStateIcon"
+                    icon="skills:add-reaction" aria-hidden="true"
+                    ?hidden="${this.shouldHideEmojiZeroState_()}">
                 </cr-icon>
-                <input id="emojiTrigger" class="emoji-trigger" type="text"
-                  .value="${this.skill_.icon}" @click="${this.onEmojiBtnClick_}"
-                  @input="${this.onEmojiInput_}"
-                  @keydown="${this.onEmojiKeydown_}" title="$i18n{chooseIcon}"
-                  aria-label="$i18n{chooseIcon}" readonly>
+                <input id="emojiTrigger" type="text"
+                    class="emoji-trigger ${this.getEmojiTriggerClass_()}"
+                    .value="${this.getEmojiTriggerValue_()}"
+                    @click="${this.onEmojiBtnClick_}"
+                    @input="${this.onEmojiInput_}"
+                    @keydown="${this.onEmojiKeydown_}" title="$i18n{chooseIcon}"
+                    aria-label="$i18n{chooseIcon}" readonly>
+                <div id="generatedPlaceholder"
+                    ?hidden="${!this.shouldShowGeneratedPlaceholder_()}">
+                  <span id="generatedNameText">${this.generatedName_}</span>
+                  <span id="tabHint" aria-hidden="true">Tab</span>
+                </div>
               </div>
             </cr-input>
             <div id="nameErrorMessage" class="error-message"
