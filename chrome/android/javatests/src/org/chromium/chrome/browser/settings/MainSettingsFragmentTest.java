@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
@@ -472,7 +473,6 @@ public class MainSettingsFragmentTest {
     })
     public void testSignInRowLaunchesSignInFlowForSignedOutAccounts() {
         startSettings();
-        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
 
         onView(withId(R.id.recycler_view))
                 .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
@@ -779,6 +779,14 @@ public class MainSettingsFragmentTest {
                 + "manage-url/https%3A%2F%2Ftest.plusaddresses.google.com"
     })
     public void testPlusAddressesEnabled() {
+        // Use anyInt() because clicking the preference launches a Custom Tab. The Custom Tab's
+        // RootUiCoordinator initializes its own sign-in flow using SigninAccessPoint.WEB_SIGNIN,
+        // while the settings UI may use SigninAccessPoint.SETTINGS.
+        when(mSigninAndHistorySyncActivityLauncher
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                any(), any(), any(), any(), any(), any(), any(), any(), any(),
+                                anyInt()))
+                .thenReturn(mSigninCoordinator);
         startSettings();
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_PLUS_ADDRESSES);
         Assert.assertNotNull(preference);
