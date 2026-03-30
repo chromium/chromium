@@ -1220,10 +1220,6 @@ INSTANTIATE_TEST_SUITE_P(ForceUpdateOn,
                          DevtoolsPanelForceUpdateTest,
                          testing::Values(true));
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests that http Iframes within the visible devtools panel for the devtools
 // extension are rendered in their own processes and not in the devtools process
 // or the extension's process.  This is tested because this is one of the
@@ -1444,10 +1440,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
 // Tests that http Iframes within the devtools background page, which is
 // different from the extension's background page, are rendered in their own
 // processes and not in the devtools process or the extension's process.
@@ -1522,10 +1514,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests that iframes to a non-devtools extension embedded in a devtools
 // extension will be isolated from devtools and the devtools extension.
@@ -1749,7 +1737,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, DevToolsExtensionInItself) {
             devtools_extension_panel_frame_rfh->GetSiteInstance());
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Tests that a devtools (not a devtools extension) Iframe can be injected into
 // devtools.  http://crbug.com/41229189
@@ -1795,14 +1783,22 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, MAYBE_DevtoolsInDevTools) {
   EXPECT_EQ(devtools_url.DeprecatedGetOriginAsURL().spec(), message + "/");
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Some web features, when used from an extension, are subject to browser-side
 // security policy enforcement. Make sure they work properly from inside a
 // devtools extension.
 // ToDo(993982): The test is flaky (timeout, crash, and fail) on several builds:
 // Debug, Windows, Mac, MSan, and ASan.
+// TODO(crbug.com/405219356): Flaky. Enable the test on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DevToolsExtensionSecurityPolicyGrants \
+  DISABLED_DevToolsExtensionSecurityPolicyGrants
+#else
+#define MAYBE_DevToolsExtensionSecurityPolicyGrants \
+  DevToolsExtensionSecurityPolicyGrants
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
-                       DevToolsExtensionSecurityPolicyGrants) {
+                       MAYBE_DevToolsExtensionSecurityPolicyGrants) {
   auto dir = std::make_unique<extensions::TestExtensionDir>();
 
   dir->WriteManifest(base::DictValue()
@@ -1887,10 +1883,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
     }
   }
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // Disabled on Windows due to flakiness. http://crbug.com/40967938
 // TODO(crbug.com/425268770): Flaky on Linux.
@@ -2052,8 +2044,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
           base::StrCat({kArbitraryPage, "#", file_url}));
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-
+// TODO(crbug.com/405219356): Enable the test on Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Test that an extension's side panel view is inspectable whether or not the
@@ -2070,12 +2061,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   ASSERT_TRUE(extension);
 
   ExtensionTestMessageListener default_path_listener("default_path");
-  browser()->GetFeatures().side_panel_ui()->Show(
+  browser_window_interface()->GetFeatures().side_panel_ui()->Show(
       SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id()));
   ASSERT_TRUE(default_path_listener.WaitUntilSatisfied());
 
   content::WebContents* side_panel_contents =
-      browser()
+      browser_window_interface()
           ->GetFeatures()
           .extension_side_panel_manager()
           ->GetExtensionCoordinatorForTesting(extension->id())
@@ -2099,8 +2090,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   DevToolsWindowTesting::CloseDevToolsWindowSync(window);
 }
 
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // TODO(crbug.com/41495883): Re-enable on linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/405219356): Enable the test on Android.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CanInspectExtensionOffscreenDoc \
   DISABLED_CanInspectExtensionOffscreenDoc
 #else
@@ -2267,11 +2261,12 @@ class DevToolsExtensionFileAccessTest : public DevToolsExtensionTest {
 
 // This test is flaky on Linux MSAN.
 // TODO(https://crbug.com/463490299): Enable the test.
+// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) ||         \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) ||         \
     BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                                 \
     BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_LINUX)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CanGetFileResourceWithFileAccess \
   DISABLED_CanGetFileResourceWithFileAccess
 #else
@@ -2283,9 +2278,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
+// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
+    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CantGetFileResourceWithoutFileAccess \
   DISABLED_CantGetFileResourceWithoutFileAccess
 #else
@@ -2298,9 +2295,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
+// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
+    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CantGetFileResourceWithoutFileAccessNoSlashes \
   DISABLED_CantGetFileResourceWithoutFileAccessNoSlashes
 #else
@@ -2313,9 +2312,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
 }
 
 // TODO(crbug.com/463490299): Tests time out on sanitizer bots.
+// TODO(crbug.com/405219356): Enable the test on Android.
 #if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || \
     BUILDFLAG(CFI_CAST_CHECK) || BUILDFLAG(CFI_ICALL_CHECK) || \
-    BUILDFLAG(CFI_ENFORCEMENT_TRAP) || BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC)
+    BUILDFLAG(CFI_ENFORCEMENT_TRAP) ||                         \
+    BUILDFLAG(CFI_ENFORCEMENT_DIAGNOSTIC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CantGetFileResourceWithoutFileAccessMixedCase \
   DISABLED_CantGetFileResourceWithoutFileAccessMixedCase
 #else
@@ -2326,7 +2327,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionFileAccessTest,
                        MAYBE_CantGetFileResourceWithoutFileAccessMixedCase) {
   Run(false, "fILe:");
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // This test is flaky on Mac and Linux.
 // TODO(crbug.com/40787389): Enable the test.
@@ -3820,7 +3821,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // See https://crbug.com/40630787
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        DISABLED_ExtensionWebSocketUserAgentOverride) {
@@ -3853,7 +3854,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, SourceMapsFromDevtools) {
   DispatchOnTestSuite(window_, "testSourceMapsFromDevtools");
   CloseDevToolsWindow();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 IN_PROC_BROWSER_TEST_F(DevToolsTest,
                        DoesNotCrashOnSourceMapsFromUnknownScheme) {
@@ -3862,7 +3863,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest,
   CloseDevToolsWindow();
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // TODO(crbug.com/40937316): Test is flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_ExtensionWebSocketOfflineNetworkConditions \
@@ -3885,7 +3886,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                       base::NumberToString(websocket_port).c_str());
   CloseDevToolsWindow();
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
