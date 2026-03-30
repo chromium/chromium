@@ -151,6 +151,7 @@ public class OmniboxChipManager {
     }
 
     private final ViewGroup mRootView;
+    private final LocationBarEmbedder mLocationBarEmbedder;
     private final @Px int mCollapsedWidth;
     private final @Px int mMinExpandedWidth;
     private final @Px int mMaxExpandedWidth;
@@ -161,7 +162,6 @@ public class OmniboxChipManager {
     private @VisibilityState int mChipVisibilityState;
     private @Nullable ChipCallback mChipCallback;
     private boolean mOmniboxFocused;
-    private LocationBarEmbedder mLocationBarEmbedder;
 
     /**
      * Creates an instance of {@link OmniboxChipManager}.
@@ -179,12 +179,6 @@ public class OmniboxChipManager {
         mMaxExpandedWidth = res.getDimensionPixelSize(R.dimen.omnibox_chip_max_expanded_width);
         mCollapsedToolbarWidthConsumer = new CollapsedToolbarWidthConsumer();
         mExpandedToolbarWidthConsumer = new ExpandedToolbarWidthConsumer();
-    }
-
-    @SuppressWarnings("NullAway")
-    public void destroy() {
-        mLocationBarEmbedder = null;
-        dismissChip();
     }
 
     /**
