@@ -58,6 +58,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_settings_metrics.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/consent_level.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
@@ -621,7 +622,10 @@ void ShowAboutChrome(BrowserWindowInterface* browser) {
 
 void ShowSearchEngineSettings(BrowserWindowInterface* browser) {
   base::RecordAction(UserMetricsAction("EditSearchEngines"));
-  ShowSettingsSubPage(browser, kSearchEnginesSubPage);
+  ShowSettingsSubPage(
+      browser, base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
+                   ? kSearchSubPage
+                   : kSearchEnginesSubPage);
 }
 
 void ShowWebStore(BrowserWindowInterface* browser,
