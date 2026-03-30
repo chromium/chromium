@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/renderers/paint_canvas_video_renderer.h"
 
@@ -400,9 +396,10 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
           // pixel on row N and column M will wrap to column M on row N + 1.
           .stride = video_frame->stride(plane),
 
-          .data = video_frame->visible_data(plane) +
-                  video_frame->stride(plane) * (chunk_start * rows_per_chunk) /
-                      VideoFrame::SampleSize(format, plane).height()};
+          .data = UNSAFE_TODO(
+              video_frame->visible_data(plane) +
+              video_frame->stride(plane) * (chunk_start * rows_per_chunk) /
+                  VideoFrame::SampleSize(format, plane).height())};
     } else {
       plane_meta[plane] = {.stride = 0, .data = nullptr};
     }

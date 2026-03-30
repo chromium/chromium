@@ -15,11 +15,6 @@
 // built for Fake GBM will simply be DLL injected (using LD_PRELOAD generally)
 // into the test process.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// We need to conform to the GBM API, which unfortunately involves a lot of
-// unsafe buffer access to maintain C99 compatibility.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <errno.h>
 #include <stdio.h>
@@ -28,6 +23,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "third_party/minigbm/src/gbm.h"
@@ -84,7 +80,7 @@ uint32_t get_x_subsample(struct gbm_bo* bo, size_t plane) {
 }
 
 uint32_t get_plane_min_size(struct gbm_bo* bo, size_t plane) {
-  return bo->meta.strides[plane] *
+  return UNSAFE_TODO(bo->meta.strides[plane]) *
          ALIGN(bo->meta.height, get_y_subsample(bo, plane)) /
          get_y_subsample(bo, plane);
 }
@@ -147,9 +143,10 @@ extern "C" GBM_EXPORT struct gbm_bo* gbm_bo_create(struct gbm_device* gbm,
 
   uint32_t size = 0;
   for (int i = 0; i < gbm_bo_get_plane_count(bo); i++) {
-    bo->meta.offsets[i] = size;
-    bo->meta.strides[i] = ALIGN(width, get_x_subsample(bo, i)) /
-                          get_x_subsample(bo, i) * gbm_bo_get_bpp(bo);
+    UNSAFE_TODO(bo->meta.offsets[i]) = size;
+    UNSAFE_TODO(bo->meta.strides[i]) = ALIGN(width, get_x_subsample(bo, i)) /
+                                       get_x_subsample(bo, i) *
+                                       gbm_bo_get_bpp(bo);
     size += ALIGN(get_plane_min_size(bo, i), PAGE_SIZE);
   }
 
@@ -181,7 +178,7 @@ extern "C" GBM_EXPORT void* gbm_bo_map2(struct gbm_bo* bo,
 
   size_t size = ALIGN(get_plane_min_size(bo, plane), PAGE_SIZE);
   void* addr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
-                    bo->meta.fds[0], bo->meta.offsets[plane]);
+                    bo->meta.fds[0], UNSAFE_TODO(bo->meta.offsets[plane]));
   CHECK(addr);
   CHECK(addr != MAP_FAILED);
 
@@ -190,11 +187,13 @@ extern "C" GBM_EXPORT void* gbm_bo_map2(struct gbm_bo* bo,
   *_map_data = new struct gbm_bo_mapping;
   (*_map_data)->addr = addr;
   (*_map_data)->size = size;
-  *stride = bo->meta.strides[plane];
+  *stride = UNSAFE_TODO(bo->meta.strides[plane]);
 
-  size_t offset = y / get_y_subsample(bo, plane) * bo->meta.strides[plane] +
-                  x / get_x_subsample(bo, plane) * gbm_bo_get_bpp(bo);
-  return reinterpret_cast<void*>(reinterpret_cast<uint8_t*>(addr) + offset);
+  size_t offset =
+      y / get_y_subsample(bo, plane) * UNSAFE_TODO(bo->meta.strides[plane]) +
+      x / get_x_subsample(bo, plane) * gbm_bo_get_bpp(bo);
+  return reinterpret_cast<void*>(
+      UNSAFE_TODO(reinterpret_cast<uint8_t*>(addr) + offset));
 }
 
 extern "C" GBM_EXPORT void gbm_bo_unmap(struct gbm_bo* bo, void* map_data) {
@@ -251,7 +250,7 @@ extern "C" GBM_EXPORT uint32_t gbm_bo_get_offset(struct gbm_bo* bo,
   CHECK(bo);
   CHECK(static_cast<int>(plane) < gbm_bo_get_plane_count(bo));
 
-  return bo->meta.offsets[plane];
+  return UNSAFE_TODO(bo->meta.offsets[plane]);
 }
 
 extern "C" GBM_EXPORT uint32_t gbm_bo_get_stride_for_plane(struct gbm_bo* bo,
@@ -259,7 +258,7 @@ extern "C" GBM_EXPORT uint32_t gbm_bo_get_stride_for_plane(struct gbm_bo* bo,
   CHECK(bo);
   CHECK(static_cast<int>(plane) < gbm_bo_get_plane_count(bo));
 
-  return bo->meta.strides[plane];
+  return UNSAFE_TODO(bo->meta.strides[plane]);
 }
 
 extern "C" GBM_EXPORT uint32_t gbm_bo_get_width(struct gbm_bo* bo) {

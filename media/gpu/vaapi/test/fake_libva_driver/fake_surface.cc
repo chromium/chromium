@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-#ifdef UNSAFE_BUFFERS_BUILD
-// We need to conform to the GBM API, which unfortunately involves a lot of
-// unsafe buffer access to maintain C99 compatibility.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_surface.h"
 
@@ -14,6 +9,7 @@
 #include <va/va_drmcommon.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
@@ -104,7 +100,8 @@ std::unique_ptr<FakeSurface> FakeSurface::Create(
 
   fd_data.modifier = surf_desc->objects[0].drm_format_modifier;
   for (uint32_t i = 1u; i < surf_desc->num_objects; i++) {
-    CHECK_EQ(surf_desc->objects[i].drm_format_modifier, fd_data.modifier);
+    CHECK_EQ(UNSAFE_TODO(surf_desc->objects[i]).drm_format_modifier,
+             fd_data.modifier);
   }
 
   // In general, the planes may be distributed across multiple layers, but let's
@@ -114,13 +111,16 @@ std::unique_ptr<FakeSurface> FakeSurface::Create(
   CHECK_EQ(surf_desc->layers[0].num_planes, expected_num_planes);
 
   for (uint32_t plane = 0u; plane < expected_num_planes; ++plane) {
-    CHECK_LT(surf_desc->layers[0].object_index[plane], surf_desc->num_objects);
-    fd_data.fds[plane] =
-        surf_desc->objects[surf_desc->layers[0].object_index[plane]].fd;
-    fd_data.strides[plane] =
-        base::checked_cast<int>(surf_desc->layers[0].pitch[plane]);
-    fd_data.offsets[plane] =
-        base::checked_cast<int>(surf_desc->layers[0].offset[plane]);
+    CHECK_LT(UNSAFE_TODO(surf_desc->layers[0].object_index[plane]),
+             surf_desc->num_objects);
+    UNSAFE_TODO(fd_data.fds[plane]) =
+        UNSAFE_TODO(
+            surf_desc->objects[surf_desc->layers[0].object_index[plane]])
+            .fd;
+    UNSAFE_TODO(fd_data.strides[plane]) =
+        base::checked_cast<int>(UNSAFE_TODO(surf_desc->layers[0].pitch[plane]));
+    UNSAFE_TODO(fd_data.offsets[plane]) = base::checked_cast<int>(
+        UNSAFE_TODO(surf_desc->layers[0].offset[plane]));
   }
 
   ScopedBOMapping mapped_bo = scoped_bo_mapping_factory.Create(fd_data);

@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/renderers/shared_image_video_frame_test_utils.h"
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -126,12 +123,12 @@ scoped_refptr<VideoFrame> CreateSharedImageI420Frame(
     for (int y = 0; y < coded_size.height() / 2; ++y) {
       for (size_t block_x = 0; block_x < 4u; ++block_x) {
         size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = kYuvColors[color_index];
+        const uint8_t* yuv = UNSAFE_TODO(kYuvColors[color_index]);
         for (int x = 0; x < coded_size.width() / 4; ++x) {
           y_pixels[y_i++] = yuv[0];
           if ((x % 2) && (y % 2)) {
-            u_pixels[uv_i] = yuv[1];
-            v_pixels[uv_i++] = yuv[2];
+            u_pixels[uv_i] = UNSAFE_TODO(yuv[1]);
+            v_pixels[uv_i++] = UNSAFE_TODO(yuv[2]);
           }
         }
       }
@@ -212,12 +209,12 @@ scoped_refptr<VideoFrame> CreateSharedImageNV12Frame(
     for (int y = 0; y < coded_size.height() / 2; ++y) {
       for (size_t block_x = 0; block_x < 4u; ++block_x) {
         size_t color_index = block_x + block_y * 4;
-        const uint8_t* yuv = kYuvColors[color_index];
+        const uint8_t* yuv = UNSAFE_TODO(kYuvColors[color_index]);
         for (int x = 0; x < coded_size.width() / 4; ++x) {
           y_pixels[y_i++] = yuv[0];
           if ((x % 2) && (y % 2)) {
-            uv_pixels[uv_i++] = yuv[1];
-            uv_pixels[uv_i++] = yuv[2];
+            UNSAFE_TODO(uv_pixels[uv_i++]) = UNSAFE_TODO(yuv[1]);
+            uv_pixels[uv_i++] = UNSAFE_TODO(yuv[2]);
           }
         }
       }

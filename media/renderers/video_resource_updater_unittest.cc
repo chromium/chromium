@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/renderers/video_resource_updater.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -383,15 +380,16 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameRGBNonOrigin) {
     const auto bytes_per_row = video_frame->row_bytes(VideoFrame::Plane::kARGB);
     const auto bytes_per_element =
         VideoFrame::BytesPerElement(fmt, VideoFrame::Plane::kARGB);
-    auto* dest_pixels = raster_->last_upload() + rect.y() * bytes_per_row +
-                        rect.x() * bytes_per_element;
+    auto* dest_pixels =
+        UNSAFE_TODO(raster_->last_upload() + rect.y() * bytes_per_row +
+                    rect.x() * bytes_per_element);
     auto* src_pixels = video_frame->visible_data(VideoFrame::Plane::kARGB);
 
     // Pixels are 0xFFFFFFFF, so channel reordering doesn't matter.
     for (int y = 0; y < rect.height(); ++y) {
       for (int x = 0; x < rect.width() * bytes_per_element; ++x) {
         const auto pos = y * bytes_per_row + x;
-        ASSERT_EQ(src_pixels[pos], dest_pixels[pos]);
+        ASSERT_EQ(UNSAFE_TODO(src_pixels[pos]), UNSAFE_TODO(dest_pixels[pos]));
       }
     }
   }
@@ -417,14 +415,15 @@ TEST_F(VideoResourceUpdaterTest, SoftwareFrameY16NonOrigin) {
                            video_frame->coded_size().width());
   const auto bytes_per_element =
       VideoFrame::BytesPerElement(kOutputFormat, VideoFrame::Plane::kARGB);
-  auto* dest_pixels = raster_->last_upload() + rect.y() * bytes_per_row +
-                      rect.x() * bytes_per_element;
+  auto* dest_pixels =
+      UNSAFE_TODO(raster_->last_upload() + rect.y() * bytes_per_row +
+                  rect.x() * bytes_per_element);
 
   // Pixels are 0xFFFFFFFF, so channel reordering doesn't matter.
   for (int y = 0; y < rect.height(); ++y) {
     for (int x = 0; x < rect.width() * bytes_per_element; ++x) {
       const auto pos = y * bytes_per_row + x;
-      ASSERT_EQ(0xFF, dest_pixels[pos]);
+      ASSERT_EQ(0xFF, UNSAFE_TODO(dest_pixels[pos]));
     }
   }
 }
