@@ -102,6 +102,9 @@ class AppBarMediatorTest : public PlatformTest {
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(BwgServiceFactory::GetInstance(),
                               BwgServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
     // Initialize VariationsService with a default country to prevent crashes
     // in IsGeminiLocationEligible().
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");

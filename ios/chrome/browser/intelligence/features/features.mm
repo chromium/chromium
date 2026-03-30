@@ -73,7 +73,7 @@ bool IsPageActionMenuAuthFlowEnabled() {
          base::FeatureList::IsEnabled(kPageActionMenuAuthFlow);
 }
 
-BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsProactiveSuggestionsFrameworkEnabled() {
   if (!IsPageActionMenuEnabled()) {
@@ -93,7 +93,7 @@ bool IsProactiveSuggestionsFrameworkPopupBlockerEnabled() {
       kProactiveSuggestionsFrameworkPopupBlocker, false);
 }
 
-BASE_FEATURE(kAskGeminiChip, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAskGeminiChip, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kAskGeminiChipIgnoreCriteria[] = "AskGeminiChipIgnoreCriteria";
 
