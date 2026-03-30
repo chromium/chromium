@@ -30,7 +30,7 @@
 #include "chrome/common/pref_names.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/extension_l10n_util.h"
 #endif
 
@@ -108,7 +108,7 @@ std::string InitResourceBundleAndDetermineLocale(PrefService* local_state,
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_l10n_util::SetProcessLocale(actual_locale);
   extension_l10n_util::SetPreferredLocale(preferred_locale);
 #endif
