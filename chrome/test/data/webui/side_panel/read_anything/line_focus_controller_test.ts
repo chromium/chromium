@@ -610,6 +610,9 @@ suite('LineFocusController', () => {
   test('onMouseMove does nothing when speech active', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
+    readAloudModel.setCurrentTextSegments(
+        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+    readAloudModel.setCurrentTextContent('a');
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     lineFocusController.onStyleChange(
@@ -730,6 +733,9 @@ suite('LineFocusController', () => {
   test('onMouseMoveInToolbar does nothing when speech active', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
+    readAloudModel.setCurrentTextSegments(
+        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+    readAloudModel.setCurrentTextContent('a');
     lineFocusController.onMovementChange(
         LineFocusMovement.CURSOR, container, defaultHeight);
     lineFocusController.onStyleChange(
@@ -1212,6 +1218,9 @@ suite('LineFocusController', () => {
   test('snapToNextLine does nothing when speech active', () => {
     readAloudModel.setInitialized(false);
     const container = createLongContainer();
+    readAloudModel.setCurrentTextSegments(
+        [{node: ReadAloudNode.create(container)!, start: 0, length: 1}]);
+    readAloudModel.setCurrentTextContent('a');
     lineFocusController.onStyleChange(
         LineFocusStyle.UNDERLINE, container, defaultHeight);
     lineFocusController.onMovementChange(

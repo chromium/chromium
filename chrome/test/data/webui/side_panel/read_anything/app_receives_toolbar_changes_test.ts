@@ -395,8 +395,9 @@ suite('AppReceivesToolbarChanges', () => {
   test('on speech rate change speech rate updated', async () => {
     setupBasicSpeech(speech);
     readAloudModel.setInitialized(true);
-    setContent('we mean no harm', readAloudModel);
+    const node = setContent('we mean no harm', readAloudModel);
     app.updateContent();
+    app.$.container.appendChild(node);
     await emitPlayPause();
 
     const speechRate1 = 2;
@@ -437,7 +438,8 @@ suite('AppReceivesToolbarChanges', () => {
   suite('play/pause', () => {
     setup(() => {
       readAloudModel.setInitialized(true);
-      setContent('We come in peace', readAloudModel);
+      const node = setContent('We come in peace', readAloudModel);
+      app.$.container.appendChild(node);
     });
 
     test('on first click starts speech', async () => {
@@ -527,8 +529,9 @@ suite('AppReceivesToolbarChanges', () => {
     setup(() => {
       setupBasicSpeech(speech);
       readAloudModel.setInitialized(true);
-      setContent('we mean no harm', readAloudModel);
+      const node = setContent('we mean no harm', readAloudModel);
       app.updateContent();
+      app.$.container.appendChild(node);
       return emitPlayPause();
     });
 

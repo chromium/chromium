@@ -143,44 +143,50 @@ suite('SpeechController', () => {
       assertEquals(1, readAloudModel.getCallCount('init'));
     });
 
-    test('updateContent resets the read aloud model with ts flag', async () => {
+    test('updateContent resets the read aloud model with ts flag', () => {
       chrome.readingMode.isTsTextSegmentationEnabled = true;
-      await createApp();
-      assertEquals(1, readAloudModel.getCallCount('resetModel'));
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
 
       setContent('hello', readAloudModel);
       app.updateContent();
-      assertEquals(2, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
 
       setContent('hello, it\'s me', readAloudModel);
       app.updateContent();
-      assertEquals(3, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount + 2, readAloudModel.getCallCount('resetModel'));
     });
 
-    test('updateContent does not reset the model without ts flag', async () => {
+    test('updateContent does not reset the model without ts flag', () => {
       chrome.readingMode.isTsTextSegmentationEnabled = false;
-      await createApp();
-      assertEquals(0, readAloudModel.getCallCount('resetModel'));
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
 
       setContent('hello', readAloudModel);
       app.updateContent();
-      assertEquals(0, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
 
       setContent('hello, it\'s me', readAloudModel);
       app.updateContent();
-      assertEquals(0, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
     });
 
     test('showLoading resets the read aloud model with ts flag', () => {
       chrome.readingMode.isTsTextSegmentationEnabled = true;
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
       app.showLoading();
-      assertEquals(1, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
     });
 
     test('showLoading does not reset the model without ts flag', () => {
       chrome.readingMode.isTsTextSegmentationEnabled = false;
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
       app.showLoading();
-      assertEquals(0, readAloudModel.getCallCount('resetModel'));
+      assertEquals(
+          initialResetCallCount, readAloudModel.getCallCount('resetModel'));
     });
   });
 
@@ -345,43 +351,62 @@ suite('SpeechController', () => {
     const textNode = document.createTextNode(text1 + text2 + text3);
     p.appendChild(textNode);
     document.body.appendChild(p);
+
+    const node = ReadAloudNode.create(textNode);
+    assertTrue(!!node);
+    readAloudModel.setInitialized(true);
+    readAloudModel.setCurrentTextContent(text1);
+    readAloudModel.setCurrentTextSegments(
+        [{node, start: 0, length: text1.length}]);
+
     // Start playing and then pause
     speechController.onPlayPauseToggle(p);
     wordBoundaries.updateBoundary(2);
     speechController.onPlayPauseToggle(p);
     assertTrue(wordBoundaries.hasBoundaries());
     // Now select text and play from there.
-    nodeStore.setDomNode(textNode, id);
+    // Restore DOM to clear highlights before selection
+    p.replaceChildren();
+    const newTextNode = document.createTextNode(text1 + text2 + text3);
+    p.appendChild(newTextNode);
+    nodeStore.setDomNode(newTextNode, id);
+    const newNode = ReadAloudNode.create(newTextNode);
+    assertTrue(!!newNode);
+    readAloudModel.setCurrentTextSegments(
+        [{node: newNode, start: 0, length: text1.length}]);
+
     const selection = document.getSelection();
     assertTrue(!!selection);
     const range = new Range();
-    range.setStart(textNode, text1.length + text2.length + 3);
-    range.setEnd(textNode, text1.length + text2.length + 8);
+    selection.removeAllRanges();
+    range.setStart(newTextNode, text1.length + text2.length + 3);
+    range.setEnd(newTextNode, text1.length + text2.length + 8);
     selection.addRange(range);
     selectionController.onSelectionChange(selection);
-    readAloudModel.setInitialized(true);
     readAloudModel.setCurrentTextContent(text3);
-    const node = ReadAloudNode.create(textNode);
-    assertTrue(!!node);
-    readAloudModel.setCurrentTextSegments(
-        [{node, start: 0, length: text1.length}]);
+
     let calls = 0;
     readAloudModel.moveSpeechForward = () => {
       readAloudModel.methodCalled('moveSpeechForward');
       calls++;
       if (calls === 1) {
         readAloudModel.setCurrentTextSegments(
-            [{node, start: text1.length, length: text2.length}]);
-      } else {
+            [{node: newNode, start: text1.length, length: text2.length}]);
+      } else if (calls === 2) {
         readAloudModel.setCurrentTextSegments([
-          {node, start: text1.length + text2.length, length: text3.length},
+          {
+            node: newNode,
+            start: text1.length + text2.length,
+            length: text3.length,
+          },
         ]);
+      } else {
+        readAloudModel.setCurrentTextSegments([]);
       }
     };
-
-    speechController.onPlayPauseToggle(p);
     const mockTimer = new MockTimer();
     mockTimer.install();
+    speechController.onPlayPauseToggle(p);
     mockTimer.tick(playFromSelectionTimeout);
     mockTimer.uninstall();
     await speech.whenCalled('speak');

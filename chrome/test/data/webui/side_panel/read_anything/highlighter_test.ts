@@ -47,7 +47,6 @@ suite('Highlighter', () => {
     BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    chrome.readingMode.isPhraseHighlightingEnabled = true;
 
     readAloudModel = new TestReadAloudModelBrowserProxy();
     setInstance(readAloudModel);
@@ -424,6 +423,8 @@ suite('Highlighter', () => {
   });
 
   test('phrase highlight', () => {
+    chrome.readingMode.isTsTextSegmentationEnabled = false;
+    chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
     wordBoundaries.updateBoundary(0);
@@ -450,6 +451,8 @@ suite('Highlighter', () => {
   });
 
   test('phrase highlight with engine length, ignores engine length', () => {
+    chrome.readingMode.isTsTextSegmentationEnabled = false;
+    chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
     wordBoundaries.updateBoundary(0, 1);
@@ -479,6 +482,8 @@ suite('Highlighter', () => {
       'onWillMoveToNextGranularity with phrase highlighting highlights the ' +
           'rest of the sentence',
       () => {
+        chrome.readingMode.isTsTextSegmentationEnabled = false;
+        chrome.readingMode.isPhraseHighlightingEnabled = true;
         chrome.readingMode.onHighlightGranularityChanged(
             chrome.readingMode.autoHighlighting);
         wordBoundaries.updateBoundary(0);
@@ -514,6 +519,8 @@ suite('Highlighter', () => {
       });
 
   test('phrase highlight across multiple nodes', () => {
+    chrome.readingMode.isTsTextSegmentationEnabled = false;
+    chrome.readingMode.isPhraseHighlightingEnabled = true;
     chrome.readingMode.onHighlightGranularityChanged(
         chrome.readingMode.autoHighlighting);
     // speechUtteranceLength should extend across multiple nodes.
