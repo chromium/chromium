@@ -29,7 +29,6 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
