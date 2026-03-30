@@ -681,8 +681,9 @@ ci.thin_tester(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests.filter",
                 ],
+                # Slow on certain debug builders, see crbug.com/1513713.
                 swarming = targets.swarming(
-                    shards = 20,
+                    shards = 25,
                 ),
             ),
             "leveldb_unittests": targets.mixin(

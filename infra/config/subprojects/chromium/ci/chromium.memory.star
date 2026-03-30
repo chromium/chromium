@@ -345,7 +345,7 @@ linux_memory_builder(
             "interactive_ui_tests": targets.mixin(
                 # Slow on certain debug builders, see crbug.com/1513713.
                 swarming = targets.swarming(
-                    shards = 10,
+                    shards = 15,
                 ),
             ),
         },
