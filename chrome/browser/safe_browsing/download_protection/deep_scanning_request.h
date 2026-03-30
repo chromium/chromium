@@ -226,6 +226,24 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
       const enterprise_connectors::ContentAnalysisResponse& response,
       DownloadCheckResult& result);
 
+  // Evaluates whether force save to cloud is enabled, and if so, finds the
+  // correct web contents. Modifies `result` to SENSITIVE_CONTENT_BLOCK if the
+  // feature is disabled. Returns the WebContents to use for the dialog, or
+  // nullptr if no dialog should be shown (either because it's not a force save,
+  // the feature is disabled, or no web contents could be found).
+  content::WebContents* MaybeGetWebContentsForForceSave(
+      DownloadCheckResult& result);
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+  // Shows the force save to cloud dialog. `file_count` should be 1 for single
+  // file scans. For save package scans, it should be the number of files in
+  // the package.
+  void ShowForceSaveToCloudDialog(base::OnceClosure keep_closure,
+                                  base::OnceClosure discard_closure,
+                                  content::WebContents* web_contents,
+                                  size_t file_count);
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+
   // Metadata for the item being scanned. This is owned by `DeepScanningRequest`
   // and provides an abstraction layer over different types of scan sources
   // (download items, file system access writes).

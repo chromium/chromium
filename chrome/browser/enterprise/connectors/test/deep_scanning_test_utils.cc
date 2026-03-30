@@ -63,6 +63,18 @@ proto::EventResult GetEventResultProto(const std::string& event_result) {
   if (event_result == "EVENT_RESULT_BYPASSED") {
     return proto::EventResult::EVENT_RESULT_BYPASSED;
   }
+  if (event_result == "EVENT_RESULT_DETECTED") {
+    return proto::EventResult::EVENT_RESULT_DETECTED;
+  }
+  if (event_result == "EVENT_RESULT_DATA_MASKED") {
+    return proto::EventResult::EVENT_RESULT_DATA_MASKED;
+  }
+  if (event_result == "EVENT_RESULT_DATA_UNMASKED") {
+    return proto::EventResult::EVENT_RESULT_DATA_UNMASKED;
+  }
+  if (event_result == "EVENT_RESULT_FORCED_SAVE_TO_CLOUD") {
+    return proto::EventResult::EVENT_RESULT_FORCED_SAVE_TO_CLOUD;
+  }
   NOTREACHED();
 }
 

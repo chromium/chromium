@@ -751,36 +751,8 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     download_result = DownloadCheckResult::BLOCKED_SCAN_FAILED;
   }
 
-  bool should_show_force_save_dialog = false;
-  content::WebContents* force_save_web_contents = web_contents();
-  // Handle force save to cloud if the feature is enabled.
-  if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE ||
-      download_result == DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
-    const auto& force_save_to_cloud_feature =
-        download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
-            ? enterprise_data_protection::kEnableForceDownloadToCloud
-            : enterprise_data_protection::kEnableForceDownloadToOneDrive;
-
-    if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
-      download_result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
-    } else {
-      should_show_force_save_dialog = true;
-
-      // `web_contents()` may be nullptr in several cases, if the tab owning
-      // the download was opened by a download link, a restored page, or an
-      // external application. For those cases, download to drive directly.
-      if (force_save_web_contents == nullptr) {
-#if !BUILDFLAG(IS_ANDROID)
-        Browser* browser = chrome::FindLastActiveWithProfile(
-            Profile::FromBrowserContext(metadata_->GetBrowserContext()));
-        if (browser) {
-          force_save_web_contents =
-              browser->tab_strip_model()->GetActiveWebContents();
-        }
-#endif
-      }
-    }
-  }
+  content::WebContents* force_save_web_contents =
+      MaybeGetWebContentsForForceSave(download_result);
 
   // Reporting happens unconditionally and does not depend on
   // DownloadCheckResult. Can be kept here.
@@ -804,33 +776,24 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
     metadata_->AddScanResultMetadata(file_metadata);
   }
 
-  if (should_show_force_save_dialog && force_save_web_contents) {
+  if (force_save_web_contents) {
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-    // ProcessEnterpriseDownloadResult will run via
-    // dialog callback.
-    base::OnceClosure keep_closure =
-        base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
-                       weak_ptr_factory_.GetWeakPtr(), download_result);
-    base::OnceClosure discard_closure =
-        base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+    if (save_package_files_.empty()) {
+      // ProcessEnterpriseDownloadResult will run via
+      // dialog callback.
+      base::OnceClosure keep_closure =
+          base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
+                         weak_ptr_factory_.GetWeakPtr(), download_result);
+      base::OnceClosure discard_closure =
+          base::BindOnce(&DeepScanningRequest::ProcessEnterpriseDownloadResult,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
 
-    new enterprise_connectors::ContentAnalysisDialogController(
-        std::make_unique<
-            enterprise_connectors::ContentAnalysisDownloadsDelegate>(
-            metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
-            GURL(), false, std::move(keep_closure), std::move(discard_closure),
-            nullptr,
-            enterprise_connectors::ContentAnalysisResponse::Result::
-                TriggeredRule::CustomRuleMessage()),
-        true,  // Downloads are always cloud-based for now.
-        force_save_web_contents,
-        enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
-        /* file_count */ 1,
-        enterprise_connectors::FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD,
-        nullptr);
-    return;
+      ShowForceSaveToCloudDialog(std::move(keep_closure),
+                                 std::move(discard_closure),
+                                 force_save_web_contents, /*file_count=*/1);
+      return;
+    }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   }
 
@@ -949,6 +912,25 @@ void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
   DecrementCrashKey(ScanningCrashKey::PENDING_FILE_DOWNLOADS);
 
   if ((--pending_scan_requests_) == 0) {
+    if (!save_package_files_.empty()) {
+      content::WebContents* force_save_web_contents =
+          MaybeGetWebContentsForForceSave(download_check_result_);
+      if (force_save_web_contents) {
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+        base::OnceClosure keep_closure = base::BindOnce(
+            &DeepScanningRequest::FinishRequest, weak_ptr_factory_.GetWeakPtr(),
+            download_check_result_);
+        base::OnceClosure discard_closure = base::BindOnce(
+            &DeepScanningRequest::FinishRequest, weak_ptr_factory_.GetWeakPtr(),
+            DownloadCheckResult::SENSITIVE_CONTENT_BLOCK);
+
+        ShowForceSaveToCloudDialog(
+            std::move(keep_closure), std::move(discard_closure),
+            force_save_web_contents, save_package_files_.size());
+        return;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+      }
+    }
     FinishRequest(download_check_result_);
   }
 }
@@ -1044,6 +1026,64 @@ void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   metadata_.reset();
   download_service_->RequestFinished(this);
 }
+
+content::WebContents* DeepScanningRequest::MaybeGetWebContentsForForceSave(
+    DownloadCheckResult& result) {
+  if (result != DownloadCheckResult::FORCE_SAVE_TO_GDRIVE &&
+      result != DownloadCheckResult::FORCE_SAVE_TO_ONEDRIVE) {
+    return nullptr;
+  }
+
+  const auto& force_save_to_cloud_feature =
+      result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE
+          ? enterprise_data_protection::kEnableForceDownloadToCloud
+          : enterprise_data_protection::kEnableForceDownloadToOneDrive;
+
+  if (!base::FeatureList::IsEnabled(force_save_to_cloud_feature)) {
+    result = DownloadCheckResult::SENSITIVE_CONTENT_BLOCK;
+    return nullptr;
+  }
+
+  content::WebContents* force_save_web_contents = web_contents();
+
+  // `web_contents()` may be nullptr in several cases, if the tab owning
+  // the download was opened by a download link, a restored page, or an
+  // external application. For those cases, try to find the active web
+  // contents of the browser to show the dialog on.
+  if (!force_save_web_contents) {
+#if !BUILDFLAG(IS_ANDROID)
+    Browser* browser = chrome::FindLastActiveWithProfile(
+        Profile::FromBrowserContext(metadata_->GetBrowserContext()));
+    if (browser) {
+      force_save_web_contents =
+          browser->tab_strip_model()->GetActiveWebContents();
+    }
+#endif
+  }
+
+  return force_save_web_contents;
+}
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+void DeepScanningRequest::ShowForceSaveToCloudDialog(
+    base::OnceClosure keep_closure,
+    base::OnceClosure discard_closure,
+    content::WebContents* web_contents,
+    size_t file_count) {
+  new enterprise_connectors::ContentAnalysisDialogController(
+      std::make_unique<enterprise_connectors::ContentAnalysisDownloadsDelegate>(
+          metadata_->GetTargetFilePath().BaseName().AsUTF16Unsafe(), u"",
+          GURL(), false, std::move(keep_closure), std::move(discard_closure),
+          nullptr,
+          enterprise_connectors::ContentAnalysisResponse::Result::
+              TriggeredRule::CustomRuleMessage()),
+      true,  // Downloads are always cloud-based for now.
+      web_contents, enterprise_connectors::DeepScanAccessPoint::DOWNLOAD,
+      file_count,
+      enterprise_connectors::FinalContentAnalysisResult::FORCE_SAVE_TO_CLOUD,
+      nullptr);
+}
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 void DeepScanningRequest::MaybeUpdateDownloadCheckResult(
     const enterprise_connectors::ContentAnalysisResponse& response,
