@@ -13,7 +13,6 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.structured.code_generator_cpp as code_generator_cpp
 import chromium_src.tools.metrics.structured.code_generator_ts as code_generator_ts
 from chromium_src.tools.metrics.structured.sync import model
@@ -25,12 +24,10 @@ parser.add_argument('--input', help='Path to structured.xml')
 parser.add_argument('--output', help='Path to generated files.')
 parser.add_argument('--target',
                     help='Target for generating events, e.g. chromium, webui.')
-logging_utils.parser_add_argument(parser)
 
 
 def main():
   args = parser.parse_args()
-  logging_utils.config_logging(args)
   data = model.Model(open(args.input, encoding='utf-8').read(), 'chrome')
 
   if (args.target == 'chromium'):

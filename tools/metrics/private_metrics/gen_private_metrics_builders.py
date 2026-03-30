@@ -14,7 +14,6 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.private_metrics.dkm_model as dkm_model
 import chromium_src.tools.metrics.private_metrics.dkm_builders_template as dkm_builders_template
 import chromium_src.tools.metrics.private_metrics.dwa_model as dwa_model
@@ -26,12 +25,10 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--input-dkm', help='Path to dkm.xml')
 parser.add_argument('--input-dwa', help='Path to dwa.xml')
 parser.add_argument('--output', help='Path to generated files.')
-logging_utils.parser_add_argument(parser)
 
 
 def main():
   args = parser.parse_args()
-  logging_utils.config_logging(args)
 
   relpath = 'components/metrics/private_metrics/'
   relpath_dwa = 'components/metrics/dwa/'

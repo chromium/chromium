@@ -10,7 +10,6 @@ import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 
 _SCRIPT_NAME = "generate_allowlist_from_histograms_file.py"
@@ -136,13 +135,11 @@ def _ParseArguments():
                           help="XML tag name of either 'enum' or 'variant'.")
   arg_parser.add_argument("--input",
                           help="Path to .xml file with histogram descriptions.")
-  logging_utils.parser_add_argument(arg_parser)
   return arg_parser.parse_args()
 
 
 def main():
   arguments = _ParseArguments()
-  logging_utils.config_logging(arguments)
   _GenerateFile(arguments)
 
 

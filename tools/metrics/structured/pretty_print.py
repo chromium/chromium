@@ -10,7 +10,6 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.structured.sync.model as model
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
@@ -36,9 +35,6 @@ def main():
   parser.add_argument('--cleanup',
                       action="store_true",
                       help="Remove the backup file after a successful run.")
-  logging_utils.parser_add_argument(parser)
-  args = parser.parse_args()
-  logging_utils.config_logging(args)
 
   dirname = os.path.dirname(os.path.realpath(__file__))
   xml = dirname + '/sync/structured.xml'

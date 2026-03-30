@@ -15,7 +15,6 @@ from typing import Iterable, Set
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
@@ -123,9 +122,7 @@ def main(argv):
   parser.add_argument("--diff",
                       type=str,
                       help="Git revision to diff against (e.g. HEAD~)")
-  logging_utils.parser_add_argument(parser)
   args = parser.parse_args(argv[1:])
-  logging_utils.config_logging(args)
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:

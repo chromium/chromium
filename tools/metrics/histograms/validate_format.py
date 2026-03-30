@@ -16,7 +16,6 @@ import xml.dom.minidom
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.enums as enums
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.extract_histograms as extract_histograms
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
@@ -159,12 +158,7 @@ def main():
       default=histogram_paths.ALL_XMLS,
       help='An optional list of paths to XML files to validate passed as'
       ' consecutive arguments. Production XML files are validated by default.')
-
-  logging_utils.parser_add_argument(parser)
-  parsed_args = parser.parse_args()
-
-  logging_utils.config_logging(parsed_args)
-  paths_to_check = parsed_args.xml_paths
+  paths_to_check = parser.parse_args().xml_paths
 
   doc = merge_xml.MergeFiles(paths_to_check,
                              expand_owners_and_extract_components=False)

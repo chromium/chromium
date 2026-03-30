@@ -11,7 +11,6 @@ import xml.dom.minidom
 
 import setup_modules  # pylint: disable=unused-import
 
-import chromium_src.tools.metrics.common.logging_utils as logging_utils
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 import chromium_src.tools.metrics.histograms.expand_owners as expand_owners
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
@@ -238,9 +237,7 @@ def PrettyPrintMergedFiles(filenames=[], files=[]):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--output', required=True)
-  logging_utils.parser_add_argument(parser)
   args = parser.parse_args()
-  logging_utils.config_logging(args)
   with open(args.output, 'w', encoding='utf-8', newline='\n') as f:
     # This is run by
     # https://source.chromium.org/chromium/chromium/src/+/main:tools/metrics/BUILD.gn;drc=573e48309695102dec2da1e8f806c18c3200d414;l=5
