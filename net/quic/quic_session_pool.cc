@@ -376,6 +376,9 @@ void LogSessionKeyMismatch(QuicSessionKeyPartialMatchResult result,
 }
 
 base::TimeDelta GetAdditionalDelayForMainJob() {
+  if (!base::FeatureList::IsEnabled(features::kAdditionalDelayMainJob)) {
+    return base::TimeDelta();
+  }
   return features::kAdditionalDelay.Get();
 }
 

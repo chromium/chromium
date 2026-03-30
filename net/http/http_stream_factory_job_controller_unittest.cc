@@ -119,7 +119,11 @@ const std::string_view kHttpTestUrls[] = {"http://www.example.com",
 
 // The default delay for main job defined in QuicSessionPool::
 // GetTimeDelayForWaitingJob().
+#if BUILDFLAG(IS_ANDROID)
+const int kDefaultDelayMilliSecsForWaitingJob = 400;
+#else
 const int kDefaultDelayMilliSecsForWaitingJob = 300;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Phases in which errors will happen for HTTP, HTTPS and SOCKS5 tests.
 enum class TcpErrorPhase {
@@ -4361,6 +4365,11 @@ TEST_F(HttpStreamFactoryJobControllerTest, InvalidPortForQuic) {
 // Verifies that the main job is not resumed until after the alt job completes
 // host resolution.
 TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
+  // Explicitly disable the kAdditionalDelayMainJob feature, since this would
+  // add a delay to the main job and cause the test to fail.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kAdditionalDelayMainJob);
+
   auto hanging_resolver = std::make_unique<MockHostResolver>();
   hanging_resolver->set_ondemand_mode(true);
   hanging_resolver->rules()->AddRule("www.google.com", "1.2.3.4");
@@ -4370,6 +4379,7 @@ TEST_F(HttpStreamFactoryJobControllerTest, HostResolutionHang) {
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
 
+  SetNotDelayMainJobWithAvailableSpdySession();
   Initialize(request_info);
 
   // handshake will fail asynchronously after mock data is unpaused.
