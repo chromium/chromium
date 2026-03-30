@@ -35,20 +35,31 @@ base::expected<void, mojo_base::mojom::ErrorPtr> CheckIsContentType(
   return base::ok();
 }
 
-base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetNativeTabId(
+base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetNativeId(
     const NodeId& node_id) {
-  int32_t tab_id;
-  if (!base::StringToInt(node_id.Id(), &tab_id)) {
+  int32_t native_id;
+  if (!base::StringToInt(node_id.Id(), &native_id)) {
     return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "invalid tab id provided"));
+        mojo_base::mojom::Code::kInvalidArgument, "invalid id provided"));
   }
-  return tab_id;
+  return native_id;
 }
 
 base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetContentNativeTabId(
     const NodeId& node_id) {
   RETURN_IF_ERROR(CheckIsContentType(node_id));
-  ASSIGN_OR_RETURN(auto native, GetNativeTabId(node_id));
+  ASSIGN_OR_RETURN(auto native, GetNativeId(node_id));
+  return native;
+}
+
+base::expected<int32_t, mojo_base::mojom::ErrorPtr> GetCollectionNativeId(
+    const NodeId& node_id) {
+  if (node_id.Type() != tabs_api::NodeId::Type::kCollection) {
+    return base::unexpected(
+        mojo_base::mojom::Error::New(mojo_base::mojom::Code::kInvalidArgument,
+                                     "only collection ids accepted"));
+  }
+  ASSIGN_OR_RETURN(auto native, GetNativeId(node_id));
   return native;
 }
 

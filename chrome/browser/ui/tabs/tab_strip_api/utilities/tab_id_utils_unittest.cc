@@ -66,14 +66,14 @@ TEST(TabStripApiUtilsTest, CheckIsContentType_WrongType) {
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
 
-TEST(TabStripApiUtilsTest, GetNativeTabId) {
-  auto result = GetNativeTabId(NodeId(NodeId::Type::kContent, "123"));
+TEST(TabStripApiUtilsTest, GetNativeId) {
+  auto result = GetNativeId(NodeId(NodeId::Type::kContent, "123"));
   ASSERT_TRUE(result.has_value());
   ASSERT_EQ(123, result.value());
 }
 
-TEST(TabStripApiUtilsTest, GetNativeTabId_BadType) {
-  auto result = GetNativeTabId(NodeId(NodeId::Type::kContent, "abc"));
+TEST(TabStripApiUtilsTest, GetNativeId_BadType) {
+  auto result = GetNativeId(NodeId(NodeId::Type::kContent, "abc"));
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }
@@ -86,6 +86,24 @@ TEST(TabStripApiUtilsTest, GetContentNativeTabId) {
 
 TEST(TabStripApiUtilsTest, GetContentNativeTabId_Invalid) {
   auto result = GetContentNativeTabId(NodeId(NodeId::Type::kInvalid, "123"));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+}
+
+TEST(TabStripApiUtilsTest, GetCollectionNativeId) {
+  auto result = GetCollectionNativeId(NodeId(NodeId::Type::kCollection, "123"));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(123, result.value());
+}
+
+TEST(TabStripApiUtilsTest, GetCollectionNativeId_Invalid) {
+  // Wrong type.
+  auto result = GetCollectionNativeId(NodeId(NodeId::Type::kContent, "123"));
+  ASSERT_FALSE(result.has_value());
+  ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
+
+  // Wrong string.
+  result = GetCollectionNativeId(NodeId(NodeId::Type::kCollection, "abc"));
   ASSERT_FALSE(result.has_value());
   ASSERT_EQ(mojo_base::mojom::Code::kInvalidArgument, result.error()->code);
 }

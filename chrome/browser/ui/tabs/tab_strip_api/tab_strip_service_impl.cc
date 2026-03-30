@@ -250,12 +250,12 @@ TabStripServiceImpl::SetSelectedTabs(
 
   std::vector<tabs::TabHandle> selection_handles;
   for (auto& id : selection) {
-    ASSIGN_OR_RETURN(auto handle_id, utils::GetNativeTabId(id));
-    selection_handles.push_back(tabs::TabHandle(handle_id));
+    ASSIGN_OR_RETURN(auto handle_id, utils::GetNativeId(id));
+    selection_handles.emplace_back(handle_id);
   }
 
   ASSIGN_OR_RETURN(auto activate_handle_id,
-                   utils::GetNativeTabId(tab_to_activate));
+                   utils::GetNativeId(tab_to_activate));
 
   tab_strip_model_adapter().SetTabSelection(
       selection_handles, tabs::TabHandle(activate_handle_id));
@@ -315,20 +315,11 @@ TabStripServiceImpl::UpdateTabGroupVisual(
     const tab_groups::TabGroupVisualData& visual_data) {
   auto session = session_controller_->CreateSession();
 
-  if (id.Type() != tabs_api::NodeId::Type::kCollection) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "id must be a collection"));
-  }
-
-  const std::optional<tabs::TabCollectionHandle> collection_handle =
-      id.ToTabCollectionHandle();
-  if (!collection_handle.has_value()) {
-    return base::unexpected(mojo_base::mojom::Error::New(
-        mojo_base::mojom::Code::kInvalidArgument, "id is malformed"));
-  }
+  ASSIGN_OR_RETURN(auto collection_id, utils::GetCollectionNativeId(id));
+  tabs::TabCollectionHandle collection_handle(collection_id);
 
   const std::optional<const tab_groups::TabGroupId> group_id =
-      tab_strip_model_adapter().FindGroupIdFor(collection_handle.value());
+      tab_strip_model_adapter().FindGroupIdFor(collection_handle);
   if (!group_id.has_value()) {
     return base::unexpected(
         mojo_base::mojom::Error::New(mojo_base::mojom::Code::kNotFound,
