@@ -47,6 +47,8 @@ class AiOverlayDialogController : public content::WebContentsDelegate {
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+  void ResizeDueToAutoResize(content::WebContents* source,
+                             const gfx::Size& new_size) override;
 
  private:
   views::WebView* GetActiveOverlayWebView() const;

@@ -107,6 +107,8 @@ ContentsContainerView::ContentsContainerView(BrowserView* browser_view)
     ai_overlay_dialog_view->SetVisible(false);
     ai_overlay_dialog_view->SetProperty(views::kElementIdentifierKey,
                                         kAiOverlayDialogWebViewElementId);
+    ai_overlay_dialog_view->EnableSizingFromWebContents(gfx::Size(1, 1),
+                                                        gfx::Size(800, 600));
     ai_overlay_dialog_view_ = AddChildView(std::move(ai_overlay_dialog_view));
   }
 
@@ -642,9 +644,22 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
     // TODO(b/490458384): Look into whether the view can be transparent to hit
     // testing (in transparent parts) - otherwise autosize it to the inner web
     // content.
-    gfx::Size size(200, 200);
-    gfx::Point top_left = non_devtools_contents_bounds.bottom_right() -
-                          gfx::Vector2d(size.width(), size.height());
+    gfx::Size size = ai_overlay_dialog_view_->GetPreferredSize();
+    if (size.IsEmpty()) {
+      int dialog_width = 200;
+      int dialog_height = 200;
+      if (!features::kAiOverlayDialogMockJsonPath.Get().empty()) {
+        // 150px (buttons) + 20px (gap) + 100px (persona) = 270px
+        dialog_width = 270;
+        // 200px (max height of column)
+        dialog_height = 200;
+      }
+      size = gfx::Size(dialog_width, dialog_height);
+    }
+    int margin = 20;
+    gfx::Point top_left =
+        non_devtools_contents_bounds.bottom_right() -
+        gfx::Vector2d(size.width() + margin, size.height() + margin);
     gfx::Rect rect(top_left, size);
     layouts.child_layouts.emplace_back(ai_overlay_dialog_view_.get(),
                                        ai_overlay_dialog_view_->GetVisible(),

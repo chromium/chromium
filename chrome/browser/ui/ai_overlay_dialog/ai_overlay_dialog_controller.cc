@@ -115,3 +115,12 @@ bool AiOverlayDialogController::CheckMediaAccessPermission(
     blink::mojom::MediaStreamType type) {
   return true;
 }
+
+void AiOverlayDialogController::ResizeDueToAutoResize(
+    content::WebContents* source,
+    const gfx::Size& new_size) {
+  views::WebView* overlay_web_view = GetActiveOverlayWebView();
+  if (overlay_web_view && overlay_web_view->GetWebContents() == source) {
+    overlay_web_view->SetPreferredSize(new_size);
+  }
+}
