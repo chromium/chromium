@@ -363,7 +363,7 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   if (IsManifestUrlChange(data)) {
     return;
   }
-  if (state() != State::FETCHING_MANIFEST) {
+  if (state_ != State::FETCHING_MANIFEST) {
     return;
   }
 
@@ -1001,8 +1001,22 @@ void AppBannerManager::ShowBannerForCurrentPageState() {
   std::optional<InstallBannerConfig> config = GetCurrentBannerConfig();
   CHECK(config);
   TrackBeforeInstallEvent(BEFORE_INSTALL_EVENT_COMPLETE);
-  delegate_->ShowBannerUi(install_source, config.value());
-  ReportStatus(InstallableStatusCode::SHOWING_APP_INSTALLATION_DIALOG);
+  ShowBannerUiResult result =
+      delegate_->ShowBannerUi(install_source, config.value());
+  switch (result) {
+    case ShowBannerUiResult::kShownAppInstallationDialog:
+      ReportStatus(InstallableStatusCode::SHOWING_APP_INSTALLATION_DIALOG);
+      break;
+    case ShowBannerUiResult::kShownWebApp:
+      ReportStatus(InstallableStatusCode::SHOWING_WEB_APP_BANNER);
+      break;
+    case ShowBannerUiResult::kShownNativeApp:
+      ReportStatus(InstallableStatusCode::SHOWING_NATIVE_APP_BANNER);
+      break;
+    case ShowBannerUiResult::kFailed:
+      ReportStatus(InstallableStatusCode::FAILED_TO_CREATE_BANNER);
+      break;
+  }
   UpdateState(State::COMPLETE);
 
   for (Observer& observer : observer_list_) {

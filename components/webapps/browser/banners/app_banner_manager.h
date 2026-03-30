@@ -85,6 +85,14 @@ class AppBannerManager final : public content::WebContentsObserver,
     virtual void OnComplete() {}
   };
 
+  // Result of trying to show the banner UI.
+  enum class ShowBannerUiResult {
+    kShownAppInstallationDialog,
+    kShownWebApp,
+    kShownNativeApp,
+    kFailed,
+  };
+
   class Delegate {
    public:
     // This is called by the MLInstallabilityPromoter when, for this current web
@@ -144,10 +152,11 @@ class AppBannerManager final : public content::WebContentsObserver,
     // might override this to show UI (e.g. on Android).
     virtual void MaybeShowAmbientBadge(const InstallBannerConfig& config) = 0;
 
-    // Creates the app banner UI. Overridden by subclasses as the infobar is
-    // platform-specific.
-    virtual void ShowBannerUi(WebappInstallSource install_source,
-                              const InstallBannerConfig& config) = 0;
+    // Shows the banner UI for the given configuration. Returns the result of
+    // the attempt.
+    virtual ShowBannerUiResult ShowBannerUi(
+        WebappInstallSource install_source,
+        const InstallBannerConfig& config) = 0;
 
     // Called when the pipeline is complete - data can be saved, but pending
     // operations should stop.
@@ -312,17 +321,18 @@ class AppBannerManager final : public content::WebContentsObserver,
 
   bool IsRunningForTesting() const;
 
-  // TODO(http://crbug.com/322342499): Make this private.
-  State state() const { return state_; }
+  // Returns the current state of the AppBannerManager pipeline. For testing
+  // only.
+  State state_for_testing() const { return state_; }
 
-  // Voids all outstanding service pointers.
-  // TODO(http://crbug.com/322342499): Make this private.
-  void ResetBindings();
+  // Returns true if the AppBannerManager is currently fetching native app data.
+  bool IsFetchingNativeData() const {
+    return state_ == State::FETCHING_NATIVE_DATA;
+  }
 
-  // Reports |code| via a UMA histogram or logs it to the console.
-  // TODO(http://crbug.com/322342499): Figure out if this should be private,
-  // currently AppBannerManagerAndroid use it.
-  void ReportStatus(InstallableStatusCode code);
+  // Resets the bindings for the AppBannerManager. This should be called before
+  // replacing the current banner prompt with a new one.
+  void PrepareForBannerPromptReplacement() { ResetBindings(); }
 
   void ResetCurrentPageDataForTesting();
   void OverrideInstallableParamsForTesting(const InstallableParams& params);
@@ -387,6 +397,12 @@ class AppBannerManager final : public content::WebContentsObserver,
   void PerformInstallableWebAppCheck();
 
   void ResetCurrentPageData();
+
+  // Resets the bindings for the AppBannerManager.
+  void ResetBindings();
+
+  // Reports an installable status code to the delegate.
+  void ReportStatus(InstallableStatusCode code);
 
   // Stops the banner pipeline early.
   void Terminate(InstallableStatusCode code);
