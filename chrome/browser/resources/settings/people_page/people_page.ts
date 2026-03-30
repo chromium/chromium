@@ -460,6 +460,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
+  // <if expr="is_chromeos">
+  private getSyncAndNonPersonalizedServicesSubtext_(): string {
+    if (this.syncStatus && this.syncStatus.hasError &&
+        this.syncStatus.statusText) {
+      return this.syncStatus.statusText;
+    }
+    return '';
+  }
+  // </if>
+
   // <if expr="not is_chromeos">
   private shouldHideSyncSetupLinkRow_() {
     return this.replaceSyncPromosWithSignInPromos_ &&

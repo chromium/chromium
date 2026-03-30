@@ -184,13 +184,20 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
           SyncStatusActionType::kRetrieveTrustedVaultKeys};
 
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-      return {SyncStatusMessageType::kSyncError,
-              IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
-              button_string_id,
-              syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
-                  ? IDS_SETTINGS_PEOPLE_SIGN_OUT
-                  : IDS_SETTINGS_SIGN_OUT,
-              SyncStatusActionType::kEnterPassphrase};
+      return {
+          SyncStatusMessageType::kSyncError,
+#if BUILDFLAG(IS_CHROMEOS)
+          syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+              ? IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL
+              : IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION,
+#else
+          IDS_SETTINGS_ERROR_PASSPHRASE_USER_ERROR_DESCRIPTION_WITH_EMAIL,
+#endif
+          button_string_id,
+          syncer::IsReplaceSyncPromosWithSignInPromosEnabled()
+              ? IDS_SETTINGS_PEOPLE_SIGN_OUT
+              : IDS_SETTINGS_SIGN_OUT,
+          SyncStatusActionType::kEnterPassphrase};
 
     case syncer::SyncService::UserActionableError::
         kTrustedVaultRecoverabilityDegradedForEverything:

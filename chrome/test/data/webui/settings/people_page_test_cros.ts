@@ -118,6 +118,20 @@ suite('Chrome OS', function() {
     assertTrue(!!subpageArrow);
     assertFalse(subpageArrow.hidden);
   });
+
+  test('SyncSetupSubLabelUpdatedForPassphraseError', () => {
+    simulateSyncStatus({
+      signedInState: SignedInState.SYNCING,
+      hasError: true,
+      statusAction: StatusAction.ENTER_PASSPHRASE,
+      statusText:
+          'To use and save Chromium data in your Google Account, enter your passphrase',
+    });
+
+    const syncSetupRow = peoplePage.shadowRoot!.querySelector('#sync-setup')!;
+    assertEquals(
+        peoplePage.syncStatus!.statusText, (syncSetupRow as any).subLabel);
+  });
 });
 
 suite('Chrome OS with account manager disabled', function() {
