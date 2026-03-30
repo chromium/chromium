@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.CallbackController;
@@ -49,9 +50,9 @@ public class TabBottomSheetManager implements Destroyable {
                 @Override
                 public void onStartedShowing(@LayoutType int layoutType) {
                     if (layoutType == LayoutType.TAB_SWITCHER) {
-                        mSuppressedOnTabSwitcher = true;
                         if (mTabBottomSheetCoordinator != null
                                 && mNativeInterfaceDelegate != null) {
+                            mSuppressedOnTabSwitcher = true;
                             mTabBottomSheetCoordinator.closeBottomSheet();
                         }
                     }
@@ -60,14 +61,15 @@ public class TabBottomSheetManager implements Destroyable {
                 @Override
                 public void onStartedHiding(@LayoutType int layoutType) {
                     if (layoutType == LayoutType.TAB_SWITCHER) {
-                        mSuppressedOnTabSwitcher = false;
                         if (mLayoutStateProviderOneShotSupplier.get() != null) {
                             @LayoutType
                             int nextLayoutType =
                                     mLayoutStateProviderOneShotSupplier.get().getNextLayoutType();
                             if (nextLayoutType == LayoutType.BROWSING) {
-                                if (mTabBottomSheetCoordinator != null
+                                if (mSuppressedOnTabSwitcher
+                                        && mTabBottomSheetCoordinator != null
                                         && mNativeInterfaceDelegate != null) {
+                                    mSuppressedOnTabSwitcher = false;
                                     if (mTabBottomSheetCoordinator.tryToShowBottomSheet(
                                             /* animate= */ false, /* startsExpanded= */ false)) {
                                         mBottomSheetController.addObserver(mBottomSheetObserver);
@@ -81,6 +83,7 @@ public class TabBottomSheetManager implements Destroyable {
                 }
             };
 
+    private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
@@ -102,9 +105,11 @@ public class TabBottomSheetManager implements Destroyable {
      *     state.
      */
     public TabBottomSheetManager(
+            Context context,
             WindowAndroid windowAndroid,
             BottomSheetController bottomSheetController,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderOneShotSupplier) {
+        mContext = context;
         mWindowAndroid = windowAndroid;
         mBottomSheetController = bottomSheetController;
         mLayoutStateProviderOneShotSupplier = layoutStateProviderOneShotSupplier;
@@ -137,13 +142,8 @@ public class TabBottomSheetManager implements Destroyable {
         // Close any existing bottom sheet before showing a new one.
         tryToCloseBottomSheet();
         mTabBottomSheetCoordinator =
-                new TabBottomSheetCoordinator(mBottomSheetController, coBrowseViews);
-        if (mSuppressedOnTabSwitcher) {
-            // We are currently in the tab switcher, save this sheet to be shown when we return to a
-            // tab.
-            mNativeInterfaceDelegate = nativeInterfaceDelegate;
-            return true;
-        }
+                new TabBottomSheetCoordinator(mContext, mBottomSheetController, coBrowseViews);
+
         if (mTabBottomSheetCoordinator.tryToShowBottomSheet(animate, startsExpanded)) {
             // Successfully showed bottom sheet.
             mBottomSheetController.addObserver(mBottomSheetObserver);
@@ -164,6 +164,7 @@ public class TabBottomSheetManager implements Destroyable {
         if (mTabBottomSheetCoordinator != null) {
             if (mSuppressedOnTabSwitcher) {
                 // The bottom sheet is already closed. just send a onClose event back to native.
+                mSuppressedOnTabSwitcher = false;
                 notifyOnClose();
             } else {
                 mTabBottomSheetCoordinator.closeBottomSheet();

@@ -4,22 +4,29 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.content.Context;
 import android.view.MotionEvent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for tab bottom sheet */
 @NullMarked
 public class TabBottomSheetMediator {
-    private final TouchArbitrator mTouchArbitrator;
+    private static final int MIN_SHEET_HEIGHT_DP = 240;
+
+    private final Context mContext;
     private final PropertyModel mModel;
+    private final TouchArbitrator mTouchArbitrator;
     private final float mFullheightRatio;
 
     private @SheetState int mCurrentSheetState = SheetState.HIDDEN;
 
-    public TabBottomSheetMediator(PropertyModel model) {
+    public TabBottomSheetMediator(Context context, PropertyModel model) {
+        mContext = context;
         mModel = model;
         mTouchArbitrator = new TouchArbitrator();
         // Setting statically right now, can be modified later to be set dynamically based on device
@@ -38,9 +45,20 @@ public class TabBottomSheetMediator {
      * fix until bottom sheet resizing is implemented.
      */
     void setMaxSheetHeight(int maxSheetHeight) {
-        mModel.set(
-                TabBottomSheetProperties.SHEET_HEIGHT,
-                Math.round(maxSheetHeight * mFullheightRatio));
+        int sheetHeight = Math.round(maxSheetHeight * mFullheightRatio);
+        mModel.set(TabBottomSheetProperties.SHEET_HEIGHT, sheetHeight);
+    }
+
+    int getMaxSheetHeight() {
+        return mModel.get(TabBottomSheetProperties.SHEET_HEIGHT);
+    }
+
+    boolean isSheetHeightSufficient() {
+        int webUiHeightDp =
+                DisplayUtil.pxToDp(
+                        DisplayAndroid.getNonMultiDisplay(mContext), getMaxSheetHeight());
+
+        return webUiHeightDp >= MIN_SHEET_HEIGHT_DP;
     }
 
     /** Returns the touch handler for the WebUI container. */

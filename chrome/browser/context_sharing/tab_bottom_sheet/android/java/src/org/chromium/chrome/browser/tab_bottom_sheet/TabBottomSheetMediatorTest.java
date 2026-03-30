@@ -5,7 +5,13 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import android.view.View;
+import android.widget.FrameLayout;
+
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -27,14 +33,21 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TabBottomSheetMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private Context mContext;
+    private View mView;
+    private PropertyModel mModel;
     private TabBottomSheetMediator mMediator;
 
     @Mock private CoBrowseViews mCoBrowseViews;
 
     @Before
     public void setUp() {
-        PropertyModel model = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
-        mMediator = new TabBottomSheetMediator(model);
+        mContext = ApplicationProvider.getApplicationContext();
+        mView = new FrameLayout(mContext);
+        when(mCoBrowseViews.getView()).thenReturn(mView);
+
+        mModel = TabBottomSheetProperties.createDefaultModel(mCoBrowseViews);
+        mMediator = new TabBottomSheetMediator(mContext, mModel);
     }
 
     @Test
@@ -48,10 +61,8 @@ public class TabBottomSheetMediatorTest {
     @SmallTest
     public void testSetMaxSheetHeight_setsSheetHeight() {
         int maxHeight = 1000;
-        int expectedHeight = (int) (maxHeight * mMediator.getFullHeightRatioForTesting());
+        int expectedHeight = Math.round(maxHeight * mMediator.getFullHeightRatioForTesting());
         mMediator.setMaxSheetHeight(maxHeight);
-        assertEquals(
-                expectedHeight,
-                (int) mMediator.getModelForTesting().get(TabBottomSheetProperties.SHEET_HEIGHT));
+        assertEquals(expectedHeight, mModel.get(TabBottomSheetProperties.SHEET_HEIGHT));
     }
 }

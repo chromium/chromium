@@ -52,6 +52,7 @@ public class TabBottomSheetManagerTest {
                     mCoBrowseViews = new CoBrowseViews(mActivity, null, null, null);
                     mManager =
                             new TabBottomSheetManager(
+                                    mActivity,
                                     mWindowAndroid,
                                     mBottomSheetController,
                                     mActivity.getLayoutStateProviderSupplier());

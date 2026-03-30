@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
+import android.content.ComponentCallbacks;
+import android.content.Context;
+import android.content.res.Configuration;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +22,20 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetCoordinator {
+    private final ComponentCallbacks mComponentsCallbacks =
+            new ComponentCallbacks() {
+                @Override
+                public void onConfigurationChanged(Configuration configuration) {
+                    if (mIsSheetCurrentlyManagedByController) {
+                        mExpectingLayoutChange = true;
+                    }
+                }
+
+                @Override
+                public void onLowMemory() {}
+            };
+
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
     private final CoBrowseViews mCoBrowseViews;
@@ -30,8 +47,10 @@ public class TabBottomSheetCoordinator {
     private @Nullable View mContentView;
 
     private boolean mIsSheetCurrentlyManagedByController;
+    private boolean mExpectingLayoutChange;
 
     /**
+     * @param context The context to use for creating views.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      * @param coBrowseViews The views to be displayed within the bottom sheet. These should be
      *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
@@ -39,13 +58,16 @@ public class TabBottomSheetCoordinator {
      *     subsequent showings.
      */
     TabBottomSheetCoordinator(
-            BottomSheetController bottomSheetController, CoBrowseViews coBrowseViews) {
+            Context context,
+            BottomSheetController bottomSheetController,
+            CoBrowseViews coBrowseViews) {
+        mContext = context;
         mBottomSheetController = bottomSheetController;
         mCoBrowseViews = coBrowseViews;
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
-        mMediator = new TabBottomSheetMediator(mModel);
+        mMediator = new TabBottomSheetMediator(mContext, mModel);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
     }
@@ -55,20 +77,30 @@ public class TabBottomSheetCoordinator {
         if (mIsSheetCurrentlyManagedByController) {
             return false;
         }
-
         mContentView = mCoBrowseViews.getView();
-
+        mSheetContent = new TabBottomSheetContent(mContentView);
         mViewBinder =
                 PropertyModelChangeProcessor.create(
                         mModel, mContentView, TabBottomSheetViewBinder::bind);
-        mSheetContent = new TabBottomSheetContent(mContentView);
 
         if (mBottomSheetController.requestShowContent(mSheetContent, animate)) {
-            if (startsExpanded) {
-                mBottomSheetController.expandSheet();
-            }
+            // If bottom sheet has never been initialized, its max height return 0.
+            // We set it here, and if it changes later, we will update it in the observer.
+            mContentView.post(
+                    () -> {
+                        mMediator.setMaxSheetHeight(mBottomSheetController.getContainerHeight());
+                        if (startsExpanded
+                                && mSheetContent != null
+                                && mMediator.isSheetHeightSufficient()) {
+                            mBottomSheetController.expandSheet();
+                        }
+                    });
+
             mSheetObserver = buildBottomSheetObserver();
             mBottomSheetController.addObserver(mSheetObserver);
+
+            mContext.registerComponentCallbacks(mComponentsCallbacks);
+
             mIsSheetCurrentlyManagedByController = true;
             return true;
         } else {
@@ -98,6 +130,10 @@ public class TabBottomSheetCoordinator {
         mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
     }
 
+    boolean isSheetShowing() {
+        return mIsSheetCurrentlyManagedByController;
+    }
+
     // Cleanup methods.
     void destroy() {
         if (mIsSheetCurrentlyManagedByController && mSheetContent != null) {
@@ -106,15 +142,14 @@ public class TabBottomSheetCoordinator {
         cleanupSheetResources();
     }
 
-    boolean isSheetShowing() {
-        return mIsSheetCurrentlyManagedByController;
-    }
-
     private void cleanupSheetResources() {
         if (mSheetObserver != null && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
         }
+
+        mContext.unregisterComponentCallbacks(mComponentsCallbacks);
+
         if (mSheetContent != null) {
             mSheetContent.destroy();
             mSheetContent = null;
@@ -138,8 +173,12 @@ public class TabBottomSheetCoordinator {
             }
 
             @Override
-            public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                mMediator.setMaxSheetHeight(mBottomSheetController.getContainerHeight());
+            public void onContainerSizeChanged(int containerWidth, int containerHeight) {
+                if (mExpectingLayoutChange) {
+                    mBottomSheetController.collapseSheet(/* animate= */ true);
+                    mMediator.setMaxSheetHeight(containerHeight);
+                    mExpectingLayoutChange = false;
+                }
             }
         };
     }
@@ -151,5 +190,9 @@ public class TabBottomSheetCoordinator {
 
     boolean isSheetCurrentlyManagedForTesting() {
         return mIsSheetCurrentlyManagedByController;
+    }
+
+    boolean isExpectingLayoutChangeForTesting() {
+        return mExpectingLayoutChange;
     }
 }

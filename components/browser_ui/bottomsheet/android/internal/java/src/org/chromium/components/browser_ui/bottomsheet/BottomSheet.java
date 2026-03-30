@@ -387,6 +387,10 @@ class BottomSheet extends FrameLayout
                             }
                             invalidateContentDesiredHeight();
                             sizeAndPositionSheetInParent();
+
+                            for (BottomSheetObserver obs : mObservers) {
+                                obs.onContainerSizeChanged(mContainerWidth, mContainerHeight);
+                            }
                         }
 
                         assert mEdgeToEdgeBottomInsetSupplier.get() != null;

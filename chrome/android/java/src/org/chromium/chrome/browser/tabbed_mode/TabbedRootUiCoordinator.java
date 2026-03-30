@@ -1717,6 +1717,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             contextMenuPopulatorFactory);
             mTabBottomSheetManager =
                     new TabBottomSheetManager(
+                            mActivity,
                             mWindowAndroid,
                             getBottomSheetController(),
                             mLayoutStateProviderOneShotSupplier);

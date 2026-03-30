@@ -44,9 +44,18 @@ public interface BottomSheetObserver {
 
     /**
      * An event for when the sheet content changes.
+     *
      * @param newContent The new {@link BottomSheetContent}, or null if the sheet has no content.
      */
     void onSheetContentChanged(@Nullable BottomSheetContent newContent);
+
+    /**
+     * Called when the sheet layout changes.
+     *
+     * @param newWidth The new width of the sheet container in pixels.
+     * @param newHeight The new height of the sheet container in pixels.
+     */
+    default void onContainerSizeChanged(int newWidth, int newHeight) {}
 
     /** Called when the sheet background color override is changed. */
     default void onSheetBackgroundColorOverrideChanged() {}
