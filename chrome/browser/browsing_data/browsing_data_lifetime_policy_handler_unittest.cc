@@ -5,7 +5,6 @@
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/browsing_data/core/pref_names.h"

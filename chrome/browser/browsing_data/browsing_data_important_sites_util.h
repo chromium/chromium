@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_IMPORTANT_SITES_UTIL_H_
 #define CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_IMPORTANT_SITES_UTIL_H_
 
-#include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "content/public/browser/browsing_data_remover.h"
 

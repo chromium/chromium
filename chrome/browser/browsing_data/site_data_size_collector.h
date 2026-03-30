@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_SITE_DATA_SIZE_COLLECTOR_H_
 
 #include <list>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
@@ -14,7 +13,6 @@
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/local_storage_helper.h"
-#include "content/public/browser/storage_partition.h"
 
 class SiteDataSizeCollector {
  public:

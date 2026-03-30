@@ -5,7 +5,6 @@
 #include "chrome/browser/browsing_data/browsing_data_lifetime_policy_handler.h"
 
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/browsing_data/core/browsing_data_policies_utils.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_logger.h"

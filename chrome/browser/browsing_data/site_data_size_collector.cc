@@ -10,7 +10,6 @@
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/pref_names.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_constants.h"

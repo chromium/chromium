@@ -6,7 +6,6 @@
 
 #include <tuple>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
 #include "chrome/browser/browsing_data/navigation_entry_remover.h"

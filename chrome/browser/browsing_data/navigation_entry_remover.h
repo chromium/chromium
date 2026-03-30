@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BROWSING_DATA_NAVIGATION_ENTRY_REMOVER_H_
 
 #include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/url_row.h"
 
 class Profile;
 
