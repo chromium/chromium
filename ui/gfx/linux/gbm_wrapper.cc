@@ -439,7 +439,11 @@ class Device final : public ui::GbmDevice {
     fd_data.num_fds = handle.planes.size();
     fd_data.modifier = handle.modifier;
 
-    DCHECK_LE(handle.planes.size(), 3u);
+    if (handle.planes.size() > 3u) {
+      LOG(ERROR) << "Importing handle with too many planes: "
+                 << handle.planes.size();
+      return nullptr;
+    }
 
     for (size_t i = 0; i < handle.planes.size(); ++i) {
       UNSAFE_TODO(fd_data.fds[i]) =
