@@ -5,7 +5,9 @@
 #import "ios/chrome/app/task_request_user_activity.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
+#import <Intents/Intents.h>
 
+#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
@@ -32,9 +34,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/chrome/common/intents/AddBookmarkToChromeIntent.h"
 
 namespace {
 
@@ -249,6 +253,21 @@ void OpenBookmarksWithBrowser(base::WeakPtr<Browser> weak_browser) {
   }
 }
 
+// Adds bookmarks to Chrome.
+void AddBookmarkToChromeWithIntent(INIntent* intent,
+                                   base::WeakPtr<Browser> weak_browser) {
+  if (Browser* browser = weak_browser.get()) {
+    AddBookmarkToChromeIntent* bookmark_intent =
+        base::apple::ObjCCastStrict<AddBookmarkToChromeIntent>(intent);
+    if (bookmark_intent && bookmark_intent.url &&
+        bookmark_intent.url.count > 0) {
+      id<BookmarksCommands> handler = HandlerForProtocol(
+          browser->GetCommandDispatcher(), BookmarksCommands);
+      [handler addBookmarks:bookmark_intent.url];
+    }
+  }
+}
+
 }  // namespace
 
 @implementation TaskRequestForUserActivity {
@@ -313,7 +332,10 @@ void OpenBookmarksWithBrowser(base::WeakPtr<Browser> weak_browser) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kAddBookmarkToChrome:
-      // TODO(crbug.com/492115056): Add implementation.
+      completion = base::CallbackToBlock(base::BindRepeating(
+          &AddBookmarkToChromeWithIntent, _userActivity.interaction.intent,
+          browser->AsWeakPtr()));
+      webpageGURL = GURL(kChromeUINewTabURL);
       break;
     case UserActivityType::kAddReadingListItemToChrome:
       // TODO(crbug.com/492115056): Add implementation.

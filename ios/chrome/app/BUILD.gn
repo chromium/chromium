@@ -119,6 +119,7 @@ source_set("tasks_handling") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:url_loading_params_header",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/common/intents:intents_generate_source",
     "//ios/components/webui:url_constants",
     "//net",
     "//ui/base",
