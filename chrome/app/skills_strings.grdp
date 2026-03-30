@@ -37,16 +37,16 @@
   </message>
 
   <!-- chrome://skills error page -->
-  <message name="IDS_SKILLS_ERROR_PAGE_TITLE" desc="Title of the error page that occurs when chrome://skills is not accessible" translateable="false">
+  <message name="IDS_SKILLS_ERROR_PAGE_TITLE" desc="Title of the error page that occurs when chrome://skills is not accessible">
     Skills isn't available
   </message>
-  <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible" translateable="false">
+  <message name="IDS_SKILLS_ERROR_PAGE_DESCRIPTION" desc="Description of the error page that occurs when chrome://skills is not accessible">
     To use Skills, sign in to Chrome with a Google account that has Gemini in Chrome enabled
   </message>
-  <message name="IDS_SKILLS_NO_SEARCH_RESULT_TITLE" desc="Title of the page that occurs when chrome://skills has no search results" translateable="false">
+  <message name="IDS_SKILLS_NO_SEARCH_RESULT_TITLE" desc="Title of the page that occurs when chrome://skills has no search results">
     No search results
   </message>
-  <message name="IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION" desc="Description of the page that occurs when chrome://skills has no search results" translateable="false">
+  <message name="IDS_SKILLS_NO_SEARCH_RESULT_DESCRIPTION" desc="Description of the page that occurs when chrome://skills has no search results">
     It looks like there aren't any search results for your search
   </message>
 
@@ -133,7 +133,7 @@
   <message name="IDS_SKILLS_EMOJI_PICKER_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the emoji picker.">
     Search
   </message>
-  <message name="IDS_SKILLS_EMOJI_PICKER_ARIA_LABEL" desc="Aria label for the emoji picker." translateable="false">
+  <message name="IDS_SKILLS_EMOJI_PICKER_ARIA_LABEL" is_accessibility_with_no_ui="true" desc="Aria label for the emoji picker.">
     Emoji Picker
   </message>
 </grit-part>
