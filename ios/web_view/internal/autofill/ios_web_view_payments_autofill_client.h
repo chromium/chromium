@@ -32,7 +32,6 @@ class CardUnmaskPromptController;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
 class CreditCardRiskBasedAuthenticator;
-class OmniboxAutofillDelegate;
 class PaymentsDataManager;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
@@ -203,7 +202,6 @@ class IOSWebViewPaymentsAutofillClient : public PaymentsAutofillClient {
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
-  OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
 
   // Begin IOSWebViewPaymentsAutofillClient-specific section.
 

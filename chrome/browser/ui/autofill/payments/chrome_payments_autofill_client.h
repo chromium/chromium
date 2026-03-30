@@ -251,7 +251,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool IsTabModalPopupDeprecated() const override;
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
+#if !BUILDFLAG(IS_ANDROID)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
+#endif
 
   // Begin ChromePaymentsAutofillClient-specific section.
 
@@ -385,9 +387,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // Lazily initialized: access only through `GetBnplUiDelegate()`.
   std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
 
+#if !BUILDFLAG(IS_ANDROID)
   // The OmniboxAutofillDelegate used to handle the logic flow and user
   // interactions when the user triggers Autofill from the Omnibox.
   std::unique_ptr<OmniboxAutofillDelegate> omnibox_autofill_delegate_;
+#endif
 
   // Used to cache client side risk data. The cache is invalidated when the
   // chrome browser tab is closed.

@@ -473,11 +473,6 @@ BnplUiDelegate* IOSWebViewPaymentsAutofillClient::GetBnplUiDelegate() {
   return nullptr;
 }
 
-OmniboxAutofillDelegate*
-IOSWebViewPaymentsAutofillClient::GetOmniboxAutofillDelegate() {
-  return nullptr;
-}
-
 PrefService* IOSWebViewPaymentsAutofillClient::GetPrefService() const {
   return ios_web_view::WebViewBrowserState::FromBrowserState(
              web_state_->GetBrowserState())
