@@ -92,6 +92,7 @@ static_library("test_support") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
     "//ui/accessibility:test_support",
     "//ui/aura",

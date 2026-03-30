@@ -76,11 +76,10 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
         static_cast<ash::FakeVmPluginDispatcherClient*>(
             ash::VmPluginDispatcherClient::Get());
 
-    network_connection_tracker_ =
-        network::TestNetworkConnectionTracker::CreateInstance();
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     content::SetNetworkConnectionTrackerForTesting(nullptr);
     content::SetNetworkConnectionTrackerForTesting(
-        network_connection_tracker_.get());
+        network::TestNetworkConnectionTracker::GetInstance());
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   }
@@ -126,8 +125,6 @@ class PluginVmInstallerViewBrowserTest : public DialogBrowserTest {
                                      IDS_PLUGIN_VM_INSTALLER_FINISHED_TITLE));
   }
 
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
   raw_ptr<PluginVmInstallerView, DanglingUntriaged> view_;
   raw_ptr<ash::FakeConciergeClient, DanglingUntriaged> fake_concierge_client_;
   raw_ptr<ash::FakeVmPluginDispatcherClient, DanglingUntriaged>

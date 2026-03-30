@@ -97,6 +97,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -338,6 +339,9 @@ void InProcessBrowserTest::RunScheduledLayouts() {
 
 void InProcessBrowserTest::Initialize() {
   g_current_test = this;
+
+  test_network_connection_tracker_ =
+      network::TestNetworkConnectionTracker::CreateInstance();
 
   // chrome::DIR_TEST_DATA isn't going to be setup until after we call
   // ContentMain. However that is after tests' constructors or SetUp methods,

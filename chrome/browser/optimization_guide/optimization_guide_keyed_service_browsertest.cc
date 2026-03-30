@@ -196,9 +196,8 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceDisabledBrowserTest,
 class OptimizationGuideKeyedServiceBrowserTest
     : public OptimizationGuideKeyedServiceDisabledBrowserTest {
  public:
-  OptimizationGuideKeyedServiceBrowserTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {
+  OptimizationGuideKeyedServiceBrowserTest() {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     // Enable visibility of tab organization feature.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
@@ -330,7 +329,8 @@ class OptimizationGuideKeyedServiceBrowserTest
   // Sets the connection type that the Network Connection Tracker will report.
   void SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType connection_type) {
-    network_connection_tracker_->SetConnectionType(connection_type);
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+        connection_type);
   }
 
   // Sets the callback on the consumer of the OptimizationGuideKeyedService. If

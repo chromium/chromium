@@ -26,6 +26,7 @@
 #include "chromeos/ash/components/nearby/presence/proto/update_device_rpc.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -144,7 +145,14 @@ namespace ash::nearby::presence {
 
 class NearbyPresenceServerClientImplTest : public testing::Test {
  protected:
-  NearbyPresenceServerClientImplTest() {
+  NearbyPresenceServerClientImplTest()
+      // In threadsafe death tests, the child process bypasses `AshTestSuite`'s
+      // `OnTestStart()` listener, meaning `TestNetworkConnectionTracker` is not
+      // created automatically. Create a fallback instance here if none exists.
+      : network_connection_tracker_(
+            network::TestNetworkConnectionTracker::HasInstance()
+                ? nullptr
+                : network::TestNetworkConnectionTracker::CreateInstance()) {
     shared_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             base::BindOnce([]() -> network::mojom::URLLoaderFactory* {
@@ -196,6 +204,8 @@ class NearbyPresenceServerClientImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
   signin::IdentityTestEnvironment identity_test_environment_;
   raw_ptr<FakeNearbyApiCallFlow, DanglingUntriaged> api_call_flow_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;

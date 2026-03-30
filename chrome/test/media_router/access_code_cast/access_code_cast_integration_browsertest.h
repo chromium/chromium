@@ -163,9 +163,6 @@ class AccessCodeCastIntegrationBrowserTest
   base::CallbackListSubscription subscription_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
-
  protected:
   raw_ptr<media_router::MockMediaRouter, DanglingUntriaged> media_router_ =
       nullptr;

@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/path_service.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/provide_ax_platform_for_tests.h"
 #include "ui/aura/env.h"
@@ -21,6 +22,31 @@
 
 namespace ash {
 
+namespace {
+
+class AshTestSuiteInitializer : public testing::EmptyTestEventListener {
+ public:
+  AshTestSuiteInitializer() = default;
+  AshTestSuiteInitializer(const AshTestSuiteInitializer&) = delete;
+  AshTestSuiteInitializer& operator=(const AshTestSuiteInitializer&) = delete;
+  ~AshTestSuiteInitializer() override = default;
+
+  void OnTestStart(const testing::TestInfo& test_info) override {
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+  }
+
+  void OnTestEnd(const testing::TestInfo& test_info) override {
+    network_connection_tracker_.reset();
+  }
+
+ private:
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
+};
+
+}  // namespace
+
 AshTestSuite::AshTestSuite(int argc, char** argv)
     : base::TestSuite(argc, argv) {}
 
@@ -31,6 +57,8 @@ void AshTestSuite::Initialize() {
 
   testing::UnitTest::GetInstance()->listeners().Append(
       new ui::ProvideAXPlatformForTests());
+  testing::UnitTest::GetInstance()->listeners().Append(
+      new AshTestSuiteInitializer());
 
   // Force software-gl. This is necessary for tests that trigger launching ash
   // in its own process

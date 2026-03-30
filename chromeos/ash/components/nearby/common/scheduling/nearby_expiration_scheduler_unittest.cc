@@ -31,15 +31,14 @@ namespace ash::nearby {
 
 class NearbyExpirationSchedulerTest : public ::testing::Test {
  protected:
-  NearbyExpirationSchedulerTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {}
+  NearbyExpirationSchedulerTest() = default;
 
   ~NearbyExpirationSchedulerTest() override = default;
 
   void SetUp() override {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     content::SetNetworkConnectionTrackerForTesting(
-        network_connection_tracker_.get());
+        network::TestNetworkConnectionTracker::GetInstance());
     FastForward(kTestInitialNow);
     expiration_time_ = Now() + kTestExpirationTimeFromInitalNow;
 
@@ -73,8 +72,6 @@ class NearbyExpirationSchedulerTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyScheduler> scheduler_;
 };

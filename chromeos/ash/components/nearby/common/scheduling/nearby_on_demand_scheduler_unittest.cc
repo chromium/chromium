@@ -23,15 +23,14 @@ namespace ash::nearby {
 
 class NearbyOnDemandSchedulerTest : public ::testing::Test {
  protected:
-  NearbyOnDemandSchedulerTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {}
+  NearbyOnDemandSchedulerTest() = default;
 
   ~NearbyOnDemandSchedulerTest() override = default;
 
   void SetUp() override {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     content::SetNetworkConnectionTrackerForTesting(
-        network_connection_tracker_.get());
+        network::TestNetworkConnectionTracker::GetInstance());
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
@@ -47,8 +46,6 @@ class NearbyOnDemandSchedulerTest : public ::testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyScheduler> scheduler_;
 };

@@ -53,6 +53,10 @@ class BrowserContext;
 class WebContents;
 }  // namespace content
 
+namespace network {
+class TestNetworkConnectionTracker;
+}  // namespace network
+
 #if defined(TOOLKIT_VIEWS)
 namespace views {
 class ViewsDelegate;
@@ -373,6 +377,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   void SetUpProtocolHandlerTestFactories(content::BrowserContext* context);
 
   static SetUpBrowserFunction* global_browser_set_up_function_;
+
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      test_network_connection_tracker_;
 
   // Usually references the browser created in BrowserMain().
   // If no browser is created in BrowserMain(), then `browser_` will remain

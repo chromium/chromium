@@ -65,15 +65,14 @@ class NearbySchedulerBaseForTest : public NearbySchedulerBase {
 
 class NearbySchedulerBaseTest : public ::testing::Test {
  protected:
-  NearbySchedulerBaseTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {}
+  NearbySchedulerBaseTest() = default;
 
   ~NearbySchedulerBaseTest() override = default;
 
   void SetUp() override {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     content::SetNetworkConnectionTrackerForTesting(
-        network_connection_tracker_.get());
+        network::TestNetworkConnectionTracker::GetInstance());
     pref_service_.registry()->RegisterDictionaryPref(kTestPrefName);
     SetNetworkConnection(/*online=*/true);
   }
@@ -148,8 +147,6 @@ class NearbySchedulerBaseTest : public ::testing::Test {
   size_t on_request_call_count_ = 0;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<NearbyScheduler> scheduler_;
 };

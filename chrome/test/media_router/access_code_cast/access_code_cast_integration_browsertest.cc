@@ -184,11 +184,10 @@ void AccessCodeCastIntegrationBrowserTest::OnWillCreateBrowserContextServices(
 
 void AccessCodeCastIntegrationBrowserTest::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
-  network_connection_tracker_ =
-      network::TestNetworkConnectionTracker::CreateInstance();
+  CHECK(network::TestNetworkConnectionTracker::HasInstance());
   content::SetNetworkConnectionTrackerForTesting(nullptr);
   content::SetNetworkConnectionTrackerForTesting(
-      network_connection_tracker_.get());
+      network::TestNetworkConnectionTracker::GetInstance());
   network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI);
   url_loader_interceptor_ =

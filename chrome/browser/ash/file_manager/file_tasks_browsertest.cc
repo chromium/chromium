@@ -1816,10 +1816,12 @@ class OneDriveTest : public TestAccountBrowserTest,
   }
 
   void SetNetworkConnected(const bool connected) {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     content::SetNetworkConnectionTrackerForTesting(nullptr);
-    content::SetNetworkConnectionTrackerForTesting(connection_tracker_.get());
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
     using ConnectionType = net::NetworkChangeNotifier::ConnectionType;
-    connection_tracker_->SetConnectionType(
+    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
         connected ? ConnectionType::CONNECTION_WIFI
                   : ConnectionType::CONNECTION_NONE);
     SetDriveConnectionStatusForTesting(connected
@@ -1864,8 +1866,6 @@ class OneDriveTest : public TestAccountBrowserTest,
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  const std::unique_ptr<TestNetworkConnectionTracker> connection_tracker_ =
-      TestNetworkConnectionTracker::CreateInstance();
   const std::string test_docx_file_name_1_ = "text.docx";
   const std::string test_pptx_file_name_2_ = "presentation.pptx";
   base::WeakPtr<ash::cloud_upload::CloudOpenMetrics>

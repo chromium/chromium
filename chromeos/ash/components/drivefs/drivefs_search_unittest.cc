@@ -66,16 +66,13 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting {
 
 class DriveFsSearchTest : public testing::Test {
  public:
-  DriveFsSearchTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {
+  DriveFsSearchTest() {
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
     clock_.SetNow(base::Time::Now());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
   MockDriveFs mock_drivefs_;
   base::SimpleTestClock clock_;
 };
@@ -118,7 +115,8 @@ MATCHER_P5(MatchQuery, source, text, title, shared, offline, "") {
 }
 
 TEST_F(DriveFsSearchTest, Search) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   MockMojomQuery mojom_query;
@@ -149,7 +147,8 @@ TEST_F(DriveFsSearchTest, Search) {
 }
 
 TEST_F(DriveFsSearchTest, Search_Fail) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   MockMojomQuery mojom_query;
@@ -179,10 +178,11 @@ TEST_F(DriveFsSearchTest, Search_Fail) {
 }
 
 TEST_F(DriveFsSearchTest, Search_OnlineToOffline) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
-  network_connection_tracker_->SetConnectionType(
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   MockMojomQuery mojom_query;
@@ -213,7 +213,8 @@ TEST_F(DriveFsSearchTest, Search_OnlineToOffline) {
 }
 
 TEST_F(DriveFsSearchTest, Search_OnlineToOfflineFallback) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   MockMojomQuery cloud_mojom_query;
@@ -259,7 +260,8 @@ TEST_F(DriveFsSearchTest, Search_OnlineToOfflineFallback) {
 }
 
 TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   MockMojomQuery cloud_mojom_query_1;
@@ -351,7 +353,8 @@ TEST_F(DriveFsSearchTest, Search_SharedWithMeCaching) {
 }
 
 TEST_F(DriveFsSearchTest, Search_NoErrorCaching) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   MockMojomQuery mojom_query_1;
@@ -411,7 +414,8 @@ TEST_F(DriveFsSearchTest, Search_NoErrorCaching) {
 }
 
 TEST_F(DriveFsSearchTest, Search_SearchQueryRemoteDisconnected) {
-  DriveFsSearch search(&mock_drivefs_, network_connection_tracker_.get(),
+  DriveFsSearch search(&mock_drivefs_,
+                       network::TestNetworkConnectionTracker::GetInstance(),
                        &clock_);
 
   auto mojom_query = std::make_unique<MockMojomQuery>();

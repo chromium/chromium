@@ -37,15 +37,14 @@ namespace ash::cloud_upload {
 // with the expected results.
 class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
  public:
-  OdfsSkyvaultUploaderTest()
-      : network_connection_tracker_(
-            network::TestNetworkConnectionTracker::CreateInstance()) {}
+  OdfsSkyvaultUploaderTest() = default;
 
   OdfsSkyvaultUploaderTest(const OdfsSkyvaultUploaderTest&) = delete;
   OdfsSkyvaultUploaderTest& operator=(const OdfsSkyvaultUploaderTest&) = delete;
 
   void SetUpOnMainThread() override {
     SkyvaultOneDriveTest::SetUpOnMainThread();
+    CHECK(network::TestNetworkConnectionTracker::HasInstance());
 
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile());
@@ -58,9 +57,6 @@ class OdfsSkyvaultUploaderTest : public SkyvaultOneDriveTest {
   // Used to observe skyvault notifications during tests.
   base::RepeatingCallback<void(const message_center::Notification&)>
       on_notification_displayed_callback_;
-
-  std::unique_ptr<network::TestNetworkConnectionTracker>
-      network_connection_tracker_;
 };
 
 class OdfsSkyvaultUploaderParamTest
@@ -201,7 +197,7 @@ INSTANTIATE_TEST_SUITE_P(SkyVault,
 // connectivity instead of failing quickly.
 IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
                        SuccessfulUploadAfterWaitingForNetwork) {
-  network_connection_tracker_->SetConnectionType(
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE);
 
   SetUpMyFiles();
@@ -225,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest,
       /*upload_root=*/kUploadRootPrefix, UploadTrigger::kMigration,
       progress_callback.Get(), upload_callback.GetCallback());
 
-  network_connection_tracker_->SetConnectionType(
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
       net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET);
 
   auto [url, error, upload_root_path] = upload_callback.Get();
