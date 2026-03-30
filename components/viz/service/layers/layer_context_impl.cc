@@ -368,6 +368,11 @@ base::expected<void, std::string> UpdatePropertyTreeNode(
     return base::unexpected(
         "Invalid closest_ancestor_with_shared_element_id for effect node");
   }
+  if (!IsOptionalPropertyTreeIndexValid(trees.effect_tree(),
+                                        wire.view_transition_target_id)) {
+    return base::unexpected(
+        "Invalid view_transition_target_id for effect node");
+  }
   node.transform_id = wire.transform_id;
   node.clip_id = wire.clip_id;
   node.element_id = wire.element_id;

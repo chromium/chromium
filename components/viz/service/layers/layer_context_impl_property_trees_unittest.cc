@@ -1483,6 +1483,31 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
+       InvalidEffectNodeViewTransitionTargetId) {
+  auto update = CreateDefaultUpdate();
+  auto node_update = mojom::EffectNode::New();
+  node_update->id = cc::kSecondaryRootPropertyNodeId;
+  node_update->view_transition_target_id = next_effect_id_;
+  update->effect_nodes.push_back(std::move(node_update));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid view_transition_target_id for effect node");
+
+  auto update_neg = CreateDefaultUpdate();
+  auto node_update_neg = mojom::EffectNode::New();
+  node_update_neg->id = cc::kSecondaryRootPropertyNodeId;
+  node_update_neg->view_transition_target_id = -2;
+  update_neg->effect_nodes.push_back(std::move(node_update_neg));
+
+  result = layer_context_impl_->DoUpdateDisplayTree(std::move(update_neg));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid view_transition_target_id for effect node");
+}
+
+TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
        BackdropMaskElementIdValid) {
   auto update = CreateDefaultUpdate();
   // Create a TileDisplayLayer to serve as the mask.
@@ -1604,7 +1629,7 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
        ViewTransitionTargetId) {
   auto update = CreateDefaultUpdate();
   auto node_update = CreateDefaultSecondaryRootEffectNode();
-  const int32_t view_transition_target_id = 5;
+  const int32_t view_transition_target_id = cc::kRootPropertyNodeId;
   node_update->view_transition_target_id = view_transition_target_id;
   update->effect_nodes.push_back(std::move(node_update));
 
