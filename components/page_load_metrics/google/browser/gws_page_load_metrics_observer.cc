@@ -138,6 +138,9 @@ const char kHistogramGWSNavigationSourceTypeDNSReuse[] =
 const char kHistogramGWSNavigationSourceTypeNonReuse[] =
     HISTOGRAM_PREFIX "NavigationSourceType.NonConnectionReuse";
 
+const char kHistogramGWSBeforeUnloadExecutionMode[] =
+    HISTOGRAM_PREFIX "Navigation.BeforeUnloadExecutionMode";
+
 const char kHistogramGWSIsFirstNavigationForGWS[] =
     HISTOGRAM_PREFIX "IsFirstNavigationForGWS";
 
@@ -495,6 +498,14 @@ GWSPageLoadMetricsObserver::OnCommit(
   base::UmaHistogramEnumeration(
       base::StrCat({internal::kHistogramSiteInstanceProcessAssignment, suffix}),
       render_process_assignment);
+
+  if (!navigation_handle->IsSameDocument() &&
+      navigation_handle->IsInOutermostMainFrame() &&
+      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+    base::UmaHistogramEnumeration(
+        internal::kHistogramGWSBeforeUnloadExecutionMode,
+        navigation_handle->GetBeforeUnloadExecutionMode());
+  }
 
   return CONTINUE_OBSERVING;
 }

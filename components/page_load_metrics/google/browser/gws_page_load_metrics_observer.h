@@ -47,6 +47,7 @@ extern const char kHistogramGWSParseStart[];
 extern const char kHistogramGWSConnectStart[];
 extern const char kHistogramGWSDomainLookupStart[];
 extern const char kHistogramGWSDomainLookupEnd[];
+extern const char kHistogramGWSBeforeUnloadExecutionMode[];
 
 extern const char kHistogramServiceWorkerParseStartSearch[];
 extern const char kHistogramServiceWorkerFirstContentfulPaintSearch[];
