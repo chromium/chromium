@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
@@ -47,12 +48,14 @@ bool SSLClientSessionCache::Key::operator<(const Key& other) const {
 SSLClientSessionCache::SSLClientSessionCache(const Config& config)
     : clock_(base::DefaultClock::GetInstance()),
       config_(config),
-      cache_(config.max_entries) {
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE, base::MemoryPressureListenerTag::kSSLClientSessionCache,
-          this);
-}
+      cache_(config.max_entries),
+      memory_consumer_registration_(
+          "SSLClientSessionCache",
+          std::nullopt,  // TODO(crbug.com/489671163): Add traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled) {}
 
 SSLClientSessionCache::~SSLClientSessionCache() {
   Flush();
@@ -214,32 +217,32 @@ void SSLClientSessionCache::FlushExpiredSessions() {
   }
 }
 
-void SSLClientSessionCache::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    switch (memory_pressure_level) {
-      case base::MEMORY_PRESSURE_LEVEL_NONE:
-        cache_.UpdateMaxSize(config_.max_entries);
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-        cache_.UpdateMaxSize(config_.max_entries / 2);
-        break;
-      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-        cache_.UpdateMaxSize(0);
-        break;
-    }
+void SSLClientSessionCache::OnUpdateMemoryLimit() {
+  if (!base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
     return;
   }
 
-  switch (memory_pressure_level) {
-    case base::MEMORY_PRESSURE_LEVEL_NONE:
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_MODERATE:
-      FlushExpiredSessions();
-      break;
-    case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
-      Flush();
-      break;
+  size_t target_size = config_.max_entries * memory_limit_ratio();
+
+  // IMPORTANT: Ensure no memory is released during this call.
+  // By using std::max, we ensure the new limit is at least the current size,
+  // preventing growth without triggering immediate eviction.
+  size_t new_limit = std::max(cache_.size(), target_size);
+  cache_.UpdateMaxSize(new_limit);
+}
+
+void SSLClientSessionCache::OnReleaseMemory() {
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    // Now we actually evict entries to reach the target size.
+    cache_.UpdateMaxSize(config_.max_entries * memory_limit_ratio());
+    return;
+  }
+
+  // Preserve the traditional "one-shot" logic for legacy memory pressure.
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
+    Flush();
+  } else if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    FlushExpiredSessions();
   }
 }
 

@@ -4,8 +4,9 @@
 
 #include "net/ssl/ssl_client_session_cache.h"
 
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -79,8 +80,21 @@ class SSLClientSessionCacheTest : public testing::Test {
     return session;
   }
 
+  void SimulateMemoryLimitAndRelease(
+      base::test::TaskEnvironment& task_environment,
+      int percentage) {
+    test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
+        percentage, task_environment.QuitClosure());
+    task_environment.RunUntilQuit();
+
+    test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
+        task_environment.QuitClosure());
+    task_environment.RunUntilQuit();
+  }
+
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+
  private:
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   bssl::UniquePtr<SSL_CTX> ssl_ctx_;
 };
 
@@ -475,9 +489,8 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_TestFlushOnMemoryNotifications) {
   EXPECT_EQ(2u, cache.size());
 
   // Fire a notification that will flush expired sessions.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  base::RunLoop().RunUntilIdle();
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::kModerateMemoryPressureThreshold);
 
   // Expired session's cache should be flushed.
   // Lookup returns nullptr, when cache entry not found.
@@ -486,9 +499,8 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_TestFlushOnMemoryNotifications) {
   EXPECT_EQ(1u, cache.size());
 
   // Fire notification that will flush everything.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::kCriticalMemoryPressureThreshold);
   EXPECT_EQ(0u, cache.size());
 }
 
@@ -527,9 +539,8 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_MemoryPressure) {
   EXPECT_EQ(10u, cache.size());
 
   // Memory pressure moderate should halve the cache size.
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment.QuitClosure());
-  task_environment.RunUntilQuit();
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::kModerateMemoryPressureThreshold);
   EXPECT_EQ(5u, cache.max_size());
   EXPECT_EQ(5u, cache.size());
 
@@ -544,9 +555,7 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_MemoryPressure) {
   }
 
   // Memory pressure critical should clear the cache.
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment.QuitClosure());
-  task_environment.RunUntilQuit();
+  SimulateMemoryLimitAndRelease(task_environment, 0);
   EXPECT_EQ(0u, cache.max_size());
   EXPECT_EQ(0u, cache.size());
 
@@ -559,9 +568,7 @@ TEST_F(SSLClientSessionCacheTest, MAYBE_MemoryPressure) {
   }
 
   // Memory pressure none should restore the original size limit.
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_NONE, task_environment.QuitClosure());
-  task_environment.RunUntilQuit();
+  SimulateMemoryLimitAndRelease(task_environment, 100);
   EXPECT_EQ(10u, cache.max_size());
   EXPECT_EQ(0u, cache.size());
 

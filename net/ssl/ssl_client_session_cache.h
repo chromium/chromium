@@ -15,8 +15,9 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
@@ -32,7 +33,7 @@ class Clock;
 
 namespace net {
 
-class NET_EXPORT SSLClientSessionCache : public base::MemoryPressureListener {
+class NET_EXPORT SSLClientSessionCache : public base::MemoryConsumer {
  public:
   struct Config {
     // The maximum number of entries in the cache.
@@ -130,17 +131,16 @@ class NET_EXPORT SSLClientSessionCache : public base::MemoryPressureListener {
   // Removes all expired sessions from the cache.
   void FlushExpiredSessions();
 
-  // Clear cache on low memory notifications callback.
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override;
+  // base::MemoryConsumer implementation:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
   raw_ptr<base::Clock> clock_;
   uint64_t generation_number_ = 0;
   Config config_;
   base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_ = 0;
-  std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 };
 
 }  // namespace net
