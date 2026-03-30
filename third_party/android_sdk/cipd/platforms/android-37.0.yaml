@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-package: chromium/third_party/android_sdk/public/platforms/android-37
+package: chromium/third_party/android_sdk/public/platforms/android-37.0
 description: platforms Android SDK Platforms library
 root: ../../public/
 data:
-  - dir: platforms/android-37
+  - dir: platforms/android-37.0
 # Some tools inspect their argv0 and don't handle CIPD's symlink structure
 # correctly. Install in copy mode so that they can find the other directories
 # relative to themselves.

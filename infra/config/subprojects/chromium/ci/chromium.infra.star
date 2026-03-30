@@ -278,8 +278,8 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-36.1.yaml",
             },
             {
-                "sdk_package_name": "platforms;android-37",
-                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.yaml",
+                "sdk_package_name": "platforms;android-37.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.0.yaml",
             },
             {
                 "sdk_package_name": "platform-tools",
