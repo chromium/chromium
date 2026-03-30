@@ -387,16 +387,16 @@ float LineFitter::MeasureScale() {
   // Measure the static parts and the flexible parts in the items.
   LayoutUnit static_total_size;
   LayoutUnit flexible_total_size;
+  bool is_first_text = true;
   // TODO(crbug.com/4173061029): Apply TextAutoSpace as well as letter-spacing
   // and word-spacing.
   for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() == InlineItem::kText) {
       if (HasFixedSpacing(item.item->Style()->GetFontDescription())) {
-        // TODO(crbug.com/417306102): Pass correct `is_start_of_paragraph` flag.
         ShapeResult* nospacing_shape = ShapeForFit(
             *item.item, item.StartOffset(), item.EndOffset(), shaper_,
             *item.item->Style()->GetFont(), items_data_.segments.get(),
-            /* is_start_of_paragraph */ false);
+            line_info_.IsStartOfParagraph() && is_first_text);
         if (spacing_.SetSpacing(PercentageSpacingDescription(
                 item.item->Style()->GetFontDescription()))) {
           nospacing_shape->ApplySpacing(spacing_);
@@ -407,6 +407,7 @@ float LineFitter::MeasureScale() {
       } else {
         flexible_total_size += item.inline_size;
       }
+      is_first_text = false;
     } else {
       static_total_size += item.inline_size;
     }
@@ -449,6 +450,7 @@ bool LineFitter::FitLine(float scale_factor,
   LayoutUnit static_total_size;
   LayoutUnit flexible_total_size;
   bool restricted = false;
+  bool is_first_text = true;
   for (auto& item : *line_info_.MutableResults()) {
     if (item.item->Type() != InlineItem::kText) {
       static_total_size += item.inline_size;
@@ -459,10 +461,11 @@ bool LineFitter::FitLine(float scale_factor,
         ScaledFontDescription(font, scale_factor, limit, restricted);
     Font* scaled_font =
         MakeGarbageCollected<Font>(scaled_desc, font.GetFontSelector());
-    // TODO(crbug.com/417306102): Pass correct `is_start_of_paragraph` flag.
-    ShapeResult* shape_result = ShapeForFit(
-        *item.item, item.StartOffset(), item.EndOffset(), shaper_, *scaled_font,
-        items_data_.segments.get(), /* is_start_of_paragraph */ false);
+    ShapeResult* shape_result =
+        ShapeForFit(*item.item, item.StartOffset(), item.EndOffset(), shaper_,
+                    *scaled_font, items_data_.segments.get(),
+                    line_info_.IsStartOfParagraph() && is_first_text);
+    is_first_text = false;
     LayoutUnit size_without_spacing =
         shape_result->SnappedWidth().ClampNegativeToZero();
     if (spacing_.SetSpacing(scaled_desc)) {

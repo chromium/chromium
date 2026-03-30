@@ -55,6 +55,11 @@ class CORE_EXPORT LineInfo {
   bool IsFirstFormattedLine() const { return is_first_formatted_line_; }
   void SetIsFirstFormattedLine(bool value) { is_first_formatted_line_ = value; }
 
+  // True if this line is the first line in the IFC, or next of a forced
+  // line break.
+  bool IsStartOfParagraph() const { return is_start_of_paragraph_; }
+  void SetIsStartOfParagraph(bool value) { is_start_of_paragraph_ = value; }
+
   // Use ::first-line style if true.
   // https://drafts.csswg.org/css-pseudo/#selectordef-first-line
   // This is false for the "first formatted line" if '::first-line' rule is not
@@ -337,6 +342,7 @@ class CORE_EXPORT LineInfo {
   TextDirection base_direction_ = TextDirection::kLtr;
 
   bool is_first_formatted_line_ = false;
+  bool is_start_of_paragraph_ = false;
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
   bool has_forced_break_ = false;

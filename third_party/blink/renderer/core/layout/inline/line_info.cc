@@ -87,6 +87,7 @@ void LineInfo::Reset() {
   may_have_text_combine_or_ruby_item_ = false;
   may_have_ruby_overhang_ = false;
   allow_hang_for_alignment_ = false;
+  is_start_of_paragraph_ = false;
 }
 
 void LineInfo::SetLineStyle(const InlineNode& node,
