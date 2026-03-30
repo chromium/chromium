@@ -3321,7 +3321,6 @@ test("content_unittests") {
     "//content/browser/interest_group:interest_group_proto",
     "//content/browser/notifications:notification_proto",
     "//content/browser/private_aggregation:for_content_tests",
-    "//content/browser/tpcd_heuristics:unit_tests",
     "//content/browser/tracing/traces_internals:mojo_bindings",
     "//content/child:for_content_tests",
     "//content/common:for_content_tests",

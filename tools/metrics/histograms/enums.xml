@@ -2684,12 +2684,6 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Both read and wrote cookies"/>
 </enum>
 
-<enum name="CookieHeuristicInteractionType">
-  <int value="0" label="Authentication"/>
-  <int value="1" label="UserActivation"/>
-  <int value="2" label="NoInteraction"/>
-</enum>
-
 <enum name="CopylessCacheHit">
   <int value="0" label="Cache hit with entity"/>
   <int value="1" label="Cache hit without entity"/>
@@ -4730,12 +4724,6 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="HaTS Service rejected request to load survey"/>
   <int value="17"
       label="Last time the survey was attempted to be shown too recent"/>
-</enum>
-
-<enum name="HasSameSiteIframe">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="False"/>
-  <int value="2" label="True"/>
 </enum>
 
 <enum name="HdcpVersion">
@@ -22839,15 +22827,6 @@ Called by update_net_error_codes.py.-->
   <int value="117" label="EUCLEAN">Structure needs cleaning</int>
   <int value="122" label="EDQUOT/_/_">Quota exceeeded on Linux.</int>
   <int value="123" label="ENOMEDIUM">No medium found</int>
-</enum>
-
-<enum name="PopupProvider">
-<!--
-      Privacy Team wants to monitor additions to this enum.
--->
-
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Google"/>
 </enum>
 
 <enum name="PopupSafeBrowsingStatus">
