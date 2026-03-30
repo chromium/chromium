@@ -1520,6 +1520,16 @@ bool BrowserView::IsInSplitView() const {
 
 void BrowserView::OnVerticalTabStripModeChanged(
     tabs::VerticalTabStripStateController* controller) {
+  // Clear selection model
+  if (auto* active_tab = browser_->tab_strip_model()->GetActiveTab()) {
+    tabs::TabStripModelSelectionState selection_state(
+        browser_->tab_strip_model());
+    selection_state.SetActiveTab(active_tab);
+    selection_state.SetAnchorTab(active_tab);
+    browser_->tab_strip_model()->SetSelectionFromModel(
+        std::move(selection_state));
+  }
+
   if (controller->ShouldDisplayVerticalTabs()) {
     horizontal_tab_strip_region_view_->ResetTabStrip();
     vertical_tab_strip_region_view_->InitializeTabStrip();

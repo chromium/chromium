@@ -6782,6 +6782,28 @@ TEST_P(TabStripModelTest,
   EXPECT_EQ(tabstrip()->active_index(), 0);
 }
 
+TEST_P(TabStripModelTest, AddSelectionFromModel_SplitActiveTab) {
+  // Create four tabs with a split containing tabs 2 and 3.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 4, 0, {0}));
+  tabstrip()->ActivateTabAt(3);
+  tabstrip()->AddToNewSplit({2}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip()));
+
+  // Set selection from model for the split active tab.
+  tabs::TabStripModelSelectionState selection_state(tabstrip());
+  selection_state.SetActiveTab(tabstrip()->GetActiveTab());
+  selection_state.SetAnchorTab(tabstrip()->GetActiveTab());
+  tabstrip()->SetSelectionFromModel(std::move(selection_state));
+
+  // Validate if all the tabs in the split are selected and the
+  // active tab remains unchanged.
+  ExpectSelectionIsExactly(tabstrip(), {2, 3});
+  EXPECT_EQ(tabstrip()->active_index(), 3);
+}
+
 TEST_P(TabStripModelTest, AddSelectionFromAnchorTo_SplitTab) {
   // Create six tabs with a split containing tabs 0 and 1.
   ASSERT_NO_FATAL_FAILURE(

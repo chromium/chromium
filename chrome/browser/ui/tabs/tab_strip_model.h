@@ -564,7 +564,7 @@ class TabStripModel {
 
   // Sets the selection to match that of |source|.
   void SetSelectionFromModel(ui::ListSelectionModel source);
-  void SetSelectionFromModel(const tabs::TabStripModelSelectionState& source);
+  void SetSelectionFromModel(tabs::TabStripModelSelectionState source);
 
   const tabs::TabStripModelSelectionState& selection_model() const {
     return selection_model_;

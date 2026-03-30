@@ -1663,8 +1663,22 @@ void TabStripModel::SetSelectionFromModel(ui::ListSelectionModel source) {
 }
 
 void TabStripModel::SetSelectionFromModel(
-    const tabs::TabStripModelSelectionState& source) {
+    tabs::TabStripModelSelectionState source) {
   CHECK(source.active_tab());
+
+  const std::unordered_set<raw_ptr<tabs::TabInterface>> sel =
+      source.selected_tabs();
+  for (auto& selected_tab : sel) {
+    auto split_id = selected_tab->GetSplit();
+    if (split_id.has_value()) {
+      auto* split_data = GetSplitData(split_id.value());
+      CHECK(split_data);
+      for (auto* split_tab : split_data->ListTabs()) {
+        source.AddTabToSelection(split_tab);
+      }
+    }
+  }
+
   SetSelection(source, TabStripModelObserver::CHANGE_REASON_NONE,
                /*triggered_by_other_operation=*/false);
 }

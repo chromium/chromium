@@ -216,6 +216,11 @@ void BrowserTabStripController::InitFromModel(TabStrip* tabstrip) {
     tabstrip_->OnSplitCreated(data->GetIndexRange().ToIntVector(), split_id);
   }
 
+  // Set the active selected tab.
+  if (!model_->empty()) {
+    tabstrip_->SetSelection(GetSelectionModel());
+  }
+
   tabstrip_->StopAnimating();
 }
 
