@@ -7712,10 +7712,27 @@
             ]
         }
     ],
-    "DelayMainJob": [
+    "DelayMainJobStudy": [
         {
             "platforms": [
-                "android",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithDelayMainJob",
+                    "params": {
+                        "AdditionalDelay": "100ms"
+                    },
+                    "enable_features": [
+                        "AdditionalDelayMainJob"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DelayMainJobStudyDesktop": [
+        {
+            "platforms": [
                 "chromeos",
                 "linux",
                 "mac",
@@ -7723,9 +7740,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledWithDelayMainJob",
+                    "name": "EnabledWith50ms",
                     "params": {
-                        "AdditionalDelay": "100ms"
+                        "AdditionalDelay": "50ms"
                     },
                     "enable_features": [
                         "AdditionalDelayMainJob"
