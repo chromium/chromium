@@ -25,6 +25,8 @@ suite('AppTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
       hideClassicContextButton: false,
+      composeboxShowContextMenuDescription: false,
+      addContext: 'Add tabs and more',
     });
 
     testProxy = new TestSearchboxBrowserProxy();
@@ -208,6 +210,31 @@ suite('AppTest', function() {
       contextualEntrypoint =
           $$(localApp, 'cr-composebox-contextual-entrypoint-button');
       assertFalse(!!contextualEntrypoint);
+    });
+
+    test('ShowContextButtonText', async () => {
+      let contextualEntrypoint =
+          $$(localApp, 'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
+      assertFalse(!!$$(contextualEntrypoint, '#description'));
+
+      // Re-create app with `composeboxShowContextMenuDescription` set to true.
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        composeboxShowContextMenuDescription: true,
+      });
+      localApp = document.createElement('omnibox-popup-app');
+      document.body.appendChild(localApp);
+
+      testProxy.initVisibilityPrefs();
+      await microtasksFinished();
+
+      contextualEntrypoint =
+          $$(localApp, 'cr-composebox-contextual-entrypoint-button');
+      assertTrue(!!contextualEntrypoint);
+      const description = $$(contextualEntrypoint, '#description');
+      assertTrue(!!description);
+      assertEquals('Add tabs and more', description.textContent.trim());
     });
   });
 
