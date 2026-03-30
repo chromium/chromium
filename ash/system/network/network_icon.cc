@@ -505,7 +505,12 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
                        cros_tokens::kCrosSysSystemOnPrimaryContainer)
                  : ash_color_provider->GetColor(cros_tokens::kColorPrimary);
     case ICON_TYPE_FEATURE_POD_DISABLED:
-      return color_provider->GetColor(cros_tokens::kCrosSysDisabled);
+      return use_color_provider
+                 ? color_provider->GetColor(cros_tokens::kCrosSysDisabled)
+                 : color_utils::GetResultingPaintColor(
+                       ColorUtil::GetDisabledColor(GetDefaultColorForIconType(
+                           color_provider, ICON_TYPE_FEATURE_POD)),
+                       ash_color_provider->GetBackgroundColor());
     default:
       return use_color_provider
                  ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
