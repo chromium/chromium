@@ -225,9 +225,6 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     ConfigureAnimationSemanticColor(self.animationViewWrapper,
                                     kGroupedSecondaryBackgroundColor,
                                     kGroupedSecondaryBackgroundColor);
-    ConfigureAnimationSemanticColor(self.animationViewWrapper,
-                                    kSecondaryBackgroundColor,
-                                    kSecondaryBackgroundColor);
     // Configure text layers.
     ConfigureAnimationSemanticColor(self.animationViewWrapper, kChromeKeypath,
                                     kTextPrimaryColor);
