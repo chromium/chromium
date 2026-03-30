@@ -60,7 +60,9 @@ bool ShouldAutoReload(content::NavigationHandle* handle) {
          // Do not auto-reload if the error is caused by private network access
          // preflight failures because user reloads have different initiator
          // policies.
-         net_error != net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS;
+         net_error != net::ERR_BLOCKED_BY_LOCAL_NETWORK_ACCESS_CHECKS &&
+         // Do not auto-reload if the error is caused by connection allowlist.
+         net_error != net::ERR_NETWORK_ACCESS_REVOKED;
 }
 
 base::TimeDelta GetNextReloadDelay(size_t reload_count) {

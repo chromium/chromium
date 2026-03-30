@@ -441,6 +441,12 @@ IN_PROC_BROWSER_TEST_F(NetErrorAutoReloaderBrowserTest,
     EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
     EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
   }
+  {
+    NetErrorUrlInterceptor interceptor(GetTestUrl(),
+                                       net::ERR_NETWORK_ACCESS_REVOKED);
+    EXPECT_FALSE(NavigateMainFrame(GetTestUrl()));
+    EXPECT_EQ(std::nullopt, GetCurrentAutoReloadDelay());
+  }
 }
 
 // Only HTTP and HTTPS navigation error pages activate auto-reload.
