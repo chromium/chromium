@@ -1,12 +1,12 @@
 [package]
 name = "itoa"
-version = "1.0.17"
+version = "1.0.18"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["value-formatting", "no-std", "no-std::no-alloc"]
 description = "Fast integer primitive to string conversion"
 documentation = "https://docs.rs/itoa"
 edition = "2021"
-exclude = ["*.png", "chart/**"]
+exclude = ["*.png"]
 keywords = ["integer"]
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/itoa"

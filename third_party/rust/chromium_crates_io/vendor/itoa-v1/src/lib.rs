@@ -37,7 +37,7 @@
 //!
 //! ![performance](https://raw.githubusercontent.com/dtolnay/itoa/master/itoa-benchmark.png)
 
-#![doc(html_root_url = "https://docs.rs/itoa/1.0.17")]
+#![doc(html_root_url = "https://docs.rs/itoa/1.0.18")]
 #![no_std]
 #![allow(
     clippy::cast_lossless,
@@ -55,7 +55,6 @@ mod u128_ext;
 
 use core::hint;
 use core::mem::{self, MaybeUninit};
-use core::ptr;
 use core::str;
 #[cfg(feature = "no-panic")]
 use no_panic::no_panic;
@@ -105,9 +104,8 @@ impl Buffer {
     /// representation within the buffer.
     #[cfg_attr(feature = "no-panic", no_panic)]
     pub fn format<I: Integer>(&mut self, i: I) -> &str {
-        let string = i.write(unsafe {
-            &mut *ptr::addr_of_mut!(self.bytes).cast::<<I as private::Sealed>::Buffer>()
-        });
+        let buf_ptr = self.bytes.as_mut_ptr().cast::<I::Buffer>();
+        let string = i.write(unsafe { &mut *buf_ptr });
         if string.len() > I::MAX_STR_LEN {
             unsafe { hint::unreachable_unchecked() };
         }
@@ -412,7 +410,7 @@ fn enc_16lsd<const OFFSET: usize>(buf: &mut [MaybeUninit<u8>], n: u64) {
     let mut remain = n;
 
     // Format per four digits from the lookup table.
-    for quad_index in (0..4).rev() {
+    for quad_index in (1..4).rev() {
         // pull two pairs
         let quad = remain % 1_00_00;
         remain /= 1_00_00;
@@ -427,6 +425,15 @@ fn enc_16lsd<const OFFSET: usize>(buf: &mut [MaybeUninit<u8>], n: u64) {
             buf[quad_index * 4 + OFFSET + 3]
                 .write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 1));
         }
+    }
+
+    // final two pairs
+    let (pair1, pair2) = divmod100(remain as u32);
+    unsafe {
+        buf[OFFSET + 0].write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 0));
+        buf[OFFSET + 1].write(*DECIMAL_PAIRS.0.get_unchecked(pair1 as usize * 2 + 1));
+        buf[OFFSET + 2].write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 0));
+        buf[OFFSET + 3].write(*DECIMAL_PAIRS.0.get_unchecked(pair2 as usize * 2 + 1));
     }
 }
 
