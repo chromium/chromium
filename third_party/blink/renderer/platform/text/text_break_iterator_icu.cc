@@ -147,20 +147,23 @@ inline int64_t TextNativeLength(UText* text) {
 void TextFixPointer(const UText* source,
                     UText* destination,
                     const void*& pointer) {
+  // SAFETY: The pointer arithmetic below computes bounds within UText structs
+  // and their associated extra buffers, which were allocated by utext_setup()
+  // with the sizes indicated by extraSize and sizeOfStruct.
   if (pointer >= source->pExtra &&
-      pointer <
-          UNSAFE_TODO(static_cast<char*>(source->pExtra) + source->extraSize)) {
+      pointer < UNSAFE_BUFFERS(static_cast<char*>(source->pExtra) +
+                               source->extraSize)) {
     // Pointer references source extra buffer.
-    pointer = UNSAFE_TODO(static_cast<char*>(destination->pExtra) +
-                          (static_cast<const char*>(pointer) -
-                           static_cast<const char*>(source->pExtra)));
+    pointer = UNSAFE_BUFFERS(static_cast<char*>(destination->pExtra) +
+                             (static_cast<const char*>(pointer) -
+                              static_cast<const char*>(source->pExtra)));
   } else if (pointer >= source &&
-             pointer < UNSAFE_TODO(reinterpret_cast<const char*>(source) +
-                                   source->sizeOfStruct)) {
+             pointer < UNSAFE_BUFFERS(reinterpret_cast<const char*>(source) +
+                                      source->sizeOfStruct)) {
     // Pointer references source text structure, but not source extra buffer.
-    pointer = UNSAFE_TODO(reinterpret_cast<char*>(destination) +
-                          (static_cast<const char*>(pointer) -
-                           reinterpret_cast<const char*>(source)));
+    pointer = UNSAFE_BUFFERS(reinterpret_cast<char*>(destination) +
+                             (static_cast<const char*>(pointer) -
+                              reinterpret_cast<const char*>(source)));
   }
 }
 
@@ -180,11 +183,15 @@ UText* TextClone(UText* destination,
   void* extra_new = destination->pExtra;
   int32_t flags = destination->flags;
   int size_to_copy = std::min(source->sizeOfStruct, destination->sizeOfStruct);
-  UNSAFE_TODO(memcpy(destination, source, size_to_copy));
+  // SAFETY: `destination` and `source` are UText structs allocated by
+  // utext_setup(). `size_to_copy` is the minimum of their sizeOfStruct
+  // fields, so the copy stays within both allocations. `extra_size` is the
+  // source's extraSize, and destination was set up with the same extra_size.
+  UNSAFE_BUFFERS(memcpy(destination, source, size_to_copy));
   destination->pExtra = extra_new;
   destination->flags = flags;
   if (extra_size > 0) {
-    UNSAFE_TODO(memcpy(destination->pExtra, source->pExtra, extra_size));
+    UNSAFE_BUFFERS(memcpy(destination->pExtra, source->pExtra, extra_size));
   }
   TextFixPointer(source, destination, destination->context);
   TextFixPointer(source, destination, destination->p);
@@ -262,11 +269,16 @@ void TextLatin1MoveInPrimaryContext(UText* text,
                           : 0;
   text->nativeIndexingLimit = text->chunkLength;
   text->chunkOffset = forward ? 0 : text->chunkLength;
-  auto source = UNSAFE_TODO(base::span(
+  // SAFETY: `text->p` points to the Latin1 string data with `text->a` chars
+  // starting at offset `text->b`. The chunk range [chunkNativeStart,
+  // chunkNativeLimit) is clamped to valid bounds above. `chunkContents`
+  // points to the UText extra buffer with capacity `extraSize / sizeof(UChar)`.
+  auto source = UNSAFE_BUFFERS(base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
       static_cast<unsigned>(text->chunkLength)));
-  auto dest = UNSAFE_TODO(base::span(const_cast<UChar*>(text->chunkContents),
-                                     static_cast<unsigned>(text->chunkLength)));
+  auto dest =
+      UNSAFE_BUFFERS(base::span(const_cast<UChar*>(text->chunkContents),
+                                static_cast<unsigned>(text->chunkLength)));
   StringImpl::CopyChars(dest, source);
 }
 
