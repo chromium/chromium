@@ -172,7 +172,6 @@ public class CompositorViewHolder extends FrameLayout
             ObservableSuppliers.createNonNull(false);
 
     private boolean mIsKeyboardShowing;
-    private boolean mIsTabContentObscured;
     private boolean mNativeInitialized;
     private LayoutManagerImpl mLayoutManager;
     private Activity mActivity;
@@ -831,11 +830,9 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public boolean dispatchGenericMotionEvent(MotionEvent e) {
-        if (mIsTabContentObscured && ChromeFeatureList.sCompositorViewHolderObscuring.isEnabled()) {
+        if (mLayoutManager != null && mLayoutManager.dispatchGenericMotionEvent(e)) {
             return true;
         }
-
-        if (mLayoutManager != null && mLayoutManager.dispatchGenericMotionEvent(e)) return true;
         return super.dispatchGenericMotionEvent(e);
     }
 
@@ -894,10 +891,6 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public boolean dispatchHoverEvent(MotionEvent e) {
-        if (mIsTabContentObscured && ChromeFeatureList.sCompositorViewHolderObscuring.isEnabled()) {
-            return true;
-        }
-
         if (mNodeProvider != null) {
             if (mNodeProvider.dispatchHoverEvent(e)) {
                 return true;
@@ -925,11 +918,6 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
         assert e != null : "The motion event dispatched shouldn't be null!";
-
-        if (mIsTabContentObscured && ChromeFeatureList.sCompositorViewHolderObscuring.isEnabled()) {
-            return true;
-        }
-
         if (mNativeInitialized) {
             InputHintChecker.onCompositorViewHolderTouchEvent();
         }
@@ -1903,7 +1891,6 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
-        mIsTabContentObscured = obscureTabContent;
         if (ChromeFeatureList.sCompositorViewHolderObscuring.isEnabled()) {
             updateFocusability(!obscureTabContent, /* blockDescendants= */ true);
         } else {
