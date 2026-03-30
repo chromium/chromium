@@ -148,6 +148,10 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
       bool,
       OnMetricsReportingCallbackType,
       ChangeMetricsReportingStateCalledFrom);
+  friend void ChangeMetricsReportingLevelWithReply(
+      metrics::MetricsReportingLevel,
+      OnMetricsReportingLevelCallbackType,
+      ChangeMetricsReportingLevelCalledFrom);
   friend void ApplyMetricsReportingPolicy();
   friend class ash::settings::PerSessionSettingsUserActionTracker;
   friend class settings::MetricsReportingHandler;

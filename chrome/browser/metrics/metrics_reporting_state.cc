@@ -134,6 +134,19 @@ void ChangeMetricsReportingStateWithReply(
                          called_from));
 }
 
+void ChangeMetricsReportingLevel(
+    metrics::MetricsReportingLevel level,
+    ChangeMetricsReportingLevelCalledFrom called_from) {
+  // TODO(b/483043192): Implement this.
+}
+
+void ChangeMetricsReportingLevelWithReply(
+    metrics::MetricsReportingLevel level,
+    OnMetricsReportingLevelCallbackType callback_fn,
+    ChangeMetricsReportingLevelCalledFrom called_from) {
+  // TODO(b/483043192): Implement this.
+}
+
 void UpdateMetricsPrefsOnPermissionChange(
     bool metrics_enabled,
     ChangeMetricsReportingStateCalledFrom called_from) {
