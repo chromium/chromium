@@ -107,7 +107,7 @@ def convert(crossbench_out_dir: pathlib.Path,
       if lower_key.startswith('iteration') or lower_key == 'geomean':
         continue
       metric = key
-      if lower_key == 'score':
+      if 'score' in lower_key:
         unit = 'unitless_biggerIsBetter'
       else:
         unit = 'ms_smallerIsBetter'

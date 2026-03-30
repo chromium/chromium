@@ -66,12 +66,20 @@ class CrossbenchResultConverterTest(unittest.TestCase):
                       'unitless_biggerIsBetter')
     self.check_result(result, 'Suits', 884.8798336963456,
                       'unitless_biggerIsBetter')
+    self.check_result(result, 'scoreLowerBound', 884.16085505357,
+                      'unitless_biggerIsBetter')
+    self.check_result(result, 'scoreUpperBound', 909.0555542538938,
+                      'unitless_biggerIsBetter')
 
   def test_motionmark_1_3(self):
     result = self.process_crossbench_result('motionmark_1.3')
     self.check_result(result, 'score', 455.7206962615359,
                       'unitless_biggerIsBetter')
     self.check_result(result, 'Suits', 443.96956820438845,
+                      'unitless_biggerIsBetter')
+    self.check_result(result, 'scoreLowerBound', 440.42364915850067,
+                      'unitless_biggerIsBetter')
+    self.check_result(result, 'scoreUpperBound', 469.630998093865,
                       'unitless_biggerIsBetter')
 
   def test_speedometer_2_1(self):
