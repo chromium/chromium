@@ -55,7 +55,7 @@ class StartupUtils {
   // It is triggered by enrolling the device, but also by logging in as a
   // consumer owner or by logging in as guest.  This state change is announced
   // to the system by writing the .oobe_completed flag file.
-  static bool IsDeviceRegistered();
+  static bool IsDeviceRegistered(PrefService& local_state);
 
   // clear specific oobe preference from Local state.
   static void ClearSpecificOobePrefs();

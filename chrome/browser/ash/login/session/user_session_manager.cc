@@ -1888,6 +1888,9 @@ void UserSessionManager::MaybeLaunchHelpAppForFirstRun(Profile* profile) const {
 }
 
 bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
+  // TODO(crbug.com/404133029): Avoid using g_browser_process.
+  PrefService& local_state = CHECK_DEREF(g_browser_process->local_state());
+
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (!user_manager->IsCurrentUserNew()) {
     return false;
@@ -1912,8 +1915,9 @@ bool UserSessionManager::MaybeStartNewUserOnboarding(Profile* profile) {
 
   // Mark the device as registered., i.e. the second part of OOBE as
   // completed.
-  if (!StartupUtils::IsDeviceRegistered())
+  if (!StartupUtils::IsDeviceRegistered(local_state)) {
     StartupUtils::MarkDeviceRegistered(base::OnceClosure());
+  }
 
   if (LoginDisplayHost::default_host() &&
       LoginDisplayHost::default_host()->GetSigninUI()) {

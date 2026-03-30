@@ -544,7 +544,8 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
 
     EXPECT_TRUE(StartupUtils::IsOobeCompleted(
         CHECK_DEREF(g_browser_process->local_state())));
-    EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+    EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+        CHECK_DEREF(g_browser_process->local_state())));
   }
 };
 
@@ -645,7 +646,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // Both components were successfully loaded on the initial attempt.
   histogram_tester_.ExpectTotalCount(
@@ -754,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // Both components were successfully loaded on the initial attempt.
   histogram_tester_.ExpectTotalCount(
@@ -818,7 +821,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
@@ -852,7 +856,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, OnlineSetupFlowErrorDefault) {
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // The error occurred at the enrollment step. In the previous component
   // loading step, both components were still successfully loaded on the initial
@@ -899,7 +904,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // The error occurred at the enrollment step. In the previous component
   // loading step, both components were still successfully loaded on the initial
@@ -1057,7 +1063,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, DISABLED_RetryOnErrorScreen) {
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success. There should have been two counts because of two tries.
   histogram_tester_.ExpectBucketCount(
@@ -1097,7 +1104,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest, ClickRetryOnErrorScreen) {
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   test::LockDemoDeviceInstallAttributes();
 
@@ -1264,7 +1272,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupComponentLoadErrorTest,
 
   EXPECT_FALSE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // DemoSetupComponentLoadErrorTest gives INSTALL_FAILURE to the demo mode app
   // component. So there should be app failure and resources success. There is
@@ -1322,7 +1331,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupVariantCountryCodeRegionTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success.
   histogram_tester_.ExpectBucketCount(
@@ -1477,7 +1487,8 @@ IN_PROC_BROWSER_TEST_F(DemoSetupBlazeyDeviceTest,
 
   EXPECT_TRUE(StartupUtils::IsOobeCompleted(
       CHECK_DEREF(g_browser_process->local_state())));
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   // The enum of success (no error) is recorded to DemoMode.Setup.Error on
   // success.
   histogram_tester_.ExpectBucketCount(

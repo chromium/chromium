@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -66,7 +67,8 @@ CrOSPreConsentMetricsManager::MaybeCreate() {
 
   // Handle when a ChromeOS device upgrades to the version this functionality
   // was added that has completed OOBE.
-  if (ash::StartupUtils::IsDeviceRegistered()) {
+  if (ash::StartupUtils::IsDeviceRegistered(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     base::ThreadPool::PostTask(
         FROM_HERE, base::MayBlock(),
         base::BindOnce(&WritePreConsentCompleteFile,

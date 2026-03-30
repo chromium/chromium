@@ -179,7 +179,8 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
     host()->HandleAccelerator(LoginAcceleratorAction::kStartEnrollment);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
-    ASSERT_FALSE(StartupUtils::IsDeviceRegistered());
+    ASSERT_FALSE(StartupUtils::IsDeviceRegistered(
+        CHECK_DEREF(g_browser_process->local_state())));
     ASSERT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
     WaitForGaiaPageBackButtonUpdate();
 
@@ -367,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase, ManualEnrollment) {
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -396,7 +398,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
   test::OobeJS().ExpectTrue("Oobe.isEnrollmentSuccessfulForTest()");
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -431,7 +434,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
                                         test::values::kLocation);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -450,7 +454,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -468,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR_MEETS,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -484,7 +490,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_AUTH_ACCOUNT_ERROR, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -501,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_ACCOUNT_ERROR_MEETS, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -519,7 +527,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_POLICY_DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -535,7 +544,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_DOMAIN_MISMATCH_ERROR, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -552,7 +562,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_POLICY_DM_STATUS_SERVICE_DEVICE_ID_CONFLICT, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -568,7 +579,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_POLICY_DM_STATUS_SERVICE_ACTIVATION_PENDING, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -585,7 +597,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -601,7 +614,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(IDS_POLICY_DM_STATUS_TEMPORARY_UNAVAILABLE,
                                     /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -618,7 +632,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -634,7 +649,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -652,7 +668,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED_MEETS,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -668,7 +685,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -683,7 +701,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(IDS_POLICY_DM_STATUS_HTTP_STATUS_ERROR,
                                     /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -702,7 +721,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
                                         test::values::kLocation);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
   auto login_waiter = CreateLoginVisibleWaiter();
   enrollment_ui_.LeaveDeviceAttributeErrorScreen();
@@ -722,7 +742,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
   enrollment_ui_.ExpectErrorMessage(IDS_POLICY_DM_STATUS_TEMPORARY_UNAVAILABLE,
                                     /*can_retry=*/true);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
   enrollment_ui_.RetryAndWaitForSigninStep();
 }
@@ -740,7 +761,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_INVALID_PACKAGED_DEVICE_FOR_KIOSK,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -757,7 +779,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
       IDS_ENTERPRISE_ENROLLMENT_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED,
       /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -773,7 +796,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.ExpectErrorMessage(
       IDS_POLICY_DM_STATUS_SERVICE_POLICY_NOT_FOUND,
       /*can_retry=*/true);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
   enrollment_ui_.RetryAndWaitForSigninStep();
 }
@@ -789,7 +813,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentEmbeddedPolicyServerBase,
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
   enrollment_ui_.ExpectErrorMessage(IDS_POLICY_DM_STATUS_SERVICE_DEPROVISIONED,
                                     /*can_retry=*/true);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
   enrollment_ui_.RetryAndWaitForSigninStep();
 }
@@ -928,7 +953,8 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, Attestation) {
       AutoEnrollmentCheckScreenView::kScreenId);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -978,7 +1004,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {
   base::ScopedAllowBlockingForTesting allow_io;
   test::SkipToEnrollmentOnRecovery();
 
-  ASSERT_TRUE(StartupUtils::IsDeviceRegistered());
+  ASSERT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   ASSERT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
   // No DM Token
   ASSERT_TRUE(
@@ -1006,7 +1033,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {
 IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, DifferentDomain) {
   test::SkipToEnrollmentOnRecovery();
 
-  ASSERT_TRUE(StartupUtils::IsDeviceRegistered());
+  ASSERT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   ASSERT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
 
   login::OnlineSigninArtifacts signin_artifacts;
@@ -1066,7 +1094,8 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, MAYBE_EnrollmentForced) {
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -1112,7 +1141,8 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
       static_cast<int>(policy::LicenseType::kEnterprise),
       FakeGaiaMixin::kFakeAuthCode);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -1130,7 +1160,8 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest,
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
                                         test::values::kLocation);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -1209,7 +1240,8 @@ class KioskEnrollmentPolicyServerTest
     host()->HandleAccelerator(LoginAcceleratorAction::kStartKioskEnrollment);
     OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
 
-    ASSERT_FALSE(StartupUtils::IsDeviceRegistered());
+    ASSERT_FALSE(StartupUtils::IsDeviceRegistered(
+        CHECK_DEREF(g_browser_process->local_state())));
     ASSERT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
     WaitForGaiaPageBackButtonUpdate();
 
@@ -1241,7 +1273,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest, KioskEnrollment) {
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
                                         test::values::kLocation);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -1260,7 +1293,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -1276,7 +1310,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest, EnterpriseEnrollment) {
   enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
                                         test::values::kLocation);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 }
 
@@ -1292,7 +1327,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentPolicyServerTest,
   enrollment_ui_.ExpectErrorMessage(
       IDS_ENTERPRISE_ENROLLMENT_MISSING_LICENSES_ERROR, /*can_retry=*/true);
   enrollment_ui_.RetryAndWaitForSigninStep();
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_FALSE(InstallAttributes::Get()->IsEnterpriseManaged());
 }
 
@@ -1332,7 +1368,8 @@ IN_PROC_BROWSER_TEST_F(KioskEnrollmentTest,
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
 
   ScopedDeviceSettings settings;
@@ -1375,7 +1412,8 @@ IN_PROC_BROWSER_TEST_F(
   TriggerEnrollmentAndSignInSuccessfully();
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   EXPECT_TRUE(InstallAttributes::Get()->IsCloudManaged());
   // The tokens should be revoked when the Kiosk session starts.
   ExpectCachedTokenRevoked();

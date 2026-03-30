@@ -251,9 +251,8 @@ base::TimeDelta StartupUtils::GetTimeSinceOobeFlagFileCreation() {
 }
 
 // static
-bool StartupUtils::IsDeviceRegistered() {
-  int value = g_browser_process->local_state()->GetInteger(
-      ash::prefs::kDeviceRegistered);
+bool StartupUtils::IsDeviceRegistered(PrefService& local_state) {
+  int value = local_state.GetInteger(ash::prefs::kDeviceRegistered);
   if (value > 0) {
     // Recreate flag file in case it was lost.
     base::ThreadPool::PostTask(
@@ -268,8 +267,7 @@ bool StartupUtils::IsDeviceRegistered() {
     base::ScopedAllowBlocking allow_blocking;
     const base::FilePath oobe_complete_flag_path = GetOobeCompleteFlagPath();
     bool file_exists = base::PathExists(oobe_complete_flag_path);
-    SaveIntegerPreferenceForced(*g_browser_process->local_state(),
-                                ash::prefs::kDeviceRegistered,
+    SaveIntegerPreferenceForced(local_state, ash::prefs::kDeviceRegistered,
                                 file_exists ? 1 : 0);
     return file_exists;
   }

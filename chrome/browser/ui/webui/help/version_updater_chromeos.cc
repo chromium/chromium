@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -195,7 +196,8 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
 
   // Make sure that libcros is loaded and OOBE is complete.
   if (!ash::WizardController::default_controller() ||
-      ash::StartupUtils::IsDeviceRegistered()) {
+      ash::StartupUtils::IsDeviceRegistered(
+          CHECK_DEREF(g_browser_process->local_state()))) {
     update_engine_client->RequestUpdateCheck(base::BindOnce(
         &VersionUpdaterCros::OnUpdateCheck, weak_ptr_factory_.GetWeakPtr()));
   }

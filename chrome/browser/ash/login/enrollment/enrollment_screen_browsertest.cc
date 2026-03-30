@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/notreached.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -140,7 +142,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestCancel) {
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
 
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
@@ -150,7 +153,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TestSuccess) {
   EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
   EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollmentSpinner) {
@@ -188,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollAfterRollbackSuccess) {
 
   enrollment_ui_.WaitForScreenExit();
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
@@ -215,7 +220,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   // Expect that the screen ends up on the gaia sign-in page as a manual
   // fallback for the failed automatic enrollment.
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSignin);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // Enrollment helper mock is owned by enrollment screen and released when
   // enrollment config changes. Need to prepare a new mock to be consumed.
@@ -233,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForScreenExit();
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
@@ -256,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_screen()->Show(&context);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 
   // Retry enrollment and finish successfully.
 
@@ -275,7 +283,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
 
   enrollment_ui_.WaitForScreenExit();
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentSuccess) {
@@ -296,7 +305,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentSuccess) {
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
@@ -340,7 +350,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueGoBack) {
@@ -477,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, ManualEnrollmentSuccess) {
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
@@ -544,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TokenBasedEnrollmentSuccess) {
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -569,7 +582,8 @@ IN_PROC_BROWSER_TEST_F(
 
   enrollment_ui_.WaitForScreenExit();
 
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 // TODO(b/320497330): Add more browser tests for token-based kiosk enrollment
@@ -617,7 +631,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
       test::EnrollmentHelperMixin::kTestAuthCode);
 
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
 }
 
 struct EnrollmentErrorScreenTestParams {
@@ -731,7 +746,8 @@ IN_PROC_BROWSER_TEST_P(ManualEnrollmentErrorScreenTest,
   // Expect that the screen ends up on error screen.
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
 
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   if (enrollment_config.is_forced()) {
     EXPECT_TRUE(
         test::OobeJS().GetAttributeBool("isForced", {"enterprise-enrollment"}));
@@ -820,7 +836,8 @@ IN_PROC_BROWSER_TEST_P(AttestationEnrollmentErrorScreenTest,
   // Expect that the screen ends up on error screen.
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
 
-  EXPECT_FALSE(StartupUtils::IsDeviceRegistered());
+  EXPECT_FALSE(StartupUtils::IsDeviceRegistered(
+      CHECK_DEREF(g_browser_process->local_state())));
   if (enrollment_config.is_forced()) {
     EXPECT_TRUE(
         test::OobeJS().GetAttributeBool("isForced", {"enterprise-enrollment"}));

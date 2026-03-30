@@ -610,7 +610,8 @@ void WizardController::AdvanceToScreenAfterHIDDetection(
 
   first_screen_for_testing_ = actual_first_screen;
 
-  if (!IsMachineHWIDCorrect() && !StartupUtils::IsDeviceRegistered() &&
+  if (!IsMachineHWIDCorrect() &&
+      !StartupUtils::IsDeviceRegistered(local_state_.get()) &&
       first_screen == ash::OOBE_SCREEN_UNKNOWN) {
     ShowWrongHWIDScreen();
   } else {

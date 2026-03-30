@@ -988,7 +988,7 @@ void ExistingUserController::OnOffTheRecordAuthSuccess() {
   // that would actually complete the login process.
 
   // Mark the device as registered., i.e. the second part of OOBE as completed.
-  if (!StartupUtils::IsDeviceRegistered()) {
+  if (!StartupUtils::IsDeviceRegistered(local_state_.get())) {
     StartupUtils::MarkDeviceRegistered(base::OnceClosure());
   }
 
