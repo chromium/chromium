@@ -14839,24 +14839,6 @@
             ]
         }
     ],
-    "MigrateAutomaticJsOptimizer": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MigrateToBlockV8OptimizerOnUnfamiliarSites"
-                    ]
-                }
-            ]
-        }
-    ],
     "MigrateIOSKeychainAccessibility": [
         {
             "platforms": [
