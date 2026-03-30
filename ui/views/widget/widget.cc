@@ -136,6 +136,20 @@ ui::mojom::WindowShowState GetShowState(views::Widget* widget) {
 
 }  // namespace
 
+class Widget::ScopedCallStackLock {
+ public:
+  explicit ScopedCallStackLock(Widget* widget)
+      : reset_(&widget->on_call_stack_, true) {}
+
+  ScopedCallStackLock(const ScopedCallStackLock&) = delete;
+  ScopedCallStackLock& operator=(const ScopedCallStackLock&) = delete;
+
+  ~ScopedCallStackLock() = default;
+
+ private:
+  base::AutoReset<bool> reset_;
+};
+
 // static
 Widget::DisableActivationChangeHandlingType
     Widget::g_disable_activation_change_handling_ =
@@ -242,6 +256,13 @@ Widget::Widget(InitParams params) {
 }
 
 Widget::~Widget() {
+  CHECK(!on_call_stack_);
+
+  // It's illegal for any of the body of this destructor to re-enter this
+  // destructor, because if that happened the outer destructor would
+  // use-after-free once it returns.
+  ScopedCallStackLock on_stack(this);
+
   // DestroyRootView() will cause InvalidateLayout() to ScheduleLayout() which
   // is unnecessary.
   is_destroying_ = true;
@@ -257,6 +278,8 @@ Widget::~Widget() {
   // CLIENT_OWNS_WIDGET, all events are emitted in ~Widget.
 
   if (widget_delegate_ && ownership_ != InitParams::CLIENT_OWNS_WIDGET) {
+    // It's illegal for WidgetDestroying() to re-enter the Widget destructor,
+    // because then the other destructor will use-after-free.
     widget_delegate_->WidgetDestroying();
   }
   if (ownership_ == InitParams::WIDGET_OWNS_NATIVE_WIDGET) {
@@ -978,6 +1001,7 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
 
   ax_mode_observation_.Reset();
 
+  ScopedCallStackLock on_stack(this);
   observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
 
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -1007,12 +1031,17 @@ void Widget::CloseNow() {
 
   ax_mode_observation_.Reset();
 
-  observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
-  internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
+  {
+    ScopedCallStackLock on_stack(this);
+    observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
+    internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(
+        this);
+  }
 
   DCHECK(native_widget_initialized_) << "Native widget is never initialized.";
-
   if (native_widget_) {
+    // The Widget may be destroyed inside CloseNow(), so *DO NOT* use this after
+    // this point.
     native_widget_->CloseNow();
   }
 }
@@ -2022,6 +2051,7 @@ void Widget::OnNativeWidgetMove() {
   }
   NotifyCaretBoundsChanged(GetInputMethod());
 
+  ScopedCallStackLock on_stack(this);
   observers_.Notify(&WidgetObserver::OnWidgetBoundsChanged, this,
                     GetWindowBoundsInScreen());
 }
@@ -2039,6 +2069,7 @@ void Widget::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
 
   base::AutoReset auto_reset(&save_window_placement_allowed_, false);
 
+  ScopedCallStackLock on_stack(this);
   observers_.Notify(&WidgetObserver::OnWidgetBoundsChanged, this,
                     GetWindowBoundsInScreen());
 

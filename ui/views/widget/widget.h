@@ -1534,6 +1534,7 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   };
 
   class PaintAsActiveLockImpl;
+  class ScopedCallStackLock;
 
   friend class ButtonTest;
   friend class ComboboxTest;
@@ -1787,6 +1788,10 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // fullscreen. However, on macOS some child widgets logically correspond to
   // the same window. Their fullscreen state should inherit from their parents.
   bool check_parent_for_fullscreen_ = false;
+
+  // Whether any method using this Widget is still on the call stack. Used to
+  // crash in the destructor if so, to turn UaFs into predictable crashes.
+  bool on_call_stack_ = false;
 
   // Replaces the implementation of Close() and CloseWithReason().
   base::OnceCallback<void(ClosedReason)> override_close_;
