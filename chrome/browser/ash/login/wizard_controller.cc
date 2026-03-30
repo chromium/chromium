@@ -1501,14 +1501,15 @@ void WizardController::OnUserCreationScreenExit(
       [[fallthrough]];
     case UserCreationScreen::Result::SIGNIN_TRIAGE:
       GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
-      StartupUtils::SaveScreenAfterConsumerUpdate(GaiaView::kScreenId.name);
+      StartupUtils::SaveScreenAfterConsumerUpdate(local_state_.get(),
+                                                  GaiaView::kScreenId.name);
       ShowConsumerUpdateScreen();
       break;
     case UserCreationScreen::Result::SIGNIN:
       if (features::IsOobeSoftwareUpdateEnabled()) {
         GetLocalState()->SetBoolean(prefs::kOobeIsConsumerSegment, true);
         StartupUtils::SaveScreenAfterConsumerUpdate(
-            GaiaInfoScreenView::kScreenId.name);
+            local_state_.get(), GaiaInfoScreenView::kScreenId.name);
         ShowConsumerUpdateScreen();
       } else {
         ShowGaiaInfoScreen();
@@ -1527,7 +1528,7 @@ void WizardController::OnUserCreationScreenExit(
           quick_start::QuickStartController::AbortFlowReason::ADD_CHILD);
       if (features::IsOobeSoftwareUpdateEnabled()) {
         StartupUtils::SaveScreenAfterConsumerUpdate(
-            AddChildScreenView::kScreenId.name);
+            local_state_.get(), AddChildScreenView::kScreenId.name);
         ShowConsumerUpdateScreen();
       } else {
         ShowAddChildScreen();

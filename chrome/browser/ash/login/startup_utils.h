@@ -42,7 +42,8 @@ class StartupUtils {
                                     const std::string& screen);
 
   // Stores the next OOBE screen after updating and rebooting to be resumed.
-  static void SaveScreenAfterConsumerUpdate(const std::string& screen);
+  static void SaveScreenAfterConsumerUpdate(PrefService& local_state,
+                                            const std::string& screen);
 
   // Returns the time the OOBE flag file was created.
   static base::Time GetTimeOfOobeFlagFileCreation();

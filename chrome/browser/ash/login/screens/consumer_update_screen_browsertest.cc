@@ -138,6 +138,7 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
     // this local state is set in OnUserCreationScreenExit and in the test we
     // advance directly to the consumerUpdate Screen.
     StartupUtils::SaveScreenAfterConsumerUpdate(
+        CHECK_DEREF(g_browser_process->local_state()),
         GaiaInfoScreenView::kScreenId.name);
 
     if (ash::features::IsOobeAutoEnrollmentCheckForcedEnabled()) {
@@ -152,7 +153,8 @@ class ConsumerUpdateScreenTest : public OobeBaseTest {
   }
 
   void SaveScreenAfterConsumerUpdate(const std::string& screen_name) {
-    StartupUtils::SaveScreenAfterConsumerUpdate(screen_name);
+    StartupUtils::SaveScreenAfterConsumerUpdate(
+        CHECK_DEREF(g_browser_process->local_state()), screen_name);
   }
 
   void TearDownOnMainThread() override {

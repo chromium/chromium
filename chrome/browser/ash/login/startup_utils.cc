@@ -227,9 +227,10 @@ void StartupUtils::SaveOobePendingScreen(PrefService& local_state,
 }
 
 // static
-void StartupUtils::SaveScreenAfterConsumerUpdate(const std::string& screen) {
-  SaveStringPreferenceForced(*g_browser_process->local_state(),
-                             prefs::kOobeScreenAfterConsumerUpdate, screen);
+void StartupUtils::SaveScreenAfterConsumerUpdate(PrefService& local_state,
+                                                 const std::string& screen) {
+  SaveStringPreferenceForced(local_state, prefs::kOobeScreenAfterConsumerUpdate,
+                             screen);
 }
 
 // static
