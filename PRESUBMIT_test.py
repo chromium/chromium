@@ -6367,7 +6367,7 @@ class CheckNoMainLayoutSwitcherTest(unittest.TestCase):
                 ['something']),
         ]
         mock_input_api.change.footers = {
-            'Allow-MainLayoutSwitcher-Changes': ['true']
+            'Allow-Mainlayoutswitcher-Changes': ['true']
         }
         results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
                                                       MockOutputApi())
@@ -6381,7 +6381,7 @@ class CheckNoMainLayoutSwitcherTest(unittest.TestCase):
                 ['something']),
         ]
         mock_input_api.change.footers = {
-            'Allow-MainLayoutSwitcher-Changes': ['false']
+            'Allow-Mainlayoutswitcher-Changes': ['false']
         }
         results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
                                                       MockOutputApi())
@@ -6398,6 +6398,74 @@ class CheckNoMainLayoutSwitcherTest(unittest.TestCase):
         results = PRESUBMIT.CheckNoMainLayoutSwitcher(mock_input_api,
                                                       MockOutputApi())
         self.assertEqual(0, len(results))
+
+
+class CheckNoDirectRefToAndroidSidePanelCachedFlagTest(unittest.TestCase):
+
+    def testPositive(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'some/other/File.java',
+                ['ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()']),
+        ]
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
+
+    def testAllowedFiles(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'chrome/browser/ui/side_panel/android/java/src/org/chromium/chrome/browser/ui/side_panel/AndroidSidePanelEnabledFn.java',
+                ['ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()']),
+            MockAffectedFile(
+                'chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java',
+                ['sEnableAndroidSidePanel']),
+            MockAffectedFile('PRESUBMIT.py', ['sEnableAndroidSidePanel']),
+            MockAffectedFile('PRESUBMIT_test.py', ['sEnableAndroidSidePanel']),
+        ]
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testSimilarFeatureFlag(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile(
+                'some/other/File.java',
+                ['ChromeFeatureList.sEnableAndroidSidePanelDevFeature.isEnabled()']),
+        ]
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testNegative(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('some/other/File.java', ['other code']),
+        ]
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testBypassTagTrue(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('some/other/File.java', ['ChromeFeatureList.sEnableAndroidSidePanel']),
+        ]
+        mock_input_api.change.footers = {
+            'No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm': ['true']
+        }
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(0, len(results))
+
+    def testBypassTagFalse(self):
+        mock_input_api = MockInputApi()
+        mock_input_api.files = [
+            MockAffectedFile('some/other/File.java', ['ChromeFeatureList.sEnableAndroidSidePanel']),
+        ]
+        mock_input_api.change.footers = {
+            'No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm': ['false']
+        }
+        results = PRESUBMIT.CheckNoDirectRefToAndroidSidePanelCachedFlag(mock_input_api, MockOutputApi())
+        self.assertEqual(1, len(results))
 
 
 if __name__ == '__main__':

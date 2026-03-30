@@ -13,8 +13,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * Checks all conditions for whether to enable the Android Side Panel.
  *
  * <p>This is the sole authority that decides whether to enable Android Side Panel.
- *
- * <p>TODO(crbug.com/496609444): Replace all flag checks with this class.
  */
 @NullMarked
 public final class AndroidSidePanelEnabledFn {
@@ -23,6 +21,7 @@ public final class AndroidSidePanelEnabledFn {
     /** Returns true if the Android Side Panel should be enabled. */
     @CalledByNative
     public static boolean isEnabled() {
+        // TODO(crbug.com/497862593): See if the cached flag can be instantiated inside this class.
         return ChromeFeatureList.sEnableAndroidSidePanel.isEnabled();
     }
 }

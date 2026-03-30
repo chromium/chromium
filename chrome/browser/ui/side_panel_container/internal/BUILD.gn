@@ -27,6 +27,7 @@ android_library("java") {
     "//chrome/browser/android/content:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/ui/side_panel/android:java",
     "//chrome/browser/ui/side_panel_container/public:java",
     "//chrome/browser/ui/side_ui/public:java",
     "//components/embedder_support/android:content_view_java",

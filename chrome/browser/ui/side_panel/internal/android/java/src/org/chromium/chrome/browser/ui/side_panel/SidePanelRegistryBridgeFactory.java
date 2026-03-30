@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.side_panel;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Factory for creating JNI bridges that own a native {@code SidePanelRegistry}. */
 @NullMarked
@@ -24,7 +23,7 @@ public final class SidePanelRegistryBridgeFactory {
      */
     @Nullable
     public static WindowScopedSidePanelRegistryBridge createWindowScopedBridge() {
-        if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
+        if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }
 

@@ -8,7 +8,7 @@ import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 
 /** Factory for creating a {@link SideUiCoordinator}. */
 @NullMarked
@@ -26,7 +26,7 @@ public final class SideUiCoordinatorFactory {
     public static SideUiCoordinator create(
             @Nullable ViewStub startAnchorContainerStub,
             @Nullable ViewStub endAnchorContainerStub) {
-        if (!ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
+        if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }
 

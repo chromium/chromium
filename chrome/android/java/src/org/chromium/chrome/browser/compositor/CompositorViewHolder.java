@@ -83,6 +83,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
@@ -1017,7 +1018,7 @@ public class CompositorViewHolder extends FrameLayout
         // The view size takes into account side-anchored UI whose width should be subtracted from
         // the view if they are visible, therefore shrinking the Blink-side view size.
         int horizontalViewportInsets = 0;
-        if (ChromeFeatureList.sEnableAndroidSidePanel.isEnabled() && mSideUiStateProvider != null) {
+        if (AndroidSidePanelEnabledFn.isEnabled() && mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
             horizontalViewportInsets =
                     sideUiSpecs.mStartContainerWidth + sideUiSpecs.mEndContainerWidth;

@@ -8,7 +8,7 @@ import androidx.annotation.LayoutRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 
 /**
  * Switches the main layout based on feature flags.
@@ -27,7 +27,7 @@ public final class MainLayoutSwitcher {
     /** Returns the resource ID for the main layout. */
     @LayoutRes
     public static int getMainLayoutRes() {
-        return ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()
+        return AndroidSidePanelEnabledFn.isEnabled()
                 ? R.layout.main_forked_with_secondary_ui_container
                 : R.layout.main;
     }

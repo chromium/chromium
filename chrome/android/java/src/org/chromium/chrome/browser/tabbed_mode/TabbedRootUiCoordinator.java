@@ -212,6 +212,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroidFactory;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelRegistryBridgeFactory;
@@ -1002,7 +1003,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mLayoutManagerSupplier);
         }
 
-        if (ChromeFeatureList.sEnableAndroidSidePanel.isEnabled()) {
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
             mCompositorViewHolderSupplier
                     .get()
                     .setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);

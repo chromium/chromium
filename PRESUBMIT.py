@@ -6778,9 +6778,14 @@ def CheckNoMainLayoutSwitcher(input_api, output_api):
     if input_api.no_diffs:
         return []
 
+    # When //third_party/depot_tools/git_footers.py parses the footers in a commit message, it
+    # splits the key by hyphens (-) and applies title casing to each word.
+    #
+    # So here "Mainlayoutswitcher" should have lowercase l and s, i.e., "MainLayoutSwitcher"
+    # (uppercase L and S) will _not_ match the output of git_footers.py.
     git_footers = input_api.change.GitFootersFromDescription()
     if 'true' in [footer.lower() for footer in git_footers.get(
-            u'Allow-MainLayoutSwitcher-Changes', [])]:
+            u'Allow-Mainlayoutswitcher-Changes', [])]:
         return []
 
     results = []
@@ -6791,9 +6796,44 @@ def CheckNoMainLayoutSwitcher(input_api, output_api):
                 '(main_forked_with_secondary_ui_container.xml) during Android side panel '
                 'development.\n'
                 'Generally we should not need to change this file except deleting it, but if you '
-                'must, add "Allow-MainLayoutSwitcher-Changes: true" to your commit message '
-                'footers and send the CL to the file owners.',
+                'must, add "Allow-Mainlayoutswitcher-Changes: true" (note: lowercase l and s in '
+                'Mainlayoutswitcher) to your commit message footers and send the CL to the file '
+                'owners.',
                 [f]))
+    return results
+
+
+def CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api):
+    """
+    Bans direct references to the cached flag 'sEnableAndroidSidePanel'
+    except in AndroidSidePanelEnabledFn.java.
+    """
+    if input_api.no_diffs:
+        return []
+
+    git_footers = input_api.change.GitFootersFromDescription()
+    if 'true' in [footer.lower() for footer in git_footers.get(
+            u'No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm', [])]:
+        return []
+
+    results = []
+    pattern = input_api.re.compile(r'sEnableAndroidSidePanel\b')
+    for f in input_api.AffectedFiles(include_deletes=False):
+        local_path = f.LocalPath()
+        if ('AndroidSidePanelEnabledFn.java' in local_path
+                or 'ChromeFeatureList.java' in local_path
+                or 'PRESUBMIT.py' in local_path
+                or 'PRESUBMIT_test.py' in local_path):
+            continue
+        for line_num, line in f.ChangedContents():
+            if pattern.search(line):
+                results.append(output_api.PresubmitError(
+                    '%s:%d: sEnableAndroidSidePanel should not be referenced directly. '
+                    'Use AndroidSidePanelEnabledFn.isEnabled() instead. '
+                    'If this is a false alarm, add '
+                    '"No-Direct-Ref-To-Android-Side-Panel-Cached-Flag-False-Alarm: true" '
+                    'to the commit message footers' % (f.LocalPath(), line_num)
+                ))
     return results
 
 
@@ -6809,6 +6849,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(
         input_api.canned_checks.CheckPatchFormatted(input_api, output_api))
     results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
+    results.extend(CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
     return results
 
 
@@ -6837,6 +6878,7 @@ def CheckChangeOnCommit(input_api, output_api):
         input_api.canned_checks.CheckChangeHasNoUnwantedTags(
             input_api, output_api))
     results.extend(CheckNoMainLayoutSwitcher(input_api, output_api))
+    results.extend(CheckNoDirectRefToAndroidSidePanelCachedFlag(input_api, output_api))
     return results
 
 
