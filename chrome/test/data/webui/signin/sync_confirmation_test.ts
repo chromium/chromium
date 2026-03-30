@@ -3,29 +3,19 @@
 // found in the LICENSE file.
 
 import 'chrome://sync-confirmation/sync_confirmation_app.js';
-import 'chrome://sync-confirmation/sync_confirmation_app_refresh.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SyncConfirmationAppElement} from 'chrome://sync-confirmation/sync_confirmation_app.js';
-import type {SyncConfirmationAppRefreshElement} from 'chrome://sync-confirmation/sync_confirmation_app_refresh.js';
 import {ScreenMode, SyncConfirmationBrowserProxyImpl} from 'chrome://sync-confirmation/sync_confirmation_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSyncConfirmationBrowserProxy} from './test_sync_confirmation_browser_proxy.js';
 
-type AppElement = SyncConfirmationAppElement|SyncConfirmationAppRefreshElement;
-
 suite(`SigninSyncConfirmationTest`, function() {
-  let app: AppElement;
+  let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
-
-  function getAppName(): string {
-    return loadTimeData.getBoolean('isFirstRunDesktopRefreshEnabled') ?
-        'sync-confirmation-app-refresh' :
-        'sync-confirmation-app';
-  }
 
   async function testButtonClick(buttonSelector: string) {
     const allButtons = Array.from(app.shadowRoot.querySelectorAll('cr-button'));
@@ -47,7 +37,7 @@ suite(`SigninSyncConfirmationTest`, function() {
     browserProxy = new TestSyncConfirmationBrowserProxy();
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement(getAppName()) as AppElement;
+    app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Check that the account image is requested when the app element is
     // attached to the document.
@@ -92,14 +82,8 @@ suite(`SigninSyncConfirmationTest`, function() {
 // without also updating the attributes referring to consent strings,
 // this test will break.
 suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
-  let app: AppElement;
+  let app: SyncConfirmationAppElement;
   let browserProxy: TestSyncConfirmationBrowserProxy;
-
-  function getAppName(): string {
-    return loadTimeData.getBoolean('isFirstRunDesktopRefreshEnabled') ?
-        'sync-confirmation-app-refresh' :
-        'sync-confirmation-app';
-  }
 
   function getConsentDescriptionTexts(i18n: Function) {
     const consentDescriptionTexts = [
@@ -123,7 +107,7 @@ suite(`SigninSyncConfirmationConsentRecordingTest`, function() {
     SyncConfirmationBrowserProxyImpl.setInstance(browserProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    app = document.createElement(getAppName()) as AppElement;
+    app = document.createElement('sync-confirmation-app');
     document.body.append(app);
     // Wait for the app element to get attached to the document (which is
     // when the account image gets requested).

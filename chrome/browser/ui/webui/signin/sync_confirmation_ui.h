@@ -74,8 +74,7 @@ class SyncConfirmationUI : public SigninWebDialogUI {
  private:
   void InitializeForSyncConfirmation(content::WebUIDataSource* source,
                                      SyncConfirmationStyle style,
-                                     bool is_sync_promo,
-                                     bool is_first_run_desktop_refresh_enabled);
+                                     bool is_sync_promo);
   void InitializeForSyncDisabled(content::WebUIDataSource* source);
 
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|
