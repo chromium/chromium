@@ -74,6 +74,8 @@ SchedulerSettings LayerTreeSettings::ToSchedulerSettings() const {
           ::features::kWaitForLateScrollEventsDeadlineRatio.Get();
     }
   }
+  scheduler_settings.single_threaded_proxy = single_thread_proxy_scheduler;
+
   return scheduler_settings;
 }
 

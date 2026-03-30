@@ -71,6 +71,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kCCSlimming);
 // Check if the above feature is enabled. For performance purpose.
 CC_BASE_EXPORT bool IsCCSlimmingEnabled();
 
+// When enabled, the scheduler will use SlimSchedulerStateMachine which ensures
+// that each action is returned only once per begin frame.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimScheduler);
+
 // Modes for `kWaitForLateScrollEvents` changing event dispatch. Where the
 // default is to just always enqueue scroll events.
 //

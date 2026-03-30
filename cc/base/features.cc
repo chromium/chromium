@@ -78,6 +78,10 @@ bool IsCCSlimmingEnabled() {
   return enabled;
 }
 
+// When enabled, the scheduler will use SlimSchedulerStateMachine which ensures
+// that each action is returned only once per begin frame.
+BASE_FEATURE(kSlimScheduler, base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr const char kScrollEventDispatchModeDispatchScrollEventsImmediately[] =
     "DispatchScrollEventsImmediately";
 constexpr const char kScrollEventDispatchModeUseScrollPredictorForEmptyQueue[] =
