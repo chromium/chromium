@@ -7,6 +7,8 @@
 
 #include "ui/gfx/geometry/rect.h"
 
+class VerticalTabStripView;
+
 namespace views {
 class View;
 }
@@ -16,5 +18,9 @@ class View;
 // may differ from current `View::bounds()` due to animated transitions. For
 // other views the current bounds will be returned.
 gfx::Rect GetVerticalTabStripViewTargetBounds(const views::View* view);
+
+// Returns the vertical tab strip view for the provided `view`. Iterates
+// through the parent hierarchy until a `VerticalTabStripView` is found.
+VerticalTabStripView* GetVerticalTabStripView(views::View* view);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_UTILS_H_

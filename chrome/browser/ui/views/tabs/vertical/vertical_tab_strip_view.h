@@ -46,7 +46,6 @@ class VerticalTabStripView final : public views::View,
   VerticalUnpinnedTabContainerView* GetUnpinnedTabsContainer();
 
   void SetCollapsedState(bool is_collapsed);
-
   void SetIsAnimatingSize(bool is_animating);
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
@@ -57,14 +56,18 @@ class VerticalTabStripView final : public views::View,
 
   // views::View:
   void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
 
   // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
   void OnActiveTabChanged(const tabs::TabInterface* active_tab);
+
   void RecordMousePressedInTab();
+  bool IsFocusInTabStrip();
 
  private:
   class ActivatedViewTracker;
@@ -113,6 +116,7 @@ class VerticalTabStripView final : public views::View,
   base::CallbackListSubscription paint_as_active_subscription_;
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 
+  bool is_first_window_presentation_ = true;
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
 };

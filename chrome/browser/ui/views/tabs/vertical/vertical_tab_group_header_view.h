@@ -54,8 +54,9 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
     virtual bool ContinueHeaderDrag(const ui::LocatedEvent& event) = 0;
     virtual void CancelHeaderDrag() = 0;
     virtual const TabGroup& GetTabGroup() const = 0;
-    virtual void UpdateHoverCard() const = 0;
-    virtual void HideHoverCard() const = 0;
+    virtual void UpdateHoverCard(int update_type) const = 0;
+    virtual void HideHoverCard(int update_type) const = 0;
+    virtual bool IsFocusInTabStrip() = 0;
 
     virtual void ShiftGroupUp() = 0;
     virtual void ShiftGroupDown() = 0;

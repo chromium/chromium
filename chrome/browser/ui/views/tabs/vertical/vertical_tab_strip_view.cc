@@ -253,6 +253,10 @@ void VerticalTabStripView::AddedToWidget() {
   widget_observation_.Observe(widget);
 }
 
+void VerticalTabStripView::RemovedFromWidget() {
+  widget_observation_.Reset();
+}
+
 void VerticalTabStripView::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
   has_reported_time_mouse_entered_to_switch_ = false;
@@ -264,18 +268,27 @@ void VerticalTabStripView::OnMouseExited(const ui::MouseEvent& event) {
   }
 
   if (TabHoverCardController* hover_card_controller =
-          collection_node_->GetController()->GetHoverCardController();
-      hover_card_controller) {
+          collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kHover);
   }
 }
 
+void VerticalTabStripView::OnWidgetActivationChanged(views::Widget* widget,
+                                                     bool active) {
+  if (TabHoverCardController* hover_card_controller =
+          collection_node_->GetController()->GetHoverCardController();
+      hover_card_controller) {
+    hover_card_controller->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+  }
+}
+
 void VerticalTabStripView::OnWidgetVisibilityChanged(views::Widget* widget,
                                                      bool visible) {
-  if (collection_node_ && visible) {
+  if (collection_node_ && visible && is_first_window_presentation_) {
     // Only scroll-in the active tab for the first window presentation.
-    widget_observation_.Reset();
+    is_first_window_presentation_ = false;
     OnActiveTabChanged(collection_node_->GetController()->GetActiveTab());
   }
 }
@@ -335,6 +348,10 @@ void VerticalTabStripView::RecordMousePressedInTab() {
         base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
     has_reported_time_mouse_entered_to_switch_ = true;
   }
+}
+
+bool VerticalTabStripView::IsFocusInTabStrip() {
+  return GetFocusManager() && Contains(GetFocusManager()->GetFocusedView());
 }
 
 VerticalPinnedTabContainerView* VerticalTabStripView::GetPinnedTabsContainer() {

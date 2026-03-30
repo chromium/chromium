@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -34,4 +35,13 @@ gfx::Rect GetVerticalTabStripViewTargetBounds(const views::View* view) {
   const views::ChildLayout* const view_layout =
       layout_manager->target_layout().GetLayoutFor(view);
   return view_layout ? view_layout->bounds : view->bounds();
+}
+
+VerticalTabStripView* GetVerticalTabStripView(views::View* view) {
+  for (views::View* v = view->parent(); v; v = v->parent()) {
+    if (auto* tab_strip = views::AsViewClass<VerticalTabStripView>(v)) {
+      return tab_strip;
+    }
+  }
+  return nullptr;
 }

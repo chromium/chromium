@@ -60,8 +60,9 @@ class VerticalTabGroupView
   bool ContinueHeaderDrag(const ui::LocatedEvent& event) override;
   void CancelHeaderDrag() override;
   const TabGroup& GetTabGroup() const override;
-  void UpdateHoverCard() const override;
-  void HideHoverCard() const override;
+  void UpdateHoverCard(int update_type) const override;
+  void HideHoverCard(int update_type) const override;
+  bool IsFocusInTabStrip() override;
   void ShiftGroupUp() override;
   void ShiftGroupDown() override;
 

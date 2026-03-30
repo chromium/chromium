@@ -195,13 +195,12 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
   void OnEvent(const ui::Event& event) override {
     bool close_hover_card = true;
     if (event.IsKeyEvent()) {
-      bool is_tab_focused =
-          controller_->tab_strip_->GetFocusedTabIndex().has_value();
+      bool is_tab_strip_focused = IsTabStripFocused();
       // Hover card needs to be dismissed (and regenerated) if the keypress
       // would select the tab (this also takes focus out of the tabstrip).
       close_hover_card = event.AsKeyEvent()->key_code() == ui::VKEY_RETURN ||
                          event.AsKeyEvent()->key_code() == ui::VKEY_ESCAPE ||
-                         !is_tab_focused;
+                         !is_tab_strip_focused;
     }
 
     if (close_hover_card) {
@@ -211,6 +210,13 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
   }
 
  private:
+  bool IsTabStripFocused() const {
+    views::View* tab_strip_view = controller_->tab_strip_->GetTabStripView();
+    return tab_strip_view && tab_strip_view->GetFocusManager() &&
+           tab_strip_view->Contains(
+               tab_strip_view->GetFocusManager()->GetFocusedView());
+  }
+
   const raw_ptr<TabHoverCardController> controller_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };

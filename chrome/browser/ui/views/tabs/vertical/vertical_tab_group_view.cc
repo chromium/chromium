@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
@@ -328,7 +330,7 @@ std::unique_ptr<views::View> VerticalTabGroupView::DetachChildView(
 }
 
 void VerticalTabGroupView::ResetCollectionNode() {
-  HideHoverCard();
+  HideHoverCard(TabSlotController::HoverCardUpdateType::kTabRemoved);
   attention_indicator_observation_.Reset();
   node_destroyed_subscription_ = {};
   data_changed_subscription_ = {};
@@ -529,7 +531,7 @@ const TabGroup& VerticalTabGroupView::GetTabGroup() const {
   return *GetTabGroupFromNode(collection_node_);
 }
 
-void VerticalTabGroupView::UpdateHoverCard() const {
+void VerticalTabGroupView::UpdateHoverCard(int update_type) const {
   if (!collection_node_ || !group_header_) {
     return;
   }
@@ -537,11 +539,12 @@ void VerticalTabGroupView::UpdateHoverCard() const {
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(
-        group_header_, TabSlotController::HoverCardUpdateType::kEvent);
+        group_header_,
+        static_cast<TabSlotController::HoverCardUpdateType>(update_type));
   }
 }
 
-void VerticalTabGroupView::HideHoverCard() const {
+void VerticalTabGroupView::HideHoverCard(int update_type) const {
   if (!collection_node_) {
     return;
   }
@@ -549,8 +552,14 @@ void VerticalTabGroupView::HideHoverCard() const {
   if (TabHoverCardController* hover_card_controller =
           collection_node_->GetController()->GetHoverCardController()) {
     hover_card_controller->UpdateHoverCard(
-        nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+        nullptr,
+        static_cast<TabSlotController::HoverCardUpdateType>(update_type));
   }
+}
+
+bool VerticalTabGroupView::IsFocusInTabStrip() {
+  auto* tab_strip_view = GetVerticalTabStripView(this);
+  return tab_strip_view && tab_strip_view->IsFocusInTabStrip();
 }
 
 void VerticalTabGroupView::ShiftGroupUp() {

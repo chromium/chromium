@@ -38,8 +38,9 @@ class MockDelegate : public VerticalTabGroupHeaderView::Delegate {
   MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::LocatedEvent&), (override));
   MOCK_METHOD(void, CancelHeaderDrag, (), (override));
   MOCK_METHOD(const TabGroup&, GetTabGroup, (), (const, override));
-  MOCK_METHOD(void, UpdateHoverCard, (), (const, override));
-  MOCK_METHOD(void, HideHoverCard, (), (const, override));
+  MOCK_METHOD(void, UpdateHoverCard, (int), (const, override));
+  MOCK_METHOD(void, HideHoverCard, (int), (const, override));
+  MOCK_METHOD(bool, IsFocusInTabStrip, (), (override));
   MOCK_METHOD(void, ShiftGroupUp, (), (override));
   MOCK_METHOD(void, ShiftGroupDown, (), (override));
 };
@@ -135,9 +136,9 @@ TEST_P(VerticalTabGroupHeaderViewTest, ShowHoverCardOnMouseEnter) {
   if (UseGroupHeaderHoverCards()) {
     EXPECT_CALL(delegate, GetTabGroup())
         .WillOnce(testing::ReturnRef(mock_tab_group));
-    EXPECT_CALL(delegate, UpdateHoverCard());
+    EXPECT_CALL(delegate, UpdateHoverCard(testing::_));
   } else {
-    EXPECT_CALL(delegate, UpdateHoverCard()).Times(0);
+    EXPECT_CALL(delegate, UpdateHoverCard(testing::_)).Times(0);
   }
 
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
