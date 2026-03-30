@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/memory/ptr_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/android/java_bitmap.h"
