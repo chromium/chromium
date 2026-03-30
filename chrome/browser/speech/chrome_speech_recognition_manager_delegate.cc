@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/speech_recognition_manager.h"
@@ -24,6 +25,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #endif
@@ -173,9 +175,23 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
   bool check_permission = false;
 
   if (!render_frame_host) {
-    // This happens for extensions. Manifest should be checked for permission.
-    allowed = true;
-    check_permission = false;
+    if (render_process_id == content::ChildProcessHost::kInvalidUniqueID) {
+      // This happens for browser-initiated requests (e.g. Chrome OS Dictation).
+      allowed = true;
+    } else {
+      bool is_extension = false;
+  #if BUILDFLAG(ENABLE_EXTENSIONS)
+      content::RenderProcessHost* render_process_host =
+          content::RenderProcessHost::FromID(render_process_id);
+      if (render_process_host) {
+        is_extension = extensions::ProcessMap::Get(
+                           render_process_host->GetBrowserContext())
+                           ->Contains(render_process_id);
+      }
+  #endif
+      // Allow if it's a valid extension; otherwise deny (frame destroyed/invalid).
+      allowed = is_extension;
+    }
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), check_permission, allowed));

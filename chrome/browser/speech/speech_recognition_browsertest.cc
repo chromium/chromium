@@ -5,17 +5,27 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/process_map.h"
+#endif
 
 using content::FakeSpeechRecognitionManager;
 using content::WebContents;
@@ -31,6 +41,14 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
       delete;
 
   ~ChromeSpeechRecognitionTest() override = default;
+
+  static void CheckRenderFrameType(
+      base::OnceCallback<void(bool ask_user, bool is_allowed)> callback,
+      int render_process_id,
+      int render_frame_id) {
+    ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
+        std::move(callback), render_process_id, render_frame_id);
+  }
 
   void SetUp() override {
     // SpeechRecognition test specific SetUp.
@@ -139,5 +157,63 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   chrome::CloseTab(browser());
   EXPECT_TRUE(speech_contents_observer.web_contents_destroyed());
 }
+
+// Tests the TOCTOU race condition where an iframe is detached between
+// StartRequestOnUI and CheckRenderFrameType, causing the RFH to be null.
+// The safe fallback logic should securely deny permission.
+IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, TOCTOUPermissionBypass) {
+  base::test::TestFuture<bool /* ask_user */, bool /* is_allowed */> future;
+
+  int process_id = browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetPrimaryMainFrame()
+                       ->GetProcess()
+                       ->GetID()
+                       .GetUnsafeValue();
+
+  // Call CheckRenderFrameType directly on the UI thread with an invalid RFH ID
+  // but a valid renderer process ID to simulate a detached iframe.
+  CheckRenderFrameType(
+      base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                         future.GetCallback()),
+      process_id, -1);
+
+  // Wait for the callback and validate the safe logic.
+  // Get<0>() is ask_user, Get<1>() is is_allowed.
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_FALSE(future.Get<1>());
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Verifies that extension background pages/service workers are successfully
+// granted permission despite having a null RenderFrameHost.
+IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
+                       ExtensionBackgroundPageAllowed) {
+  base::test::TestFuture<bool /* ask_user */, bool /* is_allowed */> future;
+
+  int process_id = browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetPrimaryMainFrame()
+                       ->GetProcess()
+                       ->GetID()
+                       .GetUnsafeValue();
+
+  extensions::ProcessMap::Get(browser()->profile())
+      ->Insert("fake_extension_id", process_id);
+
+  // Call CheckRenderFrameType with a missing frame, which is typical for
+  // extension background pages or service workers.
+  CheckRenderFrameType(base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                                          future.GetCallback()),
+                       process_id, -1);
+
+  // For extensions, ask_user should be false (manifest checks apply instead)
+  // and is_allowed should be true.
+  EXPECT_FALSE(future.Get<0>());
+  EXPECT_TRUE(future.Get<1>());
+}
+#endif
 
 }  // namespace speech
