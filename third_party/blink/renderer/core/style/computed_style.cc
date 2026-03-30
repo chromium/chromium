@@ -3058,8 +3058,11 @@ ComputedStyleBuilder::ComputedStyleBuilder(
     SetUserSelect(EUserSelect::kAuto);  // FIXME(sesse): Is this right?
   }
 
-  // TODO(sesse): Why do we do this?
-  SetBaseTextDecorationData(parent_style.AppliedTextDecorationData());
+  // NOTE: BaseTextDecorationData also “inherits” in our implementation
+  // (from EffectiveTextDecorationData), but since it inherits from the
+  // layout parent and also not in all cases (it depends on e.g. the
+  // computed display property), that inheritance happens in StyleAdjuster,
+  // not here.
 }
 
 const ComputedStyle* ComputedStyleBuilder::TakeStyle() {

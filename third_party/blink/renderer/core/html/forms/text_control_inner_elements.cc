@@ -60,6 +60,8 @@ const ComputedStyle* EditingViewPortElement::CustomStyleForLayoutObject(
   style_builder.SetMinHeight(Length::Fixed(0));
   style_builder.SetDisplay(EDisplay::kBlock);
   style_builder.SetDirection(TextDirection::kLtr);
+  style_builder.SetBaseTextDecorationData(
+      OwnerShadowHost()->ComputedStyleRef().AppliedTextDecorationData());
 
   // We don't want the shadow dom to be editable, so we set this block to
   // read-only in case the input itself is editable.
@@ -150,6 +152,8 @@ const ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
           ? EUserModify::kReadOnly
           : EUserModify::kReadWritePlaintextOnly);
   style_builder.SetDisplay(EDisplay::kBlock);
+  style_builder.SetBaseTextDecorationData(
+      OwnerShadowHost()->ComputedStyleRef().AppliedTextDecorationData());
   if (!start_style.ApplyControlFixedSize(host)) {
     const Font* font = start_style.GetFont();
     const SimpleFontData* font_data = font->PrimaryFont();

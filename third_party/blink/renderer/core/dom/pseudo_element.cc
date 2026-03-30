@@ -412,6 +412,7 @@ const ComputedStyle* PseudoElement::AdjustedLayoutStyle(
             .GetStyleResolver()
             .CreateComputedStyleBuilderInheritingFrom(style);
     builder.SetContent(style.GetContentData());
+    builder.SetBaseTextDecorationData(style.AppliedTextDecorationData());
     builder.SetDisplay(EDisplay::kInline);
     builder.SetStyleType(GetPseudoIdForStyling());
     return builder.TakeStyle();
