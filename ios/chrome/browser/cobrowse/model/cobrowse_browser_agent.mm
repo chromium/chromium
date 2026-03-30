@@ -50,7 +50,8 @@ bool CobrowseBrowserAgent::CanShowAssistantForWebState(
   CHECK_NE(index, WebStateList::kInvalidIndex);
 
   web::WebState* opener = web_state_list->GetOpenerOfWebStateAt(index).opener;
-  return opener && IsAimURL(opener->GetLastCommittedURL());
+  return opener && opener->IsRealized() &&
+         IsAimURL(opener->GetLastCommittedURL());
 }
 
 void CobrowseBrowserAgent::ConfigureAssistantContextForWebState(
