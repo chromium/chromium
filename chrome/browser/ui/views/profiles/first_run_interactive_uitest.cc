@@ -107,24 +107,6 @@ enum class SyncButtonsFeatureConfig : int {
   kButtonsStillLoading = 4,
 };
 
-const DeepQuery& GetOptInSyncButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kOptInSyncButton(
-      {"sync-confirmation-app", "#confirmButton"});
-  return *kOptInSyncButton;
-}
-
-const DeepQuery& GetDontSyncButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kDontSyncButton(
-      {"sync-confirmation-app", "#notNowButton"});
-  return *kDontSyncButton;
-}
-
-const DeepQuery& GetSettingsButtonQuery() {
-  static const base::NoDestructor<DeepQuery> kSettingsButton(
-      {"sync-confirmation-app", "#settingsButton"});
-  return *kSettingsButton;
-}
-
 const DeepQuery& GetSearchEngineChoiceActionButtonQuery() {
   static const base::NoDestructor<DeepQuery> kSearchEngineChoiceActionButton(
       {"search-engine-choice-app", "#actionButton"});
@@ -349,6 +331,42 @@ class FirstRunInteractiveUiBaseTest
     } else {
       static const base::NoDestructor<DeepQuery> kQuery(
           {"default-browser-app", "#confirmButton"});
+      return *kQuery;
+    }
+  }
+
+  const DeepQuery& GetOptInSyncButtonQuery() const {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app-refresh", "#confirmButton"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app", "#confirmButton"});
+      return *kQuery;
+    }
+  }
+
+  const DeepQuery& GetDontSyncButtonQuery() const {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app-refresh", "#notNowButton"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app", "#notNowButton"});
+      return *kQuery;
+    }
+  }
+
+  const DeepQuery& GetSettingsButtonQuery() const {
+    if (UseRefreshedView()) {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app-refresh", "#settingsButton"});
+      return *kQuery;
+    } else {
+      static const base::NoDestructor<DeepQuery> kQuery(
+          {"sync-confirmation-app", "#settingsButton"});
       return *kQuery;
     }
   }

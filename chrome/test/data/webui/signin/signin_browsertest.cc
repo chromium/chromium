@@ -59,6 +59,24 @@ IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }
 
+class SigninTestWithRefresh : public SigninTest {
+ protected:
+  SigninTestWithRefresh() {
+    feature_list_.InitWithFeatures(
+        {switches::kFirstRunDesktopRefresh,
+         switches::kFirstRunDesktopChoiceScreenRefresh},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SigninTestWithRefresh, SyncConfirmationRefresh) {
+  set_test_loader_host(chrome::kChromeUISyncConfirmationHost);
+  RunTest("signin/sync_confirmation_test.js", "mocha.run()");
+}
+
 class SigninManagedUserProfileNoticeRefreshTest : public SigninTest {
  protected:
   SigninManagedUserProfileNoticeRefreshTest() {

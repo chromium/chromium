@@ -295,7 +295,11 @@ class SigninViewControllerTestUtil {
     NOTREACHED();
 #else
     return TryDismissModalDialog(
-        browser, "sync-confirmation-app",
+        browser,
+        /*app=*/
+        base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+            ? "sync-confirmation-app-refresh"
+            : "sync-confirmation-app",
         GetButtonIdForSyncConfirmationDialogAction(action));
 #endif
   }
