@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
 
+#import "components/autofill/core/browser/autofill_format_string.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/autofill/core/browser/proto/server.pb.h"
 
 namespace {
 
@@ -34,8 +36,8 @@ NSDate* NSDateFromAttributeInstance(
   components.month = date.month;
   components.day = date.day;
 
-  NSCalendar* gregorian = [[NSCalendar alloc]
-      initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+  NSCalendar* gregorian =
+      [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
   return [gregorian dateFromComponents:components];
 }
 
@@ -56,4 +58,9 @@ std::u16string AttributeValueFromNSDate(NSDate* date) {
   autofill_date.day = static_cast<int>(components.day);
 
   return autofill::data_util::FormatDate(autofill_date, kLibraryDateFormat);
+}
+
+autofill::AutofillFormatString GetAttributeFormatString() {
+  return autofill::AutofillFormatString(kLibraryDateFormat,
+                                        autofill::FormatString_Type_DATE);
 }

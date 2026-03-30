@@ -7,11 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@class AutofillAIEntityEditDateItem;
+
 // Mutator for Autofill AI entities.
 @protocol AutofillAIEntityEditMutator
 
 // Saves the entity instance that is being edited.
 - (void)saveEntityInstance;
+
+// Notifies the mutator that the date for `item` has changed to `date`.
+- (void)didChangeDate:(NSDate*)date forItem:(AutofillAIEntityEditDateItem*)item;
 
 @end
 

@@ -15,8 +15,10 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item_factory.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_date_util.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -116,7 +118,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   for (TableViewItem* item in _editItems) {
     if ([item isKindOfClass:[AutofillAIEntityEditItem class]]) {
       AutofillAIEntityEditItem* editItem =
-          base::apple::ObjCCast<AutofillAIEntityEditItem>(item);
+          base::apple::ObjCCastStrict<AutofillAIEntityEditItem>(item);
       autofill::AttributeType attrType(editItem.attributeType);
       autofill::AttributeInstance attrInstance(attrType);
       attrInstance.SetInfo(attrType.field_type(),
@@ -127,12 +129,23 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
       updatedAttributes.insert(std::move(attrInstance));
     } else if ([item isKindOfClass:[AutofillAIEntityCountryItem class]]) {
       AutofillAIEntityCountryItem* countryItem =
-          base::apple::ObjCCast<AutofillAIEntityCountryItem>(item);
+          base::apple::ObjCCastStrict<AutofillAIEntityCountryItem>(item);
       autofill::AttributeType attrType(countryItem.attributeType);
       autofill::AttributeInstance attrInstance(attrType);
       attrInstance.SetInfo(attrType.field_type(),
                            base::SysNSStringToUTF16(countryItem.detailText),
                            _locale, std::nullopt,
+                           autofill::VerificationStatus::kNoStatus);
+      attrInstance.FinalizeInfo();
+      updatedAttributes.insert(std::move(attrInstance));
+    } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
+      AutofillAIEntityEditDateItem* dateItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
+      autofill::AttributeType attrType(dateItem.attributeType);
+      autofill::AttributeInstance attrInstance(attrType);
+      attrInstance.SetInfo(attrType.field_type(),
+                           AttributeValueFromNSDate(dateItem.dateValue),
+                           _locale, GetAttributeFormatString(),
                            autofill::VerificationStatus::kNoStatus);
       attrInstance.FinalizeInfo();
       updatedAttributes.insert(std::move(attrInstance));
@@ -163,6 +176,12 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 
   _entityInstance = builder.Build();
   _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
+}
+
+- (void)didChangeDate:(NSDate*)date
+              forItem:(AutofillAIEntityEditDateItem*)item {
+  item.dateValue = date;
+  item.detailText = [_dateFormatter stringFromDate:date];
 }
 
 #pragma mark - Public

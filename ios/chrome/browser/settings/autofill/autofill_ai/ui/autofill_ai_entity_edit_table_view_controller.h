@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_EDIT_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 #import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
 
 @protocol AutofillAIEntityEditTableViewControllerDelegate;
@@ -21,6 +22,7 @@ enum class AutofillAIEntityEditMode {
 
 @interface AutofillAIEntityEditTableViewController
     : AutofillEditTableViewController <AutofillAIEntityEditConsumer,
+                                       AutofillAIEntityEditDateItemDelegate,
                                        UITextFieldDelegate>
 
 @property(nonatomic, weak) id<AutofillAIEntityEditTableViewControllerDelegate>

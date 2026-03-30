@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
@@ -83,6 +84,11 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
         countryItem.accessoryType = UITableViewCellAccessoryNone;
         countryItem.selectionStyle = UITableViewCellSelectionStyleNone;
       }
+    } else if ([item isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
+      AutofillAIEntityEditDateItem* dateItem =
+          (AutofillAIEntityEditDateItem*)item;
+      dateItem.editingEnabled = self.tableView.editing;
+      dateItem.delegate = self;
     }
   }
 }
@@ -161,6 +167,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)reloadData {
   [self.tableView reloadData];
+}
+
+#pragma mark - AutofillAIEntityEditDateItemDelegate
+
+- (void)didChangeDate:(NSDate*)date
+              forItem:(AutofillAIEntityEditDateItem*)item {
+  [self.mutator didChangeDate:date forItem:item];
 }
 
 #pragma mark - Actions

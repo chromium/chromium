@@ -9,6 +9,8 @@
 
 #import <string>
 
+#include "components/autofill/core/browser/autofill_format_string.h"
+
 namespace autofill {
 class AttributeInstance;
 }
@@ -21,5 +23,8 @@ NSDate* NSDateFromAttributeInstance(
 // Returns a string representation of `date` in the format expected by
 // `autofill::AttributeInstance::SetInfo()`.
 std::u16string AttributeValueFromNSDate(NSDate* date);
+
+// Returns the format string used for setting the value for a `kDate` type.
+autofill::AutofillFormatString GetAttributeFormatString();
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UTILS_AUTOFILL_AI_DATE_UTIL_H_
