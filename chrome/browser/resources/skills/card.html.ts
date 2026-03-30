@@ -12,14 +12,17 @@ export function getHtml(this: SkillCardElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="card">
+  ${this.skill.imageUrl ? html`
+    <div id="illustrationContainer">
+      <img is="cr-auto-img" id="illustrationImage"
+          auto-src="${this.skill.imageUrl}">
+      </img>
+    </div>` : html``
+  }
   <div id="cardHeader">
     <div id="infoContainer">
       <div id="icon">${this.skill.icon}</div>
       <div id="name">${this.skill.name}</div>
-      <cr-tooltip for="infoContainer" position="bottom" offset="0"
-          fit-to-visible-bounds>
-        ${this.skill.name}
-      </cr-tooltip>
     </div>
     <!-- Only show the menu button for user-created skills. -->
     ${this.isDiscoverCard_() ? html`` : html`
@@ -45,6 +48,10 @@ export function getHtml(this: SkillCardElement) {
       </cr-action-menu>
     `}
   </div>
+  <cr-tooltip for="cardHeader" position="bottom" offset="0"
+      fit-to-visible-bounds>
+    ${this.skill.name}
+  </cr-tooltip>
   <div id="${this.cardType}Body" class="card-body">${this.getCardBodyText_()}
   </div>
   <div id="cardFooter">

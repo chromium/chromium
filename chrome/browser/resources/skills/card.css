@@ -23,7 +23,7 @@
 .card {
   align-items: flex-start;
   background-color: var(--color-sys-surface2);
-  border-radius: 12px;
+  border-radius: 16px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -31,6 +31,25 @@
   height: 100%;
   margin: 0 auto;
   padding: var(--skills-card-gap);
+  width: 100%;
+}
+
+
+#illustrationContainer {
+  align-items: center;
+  background-color: var(--color-sys-secondary-container);
+  display: flex;
+  height: 98px;
+  border-radius: 8px;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#illustrationImage {
+  height: 100%;
+  object-fit: cover;
   width: 100%;
 }
 

@@ -29,3 +29,7 @@
 #browseSkillsTitle {
   padding-top: 16px;
 }
+
+skill-card.skill-with-image {
+  --skills-card-height: 287px;
+}
