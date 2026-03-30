@@ -10,7 +10,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
   return html`<!--_html_template_start_-->
   <cr-icon-button iron-icon="${this.getIcon_()}"
       ?disabled="${!this.state.enabled}"
-      is-menu-open="${this.state.highlighted}"
+      ?is-menu-open="${this.state.highlighted}"
       @click="${this.onActionClick_}">
   </cr-icon-button>
 <!--_html_template_end_-->`;
