@@ -705,6 +705,12 @@ BASE_FEATURE(kServiceWorkerWindowClientInitiator,
 BASE_FEATURE(kServiceWorkerSoftUpdateOnFunctionalEvent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the browser process will derive the secure context state of a
+// SharedWorker connection from its own authoritative ground truth
+// (PolicyContainerHost) instead of trusting the renderer-supplied parameter.
+BASE_FEATURE(kSharedWorkerSecureContextDerivationFromBrowser,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables skipping the early call to CommitPending when navigating away from a
 // crashed frame.
 BASE_FEATURE(kSkipEarlyCommitPendingForCrashedFrame,

@@ -27,6 +27,7 @@
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -35,7 +36,6 @@
 #include "content/public/browser/shared_worker_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
@@ -186,6 +186,35 @@ void SharedWorkerServiceImpl::ConnectToWorker(
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
     return;
+  }
+
+  blink::mojom::SharedWorkerCreationContextType browser_derived_context_type =
+      render_frame_host->policy_container_host()
+              ->policies()
+              .is_web_secure_context
+          ? blink::mojom::SharedWorkerCreationContextType::kSecure
+          : blink::mojom::SharedWorkerCreationContextType::kNonsecure;
+
+  // Log discrepancies between the renderer-supplied creation context type and
+  // the browser-derived one.
+  SharedWorkerCreationContextTypeMismatch mismatch_value =
+      [creation_context_type, browser_derived_context_type]() {
+        using TypeMismatch = SharedWorkerCreationContextTypeMismatch;
+        using ContextType = blink::mojom::SharedWorkerCreationContextType;
+        if (creation_context_type == browser_derived_context_type) {
+          return TypeMismatch::kMatch;
+        }
+        return (creation_context_type == ContextType::kSecure)
+                   ? TypeMismatch::kMismatchRendererSecureBrowserNonsecure
+                   : TypeMismatch::kMismatchRendererNonsecureBrowserSecure;
+      }();
+
+  base::UmaHistogramEnumeration(
+      "Content.SharedWorker.CreationContextTypeMismatch", mismatch_value);
+
+  if (base::FeatureList::IsEnabled(
+          features::kSharedWorkerSecureContextDerivationFromBrowser)) {
+    creation_context_type = browser_derived_context_type;
   }
 
   SharedWorkerHost* host = FindMatchingSharedWorkerHost(

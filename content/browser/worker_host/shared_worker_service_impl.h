@@ -46,6 +46,17 @@ class StoragePartitionImpl;
 // Created per StoragePartition.
 class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SharedWorkerCreationContextTypeMismatch)
+  enum class SharedWorkerCreationContextTypeMismatch {
+    kMatch = 0,
+    kMismatchRendererSecureBrowserNonsecure = 1,
+    kMismatchRendererNonsecureBrowserSecure = 2,
+    kMaxValue = kMismatchRendererNonsecureBrowserSecure,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/content/enums.xml:SharedWorkerCreationContextTypeMismatch)
+
   SharedWorkerServiceImpl(
       StoragePartitionImpl* storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);

@@ -80,6 +80,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Content.SharedWorker.CreationContextTypeMismatch"
+    enum="SharedWorkerCreationContextTypeMismatch" expires_after="2026-08-09">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>content-owners@chromium.org</owner>
+  <summary>
+    Records whether the renderer-supplied creation context type matches the
+    browser-derived secure context state for a SharedWorker connection. Recorded
+    on each SharedWorker connection request.
+  </summary>
+</histogram>
+
 <histogram name="Content.SharedWorker.Host.DestructionSource"
     enum="SharedWorkerHostDestructionSource" expires_after="2026-08-09">
   <owner>yyanagisawa@chromium.org</owner>

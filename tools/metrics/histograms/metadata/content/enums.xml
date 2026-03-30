@@ -486,6 +486,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Popup clicked through (abusive)"/>
 </enum>
 
+<!-- LINT.IfChange(SharedWorkerCreationContextTypeMismatch) -->
+
+<enum name="SharedWorkerCreationContextTypeMismatch">
+  <int value="0" label="Match"/>
+  <int value="1" label="Mismatch: Renderer Secure, Browser Non-secure"/>
+  <int value="2" label="Mismatch: Renderer Non-secure, Browser Secure"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/worker_host/shared_worker_service_impl.h:SharedWorkerCreationContextTypeMismatch) -->
+
 <!-- LINT.IfChange(SharedWorkerHostDestructionSource) -->
 
 <enum name="SharedWorkerHostDestructionSource">

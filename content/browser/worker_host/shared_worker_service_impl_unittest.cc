@@ -15,13 +15,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/worker_host/mock_shared_worker.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -50,10 +54,11 @@ namespace {
 
 using ::testing::ElementsAre;
 
-void ConnectToSharedWorker(
+void ConnectToSharedWorkerWithContextType(
     mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
     const GURL& url,
     const std::string& name,
+    blink::mojom::SharedWorkerCreationContextType creation_context_type,
     MockSharedWorkerClient* client,
     MessagePortChannel* local_port) {
   auto options = blink::mojom::WorkerOptions::New();
@@ -79,8 +84,20 @@ void ConnectToSharedWorker(
   client->Bind(client_proxy.InitWithNewPipeAndPassReceiver());
 
   connector->Connect(std::move(info), std::move(client_proxy),
-                     blink::mojom::SharedWorkerCreationContextType::kSecure,
-                     pipe.TakePort1(), mojo::NullRemote());
+                     creation_context_type, pipe.TakePort1(),
+                     mojo::NullRemote());
+}
+
+void ConnectToSharedWorker(
+    mojo::Remote<blink::mojom::SharedWorkerConnector> connector,
+    const GURL& url,
+    const std::string& name,
+    MockSharedWorkerClient* client,
+    MessagePortChannel* local_port) {
+  ConnectToSharedWorkerWithContextType(
+      std::move(connector), url, name,
+      blink::mojom::SharedWorkerCreationContextType::kSecure, client,
+      local_port);
 }
 
 }  // namespace
@@ -222,6 +239,34 @@ class SharedWorkerServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<FakeNetworkURLLoaderFactory> fake_url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       url_loader_factory_wrapper_;
+};
+
+enum class ContextTypeTestCase {
+  kMatch,
+  kMismatchRendererSecure,
+  kMismatchRendererNonsecure,
+};
+
+class SharedWorkerServiceImplCreationContextTest
+    : public SharedWorkerServiceImplTest,
+      public testing::WithParamInterface<
+          std::tuple<bool, ContextTypeTestCase>> {
+ public:
+  SharedWorkerServiceImplCreationContextTest() {
+    if (is_flag_enabled()) {
+      feature_list_.InitAndEnableFeature(
+          features::kSharedWorkerSecureContextDerivationFromBrowser);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kSharedWorkerSecureContextDerivationFromBrowser);
+    }
+  }
+
+  bool is_flag_enabled() const { return std::get<0>(GetParam()); }
+  ContextTypeTestCase test_case() const { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SharedWorkerServiceImplTest, BasicTest) {
@@ -1660,5 +1705,132 @@ TEST_F(SharedWorkerServiceImplTest, FreezeAndResumeOnAddClient) {
   }));
   EXPECT_TRUE(client2.CheckReceivedOnCreated());
 }
+
+TEST_P(SharedWorkerServiceImplCreationContextTest,
+       CreationContextTypeMismatchUMA) {
+  base::HistogramTester histogram_tester;
+  const std::string kName =
+      "uma_name_" + base::NumberToString(static_cast<int>(test_case()));
+  const GURL kUrl("https://example.com/w.js");
+
+  std::unique_ptr<TestWebContents> web_contents =
+      CreateWebContents(GURL("https://example.com/"));
+  TestRenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
+
+  blink::mojom::SharedWorkerCreationContextType renderer_type;
+  SharedWorkerServiceImpl::SharedWorkerCreationContextTypeMismatch
+      expected_uma_bucket;
+
+  switch (test_case()) {
+    case ContextTypeTestCase::kMatch:
+      renderer_type = blink::mojom::SharedWorkerCreationContextType::kSecure;
+      expected_uma_bucket = SharedWorkerServiceImpl::
+          SharedWorkerCreationContextTypeMismatch::kMatch;
+      break;
+    case ContextTypeTestCase::kMismatchRendererSecure: {
+      auto policies = rfh->policy_container_host()->policies().Clone();
+      policies.is_web_secure_context = false;
+      rfh->SetPolicyContainerHost(
+          base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+    }
+      renderer_type = blink::mojom::SharedWorkerCreationContextType::kSecure;
+      expected_uma_bucket =
+          SharedWorkerServiceImpl::SharedWorkerCreationContextTypeMismatch::
+              kMismatchRendererSecureBrowserNonsecure;
+      break;
+    case ContextTypeTestCase::kMismatchRendererNonsecure:
+      renderer_type = blink::mojom::SharedWorkerCreationContextType::kNonsecure;
+      expected_uma_bucket =
+          SharedWorkerServiceImpl::SharedWorkerCreationContextTypeMismatch::
+              kMismatchRendererNonsecureBrowserSecure;
+      break;
+  }
+
+  MockSharedWorkerClient client;
+  MessagePortChannel local_port;
+  ConnectToSharedWorkerWithContextType(
+      MakeSharedWorkerConnector(rfh->GetGlobalId()), kUrl, kName, renderer_type,
+      &client, &local_port);
+
+  EXPECT_TRUE(base::test::RunUntil([&histogram_tester, expected_uma_bucket]() {
+    return histogram_tester.GetBucketCount(
+               "Content.SharedWorker.CreationContextTypeMismatch",
+               static_cast<int>(expected_uma_bucket)) == 1;
+  }));
+}
+
+TEST_P(SharedWorkerServiceImplCreationContextTest, SpoofingProtection) {
+  if (test_case() != ContextTypeTestCase::kMismatchRendererSecure) {
+    GTEST_SKIP()
+        << "Only test spoofing protection for renderer secure mismatch";
+  }
+
+  const std::string kName = "spoof_name";
+  const GURL kUrl("https://example.com/w.js");
+
+  // 1. Create a legitimate Secure worker.
+  std::unique_ptr<TestWebContents> web_contents_b =
+      CreateWebContents(GURL("https://example.com/"));
+  TestRenderFrameHost* rfh_b = web_contents_b->GetPrimaryMainFrame();
+  EXPECT_TRUE(rfh_b->policy_container_host()->policies().is_web_secure_context);
+
+  MockSharedWorkerClient client_b;
+  MessagePortChannel local_port_b;
+  ConnectToSharedWorkerWithContextType(
+      MakeSharedWorkerConnector(rfh_b->GetGlobalId()), kUrl, kName,
+      blink::mojom::SharedWorkerCreationContextType::kSecure, &client_b,
+      &local_port_b);
+
+  auto [factory_receiver, process_id] = WaitForFactoryReceiver();
+  MockSharedWorkerFactory factory(std::move(factory_receiver));
+  {
+    base::RunLoop run_loop;
+    factory.SetCreateWorkerCallback(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  mojo::Remote<blink::mojom::SharedWorkerHost> worker_host;
+  mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
+  EXPECT_TRUE(factory.CheckReceivedCreateSharedWorker(
+      kUrl, kName, std::vector<network::mojom::ContentSecurityPolicyPtr>(),
+      &worker_host, &worker_receiver));
+  MockSharedWorker worker(std::move(worker_receiver));
+
+  // 2. Attempt to connect from a Non-secure context spoofing as Secure.
+  std::unique_ptr<TestWebContents> web_contents_a =
+      CreateWebContents(GURL("https://example.com/"));
+  TestRenderFrameHost* rfh_a = web_contents_a->GetPrimaryMainFrame();
+  {
+    auto policies = rfh_a->policy_container_host()->policies().Clone();
+    policies.is_web_secure_context = false;
+    rfh_a->SetPolicyContainerHost(
+        base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
+  }
+
+  MockSharedWorkerClient client_a;
+  MessagePortChannel local_port_a;
+  ConnectToSharedWorkerWithContextType(
+      MakeSharedWorkerConnector(rfh_a->GetGlobalId()), kUrl, kName,
+      blink::mojom::SharedWorkerCreationContextType::kSecure, &client_a,
+      &local_port_a);
+
+  if (is_flag_enabled()) {
+    // Rejection expected.
+    EXPECT_TRUE(base::test::RunUntil(
+        [&client_a]() { return client_a.CheckReceivedOnScriptLoadFailed(); }));
+  } else {
+    // Connection success expected (vulnerable state).
+    EXPECT_TRUE(base::test::RunUntil(
+        [&worker]() { return worker.CheckReceivedConnect(nullptr, nullptr); }));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SharedWorkerServiceImplCreationContextTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Values(ContextTypeTestCase::kMatch,
+                        ContextTypeTestCase::kMismatchRendererSecure,
+                        ContextTypeTestCase::kMismatchRendererNonsecure)));
 
 }  // namespace content
