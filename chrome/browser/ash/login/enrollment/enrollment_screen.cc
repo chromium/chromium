@@ -605,7 +605,7 @@ void EnrollmentScreen::OnCancel() {
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
-  StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted(local_state_.get());
 
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.

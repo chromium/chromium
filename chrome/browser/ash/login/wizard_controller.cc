@@ -909,7 +909,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ConsolidatedConsentScreen>(
-      &application_locale_storage_.get(), metrics_service,
+      &local_state_.get(), &application_locale_storage_.get(), metrics_service,
       oobe_ui->GetView<ConsolidatedConsentScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnConsolidatedConsentScreenExit,
                           weak_factory_.GetWeakPtr())));

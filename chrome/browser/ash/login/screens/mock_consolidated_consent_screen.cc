@@ -10,11 +10,13 @@
 namespace ash {
 
 MockConsolidatedConsentScreen::MockConsolidatedConsentScreen(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     ::metrics::MetricsService* metrics_service,
     base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
-    : ConsolidatedConsentScreen(application_locale_storage,
+    : ConsolidatedConsentScreen(local_state,
+                                application_locale_storage,
                                 metrics_service,
                                 std::move(view),
                                 exit_callback) {

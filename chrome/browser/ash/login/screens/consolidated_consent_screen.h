@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 
 class ApplicationLocaleStorage;
+class PrefService;
 
 namespace arc {
 class ArcOptInPreferenceHandler;
@@ -69,10 +70,12 @@ class ConsolidatedConsentScreen
   using TView = ConsolidatedConsentScreenView;
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  // `application_locale_storage` must be non-null and must outlive `this`.
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
   // `metrics_service` may be null in tests, but must outlive `this` if it's
   // non-null.
   ConsolidatedConsentScreen(
+      PrefService* local_state,
       const ApplicationLocaleStorage* application_locale_storage,
       ::metrics::MetricsService* metrics_service,
       base::WeakPtr<ConsolidatedConsentScreenView> view,
@@ -143,6 +146,7 @@ class ConsolidatedConsentScreen
   // Updates the state of the metrics toggle.
   void UpdateMetricsMode(bool enabled, bool managed);
 
+  const raw_ref<PrefService> local_state_;
   const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
   const raw_ptr<::metrics::MetricsService> metrics_service_;
 

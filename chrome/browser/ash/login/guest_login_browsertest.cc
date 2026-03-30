@@ -5,6 +5,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -165,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, UserCreationGuestButtonVisibility) {
 // The test verifies that clicking the Guest button multiple times doesn't
 // trigger extra userdataauth requests. A regression test for b/213835042.
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_MultipleClicks) {
-  StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted(CHECK_DEREF(g_browser_process->local_state()));
   base::RunLoop restart_job_waiter;
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
@@ -255,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest,
 // Every Guest session displays the ToS.
 IN_PROC_BROWSER_TEST_F(GuestLoginTest, PRE_ShowGuestToS) {
   // Assume device owner accepts Eula ToS.
-  StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted(CHECK_DEREF(g_browser_process->local_state()));
 
   base::RunLoop restart_job_waiter;
   FakeSessionManagerClient::Get()->set_restart_job_callback(

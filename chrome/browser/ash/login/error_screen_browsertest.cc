@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -296,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, GuestLogin) {
 // Test that guest signin option is shown when enabled and that clicking on it
 // directly starts a guest session if EULA was already accepted.
 IN_PROC_BROWSER_TEST_P(GuestErrorScreenTest, PRE_GuestLoginWithEulaAccepted) {
-  StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted(CHECK_DEREF(g_browser_process->local_state()));
   ShowErrorScreenWithGuestSignin();
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);

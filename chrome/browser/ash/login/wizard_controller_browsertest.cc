@@ -655,6 +655,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockConsolidatedConsentScreenView>();
     mock_consolidated_consent_screen_ = MockScreenExpectLifecycle(
         std::make_unique<MockConsolidatedConsentScreen>(
+            g_browser_process->local_state(),
             g_browser_process->GetFeatures()->application_locale_storage(),
             g_browser_process->metrics_service(),
             mock_consolidated_consent_screen_view_.get()->AsWeakPtr(),

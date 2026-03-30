@@ -2107,6 +2107,7 @@ class ArcSessionOobeOptInNegotiatorTest
     std::unique_ptr<ash::ConsolidatedConsentScreen>
         fake_consolidated_consent_screen =
             std::make_unique<ash::ConsolidatedConsentScreen>(
+                TestingBrowserProcess::GetGlobal()->local_state(),
                 TestingBrowserProcess::GetGlobal()
                     ->GetFeatures()
                     ->application_locale_storage(),

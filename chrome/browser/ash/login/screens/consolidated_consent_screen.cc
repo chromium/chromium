@@ -159,12 +159,14 @@ std::string ConsolidatedConsentScreen::GetResultString(Result result) {
 }
 
 ConsolidatedConsentScreen::ConsolidatedConsentScreen(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     ::metrics::MetricsService* metrics_service,
     base::WeakPtr<ConsolidatedConsentScreenView> view,
     const ScreenExitCallback& exit_callback)
     : BaseScreen(ConsolidatedConsentScreenView::kScreenId,
                  OobeScreenPriority::DEFAULT),
+      local_state_(CHECK_DEREF(local_state)),
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       metrics_service_(metrics_service),
       view_(std::move(view)),
@@ -182,7 +184,7 @@ ConsolidatedConsentScreen::~ConsolidatedConsentScreen() {
 
 bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
   if (context.skip_post_login_screens_for_tests) {
-    StartupUtils::MarkEulaAccepted();
+    StartupUtils::MarkEulaAccepted(local_state_.get());
 
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -564,7 +566,7 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
     // case.
     RecordRecoveryOptinResult(context()->recovery_setup);
   }
-  StartupUtils::MarkEulaAccepted();
+  StartupUtils::MarkEulaAccepted(local_state_.get());
 
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();

@@ -200,9 +200,8 @@ bool StartupUtils::IsOobeCompleted(const PrefService& local_state) {
 }
 
 // static
-void StartupUtils::MarkEulaAccepted() {
-  SaveBoolPreferenceForced(*g_browser_process->local_state(),
-                           ::prefs::kEulaAccepted, true);
+void StartupUtils::MarkEulaAccepted(PrefService& local_state) {
+  SaveBoolPreferenceForced(local_state, ::prefs::kEulaAccepted, true);
 }
 
 // static

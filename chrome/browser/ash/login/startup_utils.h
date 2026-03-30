@@ -32,7 +32,7 @@ class StartupUtils {
   static bool IsOobeCompleted(const PrefService& local_state);
 
   // Marks EULA status as accepted.
-  static void MarkEulaAccepted();
+  static void MarkEulaAccepted(PrefService& local_state);
 
   // Marks OOBE process as completed.
   // If `local_state` is nullptr, it's taken from g_browser_process.
