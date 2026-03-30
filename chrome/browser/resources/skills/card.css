@@ -137,7 +137,8 @@ cr-tooltip {
 
 /* HCM */
 @media (forced-colors: active) {
-  .dropdown-item:hover {
+  .dropdown-item:hover,
+  .dropdown-item:focus {
     outline: 1px solid Highlight;
   }
 
