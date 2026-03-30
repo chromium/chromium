@@ -2123,7 +2123,8 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 }
 
 std::vector<WebContents*> GetAllWebContents() {
-  std::vector<WebContentsImpl*> all_wci = WebContentsImpl::GetAllWebContents();
+  std::vector<raw_ptr<WebContentsImpl>> all_wci =
+      WebContentsImpl::GetAllWebContents();
   std::vector<WebContents*> all_wc;
   std::ranges::transform(all_wci, std::back_inserter(all_wc),
                          [](WebContentsImpl* wc) { return wc; });
@@ -2805,7 +2806,7 @@ class DOMMessageQueue::MessageObserver : public WebContentsObserver {
 DOMMessageQueue::DOMMessageQueue() {
   // TODO(crbug.com/40746969): Remove the need to listen for this
   // notification.
-  for (auto* contents : WebContentsImpl::GetAllWebContents()) {
+  for (auto contents : WebContentsImpl::GetAllWebContents()) {
     observers_.emplace(std::make_unique<MessageObserver>(this, contents));
   }
   web_contents_creation_subscription_ =

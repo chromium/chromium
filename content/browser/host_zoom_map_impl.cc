@@ -387,7 +387,7 @@ void HostZoomMapImpl::SetDefaultZoomLevel(double level) {
 
   // Second, update zoom levels for all pages that do not have an overriding
   // entry.
-  for (auto* web_contents : WebContentsImpl::GetAllWebContents()) {
+  for (auto web_contents : WebContentsImpl::GetAllWebContents()) {
     // Only change zoom for WebContents tied to the StoragePartition this
     // HostZoomMap serves.
     if (GetForWebContents(web_contents) != this)
@@ -540,7 +540,7 @@ void HostZoomMapImpl::SendZoomLevelChange(const std::string& scheme,
   // other case of interest is where the renderer is hosting a plugin document;
   // that should be reflected in our temporary zoom level map, but we will
   // double check on the renderer side to avoid the possibility of any races.
-  for (auto* web_contents : WebContentsImpl::GetAllWebContents()) {
+  for (auto web_contents : WebContentsImpl::GetAllWebContents()) {
     // Only send zoom level changes to WebContents that are using this
     // HostZoomMap.
     if (GetForWebContents(web_contents) != this)

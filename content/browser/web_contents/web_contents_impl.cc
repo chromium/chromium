@@ -1595,10 +1595,10 @@ std::unique_ptr<WebContentsImpl> WebContentsImpl::CreateWithOpener(
 }
 
 // static
-std::vector<WebContentsImpl*> WebContentsImpl::GetAllWebContents() {
+std::vector<raw_ptr<WebContentsImpl>> WebContentsImpl::GetAllWebContents() {
   OPTIONAL_TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
                         "WebContentsImpl::GetAllWebContents");
-  std::vector<WebContentsImpl*> result;
+  std::vector<raw_ptr<WebContentsImpl>> result;
   std::unique_ptr<RenderWidgetHostIterator> widgets(
       RenderWidgetHostImpl::GetRenderWidgetHosts());
   while (RenderWidgetHost* rwh = widgets->GetNextHost()) {

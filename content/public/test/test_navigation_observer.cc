@@ -139,8 +139,9 @@ void TestNavigationObserver::StopWatchingNewWebContents() {
 }
 
 void TestNavigationObserver::WatchExistingWebContents() {
-  for (auto* web_contents : WebContentsImpl::GetAllWebContents())
+  for (auto web_contents : WebContentsImpl::GetAllWebContents()) {
     RegisterAsObserver(web_contents);
+  }
 }
 
 void TestNavigationObserver::WatchWebContents(

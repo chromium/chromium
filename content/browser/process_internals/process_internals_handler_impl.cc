@@ -310,7 +310,7 @@ void ProcessInternalsHandlerImpl::GetGloballyIsolatedOrigins(
 void ProcessInternalsHandlerImpl::GetAllWebContentsInfo(
     GetAllWebContentsInfoCallback callback) {
   std::vector<::mojom::WebContentsInfoPtr> infos;
-  std::vector<WebContentsImpl*> all_contents =
+  std::vector<raw_ptr<WebContentsImpl>> all_contents =
       WebContentsImpl::GetAllWebContents();
 
   for (WebContentsImpl* web_contents : all_contents) {

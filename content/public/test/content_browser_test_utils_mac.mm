@@ -73,7 +73,7 @@ RenderWidgetHostViewCocoa* GetRenderWidgetHostViewCocoa(WebContents* contents) {
 }
 
 content::RenderWidgetHostViewMac* GetRenderWidgetHostViewMac(NSObject* object) {
-  for (auto* contents : WebContentsImpl::GetAllWebContents()) {
+  for (auto contents : WebContentsImpl::GetAllWebContents()) {
     content::RenderWidgetHostViewMac* rwhv_mac =
         GetRenderWidgetHostViewMac(contents);
     if (rwhv_mac && rwhv_mac->GetInProcessNSView() == object) {

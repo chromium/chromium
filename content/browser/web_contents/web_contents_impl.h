@@ -226,7 +226,7 @@ class CONTENT_EXPORT WebContentsImpl
       const WebContents::CreateParams& params,
       RenderFrameHostImpl* opener_rfh);
 
-  static std::vector<WebContentsImpl*> GetAllWebContents();
+  static std::vector<raw_ptr<WebContentsImpl>> GetAllWebContents();
 
   static WebContentsImpl* FromFrameTreeNode(
       const FrameTreeNode* frame_tree_node);
