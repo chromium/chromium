@@ -1029,8 +1029,8 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
       return natural_size->block_size;
     }
     if (mode == ReplacedSizeMode::kNormal) {
-      return ComputeReplacedSize(node, space, border_padding,
-                                 ReplacedSizeMode::kIgnoreBlockLengths)
+      return ComputeReplacedSizeInternal(node, space, border_padding,
+                                         ReplacedSizeMode::kIgnoreBlockLengths)
           .block_size;
     }
     if (natural_size) {
@@ -1107,8 +1107,9 @@ LogicalSize ComputeReplacedSizeInternal(const BlockNode& node,
     } else if (natural_size) {
       DCHECK_NE(mode, ReplacedSizeMode::kIgnoreInlineLengths);
       size = mode == ReplacedSizeMode::kNormal
-                 ? ComputeReplacedSize(node, space, border_padding,
-                                       ReplacedSizeMode::kIgnoreInlineLengths)
+                 ? ComputeReplacedSizeInternal(
+                       node, space, border_padding,
+                       ReplacedSizeMode::kIgnoreInlineLengths)
                        .inline_size
                  : natural_size->inline_size;
     } else {
