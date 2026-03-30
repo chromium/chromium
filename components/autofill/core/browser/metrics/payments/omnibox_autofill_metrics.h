@@ -15,9 +15,15 @@ namespace autofill::autofill_metrics {
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+//
+// LINT.IfChange(OmniboxAutofillShowChipDecisionPart1)
 enum class OmniboxAutofillShowChipDecisionPart1 {
+  // The Autofill payment methods policy pref (kAutofillCreditCardEnabled) was
+  // disabled, regardless of if it was by the user, enterprise admin, or
+  // extension.
+  kAutofillPaymentMethodsPolicyDisabled = 0,
+
   // Expected remaining buckets:
-  //  kEnterpriseAdminDisabled = 0,
   //  kNoCreditCardsOnFile = 1,
   //  kNotCompleteCreditCardForm = 2,
   //  kCouldNotDeduceCardNumberField = 3,
@@ -27,6 +33,7 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
 
   kMaxValue = kSuccess,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:OmniboxAutofillShowChipDecisionPart1)
 
 void LogOmniboxAutofillShowChipDecisionPart1(
     OmniboxAutofillShowChipDecisionPart1 metric);

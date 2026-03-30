@@ -5,10 +5,12 @@
 #include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -38,6 +40,17 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
     // Don't log an `OmniboxAutofillShowChipDecisionPart1` entry here, because
     // learning how many non-outermost-active-main-frame BAMs exist on the page
     // is not useful information.
+    return;
+  }
+
+  // Respect the kAutofillCreditCardEnabled pref, which can be toggled by
+  // users, enterprise admins, or extensions.
+  if (!client_->GetPaymentsAutofillClient()
+           ->GetPaymentsDataManager()
+           .IsAutofillPaymentMethodsEnabled()) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::
+            kAutofillPaymentMethodsPolicyDisabled);
     return;
   }
 

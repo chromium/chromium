@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,10 @@ class OmniboxAutofillDelegateTest
   void SetUp() override {
     InitAutofillClient();
     CreateAutofillDriver();
+
+    autofill_driver().SetParent(nullptr);
+    autofill_driver().SetIsEmbedded(false);
+    autofill_driver().SetIsActive(true);
   }
 
   void TearDown() override { DestroyAutofillClient(); }
@@ -78,10 +83,6 @@ class OmniboxAutofillDelegateTest
 
 TEST_F(OmniboxAutofillDelegateTest, OnFieldTypesDetermined_SuccessPath) {
   base::HistogramTester histogram_tester;
-
-  autofill_driver().SetParent(nullptr);
-  autofill_driver().SetIsEmbedded(false);
-  autofill_driver().SetIsActive(true);
 
   FormData form = CreateTestCreditCardFormData();
   FormsSeen({form});
@@ -140,6 +141,24 @@ TEST_F(OmniboxAutofillDelegateTest,
   // Logic flow aborting at the stage of finding the right BAM is not logged.
   histogram_tester.ExpectTotalCount(
       "Autofill.OmniboxAutofill.ShowChipDecisionPart1", 0);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_AutofillPolicyDisabled_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Do not run Omnibox functionality if payment method Autofill is disabled.
+  autofill_client().GetPrefs()->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                                           false);
+
+  FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::
+          kAutofillPaymentMethodsPolicyDisabled,
+      1);
 }
 
 }  // namespace autofill
