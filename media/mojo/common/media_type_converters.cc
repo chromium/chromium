@@ -43,6 +43,17 @@ std::unique_ptr<media::DecryptConfig>
 TypeConverter<std::unique_ptr<media::DecryptConfig>,
               media::mojom::DecryptConfigPtr>::
     Convert(const media::mojom::DecryptConfigPtr& input) {
+  // Required invariants by the DecryptConfig constructor, to prevent a renderer
+  // from crashing the GPU we check them here as well and gracefully return
+  // nullptr instead.
+  if (input->encryption_scheme == media::EncryptionScheme::kUnencrypted) {
+    return nullptr;
+  }
+  // Pattern not allowed for non-'cbcs' schemes.
+  if (input->encryption_scheme != media::EncryptionScheme::kCbcs &&
+      input->encryption_pattern) {
+    return nullptr;
+  }
   return std::make_unique<media::DecryptConfig>(
       input->encryption_scheme, input->key_id, input->iv, input->subsamples,
       input->encryption_pattern);
@@ -203,8 +214,10 @@ TypeConverter<media::mojom::AudioBufferPtr, media::AudioBuffer>::Convert(
     // `media::AudioBuffer`.
     // `data_size()` refers to the amount of memory really used by the audio
     // data. The rest is padding, which we don't need to copy.
-    DCHECK_GT(input.data_size(), 0u);
-    DCHECK_GE(input.data_size(), input.data_->span().size());
+    // Safe to CHECK here since this is into Mojo not From mojo (and thus not
+    // untrusted input).
+    CHECK_GT(input.data_size(), 0u);
+    CHECK_GE(input.data_size(), input.data_->span().size());
     auto buffer_start = input.data_->span().begin();
     auto buffer_end = buffer_start + input.data_size();
     buffer->data.assign(buffer_start, buffer_end);
@@ -252,7 +265,8 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
       base::CheckMul(input->frame_count,
                      base::CheckMul(input->channel_count, bytes_per_channel))
           .ValueOrDefault(0u);
-  if (input->data.size() < min_data_size) {
+  if (input->data.size() < min_data_size ||
+      input->data.size() % input->channel_count != 0) {
     DLOG(ERROR) << "Received invalid AudioBuffer, replace it with EOS.";
     return media::AudioBuffer::CreateEOSBuffer();
   }
@@ -261,7 +275,6 @@ TypeConverter<scoped_refptr<media::AudioBuffer>, media::mojom::AudioBufferPtr>::
   // one in the case of interleaved data.
   std::vector<const uint8_t*> channel_ptrs(input->channel_count, nullptr);
   const size_t size_per_channel = input->data.size() / input->channel_count;
-  DCHECK_EQ(0u, input->data.size() % input->channel_count);
   for (int i = 0; i < input->channel_count; ++i) {
     channel_ptrs[i] = UNSAFE_TODO(input->data.data() + i * size_per_channel);
   }

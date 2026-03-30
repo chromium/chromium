@@ -47,12 +47,12 @@ DecryptConfig::DecryptConfig(
       subsamples_(subsamples),
       encryption_pattern_(std::move(encryption_pattern)) {
   // Unencrypted blocks should not have a DecryptConfig.
-  DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
+  CHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
   CHECK_GT(key_id_.size(), 0u);
   CHECK_EQ(iv_.size(), static_cast<size_t>(DecryptConfig::kDecryptionKeySize));
 
   // Pattern not allowed for non-'cbcs' schemes.
-  DCHECK(encryption_scheme_ == EncryptionScheme::kCbcs || !encryption_pattern_);
+  CHECK(encryption_scheme_ == EncryptionScheme::kCbcs || !encryption_pattern_);
 }
 
 DecryptConfig::~DecryptConfig() = default;
