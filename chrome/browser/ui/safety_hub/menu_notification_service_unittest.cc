@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -202,6 +203,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsIncremental) {
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
+  // Disruptive notification revocation disables the notification review module.
+  // TODO(crbug.com/496616827): Clean up this test when removing the
+  // notification review module logic.
+  base::test::ScopedFeatureList disable_notification_autorevocation;
+  disable_notification_autorevocation.InitAndDisableFeature(
+      features::kSafetyHubDisruptiveNotificationRevocation);
+
   // Creating a mock result, which should result in a notification to be
   // available.
   CreateMockUnusedSitePermissionsEntry("https://example1.com:443");
@@ -227,6 +235,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
+  // Disruptive notification revocation disables the notification review module.
+  // TODO(https://crbug.com/496616827): Clean up this test when removing the
+  // notification review module logic.
+  base::test::ScopedFeatureList disable_notification_autorevocation;
+  disable_notification_autorevocation.InitAndDisableFeature(
+      features::kSafetyHubDisruptiveNotificationRevocation);
+
   // Creating a mock result, which should result in a notification to be
   // available.
   CreateMockUnusedSitePermissionsEntry("https://example1.com:443");

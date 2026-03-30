@@ -141,18 +141,6 @@ class RevokedPermissionsServiceTest
                      /*should_setup_unused_sites*/ bool,
                      /*should_setup_disruptive_sites*/ bool>> {
  public:
-  RevokedPermissionsServiceTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        content_settings::features::kSafetyCheckUnusedSitePermissions};
-    if (ShouldSetupDisruptiveSites()) {
-      enabled_features.push_back(
-          features::kSafetyHubDisruptiveNotificationRevocation);
-    }
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/enabled_features,
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     base::Time time;
@@ -527,7 +515,8 @@ class RevokedPermissionsServiceTest
 
   base::SimpleTestClock clock_;
   uint8_t callback_count_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      content_settings::features::kSafetyCheckUnusedSitePermissions};
   scoped_refptr<MockSafeBrowsingDatabaseManager> fake_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
       safe_browsing_factory_;

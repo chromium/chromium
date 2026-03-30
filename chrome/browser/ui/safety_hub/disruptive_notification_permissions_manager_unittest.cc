@@ -239,12 +239,10 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
   void SetupRevocationEntry(const GURL& url,
                             int days_since_revocation,
                             RevocationState revocation_state) {
-    const int kDailyNotificationCount = 4;
-
     RevocationEntry entry(
         /*revocation_state=*/revocation_state,
         /*site_engagement=*/0.0,
-        /*daily_notification_count=*/kDailyNotificationCount,
+        /*daily_notification_count=*/kHighNotificationCount,
         /*timestamp=*/base::Time::Now() - base::Days(days_since_revocation));
     ContentSettingHelper(*hcsm()).PersistRevocationEntry(url, entry);
   }
@@ -270,6 +268,11 @@ class DisruptiveNotificationPermissionsManagerTest : public ::testing::Test {
         RevokedPermissionsOSNotificationDisplayManagerFactory::GetForProfile(
             profile()));
   }
+
+  const int kHighNotificationCount =
+      features::kSafetyHubDisruptiveNotificationRevocationMinNotificationCount
+          .Get();
+  const int kLowNotificationCount = 1;
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -301,7 +304,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
         url, RevocationEntry(
                  /*revocation_state=*/revocation_state,
                  /*site_engagement=*/0.0,
-                 /*daily_notification_count=*/4));
+                 /*daily_notification_count=*/kHighNotificationCount));
     content_settings::SettingInfo info;
     base::Value stored_value = hcsm()->GetWebsiteSetting(
         url, url,
@@ -335,24 +338,24 @@ TEST_F(DisruptiveNotificationPermissionsManagerTest,
   RevocationEntry proposed_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kProposed,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   proposed_entry.lifetime =
       safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   RevocationEntry revoked_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kRevoked,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   revoked_entry.lifetime =
       safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   RevocationEntry ignore_inside_sh_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kIgnoreInsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   ignore_inside_sh_entry.lifetime = base::Days(365);
   RevocationEntry ignore_outside_sh_entry = RevocationEntry(
       /*revocation_state=*/RevocationState::kIgnoreOutsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   ignore_outside_sh_entry.lifetime = base::Days(90);
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(proposed_url,
                                                        proposed_entry);
@@ -430,7 +433,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -445,12 +448,13 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_THAT(revocation_entry,
               Optional(Field(&RevocationEntry::site_engagement, 0)));
   EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::daily_notification_count, 4)));
+              Optional(Field(&RevocationEntry::daily_notification_count,
+                             kHighNotificationCount)));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, 4, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
 
   clock()->Advance(base::Days(3));
 
@@ -511,7 +515,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -554,7 +558,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -572,7 +576,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_THAT(revocation_entry,
               Optional(Field(&RevocationEntry::site_engagement, 0.0)));
   EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::daily_notification_count, 4)));
+              Optional(Field(&RevocationEntry::daily_notification_count,
+                             kHighNotificationCount)));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
@@ -603,7 +608,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -646,7 +651,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   base::HistogramTester t;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   EXPECT_CALL(*mock_notification_manager(), DisplayNotification).Times(0);
@@ -662,7 +667,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, 4, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
 
   site_engagement_service()->ResetBaseScoreForURL(url, 10);
 
@@ -687,17 +692,17 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   GURL first_url("https://www.example.com");
   SetNotificationPermission(first_url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(first_url, 4);
+  SetDailyAverageNotificationCount(first_url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(first_url, 0);
 
   GURL second_url("https://www.chrome.com");
   SetNotificationPermission(second_url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(second_url, 1);
+  SetDailyAverageNotificationCount(second_url, kLowNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(second_url, 0);
 
   GURL third_url("https://www.anothersite.com");
   SetNotificationPermission(third_url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(third_url, 4);
+  SetDailyAverageNotificationCount(third_url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(third_url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -709,7 +714,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 2, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, 4, 2);
+  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 2);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -717,7 +722,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   base::HistogramTester t;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 90);
 
   manager()->RevokeDisruptiveNotifications();
@@ -734,7 +739,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   base::HistogramTester t;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 1);
+  SetDailyAverageNotificationCount(url, kLowNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -769,7 +774,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   // Already blocked notification.
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_BLOCK);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -798,7 +803,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -818,7 +823,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                                         safety_hub::kIgnoreStr)));
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -836,7 +841,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -854,7 +859,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 1);
+  SetDailyAverageNotificationCount(url, kLowNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 5.0);
 
   manager()->RevokeDisruptiveNotifications();
@@ -876,7 +881,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
   manager()->RevokeDisruptiveNotifications();
 
@@ -908,12 +913,11 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   GURL url("https://chrome.test/");
-  const int kDailyNotificationCount = 4;
 
   RevocationEntry entry(
       /*revocation_state=*/RevocationState::kProposed,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/kDailyNotificationCount);
+      /*daily_notification_count=*/kHighNotificationCount);
 
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(url, entry);
 
@@ -929,7 +933,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_EQ(1u, entries.size());
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(entries[0], "DailyAverageVolume",
-                                 kDailyNotificationCount);
+                                 kHighNotificationCount);
   ukm_recorder.ExpectEntryMetric(entries[0], "SiteEngagement", 0.0);
 
   // After the metric is reported, has_reported_proposal flag is set.
@@ -954,7 +958,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   GURL url("https://www.example.com");
 
   // Set up a revoked disruptive notification.
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
@@ -965,7 +969,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       url, RevocationEntry(
                /*revocation_state=*/RevocationState::kRevoked,
                /*site_engagement=*/0.0,
-               /*daily_notification_count=*/4,
+               /*daily_notification_count=*/kHighNotificationCount,
                /*timestamp=*/clock()->Now()));
 
   clock()->Advance(base::Days(5));
@@ -997,7 +1001,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "InSafetyHub.PreviousNotificationCount",
-      4, 1);
+      kHighNotificationCount, 1);
 
   manager()->RevokeDisruptiveNotifications();
   // The site is reported as ignored for revocation and not revoked.
@@ -1025,14 +1029,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Set up a disruptive notification.
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Set up an ignored value.
   RevocationEntry entry(
       /*revocation_state=*/RevocationState::kIgnoreInsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4,
+      /*daily_notification_count=*/kHighNotificationCount,
       /*timestamp=*/base::Time::Now());
 
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(url, entry);
@@ -1059,7 +1063,8 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   EXPECT_THAT(revocation_entry,
               Optional(Field(&RevocationEntry::site_engagement, 0.0)));
   EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::daily_notification_count, 4)));
+              Optional(Field(&RevocationEntry::daily_notification_count,
+                             kHighNotificationCount)));
   EXPECT_THAT(revocation_entry,
               Optional(Field(&RevocationEntry::timestamp, base::Time::Now())));
 }
@@ -1071,7 +1076,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Set up a disruptive notification.
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Attempt to undo the regrant (return to revoked state).
@@ -1093,14 +1098,14 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
   // Set up a disruptive notification.
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // Set up an ignored value.
   RevocationEntry entry(
       /*revocation_state=*/RevocationState::kIgnoreInsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4,
+      /*daily_notification_count=*/kHighNotificationCount,
       /*timestamp=*/base::Time::Now());
 
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(url, entry);
@@ -1126,7 +1131,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   RevocationEntry revoked_entry(
       /*revocation_state=*/RevocationState::kRevoked,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   revoked_entry.lifetime =
       safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(revoked_url,
@@ -1137,7 +1142,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   RevocationEntry proposed_entry(
       /*revocation_state=*/RevocationState::kProposed,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   proposed_entry.lifetime =
       safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(proposed_url,
@@ -1148,7 +1153,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   RevocationEntry ignored_inside_SH_entry(
       /*revocation_state=*/RevocationState::kIgnoreInsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   ignored_inside_SH_entry.lifetime = base::Days(365);
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(ignored_inside_SH_url,
                                                        ignored_inside_SH_entry);
@@ -1158,7 +1163,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   RevocationEntry ignored_outside_SH_entry(
       /*revocation_state=*/RevocationState::kIgnoreOutsideSH,
       /*site_engagement=*/0.0,
-      /*daily_notification_count=*/4);
+      /*daily_notification_count=*/kHighNotificationCount);
   ignored_outside_SH_entry.lifetime = base::Days(90);
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(
       ignored_outside_SH_url, ignored_outside_SH_entry);
@@ -1228,7 +1233,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
         url, RevocationEntry(
                  /*revocation_state=*/initial_state,
                  /*site_engagement=*/0.0,
-                 /*daily_notification_count=*/4));
+                 /*daily_notification_count=*/kHighNotificationCount));
 
     SetNotificationPermission(url, new_content_setting);
     manager()->OnPermissionChanged(
@@ -1258,7 +1263,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       url, RevocationEntry(
                /*revocation_state=*/RevocationState::kRevoked,
                /*site_engagement=*/0.0,
-               /*daily_notification_count=*/4));
+               /*daily_notification_count=*/kHighNotificationCount));
   clock()->Advance(base::Days(5));
   site_engagement_service()->ResetBaseScoreForURL(url, 7.0);
   SetNotificationPermission(url, ContentSetting::CONTENT_SETTING_ALLOW);
@@ -1276,7 +1281,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectUniqueSample(
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "OutsideSafetyHub.PreviousNotificationCount",
-      4, 1);
+      kHighNotificationCount, 1);
 }
 
 class DisruptiveNotificationPermissionsManagerShadowRunTest
@@ -1297,7 +1302,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   base::HistogramTester t;
   GURL url("https://www.example.com");
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   site_engagement_service()->ResetBaseScoreForURL(url, 0);
 
   // The shadow run should never display notifications.
@@ -1314,12 +1319,13 @@ TEST_F(DisruptiveNotificationPermissionsManagerShadowRunTest,
   EXPECT_THAT(revocation_entry,
               Optional(Field(&RevocationEntry::site_engagement, 0)));
   EXPECT_THAT(revocation_entry,
-              Optional(Field(&RevocationEntry::daily_notification_count, 4)));
+              Optional(Field(&RevocationEntry::daily_notification_count,
+                             kHighNotificationCount)));
 
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, 4, 1);
+  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
 
   // Repeated runs during the shadow run don't revoke the notification but
   // report that the site is already in proposed revocation list instead.
@@ -1341,7 +1347,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   GURL url("https://chrome.test/");
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   SetupRevocationEntry(url, /*days_since_revocation=*/5,
                        RevocationState::kProposed);
   site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
@@ -1400,7 +1406,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "RevocationState",
                                  static_cast<int>(RevocationState::kProposed));
 
@@ -1415,7 +1421,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "RevocationState",
                                  static_cast<int>(RevocationState::kProposed));
 }
@@ -1427,7 +1433,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   GURL url("https://chrome.test/");
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
-  SetDailyAverageNotificationCount(url, 4);
+  SetDailyAverageNotificationCount(url, kHighNotificationCount);
   SetupRevocationEntry(url, /*days_since_revocation=*/5,
                        RevocationState::kRevoked);
   site_engagement_service()->ResetBaseScoreForURL(url, 1.0);
@@ -1462,7 +1468,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "RevocationState",
                                  static_cast<int>(RevocationState::kRevoked));
 
@@ -1477,7 +1483,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
   ukm_recorder.ExpectEntryMetric(interaction_entries[1], "RevocationState",
                                  static_cast<int>(RevocationState::kRevoked));
 
@@ -1496,7 +1502,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(revocation_entries[0], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(revocation_entries[0], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -1508,7 +1514,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   SetupRevocationEntry(url, /*days_since_revocation=*/5,
                        RevocationState::kProposed);
 
-  SetDailyAverageNotificationCount(url, 1);
+  SetDailyAverageNotificationCount(url, kLowNotificationCount);
 
   // The next safety check run, the entry is removed from proposal list because
   // the notification count is low (1) and reported as not disruptive anymore.
@@ -1557,7 +1563,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
 
   // Check that the no false positive revocation metrics are reported.
   auto revocation_entries = ukm_recorder.GetEntriesByName(
@@ -1621,7 +1627,7 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "OldSiteEngagement",
                                  0.0);
   ukm_recorder.ExpectEntryMetric(interaction_entries[0], "DailyAverageVolume",
-                                 4);
+                                 kHighNotificationCount);
 
   // Check that the no false positive revocation metrics are reported.
   auto revocation_entries = ukm_recorder.GetEntriesByName(
@@ -1641,18 +1647,18 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       ignored_inside_sh_url,
       RevocationEntry(/*revocation_state=*/RevocationState::kIgnoreInsideSH,
                       /*site_engagement=*/0.0,
-                      /*daily_notification_count=*/4));
+                      /*daily_notification_count=*/kHighNotificationCount));
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(
       ignored_outside_sh_url,
       RevocationEntry(/*revocation_state=*/RevocationState::kIgnoreOutsideSH,
                       /*site_engagement=*/0.0,
-                      /*daily_notification_count=*/4));
+                      /*daily_notification_count=*/kHighNotificationCount));
   // Set up a revoked entry.
   ContentSettingHelper(*hcsm()).PersistRevocationEntry(
       revoked_url,
       RevocationEntry(/*revocation_state=*/RevocationState::kRevoked,
                       /*site_engagement=*/0.0,
-                      /*daily_notification_count=*/4));
+                      /*daily_notification_count=*/kHighNotificationCount));
 
   EXPECT_TRUE(DisruptiveNotificationPermissionsManager::
                   IsUrlIgnoredForRevokedDisruptiveNotification(

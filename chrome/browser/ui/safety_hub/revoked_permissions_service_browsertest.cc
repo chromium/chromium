@@ -667,7 +667,10 @@ IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
                      DisruptiveNotificationRevocationState::kProposed)));
 
   // Wait for the disruptive metrics cooldown to expire.
-  clock.Advance(base::Days(8));
+  clock.Advance(
+      features::kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed
+          .Get() +
+      base::Days(1));
 
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   revocation_entry =
@@ -742,7 +745,10 @@ IN_PROC_BROWSER_TEST_F(
                      DisruptiveNotificationRevocationState::kProposed)));
 
   // Wait for the disruptive metrics cooldown to expire.
-  clock.Advance(base::Days(8));
+  clock.Advance(
+      features::kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed
+          .Get() +
+      base::Days(1));
 
   safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
   // Both disruptive notifications and unused permissions were revoked for the

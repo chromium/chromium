@@ -1332,32 +1332,23 @@ BASE_FEATURE(kSafetyHubExtensionsOffStoreTrigger,
 BASE_FEATURE(kSafetyHubThreeDotDetails, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafetyHubDisruptiveNotificationRevocation,
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
-
-constexpr base::FeatureParam<int>
-    kSafetyHubDisruptiveNotificationRevocationExperimentVersion{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"experiment_version", /*default_value=*/1};
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<bool>
     kSafetyHubDisruptiveNotificationRevocationShadowRun{
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"shadow_run", /*default_value=*/false};
 
+#if BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationExperimentVersion{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"experiment_version", /*default_value=*/1};
+
 constexpr base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationMinNotificationCount{
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"min_notification_count", /*default_value=*/4};
-
-constexpr base::FeatureParam<double>
-    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore{
-        &kSafetyHubDisruptiveNotificationRevocation,
-        /*name=*/"max_engagement_score", /*default_value=*/0.0};
 
 constexpr base::FeatureParam<base::TimeDelta>
     kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed{
@@ -1369,6 +1360,27 @@ constexpr base::FeatureParam<int>
         &kSafetyHubDisruptiveNotificationRevocation,
         /*name=*/"notification_timeout_seconds",
         /*default_value=*/7 * 24 * 3600};
+#else
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationExperimentVersion{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"experiment_version", /*default_value=*/2};
+
+constexpr base::FeatureParam<int>
+    kSafetyHubDisruptiveNotificationRevocationMinNotificationCount{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"min_notification_count", /*default_value=*/6};
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kSafetyHubDisruptiveNotificationRevocationWaitingTimeAsProposed{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"waiting_time_as_proposed", /*default_value=*/base::Days(14)};
+#endif
+
+constexpr base::FeatureParam<double>
+    kSafetyHubDisruptiveNotificationRevocationMaxEngagementScore{
+        &kSafetyHubDisruptiveNotificationRevocation,
+        /*name=*/"max_engagement_score", /*default_value=*/0.0};
 
 constexpr base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationMinFalsePositiveCooldown{

@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -1125,6 +1126,10 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
 
 TEST_F(SafetyHubHandlerTest,
        HandleGetSafetyHubEntryPointData_HasRecommendationsAndHeader) {
+  base::test::ScopedFeatureList disable_notification_autorevocation;
+  disable_notification_autorevocation.InitAndDisableFeature(
+      features::kSafetyHubDisruptiveNotificationRevocation);
+
 #if BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/490024783): This is one of several tests failing on Linux
   // builders with Ozone Wayland. Diagnose, fix, and unskip this test.
@@ -1203,11 +1208,6 @@ TEST_F(SafetyHubHandlerTest,
 
   ValidateEntryPointSubheader(
       l10n_util::GetStringUTF8(
-          IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME),
-      SafetyHubHandler::SafetyHubModule::kNotifications);
-
-  ValidateEntryPointSubheader(
-      l10n_util::GetStringUTF8(
           IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME),
       SafetyHubHandler::SafetyHubModule::kUnusedSitePermissions);
 }
@@ -1251,16 +1251,6 @@ TEST_F(SafetyHubHandlerTest,
   ValidateEntryPointSubheader(expected_subheader,
                               SafetyHubHandler::SafetyHubModule::kExtensions);
 
-  // The expected subheader should be "Passwords, notifications"
-  expected_subheader =
-      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
-      l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR) +
-      " " +
-      l10n_util::GetStringUTF8(
-          IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME);
-  ValidateEntryPointSubheader(
-      expected_subheader, SafetyHubHandler::SafetyHubModule::kNotifications);
-
   // The expected subheader should be "Passwords, permissions"
   expected_subheader =
       l10n_util::GetStringUTF8(IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME) +
@@ -1275,6 +1265,13 @@ TEST_F(SafetyHubHandlerTest,
 
 TEST_F(SafetyHubHandlerTest,
        HandleGetSafetyHubEntryPointData_Subheader_AllModules) {
+  // Disruptive notification revocation disables the notification review module.
+  // TODO(https://crbug.com/496616827): Adapt this test when removing the
+  // notification review module logic.
+  base::test::ScopedFeatureList disable_notification_autorevocation;
+  disable_notification_autorevocation.InitAndDisableFeature(
+      features::kSafetyHubDisruptiveNotificationRevocation);
+
   AddUnusedPermission();
   SetupTestToShowOrHideRecommendationForModule(
       SafetyHubHandler::SafetyHubModule::kPasswords, true);

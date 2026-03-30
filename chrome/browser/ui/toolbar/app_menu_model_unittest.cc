@@ -797,6 +797,15 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 
 class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
  public:
+  TestAppMenuModelSafetyHubTest() {
+    // Disruptive notification revocation disables the notification review
+    // module.
+    // TODO(https://crbug.com/496616827): Clean up this test when removing the
+    // notification review module logic.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kSafetyHubDisruptiveNotificationRevocation);
+  }
+
   void SetUp() override {
     AppMenuModelTest::SetUp();
     password_store_ = CreateAndUseTestPasswordStore(profile());
@@ -811,6 +820,9 @@ class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
 
  protected:
   scoped_refptr<password_manager::TestPasswordStore> password_store_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {

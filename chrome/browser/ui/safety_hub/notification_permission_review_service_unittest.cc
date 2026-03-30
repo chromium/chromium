@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
@@ -28,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-class NotificationPermissionReviewServiceTest : public testing::Test {
+class NotificationPermissionReviewServiceTestBase : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     safety_hub_test_util::CreateNotificationPermissionsReviewService(profile());
@@ -117,6 +118,18 @@ class NotificationPermissionReviewServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+};
+
+class NotificationPermissionReviewServiceTest
+    : public NotificationPermissionReviewServiceTestBase {
+ public:
+  NotificationPermissionReviewServiceTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kSafetyHubDisruptiveNotificationRevocation);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NotificationPermissionReviewServiceTest,
@@ -388,7 +401,10 @@ TEST_F(NotificationPermissionReviewServiceTest,
   ASSERT_EQ(CONTENT_SETTING_ASK, type);
 }
 
-TEST_F(NotificationPermissionReviewServiceTest,
+using NotificationPermissionReviewServiceTestWithAutorevocationEnabled =
+    NotificationPermissionReviewServiceTestBase;
+
+TEST_F(NotificationPermissionReviewServiceTestWithAutorevocationEnabled,
        DisruptiveNotificationRevocationShadowRun) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -408,7 +424,7 @@ TEST_F(NotificationPermissionReviewServiceTest,
   EXPECT_EQ(2UL, notification_permissions.size());
 }
 
-TEST_F(NotificationPermissionReviewServiceTest,
+TEST_F(NotificationPermissionReviewServiceTestWithAutorevocationEnabled,
        DisruptiveNotificationRevocation) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(

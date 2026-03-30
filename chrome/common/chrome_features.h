@@ -1007,9 +1007,11 @@ extern const base::FeatureParam<base::TimeDelta>
 
 // Timeout in seconds for the Safety Hub OS notification informing users about
 // revoked notification permissions.
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int>
     kSafetyHubDisruptiveNotificationRevocationNotificationTimeoutSeconds;
+#endif
 
 // The minimum number of days since the revocation until a site can be
 // considered a false positive disruptive notification revocation. The cooldown

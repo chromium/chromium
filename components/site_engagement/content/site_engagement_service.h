@@ -42,7 +42,7 @@ class WebAppEngagementBrowserTest;
 class GURL;
 class HostContentSettingsMap;
 class PrefRegistrySimple;
-class NotificationPermissionReviewServiceTest;
+class NotificationPermissionReviewServiceTestBase;
 class SafetyHubHatsServiceTest;
 
 namespace site_engagement {
@@ -215,7 +215,7 @@ class SiteEngagementService : public KeyedService,
   friend class SiteEngagementObserver;
   friend class SiteEngagementServiceTest;
   friend class web_app::WebAppEngagementBrowserTest;
-  friend class ::NotificationPermissionReviewServiceTest;
+  friend class ::NotificationPermissionReviewServiceTestBase;
   friend class ::SafetyHubHatsServiceTest;
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CheckHistograms);
   FRIEND_TEST_ALL_PREFIXES(SiteEngagementServiceTest, CleanupEngagementScores);
