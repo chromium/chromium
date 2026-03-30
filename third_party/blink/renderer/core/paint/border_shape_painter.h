@@ -45,12 +45,6 @@ class BorderShapePainter {
   static Path OuterPath(const ComputedStyle&,
                         const PhysicalRect& outer_reference_rect);
 
-  // Returns the inner path to use for overflow clipping. For single-shape
-  // border-shape, this contracts the path inward by half the border stroke
-  // width, since the border is drawn as a stroke centered on the path and
-  // children should not paint over the inner half of the border.
-  static Path OverflowClipInnerPath(const ComputedStyle&,
-                                    const PhysicalRect& inner_reference_rect);
 
   // Returns an outer path offset by the given amount (positive = outward).
   static Path OuterPathWithOffset(const ComputedStyle&,
@@ -68,7 +62,7 @@ class BorderShapePainter {
   // (non-inset) box-shadows.
   //
   // Shadow outsets are computed by replicating the exact path the painter
-  // builds — ExpandPathWithStroke(OuterPath, (spread+blur)*2) — then outset
+  // builds — ExpandPathWithStroke(OuterPath, spread*2) — then outset
   // by sigma_3 = ceil(3*sigma), which is how Skia bounds a box blur.
   // This is more precise than BoxDecorationOutsets(), which omits the blur
   // term from the path expansion. Callers should Unite (not Expand/add) with

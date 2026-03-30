@@ -476,14 +476,10 @@ TEST_P(BoxPaintInvalidatorTest, BorderShapeBoxShadowChange) {
   ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
   ScopedCSSBorderShapeForTest scoped_border_shape(true);
   // Test that changing box-shadow on an element with border-shape does not
-  // cause under-invalidation (crbug.com/483350719). Without the fix in
-  // BorderShapePainter::VisualOutsets(), the ink overflow rect for
-  // border-shape + box-shadow was too small. For border-shape, the shadow is
-  // painted via ExpandPathWithStroke(outer_path, (spread + blur) * 2), so the
-  // full shadow extent from the outer path is (spread + blur + sigma_3).
-  // BoxDecorationOutsets() uses only (spread + sigma_3), missing the blur term.
-  // When the shadow grows, new shadow pixels outside the too-small ink overflow
-  // rect are not invalidated, causing stale pixels (under-invalidation).
+  // cause under-invalidation (crbug.com/483350719).
+  // For border-shape, the shadow is painted via ExpandPathWithStroke(
+  // outer_path, spread * 2), so the full shadow extent from the outer path
+  // is (spread + sigma_3), matching BoxDecorationOutsets().
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {
@@ -498,14 +494,13 @@ TEST_P(BoxPaintInvalidatorTest, BorderShapeBoxShadowChange) {
   UpdateAllLifecyclePhasesForTest();
 
   // Verify the ink overflow rect accounts for the full shadow extent:
-  // spread=10, blur=10, sigma_3=ceil(3*5)=15 -> outset = 35px each side.
-  // Without the fix, BoxDecorationOutsets uses only (spread + sigma_3) = 25px.
+  // spread=10, blur=10, sigma_3=ceil(3*5)=15 -> outset = 25px each side.
   EXPECT_EQ(GetLayoutBoxByElementId("target")
                 ->GetPhysicalFragment(0)
                 ->InkOverflowRect(),
-            PhysicalRect(-35, -35, 170, 170));
+            PhysicalRect(-25, -25, 150, 150));
   EXPECT_EQ(GetLayoutBoxByElementId("target")->SelfVisualOverflowRect(),
-            PhysicalRect(-35, -35, 170, 170));
+            PhysicalRect(-25, -25, 150, 150));
 
   // Changing box-shadow while border-shape is active should not cause
   // under-invalidation (crbug.com/483350719).
@@ -516,14 +511,14 @@ TEST_P(BoxPaintInvalidatorTest, BorderShapeBoxShadowChange) {
   UpdateAllLifecyclePhasesForTest();
 
   // The shadow has grown: spread=20, blur=20, sigma_3=ceil(3*10)=30
-  // (blur as sigma is 20*0.5=10), giving outset = 70px each side.
+  // (blur as sigma is 20*0.5=10), giving outset = 50px each side.
   // Verify the overflow rects update accordingly as well.
   EXPECT_EQ(GetLayoutBoxByElementId("target")
                 ->GetPhysicalFragment(0)
                 ->InkOverflowRect(),
-            PhysicalRect(-70, -70, 240, 240));
+            PhysicalRect(-50, -50, 200, 200));
   EXPECT_EQ(GetLayoutBoxByElementId("target")->SelfVisualOverflowRect(),
-            PhysicalRect(-70, -70, 240, 240));
+            PhysicalRect(-50, -50, 200, 200));
 }
 
 }  // namespace blink

@@ -2880,8 +2880,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderShapeClip() {
                                            box);
       const PhysicalRect inner_reference_rect =
           border_shape_rects ? border_shape_rects->inner : expanded_box_rect;
-      const Path inner_path = BorderShapePainter::OverflowClipInnerPath(
-          box.StyleRef(), inner_reference_rect);
+      const Path inner_path =
+          BorderShapePainter::InnerPath(box.StyleRef(), inner_reference_rect);
       gfx::RectF layout_clip_rect(expanded_box_rect);
       PhysicalOffset offset = -OffsetInStitchedFragments(BoxFragment());
       layout_clip_rect.Offset(gfx::Vector2dF(offset));
