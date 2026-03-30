@@ -383,7 +383,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private void setSearchBoxHeightBoundsVerticalInset() {
         Resources resources = mActivity.getResources();
         int searchBoxHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                NtpCustomizationUtils.getSearchBoxHeight(
                         resources, assumeNonNull(mIsComposeplateEnabled));
         if (mSearchBoxCoordinator != null) {
             mSearchBoxCoordinator.setHeight(searchBoxHeight);
@@ -525,9 +525,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 this::onComposeplateButtonClicked);
 
         if (shouldApplyWhiteBackgroundOnSearchBox) {
-            // It is safe to call mComposeplateCoordinator.applyWhiteBackgroundWithShadow() again
-            // since it is no-op if the white background has been applied.
-            mComposeplateCoordinator.applyWhiteBackgroundWithShadow(/* apply= */ true);
+            // It is safe to call mComposeplateCoordinator.applyWhiteBackground() again since it is
+            // no-op if the white background has been applied.
+            mComposeplateCoordinator.applyWhiteBackground(/* apply= */ true);
         }
     }
 
@@ -1432,19 +1432,18 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         }
 
         // If the fake search box hasn't been initialized, returns now. It is fine to skip here
-        // because applyWhiteBackgroundWithShadow() will be called immediately after the
-        // mSearchBoxCoordinator is initialized.
+        // because applyWhiteBackground() will be called immediately after the mSearchBoxCoordinator
+        // is initialized.
         if (mSearchBoxCoordinator == null) return;
 
         mIsWhiteBackgroundOnSearchBoxApplied = applyWhiteBackgroundOnSearchBox;
 
         if (mSearchBoxCoordinator != null) {
-            mSearchBoxCoordinator.applyWhiteBackgroundWithShadow(applyWhiteBackgroundOnSearchBox);
+            mSearchBoxCoordinator.applyWhiteBackground(applyWhiteBackgroundOnSearchBox);
         }
 
         if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.applyWhiteBackgroundWithShadow(
-                    applyWhiteBackgroundOnSearchBox);
+            mComposeplateCoordinator.applyWhiteBackground(applyWhiteBackgroundOnSearchBox);
         }
     }
 

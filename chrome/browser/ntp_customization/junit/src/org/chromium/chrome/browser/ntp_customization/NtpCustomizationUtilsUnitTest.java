@@ -1318,7 +1318,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testGetSearchBoxHeightWithShadows() {
+    public void testGetSearchBoxHeight() {
         // Mock dimension values.
         int searchBoxHeightTall =
                 mResources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall);
@@ -1327,14 +1327,13 @@ public class NtpCustomizationUtilsUnitTest {
         // Test case 1: Tall search box.
         int expectedHeight = searchBoxHeightTall;
         int actualHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
-                        mResources, /* showSearchBoxTall= */ true);
+                NtpCustomizationUtils.getSearchBoxHeight(mResources, /* showSearchBoxTall= */ true);
         assertEquals(expectedHeight, actualHeight);
 
         // Test case 2: Regular search box.
         expectedHeight = searchBoxHeight;
         actualHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                NtpCustomizationUtils.getSearchBoxHeight(
                         mResources, /* showSearchBoxTall= */ false);
         assertEquals(expectedHeight, actualHeight);
     }

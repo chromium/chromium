@@ -89,24 +89,17 @@ public class ComposeplateUtilsUnitTest {
 
     @Test
     public void testApplyWhiteBackgroundAndShadow() {
-        float elevation =
-                mContext.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
-
         // Verifies the apply case.
-        ComposeplateUtils.applyWhiteBackgroundAndShadow(mContext, mView, /* apply= */ true);
-        verify(mView).setClipToOutline(eq(true));
+        ComposeplateUtils.applyWhiteBackground(mContext, mView, /* apply= */ true);
         verify(mView).setBackground(mBackgroundDrawableCaptor.capture());
         assertEquals(
                 Color.WHITE, mBackgroundDrawableCaptor.getValue().getColor().getDefaultColor());
-        verify(mView).setElevation(eq(elevation));
 
         clearInvocations(mView);
 
         // Verifies the reset case.
-        ComposeplateUtils.applyWhiteBackgroundAndShadow(mContext, mView, /* apply= */ false);
-        verify(mView).setClipToOutline(eq(false));
+        ComposeplateUtils.applyWhiteBackground(mContext, mView, /* apply= */ false);
         verify(mView).setBackground(any(Drawable.class));
-        verify(mView).setElevation(eq(0f));
     }
 
     @Test

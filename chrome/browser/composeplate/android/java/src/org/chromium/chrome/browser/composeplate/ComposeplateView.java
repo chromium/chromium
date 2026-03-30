@@ -38,24 +38,18 @@ public class ComposeplateView extends LinearLayout {
     }
 
     /**
-     * Applies a white background with shadow or resets to the default background.
+     * Applies a white background or resets to the default background.
      *
      * @param apply Whether to apply or reset to the default background.
      */
-    void applyWhiteBackgroundWithShadow(boolean apply) {
-        if (apply) {
-            setElevation(getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation));
-        } else {
-            setElevation(0f);
-        }
-
+    void applyWhiteBackground(boolean apply) {
         Context context = getContext();
         if (mComposeplateButton != null) {
-            ComposeplateUtils.applyWhiteBackgroundAndShadow(context, mComposeplateButton, apply);
+            ComposeplateUtils.applyWhiteBackground(context, mComposeplateButton, apply);
         }
 
         if (mIncognitoButton != null) {
-            ComposeplateUtils.applyWhiteBackgroundAndShadow(context, mIncognitoButton, apply);
+            ComposeplateUtils.applyWhiteBackground(context, mIncognitoButton, apply);
         }
     }
 

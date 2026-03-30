@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.composeplate;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -99,37 +97,32 @@ public class ComposeplateViewBinderUnitTest {
     }
 
     @Test
-    public void testApplyWhiteBackgroundWithShadow_withMockView() {
-        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
-        verify(mViewMock).applyWhiteBackgroundWithShadow(eq(true));
+    public void testApplyWhiteBackground_withMockView() {
+        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND, true);
+        verify(mViewMock).applyWhiteBackground(eq(true));
 
-        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
-        verify(mViewMock).applyWhiteBackgroundWithShadow(eq(false));
+        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND, false);
+        verify(mViewMock).applyWhiteBackground(eq(false));
     }
 
     @Test
-    public void testApplyWhiteBackgroundWithShadow() {
+    public void testApplyWhiteBackground() {
         // Bind PropertyModel with mView.
         PropertyModelChangeProcessor.create(mPropertyModel, mView, ComposeplateViewBinder::bind);
 
-        float expectedElevation =
-                mContext.getResources().getDimensionPixelSize(R.dimen.ntp_search_box_elevation);
-        assertNotEquals(0, Float.compare(0f, expectedElevation));
         Drawable defaultBackground =
                 mContext.getDrawable(R.drawable.home_surface_search_box_background);
 
         View composeplateButton = mView.findViewById(R.id.composeplate_button);
         View incognitoButton = mView.findViewById(R.id.incognito_button);
 
-        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
-        verifyApplyBackground(composeplateButton, expectedElevation);
-        verifyApplyBackground(incognitoButton, expectedElevation);
-        assertEquals(0, Float.compare(expectedElevation, mView.getElevation()));
+        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND, true);
+        verifyApplyBackground(composeplateButton);
+        verifyApplyBackground(incognitoButton);
 
-        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
+        mPropertyModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND, false);
         verifyResetBackground(composeplateButton, defaultBackground);
         verifyResetBackground(incognitoButton, defaultBackground);
-        assertEquals(0, Float.compare(0f, mView.getElevation()));
     }
 
     @Test
@@ -162,9 +155,7 @@ public class ComposeplateViewBinderUnitTest {
         verify(mViewMock).setTextStyle(eq(textStyleResId));
     }
 
-    private void verifyApplyBackground(View view, float elevation) {
-        assertEquals(0, Float.compare(elevation, view.getElevation()));
-        assertTrue(view.getClipToOutline());
+    private void verifyApplyBackground(View view) {
         // Verifies that the background is set to color white.
         Drawable whiteBackground = view.getBackground();
         assertTrue(whiteBackground instanceof GradientDrawable);
@@ -173,8 +164,6 @@ public class ComposeplateViewBinderUnitTest {
     }
 
     private void verifyResetBackground(View view, Drawable defaultBackground) {
-        assertEquals(0, Float.compare(0f, view.getElevation()));
-        assertFalse(view.getClipToOutline());
         // Verifies that the background of the view is to reset.
         assertEquals(
                 ((GradientDrawable) defaultBackground).getColor().getDefaultColor(),

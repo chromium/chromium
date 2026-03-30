@@ -451,13 +451,13 @@ public class UploadImagePreviewCoordinatorUnitTest {
         PropertyModel model = mUploadImagePreviewCoordinator.getPropertyModelForTesting();
 
         int expectedTallHeight =
-                NtpCustomizationUtils.getSearchBoxHeightWithShadows(
+                NtpCustomizationUtils.getSearchBoxHeight(
                         mActivity.getResources(), /* showSearchBoxTall= */ true);
 
         // Verifies the height passed to the model
         assertEquals(
                 "The height passed to the property model should be the one returned by"
-                        + " getSearchBoxHeightWithShadows()",
+                        + " getSearchBoxHeight()",
                 expectedTallHeight,
                 model.get(NtpThemeProperty.SEARCH_BOX_HEIGHT));
 
@@ -465,7 +465,7 @@ public class UploadImagePreviewCoordinatorUnitTest {
         ConstraintLayout.LayoutParams layoutParams = getSearchBoxLayoutParams();
         assertEquals(
                 "The height of the real search box view should be the one returned by"
-                        + " getSearchBoxHeightWithShadows()",
+                        + " getSearchBoxHeight()",
                 expectedTallHeight,
                 layoutParams.height);
     }

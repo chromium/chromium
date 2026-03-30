@@ -144,8 +144,8 @@ public class SearchBoxCoordinator {
         mMediator.setSearchEngineIcon(icon);
     }
 
-    public void applyWhiteBackgroundWithShadow(boolean apply) {
-        mMediator.applyWhiteBackgroundWithShadow(apply);
+    public void applyWhiteBackground(boolean apply) {
+        mMediator.applyWhiteBackground(apply);
     }
 
     /**

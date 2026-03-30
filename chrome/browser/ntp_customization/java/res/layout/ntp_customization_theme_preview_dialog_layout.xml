@@ -12,7 +12,6 @@ found in the LICENSE file.
     android:id="@+id/upload_image_preview_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false"
     tools:ignore="UnusedResources">
 
     <!--
@@ -68,8 +67,6 @@ found in the LICENSE file.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/home_surface_search_box_background"
-            android:elevation="@dimen/ntp_search_box_elevation"
-            android:clipToOutline="true"
         />
 
     </FrameLayout>

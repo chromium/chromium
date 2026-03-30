@@ -110,10 +110,9 @@ class SearchBoxViewBinder
                     model.get(SearchBoxProperties.ENABLE_SEARCH_BOX_EDIT_TEXT));
         } else if (SearchBoxProperties.SEARCH_BOX_HINT_TEXT == propertyKey) {
             searchBoxTextView.setHint(model.get(SearchBoxProperties.SEARCH_BOX_HINT_TEXT));
-        } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW == propertyKey) {
+        } else if (SearchBoxProperties.APPLY_WHITE_BACKGROUND == propertyKey) {
             ((SearchBoxContainerView) searchBoxlayout)
-                    .applyWhiteBackgroundWithShadow(
-                            model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+                    .applyWhiteBackground(model.get(SearchBoxProperties.APPLY_WHITE_BACKGROUND));
         } else if (SearchBoxProperties.DSE_ICON_RESOURCE_ID == propertyKey) {
             ((SearchBoxContainerView) searchBoxlayout)
                     .setDseIconResource(model.get(SearchBoxProperties.DSE_ICON_RESOURCE_ID));

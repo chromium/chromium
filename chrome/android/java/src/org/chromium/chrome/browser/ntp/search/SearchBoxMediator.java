@@ -209,12 +209,12 @@ class SearchBoxMediator implements DestroyObserver {
         mModel.set(SearchBoxProperties.SEARCH_BOX_HINT_TEXT, hint);
     }
 
-    void applyWhiteBackgroundWithShadow(boolean apply) {
+    void applyWhiteBackground(boolean apply) {
         ColorStateList colorStateList =
                 ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
 
-        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
+        mModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, apply);
 
         @StyleRes
         int resId =

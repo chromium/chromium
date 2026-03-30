@@ -126,8 +126,8 @@ public class ComposeplateCoordinator {
         mModel.set(ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER, null);
     }
 
-    public void applyWhiteBackgroundWithShadow(boolean apply) {
-        mModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, apply);
+    public void applyWhiteBackground(boolean apply) {
+        mModel.set(ComposeplateProperties.APPLY_WHITE_BACKGROUND, apply);
 
         ColorStateList colorStateList =
                 ComposeplateUtils.getSearchBoxIconColorTint(mView.getContext(), apply);

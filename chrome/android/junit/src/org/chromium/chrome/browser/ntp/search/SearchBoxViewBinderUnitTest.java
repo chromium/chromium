@@ -93,12 +93,12 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
-    public void testApplyWhiteBackgroundWithShadow() {
-        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, true);
-        verify(mSearchBoxLayout).applyWhiteBackgroundWithShadow(eq(true));
+    public void testApplyWhiteBackground() {
+        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, true);
+        verify(mSearchBoxLayout).applyWhiteBackground(eq(true));
 
-        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW, false);
-        verify(mSearchBoxLayout).applyWhiteBackgroundWithShadow(eq(false));
+        mPropertyModel.set(SearchBoxProperties.APPLY_WHITE_BACKGROUND, false);
+        verify(mSearchBoxLayout).applyWhiteBackground(eq(false));
     }
 
     @Test

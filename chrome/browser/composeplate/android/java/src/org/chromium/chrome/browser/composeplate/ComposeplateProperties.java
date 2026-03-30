@@ -26,8 +26,7 @@ interface ComposeplateProperties {
     WritableObjectPropertyKey<View.OnClickListener> COMPOSEPLATE_BUTTON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND_WITH_SHADOW =
-            new WritableBooleanPropertyKey();
+    WritableBooleanPropertyKey APPLY_WHITE_BACKGROUND = new WritableBooleanPropertyKey();
 
     WritableObjectPropertyKey<@Nullable ColorStateList> COLOR_STATE_LIST =
             new WritableObjectPropertyKey<>();
@@ -39,7 +38,7 @@ interface ComposeplateProperties {
                 IS_INCOGNITO_BUTTON_VISIBLE,
                 INCOGNITO_CLICK_LISTENER,
                 COMPOSEPLATE_BUTTON_CLICK_LISTENER,
-                APPLY_WHITE_BACKGROUND_WITH_SHADOW,
+                APPLY_WHITE_BACKGROUND,
                 COLOR_STATE_LIST,
                 TEXT_STYLE_RES_ID,
             };

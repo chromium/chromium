@@ -1433,11 +1433,8 @@ public class NtpCustomizationUtils {
      *
      * @param resources The resources to get dimens.
      * @param showSearchBoxTall Whether to show a tall search box.
-     * @param hasShadowApplied Whether a shadow is shown on the search box. Drawing shadow requires
-     *     extra paddings on top and bottom of the search box.
      */
-    public static int getSearchBoxHeightWithShadows(
-            Resources resources, boolean showSearchBoxTall) {
+    public static int getSearchBoxHeight(Resources resources, boolean showSearchBoxTall) {
         int searchBoxHeight =
                 showSearchBoxTall
                         ? resources.getDimensionPixelSize(R.dimen.ntp_search_box_height_tall)

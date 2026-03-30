@@ -84,12 +84,12 @@ public class SearchBoxContainerView extends LinearLayout {
      *
      * @param apply Whether to apply a white background color to the fake search box.
      */
-    void applyWhiteBackgroundWithShadow(boolean apply) {
+    void applyWhiteBackground(boolean apply) {
         Context context = getContext();
 
         View searchBoxContainerView = findViewById(R.id.search_box_container);
         if (searchBoxContainerView != null) {
-            ComposeplateUtils.applyWhiteBackgroundAndShadow(context, searchBoxContainerView, apply);
+            ComposeplateUtils.applyWhiteBackground(context, searchBoxContainerView, apply);
         }
     }
 }

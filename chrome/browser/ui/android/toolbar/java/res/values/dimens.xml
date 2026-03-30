@@ -15,7 +15,6 @@ found in the LICENSE file.
 
     <dimen name="ntp_search_box_height">64dp</dimen>
     <dimen name="ntp_search_box_height_tall">72dp</dimen>
-    <dimen name="ntp_search_box_elevation">3dp</dimen>
 
     <!-- Tab group context menu on tablet tab strip -->
     <!-- list_menu_item_horizontal_padding is 16dp and

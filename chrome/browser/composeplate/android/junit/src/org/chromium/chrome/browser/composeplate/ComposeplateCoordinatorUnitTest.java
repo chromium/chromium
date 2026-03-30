@@ -147,21 +147,21 @@ public class ComposeplateCoordinatorUnitTest {
         int textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
         ColorStateList colorStateList =
                 ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
-        mCoordinator.applyWhiteBackgroundWithShadow(true);
-        assertTrue(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        mCoordinator.applyWhiteBackground(true);
+        assertTrue(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND));
         assertEquals(colorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
         assertEquals(textStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
-        verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(true));
+        verify(mComposeplateView).applyWhiteBackground(eq(true));
 
         // Tests the case to remove the white background with shadow.
         apply = false;
         textStyleResId = ComposeplateUtils.getSearchBoxTextStyleResId(apply);
         colorStateList = ComposeplateUtils.getSearchBoxIconColorTint(mContext, apply);
-        mCoordinator.applyWhiteBackgroundWithShadow(false);
-        assertFalse(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND_WITH_SHADOW));
+        mCoordinator.applyWhiteBackground(false);
+        assertFalse(mPropertyModel.get(ComposeplateProperties.APPLY_WHITE_BACKGROUND));
         assertEquals(colorStateList, mPropertyModel.get(ComposeplateProperties.COLOR_STATE_LIST));
         assertEquals(textStyleResId, mPropertyModel.get(ComposeplateProperties.TEXT_STYLE_RES_ID));
-        verify(mComposeplateView).applyWhiteBackgroundWithShadow(eq(false));
+        verify(mComposeplateView).applyWhiteBackground(eq(false));
     }
 
     private View.OnClickListener getCapturedOnClickListener(View button) {
