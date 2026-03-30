@@ -872,6 +872,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<TpmErrorScreen>(
+      &local_state_.get(),
       oobe_ui->GetView<TpmErrorScreenHandler>()->AsWeakPtr()));
 
   append(std::make_unique<InstallAttributesErrorScreen>(
@@ -3380,7 +3381,8 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   if (isEligibleForSavingPendingScreen) {
     if (!wizard_context_->is_add_person_flow &&
         IsResumableOobeScreen(current_screen_->screen_id())) {
-      StartupUtils::SaveOobePendingScreen(current_screen_->screen_id().name);
+      StartupUtils::SaveOobePendingScreen(local_state_.get(),
+                                          current_screen_->screen_id().name);
     } else if (IsResumablePostLoginScreen(current_screen_->screen_id()) &&
                !wizard_context_->is_cloud_ready_update_flow &&
                wizard_context_->screen_after_managed_tos !=

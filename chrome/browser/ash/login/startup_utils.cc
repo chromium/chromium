@@ -221,9 +221,9 @@ void StartupUtils::MarkOobeCompleted(PrefService& local_state) {
 }
 
 // static
-void StartupUtils::SaveOobePendingScreen(const std::string& screen) {
-  SaveStringPreferenceForced(*g_browser_process->local_state(),
-                             prefs::kOobeScreenPending, screen);
+void StartupUtils::SaveOobePendingScreen(PrefService& local_state,
+                                         const std::string& screen) {
+  SaveStringPreferenceForced(local_state, prefs::kOobeScreenPending, screen);
 }
 
 // static

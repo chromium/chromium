@@ -38,7 +38,8 @@ class StartupUtils {
   static void MarkOobeCompleted(PrefService& local_state);
 
   // Stores the next pending OOBE screen in case it will need to be resumed.
-  static void SaveOobePendingScreen(const std::string& screen);
+  static void SaveOobePendingScreen(PrefService& local_state,
+                                    const std::string& screen);
 
   // Stores the next OOBE screen after updating and rebooting to be resumed.
   static void SaveScreenAfterConsumerUpdate(const std::string& screen);
