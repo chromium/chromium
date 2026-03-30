@@ -33,7 +33,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
     private static final String TAG = "ActorFgsMngr";
     public static final int INVALID_NOTIFICATION_ID = -1;
     // Delay to ensure start/stop foreground doesn't happen too quickly.
-    private static int sWaitTimeMs = 200;
+    private static final int ONE_HOUR_MS = 60 * 60 * 1000;
+    private static int sWaitTimeMs = ONE_HOUR_MS;
 
     @Nullable private static ActorForegroundServiceManager sInstance;
 
