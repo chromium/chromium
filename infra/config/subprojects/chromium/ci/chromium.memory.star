@@ -177,6 +177,9 @@ linux_memory_builder(
                     shards = 70,
                 ),
             ),
+            "components_browsertests": targets.mixin(
+                ci_only = True,
+            ),
             "components_unittests": targets.mixin(
                 # These are very slow on the ASAN trybot for some reason.
                 # crbug.com/1257927
