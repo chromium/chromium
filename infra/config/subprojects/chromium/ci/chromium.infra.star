@@ -229,6 +229,10 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/build-tools/36.1.0.yaml",
             },
             {
+                "sdk_package_name": "build-tools;37.0.0",
+                "cipd_yaml": "third_party/android_sdk/cipd/build-tools/37.0.0.yaml",
+            },
+            {
                 "sdk_package_name": "cmdline-tools;latest",
                 "cipd_yaml": "third_party/android_sdk/cipd/cmdline-tools/linux.yaml",
             },
@@ -272,6 +276,10 @@ packager_builder(
             {
                 "sdk_package_name": "platforms;android-36.1",
                 "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-36.1.yaml",
+            },
+            {
+                "sdk_package_name": "platforms;android-37",
+                "cipd_yaml": "third_party/android_sdk/cipd/platforms/android-37.yaml",
             },
             {
                 "sdk_package_name": "platform-tools",
@@ -359,12 +367,20 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.1/google_apis/arm64-v8a.yaml",
             },
             {
+                "sdk_package_name": "system-images;android-37.0;google_apis_ps16k;arm64-v8a",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/arm64-v8a.yaml",
+            },
+            {
                 "sdk_package_name": "system-images;android-36;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36/google_apis/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-36.1;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-36.1/google_apis/x86_64.yaml",
+            },
+            {
+                "sdk_package_name": "system-images;android-37.0;google_apis_ps16k;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-37.0/google_apis_ps16k/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-36.0-CANARY;google_apis;x86_64",
