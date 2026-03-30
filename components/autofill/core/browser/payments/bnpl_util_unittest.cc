@@ -228,6 +228,45 @@ TEST_F(
 
 TEST_F(BnplUtilTest,
        GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooLow) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
+  std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)};
+
+  EXPECT_EQ(
+      GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplZip, "en-US",
+                                       issuer_contexts),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          u"$50.00"));
+}
+
+TEST_F(BnplUtilTest,
+       GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooHigh) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
+  std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
+      test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
+      BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
+
+  EXPECT_EQ(
+      GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAfterpay,
+                                       "en-US", issuer_contexts),
+      l10n_util::GetStringFUTF16(
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
+          u"$200.00"));
+}
+
+TEST_F(
+    BnplUtilTest,
+    GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooLow_TabsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
   std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplZip),
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)};
@@ -240,8 +279,13 @@ TEST_F(BnplUtilTest,
           u"$50.00"));
 }
 
-TEST_F(BnplUtilTest,
-       GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooHigh) {
+TEST_F(
+    BnplUtilTest,
+    GetBnplIssuerSelectionOptionText_NotEligibleCheckoutAmountTooHigh_TabsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAutofillEnablePayNowPayLaterTabs);
+
   std::vector<BnplIssuerContext> issuer_contexts = {BnplIssuerContext(
       test::GetTestLinkedBnplIssuer(BnplIssuer::IssuerId::kBnplAfterpay),
       BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooHigh)};
@@ -256,6 +300,9 @@ TEST_F(BnplUtilTest,
 
 TEST_F(BnplUtilTest,
        GetBnplIssuerSelectionOptionText_NotEligible_LargeNumberFormatting) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range(
       /*currency=*/"USD", /*price_lower_bound=*/50'000'000,
@@ -269,12 +316,15 @@ TEST_F(BnplUtilTest,
       GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
                                        "en-US", issuer_contexts),
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH,
           u"$30,000.00"));
 }
 
 TEST_F(BnplUtilTest,
        GetBnplIssuerSelectionOptionText_NotEligible_DecimalFormatting) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range = BnplIssuer::EligiblePriceRange(
       /*currency=*/"USD", /*price_lower_bound=*/49'491'234,
@@ -289,12 +339,15 @@ TEST_F(BnplUtilTest,
       GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
                                        "en-US", issuer_contexts),
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
           u"$49.49"));
 }
 
 TEST_F(BnplUtilTest,
        GetBnplIssuerSelectionOptionText_NotEligible_DecimalRounding) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillEnablePayNowPayLaterTabs};
+
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   BnplIssuer::EligiblePriceRange price_range = BnplIssuer::EligiblePriceRange(
       /*currency=*/"USD", /*price_lower_bound=*/99'999'999,
@@ -309,7 +362,7 @@ TEST_F(BnplUtilTest,
       GetBnplIssuerSelectionOptionText(BnplIssuer::IssuerId::kBnplAffirm,
                                        "en-US", issuer_contexts),
       l10n_util::GetStringFUTF16(
-          IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
+          IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW,
           u"$100.00"));
 }
 

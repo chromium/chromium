@@ -1045,8 +1045,14 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW" desc="Text for the disabled payment option button in the BNPL select provider screen, explaining that the checkout amount is too low for the BNPL issuer to support.">
       Purchase must be over <ph name="CHECKOUT_AMOUNT_MINIMUM">$1<ex>$50.00</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the payment option button in the BNPL select provider screen, explaining that the checkout amount is too high for the BNPL issuer to support.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the disabled payment option button in the BNPL select provider screen, explaining that the checkout amount is too high for the BNPL issuer to support.">
       Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM">$1<ex>$10,000.00</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_LOW" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the checkout amount is too low for the BNPL issuer to support.">
+      Minimum purchase <ph name="CHECKOUT_AMOUNT_MINIMUM">$1<ex>$50.00</ex></ph>
+  </message>
+  <message name="IDS_AUTOFILL_CARD_BNPL_PAY_LATER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the disabled payment option button in the BNPL Pay Later tab, explaining that the checkout amount is too high for the BNPL issuer to support.">
+      Maximum purchase <ph name="CHECKOUT_AMOUNT_MAXIMUM">$1<ex>$10,000.00</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_AI_FOOTNOTE" desc="A note explaining that Google will collect data from the checkout page to determine the checkout amount.">
       Content from the checkout page is shared with Google to offer these options. To hide pay later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>.
