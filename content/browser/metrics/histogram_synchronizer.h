@@ -151,8 +151,7 @@ class HistogramSynchronizer : public metrics::HistogramSubscriber {
   // contact all processes.
   int async_sequence_number_ GUARDED_BY(lock_);
 
-  std::unique_ptr<metrics::MetricsNameMapper> webium_metrics_name_mapper_
-      GUARDED_BY(lock_);
+  std::unique_ptr<metrics::MetricsNameMapper> webium_metrics_name_mapper_;
 };
 
 }  // namespace content
