@@ -25,8 +25,13 @@ public class DownloadStartupUtils {
                 .ensureDownloadSystemInitialized(isFullBrowserStarted, isOffTheRecord);
     }
 
+    /** Sets the native interface for testing. */
+    public static void setInstanceForTesting(Natives instance) {
+        DownloadStartupUtilsJni.setInstanceForTesting(instance);
+    }
+
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void ensureDownloadSystemInitialized(boolean isFullBrowserStarted, boolean isInCognito);
     }
 }

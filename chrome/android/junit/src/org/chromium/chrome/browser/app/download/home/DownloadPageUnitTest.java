@@ -36,6 +36,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.download.DownloadStartupUtils;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -85,6 +86,7 @@ public class DownloadPageUnitTest {
     @Mock private OfflineContentAggregatorFactory.Natives mOfflineContentAggregatorFactoryJni;
     @Mock private OfflineContentProvider mOfflineContentProvider;
     @Mock private Destroyable mMarginAdapter;
+    @Mock private DownloadStartupUtils.Natives mDownloadStartupUtilsMocks;
 
     // Needed to test edge-to-edge behavior.
     private @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
@@ -106,6 +108,7 @@ public class DownloadPageUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
         when(mFaviconHelperJni.init()).thenReturn(1L); // Can't be 0 otherwise assertion fails.
+        DownloadStartupUtils.setInstanceForTesting(mDownloadStartupUtilsMocks);
         OfflineContentAggregatorFactoryJni.setInstanceForTesting(
                 mOfflineContentAggregatorFactoryJni);
         OfflineContentAggregatorFactory.setOfflineContentProviderForTests(mOfflineContentProvider);
