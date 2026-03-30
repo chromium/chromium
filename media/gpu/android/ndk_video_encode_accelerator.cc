@@ -1180,6 +1180,13 @@ scoped_refptr<VideoFrame> NdkVideoEncodeAccelerator::MapSharedImage(
                        "Failed to produce VideoImageRepresentation"});
     return nullptr;
   }
+
+  if (representation->size() != frame.coded_size()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       "SharedImage size mismatch"});
+    return nullptr;
+  }
+
   auto scoped_access = representation->BeginScopedReadAccess();
   if (!scoped_access) {
     NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,

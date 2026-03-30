@@ -443,6 +443,11 @@ EncoderStatus VideoFrameGLSurfaceRenderer::RenderSharedImageVideoFrame(
             "Failed to produce VideoImageRepresentation."};
   }
 
+  if (representation->size() != frame->coded_size()) {
+    return {EncoderStatus::Codes::kEncoderFailedEncode,
+            "SharedImage size mismatch."};
+  }
+
   auto scoped_access = representation->BeginScopedReadAccess();
   if (!scoped_access) {
     return {EncoderStatus::Codes::kSystemAPICallError,

@@ -159,6 +159,10 @@ void GenerateResourceOnSynTokenReleased(
   RETURN_ON_FAILURE_WITH_CALLBACK(representation ? S_OK : E_FAIL,
                                   "Failed to produce video");
 
+  if (representation->size() != frame->coded_size()) {
+    RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "SharedImage size mismatch");
+  }
+
   auto scoped_read_access = representation->BeginScopedReadAccess();
   gpu::D3D11TextureAndArrayIndex input_texture =
       scoped_read_access->GetD3D11Texture();
