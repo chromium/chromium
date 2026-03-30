@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
@@ -46,6 +47,10 @@ class COMPONENT_EXPORT(UI_WM) FocusController : public ActivationClient,
     ,
                                                 public ui::EventHandler,
                                                 public aura::WindowObserver {
+  // TODO(crbug.com/497548800): This macro mitigates the issue. after fixing
+  // the issue, remove the marco.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // |rules| cannot be NULL.
   explicit FocusController(FocusRules* rules);
