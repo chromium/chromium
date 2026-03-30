@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/internal/tensor_ctypes.h"
@@ -40,6 +42,9 @@ bool FieldClassificationModelExecutor::Preprocess(
                                                   empty_field);
 
     for (size_t i = 0; i < fields_count; ++i) {
+      // Mitigation for crbug.com/495252686.
+      CHECK_LE(input[i].size(), output_sequence_length);
+
       std::ranges::transform(
           input[i], encoded_input[i].begin(),
           [](FieldClassificationModelEncoder::TokenId token_id) {
@@ -62,6 +67,10 @@ bool FieldClassificationModelExecutor::Preprocess(
   // field `i` in the input is *not* padding.
   {
     CHECK_EQ(input_tensors[1]->dims->size, 2);
+
+    // Mitigation for crbug.com/495252686.
+    CHECK_LE(maximum_number_of_fields * sizeof(bool), input_tensors[1]->bytes);
+
     for (size_t i = 0; i < maximum_number_of_fields; ++i) {
       UNSAFE_TODO(tflite::GetTensorData<bool>(input_tensors[1])[i]) =
           i < fields_count;
