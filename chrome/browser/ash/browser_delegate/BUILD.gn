@@ -39,7 +39,6 @@ static_library("impl") {
   public_deps = [
     ":browser_delegate",
     "//base",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/browser_window",
   ]
 

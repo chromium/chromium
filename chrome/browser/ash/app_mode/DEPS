@@ -47,7 +47,6 @@ include_rules = [
   "+chrome/browser/ui/ash/login",
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_list.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",
@@ -68,18 +67,17 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
-  "kiosk_app_update_service_factory\\.cc": [
-    "+chrome/browser/browser_process.h",
-    "+chrome/browser/browser_process_platform_part.h",
-  ],
-
   ".*(fake|test|mixin)(_.*)?\\.(cc|h)": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/extensions/extension_service_test_base.h",
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
+  ],
+  # Allow ProfileKeyedServiceFactory to depend on browser_process for now.
+  "kiosk_app_update_service_factory\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
   ],
   "kiosk_crash_restore_browsertest\\.cc": [
     "+chrome/browser/lifetime/termination_notification.h",

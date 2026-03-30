@@ -42,7 +42,6 @@ static_library("eche_app") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/secure_channel",
     "//chrome/browser/notifications",
-    "//chrome/browser/ui:browser_list",
     "//chrome/browser/ui/web_applications",
     "//chrome/common:channel_info",
     "//chromeos/ash/components/browser_context_helper",
