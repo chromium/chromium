@@ -15,6 +15,7 @@ import '/strings.m.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
@@ -121,6 +122,11 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
         value: null,
       },
 
+      detailMessagesHTML: {
+        type: Array,
+        value: () => [],
+      },
+
       runTestsButtonText: {
         type: String,
         value: '',
@@ -218,12 +224,14 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
   private routineStartTimeMs: number;
   private executionStatus: ExecutionProgress;
   private powerRoutineResult: PowerRoutineResult;
+  private detailMessagesHTML: TrustedHTML[];
   private badgeType: BadgeType;
   private badgeText: string;
   private statusText: string;
   private isLoggedIn: boolean;
   private bannerMessage: string;
   private initialButtonText: string;
+  private lastRoutineDetails: string|null = null;
   private executor: RoutineListExecutor|null = null;
   private failedTest: RoutineType|null = null;
   private hasTestFailure: boolean = false;
@@ -295,6 +303,8 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     }
     this.testSuiteStatus = TestSuiteStatus.RUNNING;
     this.failedTest = null;
+    this.detailMessagesHTML = [];
+    this.lastRoutineDetails = null;
 
     this.systemRoutineController = getSystemRoutineController();
     const resultListElem = this.getResultListElem();
@@ -387,6 +397,8 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     if (status.result && status.result.powerResult) {
       this.powerRoutineResult = status.result.powerResult;
     }
+
+    this.lastRoutineDetails = status.details;
 
     if (status.result &&
         getSimpleResult(status.result) === StandardRoutineResult.kTestFailed &&
@@ -512,6 +524,7 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
               isPowerRoutine ? this.getPowerRoutineString() :
                                loadTimeData.getString('testSuccess'));
         }
+        this.populateDetailMessagesHTML();
         return;
     }
     assertNotReached();
@@ -537,6 +550,17 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
       badgeType: badgeType,
       statusText: statusText,
     });
+  }
+
+  private populateDetailMessagesHTML(): void {
+    this.detailMessagesHTML = [];
+    if (!this.lastRoutineDetails) {
+      return;
+    }
+    this.detailMessagesHTML =
+        this.lastRoutineDetails.split('\n\n')
+            .filter(block => block.length > 0)
+            .map(block => sanitizeInnerHtml(block.replace(/\n/g, '<br>')));
   }
 
   protected isTestRunning(): boolean {
@@ -585,6 +609,8 @@ export class RoutineSectionElement extends RoutineSectionElementBase {
     this.currentTestName = '';
     this.executionStatus = ExecutionProgress.NOT_STARTED;
     this.$.collapse.hide();
+    this.detailMessagesHTML = [];
+    this.lastRoutineDetails = null;
     this.ignoreRoutineStatusUpdates = false;
   }
 

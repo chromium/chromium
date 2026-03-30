@@ -52,9 +52,11 @@ const char kWakeLockReason[] = "DiagnosticsMemoryRoutine";
 
 mojom::RoutineResultInfoPtr ConstructStandardRoutineResultInfoPtr(
     mojom::RoutineType type,
-    mojom::StandardRoutineResult result) {
+    mojom::StandardRoutineResult result,
+    std::optional<std::string> details = std::nullopt) {
   auto routine_result = mojom::RoutineResult::NewSimpleResult(result);
-  return mojom::RoutineResultInfo::New(type, std::move(routine_result));
+  return mojom::RoutineResultInfo::New(type, std::move(routine_result),
+                                       std::move(details));
 }
 
 // Converts a cros_healthd::mojom::DiagnosticRoutineStatusEnum to a
@@ -93,7 +95,8 @@ mojom::RoutineResultInfoPtr ConstructPowerRoutineResultInfoPtr(
       mojom::PowerRoutineResult::New(result, percent_change, seconds_elapsed);
   auto routine_result =
       mojom::RoutineResult::NewPowerResult(std::move(power_result));
-  return mojom::RoutineResultInfo::New(type, std::move(routine_result));
+  return mojom::RoutineResultInfo::New(type, std::move(routine_result),
+                                       /*details=*/std::nullopt);
 }
 
 bool IsPowerRoutine(mojom::RoutineType routine_type) {

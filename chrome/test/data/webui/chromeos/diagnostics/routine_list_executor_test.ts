@@ -108,6 +108,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
         simpleResult: StandardRoutineResult.kTestFailed,
         powerResult: undefined,
       },
+      details: null,
     }];
     return runRoutinesAndAssertResults(routines);
   });
@@ -120,6 +121,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           simpleResult: StandardRoutineResult.kTestPassed,
           powerResult: undefined,
         },
+        details: null,
       },
       {
         type: RoutineType.kCpuCache,
@@ -127,6 +129,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           simpleResult: StandardRoutineResult.kTestFailed,
           powerResult: undefined,
         },
+        details: null,
       },
       {
         type: RoutineType.kCpuFloatingPoint,
@@ -134,6 +137,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           simpleResult: StandardRoutineResult.kTestPassed,
           powerResult: undefined,
         },
+        details: null,
       },
       {
         type: RoutineType.kCpuPrime,
@@ -141,6 +145,7 @@ suite('fakeRoutineListExecutorTestSuite', function() {
           simpleResult: StandardRoutineResult.kTestFailed,
           powerResult: undefined,
         },
+        details: null,
       },
     ];
 

@@ -41,6 +41,7 @@ suite('routineSectionTestSuite', function() {
     // Setup a fake routine controller so that nothing resolves unless
     // done explicitly.
     routineController.setDelayTimeInMillisecondsForTesting(-1);
+    routineController.clearRoutineState();
 
     // Enable all routines by default.
     routineController.setFakeSupportedRoutines(
@@ -1430,6 +1431,181 @@ suite('routineSectionTestSuite', function() {
               routineSectionElement.testSuiteStatus,
               TestSuiteStatus.NOT_RUNNING);
           assertEquals('', getAnnouncedText());
+        });
+  });
+
+  test('GoogleServicesConnectivityDetailsSetsDetailMessage', () => {
+    const networkRoutines = [RoutineType.kGoogleServicesConnectivity];
+    return initializeRoutineSection(networkRoutines)
+        .then(() => {
+          assert(routineSectionElement);
+
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kGoogleServicesConnectivity,
+              StandardRoutineResult.kTestFailed);
+          routineController.setFakeRoutineDetails(
+              RoutineType.kGoogleServicesConnectivity,
+              'www.google.com:\n  Status: FAIL\n  Error: Connection refused');
+          routineController.setDelayTimeInMillisecondsForTesting(0);
+
+          return routineSectionElement.runTests();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          // Property-level check -- no DOM template for detail-message
+          // exists until the details section UI patch lands.
+          const messages =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(1, messages.length);
+          const text = messages[0]!.toString();
+          assertTrue(text.includes('www.google.com:'));
+          assertTrue(text.includes('Status: FAIL'));
+          assertTrue(text.includes('Connection refused'));
+        });
+  });
+
+  test('GoogleServicesConnectivityDetailsClearedOnReset', () => {
+    const networkRoutines = [RoutineType.kGoogleServicesConnectivity];
+    return initializeRoutineSection(networkRoutines)
+        .then(() => {
+          assert(routineSectionElement);
+
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kGoogleServicesConnectivity,
+              StandardRoutineResult.kTestFailed);
+          routineController.setFakeRoutineDetails(
+              RoutineType.kGoogleServicesConnectivity,
+              'www.google.com:\n  Status: FAIL\n  Error: Connection refused');
+          routineController.setDelayTimeInMillisecondsForTesting(0);
+
+          return routineSectionElement.runTests();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          const messages =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(1, messages.length);
+
+          // Simulate page deactivation which triggers resetRoutineState.
+          routineSectionElement.isActive = false;
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          const messagesAfter =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(0, messagesAfter.length);
+        });
+  });
+
+  test('GoogleServicesConnectivityDetailsClearedOnRerun', () => {
+    const networkRoutines = [RoutineType.kGoogleServicesConnectivity];
+    return initializeRoutineSection(networkRoutines)
+        .then(() => {
+          assert(routineSectionElement);
+
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kGoogleServicesConnectivity,
+              StandardRoutineResult.kTestFailed);
+          routineController.setFakeRoutineDetails(
+              RoutineType.kGoogleServicesConnectivity,
+              'www.google.com:\n  Status: FAIL\n  Error: Connection refused');
+          routineController.setDelayTimeInMillisecondsForTesting(0);
+
+          return routineSectionElement.runTests();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          // First run populated messages.
+          const messages =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(1, messages.length);
+
+          // Second run should clear immediately.
+          routineSectionElement.runTests();
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          // Messages cleared at start of new run.
+          const messagesAfter =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(0, messagesAfter.length);
+        });
+  });
+
+  test('GoogleServicesConnectivityNoDetailsWhenEmpty', () => {
+    const networkRoutines = [RoutineType.kGoogleServicesConnectivity];
+    return initializeRoutineSection(networkRoutines)
+        .then(() => {
+          assert(routineSectionElement);
+
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kGoogleServicesConnectivity,
+              StandardRoutineResult.kTestFailed);
+          routineController.setDelayTimeInMillisecondsForTesting(0);
+
+          return routineSectionElement.runTests();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          const messages =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(0, messages.length);
+        });
+  });
+
+  // Regression: when the first routine provides details but the second
+  // does not, lastRoutineDetails must be cleared by the second routine's
+  // status update so populateDetailMessagesHTML produces no output.
+  test('DetailsNotRetainedFromEarlierRoutine', () => {
+    const routines = [
+      RoutineType.kLanConnectivity,
+      RoutineType.kDnsResolution,
+    ];
+    return initializeRoutineSection(routines)
+        .then(() => {
+          assert(routineSectionElement);
+
+          // First routine has details; second does not.
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kLanConnectivity, StandardRoutineResult.kTestPassed);
+          routineController.setFakeRoutineDetails(
+              RoutineType.kLanConnectivity, 'LAN ok:\n  Status: PASS');
+          routineController.setFakeStandardRoutineResult(
+              RoutineType.kDnsResolution, StandardRoutineResult.kTestPassed);
+          // No details set for kDnsResolution.
+          routineController.setDelayTimeInMillisecondsForTesting(0);
+
+          return routineSectionElement.runTests();
+        })
+        .then(() => {
+          return flushTasks();
+        })
+        .then(() => {
+          assert(routineSectionElement);
+          const messages =
+              (routineSectionElement.get('detailMessagesHTML') as
+               TrustedHTML[]);
+          assertEquals(0, messages.length);
         });
   });
 });

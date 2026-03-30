@@ -28,6 +28,7 @@ export class FakeSystemRoutineController implements
     FakeSystemRoutineControllerInterface {
   private methods: FakeMethodResolver = new FakeMethodResolver();
   private routineResults: Map<RoutineType, RoutineResult> = new Map();
+  private routineDetails: Map<RoutineType, string> = new Map();
   /**
    * Controls the delay resolving routines. By default this is 0 and routines
    * resolve immediately, but still asynchronously.
@@ -70,6 +71,7 @@ export class FakeSystemRoutineController implements
       RoutineType.kArcHttp,
       RoutineType.kArcPing,
       RoutineType.kArcDnsResolution,
+      RoutineType.kGoogleServicesConnectivity,
     ];
   }
 
@@ -114,6 +116,17 @@ export class FakeSystemRoutineController implements
       routineType: RoutineType, routineResult: PowerRoutineResult): void {
     this.routineResults.set(
         routineType, ({powerResult: routineResult} as RoutineResult));
+  }
+
+  setFakeRoutineDetails(routineType: RoutineType, details: string): void {
+    this.routineDetails.set(routineType, details);
+  }
+
+  // Clears all per-routine results and details so that state from one test
+  // does not leak into the next.
+  clearRoutineState(): void {
+    this.routineResults.clear();
+    this.routineDetails.clear();
   }
 
   /**
@@ -171,6 +184,7 @@ export class FakeSystemRoutineController implements
     const resultInfo: RoutineResultInfo = {
       type: this.routineType,
       result: result,
+      details: this.routineDetails.get(this.routineType) ?? null,
     };
 
     return resultInfo;

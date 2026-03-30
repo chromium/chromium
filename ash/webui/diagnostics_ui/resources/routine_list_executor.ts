@@ -37,6 +37,7 @@ export class ResultStatusItem {
   routine: RoutineType;
   progress: ExecutionProgress;
   result: RoutineResult|null = null;
+  details: string|null = null;
 
   constructor(routine: RoutineType, progress = ExecutionProgress.NOT_STARTED) {
     this.routine = routine;
@@ -141,6 +142,7 @@ export class RoutineListExecutor {
 
               const status = new ResultStatusItem(name, progress);
               status.result = result;
+              status.details = info?.details ?? null;
               statusCallback(status);
               return progress;
             });

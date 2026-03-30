@@ -1186,7 +1186,8 @@ TEST_F(SystemRoutineControllerTest,
   EXPECT_NO_FATAL_FAILURE(CallSendRoutineResult(mojom::RoutineResultInfo::New(
       mojom::RoutineType::kCpuStress,
       mojom::RoutineResult::NewSimpleResult(
-          mojom::StandardRoutineResult::kTestPassed))));
+          mojom::StandardRoutineResult::kTestPassed),
+      /*details=*/std::nullopt)));
 }
 
 // Covers all verdict branches (kNoProblem, kNotRun, kProblem).

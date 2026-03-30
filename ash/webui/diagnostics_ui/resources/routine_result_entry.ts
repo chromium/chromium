@@ -67,6 +67,8 @@ export function getRoutineType(routineType: RoutineType): string {
       return loadTimeData.getString('arcPingRoutineText');
     case RoutineType.kArcDnsResolution:
       return loadTimeData.getString('arcDnsResolutionRoutineText');
+    case RoutineType.kGoogleServicesConnectivity:
+      return loadTimeData.getString('googleServicesGroupLabel');
     default:
       return '';
   }
@@ -86,6 +88,7 @@ export function getSimpleResult(result: RoutineResult): StandardRoutineResult {
     assert(result.powerResult);
     return result.powerResult.simpleResult as number;
   }
+
   assertNotReached();
 }
 

@@ -50,6 +50,8 @@ union RoutineResult {
 struct RoutineResultInfo {
   RoutineType type;
   RoutineResult result;
+  // Pre-formatted diagnostic details from the backend, if any.
+  string? details;
 };
 
 // Implemented by clients in order to receive the results of a requested
