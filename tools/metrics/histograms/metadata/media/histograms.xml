@@ -2354,6 +2354,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.AudioOutputController{MediaAudioOutputControllerTime}"
+    units="ms" expires_after="2027-03-30">
+  <owner>olka@chromium.org</owner>
+  <owner>henrika@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Measures the execution time of
+    AudioOutputController{MediaAudioOutputControllerTime}. Recorded when the
+    corresponding AudioOutputController method finishes execution.
+  </summary>
+  <token key="MediaAudioOutputControllerTime">
+    <variant name=".CloseTime"/>
+    <variant name=".CreateTime"/>
+    <variant name=".PauseTime"/>
+    <variant name=".PlayTime"/>
+    <variant name=".ProcessDeviceChangeTime"/>
+    <variant name=".StartStreamTime"/>
+    <variant name=".StopStreamTime"/>
+    <variant name=".ToggleLocalOutputTime"/>
+  </token>
+</histogram>
+
 <histogram name="Media.AudioOutputDevice.AudioServiceDelay{LatencyTag}"
     units="ms" expires_after="2026-07-26">
   <owner>fhernqvist@google.com</owner>

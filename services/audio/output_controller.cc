@@ -203,6 +203,7 @@ OutputController::~OutputController() {
 
 bool OutputController::CreateStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.CreateTime");
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
   RecreateStream(RecreateReason::INITIAL_STREAM);
@@ -268,7 +269,7 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
 
   if (disable_local_output_) {
     SendLogMessage(base::StringPrintf(
-        "%s => (WARNING: local output disabed, using a fake stream)",
+        "%s => (WARNING: local output disabled, using a fake stream)",
         __func__));
     // Create a fake AudioOutputStream that will continue pumping the audio
     // data, but does not play it out anywhere. Pumping the audio data is
@@ -328,6 +329,7 @@ void OutputController::RecreateStream(OutputController::RecreateReason reason) {
 
 void OutputController::Play() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.PlayTime");
   TRACE_EVENT0("audio", "OutputController::Play");
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
@@ -341,6 +343,7 @@ void OutputController::Play() {
 
 void OutputController::StartStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.StartStreamTime");
   DCHECK(state_ == kCreated || state_ == kPaused);
 
   if (!request_before_read_) {
@@ -365,6 +368,7 @@ void OutputController::StartStream() {
 
 void OutputController::StopStream() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.StopStreamTime");
 
   if (state_ == kPlaying) {
     stream_->Stop();
@@ -385,6 +389,7 @@ void OutputController::StopStream() {
 
 void OutputController::Pause() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.PauseTime");
   TRACE_EVENT0("audio", "OutputController::Pause");
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
@@ -420,6 +425,7 @@ void OutputController::Flush() {
 
 void OutputController::Close() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER("Media.AudioOutputController.CloseTime");
   TRACE_EVENT0("audio", "OutputController::Close");
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
@@ -619,6 +625,8 @@ void OutputController::StopMuting() {
 
 void OutputController::ToggleLocalOutput() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.AudioOutputController.ToggleLocalOutputTime");
 
   disable_local_output_ = !disable_local_output_;
 
@@ -638,6 +646,8 @@ void OutputController::ToggleLocalOutput() {
 
 void OutputController::ProcessDeviceChange() {
   DCHECK(task_runner_->BelongsToCurrentThread());
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Media.AudioOutputController.ProcessDeviceChangeTime");
   SendLogMessage(
       base::StringPrintf("%s([state=%s])", __func__, StateToString(state_)));
   TRACE_EVENT0("audio", "OutputController::ProcessDeviceChange");
