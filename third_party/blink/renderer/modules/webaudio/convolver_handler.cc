@@ -70,6 +70,7 @@ ConvolverHandler::~ConvolverHandler() {
 void ConvolverHandler::Process(uint32_t frames_to_process) {
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
+  DCHECK(Context()->IsAudioThread());
 
   // Synchronize with possible dynamic changes to the impulse response.
   base::AutoTryLock try_locker(process_lock_);
@@ -200,6 +201,7 @@ bool ConvolverHandler::RequiresTailProcessing() const {
 }
 
 double ConvolverHandler::TailTime() const {
+  DCHECK(Context()->IsAudioThread());
   base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     return reverb_ ? reverb_->ImpulseResponseLength() /
@@ -212,6 +214,7 @@ double ConvolverHandler::TailTime() const {
 }
 
 double ConvolverHandler::LatencyTime() const {
+  DCHECK(Context()->IsAudioThread());
   base::AutoTryLock try_locker(process_lock_);
   if (try_locker.is_acquired()) {
     return reverb_ ? reverb_->LatencyFrames() /
@@ -288,34 +291,42 @@ void ConvolverHandler::CheckNumberOfChannelsForInput(AudioNodeInput* input) {
   DCHECK(input);
   DCHECK_EQ(input, &Input(0));
 
-  bool has_shared_buffer = false;
-  unsigned number_of_channels = 1;
-  bool lock_successfully_acquired = false;
+  {
+    base::AutoTryLock try_locker(process_lock_);
 
-  // TODO(crbug.com/1447093): Check what to do when the lock cannot be acquired.
-  base::AutoTryLock try_locker(process_lock_);
-  if (try_locker.is_acquired()) {
-    lock_successfully_acquired = true;
-    has_shared_buffer = !!shared_buffer_;
-    if (has_shared_buffer)
-      number_of_channels = shared_buffer_->numberOfChannels();
-  }
+    // If we couldn't get the lock, it means the main thread is in SetBuffer().
+    //
+    // Note: Other methods like Process(), TailTime(), and LatencyTime() also
+    // acquire this lock using AutoTryLock, but they are called sequentially
+    // on the audio thread and cannot run concurrently with this method (which
+    // is also on the audio thread). Therefore, the only source of contention
+    // in production is the main thread inside SetBuffer(), which uses a
+    // blocking AutoLock.
+    //
+    // We can skip the update here because SetBuffer() will update the output
+    // channel count itself.
+    if (try_locker.is_acquired()) {
+      unsigned number_of_channels = 1;
+      if (shared_buffer_) {
+        number_of_channels = shared_buffer_->numberOfChannels();
+      }
 
-  if (has_shared_buffer || !lock_successfully_acquired) {
-    unsigned number_of_output_channels = ComputeNumberOfOutputChannels(
-        input->NumberOfChannels(), number_of_channels);
+      unsigned number_of_output_channels =
+          ComputeNumberOfOutputChannels(input->NumberOfChannels(),
+                                        number_of_channels);
 
-    if (IsInitialized() &&
-        number_of_output_channels != Output(0).NumberOfChannels()) {
-      // We're already initialized but the channel count has changed.
-      Uninitialize();
-    }
+      if (IsInitialized() &&
+          number_of_output_channels != Output(0).NumberOfChannels()) {
+        // We're already initialized but the channel count has changed.
+        Uninitialize();
+      }
 
-    if (!IsInitialized()) {
-      // This will propagate the channel count to any nodes connected further
-      // downstream in the graph.
-      Output(0).SetNumberOfChannels(number_of_output_channels);
-      Initialize();
+      if (!IsInitialized()) {
+        // This will propagate the channel count to any nodes connected further
+        // downstream in the graph.
+        Output(0).SetNumberOfChannels(number_of_output_channels);
+        Initialize();
+      }
     }
   }
 

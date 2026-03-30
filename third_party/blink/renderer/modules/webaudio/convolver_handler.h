@@ -30,7 +30,7 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
 
   // AudioHandler
   void Process(uint32_t frames_to_process) override;
-  // Called in the main thread when the number of channels for the input may
+  // Called in the audio thread when the number of channels for the input may
   // have changed.
   void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
 
@@ -59,13 +59,17 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   std::unique_ptr<SharedAudioBuffer> shared_buffer_ GUARDED_BY(process_lock_);
 
   // This synchronizes dynamic changes to the convolution impulse response with
-  // process().
+  // process(). SetBuffer() is the only method that acquires this lock on the
+  // main thread.
   mutable base::Lock process_lock_;
 
   // Normalize the impulse response or not. Must default to true.
   bool normalize_ = true;
 
   FRIEND_TEST_ALL_PREFIXES(ConvolverNodeTest, ReverbLifetime);
+  FRIEND_TEST_ALL_PREFIXES(ConvolverHandlerTest,
+                           CheckNumberOfChannelsForInputWithLockContention);
+  friend class ConvolverHandlerTest;
 };
 
 }  // namespace blink
