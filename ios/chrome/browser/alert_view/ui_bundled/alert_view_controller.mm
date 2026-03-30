@@ -389,6 +389,10 @@ UIButton* GetButtonForAction(AlertAction* action) {
   UIImageView* _checkmark;
 
   UIView* _progressIndicatorContainerView;
+
+  // Width constraint for the content view. Updated when the preferred content
+  // size category changes.
+  NSLayoutConstraint* _contentViewWidthConstraint;
 }
 
 #pragma mark - Public
@@ -413,18 +417,14 @@ UIButton* GetButtonForAction(AlertAction* action) {
   self.swipeRecognizer.enabled = NO;
   [self.contentView addGestureRecognizer:self.swipeRecognizer];
 
-  NSLayoutConstraint* widthConstraint =
+  _contentViewWidthConstraint =
       [self.contentView.widthAnchor constraintEqualToConstant:GetAlertWidth()];
-  widthConstraint.priority = UILayoutPriorityRequired - 1;
+  _contentViewWidthConstraint.priority = UILayoutPriorityRequired - 1;
 
-  [[NSNotificationCenter defaultCenter]
-      addObserverForName:UIContentSizeCategoryDidChangeNotification
-                  object:nil
-                   queue:[NSOperationQueue mainQueue]
-              usingBlock:^(NSNotification* _Nonnull note) {
-                widthConstraint.constant = GetAlertWidth();
-              }];
-  widthConstraint.active = YES;
+  [self
+      registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                   withAction:@selector(preferredContentSizeCategoryDidChange)];
+  _contentViewWidthConstraint.active = YES;
   PositionContentViewInParentView(self.contentView, self.view);
 
   UIScrollView* scrollView = [[UIScrollView alloc] init];
@@ -878,6 +878,11 @@ UIButton* GetButtonForAction(AlertAction* action) {
 }
 
 #pragma mark - Private
+
+// Called when the preferred content size category changes.
+- (void)preferredContentSizeCategoryDidChange {
+  _contentViewWidthConstraint.constant = GetAlertWidth();
+}
 
 // Configures the image.
 - (void)configureAnimationViewWrapper {
