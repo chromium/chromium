@@ -167,7 +167,7 @@ missing_new_fields,chrome/browser/ui/webui/download_internals/download_internals
 missing_new_fields,chrome/browser/ui/webui/downloads/downloads_dom_handler.cc
 missing_new_fields,chrome/browser/ui/webui/management/management_ui_handler_chromeos.cc
 missing_new_fields,chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.cc
-missing_new_fields,chrome/browser/ui/webui/sanitized_image_source.cc
+missing_new_fields,chrome/browser/ui/webui/sanitized_image/sanitized_image_source.cc
 missing_new_fields,chrome/browser/ui/webui/whats_new/whats_new_util.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/webrtc.cc
 missing_new_fields,chrome/services/sharing/nearby/platform/wifi_lan_medium.cc

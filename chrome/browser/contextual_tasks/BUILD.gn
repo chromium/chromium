@@ -256,6 +256,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/webui",
       "//chrome/browser/ui/webui/cr_components/searchbox",
+      "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//components/contextual_tasks/public:feature_list",
       "//components/embedder_support:user_agent",
       "//content/public/browser",

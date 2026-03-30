@@ -65,7 +65,7 @@ source_set("internal") {
       "//chrome/browser/lens/region_search",
       "//chrome/browser/media/router:media_router_feature",
       "//chrome/browser/prefs",
-      "//chrome/browser/skills:ui",
+      "//chrome/browser/skills:public",
       "//chrome/browser/tab_group_sync:factories",
       "//chrome/browser/ui:tab_search_feature",
       "//chrome/browser/ui:ui_features",

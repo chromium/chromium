@@ -53,7 +53,7 @@ source_set("impl") {
     "//chrome/browser/actor/resources:grit",
     "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/skills:ui",
+    "//chrome/browser/skills:public",
     "//chrome/browser/translate",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui/side_panel",

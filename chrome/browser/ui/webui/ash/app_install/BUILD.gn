@@ -36,6 +36,7 @@ static_library("app_install") {
     "//chrome/browser/apps/app_service/app_install",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
     "//components/services/app_service",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",

@@ -16,7 +16,7 @@ include_rules = [
   "+chrome/browser/ui/webui/app_management",
   "+chrome/browser/ui/webui/managed_ui_handler.h",
   "+chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h",
-  "+chrome/browser/ui/webui/sanitized_image_source.h",
+  "+chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h",
   "+chrome/browser/ui/webui/webui_load_timer.h",
   "+chrome/common",
   "+chrome/grit",
