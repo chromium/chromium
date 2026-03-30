@@ -243,7 +243,7 @@ void AddFieldOverrideToForm(
       form_suggestion);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // Creates the override specification passed as a parameter to
 // `features::debug::kAutofillOverridePredictions`.
 std::string CreateManualOverridePrediction(
@@ -3094,7 +3094,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse) {
               ElementsAre(EqualsPrediction(NO_SERVER_DATA)));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 // Tests that manually specified (i.e. passed as a feature parameter) field type
 // predictions override server predictions.
 TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_WithManualOverrides) {

@@ -25,7 +25,7 @@ inline ::testing::Matcher<FieldPrediction> EqualsPrediction(FieldType type) {
   return ::testing::Property("type", &FieldPrediction::type, type);
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID)
 inline ::testing::Matcher<FieldPrediction> EqualsPrediction(
     FieldType type,
     FieldPrediction::Source source) {
