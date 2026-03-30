@@ -179,6 +179,9 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
   // Returns whether the pref with the given `key` should be inserted into the
   // local pref store.
   bool ShouldSetValueInLocalStore(std::string_view key) const;
+  // Returns whether the pref with the given `key` should be queried from the
+  // local pref store.
+  bool ShouldGetValueFromLocalStore(std::string_view key) const;
 
   // Returns whether the pref with the given `key` is mergeable.
   bool IsPrefKeyMergeable(std::string_view key) const;
@@ -200,13 +203,14 @@ class DualLayerUserPrefStore : public PersistentPrefStore,
                                                    base::Value value,
                                                    uint32_t flags) const;
 
-  // Get all prefs currently present in the account store.
+  // Get all syncable prefs currently present in `store`.
   // Note that this will also return prefs which can not be queried from the
-  // account store. For example, this method will return prefs requiring history
+  // `store`. For example, this method will return prefs requiring history
   // opt-in even if history sync is disabled. A GetValue() call for such a pref
   // will not query the account store. Thus it is the role of the callers to
   // check the history opt-in.
-  std::vector<std::string> GetPrefNamesInAccountStore() const;
+  std::vector<std::string> GetSyncablePrefNamesInStore(
+      const PersistentPrefStore* store) const;
 
   // Returns whether the user has history sync turned on.
   bool IsHistorySyncEnabled() const;

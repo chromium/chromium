@@ -3257,6 +3257,43 @@ TEST_F(DualLayerUserPrefStoreAccountScopedTest,
                              base::Value("value4")));
 }
 
+TEST_F(DualLayerUserPrefStoreAccountScopedTest, ShouldNotReadFromLocalStore) {
+  store()->SetUserSelectedTypesForTest(
+      {syncer::UserSelectableType::kPreferences});
+
+  // Set a value in the local store.
+  local_store()->SetValueSilently(kAccountScopedPref,
+                                  base::Value("local_value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kAccountScopedPref));
+
+  // Check GetMutableValue().
+  EXPECT_FALSE(store()->GetMutableValue(kAccountScopedPref, nullptr));
+
+  // Check GetValues().
+  base::DictValue values = store()->GetValues();
+  EXPECT_FALSE(values.FindByDottedPath(kAccountScopedPref));
+
+  // Now set a value in the account store as well.
+  account_store()->SetValueSilently(kAccountScopedPref,
+                                    base::Value("account_value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAccountScopedPref, "account_value"));
+
+  // Check GetMutableValue().
+  base::Value* value = nullptr;
+  ASSERT_TRUE(store()->GetMutableValue(kAccountScopedPref, &value));
+  EXPECT_EQ(*value, base::Value("account_value"));
+
+  // Check GetValues().
+  values = store()->GetValues();
+  base::Value* dict_value = values.FindByDottedPath(kAccountScopedPref);
+  ASSERT_TRUE(dict_value);
+  EXPECT_EQ(*dict_value, base::Value("account_value"));
+}
+
 TEST_F(DualLayerUserPrefStoreAccountScopedTest, ShouldNotWriteWhenNotSyncing) {
   // No types are selected.
   store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet());
@@ -3276,16 +3313,11 @@ TEST_F(DualLayerUserPrefStoreAccountScopedTest, ShouldNotWriteWhenNotSyncing) {
   EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kAccountScopedPref));
 
   // Check ReportValueChanged().
-  // Set a value in the local store to verify that it is not removed - note that
-  // can only happen in a buggy scenario since account-scoped prefs should not
-  // be in the local store.
-  local_store()->SetValueSilently(kAccountScopedPref, base::Value("value4"), 0);
-  base::Value* value = nullptr;
-  ASSERT_TRUE(store()->GetMutableValue(kAccountScopedPref, &value));
-  *value = base::Value("value");
   store()->ReportValueChanged(kAccountScopedPref, 0);
-  // Should not be in the account store.
+  // Should not be in any store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kAccountScopedPref));
   EXPECT_TRUE(ValueInStoreIsAbsent(*account_store(), kAccountScopedPref));
+  EXPECT_TRUE(ValueInStoreIsAbsent(*local_store(), kAccountScopedPref));
 }
 
 TEST_F(DualLayerUserPrefStoreAccountScopedTest,

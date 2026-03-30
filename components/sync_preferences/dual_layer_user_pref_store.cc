@@ -165,10 +165,19 @@ bool DualLayerUserPrefStore::IsInitializationComplete() const {
 
 bool DualLayerUserPrefStore::GetValue(std::string_view key,
                                       const base::Value** result) const {
-  // TODO(crbug.com/441437179): Consider if a similar check is needed for the
-  // local store.
-  if (!ShouldGetValueFromAccountStore(key)) {
+  const bool in_account = ShouldGetValueFromAccountStore(key);
+  const bool in_local = ShouldGetValueFromLocalStore(key);
+
+  if (!in_account && !in_local) {
+    return false;
+  }
+
+  if (!in_account) {
     return local_pref_store_->GetValue(key, result);
+  }
+
+  if (!in_local) {
+    return account_pref_store_->GetValue(key, result);
   }
 
   const base::Value* account_value = nullptr;
@@ -199,7 +208,17 @@ bool DualLayerUserPrefStore::GetValue(std::string_view key,
 base::DictValue DualLayerUserPrefStore::GetValues() const {
   base::DictValue values = local_pref_store_->GetValues();
 
-  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+  if (base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
+    for (const std::string& pref_name :
+         GetSyncablePrefNamesInStore(local_pref_store_.get())) {
+      if (!ShouldGetValueFromLocalStore(pref_name)) {
+        values.RemoveByDottedPath(pref_name);
+      }
+    }
+  }
+
+  for (const std::string& pref_name :
+       GetSyncablePrefNamesInStore(account_pref_store_.get())) {
     // Filter out prefs which should not be queried from the account store, for
     // example, prefs requiring history opt-in if history sync is off.
     if (ShouldGetValueFromAccountStore(pref_name)) {
@@ -256,8 +275,19 @@ void DualLayerUserPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
 
 bool DualLayerUserPrefStore::GetMutableValue(std::string_view key,
                                              base::Value** result) {
-  if (!ShouldGetValueFromAccountStore(key)) {
+  const bool in_account = ShouldGetValueFromAccountStore(key);
+  const bool in_local = ShouldGetValueFromLocalStore(key);
+
+  if (!in_account && !in_local) {
+    return false;
+  }
+
+  if (!in_account) {
     return local_pref_store_->GetMutableValue(key, result);
+  }
+
+  if (!in_local) {
+    return account_pref_store_->GetMutableValue(key, result);
   }
 
   base::Value* local_value = nullptr;
@@ -375,7 +405,8 @@ void DualLayerUserPrefStore::RemoveValuesByPrefixSilently(
   {
     base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
     // Clear all synced preferences with the prefix from the account store.
-    for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+    for (const std::string& pref_name :
+         GetSyncablePrefNamesInStore(account_pref_store_.get())) {
       if (base::StartsWith(pref_name, prefix) &&
           ShouldSetValueInAccountStore(pref_name)) {
         account_pref_store_->RemoveValue(
@@ -565,6 +596,26 @@ bool DualLayerUserPrefStore::ShouldSetValueInLocalStore(
          metadata->write_behavior() != WriteBehavior::kWriteToAccountOnly;
 }
 
+bool DualLayerUserPrefStore::ShouldGetValueFromLocalStore(
+    std::string_view key) const {
+  if (!base::FeatureList::IsEnabled(features::kAccountScopedPrefs)) {
+    // A preference `key` should always be readable from the local store.
+    return true;
+  }
+  if (!pref_model_associator_client_) {
+    // Safer this way.
+    return true;
+  }
+  auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
+                      .GetSyncablePrefMetadata(key);
+  // Prefs are read from the local store by default, unless explicitly tagged
+  // as account-only.
+  return !metadata.has_value() ||
+         // Account-only prefs should ideally not exist in the local store,
+         // except in case of a bug somewhere.
+         metadata->write_behavior() != WriteBehavior::kWriteToAccountOnly;
+}
+
 void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
     syncer::DataType data_type) {
   CHECK(data_type == syncer::PREFERENCES ||
@@ -583,7 +634,8 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   }
 
   // Clear all synced preferences from the account store.
-  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+  for (const std::string& pref_name :
+       GetSyncablePrefNamesInStore(account_pref_store_.get())) {
     std::optional<SyncablePrefMetadata> metadata =
         pref_model_associator_client_->GetSyncablePrefsDatabase()
             .GetSyncablePrefMetadata(pref_name);
@@ -752,8 +804,8 @@ bool DualLayerUserPrefStore::IsInitializationSuccessful() const {
          account_pref_store_observer_.initialization_succeeded();
 }
 
-std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
-    const {
+std::vector<std::string> DualLayerUserPrefStore::GetSyncablePrefNamesInStore(
+    const PersistentPrefStore* store) const {
   std::vector<std::string> keys;
 
   if (!pref_model_associator_client_) {
@@ -781,7 +833,7 @@ std::vector<std::string> DualLayerUserPrefStore::GetPrefNamesInAccountStore()
     }
   };
 
-  for (auto [key, value] : account_pref_store_->GetValues()) {
+  for (auto [key, value] : store->GetValues()) {
     recurse_and_insert(key, value, recurse_and_insert);
   }
 
@@ -932,7 +984,8 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
   // Note: std::optional is used as the value type since it makes the
   // comparison with the new values easier.
   std::map<std::string, std::optional<base::Value>> old_values;
-  for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
+  for (const std::string& pref_name :
+       GetSyncablePrefNamesInStore(account_pref_store_.get())) {
     auto metadata = pref_model_associator_client_->GetSyncablePrefsDatabase()
                         .GetSyncablePrefMetadata(pref_name);
     CHECK(metadata.has_value());
