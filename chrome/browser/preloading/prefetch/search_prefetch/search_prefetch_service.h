@@ -73,7 +73,11 @@ enum class SearchPrefetchEligibilityReason {
   kThrottled = 8,
   // The prefetch was suppressed because the network is too slow.
   kSlowNetwork = 9,
-  kMaxValue = kSlowNetwork,
+  // The prefetch was suppressed because Data Saver is enabled.
+  kDataSaverEnabled = 10,
+  // The prefetch was suppressed because Battery Saver is enabled.
+  kBatterySaverEnabled = 11,
+  kMaxValue = kBatterySaverEnabled,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:SearchPrefetchEligibilityReason)
 

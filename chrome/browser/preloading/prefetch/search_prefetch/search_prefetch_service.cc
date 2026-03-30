@@ -384,7 +384,14 @@ bool SearchPrefetchService::MaybePrefetchURL(
   auto eligibility = prefetch::IsSomePreloadingEnabled(
       *profile_->GetPrefs(), should_ignore_saver_modes);
   if (eligibility != content::PreloadingEligibility::kEligible) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
+    if (eligibility == content::PreloadingEligibility::kDataSaverEnabled) {
+      recorder.reason_ = SearchPrefetchEligibilityReason::kDataSaverEnabled;
+    } else if (eligibility ==
+               content::PreloadingEligibility::kBatterySaverEnabled) {
+      recorder.reason_ = SearchPrefetchEligibilityReason::kBatterySaverEnabled;
+    } else {
+      recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
+    }
     SetEligibility(attempt, eligibility);
     return false;
   }
