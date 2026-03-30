@@ -84,6 +84,7 @@ void ContextualTasksUiServiceFactory::RegisterProfilePrefs(
                                 0);
   registry->RegisterBooleanPref(kContextualTasksShareOpenTabsEveryThread,
                                 false);
+  registry->RegisterDictionaryPref(kContextualTasksSiteExclusions);
 }
 
 bool ContextualTasksUiServiceFactory::ServiceIsCreatedWithBrowserContext()

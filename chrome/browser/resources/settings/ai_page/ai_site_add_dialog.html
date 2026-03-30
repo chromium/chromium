@@ -1,0 +1,26 @@
+<style include="settings-shared">
+  #dialog {
+    --cr-dialog-body-border-top: none;
+    --cr-dialog-body-border-bottom: none;
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">Add a site</div>
+  <div slot="body">
+    <cr-input id="site" label="Site"
+        placeholder="example.com"
+        value="{{site_}}"
+        error-message="{{errorMessage_}}" spellcheck="false"
+        autofocus></cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" id="add" on-click="onSubmitClick_"
+        disabled="[[submitDisabled_]]">
+      $i18n{add}
+    </cr-button>
+  </div>
+</cr-dialog>

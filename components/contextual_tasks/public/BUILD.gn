@@ -39,6 +39,7 @@ source_set("public") {
     "//components/keyed_service/core",
     "//components/lens:lens_url_utils",
     "//components/omnibox/browser",
+    "//components/prefs",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager",
     "//components/sync/service",
@@ -103,6 +104,7 @@ source_set("unit_tests") {
     "contextual_task_unittest.cc",
     "features_unittest.cc",
     "gemini_thread_data_type_controller_unittest.cc",
+    "prefs_unittest.cc",
   ]
 
   deps = [
@@ -110,6 +112,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/omnibox/browser:test_support",
+    "//components/prefs:test_support",
     "//components/sessions:session_id",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",

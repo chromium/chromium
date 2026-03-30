@@ -4,6 +4,9 @@
 
 #include "components/contextual_tasks/public/prefs.h"
 
+#include "base/values.h"
+#include "components/prefs/pref_service.h"
+
 namespace contextual_tasks {
 
 const char kContextualTasksOnboardingTooltipDismissedCount[] =
@@ -11,5 +14,18 @@ const char kContextualTasksOnboardingTooltipDismissedCount[] =
 
 const char kContextualTasksShareOpenTabsEveryThread[] =
     "contextual_tasks.share_open_tabs_every_thread";
+
+const char kContextualTasksSiteExclusions[] =
+    "contextual_tasks.site_exclusions";
+
+void SaveSiteExclusionsToPrefs(PrefService* pref_service,
+                               const base::DictValue& site_exclusions) {
+  pref_service->SetDict(kContextualTasksSiteExclusions,
+                        site_exclusions.Clone());
+}
+
+const base::DictValue& ReadSiteExclusionsFromPrefs(PrefService* pref_service) {
+  return pref_service->GetDict(kContextualTasksSiteExclusions);
+}
 
 }  // namespace contextual_tasks

@@ -75,15 +75,52 @@
         $i18n{stsSettingsOption1SitesAddedHereWontBeReferenced}
       </div>
     </div>
+    <cr-button id="addSiteButton" on-click="onAddSiteClick_">
+      $i18n{add}
+    </cr-button>
   </div>
-  <div class="list-frame">
+  <div id="noSitesAddedLabel" class="list-frame"
+      hidden$="[[hasSites_(siteList_.*)]]">
     <div class="list-item">
       <div class="flex secondary">
         No sites added
       </div>
-      <cr-button>Add</cr-button>
     </div>
   </div>
+  <div id="siteList" class="list-frame" role="list">
+    <template is="dom-repeat" items="[[siteList_]]">
+      <div class="list-item" role="listitem">
+        <div class="start cr-padded-text">[[item]]</div>
+        <cr-icon-button
+            class="icon-more-vert"
+            aria-label="More actions"
+            on-click="onMenuClick_"
+            title="More actions">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
+
+  <cr-lazy-render id="menu">
+    <template>
+      <cr-action-menu>
+        <button id="edit" class="dropdown-item" role="menuitem"
+            on-click="onEditClick_">
+          $i18n{edit}
+        </button>
+        <button id="delete" class="dropdown-item" role="menuitem"
+            on-click="onRemoveSiteClick_">
+          $i18n{remove}
+        </button>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
+
+  <template is="dom-if" if="[[showAddSiteDialog_]]" restamp>
+    <ai-site-add-dialog on-close="onAddSiteDialogClose_"
+        on-add-site="onAddSite_" site="[[siteToEdit_]]">
+    </ai-site-add-dialog>
+  </template>
 
   <cr-link-row class="hr"
       label="$i18n{stsSettingsOption1MyGoogleSearchHistory}"

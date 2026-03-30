@@ -5,6 +5,7 @@ include_rules = [
   "+components/keyed_service",
   "+components/lens",
   "+components/omnibox/browser",
+  "+components/prefs",
   "+components/sessions/core",
   "+components/signin/public",
   "+components/sync/base",
