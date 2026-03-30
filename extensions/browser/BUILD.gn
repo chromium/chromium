@@ -872,6 +872,8 @@ source_set("crx_installer") {
 }
 source_set("webstore_installer") {
   sources = [
+    "webstore_data_fetcher.cc",
+    "webstore_data_fetcher.h",
     "webstore_data_fetcher_delegate.cc",
     "webstore_data_fetcher_delegate.h",
     "webstore_installer.cc",
@@ -888,6 +890,7 @@ source_set("webstore_installer") {
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/strings",
+    "//google_apis/common:request_util",
     "//net/traffic_annotation",
     "//ui/base",
     "//url",

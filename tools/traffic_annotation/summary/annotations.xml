@@ -419,7 +419,7 @@ Refer to README.md for content description and update process.
  <item id="help_me_write_request" added_in_milestone="124" content_hash_code="0612864d" os_list="chromeos" file_path="components/manta/orca_provider.cc" />
  <item id="camera_background_request" added_in_milestone="125" content_hash_code="0415bdde" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
  <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
- <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="06b8ded9" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/webstore_data_fetcher.cc" />
+ <item id="cws_fetch_item_snippet" added_in_milestone="124" content_hash_code="06b8ded9" os_list="windows,chromeos,linux" file_path="extensions/browser/webstore_data_fetcher.cc" />
  <item id="remoting_cloud_provision_gce_instance" added_in_milestone="125" content_hash_code="020ad462" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
  <item id="lens_overlay" added_in_milestone="125" content_hash_code="03ef5586" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/lens/lens_overlay_query_controller.cc" />
  <item id="register_push_notification_service" added_in_milestone="124" type="partial" second_id="oauth2_api_call_flow" content_hash_code="04e0c60d" os_list="chromeos" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,4" file_path="chrome/browser/push_notification/server_client/push_notification_server_client_desktop_impl.cc" />

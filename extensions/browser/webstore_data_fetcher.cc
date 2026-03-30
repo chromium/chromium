@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/webstore_data_fetcher.h"
+#include "extensions/browser/webstore_data_fetcher.h"
 
 #include <optional>
 #include <string>
@@ -85,7 +85,7 @@ void WebstoreDataFetcher::SetLogResponseCodeForTesting(bool enabled) {
 }
 
 // static
-void WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(
+void WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(  // IN-TEST
     FetchItemSnippetResponse* mock_response) {
   g_mock_item_snippet_response_ = mock_response;
 }
@@ -154,12 +154,14 @@ void WebstoreDataFetcher::InitializeSimpleLoaderForRequest(
 void WebstoreDataFetcher::OnResponseStarted(
     const GURL& final_url,
     const network::mojom::URLResponseHead& response_head) {
-  if (!response_head.headers)
+  if (!response_head.headers) {
     return;
+  }
 
   int response_code = response_head.headers->response_code();
-  if (response_code != 200)
+  if (response_code != 200) {
     LOG(ERROR) << "Response_code: " << response_code;
+  }
 }
 
 void WebstoreDataFetcher::OnFetchItemSnippetResponseReceived(

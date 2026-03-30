@@ -5024,6 +5024,7 @@ if (!is_android) {
         "//components/web_package",
         "//extensions/browser:crx_installer",
         "//extensions/browser:test_support",
+        "//extensions/browser:webstore_installer",
         "//extensions/browser/api:extensions_api_client",
         "//extensions/browser/api/storage:settings_namespace",
         "//extensions/browser/api/system_display:display_info_provider",
