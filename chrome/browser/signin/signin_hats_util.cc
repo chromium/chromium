@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/map_util.h"
@@ -171,15 +172,17 @@ bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
            {kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker,
             &switches::kChromeIdentitySurveySwitchProfileFromProfilePicker},
            {kHatsSurveyTriggerIdentityFirstRunCompleted,
-            &switches::kBeforeFirstRunDesktopRefreshSurvey}});
+            &switches::kBeforeFirstRunDesktopRefreshSurvey},
+           {kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
+            &switches::kFirstRunDesktopRefreshSurvey}});
   // Map of HaTS features that are conflicting with each other. Keys are
-  // features that are suppressed if the corresponding value feature is
+  // features that are suppressed if one of the corresponding value features is
   // enabled.
-  static const base::NoDestructor<
-      absl::flat_hash_map<const base::Feature*, const base::Feature*>>
-      kConflictingFeaturesMap(
-          {{&switches::kChromeIdentitySurveyFirstRunSignin,
-            &switches::kBeforeFirstRunDesktopRefreshSurvey}});
+  static const base::NoDestructor<absl::flat_hash_map<
+      const base::Feature*, std::vector<const base::Feature*>>>
+      kConflictingFeaturesMap({{&switches::kChromeIdentitySurveyFirstRunSignin,
+                                {&switches::kBeforeFirstRunDesktopRefreshSurvey,
+                                 &switches::kFirstRunDesktopRefreshSurvey}}});
 
   const auto* feature = base::FindPtrOrNull(*kHatsTriggerFeatureMap, trigger);
 
@@ -188,10 +191,14 @@ bool IsSurveyEnabledForHatsTrigger(const std::string& trigger) {
     return false;
   }
 
-  if (kConflictingFeaturesMap->contains(feature) &&
-      base::FeatureList::IsEnabled(*kConflictingFeaturesMap->at(feature))) {
-    // If the feature has a conflicting feature, suppress the survey.
-    return false;
+  if (auto it = kConflictingFeaturesMap->find(feature);
+      it != kConflictingFeaturesMap->end()) {
+    // If the feature has conflicting features, check if any of them is enabled.
+    for (const auto* conflicting_feature : it->second) {
+      if (base::FeatureList::IsEnabled(*conflicting_feature)) {
+        return false;
+      }
+    }
   }
 
   auto* feature_list = base::FeatureList::GetInstance();

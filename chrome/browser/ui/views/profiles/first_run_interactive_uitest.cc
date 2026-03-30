@@ -86,6 +86,7 @@ using ::testing::Not;
 using ::testing::TestParamInfo;
 using ::testing::Values;
 using ::testing::ValuesIn;
+using ::testing::WithParamInterface;
 
 using Step = ::ProfileManagementFlowController::Step;
 using DeepQuery = ::WebContentsInteractionTestUtil::DeepQuery;
@@ -612,7 +613,7 @@ class FirstRunInteractiveUiBaseTest
 };
 
 class FirstRunInteractiveUiTest
-    : public testing::WithParamInterface<
+    : public WithParamInterface<
           std::optional<switches::FirstRunDesktopSignInPromoVariation>>,
       public FirstRunInteractiveUiBaseTest {
  public:
@@ -820,7 +821,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class FirstRunParameterizedInteractiveUiTest
     : public FirstRunInteractiveUiBaseTest,
-      public testing::WithParamInterface<TestParam> {
+      public WithParamInterface<TestParam> {
  public:
   FirstRunParameterizedInteractiveUiTest()
       : FirstRunInteractiveUiBaseTest(
@@ -1608,14 +1609,40 @@ INSTANTIATE_TEST_SUITE_P(,
                          ValuesIn(GetTestParams()),
                          &ParamToTestSuffix);
 
-class FirstRunWithHatsInteractiveUiTest : public FirstRunInteractiveUiTest {
+struct HatsTestParams {
+  bool enable_refreshed_view = false;
+  base::test::FeatureRef hats_feature;
+  std::string_view hats_trigger;
+  std::string_view test_suffix;
+};
+
+const HatsTestParams kHatsTestParams[] = {
+    {.enable_refreshed_view = false,
+     .hats_feature = switches::kBeforeFirstRunDesktopRefreshSurvey,
+     .hats_trigger = kHatsSurveyTriggerIdentityFirstRunCompleted,
+     .test_suffix = "BeforeRefreshSurvey"},
+    {.enable_refreshed_view = true,
+     .hats_feature = switches::kFirstRunDesktopRefreshSurvey,
+     .hats_trigger = kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
+     .test_suffix = "RefreshSurvey"}};
+
+class FirstRunWithHatsInteractiveUiTest
+    : public WithParamInterface<HatsTestParams>,
+      public FirstRunInteractiveUiBaseTest {
  public:
   FirstRunWithHatsInteractiveUiTest()
-      : FirstRunInteractiveUiTest(/*fixture_enabled_features=*/{
-            {switches::kBeforeFirstRunDesktopRefreshSurvey, {}}}) {}
+      : FirstRunInteractiveUiBaseTest(
+            TestParam{
+                .refreshed_view_variant =
+                    GetParam().enable_refreshed_view
+                        ? std::make_optional(
+                              switches::FirstRunDesktopSignInPromoVariation::
+                                  kDefault)
+                        : std::nullopt},
+            /*fixture_enabled_features=*/{{*GetParam().hats_feature, {}}}) {}
 
   void SetUpOnMainThread() override {
-    FirstRunInteractiveUiTest::SetUpOnMainThread();
+    FirstRunInteractiveUiBaseTest::SetUpOnMainThread();
     mock_hats_service_ = static_cast<MockHatsService*>(
         HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             CHECK_DEREF(browser()).profile(),
@@ -1623,13 +1650,17 @@ class FirstRunWithHatsInteractiveUiTest : public FirstRunInteractiveUiTest {
   }
 
   void TearDownOnMainThread() override {
-    FirstRunInteractiveUiTest::TearDownOnMainThread();
+    FirstRunInteractiveUiBaseTest::TearDownOnMainThread();
     mock_hats_service_ = nullptr;
   }
 
  protected:
   MockHatsService& mock_hats_service() {
     return CHECK_DEREF(mock_hats_service_);
+  }
+
+  std::string hats_trigger() const {
+    return std::string(GetParam().hats_trigger);
   }
 
   InteractiveTestApi::MultiStep DeclineHistorySync() {
@@ -1669,9 +1700,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
   ASSERT_TRUE(IsProfileNameDefault());
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
-  EXPECT_CALL(
-      mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(hats_trigger(), _, _, _))
       .Times(0);
 
   base::test::TestFuture<bool> proceed_future;
@@ -1695,9 +1724,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
   ASSERT_TRUE(IsProfileNameDefault());
   ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
 
-  EXPECT_CALL(
-      mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(hats_trigger(), _, _, _))
       .Times(0);
 
   base::test::TestFuture<bool> proceed_future;
@@ -1718,15 +1745,12 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTest,
   ExpectStepHistograms(Step::kIntro, /*shown=*/true, /*with_exit=*/true);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    FirstRunWithHatsInteractiveUiTest,
-    Values(std::nullopt,
-           switches::FirstRunDesktopSignInPromoVariation::kDefault),
-    [](const TestParamInfo<
-        std::optional<switches::FirstRunDesktopSignInPromoVariation>>& info) {
-      return RefreshedViewSuffix(info.param);
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunWithHatsInteractiveUiTest,
+                         ValuesIn(kHatsTestParams),
+                         [](const TestParamInfo<HatsTestParams>& info) {
+                           return std::string(info.param.test_suffix);
+                         });
 
 using FirstRunWithHatsInteractiveUiTestWithSyncService =
     WithTestSyncServiceMixin<FirstRunWithHatsInteractiveUiTest>;
@@ -1745,12 +1769,10 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
   const std::map<std::string, std::string> survey_data = {
       {"Channel", "unknown"}};
   EXPECT_CALL(mock_hats_service(),
-              LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted,
-                                  _, _, Eq(survey_data)));
+              LaunchDelayedSurvey(hats_trigger(), _, _, Eq(survey_data)));
   // No other survey should be launched (e.g. permanent identity FRE survey).
   EXPECT_CALL(mock_hats_service(),
-              LaunchDelayedSurvey(
-                  Not(kHatsSurveyTriggerIdentityFirstRunCompleted), _, _, _))
+              LaunchDelayedSurvey(Not(hats_trigger()), _, _, _))
       .Times(0);
 
   base::test::TestFuture<bool> proceed_future;
@@ -1795,9 +1817,7 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
       profile(), base::BindRepeating(
                      &policy::FakeUserPolicySigninService::BuildForEnterprise));
 
-  EXPECT_CALL(
-      mock_hats_service(),
-      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunCompleted, _, _, _))
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(hats_trigger(), _, _, _))
       .Times(0);
 
   base::test::TestFuture<bool> proceed_future;
@@ -1856,14 +1876,74 @@ IN_PROC_BROWSER_TEST_P(FirstRunWithHatsInteractiveUiTestWithSyncService,
   ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
 }
 
+INSTANTIATE_TEST_SUITE_P(,
+                         FirstRunWithHatsInteractiveUiTestWithSyncService,
+                         ValuesIn(kHatsTestParams),
+                         [](const TestParamInfo<HatsTestParams>& info) {
+                           return std::string(info.param.test_suffix);
+                         });
+
+using FirstRunWithHatsAndUnrelatedFeatureSetInteractiveUiTest =
+    FirstRunWithHatsInteractiveUiTestWithSyncService;
+
+// TODO(crbug.com/366082752): Re-enable this test once the issue is fixed.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoNotLaunchHats DISABLED_DoNotLaunchHats
+#else
+#define MAYBE_DoNotLaunchHats DoNotLaunchHats
+#endif
+IN_PROC_BROWSER_TEST_P(FirstRunWithHatsAndUnrelatedFeatureSetInteractiveUiTest,
+                       MAYBE_DoNotLaunchHats) {
+  ASSERT_TRUE(IsProfileNameDefault());
+  ASSERT_TRUE(fre_service()->ShouldOpenFirstRun());
+
+  // A survey with the HaTS trigger should not be launched for a not matching
+  // feature set.
+  EXPECT_CALL(mock_hats_service(), LaunchDelayedSurvey(hats_trigger(), _, _, _))
+      .Times(0);
+
+  base::test::TestFuture<bool> proceed_future;
+  OpenFirstRun(proceed_future.GetCallback());
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kWebContentsId, web_view()),
+      CompleteIntroStep(/*sign_in=*/true),
+      WaitForWebContentsNavigation(kWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()));
+
+  ConfigureTestSyncService(SyncServiceFactory::GetForProfile(profile()),
+                           syncer::SyncService::TransportState::ACTIVE);
+  SimulateSignIn(kTestEmail, kTestGivenName);
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+      DeclineHistorySync());
+
+  WaitForPickerClosed();
+
+  EXPECT_TRUE(proceed_future.Get());
+  EXPECT_TRUE(GetFirstRunFinishedPrefValue());
+  ExpectStepHistograms(Step::kFinishFlow, /*shown=*/true, /*with_exit=*/true);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     ,
-    FirstRunWithHatsInteractiveUiTestWithSyncService,
-    Values(std::nullopt,
-           switches::FirstRunDesktopSignInPromoVariation::kDefault),
-    [](const TestParamInfo<
-        std::optional<switches::FirstRunDesktopSignInPromoVariation>>& info) {
-      return RefreshedViewSuffix(info.param);
+    FirstRunWithHatsAndUnrelatedFeatureSetInteractiveUiTest,
+    Values(
+        HatsTestParams{
+            .enable_refreshed_view = true,
+            .hats_feature = switches::kBeforeFirstRunDesktopRefreshSurvey,
+            .hats_trigger = kHatsSurveyTriggerIdentityFirstRunCompleted,
+            .test_suffix = "BeforeRefreshSurvey"},
+        HatsTestParams{.enable_refreshed_view = false,
+                       .hats_feature = switches::kFirstRunDesktopRefreshSurvey,
+                       .hats_trigger =
+                           kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
+                       .test_suffix = "RefreshSurvey"}),
+    [](const TestParamInfo<HatsTestParams>& info) {
+      return std::string(info.param.test_suffix);
     });
 
 class FirstRunDontSignInOnGaiaPageInteractiveUiTest

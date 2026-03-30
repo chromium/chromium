@@ -115,6 +115,8 @@ constexpr char kHatsSurveyTriggerIdentityProfileMenuSignin[] =
     "identity-profile-menu-signin";
 constexpr char kHatsSurveyTriggerIdentityProfilePickerAddProfileSignin[] =
     "identity-profile-picker-add-profile-signin";
+constexpr char kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted[] =
+    "identity-refreshed-first-run-completed";
 constexpr char kHatsSurveyTriggerIdentitySigninInterceptProfileSeparation[] =
     "identity-signin-intercept-profile-separation";
 constexpr char kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed[] =
@@ -660,6 +662,17 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &switches::kBeforeFirstRunDesktopRefreshSurvey,
       kHatsSurveyTriggerIdentityFirstRunCompleted,
       "XhHJ3uboj0ugnJ3q1cK0S6RQC7u7",
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/
+      std::vector<std::string>{"Channel"},
+      /*log_responses_to_uma=*/true,
+      /*log_responses_to_ukm=*/false,
+      hats::SurveyConfig::ProfileAgeRequirement::kAnyAge);
+
+  survey_configs.emplace_back(
+      &switches::kFirstRunDesktopRefreshSurvey,
+      kHatsSurveyTriggerIdentityRefreshedFirstRunCompleted,
+      "o8AU42wsG0ugnJ3q1cK0PBwPwK1J",
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Channel"},

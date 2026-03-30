@@ -14,8 +14,8 @@
 class Profile;
 
 namespace signin {
-// Launches a HaTS survey under the given `trigger` for the `profile`. It
-// attaches the given `data` to the survey.
+// Tries to launch (for eligible clients) a HaTS survey under the given
+// `trigger` for the `profile`. It attaches the given `data` to the survey.
 //
 // On Win/Mac/Linux, if no browser is active for the profile and
 // `defer_if_no_browser` is `true`, the survey is deferred until a browser
@@ -25,9 +25,10 @@ void LaunchHatsSurveyForProfile(const std::string& trigger,
                                 bool defer_if_no_browser,
                                 SurveyStringData data);
 
-// Launches a HaTS survey under the given `trigger` for the `profile`. It infers
-// the data to attach to the survey based on the `trigger`, the `profile` state
-// and the `access_point_for_data_type_promo`.
+// Tries to launch (for eligible clients) a HaTS survey under the given
+// `trigger` for the `profile`. It infers the data to attach to the survey based
+// on the `trigger`, the `profile` state and the
+// `access_point_for_data_type_promo`.
 //
 // On Win/Mac/Linux, if no browser is active for the profile and
 // `defer_if_no_browser` is `true`, the survey is deferred until a browser

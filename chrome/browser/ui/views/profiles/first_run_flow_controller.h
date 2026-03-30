@@ -65,6 +65,8 @@ class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
   // Run the `finish_flow_callback_` if it's not empty.
   void RunFinishFlowCallback();
 
+  std::string GetHatsSurveyTrigger() const;
+
   void MaybeTriggerHatsSurvey();
 
   const raw_ptr<Profile> profile_;
