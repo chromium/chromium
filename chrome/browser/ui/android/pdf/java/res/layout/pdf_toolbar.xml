@@ -61,12 +61,25 @@ found in the LICENSE file.
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
+            android:id="@+id/page_count_divider"
+            android:text=" / "
+            tools:ignore="HardcodedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            app:layout_constraintStart_toEndOf="@id/current_page"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <TextView
                 android:id="@+id/page_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:textAppearance="@style/TextAppearance.TextSmall.Primary"
-                app:layout_constraintStart_toEndOf="@id/current_page"
+                app:layout_constraintStart_toEndOf="@id/page_count_divider"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

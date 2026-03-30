@@ -21,6 +21,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.pdf.PdfSandboxHandle;
 import androidx.pdf.SandboxedPdfLoader;
 import androidx.pdf.content.ExternalLink;
+import androidx.pdf.view.PdfView;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
 import org.json.JSONException;
@@ -49,7 +50,7 @@ import org.chromium.url.Origin;
  */
 @SuppressLint("NewApi")
 @NullMarked
-public class PdfCoordinator implements PdfActionsDelegate {
+public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDelegate {
     private static final String TAG = "PdfCoordinator";
     private static final int PAGE_TRANSITION_TYPE = PageTransition.LINK;
 
@@ -60,19 +61,32 @@ public class PdfCoordinator implements PdfActionsDelegate {
     private static long sLastPdfLoadTimestamp;
 
     private static boolean sSkipLoadPdfForTesting;
-    private final View mView;
-    private final FragmentManager mFragmentManager;
-    private final Activity mActivity;
-    private final String mTabId;
-    private final NativePageHost mNativePageHost;
-    private final boolean mIsIncognito;
-    private final String mUrl;
 
+    private final Activity mActivity;
+    private final FragmentManager mFragmentManager;
+    private final View mView;
+
+    /** ProgressBar to be shown during PDF download. */
+    private final ProgressBar mProgressBar;
+
+    private final NativePageHost mNativePageHost;
+
+    private final String mTabId;
+    private final String mUrl;
+    private final boolean mIsIncognito;
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
 
+    private final @Nullable PdfToolbarCoordinator mToolbarCoordinator;
+
     /** The filepath of the pdf. It is null before download complete. */
     private @Nullable String mPdfFilePath;
+
+    /** Uri of the pdf document. Generated when the pdf is ready to load. */
+    private @Nullable Uri mUri;
+
+    /** A PdfSandboxHandle representing the active pdf session. */
+    private PdfSandboxHandle mPdfSandboxHandle;
 
     /**
      * Whether the pdf has been loaded, despite of success or failure. This is used to ensure we
@@ -80,18 +94,9 @@ public class PdfCoordinator implements PdfActionsDelegate {
      */
     private boolean mIsPdfLoaded;
 
-    /** Uri of the pdf document. Generated when the pdf is ready to load. */
-    private @Nullable Uri mUri;
-
-    @VisibleForTesting public ChromePdfViewerFragment mChromePdfViewerFragment;
-
     private int mFindInPageCount;
 
-    /** ProgressBar to be shown during PDF download. */
-    private final ProgressBar mProgressBar;
-
-    /** A PdfSandboxHandle representing the active pdf session. */
-    private PdfSandboxHandle mPdfSandboxHandle;
+    @VisibleForTesting public ChromePdfViewerFragment mChromePdfViewerFragment;
 
     /**
      * Creates a PdfCoordinator for the PdfPage.
@@ -116,13 +121,6 @@ public class PdfCoordinator implements PdfActionsDelegate {
         mIsIncognito = profile.isOffTheRecord();
         mUrl = url;
         mView = LayoutInflater.from(activity).inflate(R.layout.pdf_page, null);
-        if (PdfUtils.isInlinePdfV2Enabled()) {
-            PdfToolbar toolbar = mView.findViewById(R.id.pdf_toolbar);
-            toolbar.setVisibility(View.VISIBLE);
-            toolbar.setPageNumber(getCurrentPageString());
-            toolbar.setPageCount(getPageCountString());
-            toolbar.setZoomValue(getZoomValueString());
-        }
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
@@ -154,6 +152,12 @@ public class PdfCoordinator implements PdfActionsDelegate {
         if (filepath == null) {
             mProgressBar.setVisibility(View.VISIBLE);
         }
+        mToolbarCoordinator =
+                PdfUtils.isInlinePdfV2Enabled()
+                        ? new PdfToolbarCoordinator(activity, mView, this)
+                        : null;
+        // TODO(crbug.com/496635305): Remove this log after mToolbarCoordinator is used elsewhere.
+        Log.d(TAG, "Toolbar coordinator is null: " + (mToolbarCoordinator == null));
         loadPdfFile(filepath);
     }
 
@@ -161,6 +165,22 @@ public class PdfCoordinator implements PdfActionsDelegate {
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
 
         private @Nullable PdfActionsDelegate mDelegate;
+        private @Nullable PdfView mPdfView;
+
+        @Override
+        public void onPdfViewCreated(PdfView pdfView) {
+            super.onPdfViewCreated(pdfView);
+            mPdfView = pdfView;
+        }
+
+        /** Returns the PdfView from the PdfViewerFragment. */
+        public @Nullable PdfView getPdfViewFromFragment() {
+            return mPdfView;
+        }
+
+        public void setPdfViewForTesting(PdfView pdfView) {
+            mPdfView = pdfView;
+        }
 
         /** Public no-arg constructor for FragmentManager. */
         public ChromePdfViewerFragment() {}
@@ -335,21 +355,6 @@ public class PdfCoordinator implements PdfActionsDelegate {
         }
     }
 
-    private String getCurrentPageString() {
-        // TODO(rathomas): Update the current page.
-        return "99";
-    }
-
-    private String getPageCountString() {
-        // TODO(rathomas): Update the page count.
-        return " / 99";
-    }
-
-    private String getZoomValueString() {
-        // TODO(rathomas): Update the zoom value.
-        return "100%";
-    }
-
     @Nullable String requestAssistContent(String filename, boolean isWorkProfile) {
         if (mUri == null) {
             return null;
@@ -391,5 +396,17 @@ public class PdfCoordinator implements PdfActionsDelegate {
         var oldValue = sSkipLoadPdfForTesting;
         sSkipLoadPdfForTesting = skipLoadPdfForTesting;
         ResettersForTesting.register(() -> sSkipLoadPdfForTesting = oldValue);
+    }
+
+    /**
+     * Navigates to the specified page.
+     *
+     * @param pageIndex The 0-based index of the page to navigate to.
+     */
+    @Override
+    public void navigateToPage(int pageIndex) {
+        if (mChromePdfViewerFragment.getPdfViewFromFragment() != null) {
+            mChromePdfViewerFragment.getPdfViewFromFragment().scrollToPage(pageIndex);
+        }
     }
 }

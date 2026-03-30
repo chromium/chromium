@@ -6,12 +6,11 @@ package org.chromium.chrome.browser.pdf;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Toolbar for the PDF viewer. To handle clicks on the navigation icon, set a listener with
@@ -19,31 +18,7 @@ import org.chromium.build.annotations.NullMarked;
  */
 @NullMarked
 public class PdfToolbar extends Toolbar {
-    private TextView mCurrentPage;
-    private TextView mPageCount;
-    private TextView mZoomValue;
-
     public PdfToolbar(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        mCurrentPage = findViewById(R.id.current_page);
-        mPageCount = findViewById(R.id.page_count);
-        mZoomValue = findViewById(R.id.zoom_value);
-    }
-
-    void setPageNumber(String pageNumber) {
-        mCurrentPage.setText(pageNumber);
-    }
-
-    void setPageCount(String pageCount) {
-        mPageCount.setText(pageCount);
-    }
-
-    void setZoomValue(String zoomValue) {
-        mZoomValue.setText(zoomValue);
     }
 }

@@ -28,6 +28,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/pdf/PdfInfo.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfPage.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfToolbar.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfToolbarActionsDelegate.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfToolbarProperties.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfToolbarViewBinder.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfUtils.java",
   ]
   deps = [
@@ -75,6 +79,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/pdf/PdfContentProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfPageUnitTest.java",
+    "java/src/org/chromium/chrome/browser/pdf/PdfToolbarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/pdf/PdfUtilsUnitTest.java",
   ]
 
@@ -93,6 +98,7 @@ robolectric_library("junit") {
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_pdf_pdf_viewer_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/hamcrest:hamcrest_java",
