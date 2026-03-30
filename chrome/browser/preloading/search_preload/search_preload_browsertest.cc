@@ -516,10 +516,6 @@ class SearchPreloadBrowserTest : public SearchPreloadBrowserTestBase {
                 {},
             },
             {
-                features::kPrefetchPrerenderIntegration,
-                {},
-            },
-            {
                 features::kDsePreload2,
                 {
                     {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
@@ -1303,10 +1299,6 @@ class SearchPreloadBrowserTest_ErrorBackoffDuration
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
             {
-                features::kPrefetchPrerenderIntegration,
-                {},
-            },
-            {
                 features::kDsePreload2,
                 {
                     {"kDsePreload2ErrorBackoffDuration", "1000ms"},
@@ -1368,10 +1360,6 @@ class SearchPreloadBrowserTest_DeviceMemoryThreshold
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
             {
-                features::kPrefetchPrerenderIntegration,
-                {},
-            },
-            {
                 features::kDsePreload2,
                 {
                     {"kDsePreload2DeviceMemoryThresholdMiB",
@@ -1401,10 +1389,6 @@ class SearchPreloadBrowserTest_Limit : public SearchPreloadBrowserTestBase {
       base::test::ScopedFeatureList& scoped_feature_list) override {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
-            {
-                features::kPrefetchPrerenderIntegration,
-                {},
-            },
             {
                 features::kDsePreload2,
                 {
@@ -1623,10 +1607,6 @@ class SearchPreloadBrowserTest_Ttl : public SearchPreloadBrowserTestBase {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {
             {
-                features::kPrefetchPrerenderIntegration,
-                {},
-            },
-            {
                 features::kDsePreload2,
                 {
                     {"kDsePreload2DeviceMemoryThresholdMiB", "0"},
@@ -1830,10 +1810,6 @@ class SearchPreloadBrowserTest_Throttle : public SearchPreloadBrowserTestBase {
             {
                 features::kPrewarm,
                 {{"throttle_prefetch", "true"}},
-            },
-            {
-                features::kPrefetchPrerenderIntegration,
-                {},
             },
             {
                 features::kDsePreload2,
