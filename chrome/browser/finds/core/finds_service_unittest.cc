@@ -88,7 +88,7 @@ class FindsServiceTest : public testing::Test {
 
 TEST_F(FindsServiceTest, VerifyNotificationCooldownPref) {
   EXPECT_EQ(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
-  service_->MarkNotificationShown(&prefs_);
+  finds::MarkNotificationShown(&prefs_);
   EXPECT_NE(0, prefs_.GetInt64(prefs::kFindsModelExecutionLastTimestamp));
 }
 
@@ -292,7 +292,7 @@ TEST_F(FindsServiceTest, Success) {
 
 TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
   // Set the last execution timestamp to now.
-  service_->MarkNotificationShown(&prefs_);
+  finds::MarkNotificationShown(&prefs_);
 
   // Fast forward time just before the cooldown is set to expire.
   task_environment_.FastForwardBy(base::Days(
@@ -317,7 +317,7 @@ TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
 
 TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
   // Set the last execution timestamp to now.
-  service_->MarkNotificationShown(&prefs_);
+  finds::MarkNotificationShown(&prefs_);
 
   // Fast forward enough to pass the cooldown.
   task_environment_.FastForwardBy(

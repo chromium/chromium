@@ -4,6 +4,7 @@
 
 #include "chrome/browser/finds/core/finds_utils.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
@@ -49,6 +50,17 @@ TEST_F(FindsUtilsTest, MarkThemeAsNotInterested) {
   const base::DictValue& updated_themes =
       prefs()->GetDict(prefs::kFindsNotInterestedThemesLastTimestamp);
   EXPECT_TRUE(updated_themes.contains("Shopping"));
+}
+
+TEST_F(FindsUtilsTest, MarkNotificationShown) {
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(0, prefs()->GetInt64(prefs::kFindsModelExecutionLastTimestamp));
+
+  MarkNotificationShown(prefs());
+
+  EXPECT_GT(prefs()->GetInt64(prefs::kFindsModelExecutionLastTimestamp), 0);
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationShown", true, 1);
 }
 
 }  // namespace finds

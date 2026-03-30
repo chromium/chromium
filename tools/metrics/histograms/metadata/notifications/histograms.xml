@@ -493,6 +493,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Notifications.ChromeFinds.NotificationInteraction"
+    enum="FindsNotificationUserInteraction" expires_after="2026-08-25">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <summary>
+    Records interactions with a Chrome finds notification, such as a
+    notification body click, dismissal, or button clicks (helpful or unhelpful
+    buttons).
+  </summary>
+</histogram>
+
+<histogram name="Notifications.ChromeFinds.NotificationShown" enum="Boolean"
+    expires_after="2026-08-25">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>evanluo@google.com</owner>
+  <summary>
+    Records when a Chrome finds notification is shown to the user.
+  </summary>
+</histogram>
+
 <histogram name="Notifications.ChromeFinds.OptInEvent"
     enum="ChromeFindsOptInEvent" expires_after="2026-08-25">
   <owner>wylieb@google.com</owner>

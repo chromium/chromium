@@ -114,11 +114,6 @@ bool IsThemeCooldownPassed(const PrefService* pref_service,
          base::Days(finds::features::kThemeCooldownDurationInDays.Get());
 }
 
-void SetModelExecutionCooldownTimestamp(PrefService* pref_service) {
-  pref_service->SetInt64(prefs::kFindsModelExecutionLastTimestamp,
-                         base::Time::Now().InMillisecondsSinceUnixEpoch());
-}
-
 const SuggestionTheme* GetHighestScoredThemeIfPossible(
     PrefService* pref_service,
     const ::google::protobuf::RepeatedPtrField<SuggestionTheme>& suggestions) {
@@ -233,10 +228,6 @@ void FindsService::AddObserver(Observer* observer) {
 
 void FindsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void FindsService::MarkNotificationShown(PrefService* pref_service) {
-  SetModelExecutionCooldownTimestamp(pref_service);
 }
 
 void FindsService::ExecuteModelAndScheduleNotification(

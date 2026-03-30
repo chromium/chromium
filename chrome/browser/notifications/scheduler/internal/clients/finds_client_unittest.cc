@@ -8,7 +8,9 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
+#include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/notifications/scheduler/public/finds_agent.h"
@@ -46,11 +48,13 @@ class FindsClientTest : public testing::Test {
   NotificationSchedulerClient* finds_client() { return finds_client_.get(); }
   MockFindsAgent* mock_finds_agent() { return mock_finds_agent_; }
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
   std::unique_ptr<FindsClient> finds_client_;
   raw_ptr<MockFindsAgent> mock_finds_agent_;
   TestingPrefServiceSimple pref_service_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Verifies that a click action calls the FindsAgent OpenNotificationUrl
@@ -63,6 +67,10 @@ TEST_F(FindsClientTest, OnUserAction_Click) {
 
   EXPECT_CALL(*mock_finds_agent(), OpenNotificationUrl(GURL(kTestUrl)));
   finds_client()->OnUserAction(action_data);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationInteraction",
+      finds::FindsNotificationUserInteraction::kClick, 1);
 }
 
 // Verifies that a helpful button click action calls the FindsAgent
@@ -78,6 +86,10 @@ TEST_F(FindsClientTest, OnUserAction_HelpfulButtonClick) {
 
   EXPECT_CALL(*mock_finds_agent(), OpenNotificationUrl(GURL(kTestUrl)));
   finds_client()->OnUserAction(action_data);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationInteraction",
+      finds::FindsNotificationUserInteraction::kHelpfulButtonClick, 1);
 }
 
 // Verifies that an unhelpful button click action marks the theme as not
@@ -99,6 +111,29 @@ TEST_F(FindsClientTest, OnUserAction_UnhelpfulButtonClick) {
   const base::DictValue& not_interested_themes = pref_service()->GetDict(
       finds::prefs::kFindsNotInterestedThemesLastTimestamp);
   EXPECT_TRUE(not_interested_themes.contains("Shopping"));
+
+  histogram_tester()->ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationInteraction",
+      finds::FindsNotificationUserInteraction::kUnhelpfulButtonClick, 1);
+}
+
+TEST_F(FindsClientTest, OnUserAction_Dismiss) {
+  UserActionData action_data(SchedulerClientType::kChromeFinds,
+                             UserActionType::kDismiss, "guid1");
+
+  finds_client()->OnUserAction(action_data);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationInteraction",
+      finds::FindsNotificationUserInteraction::kDismiss, 1);
+}
+
+// Verifies that OnShowNotification records metrics.
+TEST_F(FindsClientTest, OnShowNotification) {
+  finds_client()->OnShowNotification(nullptr);
+
+  histogram_tester()->ExpectUniqueSample(
+      "Notifications.ChromeFinds.NotificationShown", true, 1);
 }
 
 }  // namespace notifications

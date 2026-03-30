@@ -11,6 +11,7 @@
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/notifications/scheduler/internal/stats.h"
 #include "chrome/browser/notifications/scheduler/public/finds_agent.h"
@@ -34,8 +35,7 @@ void FindsClient::BeforeShowNotification(
 
 void FindsClient::OnShowNotification(
     std::unique_ptr<NotificationData> notification_data) {
-  // TODO(crbug.com/483107157): Call MarkNotificationShown here.
-  NOTIMPLEMENTED();
+  finds::MarkNotificationShown(pref_service_);
 }
 
 void FindsClient::OnSchedulerInitialized(bool success,
@@ -55,25 +55,35 @@ void FindsClient::OpenNotificationAction(const UserActionData& action_data) {
   }
 }
 
+void FindsClient::NotInterestedAction(const UserActionData& action_data) {
+  finds::RecordNotificationInteraction(
+      finds::FindsNotificationUserInteraction::kUnhelpfulButtonClick);
+  using SuggestionTheme =
+      optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme;
+  SuggestionTheme::ThemeType theme_type = SuggestionTheme::UNKNOWN;
+  auto theme_it =
+      action_data.custom_data.find(kChromeFindsNotificationsThemeType);
+  if (theme_it != action_data.custom_data.end()) {
+    int theme_int;
+    if (base::StringToInt(theme_it->second, &theme_int)) {
+      theme_type = static_cast<SuggestionTheme::ThemeType>(theme_int);
+    }
+  }
+  finds::MarkThemeAsNotInterested(pref_service_, theme_type);
+}
+
 void FindsClient::HandleNotificationButtonClick(
     const UserActionData& action_data) {
   DCHECK(action_data.button_click_info.has_value());
+  // Open in Chrome button.
   if (action_data.button_click_info->type == ActionButtonType::kHelpful) {
+    finds::RecordNotificationInteraction(
+        finds::FindsNotificationUserInteraction::kHelpfulButtonClick);
     OpenNotificationAction(action_data);
+    // Not Interested button.
   } else if (action_data.button_click_info->type ==
              ActionButtonType::kUnhelpful) {
-    using SuggestionTheme =
-        optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme;
-    SuggestionTheme::ThemeType theme_type = SuggestionTheme::UNKNOWN;
-    auto theme_it =
-        action_data.custom_data.find(kChromeFindsNotificationsThemeType);
-    if (theme_it != action_data.custom_data.end()) {
-      int theme_int;
-      if (base::StringToInt(theme_it->second, &theme_int)) {
-        theme_type = static_cast<SuggestionTheme::ThemeType>(theme_int);
-      }
-    }
-    finds::MarkThemeAsNotInterested(pref_service_, theme_type);
+    NotInterestedAction(action_data);
   } else {
     // There should not be any other buttons in the finds notification.
     NOTREACHED();
@@ -83,11 +93,14 @@ void FindsClient::HandleNotificationButtonClick(
 void FindsClient::OnUserAction(const UserActionData& action_data) {
   switch (action_data.action_type) {
     case UserActionType::kClick: {
+      finds::RecordNotificationInteraction(
+          finds::FindsNotificationUserInteraction::kClick);
       OpenNotificationAction(action_data);
       break;
     }
     case UserActionType::kDismiss:
-      NOTIMPLEMENTED();
+      finds::RecordNotificationInteraction(
+          finds::FindsNotificationUserInteraction::kDismiss);
       break;
     case UserActionType::kButtonClick:
       HandleNotificationButtonClick(action_data);

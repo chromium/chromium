@@ -6,6 +6,8 @@ static_library("core") {
   sources = [
     "finds_features.cc",
     "finds_features.h",
+    "finds_metrics.cc",
+    "finds_metrics.h",
     "finds_pref_names.cc",
     "finds_pref_names.h",
     "finds_service.cc",
@@ -33,6 +35,7 @@ static_library("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "finds_metrics_unittest.cc",
     "finds_service_unittest.cc",
     "finds_utils_unittest.cc",
   ]

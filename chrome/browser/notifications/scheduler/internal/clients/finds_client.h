@@ -39,6 +39,7 @@ class FindsClient : public NotificationSchedulerClient {
   void GetThrottleConfig(ThrottleConfigCallback callback) override;
 
   void OpenNotificationAction(const UserActionData& action_data);
+  void NotInterestedAction(const UserActionData& action_data);
   void HandleNotificationButtonClick(const UserActionData& action_data);
 
   std::unique_ptr<FindsAgent> finds_agent_;

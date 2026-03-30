@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -24,20 +25,6 @@ const char kThemeFoodAndDining[] = "FoodAndDining";
 const char kThemeEntertainment[] = "Entertainment";
 const char kThemeShopping[] = "Shopping";
 const char kThemeTravel[] = "Travel";
-
-void SetThemeCooldownTimestamp(PrefService* pref_service,
-                               SuggestionTheme::ThemeType theme) {
-  const std::string theme_pref_string = ThemeTypeEnumToString(theme);
-  if (theme_pref_string.empty()) {
-    // Do not set a pref if the theme type is unknown.
-    return;
-  }
-  // Store as a double since base::DictValue only supports storing doubles, but
-  // the value is essentially an int64_t timestamp.
-  ScopedDictPrefUpdate update(pref_service,
-                              prefs::kFindsNotInterestedThemesLastTimestamp);
-  update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
-}
 
 }  // namespace
 
@@ -60,9 +47,25 @@ std::string ThemeTypeEnumToString(SuggestionTheme::ThemeType theme_type) {
   }
 }
 
+void MarkNotificationShown(PrefService* pref_service) {
+  RecordNotificationShown();
+  // Update model execution cooldown timestamp.
+  pref_service->SetInt64(prefs::kFindsModelExecutionLastTimestamp,
+                         base::Time::Now().InMillisecondsSinceUnixEpoch());
+}
+
 void MarkThemeAsNotInterested(PrefService* pref_service,
                               SuggestionTheme::ThemeType theme_type) {
-  SetThemeCooldownTimestamp(pref_service, theme_type);
+  const std::string theme_pref_string = ThemeTypeEnumToString(theme_type);
+  if (theme_pref_string.empty()) {
+    // Do not set a pref if the theme type is unknown.
+    return;
+  }
+  // Store as a double since base::DictValue only supports storing doubles, but
+  // the value is essentially an int64_t timestamp.
+  ScopedDictPrefUpdate update(pref_service,
+                              prefs::kFindsNotInterestedThemesLastTimestamp);
+  update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
 }  // namespace finds
