@@ -87,10 +87,13 @@ main {
   width: 100%;
 }
 
+:host([app-mode='profile-picker']) .title {
+  font-size: 24px;
+}
+
 .subtitle {
   align-self: center;
   font-size: 16px;
-  font-weight: 500;
   max-width: calc(var(--disclaimer-card-width) * 2 + var(--disclaimer-cards-gap));
   margin: 0;
 }

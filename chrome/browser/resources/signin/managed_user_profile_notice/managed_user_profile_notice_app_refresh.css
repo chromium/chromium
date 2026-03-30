@@ -48,12 +48,12 @@
   padding: 0;
 }
 
-#cancelButton {
-  font-weight: normal;
+.action-button {
+  width: 88px;
 }
 
 .tangible-button {
-  min-width: 133px;
+  min-width: 88px;
 }
 
 .success-icon,

@@ -49,6 +49,7 @@ export class ManagedUserProfileNoticeDisclosureRefreshElement extends
       appMode: {
         type: String,
         reflect: true,
+        attribute: 'app-mode',
       },
     };
   }
