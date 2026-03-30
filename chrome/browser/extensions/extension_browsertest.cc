@@ -1061,13 +1061,7 @@ content::WebContents* ExtensionBrowserTest::web_contents() {
 }
 
 BrowserWindowInterface* ExtensionBrowserTest::browser_window_interface() {
-#if BUILDFLAG(IS_ANDROID)
-  std::vector<BrowserWindowInterface*> all_browsers =
-      GetAllBrowserWindowInterfaces();
-  return all_browsers.empty() ? nullptr : all_browsers.front();
-#else
-  return browser();
-#endif
+  return GetBrowserWindowInterface();
 }
 
 ExtensionService* ExtensionBrowserTest::extension_service() {

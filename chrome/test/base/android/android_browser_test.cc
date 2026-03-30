@@ -12,6 +12,8 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/test_launcher_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -127,6 +129,12 @@ size_t AndroidBrowserTest::GetTestPreCount() {
 
 base::FilePath AndroidBrowserTest::GetChromeTestDataDir() const {
   return chrome_test_utils::GetChromeTestDataDir();
+}
+
+BrowserWindowInterface* AndroidBrowserTest::GetBrowserWindowInterface() const {
+  std::vector<BrowserWindowInterface*> all_browsers =
+      GetAllBrowserWindowInterfaces();
+  return all_browsers.empty() ? nullptr : all_browsers.front();
 }
 
 Profile* AndroidBrowserTest::GetProfile() const {

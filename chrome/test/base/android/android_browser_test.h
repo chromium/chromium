@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test_base.h"
 
+class BrowserWindowInterface;
 class PrefService;
 class TabListInterface;
 
@@ -76,6 +77,9 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   // Returns the test data path used by the embedded test server.
   base::FilePath GetChromeTestDataDir() const;
+
+  // Returns the BrowserWindowInterface for the initially-created browser.
+  BrowserWindowInterface* GetBrowserWindowInterface() const;
 
   // Returns the profile. If there are multiple profiles, it's not determined
   // what profile is returned.

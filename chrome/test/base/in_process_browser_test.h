@@ -191,6 +191,14 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // created at a later time and `SetBrowser()` is called.
   Browser* browser() const { return browser_; }
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Similar to browser(), but it returns BrowserWindowInterface, instead.
+  // On Android platform, the compatible API is defined in AndroidBrowserTest.
+  BrowserWindowInterface* GetBrowserWindowInterface() const {
+    return browser_.get();
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Sets the default `browser_` instance for the fixture.
   void SetBrowser(BrowserWindowInterface* browser);
 

@@ -29,7 +29,7 @@ IN_PROC_BROWSER_TEST_F(
       browser()->tab_strip_model()->GetTabAtIndex(1);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(tab_contents));
 
   base::MockCallback<base::RepeatingClosure> tab_changed_callback;
   base::MockCallback<base::RepeatingClosure> browser_changed_callback;
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, new_browser->tab_strip_model()->count());
   EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
-  EXPECT_EQ(new_browser, GetBrowserWindowInterface(tab_contents));
+  EXPECT_EQ(new_browser, webui::GetBrowserWindowInterface(tab_contents));
   testing::Mock::VerifyAndClearExpectations(&tab_changed_callback);
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
 
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(
   chrome::MoveTabsToExistingWindow(new_browser, browser(), {0});
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(tab_contents));
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
 }
 
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       browser()->tab_strip_model()->GetTabAtIndex(1);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(tab_contents));
 
   // Discard the tab.
   EXPECT_NE(browser()->tab_strip_model()->GetActiveTab(), tab_interface);
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
   // The tab and browser interfaces should remain associated with the tab
   // contents after discard.
   EXPECT_EQ(tab_interface, GetTabInterface(tab_contents));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(tab_contents));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(tab_contents));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       content::WebContents::Create(
           content::WebContents::CreateParams(browser()->profile()));
   EXPECT_FALSE(GetTabInterface(host_contents.get()));
-  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_FALSE(webui::GetBrowserWindowInterface(host_contents.get()));
 
   base::MockCallback<base::RepeatingClosure> tab_changed_callback;
   base::MockCallback<base::RepeatingClosure> browser_changed_callback;
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       browser()->tab_strip_model()->GetActiveTab();
   SetTabInterface(host_contents.get(), tab_interface);
   EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(host_contents.get()));
   testing::Mock::VerifyAndClearExpectations(&tab_changed_callback);
   testing::Mock::VerifyAndClearExpectations(&browser_changed_callback);
 
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
   EXPECT_CALL(browser_changed_callback, Run).Times(1);
   SetTabInterface(host_contents.get(), nullptr);
   EXPECT_FALSE(GetTabInterface(host_contents.get()));
-  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_FALSE(webui::GetBrowserWindowInterface(host_contents.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       browser()->tab_strip_model()->GetTabAtIndex(1);
   SetTabInterface(host_contents.get(), tab_interface);
   EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(host_contents.get()));
 
   base::MockCallback<base::RepeatingClosure> tab_changed_callback;
   base::MockCallback<base::RepeatingClosure> browser_changed_callback;
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       1, std::move(detached_tab), AddTabTypes::ADD_NONE);
 
   EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
-  EXPECT_EQ(dst_browser, GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_EQ(dst_browser, webui::GetBrowserWindowInterface(host_contents.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
       browser()->tab_strip_model()->GetTabAtIndex(1);
   SetTabInterface(host_contents.get(), tab_interface);
   EXPECT_EQ(tab_interface, GetTabInterface(host_contents.get()));
-  EXPECT_EQ(browser(), GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_EQ(browser(), webui::GetBrowserWindowInterface(host_contents.get()));
 
   base::MockCallback<base::RepeatingClosure> tab_changed_callback;
   base::MockCallback<base::RepeatingClosure> browser_changed_callback;
@@ -193,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebUIEmbeddingContextTest,
   EXPECT_CALL(browser_changed_callback, Run).Times(1);
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
   EXPECT_FALSE(GetTabInterface(host_contents.get()));
-  EXPECT_FALSE(GetBrowserWindowInterface(host_contents.get()));
+  EXPECT_FALSE(webui::GetBrowserWindowInterface(host_contents.get()));
 }
 
 }  // namespace webui
