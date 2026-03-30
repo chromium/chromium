@@ -59,6 +59,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_info.h"
@@ -71,6 +72,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -169,6 +172,48 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, LocationBarDecoration) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(zoom_view->GetVisible());
   EXPECT_FALSE(zoom_bubble_coordinator_->bubble());
+}
+
+// Ensure that middle-clicking the location icon performs a "paste and go".
+IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, MiddleClickPasteAndGo) {
+  if (!ui::Clipboard::IsMiddleClickPasteEnabled() ||
+      !ui::Clipboard::IsSupportedClipboardBuffer(
+          ui::ClipboardBuffer::kSelection)) {
+    return;
+  }
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL paste_url = embedded_test_server()->GetURL("/title1.html");
+
+  LocationBarView* location_bar_view = GetLocationBarView();
+  LocationIconView* location_icon_view =
+      location_bar_view->location_icon_view();
+
+  // Set some text in the selection clipboard.
+  const std::u16string kPasteText = base::UTF8ToUTF16(paste_url.spec());
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kSelection);
+    writer.WriteText(kPasteText);
+  }
+
+  // Set up an observer to wait for the navigation.
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+
+  // Simulate a middle-click on the location icon.
+  ui::MouseEvent middle_click_event(ui::EventType::kMousePressed, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks::Now(),
+                                    ui::EF_MIDDLE_MOUSE_BUTTON,
+                                    ui::EF_MIDDLE_MOUSE_BUTTON);
+  location_icon_view->OnMousePressed(middle_click_event);
+
+  // Wait for the navigation to finish.
+  observer.Wait();
+
+  EXPECT_EQ(paste_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 // Ensure that location bar bubbles close when the webcontents hides.
