@@ -1370,16 +1370,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   EXPECT_TRUE(contents_view->IsFocusable());
 
-  // Wait for the child tree ID to be set asynchronously
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return contents_view->GetViewAccessibility().GetChildTreeID() !=
-           ui::AXTreeIDUnknown();
-  }));
-  ui::AXTreeID main_tree_id =
-      contents_view->GetViewAccessibility().GetChildTreeID();
-  ASSERT_EQ(main_tree_id,
-            tab->GetContents()->GetPrimaryMainFrame()->GetAXTreeID());
-
   // 2) Show Immersive UI
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   EmitWebUIShowEvent();
@@ -1394,8 +1384,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   ASSERT_FALSE(
       contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   ASSERT_FALSE(contents_view->IsFocusable());
-  ASSERT_EQ(contents_view->GetViewAccessibility().GetChildTreeID(),
-            ui::AXTreeIDUnknown());
 
   // 3) Close Immersive UI
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
@@ -1408,10 +1396,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       contents_view->GetViewAccessibility().ViewAccessibility::IsLeaf());
   ASSERT_TRUE(contents_view->GetViewAccessibility().IsAccessibilityFocusable());
   ASSERT_TRUE(contents_view->IsFocusable());
-
-  // The ChildTreeID should be restored to the main frame's accessibility tree.
-  ASSERT_EQ(contents_view->GetViewAccessibility().GetChildTreeID(),
-            main_tree_id);
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,

@@ -14,11 +14,14 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
 class ContentsWebView;
 class ReadAnythingImmersiveWebView;
+
+namespace views {
+class WebView;
+}
 
 // This view is an overlay that sits on top of the main web contents. It's
 // used to house the UI for the Immersive Reading Mode feature, which provides
@@ -92,11 +95,6 @@ class ReadAnythingImmersiveOverlayView
 
   base::RepeatingCallbackList<void(views::WebView*)> focus_callback_list_;
   base::CallbackListSubscription immersive_view_focus_subscription_;
-
-  // Used to disconnect the main WebContents accessibility tree while IRM is
-  // open.
-  std::unique_ptr<views::WebView::ScopedAxDisconnectLock>
-      scoped_accessibility_disconnecter_;
 };
 
 #endif  // CHROME_BROWSER_UI_READ_ANYTHING_READ_ANYTHING_IMMERSIVE_OVERLAY_VIEW_H_
