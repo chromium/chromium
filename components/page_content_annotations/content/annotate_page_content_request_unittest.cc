@@ -4,13 +4,20 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
+#include <cstdint>
+#include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
@@ -18,6 +25,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -93,10 +101,11 @@ class AnnotatePageContentRequestTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  void SetTriggeringMode(const std::string& mode) {
+  void SetTriggeringMode(const std::string& mode,
+                         const std::string& capture_delay = "0s") {
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kAnnotatedPageContentExtraction,
-        {{"triggering_mode", mode}, {"capture_delay", "0s"}});
+        {{"triggering_mode", mode}, {"capture_delay", capture_delay}});
   }
 
   void RecreateRequest() {
@@ -206,6 +215,31 @@ TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger) {
   request_->OnVisibilityChanged(content::Visibility::HIDDEN);
   WaitForExtraction();
   EXPECT_EQ(extraction_service().extraction_count(), 2);
+}
+
+TEST_F(AnnotatePageContentRequestTest,
+       OnHiddenTrigger_NoDuplicateScheduledExtractions) {
+  SetTriggeringMode("on_hidden", /*capture_delay=*/"5s");
+
+  SimulatePageLoad();
+
+  // Hide the tab. Extraction should be scheduled (but delayed 5s).
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // At this point, no extraction has happened because of the 5s delay.
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // Hide the tab again before the 5s delay finishes.
+  // This should be a no-op because it's already kScheduled.
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // Now speed up time to trigger the extraction scheduled tasks.
+  task_environment()->FastForwardBy(base::Seconds(5));
+
+  // Should only have extracted once despite multiple hide events.
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
 }
 
 TEST_F(AnnotatePageContentRequestTest, OnLoadAndHiddenTrigger) {
@@ -332,6 +366,132 @@ TEST_F(AnnotatePageContentRequestTest, ExcludeAdRelatedFlag_Enabled) {
   ASSERT_TRUE(last_options());
   ASSERT_TRUE(last_options()->non_salient_content_config);
   EXPECT_TRUE(last_options()->non_salient_content_config->exclude_ad_related);
+}
+
+TEST_F(AnnotatePageContentRequestTest, OnLoadTrigger_ExtractsEvenWhileHidden) {
+  SetTriggeringMode("on_load");
+
+  // Tab starts completely hidden.
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  SimulatePageLoad();
+  WaitForExtraction();
+
+  // Extraction should succeed immediately on load despite being in the
+  // background.
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+}
+
+TEST_F(AnnotatePageContentRequestTest, OnHiddenTrigger_NoExtractionOnLoad) {
+  SetTriggeringMode("on_hidden");
+
+  // Load the page while entirely visible.
+  SimulatePageLoad();
+
+  // Ensure no extraction fired upon load completion, because we aren't using an
+  // OnLoad mode.
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+}
+
+TEST_F(AnnotatePageContentRequestTest,
+       ShouldScheduleExtraction_WaitingForLifecycle) {
+  SetTriggeringMode("on_hidden");
+
+  // Not finished loading, but triggered a hide event!
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // Should definitively not have scheduled or fired an extraction.
+  // Wait using FastForward in case there's an erroneous 0s delay task.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // After this, trigger load and then see that it is triggered.
+  SimulatePageLoad();
+  WaitForExtraction();
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+}
+
+TEST_F(AnnotatePageContentRequestTest,
+       OnHiddenTrigger_AsyncVisibilityRaceCondition) {
+  SetTriggeringMode("on_hidden");
+
+  // We need to simulate an asynchronous callback that we control manually.
+  auto async_callback = base::MakeRefCounted<
+      base::RefCountedData<FetchPageContextResultCallback>>();
+
+  auto manual_callback = base::BindRepeating(
+      [](scoped_refptr<base::RefCountedData<FetchPageContextResultCallback>>
+             saved_callback,
+         content::WebContents&, const FetchPageContextOptions&,
+         std::unique_ptr<FetchPageProgressListener>,
+         FetchPageContextResultCallback callback) {
+        saved_callback->data = std::move(callback);
+      },
+      async_callback);
+
+  // Overwrite the synchronous request with our manual mock.
+  request_ = AnnotatedPageContentRequest::Create(
+      web_contents(), extraction_service(), manual_callback,
+      base::BindRepeating([](content::WebContents* web_contents) {
+        return std::make_optional(reinterpret_cast<int64_t>(web_contents));
+      }));
+
+  SimulatePageLoad();
+
+  // 1. Hide the tab -> Extraction is scheduled and begins.
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  // Fast forward past any immediate capture delays to post the request
+  // callback.
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // The callback should now be captured (async call is "in flight").
+  ASSERT_TRUE(async_callback->data);
+  EXPECT_EQ(extraction_service().extraction_count(), 0);
+
+  // 2. Tab becomes visible before the async call returns.
+  // Under the old bug, this repeatedly toggled the state.
+  web_contents()->WasShown();
+  request_->OnVisibilityChanged(content::Visibility::VISIBLE);
+
+  // 3. The async call finally returns.
+  auto page_content =
+      std::make_unique<optimization_guide::AIPageContentResult>();
+  auto result = std::make_unique<FetchPageContextResult>();
+  result->annotated_page_content_result =
+      PageContentResultWithEndTime(std::move(*page_content));
+  std::move(async_callback->data).Run(std::move(result));
+
+  // Explicitly call FastForward to ensure any post-completion tasks run.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+
+  // clear the callback pointer.
+  async_callback->data = FetchPageContextResultCallback();
+
+  // 4. Hide the tab again.
+  // With the bug fixed, it should correctly identify it as a new hide
+  // transition and extract again.
+  web_contents()->WasHidden();
+  request_->OnVisibilityChanged(content::Visibility::HIDDEN);
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  ASSERT_TRUE(async_callback->data);
+
+  auto page_content2 =
+      std::make_unique<optimization_guide::AIPageContentResult>();
+  auto result2 = std::make_unique<FetchPageContextResult>();
+  result2->annotated_page_content_result =
+      PageContentResultWithEndTime(std::move(*page_content2));
+  std::move(async_callback->data).Run(std::move(result2));
+
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  EXPECT_EQ(extraction_service().extraction_count(), 2);
 }
 
 }  // namespace page_content_annotations

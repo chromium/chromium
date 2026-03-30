@@ -75,12 +75,14 @@ class AnnotatedPageContentRequest {
  private:
   void ResetForNewNavigation();
 
-  void MaybeScheduleExtraction();
+  // `on_hide` should be true iff this extraction is being triggered
+  // specifically by the tab transitioning to hidden (as opposed to, say,
+  // completing a page load).
+  void MaybeScheduleExtraction(bool on_hide = false);
+  bool ShouldScheduleExtraction(bool on_hide) const;
 
   void ExtractPageContent();
   void RequestAnnotatedPageContentSync();
-
-  bool ShouldScheduleExtraction() const;
 
   void OnPageContextFetched(FetchPageContextResultCallbackArg result);
 
@@ -106,23 +108,22 @@ class AnnotatedPageContentRequest {
   const bool include_inner_text_;
 
   enum class Lifecycle {
-    // Indicates that a new navigation occurred and we need to schedule an
-    // extraction. This is async because we need to wait for the page to be
-    // ready.
-    kPending,
+    // Indicates that a new navigation occurred and we may need to schedule an
+    // extraction.
+    kNavigated,
 
-    // The extraction has been scheduled and we are waiting on a response from
-    // the renderer. The IPC to request the content maybe delayed so the page
-    // has reached a stable state.
+    // An extraction has been scheduled and we are waiting for the delay timer
+    // to fire.
     kScheduled,
 
-    // The extraction finished after page load.
-    kExtractedAtPageLoad,
+    // The delay timer fired and we are waiting for a response from the
+    // renderer.
+    kRunning,
 
-    // All extraction triggers are handled.
-    kFinal
+    // An extraction has occurred and no others are currently scheduled.
+    kExtracted,
   };
-  Lifecycle lifecycle_ = Lifecycle::kFinal;
+  Lifecycle lifecycle_ = Lifecycle::kExtracted;
 
   bool waiting_for_load_ = false;
   bool waiting_for_fcp_ = false;

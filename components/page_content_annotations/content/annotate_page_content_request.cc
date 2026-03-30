@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/content/annotate_page_content_request.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
@@ -189,7 +190,7 @@ void AnnotatedPageContentRequest::OnFirstContentfulPaintInPrimaryMainFrame() {
 }
 
 void AnnotatedPageContentRequest::ResetForNewNavigation() {
-  lifecycle_ = Lifecycle::kPending;
+  lifecycle_ = Lifecycle::kNavigated;
   waiting_for_fcp_ = true;
   waiting_for_load_ = true;
 
@@ -202,8 +203,8 @@ void AnnotatedPageContentRequest::ResetForNewNavigation() {
       get_tab_id_callback_.Run(web_contents_), web_contents_);
 }
 
-void AnnotatedPageContentRequest::MaybeScheduleExtraction() {
-  if (!ShouldScheduleExtraction()) {
+void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {
+  if (!ShouldScheduleExtraction(on_hide)) {
     return;
   }
 
@@ -221,6 +222,8 @@ void AnnotatedPageContentRequest::ExtractPageContent() {
   if (lifecycle_ != Lifecycle::kScheduled) {
     return;
   }
+
+  lifecycle_ = Lifecycle::kRunning;
 
   if (web_contents_->GetContentsMimeType() == pdf::kPDFMimeType) {
 #if BUILDFLAG(ENABLE_PDF)
@@ -260,7 +263,7 @@ void AnnotatedPageContentRequest::RequestAnnotatedPageContentSync() {
   }
 }
 
-bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
+bool AnnotatedPageContentRequest::ShouldScheduleExtraction(bool on_hide) const {
   auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
 
   // If the page is not loaded, the extraction would not work.
@@ -268,45 +271,45 @@ bool AnnotatedPageContentRequest::ShouldScheduleExtraction() const {
     return false;
   }
 
-  if (triggering_mode ==
-          features::PageContentExtractionTriggeringMode::kOnLoadAndHidden &&
-      is_hidden_) {
-    // Allow extraction if:
-    // 1. Page loaded while hidden (kPending) - This is the *first* extraction.
-    // 2. Page loaded while visible, and is now hidden
-    //      (kExtractedAtPageLoad). This is the *second* extraction.
-    if (lifecycle_ == Lifecycle::kPending ||
-        lifecycle_ == Lifecycle::kExtractedAtPageLoad) {
+  if (lifecycle_ == Lifecycle::kScheduled ||
+      lifecycle_ == Lifecycle::kRunning) {
+    // Already scheduled or running, no need to duplicate.
+    return false;
+  }
+
+  bool trigger_on_hide =
+      triggering_mode ==
+          features::PageContentExtractionTriggeringMode::kOnHidden ||
+      triggering_mode ==
+          features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
+
+  if (trigger_on_hide) {
+    // We trigger extraction any time the page transitions to hidden, or if the
+    // page finished loading while already in the background.
+    bool newly_hidden =
+        on_hide || (lifecycle_ == Lifecycle::kNavigated && is_hidden_);
+    if (newly_hidden) {
+      CHECK(is_hidden_);
       return true;
     }
   }
 
-  if (lifecycle_ != Lifecycle::kPending) {
-    return false;
-  }
-
-  if (triggering_mode ==
+  bool trigger_on_load =
+      triggering_mode ==
           features::PageContentExtractionTriggeringMode::kOnLoad ||
       triggering_mode ==
-          features::PageContentExtractionTriggeringMode::kOnLoadAndHidden) {
+          features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
+
+  if (trigger_on_load && lifecycle_ == Lifecycle::kNavigated) {
     return true;
   }
-  if (triggering_mode ==
-      features::PageContentExtractionTriggeringMode::kOnHidden) {
-    return is_hidden_;
-  }
+
   return false;
 }
 
 void AnnotatedPageContentRequest::OnPageContextFetched(
     FetchPageContextResultCallbackArg result) {
-  if (is_hidden_) {
-    lifecycle_ = Lifecycle::kFinal;
-  } else {
-    // Set to kExtractedAtPageLoad, which could potentially trigger another
-    // extraction when backgrounded when background trigger is also needed.
-    lifecycle_ = Lifecycle::kExtractedAtPageLoad;
-  }
+  lifecycle_ = Lifecycle::kExtracted;
 
   if (!result.has_value() || !result.value() ||
       !result.value()->annotated_page_content_result.has_value()) {
@@ -368,9 +371,7 @@ void AnnotatedPageContentRequest::RequestPdfPageCount() {
 
 void AnnotatedPageContentRequest::OnPdfDocumentLoadComplete() {
   CHECK_EQ(pdf::kPDFMimeType, web_contents_->GetContentsMimeType());
-  // Do not need to set to kExtractedAtPageLoad since PDFs contents will
-  // never change.
-  lifecycle_ = Lifecycle::kFinal;
+  lifecycle_ = Lifecycle::kExtracted;
 
   auto* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents_);
@@ -412,23 +413,8 @@ void AnnotatedPageContentRequest::OnVisibilityChanged(
   page_content_extraction_service_->OnVisibilityChanged(
       get_tab_id_callback_.Run(web_contents_), web_contents_, visibility);
 
-  auto triggering_mode = features::GetPageContentExtractionTriggeringMode();
-  bool trigger_on_hide =
-      triggering_mode ==
-          features::PageContentExtractionTriggeringMode::kOnHidden ||
-      triggering_mode ==
-          features::PageContentExtractionTriggeringMode::kOnLoadAndHidden;
-
-  if (!trigger_on_hide) {
-    return;
-  }
-
   if (is_hidden_) {
-    MaybeScheduleExtraction();
-  } else {
-    // When extraction runs on hide, reset the lifecycle, so it can be extracted
-    // on hide again. Keep the cached contents to be used as needed.
-    lifecycle_ = Lifecycle::kPending;
+    MaybeScheduleExtraction(/*on_hide=*/true);
   }
 }
 
