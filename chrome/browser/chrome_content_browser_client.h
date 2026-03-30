@@ -451,11 +451,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsServiceWorkerSyntheticResponseAllowed(
       content::BrowserContext* browser_context,
       const GURL& url) override;
-  void GrantCookieAccessDueToHeuristic(content::BrowserContext* browser_context,
-                                       const net::SchemefulSite& top_frame_site,
-                                       const net::SchemefulSite& accessing_site,
-                                       base::TimeDelta ttl,
-                                       bool ignore_schemes) override;
   bool AreThirdPartyCookiesGenerallyAllowed(
       content::BrowserContext* browser_context,
       content::WebContents* web_contents) override;

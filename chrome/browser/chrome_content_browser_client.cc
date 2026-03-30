@@ -3801,24 +3801,6 @@ bool ChromeContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
   return true;
 }
 
-void ChromeContentBrowserClient::GrantCookieAccessDueToHeuristic(
-    content::BrowserContext* browser_context,
-    const net::SchemefulSite& top_frame_site,
-    const net::SchemefulSite& accessing_site,
-    base::TimeDelta ttl,
-    bool ignore_schemes) {
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
-  if (!cookie_settings) {
-    return;
-  }
-
-  cookie_settings->SetTemporaryCookieGrantForHeuristic(
-      accessing_site.GetURL(), top_frame_site.GetURL(), ttl,
-      /*use_schemeless_patterns=*/ignore_schemes);
-}
-
 bool ChromeContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents) {

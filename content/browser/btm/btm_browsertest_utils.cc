@@ -25,16 +25,6 @@ bool ContentBrowserTestTpcBlockingBrowserClient::
                                                     web_contents);
 }
 
-void ContentBrowserTestTpcBlockingBrowserClient::
-    GrantCookieAccessDueToHeuristic(BrowserContext* browser_context,
-                                    const net::SchemefulSite& top_frame_site,
-                                    const net::SchemefulSite& accessing_site,
-                                    base::TimeDelta ttl,
-                                    bool ignore_schemes) {
-  impl_.GrantCookieAccessDueToHeuristic(browser_context, top_frame_site,
-                                        accessing_site, ttl, ignore_schemes);
-}
-
 bool ContentBrowserTestTpcBlockingBrowserClient::
     ShouldBtmDeleteInteractionRecords(uint64_t remove_mask) {
   return impl_.ShouldBtmDeleteInteractionRecords(remove_mask);

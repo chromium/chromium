@@ -16,10 +16,6 @@ namespace blink {
 class StorageKey;
 }
 
-namespace net {
-class SchemefulSite;
-}
-
 namespace url {
 class Origin;
 }
@@ -40,12 +36,6 @@ class ContentBrowserTestTpcBlockingBrowserClient
       const GURL& url,
       const blink::StorageKey& storage_key,
       net::CookieSettingOverrides overrides) override;
-
-  void GrantCookieAccessDueToHeuristic(BrowserContext* browser_context,
-                                       const net::SchemefulSite& top_frame_site,
-                                       const net::SchemefulSite& accessing_site,
-                                       base::TimeDelta ttl,
-                                       bool ignore_schemes) override;
 
   bool AreThirdPartyCookiesGenerallyAllowed(BrowserContext* browser_context,
                                             WebContents* web_contents) override;

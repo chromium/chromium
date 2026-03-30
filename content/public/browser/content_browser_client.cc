@@ -741,13 +741,6 @@ bool ContentBrowserClient::IsServiceWorkerSyntheticResponseAllowed(
   return false;
 }
 
-void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
-    content::BrowserContext* browser_context,
-    const net::SchemefulSite& top_frame_site,
-    const net::SchemefulSite& accessing_site,
-    base::TimeDelta ttl,
-    bool ignore_schemes) {}
-
 bool ContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents) {

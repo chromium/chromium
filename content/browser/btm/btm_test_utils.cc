@@ -413,29 +413,6 @@ bool TpcBlockingBrowserClient::IsFullCookieAccessAllowed(
                                    storage_key.ToCookiePartitionKey());
 }
 
-void TpcBlockingBrowserClient::GrantCookieAccessDueToHeuristic(
-    BrowserContext* browser_context,
-    const net::SchemefulSite& top_frame_site,
-    const net::SchemefulSite& accessing_site,
-    base::TimeDelta ttl,
-    bool ignore_schemes) {
-  ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(
-          accessing_site.GetURL());
-  ContentSettingsPattern secondary_pattern =
-      ContentSettingsPattern::FromURLToSchemefulSitePattern(
-          top_frame_site.GetURL());
-  if (ignore_schemes) {
-    primary_pattern =
-        ContentSettingsPattern::ToHostOnlyPattern(primary_pattern);
-    secondary_pattern =
-        ContentSettingsPattern::ToHostOnlyPattern(secondary_pattern);
-  }
-  tpc_content_settings_.SetValue(primary_pattern, secondary_pattern,
-                                 base::Value(CONTENT_SETTING_ALLOW),
-                                 /*metadata=*/{});
-}
-
 bool TpcBlockingBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
     BrowserContext* browser_context,
     WebContents* web_contents) {
@@ -468,13 +445,14 @@ void TpcBlockingBrowserClient::BlockThirdPartyCookiesOnSite(const GURL& url) {
       base::Value(CONTENT_SETTING_BLOCK), /*metadata=*/{});
 }
 
-void TpcBlockingBrowserClient::BlockThirdPartyCookies(
+void TpcBlockingBrowserClient::SetThirdPartyCookieAccess(
     const GURL& url,
-    const GURL& first_party_url) {
+    const GURL& first_party_url,
+    ContentSetting setting) {
   tpc_content_settings_.SetValue(
       ContentSettingsPattern::FromURLToSchemefulSitePattern(url),
       ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url),
-      base::Value(CONTENT_SETTING_BLOCK), /*metadata=*/{});
+      base::Value(setting), /*metadata=*/{});
 }
 
 // Overrides for content_settings::CookieSettingsBase
