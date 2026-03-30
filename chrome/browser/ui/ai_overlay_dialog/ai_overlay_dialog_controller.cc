@@ -8,16 +8,22 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/actions/actions.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -79,12 +85,28 @@ void AiOverlayDialogController::ShowOverlay() {
   if (overlay_web_view->GetWidget()) {
     overlay_web_view->GetWidget()->LayoutRootViewIfNecessary();
   }
+
+  if (auto* action_item = actions::ActionManager::Get().FindAction(
+          kActionShowAiOverlayDialog,
+          browser_->GetActions()->root_action_item())) {
+    action_item->SetImage(
+        ui::ImageModel::FromVectorIcon(vector_icons::kPauseIcon, ui::kColorIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
+  }
 }
 
 void AiOverlayDialogController::HideOverlay() {
   views::WebView* overlay_web_view = GetActiveOverlayWebView();
   if (overlay_web_view) {
     overlay_web_view->SetVisible(false);
+  }
+
+  if (auto* action_item = actions::ActionManager::Get().FindAction(
+          kActionShowAiOverlayDialog,
+          browser_->GetActions()->root_action_item())) {
+    action_item->SetImage(
+        ui::ImageModel::FromVectorIcon(vector_icons::kMicIcon, ui::kColorIcon,
+                                       ui::SimpleMenuModel::kDefaultIconSize));
   }
 }
 

@@ -1548,7 +1548,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
             .SetActionId(kActionShowAiOverlayDialog)
             .SetText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP))
             .SetImage(ui::ImageModel::FromVectorIcon(
-                vector_icons::kExtensionIcon, ui::kColorIcon,
+                vector_icons::kMicIcon, ui::kColorIcon,
                 ui::SimpleMenuModel::kDefaultIconSize))
             .SetProperty(
                 actions::kActionItemPinnableKey,

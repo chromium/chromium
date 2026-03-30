@@ -210,8 +210,17 @@ export class AppElement extends CrLitElement {
         this.pageCallbackRouter.$.bindNewPipeAndPassRemote());
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    document.addEventListener('visibilitychange', this.onVisibilityChange);
+    if (document.visibilityState === 'visible') {
+      this.startConversation();
+    }
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
+    document.removeEventListener('visibilitychange', this.onVisibilityChange);
     if (this.talkingBlobUrl) {
       URL.revokeObjectURL(this.talkingBlobUrl);
     }
@@ -219,6 +228,14 @@ export class AppElement extends CrLitElement {
       URL.revokeObjectURL(this.listeningBlobUrl);
     }
   }
+
+  private onVisibilityChange = () => {
+    if (document.visibilityState === 'visible') {
+      this.startConversation();
+    } else {
+      this.stopConversation();
+    }
+  };
 
   private onAudioInput(sampleRate: number, data: string) {
     this.conversation?.sendAudio(sampleRate, data);
@@ -296,8 +313,8 @@ export class AppElement extends CrLitElement {
     return null;
   }
 
-  protected async onContainerClick() {
-    if (this.isConnecting) {
+  private async startConversation() {
+    if (this.isConnecting || this.conversation?.connected) {
       return;
     }
 
@@ -320,13 +337,15 @@ export class AppElement extends CrLitElement {
       this.conversation = this.createConversation(config);
     }
 
-    if (!this.conversation.connected) {
-      log('Attempting to connect. conversation state is not connected.');
-      this.isConnecting = true;
-      this.conversation.start().catch(e => {
-        console.error('[App] Failed to start conversation:', e);
-      });
-    } else {
+    log('Attempting to connect. conversation state is not connected.');
+    this.isConnecting = true;
+    this.conversation.start().catch(e => {
+      console.error('[App] Failed to start conversation:', e);
+    });
+  }
+
+  private stopConversation() {
+    if (this.conversation?.connected) {
       log('Conversation connected, stopping it.');
       this.conversation.stop();
     }
