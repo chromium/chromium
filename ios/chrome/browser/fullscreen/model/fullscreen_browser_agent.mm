@@ -52,11 +52,18 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
     return;
   }
 
+  updating_insets_ = true;
+  UIEdgeInsets old_insets = insets_;
+  insets_ = UIEdgeInsetsZero;
   for (auto& observer : observers_) {
     observer.WillUpdateState(this);
   }
-  for (auto& observer : observers_) {
-    observer.DidUpdateState(this);
+  updating_insets_ = false;
+
+  if (!UIEdgeInsetsEqualToEdgeInsets(old_insets, insets_)) {
+    for (auto& observer : observers_) {
+      observer.DidUpdateState(this);
+    }
   }
 }
 
@@ -107,5 +114,15 @@ void FullscreenBrowserAgent::AddObscuredInsetRange(UIRectEdge edge,
   } else if (edge == UIRectEdgeBottom) {
     min_insets_.bottom += min;
     max_insets_.bottom += max;
+  }
+}
+
+void FullscreenBrowserAgent::AddObscuredInset(UIRectEdge edge, CGFloat amount) {
+  CHECK(updating_insets_);
+  CHECK(edge == UIRectEdgeTop || edge == UIRectEdgeBottom);
+  if (edge == UIRectEdgeTop) {
+    insets_.top += amount;
+  } else if (edge == UIRectEdgeBottom) {
+    insets_.bottom += amount;
   }
 }

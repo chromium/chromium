@@ -45,6 +45,13 @@ class RangeTestFullscreenBrowserAgentObserver
     agent->AddObscuredInsetRange(edge_, min_, max_);
   }
 
+  void WillUpdateState(FullscreenBrowserAgent* agent) override {
+    CGFloat progress = edge_ == UIRectEdgeBottom ? agent->bottom_progress()
+                                                 : agent->top_progress();
+    CGFloat current = min_ + (max_ - min_) * progress;
+    agent->AddObscuredInset(edge_, current);
+  }
+
  private:
   UIRectEdge edge_;
   CGFloat min_;
@@ -152,6 +159,8 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
 
   EXPECT_EQ(0.5, agent->top_progress());
   EXPECT_NEAR(0.6666, agent->bottom_progress(), 0.001);
+  EXPECT_EQ(30.0, agent->insets().top);
+  EXPECT_NEAR(60.0, agent->insets().bottom, 0.001);
 
   EXPECT_TRUE(base_observer.will_update_called_);
   EXPECT_TRUE(base_observer.did_update_called_);
@@ -161,12 +170,16 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
 
   EXPECT_EQ(0.0, agent->top_progress());
   EXPECT_EQ(0.0, agent->bottom_progress());
+  EXPECT_EQ(10.0, agent->insets().top);
+  EXPECT_EQ(20.0, agent->insets().bottom);
 
   // Fast scroll up to check 1.0 bounds clamping.
   agent->IncrementalScroll(-500.0, PassKey());
 
   EXPECT_EQ(1.0, agent->top_progress());
   EXPECT_EQ(1.0, agent->bottom_progress());
+  EXPECT_EQ(50.0, agent->insets().top);
+  EXPECT_EQ(80.0, agent->insets().bottom);
 
   agent->RemoveObserver(&base_observer);
   agent->RemoveObserver(&observer1);
