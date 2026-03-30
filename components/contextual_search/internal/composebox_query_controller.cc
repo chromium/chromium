@@ -632,13 +632,19 @@ void ComposeboxQueryController::CreateSearchUrl(
         }
         std::unique_ptr<lens::LensOverlayRequestId> request_id = nullptr;
         if (!is_translate) {
-          request_id = is_raw_file
-                           ? request_id_generator_.GetNextRequestId(
-                                 lens::RequestIdUpdateMode::kSearchUrl,
-                                 last_active_lens_file->request_id->mime_type())
-                           : request_id_generator_.GetNextRequestId(
-                                 lens::RequestIdUpdateMode::kSearchUrl,
-                                 context_media_type);
+          if (is_aim_search) {
+            request_id = std::make_unique<lens::LensOverlayRequestId>(
+                *last_active_lens_file->request_id);
+          } else {
+            request_id =
+                is_raw_file
+                    ? request_id_generator_.GetNextRequestId(
+                          lens::RequestIdUpdateMode::kSearchUrl,
+                          last_active_lens_file->request_id->mime_type())
+                    : request_id_generator_.GetNextRequestId(
+                          lens::RequestIdUpdateMode::kSearchUrl,
+                          context_media_type);
+          }
         }
         std::move(callback).Run(GetUrlForMultimodalSearch(
             template_url_service_, is_aim_search,
