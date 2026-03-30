@@ -28,8 +28,13 @@ export const MAX_SPEECH_LENGTH: number = 175;
 
 // The timeout threshold is 10 seconds. If no speech has occurred approximately
 // 10 seconds after pressing play, there's likely an engine error.
+// After 10 seconds, an engine stall is logged. After 15 seconds, a recovery
+// failure and attempt to reload the extension failure is logged. Reading mode
+// doesn't reload at 10 seconds to avoid race conditions with recovery attempts
+// inside the extension.
 // <if expr="not is_chromeos">
 const ENGINE_TIMEOUT_THRESHOLD_MS: number = 10 * 1000;
+const ENGINE_RECOVERY_TIMEOUT_THRESHOLD_MS: number = 15 * 1000;
 // </if>
 
 export interface SpeechListener {
@@ -56,6 +61,7 @@ export class SpeechController {
   private listeners_: SpeechListener[] = [];
   private readAloudModel_: ReadAloudModelBrowserProxy = getReadAloudModel();
   private engineTimeoutId_: number|null = null;
+  private engineRecoveryTimeoutId_: number|null = null;
 
   constructor() {
     // Send over the initial state.
@@ -1025,13 +1031,21 @@ export class SpeechController {
     this.engineTimeoutId_ = setTimeout(() => {
       if (this.model_.getEngineState() === SpeechEngineState.LOADING) {
         this.logger_.logSpeechError('timeout-engine-stalled');
-        // TODO: crbug.com/465479425- Stop speech to make it a little bit
-        // easier to resume speech when the new engine is hopefully
-        // successfully reinstalled.
+      }
+    }, ENGINE_TIMEOUT_THRESHOLD_MS);
+
+    // After 10 seconds, the TTS engine attempts recovery. If speech_controller
+    // has received no error or speech playback after 5 more seconds (for 15
+    // seconds of a stalled engine total), it is likely that the recovery from
+    // within the engine was unsuccessful. Log this and attempt to reload
+    // the extension.
+    this.engineRecoveryTimeoutId_ = setTimeout(() => {
+      if (this.model_.getEngineState() === SpeechEngineState.LOADING) {
+        this.logger_.logSpeechError('timeout-stalled-after-recovery');
         chrome.readingMode.onSpeechEngineStalled();
         this.voiceLanguageController_.onVoicesChanged();
       }
-    }, ENGINE_TIMEOUT_THRESHOLD_MS);
+    }, ENGINE_RECOVERY_TIMEOUT_THRESHOLD_MS);
     // </if>
 
     this.speech_.speak(message);
@@ -1041,6 +1055,10 @@ export class SpeechController {
     if (this.engineTimeoutId_ !== null) {
       clearTimeout(this.engineTimeoutId_);
       this.engineTimeoutId_ = null;
+    }
+    if (this.engineRecoveryTimeoutId_ !== null) {
+      clearTimeout(this.engineRecoveryTimeoutId_);
+      this.engineRecoveryTimeoutId_ = null;
     }
   }
 

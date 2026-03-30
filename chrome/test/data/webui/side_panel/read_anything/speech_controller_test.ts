@@ -575,12 +575,14 @@ suite('SpeechController', () => {
       // </if>
       // <if expr="not is_chromeos">
       assertTrue(timeoutFired);
-      assertEquals(1, metrics.getCallCount('recordSpeechError'));
-      const errorArg = metrics.getArgs('recordSpeechError')[0];
+      assertEquals(2, metrics.getCallCount('recordSpeechError'));
+      const errorArg1 = metrics.getArgs('recordSpeechError')[0];
+      const errorArg2 = metrics.getArgs('recordSpeechError')[1];
 
       // Assuming ReadAnythingSpeechError is defined such that
-      // TIMEOUT_ENGINE_STALLED is 9
-      assertEquals(9, errorArg);
+      // TIMEOUT_ENGINE_STALLED is 9 and TIMEOUT_STALLED_AFTER_RECOVERY is 10
+      assertEquals(9, errorArg1);
+      assertEquals(10, errorArg2);
       // </if>
     } finally {
       window.setTimeout = originalSetTimeout;
@@ -608,7 +610,7 @@ suite('SpeechController', () => {
       assertEquals(0, clearTimeoutCalls);
       // </if>
       // <if expr="not is_chromeos">
-      assertGT(clearTimeoutCalls, 0);
+      assertEquals(2, clearTimeoutCalls);
       // </if>
     } finally {
       window.clearTimeout = originalClearTimeout;

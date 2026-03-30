@@ -71,6 +71,9 @@ export class ReadAnythingLogger {
       case 'timeout-engine-stalled':
         error = ReadAnythingSpeechError.TIMEOUT_ENGINE_STALLED;
         break;
+      case 'timeout-stalled-after-recovery':
+        error = ReadAnythingSpeechError.TIMEOUT_STALLED_AFTER_ENGINE_RECOVERY;
+        break;
       default:
         return;
     }
