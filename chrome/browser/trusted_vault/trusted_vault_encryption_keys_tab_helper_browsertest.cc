@@ -15,6 +15,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
+#include "chrome/browser/webauthn/enclave_authenticator_browsertest_base.h"
+#include "chrome/browser/webauthn/enclave_keys_waiter.h"
+#include "chrome/browser/webauthn/test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -293,16 +296,7 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {trusted_vault::kSetClientEncryptionKeysJsApi,
-         // This flag is used for simulating the presence of the passkey system
-         // user verification (UV) mechanism (which is either provided by the
-         // operating system, or not provided). The presence of the system UV is
-         // required for being able to store the opportunistically retrieved
-         // passkey secret. For the testing purposes we enable this flag to
-         // simulate the presence of the system UV for ensuring that the passkey
-         // secret can be stored in the test
-         // `SetPasskeysKeyInEnclaveManagerWhileSignedIn`.
-         device::kWebAuthnUseInsecureSoftwareUnexportableKeys},
+        {trusted_vault::kSetClientEncryptionKeysJsApi},
         /*disabled_features=*/{});
 #else
     feature_list_.InitAndEnableFeature(
@@ -573,12 +567,63 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   EXPECT_THAT(actual_keys, ElementsAreArray(kEncryptionKeys));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
-                       SetPasskeysKeyInEnclaveManagerWhileSignedIn) {
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
-      "testusername", signin::ConsentLevel::kSignin);
+// These tests are disabled under MSAN. The enclave subprocess is written in
+// Rust and FFI from Rust to C++ doesn't work in Chromium at this time
+// (crbug.com/1369167).
+#if !defined(MEMORY_SANITIZER) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+// For testing opportunistic retrieval of passkey secrets we need a special
+// infrastructure setup like the sync server, fake enclave, service fakes, and
+// platform fakes. This setup is being performed by the
+// `EnclaveAuthenticatorTestBase` class. Also the base class simulates a
+// signed-in user with a Gaia-id: `kSyncGaiaId`.
+class TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator
+    : public EnclaveAuthenticatorTestBase {
+ public:
+  TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {// This flag is needed for enabling the logic of storing
+         // opportunistically retrieved passkey secrets.
+         device::kWebAuthnOpportunisticRetrieval,
+         // This flag is needed for enabling the logic of storing
+         // opportunistically retrieved passkey secrets.
+         device::kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Override the sign-in URL so that it includes correct port from the test
+    // server.
+    command_line->AppendSwitchASCII(
+        ::switches::kGaiaUrl,
+        https_server_.GetURL("accounts.google.com", "/").spec());
+    EnclaveAuthenticatorTestBase::SetUpCommandLine(command_line);
+  }
+
+  content::WebContents* web_contents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  bool HasEncryptionKeysApi(content::RenderFrameHost* rfh) {
+    auto* tab_helper =
+        TrustedVaultEncryptionKeysTabHelper::FromWebContents(web_contents());
+    return tab_helper->HasEncryptionKeysApiForTesting(rfh);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    TrustedVaultEncryptionKeysTabHelperBrowserTestWithEnclaveAuthenticator,
+    SetPasskeysKeyInEnclaveManagerWhileSignedIn) {
+  // For storing opportunistically retrieved passkey secret we need to simulate
+  // the presence of the user verification (UV) capabilities.
+  EnableUVKeySupport();
 
   const GURL initial_url =
       https_server()->GetURL("accounts.google.com", "/title1.html");
@@ -594,20 +639,24 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
   EnclaveManager* const enclave_manager =
       EnclaveManagerFactory::GetAsEnclaveManagerForProfile(
           browser()->profile());
+  EnclaveKeysWaiter enclave_keys_waiter(enclave_manager);
   const unsigned initial_count = enclave_manager->store_keys_count();
 
   const std::vector<uint8_t> kEncryptionKey = {7};
   // This call simulates the passkey secret retrieval out of WebAuthn context
-  // (opportunistic key retrieval). In this case the key will be stored only if
-  // either a User Verification mechanism is available or if the development
-  // flag `kWebAuthnUseInsecureSoftwareUnexportableKeys` is enabled:
+  // (opportunistic key retrieval).
   ExecJsSetClientEncryptionKeysForSecurityDomain(
       web_contents()->GetPrimaryMainFrame(),
       trusted_vault::kPasskeysSecurityDomainName, kEncryptionKey,
-      "gaia_id_for_testusername");
+      kSyncGaiaId.ToString());
   ASSERT_TRUE(console_observer.Wait());
   EXPECT_EQ(console_observer.messages().size(), 1u);
 
+  // Enclave Manager asynchronously stores the opportunistically retrieved key,
+  // so we need to wait until the key becomes available.
+  EXPECT_EQ(enclave_keys_waiter.Wait(),
+            EnclaveManager::OutOfContextRecoveryOutcome::
+                kStoreKeysFromOpportunisticFlowSucceeded);
   // The keys should have been stored to the `EnclaveManager`.
   EXPECT_EQ(enclave_manager->store_keys_count(), initial_count + 1);
 
@@ -643,7 +692,8 @@ IN_PROC_BROWSER_TEST_F(TrustedVaultEncryptionKeysTabHelperBrowserTest,
                   trusted_vault::SecurityDomainId::kChromeSync, FakeAccount()),
               IsEmpty());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !defined(MEMORY_SANITIZER) && (BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
 
 IN_PROC_BROWSER_TEST_F(
     TrustedVaultEncryptionKeysTabHelperBrowserTest,
