@@ -4,14 +4,20 @@
 
 package org.chromium.chrome.browser.finds;
 
+import android.app.NotificationManager;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 
 /** Java bridge to the C++ FindsService. */
 @JNINamespace("finds")
@@ -77,5 +83,29 @@ public class FindsService {
         for (Observer observer : mObservers) {
             observer.onOptInCriteriaFulfilled();
         }
+    }
+
+    @CalledByNative
+    private static void checkAreFindsNotificationsEnabled(long callbackId) {
+        if (!NotificationProxyUtils.areNotificationsEnabled()) {
+            FindsServiceJni.get().onCheckAreFindsNotificationsEnabled(callbackId, false);
+            return;
+        }
+        BaseNotificationManagerProxyFactory.create()
+                .getNotificationChannel(
+                        ChromeChannelDefinitions.ChannelId.CHROME_FINDS,
+                        (channel) -> {
+                            boolean enabled =
+                                    (channel != null
+                                            && channel.getImportance()
+                                                    != NotificationManager.IMPORTANCE_NONE);
+                            FindsServiceJni.get()
+                                    .onCheckAreFindsNotificationsEnabled(callbackId, enabled);
+                        });
+    }
+
+    @NativeMethods
+    interface Natives {
+        void onCheckAreFindsNotificationsEnabled(long callbackId, boolean result);
     }
 }

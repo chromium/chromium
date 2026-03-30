@@ -17,6 +17,25 @@
 
 namespace finds {
 
+static void JNI_FindsService_OnCheckAreFindsNotificationsEnabled(
+    JNIEnv* env,
+    int64_t callbackId,
+    bool result) {
+  auto* callback =
+      reinterpret_cast<base::OnceCallback<void(bool)>*>(callbackId);
+  std::move(*callback).Run(result);
+  delete callback;
+}
+
+// static
+void FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(
+    base::OnceCallback<void(bool)> callback) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  auto* callback_ptr = new base::OnceCallback<void(bool)>(std::move(callback));
+  Java_FindsService_checkAreFindsNotificationsEnabled(
+      env, reinterpret_cast<intptr_t>(callback_ptr));
+}
+
 FindsServiceAndroid::FindsServiceAndroid(FindsService* service)
     : service_(service) {
   service_->AddObserver(this);

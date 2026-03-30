@@ -18,6 +18,12 @@ static_library("core") {
     "finds_utils.h",
   ]
 
+  # We include the platform header here as a source to satisfy GN checks
+  # for JNI without creating circular deps with the android target.
+  if (is_android) {
+    sources += [ "../android/finds_service_android.h" ]
+  }
+
   deps = [
     "//base",
     "//chrome/browser/notifications/scheduler/public",

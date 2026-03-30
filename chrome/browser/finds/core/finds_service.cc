@@ -14,6 +14,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/finds/android/finds_service_android.h"
+#endif
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_utils.h"
@@ -214,8 +217,9 @@ FindsService::FindsService(
       notification_schedule_service_(notification_schedule_service) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
-      base::BindOnce(&FindsService::CheckModelCooldownCriteriaAndMaybeExecute,
-                     weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &FindsService::CheckFindsNotificationsEnabledAndMaybeExecute,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 FindsService::~FindsService() {
@@ -296,8 +300,14 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
   return ScheduleNotificationWithModelResult(theme);
 }
 
-void FindsService::CheckModelCooldownCriteriaAndMaybeExecute() {
+void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
+#if BUILDFLAG(IS_ANDROID)
+  FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(
+      base::BindOnce(&FindsService::OnCheckAreFindsNotificationsEnabled,
+                     weak_ptr_factory_.GetWeakPtr()));
+#else
   ExecuteModelAndScheduleNotification(base::DoNothing());
+#endif
 }
 
 void FindsService::OnHistoryQueryComplete(
@@ -413,6 +423,12 @@ bool FindsService::ScheduleNotificationWithModelResult(
           notifications::SchedulerClientType::kChromeFinds, std::move(data),
           std::move(scheduler_params)));
   return true;
+}
+
+void FindsService::OnCheckAreFindsNotificationsEnabled(bool enabled) {
+  if (enabled) {
+    ExecuteModelAndScheduleNotification(base::DoNothing());
+  }
 }
 
 }  // namespace finds

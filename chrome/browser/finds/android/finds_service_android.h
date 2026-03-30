@@ -19,6 +19,9 @@ namespace finds {
 class FindsServiceAndroid : public FindsService::Observer,
                             public base::SupportsUserData::Data {
  public:
+  static void CheckAreFindsNotificationsEnabledAndroid(
+      base::OnceCallback<void(bool)> callback);
+
   explicit FindsServiceAndroid(FindsService* service);
   ~FindsServiceAndroid() override;
 

@@ -20,7 +20,10 @@ android_library("java") {
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 }

@@ -96,7 +96,7 @@ class FindsService : public KeyedService, public base::SupportsUserData {
  private:
   friend class FindsServiceTest;
 
-  void CheckModelCooldownCriteriaAndMaybeExecute();
+  void CheckFindsNotificationsEnabledAndMaybeExecute();
   void OnHistoryQueryComplete(base::OnceCallback<void(Result)> callback,
                               history::QueryResults results);
   void OnModelExecutionComplete(
@@ -106,6 +106,7 @@ class FindsService : public KeyedService, public base::SupportsUserData {
   bool ScheduleNotificationWithModelResult(
       const optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme&
           theme);
+  void OnCheckAreFindsNotificationsEnabled(bool enabled);
 
   raw_ptr<OptimizationGuideKeyedService> opt_guide_service_;
   raw_ptr<history::HistoryService> history_service_;

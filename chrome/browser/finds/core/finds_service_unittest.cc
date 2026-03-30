@@ -303,13 +303,8 @@ TEST_F(FindsServiceTest, ExecutionCooldownNotPassed) {
 
   base::HistogramTester histogram_tester_local;
 
-  // Run through the constructor workflow to ensure it does not work.
-  auto service = std::make_unique<FindsService>(
-      opt_guide_service_.get(), history_service_.get(), &prefs_,
-      notification_schedule_service_.get());
+  service_->ExecuteModelAndScheduleNotification(base::DoNothing());
 
-  // Run the posted task.
-  task_environment_.RunUntilIdle();
   histogram_tester_local.ExpectUniqueSample(
       "Finds.Result", FindsService::Result::Status::kModelExecutionOnCooldown,
       1);
@@ -360,13 +355,8 @@ TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
 
   base::HistogramTester histogram_tester_local;
 
-  // Run through the constructor workflow to ensure it works.
-  auto service = std::make_unique<FindsService>(
-      opt_guide_service_.get(), history_service_.get(), &prefs_,
-      notification_schedule_service_.get());
+  service_->ExecuteModelAndScheduleNotification(base::DoNothing());
 
-  // Run the posted task.
-  task_environment_.RunUntilIdle();
   histogram_tester_local.ExpectUniqueSample(
       "Finds.Result", FindsService::Result::Status::kSuccess, 1);
 }
