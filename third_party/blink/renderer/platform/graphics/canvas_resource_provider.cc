@@ -1728,7 +1728,7 @@ CanvasResourceProvider::ReleaseRecorderForCanvas2D() {
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   recorder_->SetClient(nullptr);
   recorder_.swap(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
+  DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
   return recorder;
 }
 
@@ -1737,7 +1737,7 @@ void CanvasResourceProvider::SetRecorderForCanvas2D(
   CHECK(IsCanvas2D());
   recorder->SetClient(this);
   recorder_ = std::move(recorder);
-  DisableLineDrawingAsPathsIfNecessary();
+  DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
 }
 
 void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
@@ -2191,13 +2191,15 @@ size_t CanvasResourceProvider::GetSize() const {
   return ComputeSurfaceSize();
 }
 
-void CanvasResourceProviderSharedImage::DisableLineDrawingAsPathsIfNecessary() {
+void CanvasResourceProviderSharedImage::
+    DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
+  CHECK(IsCanvas2D());
   if (context_provider_wrapper_ &&
       context_provider_wrapper_->ContextProvider()
               .GetGpuFeatureInfo()
               .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
           gpu::kGpuFeatureStatusEnabled) {
-    recorder_->DisableLineDrawingAsPaths();
+    RecorderForCanvas2D().DisableLineDrawingAsPaths();
   }
 }
 

@@ -274,12 +274,14 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
-  virtual void DisableLineDrawingAsPathsIfNecessary() {}
+  virtual void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
+    CHECK(IsCanvas2D());
+  }
 
+ protected:
   // Whether this CanvasResourceProvider is for Canvas2D.
   virtual bool IsCanvas2D() const = 0;
 
- protected:
   // Should only be called from static Create*() methods.
   // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
   // callsites.
@@ -473,7 +475,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
  private:
   scoped_refptr<CanvasResourceSharedImage> CreateResource();
-  void DisableLineDrawingAsPathsIfNecessary() override;
+  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
 
   // Returns true iff the resource provider is (a) using a GPU channel for
   // software SharedImages and (b) that channel has been lost.
