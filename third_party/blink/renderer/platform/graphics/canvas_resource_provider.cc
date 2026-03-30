@@ -252,16 +252,6 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
           base::WrapRefCounted(context_provider_wrapper_->ContextProvider()
                                    .RasterContextProvider())) {
   if (context_provider_wrapper_) {
-    // Graphite can handle a large buffer size.
-    if (context_provider_wrapper_->ContextProvider()
-            .GetGpuFeatureInfo()
-            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-        gpu::kGpuFeatureStatusEnabled) {
-      max_recorded_op_bytes_ =
-          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
-      recorder_->DisableLineDrawingAsPaths();
-    }
-
     context_provider_wrapper_->AddObserver(this);
 
     if (auto* sii = context_provider_wrapper_->ContextProvider()
@@ -2048,7 +2038,19 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         context_provider_wrapper,
                                         is_accelerated,
                                         shared_image_usage_flags,
-                                        delegate) {}
+                                        delegate) {
+  if (context_provider_wrapper_) {
+    // Graphite can handle a large buffer size.
+    if (context_provider_wrapper_->ContextProvider()
+            .GetGpuFeatureInfo()
+            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        gpu::kGpuFeatureStatusEnabled) {
+      max_recorded_op_bytes_ =
+          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
+      recorder_->DisableLineDrawingAsPaths();
+    }
+  }
+}
 
 Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     gfx::Size size,
@@ -2080,7 +2082,19 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
                                         context_provider_wrapper,
                                         is_accelerated,
                                         shared_image_usage_flags,
-                                        delegate) {}
+                                        delegate) {
+  if (context_provider_wrapper_) {
+    // Graphite can handle a large buffer size.
+    if (context_provider_wrapper_->ContextProvider()
+            .GetGpuFeatureInfo()
+            .status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
+        gpu::kGpuFeatureStatusEnabled) {
+      max_recorded_op_bytes_ =
+          static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
+      recorder_->DisableLineDrawingAsPaths();
+    }
+  }
+}
 
 CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     gfx::Size size,
