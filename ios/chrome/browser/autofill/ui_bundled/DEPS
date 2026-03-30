@@ -3,6 +3,7 @@ include_rules = [
   "+components/account_settings",
   "+components/plus_addresses/core/browser",
   "+ios/chrome/browser/bubble/ui_bundled",
+  "+ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h",
   "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/history/model/history_service_factory.h",
   "+ios/chrome/browser/infobars/model",

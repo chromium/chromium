@@ -65,6 +65,7 @@
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/strike_database_factory.h"
+#import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator.h"
 #import "ios/chrome/browser/device_reauth/model/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
@@ -201,6 +202,10 @@ EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {
 
 WalletPassAccessManager* ChromeAutofillClientIOS::GetWalletPassAccessManager() {
   return IOSWalletPassAccessManagerFactory::GetForProfile(profile_);
+}
+
+consent_auditor::ConsentAuditor* ChromeAutofillClientIOS::GetConsentAuditor() {
+  return ConsentAuditorFactory::GetForProfile(profile_);
 }
 
 FieldClassificationModelHandler*

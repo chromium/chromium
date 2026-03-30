@@ -106,6 +106,7 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   AutofillAiModelCache* GetAutofillAiModelCache() override;
   AutofillAiModelExecutor* GetAutofillAiModelExecutor() override;
   optimization_guide::RemoteModelExecutor* GetRemoteModelExecutor() override;
+  consent_auditor::ConsentAuditor* GetConsentAuditor() final;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
