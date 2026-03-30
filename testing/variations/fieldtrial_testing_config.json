@@ -21146,28 +21146,6 @@
             ]
         }
     ],
-    "SkipIPCChannelPausingForNonGuestsStudy": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251030",
-                    "params": {
-                        "internal_webui_only": "false"
-                    },
-                    "enable_features": [
-                        "SkipIPCChannelPausingForNonGuests"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipImageClassificationScoringForNonPageLoadTriggers": [
         {
             "platforms": [
