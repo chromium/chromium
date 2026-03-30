@@ -696,7 +696,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-
+  // CONFIGURATION_ANDROID_START
   if (kIPHFuseboxAttachmentFeature.name == feature->name) {
     // A config that allows measurement for user engagement on the fusebox
     // attachment button by checking:
@@ -2128,6 +2128,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(ANY, 0), 0, 360);
     return config;
   }
+// CONFIGURATION_ANDROID_END
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \

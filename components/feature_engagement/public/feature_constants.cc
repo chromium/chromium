@@ -293,6 +293,7 @@ BASE_FEATURE(kIPHBackNavigationMenuFeature,
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_ANDROID)
+// BASE_FEATURE_ANDROID_START
 BASE_FEATURE(kIPHAccountSettingsHistorySync,
              "IPH_AccountSettingsHistorySync",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -635,6 +636,7 @@ BASE_FEATURE(kIPHTabSwitcherXR,
 BASE_FEATURE(kIPHTabTearingXR,
              "IPH_TabTearingXR",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// BASE_FEATURE_ANDROID_END
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)

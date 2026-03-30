@@ -19,6 +19,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDummyFeature,  // Ensures non-empty array for all platforms.
 #if BUILDFLAG(IS_ANDROID)
     // keep-sorted start case=no
+    // ALL_FEATURES_ANDROID_START
     &kIPHAccountSettingsHistorySync,
     &kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
     &kIPHAdaptiveButtonInTopToolbarCustomizationGlicFeature,
@@ -133,6 +134,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHWebFeedFollowFeature,
     &kIPHWebFeedPostFollowDialogFeature,
     &kIPHWebFeedPostFollowDialogFeatureWithUIUpdate,
+// ALL_FEATURES_ANDROID_END
 // keep-sorted end
 #else
     // keep-sorted start case=no

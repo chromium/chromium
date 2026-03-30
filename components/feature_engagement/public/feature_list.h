@@ -44,6 +44,7 @@ inline constexpr char kIPHDemoModeFeatureChoiceParam[] = "chosen_feature";
 // Defines a flags_ui::FeatureEntry::FeatureParam for each feature.
 DEFINE_VARIATION_PARAM(kIPHDummyFeature, "IPH_Dummy");
 #if BUILDFLAG(IS_ANDROID)
+// DEFINE_VARIATION_PARAM_ANDROID_START
 DEFINE_VARIATION_PARAM(kIPHAccountSettingsHistorySync,
                        "IPH_AccountSettingsHistorySync");
 DEFINE_VARIATION_PARAM(kIPHAndroidTabDeclutter, "IPH_AndroidTabDeclutter");
@@ -236,6 +237,7 @@ DEFINE_VARIATION_PARAM(kIPHSharingHubWebnotesStylizeFeature,
 DEFINE_VARIATION_PARAM(kIPHRestoreTabsOnFREFeature, "IPH_RestoreTabsOnFRE");
 DEFINE_VARIATION_PARAM(kIPHTabSwitcherXR, "IPH_TabSwitcherXR");
 DEFINE_VARIATION_PARAM(kIPHTabTearingXR, "IPH_TabTearingXR");
+// DEFINE_VARIATION_PARAM_ANDROID_END
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
@@ -587,6 +589,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
 // clang-format off
 #if BUILDFLAG(IS_ANDROID)
 // keep-sorted start case=no
+// VARIATION_ENTRY_ANDROID_START
         VARIATION_ENTRY(kIPHAccountSettingsHistorySync),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature),
         VARIATION_ENTRY(kIPHAdaptiveButtonInTopToolbarCustomizationNewTabFeature),
@@ -690,6 +693,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHWebFeedFollowFeature),
         VARIATION_ENTRY(kIPHWebFeedPostFollowDialogFeature),
         VARIATION_ENTRY(kIPHWebFeedPostFollowDialogFeatureWithUIUpdate),
+// VARIATION_ENTRY_ANDROID_END
 // keep-sorted end
 #else
 // keep-sorted start case=no
