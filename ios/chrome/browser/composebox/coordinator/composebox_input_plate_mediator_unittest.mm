@@ -14,6 +14,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 #import "components/contextual_search/internal/test_composebox_query_controller.h"
+#import "components/contextual_search/mock_contextual_search_session_handle.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/omnibox/browser/omnibox_prefs.h"
 #import "components/prefs/testing_pref_service.h"
@@ -142,6 +143,12 @@
 @end
 
 namespace {
+
+class TestContextualSearchSessionHandle
+    : public contextual_search::MockContextualSearchSessionHandle {
+ public:
+  MOCK_METHOD(void, SetIsBackgrounded, (bool), (override));
+};
 
 class ComposeboxInputPlateMediatorTest : public PlatformTest {
  protected:
@@ -586,6 +593,52 @@ TEST_F(ComposeboxInputPlateMediatorTest, ToolWithoutRuleIsMarkedDisabled) {
 
   EXPECT_FALSE(consumer_.createImageHidden);
   EXPECT_TRUE(consumer_.createImageDisabled);
+}
+
+// Tests that the mediator forwards background/foreground notifications to the
+// contextual search session.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       HandleBackgroundForegroundNotifications) {
+  auto config_params = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  auto real_session = service_->CreateSession(
+      std::move(config_params),
+      contextual_search::ContextualSearchSource::kUnknown, std::nullopt);
+  auto* real_controller = real_session->GetController();
+
+  auto mock_session = std::make_unique<TestContextualSearchSessionHandle>();
+  TestContextualSearchSessionHandle* raw_mock = mock_session.get();
+
+  ON_CALL(*raw_mock, GetController())
+      .WillByDefault(testing::Return(real_controller));
+
+  ComposeboxInputPlateMediator* test_mediator =
+      [[ComposeboxInputPlateMediator alloc]
+          initWithContextualSearchSession:std::move(mock_session)
+                             webStateList:web_state_list_.get()
+                            faviconLoader:nullptr
+                   persistTabContextAgent:nullptr
+                              isIncognito:NO
+                               modeHolder:[[ComposeboxModeHolder alloc] init]
+                       templateURLService:template_url_service()
+                    aimEligibilityService:aim_eligibility_service_.get()
+                              prefService:&pref_service_
+                     cobrowseBrowserAgent:nil
+                browserCoordinatorHandler:nil
+                             sceneHandler:nil
+                               entrypoint:ComposeboxEntrypoint::kOther];
+
+  EXPECT_CALL(*raw_mock, SetIsBackgrounded(true)).Times(1);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationDidEnterBackgroundNotification
+                    object:nil];
+
+  EXPECT_CALL(*raw_mock, SetIsBackgrounded(false)).Times(1);
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIApplicationWillEnterForegroundNotification
+                    object:nil];
+
+  [test_mediator disconnect];
 }
 
 }  // namespace
