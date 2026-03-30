@@ -2721,13 +2721,43 @@ bool TabsMoveFunction::MoveTab(int tab_id,
     return false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496733610): Supporting CCT/PWA/TWA is currently not possible
+  // in C++ browser tests on Android. Add tests once that's supported
+  BrowserWindowInterface* source_browser =
+      source_window->GetBrowserWindowInterface();
+  bool is_source_window_cct_or_app_on_android =
+      source_browser &&
+      (source_browser->GetType() == BrowserWindowInterface::TYPE_CUSTOM_TAB ||
+       source_browser->GetType() == BrowserWindowInterface::TYPE_APP);
+#endif
+
   if (window_id && *window_id != ExtensionTabUtil::GetWindowIdOfTab(contents)) {
+#if BUILDFLAG(IS_ANDROID)
+    if (is_source_window_cct_or_app_on_android &&
+        contents != source_window->GetActiveTab()) {
+      *error = tabs_constants::
+          kAndroidOnlyActiveTabCanBeMovedFromCctOrWebAppWindowError;
+      return false;
+    }
+#endif
+
     WindowController* target_controller =
         ExtensionTabUtil::GetControllerFromWindowID(
             ChromeExtensionFunctionDetails(this), *window_id, error);
     if (!target_controller) {
       return false;
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (is_source_window_cct_or_app_on_android &&
+        target_controller->GetBrowserWindowInterface()->GetType() !=
+            BrowserWindowInterface::TYPE_NORMAL) {
+      *error =
+          tabs_constants::kAndroidCanOnlyMoveCctOrWebAppTabsToNormalWindowError;
+      return false;
+    }
+#endif
 
     BrowserWindowInterface* target_browser =
         target_controller->GetBrowserWindowInterface();
@@ -2760,6 +2790,14 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   // Clamp move location to the last position.
   // This is ">=" because the move must be to an existing location.
   // -1 means set the move location to the last position.
+
+#if BUILDFLAG(IS_ANDROID)
+  if (is_source_window_cct_or_app_on_android) {
+    *error = tabs_constants::kAndroidCannotMoveTabsWithinCctOrWebAppWindowError;
+    return false;
+  }
+#endif
+
   TabListInterface* source_tab_list =
       TabListInterface::From(source_window->GetBrowserWindowInterface());
   if (*new_index >= source_tab_list->GetTabCount() || *new_index < 0) {

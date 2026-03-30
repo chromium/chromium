@@ -66,8 +66,16 @@ inline constexpr char kGroupParamsError[] =
     "Cannot specify 'createProperties' along with a 'groupId'.";
 inline constexpr char kNotAllowedForDevToolsError[] =
     "Operation not allowed for DevTools windows";
-
 #if BUILDFLAG(IS_ANDROID)
+inline constexpr char kAndroidCannotMoveTabsWithinCctOrWebAppWindowError[] =
+    "Cannot move tabs within an Android web app or custom tab window.";
+inline constexpr char
+    kAndroidOnlyActiveTabCanBeMovedFromCctOrWebAppWindowError[] =
+        "Only the active tab in an Android web app or custom tab window can be "
+        "moved from it.";
+inline constexpr char kAndroidCanOnlyMoveCctOrWebAppTabsToNormalWindowError[] =
+    "Tabs in an Android web app or custom tab window can only be moved to a "
+    "normal browser window.";
 inline constexpr char kUnableToResizeErrorAndroidSdkTooLow[] =
     "Unable to resize: unsupported Android API level";
 inline constexpr char kUnableToResizeErrorAndroidBrowserRoleNotHeld[] =
