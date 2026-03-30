@@ -261,8 +261,14 @@ bool VerticalTabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
   }
   gfx::Point screen_location(event.location());
   ConvertPointToScreen(&event_source_view, &screen_location);
-  if (drag_controller_->Drag(screen_location) ==
-      TabDragController::Liveness::kDeleted) {
+
+  // Dragging may start a blocking loop, which may allow this to be destroyed.
+  auto ref = weak_factory_.GetWeakPtr();
+  auto liveness = drag_controller_->Drag(screen_location);
+  if (!ref) {
+    return false;
+  }
+  if (liveness == TabDragController::Liveness::kDeleted) {
     ResetDragState();
     return false;
   }

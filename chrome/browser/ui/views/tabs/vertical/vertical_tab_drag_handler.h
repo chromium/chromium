@@ -10,7 +10,10 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/memory/advanced_memory_safety_checks.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
@@ -114,9 +117,6 @@ class VerticalTabDragHandler {
 // `TabDragController`.
 class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
                                    public TabDragContext {
-  // TODO(https://crbug.com/495973592): Remove this macro.
-  ADVANCED_MEMORY_SAFETY_CHECKS();
-
   METADATA_HEADER(VerticalTabDragHandlerImpl, TabDragContext)
  public:
   explicit VerticalTabDragHandlerImpl(TabStripModel& tab_strip_model,
@@ -249,6 +249,8 @@ class VerticalTabDragHandlerImpl : public VerticalTabDragHandler,
   // with the core dragging system.
   std::map<raw_ptr<const TabCollectionNode>, raw_ptr<TabSlotView>> slot_views_;
   std::vector<base::CallbackListSubscription> node_destroyed_callbacks_;
+
+  base::WeakPtrFactory<VerticalTabDragHandlerImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_DRAG_HANDLER_H_
