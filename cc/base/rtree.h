@@ -241,7 +241,7 @@ template <typename T>
 auto RTree<T>::AllocateNodeAtLevel(uint16_t level) -> Node<T>* {
   // We don't allow reallocations, since that would invalidate references to
   // existing nodes, so verify that capacity > size.
-  DCHECK_GT(nodes_.capacity(), nodes_.size());
+  CHECK_GT(nodes_.capacity(), nodes_.size());
   nodes_.emplace_back(level);
   return &nodes_.back();
 }
