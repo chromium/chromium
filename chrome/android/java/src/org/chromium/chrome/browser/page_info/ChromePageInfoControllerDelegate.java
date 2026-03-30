@@ -29,6 +29,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
@@ -282,12 +283,15 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public Collection<PageInfoSubpageController> createAdditionalRowViews(
             PageInfoMainController mainController, ViewGroup rowWrapper) {
         Collection<PageInfoSubpageController> controllers = new ArrayList<>();
-        var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
-        adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
-        rowWrapper.addView(adPersonalizationRow);
-        controllers.add(
-                new PageInfoAdPersonalizationController(
-                        mainController, adPersonalizationRow, this));
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+            var adPersonalizationRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
+            rowWrapper.addView(adPersonalizationRow);
+            controllers.add(
+                    new PageInfoAdPersonalizationController(
+                            mainController, adPersonalizationRow, this));
+        }
 
         // Add history row.
         final Tab tab = TabUtils.fromWebContents(mWebContents);
