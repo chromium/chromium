@@ -94,7 +94,7 @@ public class GeolocationHeader {
 
     private static final String DUMMY_URL_QUERY = "some_query";
 
-    private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpate;
+    private static final LocationListener sLocationListener = GeolocationHeader::onLocationUpdate;
     private static boolean sGeolocationPrimed;
     private static boolean sHasCoarsePermissionForTesting;
     private static boolean sHasFinePermissionForTesting;
@@ -213,7 +213,7 @@ public class GeolocationHeader {
         sCurrentLocationRequested = false;
     }
 
-    private static void onLocationUpate(Location location) {
+    private static void onLocationUpdate(Location location) {
         sFusedLocation = location;
     }
 
