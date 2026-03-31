@@ -37,6 +37,7 @@ public interface ActionChipsBinder {
                         ChipViewBinder::bind);
                 actionChipsVisibility = View.VISIBLE;
             }
+            view.setSelected(false);
             view.setAdapter(adapter);
             view.setVisibility(actionChipsVisibility);
         } else if (SuggestionCommonProperties.DEVICE_FORM_FACTOR == propertyKey) {
