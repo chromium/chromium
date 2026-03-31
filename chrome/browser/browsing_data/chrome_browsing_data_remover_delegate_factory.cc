@@ -22,7 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #endif
@@ -77,7 +77,7 @@ ChromeBrowsingDataRemoverDelegateFactory::
   DependsOn(WebDataServiceFactory::GetInstance());
   DependsOn(WebHistoryServiceFactory::GetInstance());
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   DependsOn(extensions::ActivityLog::GetFactoryInstance());
   DependsOn(extensions::ExtensionPrefsFactory::GetInstance());
 #endif
