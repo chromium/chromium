@@ -93,6 +93,7 @@ source_set("impl") {
     "//chrome/browser/serial",
     "//chrome/browser/signin",
     "//chrome/browser/signin:signin_promo",
+    "//chrome/browser/ssl",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
     "//chrome/browser/task_manager",
