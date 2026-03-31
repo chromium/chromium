@@ -735,6 +735,17 @@ IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest,
                                 test_skills[1].name, first_party_skill_name}));
 }
 
+IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, Invoke1PSkillFromFloatyGic) {
+  skills::proto::Skill skill_proto = GetFirstPartySkillProto();
+  std::string skill_id = skill_proto.id();
+  RunTestSequence(
+      Seed1PSkills({skill_proto}), ToggleGlicWindow(GlicWindowMode::kDetached),
+      PollForAndAcceptFre(),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      WaitFor1PSkills(), InvokeSkillDirectly(&skill_id),
+      VerifyInvocationInWebUI(skill_proto.prompt()));
+}
+
 IN_PROC_BROWSER_TEST_F(SkillsInteractiveUiTest, Invoke1PSkill) {
   skills::proto::Skill skill_proto = GetFirstPartySkillProto();
   std::string skill_id = skill_proto.id();
