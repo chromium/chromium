@@ -21,6 +21,11 @@ class Profile;
 
 namespace indigo {
 
+struct RemoteEligibility {
+  bool is_service_supported_for_account = false;
+  bool has_user_image = false;
+};
+
 enum class LocalEligibility {
   kEligible,
   kNotSignedIn,
@@ -28,11 +33,36 @@ enum class LocalEligibility {
   kDisabledByPolicy,
 };
 
+// Combined eligibility status including local constraints (features, profile
+// state) and remote server checks.
+struct CombinedEligibility {
+  CombinedEligibility();
+  CombinedEligibility(const CombinedEligibility&);
+  CombinedEligibility& operator=(const CombinedEligibility&);
+  CombinedEligibility(CombinedEligibility&&);
+  CombinedEligibility& operator=(CombinedEligibility&&);
+  ~CombinedEligibility();
+
+  LocalEligibility local_eligibility = LocalEligibility::kNotSignedIn;
+  base::expected<RemoteEligibility, std::string> remote_eligibility =
+      base::unexpected("Status not available");
+  bool has_onboarded_pref = false;
+
+  bool CanGenerateImage() const;
+  bool ReadyToOnboard() const;
+};
+
 class IndigoService : public KeyedService,
                       public signin::IdentityManager::Observer {
  public:
   using LocalEligibilityChangedCallback =
       base::RepeatingCallback<void(LocalEligibility)>;
+  using CombinedEligibilityCallback =
+      base::OnceCallback<void(const CombinedEligibility&)>;
+  using RemoteEligibilityCallback =
+      base::OnceCallback<void(base::expected<RemoteEligibility, std::string>)>;
+  using RemoteEligibilityFetcher =
+      base::RepeatingCallback<void(RemoteEligibilityCallback)>;
 
   IndigoService(Profile* profile,
                 signin::IdentityManager* identity_manager,
@@ -61,6 +91,14 @@ class IndigoService : public KeyedService,
   bool CanShowAnchoredMessage() const;
   void AnchoredMessageShown();
 
+  // Determine whether the feature is capable of generating images right now.
+  // This may require contacting the service.
+  void GetCombinedEligibility(CombinedEligibilityCallback callback);
+
+  // Invalidate the cached or in-flight status fetch from the server, so it will
+  // be refetched when GetCombinedEligibility is called next.
+  void InvalidateRemoteEligibility();
+
   // KeyedService:
   void Shutdown() override;
 
@@ -69,9 +107,15 @@ class IndigoService : public KeyedService,
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
+  // Test helpers:
+  void SetRemoteEligibilityFetcherForTesting(RemoteEligibilityFetcher fetcher);
+
  private:
   LocalEligibility ComputeLocalEligibility() const;
   void UpdateLocalEligibilityAndNotify();
+  void OnRemoteEligibilityReceived(
+      base::expected<RemoteEligibility, std::string> eligibility_or_error);
+  void TriggerRemoteEligibilityFetch();
 
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -88,6 +132,25 @@ class IndigoService : public KeyedService,
 
   // The earliest time the anchored message can be shown again.
   base::TimeTicks anchored_message_not_before_;
+
+  // True if a fetch for remote eligibility is currently in flight.
+  bool remote_eligibility_fetch_in_progress_ = false;
+
+  // Overrides the server fetch for testing purposes.
+  RemoteEligibilityFetcher remote_eligibility_fetcher_;
+
+  // The cached result of the last remote eligibility fetch (or error
+  // description). It is empty if no fetch has succeeded yet or if it was
+  // invalidated.
+  std::optional<base::expected<RemoteEligibility, std::string>>
+      remote_eligibility_;
+
+  // Callbacks waiting for the current remote eligibility fetch to complete.
+  std::vector<CombinedEligibilityCallback> pending_callbacks_;
+
+  // Weak pointer factory used specifically for remote eligibility fetches to
+  // allow invalidation of in-flight requests.
+  base::WeakPtrFactory<IndigoService> remote_eligibility_weak_factory_{this};
 };
 
 }  // namespace indigo

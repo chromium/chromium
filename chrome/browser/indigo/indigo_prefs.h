@@ -11,6 +11,8 @@ namespace indigo::prefs {
 
 // Policy setting (0, 1, or 2, like GenAiDefaultSettings).
 inline constexpr char kIndigoPolicy[] = "indigo.policy";
+// True if the user has completed the onboarding flow in this Chrome profile.
+inline constexpr char kIndigoHasOnboarded[] = "indigo.has_onboarded";
 
 enum Policy {
   kAllowed = 0,

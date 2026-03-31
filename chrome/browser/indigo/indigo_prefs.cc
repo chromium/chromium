@@ -10,6 +10,7 @@ namespace indigo::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kIndigoPolicy, kAllowed);
+  registry->RegisterBooleanPref(kIndigoHasOnboarded, false);
 }
 
 }  // namespace indigo::prefs

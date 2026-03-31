@@ -5,14 +5,43 @@
 #include "chrome/browser/indigo/indigo_service.h"
 
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/indigo/indigo_alpha_rpc.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/storage_partition.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace indigo {
+
+CombinedEligibility::CombinedEligibility() = default;
+CombinedEligibility::CombinedEligibility(const CombinedEligibility&) = default;
+CombinedEligibility& CombinedEligibility::operator=(
+    const CombinedEligibility&) = default;
+CombinedEligibility::CombinedEligibility(CombinedEligibility&&) = default;
+CombinedEligibility& CombinedEligibility::operator=(CombinedEligibility&&) =
+    default;
+CombinedEligibility::~CombinedEligibility() = default;
+
+bool CombinedEligibility::CanGenerateImage() const {
+  return local_eligibility == LocalEligibility::kEligible &&
+         remote_eligibility.has_value() &&
+         remote_eligibility->is_service_supported_for_account &&
+         remote_eligibility->has_user_image && has_onboarded_pref;
+}
+
+bool CombinedEligibility::ReadyToOnboard() const {
+  if (local_eligibility != LocalEligibility::kEligible ||
+      !remote_eligibility.has_value() ||
+      !remote_eligibility->is_service_supported_for_account) {
+    return false;
+  }
+  return !remote_eligibility->has_user_image || !has_onboarded_pref;
+}
 
 IndigoService::IndigoService(Profile* profile,
                              signin::IdentityManager* identity_manager,
@@ -41,6 +70,7 @@ IndigoService::~IndigoService() = default;
 void IndigoService::Shutdown() {
   identity_manager_observation_.Reset();
   pref_change_registrar_.reset();
+  remote_eligibility_weak_factory_.InvalidateWeakPtrs();
 }
 
 void IndigoService::OnPrimaryAccountChanged(
@@ -103,6 +133,106 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
     last_known_local_eligibility_ = new_eligibility;
     local_eligibility_callback_list_.Notify(new_eligibility);
   }
+}
+
+void IndigoService::GetCombinedEligibility(
+    CombinedEligibilityCallback callback) {
+  CombinedEligibility status;
+  status.local_eligibility = GetLocalEligibility();
+
+  if (pref_service_) {
+    status.has_onboarded_pref =
+        pref_service_->GetBoolean(prefs::kIndigoHasOnboarded);
+  }
+
+  if (status.local_eligibility != LocalEligibility::kEligible) {
+    std::move(callback).Run(status);
+    return;
+  }
+
+  if (remote_eligibility_.has_value()) {
+    status.remote_eligibility = remote_eligibility_.value();
+    std::move(callback).Run(status);
+    return;
+  }
+
+  pending_callbacks_.push_back(std::move(callback));
+  if (remote_eligibility_fetch_in_progress_) {
+    return;
+  }
+
+  TriggerRemoteEligibilityFetch();
+}
+
+void IndigoService::TriggerRemoteEligibilityFetch() {
+  remote_eligibility_fetch_in_progress_ = true;
+  RemoteEligibilityCallback on_rpc_status_received =
+      base::BindOnce(&IndigoService::OnRemoteEligibilityReceived,
+                     remote_eligibility_weak_factory_.GetWeakPtr());
+
+  if (remote_eligibility_fetcher_) {
+    remote_eligibility_fetcher_.Run(std::move(on_rpc_status_received));
+    return;
+  }
+
+  if (!features::kIndigoAlphaStatusUrl.Get().empty()) {
+    LOG(WARNING) << "indigo: alpha status RPC in use";
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
+        profile_->GetDefaultStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess();
+    ExecuteAlphaStatusRpc(
+        loader_factory.get(),
+        base::BindOnce([](base::expected<void, std::string> result) {
+          return result.transform([] {
+            return RemoteEligibility{.is_service_supported_for_account = true,
+                                     .has_user_image = true};
+          });
+        }).Then(std::move(on_rpc_status_received)));
+    return;
+  }
+
+  LOG(WARNING) << "indigo: status RPC stub in use";
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(on_rpc_status_received),
+                     RemoteEligibility{.is_service_supported_for_account = true,
+                                       .has_user_image = true}));
+}
+
+void IndigoService::InvalidateRemoteEligibility() {
+  remote_eligibility_.reset();
+  remote_eligibility_fetch_in_progress_ = false;
+  remote_eligibility_weak_factory_.InvalidateWeakPtrs();
+
+  if (!pending_callbacks_.empty()) {
+    TriggerRemoteEligibilityFetch();
+  }
+}
+
+void IndigoService::OnRemoteEligibilityReceived(
+    base::expected<RemoteEligibility, std::string> eligibility_or_error) {
+  remote_eligibility_fetch_in_progress_ = false;
+  remote_eligibility_ = std::move(eligibility_or_error);
+
+  std::vector<CombinedEligibilityCallback> callbacks;
+  callbacks.swap(pending_callbacks_);
+
+  CombinedEligibility status;
+  status.local_eligibility = GetLocalEligibility();
+  if (pref_service_) {
+    status.has_onboarded_pref =
+        pref_service_->GetBoolean(prefs::kIndigoHasOnboarded);
+  }
+  status.remote_eligibility = remote_eligibility_.value();
+
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(status);
+  }
+}
+
+void IndigoService::SetRemoteEligibilityFetcherForTesting(
+    RemoteEligibilityFetcher fetcher) {
+  remote_eligibility_fetcher_ = std::move(fetcher);
 }
 
 }  // namespace indigo

@@ -29,6 +29,17 @@ class IndigoServiceTest : public testing::Test {
   void CreateService() {
     service_ = std::make_unique<IndigoService>(
         &profile_, identity_test_env_.identity_manager(), &prefs_);
+    service_->SetRemoteEligibilityFetcherForTesting(base::BindRepeating(
+        [](IndigoServiceTest* test,
+           IndigoService::RemoteEligibilityCallback callback) {
+          test->remote_eligibility_fetch_count_++;
+          if (test->auto_complete_remote_eligibility_fetch_) {
+            std::move(callback).Run(test->mock_remote_eligibility_);
+          } else {
+            test->pending_remote_eligibility_callback_ = std::move(callback);
+          }
+        },
+        base::Unretained(this)));
   }
 
   void MakeAccountAvailableAndCapable() {
@@ -41,6 +52,22 @@ class IndigoServiceTest : public testing::Test {
 
   void SetPolicySettings(prefs::Policy value) {
     prefs_.SetInteger(prefs::kIndigoPolicy, value);
+  }
+
+  CombinedEligibility GetCombinedEligibility() {
+    base::test::TestFuture<CombinedEligibility> future;
+    service_->GetCombinedEligibility(
+        future.GetCallback<const CombinedEligibility&>());
+    return future.Get();
+  }
+
+  void CompleteRemoteEligibilityFetch(
+      base::expected<RemoteEligibility, std::string> status =
+          base::ok(RemoteEligibility{.is_service_supported_for_account = true,
+                                     .has_user_image = true})) {
+    if (pending_remote_eligibility_callback_) {
+      std::move(pending_remote_eligibility_callback_).Run(std::move(status));
+    }
   }
 
   ::testing::AssertionResult LocalEligibilityBecomes(
@@ -72,6 +99,12 @@ class IndigoServiceTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IndigoService> service_;
+  RemoteEligibility mock_remote_eligibility_ =
+      RemoteEligibility{.is_service_supported_for_account = true,
+                        .has_user_image = true};
+  int remote_eligibility_fetch_count_ = 0;
+  IndigoService::RemoteEligibilityCallback pending_remote_eligibility_callback_;
+  bool auto_complete_remote_eligibility_fetch_ = true;
 };
 
 TEST_F(IndigoServiceTest, DefaultStateNotSignedIn) {
@@ -123,6 +156,87 @@ TEST_F(IndigoServiceTest, AnchoredMessageTrigger) {
   task_environment_.FastForwardBy(
       features::kIndigoAnchoredMessageResetDuration.Get());
   EXPECT_TRUE(service_->CanShowAnchoredMessage());
+}
+
+TEST_F(IndigoServiceTest, RemoteEligibilityUnsupported) {
+  mock_remote_eligibility_ = RemoteEligibility{
+      .is_service_supported_for_account = false, .has_user_image = false};
+  CreateService();
+
+  MakeAccountAvailableAndCapable();
+
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  CombinedEligibility combined_eligibility = GetCombinedEligibility();
+  EXPECT_TRUE(combined_eligibility.remote_eligibility.has_value());
+  EXPECT_FALSE(combined_eligibility.remote_eligibility
+                   ->is_service_supported_for_account);
+  EXPECT_FALSE(combined_eligibility.remote_eligibility->has_user_image);
+}
+
+TEST_F(IndigoServiceTest, InvalidateRemoteEligibility_NoFetchInProgress) {
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  CombinedEligibility combined_eligibility = GetCombinedEligibility();
+  EXPECT_EQ(remote_eligibility_fetch_count_, 1);
+  EXPECT_TRUE(combined_eligibility.remote_eligibility.has_value());
+  EXPECT_TRUE(combined_eligibility.remote_eligibility
+                  ->is_service_supported_for_account);
+
+  service_->InvalidateRemoteEligibility();
+
+  // Next call should trigger a new fetch.
+  combined_eligibility = GetCombinedEligibility();
+  EXPECT_EQ(remote_eligibility_fetch_count_, 2);
+  EXPECT_TRUE(combined_eligibility.remote_eligibility.has_value());
+  EXPECT_TRUE(combined_eligibility.remote_eligibility
+                  ->is_service_supported_for_account);
+}
+
+TEST_F(IndigoServiceTest, InvalidateRemoteEligibility_FetchInProgress) {
+  auto_complete_remote_eligibility_fetch_ = false;
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  base::test::TestFuture<CombinedEligibility> future;
+  service_->GetCombinedEligibility(
+      future.GetCallback<const CombinedEligibility&>());
+  EXPECT_EQ(remote_eligibility_fetch_count_, 1);
+
+  service_->InvalidateRemoteEligibility();
+  // Invalidation should have cancelled the first fetch's reply (by invalidating
+  // weak ptrs) and started a *new* fetch because there was a pending callback.
+  EXPECT_EQ(remote_eligibility_fetch_count_, 2);
+
+  // Now complete the *second* fetch.
+  CompleteRemoteEligibilityFetch(base::ok(RemoteEligibility{
+      .is_service_supported_for_account = true, .has_user_image = true}));
+
+  // The first callback (which was restarted) should now complete.
+  CombinedEligibility combined_eligibility = future.Get();
+  EXPECT_TRUE(combined_eligibility.remote_eligibility.has_value());
+  EXPECT_TRUE(combined_eligibility.remote_eligibility
+                  ->is_service_supported_for_account);
+}
+
+TEST_F(IndigoServiceTest, ErrorMessageStored) {
+  auto_complete_remote_eligibility_fetch_ = false;
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  base::test::TestFuture<CombinedEligibility> future;
+  service_->GetCombinedEligibility(
+      future.GetCallback<const CombinedEligibility&>());
+
+  CompleteRemoteEligibilityFetch(base::unexpected("Server down"));
+
+  CombinedEligibility combined_eligibility = future.Get();
+  EXPECT_FALSE(combined_eligibility.remote_eligibility.has_value());
+  EXPECT_EQ(combined_eligibility.remote_eligibility.error(), "Server down");
 }
 
 }  // namespace indigo
