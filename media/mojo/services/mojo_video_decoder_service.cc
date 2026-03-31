@@ -464,6 +464,12 @@ void MojoVideoDecoderService::OnReaderRead(
     return;
   }
 
+  if (!DecoderBuffer::DoSubsamplesMatch(*buffer)) {
+    std::move(bad_message_callback)
+        .Run("Invalid DecoderBuffer::subsamples for video.");
+    return;
+  }
+
   decoder_->Decode(
       std::move(buffer),
       base::BindOnce(&MojoVideoDecoderService::OnDecoderDecoded, weak_this_,
