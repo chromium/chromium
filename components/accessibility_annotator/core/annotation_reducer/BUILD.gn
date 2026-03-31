@@ -90,7 +90,6 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  # TODO(b:495069109): Remove conditional build with the alternate solution.
   if (build_with_model_execution) {
     sources += [ "one_p_resolver_impl_unittest.cc" ]
     deps +=
