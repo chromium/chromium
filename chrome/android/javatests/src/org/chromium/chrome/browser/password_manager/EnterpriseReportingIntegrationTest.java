@@ -88,12 +88,12 @@ public class EnterpriseReportingIntegrationTest {
         // For authenticating to the fake reporting server.
         CloudManagementSharedPreferences.saveDmToken(FAKE_DM_TOKEN);
 
-        CommandLine command_line = CommandLine.getInstance();
-        command_line.appendSwitchWithValue("realtime-reporting-url", mReportingServer.getBaseUrl());
-        command_line.appendSwitchWithValue("gaia-config-contents", buildGaiaConfig().toString());
+        CommandLine commandLine = CommandLine.getInstance();
+        commandLine.appendSwitchWithValue("realtime-reporting-url", mReportingServer.getBaseUrl());
+        commandLine.appendSwitchWithValue("gaia-config-contents", buildGaiaConfig().toString());
         // Stop the browser from trying to talk to the real DM server. The command line will set the
         // policy needed, so a 404 will suffice.
-        command_line.appendSwitchWithValue(
+        commandLine.appendSwitchWithValue(
                 "device-management-url", mReportingServer.getBaseUrl() + "does-not-exist");
     }
 

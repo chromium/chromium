@@ -131,10 +131,10 @@ public class IdentityErrorCardPreference extends ChromeBasePreference
         TextView error = card.findViewById(R.id.signin_settings_card_description);
         Button button = card.findViewById(R.id.signin_settings_card_button);
 
-        ErrorCardDetails error_card_details =
+        ErrorCardDetails errorCardDetails =
                 assumeNonNull(SyncSettingsUtils.getIdentityErrorErrorCardDetails(mIdentityError));
-        error.setText(context.getString(error_card_details.message));
-        button.setText(context.getString(error_card_details.buttonLabel));
+        error.setText(context.getString(errorCardDetails.message));
+        button.setText(context.getString(errorCardDetails.buttonLabel));
 
         button.setOnClickListener(
                 v -> {

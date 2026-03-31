@@ -78,10 +78,10 @@ public class TabDistillabilityProviderTest {
 
     @Test
     public void finishNavigationWithSameUrlDifferentFragmentDoesNothing() {
-        GURL url_1_fragment = new GURL("http://www.test1.com#fragment");
+        GURL url1Fragment = new GURL("http://www.test1.com#fragment");
         // Setup the distillation result, and verify loading the same page is a no-op.
         mProvider.onIsPageDistillableResult(
-                /* url= */ url_1_fragment,
+                /* url= */ url1Fragment,
                 /* isDistillable= */ true,
                 /* isLast= */ true,
                 /* isLongArticle= */ false,

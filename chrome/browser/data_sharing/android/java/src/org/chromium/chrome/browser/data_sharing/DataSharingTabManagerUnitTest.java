@@ -235,11 +235,11 @@ public class DataSharingTabManagerUnitTest {
     public void testShareOrManageFlowWithCollaborationService() {
         doReturn(mProfile).when(mProfile).getOriginalProfile();
         doReturn(mSavedTabGroup).when(mTabGroupSyncService).getGroup(LOCAL_ID);
-        EitherGroupId either_id = EitherGroupId.createLocalId(LOCAL_ID);
+        EitherGroupId eitherId = EitherGroupId.createLocalId(LOCAL_ID);
         mDataSharingTabManager.createOrManageFlow(
-                either_id, CollaborationServiceShareOrManageEntryPoint.UNKNOWN, null);
+                eitherId, CollaborationServiceShareOrManageEntryPoint.UNKNOWN, null);
 
-        verify(mCollaborationService).startShareOrManageFlow(any(), eq(either_id), anyInt());
+        verify(mCollaborationService).startShareOrManageFlow(any(), eq(eitherId), anyInt());
     }
 
     @Test

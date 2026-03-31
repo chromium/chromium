@@ -273,12 +273,12 @@ public class OptimizationGuideBridge {
                         optimizationType);
         if (notifications == null) return null;
 
-        byte[][] encoded_notifications = new byte[notifications.length][];
+        byte[][] encodedNotifications = new byte[notifications.length][];
         for (int i = 0; i < notifications.length; i++) {
-            encoded_notifications[i] = notifications[i].toByteArray();
+            encodedNotifications[i] = notifications[i].toByteArray();
         }
 
-        return encoded_notifications;
+        return encodedNotifications;
     }
 
     /**

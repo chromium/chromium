@@ -145,14 +145,14 @@ public class TabGridDialogViewBinderTest {
                     mContentView.setLayoutManager(mLayoutManager);
                     boolean isDataSharingEnabled = ChromeFeatureList.isEnabled(DATA_SHARING);
                     @LayoutRes
-                    int toolbar_res_id =
+                    int toolbarResId =
                             isDataSharingEnabled
                                     ? R.layout.tab_grid_dialog_toolbar_two_row
                                     : R.layout.tab_grid_dialog_toolbar;
                     mToolbarView =
                             (TabGridDialogToolbarView)
                                     LayoutInflater.from(sActivity)
-                                            .inflate(toolbar_res_id, mContentView, false);
+                                            .inflate(toolbarResId, mContentView, false);
                     LayoutInflater.from(sActivity)
                             .inflate(R.layout.tab_grid_dialog_layout, parentView, true);
                     mTabGridDialogView = parentView.findViewById(R.id.dialog_parent_view);

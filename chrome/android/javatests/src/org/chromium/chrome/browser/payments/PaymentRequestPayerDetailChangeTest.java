@@ -43,7 +43,7 @@ public class PaymentRequestPayerDetailChangeTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
-        String billing_address_id =
+        String billingAddressId =
                 helper.setProfile(
                         AutofillProfile.builder()
                                 .setFullName("Jon Doe")

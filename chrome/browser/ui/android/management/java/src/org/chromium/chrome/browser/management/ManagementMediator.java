@@ -124,11 +124,10 @@ public class ManagementMediator {
                 .append(buildBulletString(R.string.management_profile_reporting_policy))
                 .append("\n");
 
-        SpannableString learn_more_link =
-                getLearnMoreClickableText(PROFILE_REPORTING_LEARN_MORE_URL);
-        learn_more_link.setSpan(
-                new ChromeBulletSpan(mHost.getContext()), 0, learn_more_link.length(), 0);
-        spannableString.append(learn_more_link);
+        SpannableString learnMoreLink = getLearnMoreClickableText(PROFILE_REPORTING_LEARN_MORE_URL);
+        learnMoreLink.setSpan(
+                new ChromeBulletSpan(mHost.getContext()), 0, learnMoreLink.length(), 0);
+        spannableString.append(learnMoreLink);
 
         return spannableString;
     }

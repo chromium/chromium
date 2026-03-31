@@ -88,10 +88,10 @@ public class WebOTPServiceInfoBarTest {
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarOk() {
         // Get current counts because Histogram is not reset between runs with test batching.
-        int shown_count =
+        int shownCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
-        int dismissed_count =
+        int dismissedCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
         WebOTPServiceInfoBar infoBar = createInfoBar();
@@ -102,11 +102,11 @@ public class WebOTPServiceInfoBarTest {
         Assert.assertTrue(InfoBarUtil.clickPrimaryButton(infoBar));
 
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shownCount + 1);
         assertHistogramRecordedCount(
                 INFOBAR_HISTOGRAM,
                 WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED,
-                dismissed_count + 0);
+                dismissedCount + 0);
     }
 
     @Test
@@ -114,10 +114,10 @@ public class WebOTPServiceInfoBarTest {
     @Feature({"InfoBars", "UiCatalogue"})
     public void testSmsInfoBarClose() {
         // Get current counts because Histogram is not reset between runs with test batching.
-        int shown_count =
+        int shownCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
-        int dismissed_count =
+        int dismissedCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
         WebOTPServiceInfoBar infoBar = createInfoBar();
@@ -128,11 +128,11 @@ public class WebOTPServiceInfoBarTest {
         Assert.assertTrue(InfoBarUtil.clickCloseButton(infoBar));
 
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shownCount + 1);
         assertHistogramRecordedCount(
                 INFOBAR_HISTOGRAM,
                 WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED,
-                dismissed_count + 0);
+                dismissedCount + 0);
     }
 
     @DisabledTest(message = "https://crbug.com/1169221")
@@ -141,13 +141,13 @@ public class WebOTPServiceInfoBarTest {
     @Feature({"InfoBars", "UiCatalogue"})
     public void testHideKeyboardWhenInfoBarIsShown() {
         // Get current counts because Histogram is not reset between runs with test batching.
-        int shown_count =
+        int shownCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
-        int dismissed_count =
+        int dismissedCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
-        int time_cancel_count =
+        int timeCancelCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
         KeyboardVisibilityDelegate keyboardVisibilityDelegate =
@@ -175,13 +175,13 @@ public class WebOTPServiceInfoBarTest {
         CriteriaHelper.pollUiThread(() -> !keyboardVisibilityDelegate.isKeyboardShowing(editText));
 
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shownCount + 1);
         assertHistogramRecordedCount(
                 INFOBAR_HISTOGRAM,
                 WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED,
-                dismissed_count + 1);
+                dismissedCount + 1);
         assertHistogramRecordedCount(
-                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 0);
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, timeCancelCount + 0);
         ThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 
@@ -190,13 +190,13 @@ public class WebOTPServiceInfoBarTest {
     @Feature({"InfoBars", "UiCatalogue"})
     public void testUMARecordedWhenInfobarDismissedAfterHidingKeyboard() {
         // Get current counts because Histogram is not reset between runs with test batching.
-        int shown_count =
+        int shownCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN);
-        int dismissed_count =
+        int dismissedCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED);
-        int time_cancel_count =
+        int timeCancelCount =
                 RecordHistogram.getHistogramValueCountForTesting(
                         TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, 0);
         KeyboardVisibilityDelegate keyboardVisibilityDelegate =
@@ -227,13 +227,13 @@ public class WebOTPServiceInfoBarTest {
         InfoBarUtil.clickCloseButton(infoBar);
 
         assertHistogramRecordedCount(
-                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shown_count + 1);
+                INFOBAR_HISTOGRAM, WebOTPServiceUma.InfobarAction.SHOWN, shownCount + 1);
         assertHistogramRecordedCount(
                 INFOBAR_HISTOGRAM,
                 WebOTPServiceUma.InfobarAction.KEYBOARD_DISMISSED,
-                dismissed_count + 1);
+                dismissedCount + 1);
         assertHistogramRecordedCount(
-                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, time_cancel_count + 1);
+                TIME_CANCEL_ON_KEYBOARD_DISMISSAL_HISTOGRAM, timeCancelCount + 1);
         ThreadUtils.runOnUiThreadBlocking(() -> UiUtils.removeViewFromParent(editText));
     }
 }

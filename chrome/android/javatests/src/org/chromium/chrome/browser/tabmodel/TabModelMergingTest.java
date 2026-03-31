@@ -485,8 +485,8 @@ public class TabModelMergingTest {
     @Feature({"TabPersistentStore", "MultiWindow"})
     @DisabledTest(message = "https://crbug.com/1417018")
     public void testMergeOnColdStartIntoChromeTabbedActivity2() throws TimeoutException {
-        String CTA2ClassName = mActivity2.getClass().getName();
-        String CTA2PackageName = mActivity2.getPackageName();
+        String cta2ClassName = mActivity2.getClass().getName();
+        String cta2PackageName = mActivity2.getPackageName();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -511,10 +511,10 @@ public class TabModelMergingTest {
                 });
 
         // Send a main intent to restart ChromeTabbedActivity2.
-        Intent CTA2MainIntent = new Intent(Intent.ACTION_MAIN);
-        CTA2MainIntent.setClassName(CTA2PackageName, CTA2ClassName);
-        CTA2MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        InstrumentationRegistry.getInstrumentation().startActivitySync(CTA2MainIntent);
+        Intent cta2MainIntent = new Intent(Intent.ACTION_MAIN);
+        cta2MainIntent.setClassName(cta2PackageName, cta2ClassName);
+        cta2MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        InstrumentationRegistry.getInstrumentation().startActivitySync(cta2MainIntent);
 
         mNewCTA2CallbackHelper.waitForCallback(0);
 

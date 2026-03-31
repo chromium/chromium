@@ -337,10 +337,10 @@ class TouchToFillViewBinder {
                         model.get(ON_CLICK_LISTENER).onResult(credential);
                     });
         } else if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
-            WebauthnCredential webauthn_credential = model.get(WEBAUTHN_CREDENTIAL);
+            WebauthnCredential webauthnCredential = model.get(WEBAUTHN_CREDENTIAL);
             view.setOnClickListener(
                     clickedView -> {
-                        model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthn_credential);
+                        model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthnCredential);
                     });
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);

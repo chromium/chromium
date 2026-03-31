@@ -130,10 +130,10 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                                 ? R.string
                                         .autofill_card_auth_selection_dialog_title_multiple_options
                                 : R.string.autofill_card_unmask_verification_title);
-        ViewStub title_view_stub =
+        ViewStub titleViewStub =
                 mAuthenticatorSelectionDialogView.findViewById(R.id.title_with_icon_stub);
-        title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
-        title_view_stub.inflate();
+        titleViewStub.setLayoutResource(R.layout.icon_after_title_view);
+        titleViewStub.inflate();
         TextView titleView = mAuthenticatorSelectionDialogView.findViewById(R.id.title);
         titleView.setText(title);
         ImageView iconView = mAuthenticatorSelectionDialogView.findViewById(R.id.title_icon);

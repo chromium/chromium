@@ -125,18 +125,18 @@ public class ChromeSiteSettingsDelegateTest {
         assertEquals(2, result.size());
 
         // Ensure that the entry matches the set cookie.
-        var https_origin = Origin.create(new GURL("https://browsing-data.com"));
-        var http_origin = Origin.create(new GURL("http://browsing-data.com"));
+        var httpsOrigin = Origin.create(new GURL("https://browsing-data.com"));
+        var httpOrigin = Origin.create(new GURL("http://browsing-data.com"));
 
         var entries = result.entrySet().stream().collect(Collectors.toList());
-        assertEquals(https_origin, entries.get(0).getKey());
+        assertEquals(httpsOrigin, entries.get(0).getKey());
 
         BrowsingDataInfo info = entries.get(0).getValue();
-        assertEquals(https_origin, info.getOrigin());
+        assertEquals(httpsOrigin, info.getOrigin());
         assertEquals(1, info.getCookieCount());
         assertEquals(0, info.getStorageSize());
 
-        assertEquals(http_origin, entries.get(1).getKey());
+        assertEquals(httpOrigin, entries.get(1).getKey());
     }
 
     // Tests that removeBrowsingData removes data correctly for a given host.

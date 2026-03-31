@@ -749,7 +749,7 @@ public class TouchToFillViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         assertNotNull(getCredentials().getChildAt(1));
-        String expected_label =
+        String expectedLabel =
                 getActivity()
                         .getString(
                                 R.string
@@ -761,7 +761,7 @@ public class TouchToFillViewTest {
                 getActivity()
                         .getString(
                                 R.string.touch_to_fill_a11y_item_collection_info,
-                                expected_label,
+                                expectedLabel,
                                 2,
                                 2));
     }

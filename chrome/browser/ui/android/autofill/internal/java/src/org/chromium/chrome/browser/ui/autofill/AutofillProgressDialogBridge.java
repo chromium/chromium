@@ -90,10 +90,9 @@ public class AutofillProgressDialogBridge {
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_progress_dialog, null);
         ((TextView) mProgressDialogContentView.findViewById(R.id.message)).setText(loadingMessage);
 
-        ViewStub title_view_stub =
-                mProgressDialogContentView.findViewById(R.id.title_with_icon_stub);
-        title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
-        title_view_stub.inflate();
+        ViewStub titleViewStub = mProgressDialogContentView.findViewById(R.id.title_with_icon_stub);
+        titleViewStub.setLayoutResource(R.layout.icon_after_title_view);
+        titleViewStub.inflate();
         TextView titleView = mProgressDialogContentView.findViewById(R.id.title);
         titleView.setText(title);
         ImageView iconView = mProgressDialogContentView.findViewById(R.id.title_icon);

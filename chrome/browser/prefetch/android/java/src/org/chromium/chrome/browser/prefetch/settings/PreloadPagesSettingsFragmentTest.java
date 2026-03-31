@@ -86,22 +86,22 @@ public class PreloadPagesSettingsFragmentTest {
                     int currentState =
                             PreloadPagesSettingsBridge.getState(
                                     ProfileManager.getLastUsedRegularProfile());
-                    boolean extended_preloading_checked =
+                    boolean extendedPreloadingChecked =
                             currentState == PreloadPagesState.EXTENDED_PRELOADING;
-                    boolean standard_preloading_checked =
+                    boolean standardPreloadingChecked =
                             currentState == PreloadPagesState.STANDARD_PRELOADING;
-                    boolean no_preloading_checked = currentState == PreloadPagesState.NO_PRELOADING;
+                    boolean noPreloadingChecked = currentState == PreloadPagesState.NO_PRELOADING;
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            extended_preloading_checked,
+                            extendedPreloadingChecked,
                             getExtendedPreloadingButton().isChecked());
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            standard_preloading_checked,
+                            standardPreloadingChecked,
                             getStandardPreloadingButton().isChecked());
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            no_preloading_checked,
+                            noPreloadingChecked,
                             getNoPreloadingButton().isChecked());
                     Assert.assertFalse(mManagedDisclaimerText.isVisible());
                 });

@@ -154,38 +154,38 @@ public class OptimizationGuideBridgeNativeUnitTest {
                 callback,
                 requestContextMetadata);
 
-        Map<OptimizationType, OptimizationGuideDecisionWithMetadata> test_url_metadata =
+        Map<OptimizationType, OptimizationGuideDecisionWithMetadata> testUrlMetadata =
                 callback.getDecisionMetadataForUrl(new GURL(TEST_URL));
-        assertNotNull(test_url_metadata);
-        OptimizationGuideDecisionWithMetadata test_url_lp_metadata =
-                test_url_metadata.get(OptimizationType.LOADING_PREDICTOR);
-        assertNotNull(test_url_lp_metadata);
-        assertEquals(OptimizationGuideDecision.TRUE, test_url_lp_metadata.getDecision());
-        assertNotNull(test_url_lp_metadata.getMetadata());
+        assertNotNull(testUrlMetadata);
+        OptimizationGuideDecisionWithMetadata testUrlLpMetadata =
+                testUrlMetadata.get(OptimizationType.LOADING_PREDICTOR);
+        assertNotNull(testUrlLpMetadata);
+        assertEquals(OptimizationGuideDecision.TRUE, testUrlLpMetadata.getDecision());
+        assertNotNull(testUrlLpMetadata.getMetadata());
         assertEquals(
                 "type.googleapis.com/optimization_guide.proto.LoadingPredictorMetadata",
-                test_url_lp_metadata.getMetadata().getTypeUrl());
-        OptimizationGuideDecisionWithMetadata test_url_ds_metadata =
-                test_url_metadata.get(OptimizationType.DEFER_ALL_SCRIPT);
-        assertNotNull(test_url_ds_metadata);
-        assertEquals(OptimizationGuideDecision.FALSE, test_url_ds_metadata.getDecision());
-        assertNull(test_url_ds_metadata.getMetadata());
+                testUrlLpMetadata.getMetadata().getTypeUrl());
+        OptimizationGuideDecisionWithMetadata testUrlDsMetadata =
+                testUrlMetadata.get(OptimizationType.DEFER_ALL_SCRIPT);
+        assertNotNull(testUrlDsMetadata);
+        assertEquals(OptimizationGuideDecision.FALSE, testUrlDsMetadata.getDecision());
+        assertNull(testUrlDsMetadata.getMetadata());
 
-        Map<OptimizationType, OptimizationGuideDecisionWithMetadata> test_url2_metadata =
+        Map<OptimizationType, OptimizationGuideDecisionWithMetadata> testUrl2Metadata =
                 callback.getDecisionMetadataForUrl(new GURL(TEST_URL2));
-        assertNotNull(test_url2_metadata);
-        OptimizationGuideDecisionWithMetadata test_url2_lp_metadata =
-                test_url2_metadata.get(OptimizationType.LOADING_PREDICTOR);
-        assertNotNull(test_url2_lp_metadata);
-        assertEquals(OptimizationGuideDecision.FALSE, test_url2_lp_metadata.getDecision());
-        assertNull(test_url2_lp_metadata.getMetadata());
-        OptimizationGuideDecisionWithMetadata test_url2_ds_metadata =
-                test_url2_metadata.get(OptimizationType.DEFER_ALL_SCRIPT);
-        assertNotNull(test_url2_ds_metadata);
-        assertEquals(OptimizationGuideDecision.TRUE, test_url2_ds_metadata.getDecision());
-        assertNotNull(test_url2_ds_metadata.getMetadata());
+        assertNotNull(testUrl2Metadata);
+        OptimizationGuideDecisionWithMetadata testUrl2LpMetadata =
+                testUrl2Metadata.get(OptimizationType.LOADING_PREDICTOR);
+        assertNotNull(testUrl2LpMetadata);
+        assertEquals(OptimizationGuideDecision.FALSE, testUrl2LpMetadata.getDecision());
+        assertNull(testUrl2LpMetadata.getMetadata());
+        OptimizationGuideDecisionWithMetadata testUrl2DsMetadata =
+                testUrl2Metadata.get(OptimizationType.DEFER_ALL_SCRIPT);
+        assertNotNull(testUrl2DsMetadata);
+        assertEquals(OptimizationGuideDecision.TRUE, testUrl2DsMetadata.getDecision());
+        assertNotNull(testUrl2DsMetadata.getMetadata());
         assertEquals(
                 "type.googleapis.com/optimization_guide.proto.StringValue",
-                test_url2_ds_metadata.getMetadata().getTypeUrl());
+                testUrl2DsMetadata.getMetadata().getTypeUrl());
     }
 }

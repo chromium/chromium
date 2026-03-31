@@ -27,8 +27,8 @@ public class PeriodicBackgroundSyncChromeWakeUpTask extends NativeBackgroundTask
 
         // Check that we've been called with network connectivity.
         @ConnectionType
-        int current_network_type = DeviceConditions.getCurrentNetConnectionType(context);
-        if (current_network_type == ConnectionType.CONNECTION_NONE) {
+        int currentNetworkType = DeviceConditions.getCurrentNetConnectionType(context);
+        if (currentNetworkType == ConnectionType.CONNECTION_NONE) {
             return StartBeforeNativeResult.RESCHEDULE;
         }
 

@@ -33,9 +33,9 @@ public class MostVisitedSitesBridge implements MostVisitedSites {
      * @param profile The profile for which to fetch most visited sites.
      */
     public MostVisitedSitesBridge(Profile profile) {
-        boolean enable_custom_links = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
+        boolean enableCustomLinks = ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled();
         mNativeMostVisitedSitesBridge =
-                MostVisitedSitesBridgeJni.get().init(profile, enable_custom_links);
+                MostVisitedSitesBridgeJni.get().init(profile, enableCustomLinks);
     }
 
     // CustomLinkOperations -> MostVisitedSites implementation.

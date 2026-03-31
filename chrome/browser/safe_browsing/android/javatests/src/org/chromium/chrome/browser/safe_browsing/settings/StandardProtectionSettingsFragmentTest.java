@@ -94,28 +94,27 @@ public class StandardProtectionSettingsFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    boolean is_extended_reporting_enabled =
-                            isSafeBrowsingExtendedReportingEnabled();
-                    String checked_state_error_message =
+                    boolean isExtendedReportingEnabled = isSafeBrowsingExtendedReportingEnabled();
+                    String checkedStateErrorMessage =
                             ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + CHECKED_STATE;
-                    String enabled_state_error_message =
+                    String enabledStateErrorMessage =
                             ASSERT_MESSAGE_PREFIX + EXTENDED_REPORTING + ENABLED_STATE;
                     Assert.assertEquals(
-                            checked_state_error_message,
-                            is_extended_reporting_enabled,
+                            checkedStateErrorMessage,
+                            isExtendedReportingEnabled,
                             mExtendedReportingPreference.isChecked());
                     Assert.assertTrue(
-                            enabled_state_error_message, mExtendedReportingPreference.isEnabled());
+                            enabledStateErrorMessage, mExtendedReportingPreference.isEnabled());
 
                     mExtendedReportingPreference.performClick();
 
                     Assert.assertEquals(
-                            checked_state_error_message,
-                            !is_extended_reporting_enabled,
+                            checkedStateErrorMessage,
+                            !isExtendedReportingEnabled,
                             mExtendedReportingPreference.isChecked());
                     Assert.assertEquals(
-                            enabled_state_error_message + FROM_NATIVE,
-                            !is_extended_reporting_enabled,
+                            enabledStateErrorMessage + FROM_NATIVE,
+                            !isExtendedReportingEnabled,
                             isSafeBrowsingExtendedReportingEnabled());
                 });
     }
@@ -207,7 +206,7 @@ public class StandardProtectionSettingsFragmentTest {
                     String standardProtectionSubtitle =
                             fragment.getContext()
                                     .getString(R.string.safe_browsing_standard_protection_subtitle);
-                    String extended_reporting_title =
+                    String extendedReportingTitle =
                             fragment.getContext()
                                     .getString(
                                             R.string
@@ -218,7 +217,7 @@ public class StandardProtectionSettingsFragmentTest {
                     // Assert the Extended Reporting preference is present.
                     Assert.assertNotNull(mExtendedReportingPreference);
                     Assert.assertEquals(
-                            extended_reporting_title, mExtendedReportingPreference.getTitle());
+                            extendedReportingTitle, mExtendedReportingPreference.getTitle());
                 });
     }
 

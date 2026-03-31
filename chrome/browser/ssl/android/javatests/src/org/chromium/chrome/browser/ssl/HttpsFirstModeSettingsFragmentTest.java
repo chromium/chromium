@@ -105,28 +105,27 @@ public class HttpsFirstModeSettingsFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     @HttpsFirstModeSetting int currentState = getHttpsFirstModeState();
-                    boolean strict_mode_checked =
-                            currentState == HttpsFirstModeSetting.ENABLED_FULL;
-                    boolean balanced_mode_checked =
+                    boolean strictModeChecked = currentState == HttpsFirstModeSetting.ENABLED_FULL;
+                    boolean balancedModeChecked =
                             (currentState == HttpsFirstModeSetting.ENABLED_BALANCED
                                     || currentState == HttpsFirstModeSetting.DISABLED);
-                    boolean toggle_on = currentState != HttpsFirstModeSetting.DISABLED;
+                    boolean toggleOn = currentState != HttpsFirstModeSetting.DISABLED;
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            strict_mode_checked,
+                            strictModeChecked,
                             getStrictModeButton().isChecked());
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            balanced_mode_checked,
+                            balancedModeChecked,
                             getBalancedModeButton().isChecked());
                     Assert.assertEquals(
                             ASSERT_RADIO_BUTTON_CHECKED,
-                            toggle_on,
+                            toggleOn,
                             mHttpsFirstModeTogglePref.isChecked());
                     // Variant pref is enabled if toggle is on.
                     Assert.assertEquals(
                             "Incorrect variant pref enabled state.",
-                            toggle_on,
+                            toggleOn,
                             mHttpsFirstModeVariantPref.isEnabled());
                 });
     }

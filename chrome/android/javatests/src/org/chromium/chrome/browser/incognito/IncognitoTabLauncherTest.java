@@ -125,7 +125,7 @@ public class IncognitoTabLauncherTest {
         CustomTabsConnection connection = CustomTabsTestUtils.setUpConnection();
         CustomTabsSession session = CustomTabsTestUtils.bindWithCallback(null).session;
 
-        CustomTabsIntent custom_tab_intent = new CustomTabsIntent.Builder(session).build();
+        CustomTabsIntent customTabIntent = new CustomTabsIntent.Builder(session).build();
 
         // Restrict ourselves to Chrome's package, on the off chance the testing device has
         // another application that answers to the ACTION_LAUNCH_NEW_INCOGNITO_TAB action.
@@ -136,7 +136,7 @@ public class IncognitoTabLauncherTest {
         BundleCompat.putBinder(
                 extras,
                 CustomTabsIntent.EXTRA_SESSION,
-                custom_tab_intent.intent.getExtras().getBinder(CustomTabsIntent.EXTRA_SESSION));
+                customTabIntent.intent.getExtras().getBinder(CustomTabsIntent.EXTRA_SESSION));
 
         intent.putExtras(extras);
         return intent;

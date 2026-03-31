@@ -128,12 +128,12 @@ public class ContextualSearchBarControl {
                         ? mContextControl.getTextViewHeight()
                         : mSearchTermControl.getTextViewHeight();
         @Px int bottomTextViewMinHeight = mCaptionControl.getTextViewHeight();
-        float TextViewheightDps =
+        float textViewHeightDps =
                 (float) Math.ceil((topTextViewMinHeight + bottomTextViewMinHeight) / mDpToPx);
         return mContextualSearchPanel.getBarMarginTop()
                 + getSearchTermCaptionSpacing()
                 + mContextualSearchPanel.getBarBorderHeight()
-                + TextViewheightDps;
+                + textViewHeightDps;
     }
 
     /**

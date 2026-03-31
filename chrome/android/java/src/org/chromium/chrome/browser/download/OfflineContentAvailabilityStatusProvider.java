@@ -86,9 +86,9 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
 
     @Override
     public void onItemRemoved(ContentId id) {
-        boolean prefetch_removed = mSuggestedItems.remove(id);
-        boolean persistent_removed = mPersistentItems.remove(id);
-        if (prefetch_removed || persistent_removed) updateSharedPrefs();
+        boolean prefetchRemoved = mSuggestedItems.remove(id);
+        boolean persistentRemoved = mPersistentItems.remove(id);
+        if (prefetchRemoved || persistentRemoved) updateSharedPrefs();
     }
 
     @Override

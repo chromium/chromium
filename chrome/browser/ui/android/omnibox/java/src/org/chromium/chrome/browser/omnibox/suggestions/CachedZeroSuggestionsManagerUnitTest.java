@@ -110,7 +110,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
 
     @Test
     public void saveToCache_DoNotCacheClipboardSuggestions() {
-        var mix_list =
+        var mixList =
                 Arrays.asList(
                         createSuggestionBuilder("test", 1, OmniboxSuggestionType.CLIPBOARD_IMAGE)
                                 .build(),
@@ -120,15 +120,15 @@ public class CachedZeroSuggestionsManagerUnitTest {
                                 .build(),
                         createSuggestionBuilder("test", 4, OmniboxSuggestionType.SEARCH_HISTORY)
                                 .build());
-        var expected_list =
+        var expectedList =
                 Arrays.asList(
                         createSuggestionBuilder("test", 2, OmniboxSuggestionType.HISTORY_URL)
                                 .build(),
                         createSuggestionBuilder("test", 4, OmniboxSuggestionType.SEARCH_HISTORY)
                                 .build());
 
-        var dataToCache = AutocompleteResult.fromCache(mix_list, null);
-        var dataToExpected = AutocompleteResult.fromCache(expected_list, null);
+        var dataToCache = AutocompleteResult.fromCache(mixList, null);
+        var dataToExpected = AutocompleteResult.fromCache(expectedList, null);
         CachedZeroSuggestionsManager.saveToCache(PAGE_CLASS, dataToCache);
 
         var dataFromCache = CachedZeroSuggestionsManager.readFromCache(PAGE_CLASS);

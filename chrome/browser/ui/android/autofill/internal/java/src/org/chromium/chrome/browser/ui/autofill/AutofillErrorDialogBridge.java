@@ -86,9 +86,9 @@ public class AutofillErrorDialogBridge {
                 LayoutInflater.from(mContext).inflate(R.layout.autofill_error_dialog, null);
         ((TextView) errorDialogContentView.findViewById(R.id.error_message)).setText(description);
 
-        ViewStub title_view_stub = errorDialogContentView.findViewById(R.id.title_with_icon_stub);
-        title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
-        title_view_stub.inflate();
+        ViewStub titleViewStub = errorDialogContentView.findViewById(R.id.title_with_icon_stub);
+        titleViewStub.setLayoutResource(R.layout.icon_after_title_view);
+        titleViewStub.inflate();
         TextView titleView = errorDialogContentView.findViewById(R.id.title);
         titleView.setText(title);
         ImageView iconView = errorDialogContentView.findViewById(R.id.title_icon);

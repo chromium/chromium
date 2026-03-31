@@ -205,8 +205,8 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         mProgressBarHeight = PROGRESS_BAR_HEIGHT_DP;
         mBarBorderHeight = BAR_BORDER_HEIGHT_DP;
 
-        int bar_height_dimen = R.dimen.overlay_panel_bar_height;
-        mBarHeight = mContext.getResources().getDimension(bar_height_dimen) * mPxToDp;
+        int barHeightDimen = R.dimen.overlay_panel_bar_height;
+        mBarHeight = mContext.getResources().getDimension(barHeightDimen) * mPxToDp;
 
         final Resources resources = mContext.getResources();
         mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);

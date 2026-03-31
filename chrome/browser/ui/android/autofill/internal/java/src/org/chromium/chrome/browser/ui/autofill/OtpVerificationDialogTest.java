@@ -204,14 +204,14 @@ public class OtpVerificationDialogTest {
                         mResources.getString(R.string.autofill_card_unmask_otp_input_dialog_title));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = customView.findViewById(R.id.title_icon);
+        ImageView titleIcon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
                         R.drawable.google_pay,
                         ApplicationProvider.getApplicationContext().getTheme());
-        assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
-        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
+        assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
     }
 
     // Convert a drawable to a Bitmap for comparison.

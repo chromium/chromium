@@ -2003,17 +2003,17 @@ public class AutofillPaymentMethodsFragmentTest {
                 });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        CardWithButtonPreference disabled_settings_info_pref =
+        CardWithButtonPreference disabledSettingsInfoPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.DISABLED_SETTINGS_INFO);
-        assertNotNull(disabled_settings_info_pref);
+        assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));
-        String title = disabled_settings_info_pref.getTitle().toString();
+        String title = disabledSettingsInfoPref.getTitle().toString();
         assertThat(title)
                 .isEqualTo(
                         activity.getString(R.string.autofill_disable_settings_explanation_title));
-        String summary = disabled_settings_info_pref.getSummary().toString();
+        String summary = disabledSettingsInfoPref.getSummary().toString();
         assertThat(summary)
                 .isEqualTo(activity.getString(R.string.autofill_disable_settings_explanation));
 

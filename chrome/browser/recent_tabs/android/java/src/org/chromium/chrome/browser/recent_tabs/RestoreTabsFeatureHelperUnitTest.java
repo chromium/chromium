@@ -132,8 +132,8 @@ public class RestoreTabsFeatureHelperUnitTest {
 
         doAnswer(
                         invocation -> {
-                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-                            invoked_sessions.addAll(sessions);
+                            List<ForeignSession> invokedSessions = invocation.getArgument(1);
+                            invokedSessions.addAll(sessions);
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)
@@ -167,8 +167,8 @@ public class RestoreTabsFeatureHelperUnitTest {
         sessionsToReturn.add(session);
         doAnswer(
                         invocation -> {
-                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-                            invoked_sessions.addAll(sessionsToReturn);
+                            List<ForeignSession> invokedSessions = invocation.getArgument(1);
+                            invokedSessions.addAll(sessionsToReturn);
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)
@@ -205,8 +205,8 @@ public class RestoreTabsFeatureHelperUnitTest {
         sessionsToReturn.add(session);
         doAnswer(
                         invocation -> {
-                            List<ForeignSession> invoked_sessions = invocation.getArgument(1);
-                            invoked_sessions.addAll(sessionsToReturn);
+                            List<ForeignSession> invokedSessions = invocation.getArgument(1);
+                            invokedSessions.addAll(sessionsToReturn);
                             return true;
                         })
                 .when(mForeignSessionHelperJniMock)

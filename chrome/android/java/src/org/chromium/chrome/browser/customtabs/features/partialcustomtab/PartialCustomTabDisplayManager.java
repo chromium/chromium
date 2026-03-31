@@ -311,23 +311,23 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
                         displayWidthDpSupplier,
                         calculateBreakPoint(provider.getActivityBreakPoint()));
 
-        @AnimRes int start_anim_id = defaultResId;
+        @AnimRes int startAnimId = defaultResId;
         if (type == PartialCustomTabType.BOTTOM_SHEET || type == PartialCustomTabType.FULL_SIZE) {
-            start_anim_id = R.anim.slide_in_up;
+            startAnimId = R.anim.slide_in_up;
         } else if (type == PartialCustomTabType.SIDE_SHEET) {
             int behavior = provider.getSideSheetSlideInBehavior();
             if (behavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM) {
-                start_anim_id = R.anim.slide_in_up;
+                startAnimId = R.anim.slide_in_up;
             } else if (behavior == ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE) {
                 boolean sheetOnRight =
                         PartialCustomTabSideSheetStrategy.isSheetOnRight(
                                 provider.getSideSheetPosition());
-                start_anim_id = sheetOnRight ? R.anim.slide_in_right : R.anim.slide_in_left;
+                startAnimId = sheetOnRight ? R.anim.slide_in_right : R.anim.slide_in_left;
             } else {
                 assert false : "Invalide slide-in behavior";
             }
         }
-        return start_anim_id;
+        return startAnimId;
     }
 
     private PartialCustomTabBaseStrategy createSizeStrategy(

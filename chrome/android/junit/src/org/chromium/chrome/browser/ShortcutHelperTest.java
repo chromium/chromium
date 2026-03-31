@@ -35,27 +35,27 @@ public class ShortcutHelperTest {
         String url14 = "https://www.google.com/maps/au/north?q=maps#fragment";
         String url15 = "https://www.google.com/a=b/c";
 
-        String url2_scope = "https://www.google.com/";
-        String url4_scope = "https://www.google.com/maps/";
-        String url8_scope = "https://www.google.com/maps/au/";
-        String url10_scope = "https://www.google.com/maps/au/north/";
-        String url12_scope = "http://www.google.com:8000/maps/au/";
-        String url15_scope = "https://www.google.com/a=b/";
+        String url2Scope = "https://www.google.com/";
+        String url4Scope = "https://www.google.com/maps/";
+        String url8Scope = "https://www.google.com/maps/au/";
+        String url10Scope = "https://www.google.com/maps/au/north/";
+        String url12Scope = "http://www.google.com:8000/maps/au/";
+        String url15Scope = "https://www.google.com/a=b/";
 
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url1));
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url2));
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url3));
-        assertEquals(url4_scope, ShortcutHelper.getScopeFromUrl(url4));
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url5));
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url6));
-        assertEquals(url2_scope, ShortcutHelper.getScopeFromUrl(url7));
-        assertEquals(url8_scope, ShortcutHelper.getScopeFromUrl(url8));
-        assertEquals(url8_scope, ShortcutHelper.getScopeFromUrl(url9));
-        assertEquals(url10_scope, ShortcutHelper.getScopeFromUrl(url10));
-        assertEquals(url8_scope, ShortcutHelper.getScopeFromUrl(url11));
-        assertEquals(url12_scope, ShortcutHelper.getScopeFromUrl(url12));
-        assertEquals(url10_scope, ShortcutHelper.getScopeFromUrl(url13));
-        assertEquals(url8_scope, ShortcutHelper.getScopeFromUrl(url14));
-        assertEquals(url15_scope, ShortcutHelper.getScopeFromUrl(url15));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url1));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url2));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url3));
+        assertEquals(url4Scope, ShortcutHelper.getScopeFromUrl(url4));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url5));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url6));
+        assertEquals(url2Scope, ShortcutHelper.getScopeFromUrl(url7));
+        assertEquals(url8Scope, ShortcutHelper.getScopeFromUrl(url8));
+        assertEquals(url8Scope, ShortcutHelper.getScopeFromUrl(url9));
+        assertEquals(url10Scope, ShortcutHelper.getScopeFromUrl(url10));
+        assertEquals(url8Scope, ShortcutHelper.getScopeFromUrl(url11));
+        assertEquals(url12Scope, ShortcutHelper.getScopeFromUrl(url12));
+        assertEquals(url10Scope, ShortcutHelper.getScopeFromUrl(url13));
+        assertEquals(url8Scope, ShortcutHelper.getScopeFromUrl(url14));
+        assertEquals(url15Scope, ShortcutHelper.getScopeFromUrl(url15));
     }
 }

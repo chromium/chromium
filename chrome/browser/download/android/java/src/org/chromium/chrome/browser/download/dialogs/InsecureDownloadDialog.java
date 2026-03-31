@@ -46,7 +46,7 @@ public class InsecureDownloadDialog {
                                 "%s (%s)",
                                 fileName, DownloadUtils.getStringForBytes(context, totalBytes))
                         : fileName;
-        ArrayList<CharSequence> message_paragraphs = new ArrayList<>(List.of(message));
+        ArrayList<CharSequence> messageParagraphs = new ArrayList<>(List.of(message));
 
         var controller =
                 new ModalDialogProperties.Controller() {
@@ -79,7 +79,7 @@ public class InsecureDownloadDialog {
                         .with(
                                 ModalDialogProperties.TITLE,
                                 resources.getString(R.string.insecure_download_dialog_title))
-                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, message_paragraphs)
+                        .with(ModalDialogProperties.MESSAGE_PARAGRAPHS, messageParagraphs)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources.getString(R.string.insecure_download_dialog_confirm_text))

@@ -421,7 +421,7 @@ public class WebFeedFollowIntroController {
                 return;
             }
 
-            Callback<WebFeedBridge.WebFeedMetadata> metadata_callback =
+            Callback<WebFeedBridge.WebFeedMetadata> metadataCallback =
                     result -> {
                         // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if
                         // it is already followed.
@@ -456,7 +456,7 @@ public class WebFeedFollowIntroController {
                     request.tab,
                     request.url,
                     WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION,
-                    metadata_callback);
+                    metadataCallback);
         }
 
         private void sendResult(Request request, @Nullable RecommendedWebFeedInfo result) {

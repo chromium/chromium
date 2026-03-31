@@ -298,14 +298,14 @@ public class AuthenticatorSelectionDialogTest {
                 .isEqualTo(mResources.getString(R.string.autofill_card_unmask_verification_title));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = customView.findViewById(R.id.title_icon);
+        ImageView titleIcon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
                         R.drawable.google_pay,
                         ApplicationProvider.getApplicationContext().getTheme());
-        assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
-        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
+        assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
     }
 
     @Test
@@ -334,14 +334,14 @@ public class AuthenticatorSelectionDialogTest {
                                         .autofill_card_auth_selection_dialog_title_multiple_options));
 
         // Verify that the title icon set by custom view is correct.
-        ImageView title_icon = customView.findViewById(R.id.title_icon);
+        ImageView titleIcon = customView.findViewById(R.id.title_icon);
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
                         R.drawable.google_pay,
                         ApplicationProvider.getApplicationContext().getTheme());
-        assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
-        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
+        assertThat(titleIcon.getVisibility()).isEqualTo(View.VISIBLE);
+        assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(titleIcon.getDrawable())));
     }
 
     private PropertyModel createAndShowModelForChangeSelectedOptionTest() {

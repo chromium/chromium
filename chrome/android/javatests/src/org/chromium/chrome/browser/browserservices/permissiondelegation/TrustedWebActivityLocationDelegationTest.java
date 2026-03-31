@@ -129,12 +129,12 @@ public class TrustedWebActivityLocationDelegationTest {
     @MediumTest
     public void getLocationFromChrome_afterNavigateAwayFromTrustedOrigin()
             throws TimeoutException, Exception {
-        String other_page =
+        String otherPage =
                 mCustomTabActivityTestRule
                         .getTestServer()
                         .getURLWithHostName("www.otherexample.com", TEST_FILE);
 
-        mCustomTabActivityTestRule.loadUrl(other_page);
+        mCustomTabActivityTestRule.loadUrl(otherPage);
         assertFalse(isTrustedWebActivity(mCustomTabActivityTestRule.getActivity()));
 
         verifyLocationFromChrome();

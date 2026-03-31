@@ -93,27 +93,26 @@ public class FamilyLinkControlsTest {
     @SmallTest
     public void testDeletingOnDeviceDataBlockedForSupervisedUsers() {
         SettingsActivity settingsActivity =
-            SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.SITE_DATA);
+                SiteSettingsTestUtils.startSiteSettingsCategory(
+                        SiteSettingsCategory.Type.SITE_DATA);
         PreferenceFragmentCompat preferenceFragment =
-            (PreferenceFragmentCompat) settingsActivity.getMainFragment();
+                (PreferenceFragmentCompat) settingsActivity.getMainFragment();
         PreferenceScreen preferenceScreen = preferenceFragment.getPreferenceScreen();
-        BinaryStatePermissionPreference binary_radio_button =
-            preferenceScreen.findPreference("binary_radio_button");
+        BinaryStatePermissionPreference binaryRadioButton =
+                preferenceScreen.findPreference("binary_radio_button");
 
         // When deleting cookies are blocked through Family Link, the toggle will be checked and
         // disabled
-        Assert.assertTrue(binary_radio_button.isChecked());
-        Assert.assertFalse(binary_radio_button.isEnabled());
-        onView(
-            allOf(
-                withId(android.R.id.summary),
-                hasSibling(withId(R.id.radio_button_layout))))
-        .check(
-            matches(
-                withText(
-                    containsString(
-                        settingsActivity.getString(
-                            org.chromium.chrome.test.R.string.managed_by_your_parent)))));
+        Assert.assertTrue(binaryRadioButton.isChecked());
+        Assert.assertFalse(binaryRadioButton.isEnabled());
+        onView(allOf(withId(android.R.id.summary), hasSibling(withId(R.id.radio_button_layout))))
+                .check(
+                        matches(
+                                withText(
+                                        containsString(
+                                                settingsActivity.getString(
+                                                        org.chromium.chrome.test.R.string
+                                                                .managed_by_your_parent)))));
         settingsActivity.finish();
     }
 

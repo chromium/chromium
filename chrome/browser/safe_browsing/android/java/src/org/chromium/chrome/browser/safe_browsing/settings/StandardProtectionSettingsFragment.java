@@ -60,22 +60,20 @@ public class StandardProtectionSettingsFragment extends SafeBrowsingSettingsFrag
      * forced enabled in ENHANCED_PROTECTION mode and forced disabled in NO_SAFE_BROWSING mode.
      */
     private void updateExtendedReportingPreferences() {
-        @SafeBrowsingState int safe_browsing_state = getSafeBrowsingBridge().getSafeBrowsingState();
-        boolean is_enhanced_protection =
-                safe_browsing_state == SafeBrowsingState.ENHANCED_PROTECTION;
-        boolean is_standard_protection =
-                safe_browsing_state == SafeBrowsingState.STANDARD_PROTECTION;
+        @SafeBrowsingState int safeBrowsingState = getSafeBrowsingBridge().getSafeBrowsingState();
+        boolean isEnhancedProtection = safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION;
+        boolean isStandardProtection = safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION;
 
-        boolean extended_reporting_checked =
-                is_enhanced_protection
-                        || (is_standard_protection
+        boolean extendedReportingChecked =
+                isEnhancedProtection
+                        || (isStandardProtection
                                 && getSafeBrowsingBridge()
                                         .isSafeBrowsingExtendedReportingEnabled());
-        boolean extended_reporting_disabled_by_delegate =
+        boolean extendedReportingDisabledByDelegate =
                 mManagedPreferenceDelegate.isPreferenceClickDisabled(mExtendedReportingPreference);
         mExtendedReportingPreference.setEnabled(
-                is_standard_protection && !extended_reporting_disabled_by_delegate);
-        mExtendedReportingPreference.setChecked(extended_reporting_checked);
+                isStandardProtection && !extendedReportingDisabledByDelegate);
+        mExtendedReportingPreference.setChecked(extendedReportingChecked);
     }
 
     @Override

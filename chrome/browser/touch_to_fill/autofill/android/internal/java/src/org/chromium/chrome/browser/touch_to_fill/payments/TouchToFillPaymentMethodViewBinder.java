@@ -413,11 +413,11 @@ class TouchToFillPaymentMethodViewBinder {
             // AUTOFILL_ENABLE_WALLET_BRANDING is enabled the icon height is reduced.
             if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING)) {
                 Resources res = view.getContext().getResources();
-                int new_height =
+                int newHeight =
                         res.getDimensionPixelSize(
                                 R.dimen.bnpl_tos_header_item_icon_wallet_branding_height);
                 ViewGroup.LayoutParams params = sheetHeaderImage.getLayoutParams();
-                params.height = new_height;
+                params.height = newHeight;
                 sheetHeaderImage.setLayoutParams(params);
             }
             sheetHeaderImage.setImageDrawable(
