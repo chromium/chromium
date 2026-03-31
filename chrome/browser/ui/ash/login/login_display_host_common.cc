@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/webui/ash/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remove_local_auth_factors_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -597,6 +598,10 @@ void LoginDisplayHostCommon::ShowNewTermsForFlexUsers() {
 
 void LoginDisplayHostCommon::ShowPasswordSelectionScreen() {
   StartWizard(PasswordSelectionScreenView::kScreenId);
+}
+
+void LoginDisplayHostCommon::ShowRemoveLocalAuthFactorsScreen() {
+  StartWizard(RemoveLocalAuthFactorsScreenView::kScreenId);
 }
 
 void LoginDisplayHostCommon::SetAuthSessionForOnboarding(

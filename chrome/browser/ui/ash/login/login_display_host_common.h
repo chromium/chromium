@@ -114,6 +114,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                            std::unique_ptr<UserContext> user_context) final;
   void ShowSamlConfirmPassword(std::unique_ptr<UserContext> user_context) final;
   void ShowPasswordSelectionScreen() final;
+  void ShowRemoveLocalAuthFactorsScreen() final;
   WizardContext* GetWizardContextForTesting() final;
 
   // BrowserController::Observer:

@@ -298,6 +298,11 @@ class WizardContext {
 // Returns |true| if this is an OOBE flow after enterprise enrollment.
 bool IsRollbackFlow(const WizardContext& context);
 
+// Sets the `UserContext` in the wizard context while making sure that no other
+// `UserContext` is already set.
+void SetUserContext(WizardContext& wizard_context,
+                    std::unique_ptr<UserContext> user_context);
+
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_WIZARD_CONTEXT_H_

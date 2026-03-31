@@ -171,6 +171,8 @@ class ExistingUserController : public HttpAuthDialog::Observer,
 
   bool MaybeShowPasswordSelectionScreen(const UserContext& user_context);
 
+  bool MaybeShowRemoveLocalAuthFactorsScreen(const UserContext& user_context);
+
   DemoLoginController* GetDemoLoginControllerForTest();
 
  private:

@@ -63,6 +63,7 @@ class MockSigninUI : public SigninUI {
               ShowSamlConfirmPassword,
               (std::unique_ptr<UserContext>),
               (override));
+  MOCK_METHOD(void, ShowRemoveLocalAuthFactorsScreen, (), (override));
 };
 
 }  // namespace ash
