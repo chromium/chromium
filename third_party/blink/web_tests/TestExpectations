@@ -7430,6 +7430,10 @@ crbug.com/1404951 [ Win ] external/wpt/fedcm/fedcm-nonce-is-optional.https.html 
 
 crbug.com/1480054 [ Win ] external/wpt/fedcm/fedcm-loginhint.https.html [ Pass Timeout ]
 
+# Temporarily disabled to change to the new behavior in V8.
+crbug.com/336347912 external/wpt/wasm/jsapi/exception/constructor.tentative.any.html [ Failure Pass ]
+crbug.com/336347912 external/wpt/wasm/jsapi/exception/constructor.tentative.any.worker.html [ Failure Pass ]
+
 # WebAssembly ESM integration is not yet implemented.
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
 crbug.com/40575658 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
