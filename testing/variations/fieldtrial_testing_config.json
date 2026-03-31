@@ -12913,6 +12913,9 @@
                     "enable_features": [
                         "EnableReadabilityHeuristic",
                         "EnableReaderModeOptimizationGuideEligibility"
+                    ],
+                    "disable_features": [
+                        "ReaderModeIgnoreBadgeThreshold"
                     ]
                 }
             ]
