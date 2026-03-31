@@ -37,7 +37,6 @@ ConsumeAndMergeContentToVisibleTimeRequests(
     to->destination_is_loaded |= from->destination_is_loaded;
     to->show_reason_tab_switching |= from->show_reason_tab_switching;
     to->show_reason_bfcache_restore |= from->show_reason_bfcache_restore;
-    to->show_reason_unfolding |= from->show_reason_unfolding;
   }
   return *to;
 }

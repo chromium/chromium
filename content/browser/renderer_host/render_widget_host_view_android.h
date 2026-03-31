@@ -313,7 +313,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void OnAttachCompositor() override;
   void OnDetachCompositor() override;
   void OnAnimate(base::TimeTicks begin_frame_time) override;
-  void OnUnfoldStarted(base::TimeTicks unfold_begin_time) override;
   void OnActivityStopped() override;
   void OnActivityStarted() override;
 

@@ -37,11 +37,6 @@ struct BLINK_COMMON_EXPORT StructTraits<
     return request.show_reason_bfcache_restore;
   }
 
-  static bool show_reason_unfolding(
-      const blink::RecordContentToVisibleTimeRequest& request) {
-    return request.show_reason_unfolding;
-  }
-
   static bool Read(blink::mojom::RecordContentToVisibleTimeRequestDataView data,
                    blink::RecordContentToVisibleTimeRequest* out);
 };

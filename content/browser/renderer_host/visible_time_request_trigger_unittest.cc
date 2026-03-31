@@ -200,8 +200,7 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
         .event_start_time = StartTimeFromDelta(base::Seconds(2)),
         .destination_is_loaded = true,
         .show_reason_tab_switching = true,
-        .show_reason_bfcache_restore = true,
-        .show_reason_unfolding = true};
+        .show_reason_bfcache_restore = true};
     trigger.UpdateRequest(blink::RecordContentToVisibleTimeRequest{
         .event_start_time = StartTimeFromDelta(base::Seconds(3)),
         .destination_is_loaded = true,
@@ -211,12 +210,6 @@ TEST_F(VisibleTimeRequestTriggerTest, UpdateAndTakeRequest) {
         .destination_is_loaded = false,
         .show_reason_tab_switching = false,
         .show_reason_bfcache_restore = true});
-    trigger.UpdateRequest(blink::RecordContentToVisibleTimeRequest{
-        .event_start_time = StartTimeFromDelta(base::Seconds(4)),
-        .destination_is_loaded = false,
-        .show_reason_tab_switching = false,
-        .show_reason_bfcache_restore = false,
-        .show_reason_unfolding = true});
     EXPECT_THAT(trigger.TakeRequest(), Optional(expected));
     EXPECT_EQ(trigger.TakeRequest(), std::nullopt);
   }

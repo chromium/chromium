@@ -35,9 +35,6 @@ struct BLINK_COMMON_EXPORT RecordContentToVisibleTimeRequest {
   // If |show_reason_bfcache_restore| is true, web contents has become visible
   // because of restoring a page from bfcache.
   bool show_reason_bfcache_restore = false;
-  // If |show_reason_unfolding| is true, web contents has become visible
-  // because of restoring a page after unfolding.
-  bool show_reason_unfolding = false;
 
   friend bool operator==(const RecordContentToVisibleTimeRequest&,
                          const RecordContentToVisibleTimeRequest&) = default;

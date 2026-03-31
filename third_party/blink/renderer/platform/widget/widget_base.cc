@@ -607,13 +607,6 @@ void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
   TRACE_EVENT0("renderer",
                "WidgetBase::RequestSuccessfulPresentationTimeForNextFrame");
 
-  if (visible_time_request.show_reason_unfolding) {
-    LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
-        tab_switch_time_recorder_.GetCallbackForNextFrameAfterUnfold(
-            visible_time_request.event_start_time));
-    return;
-  }
-
   // Tab was shown while widget was already painting, eg. due to being
   // captured.
   LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(

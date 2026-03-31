@@ -19,7 +19,6 @@ bool StructTraits<blink::mojom::RecordContentToVisibleTimeRequestDataView,
   out->destination_is_loaded = data.destination_is_loaded();
   out->show_reason_tab_switching = data.show_reason_tab_switching();
   out->show_reason_bfcache_restore = data.show_reason_bfcache_restore();
-  out->show_reason_unfolding = data.show_reason_unfolding();
   return true;
 }
 

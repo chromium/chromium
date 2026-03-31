@@ -103,25 +103,6 @@ void RecordTabSwitchTraceEvent(base::TimeTicks start_time,
   TRACE_EVENT_END("latency", track, end_time, flow);
 }
 
-// Records histogram and trace event for the unfolding latency.
-void RecordUnfoldHistogramAndTraceEvent(
-    base::TimeTicks begin_timestamp,
-    const viz::FrameTimingDetails& frame_timing_details) {
-  base::TimeTicks presentation_timestamp =
-      frame_timing_details.presentation_feedback.timestamp;
-  DCHECK((begin_timestamp != base::TimeTicks()));
-  if (IsLatencyTraceCategoryEnabled()) {
-    const perfetto::Track track(base::trace_event::GetNextGlobalTraceId(),
-                                perfetto::ProcessTrack::Current());
-    TRACE_EVENT_BEGIN("latency", "Unfold.Latency", track, begin_timestamp);
-    TRACE_EVENT_END("latency", track, presentation_timestamp);
-  }
-
-  // Record the latency histogram.
-  base::UmaHistogramTimes("Android.UnfoldToTablet.Latency2",
-                          (presentation_timestamp - begin_timestamp));
-}
-
 }  // namespace
 
 ContentToVisibleTimeReporter::ContentToVisibleTimeReporter() = default;
@@ -167,12 +148,6 @@ ContentToVisibleTimeReporter::TabWasShown(
       weak_ptr_factory_.GetWeakPtr(), TabSwitchResult::kSuccess,
       tab_switch_start_state_->show_reason_tab_switching,
       tab_switch_start_state_->show_reason_bfcache_restore);
-}
-
-ContentToVisibleTimeReporter::SuccessfulPresentationTimeCallback
-ContentToVisibleTimeReporter::GetCallbackForNextFrameAfterUnfold(
-    base::TimeTicks begin_timestamp) {
-  return base::BindOnce(&RecordUnfoldHistogramAndTraceEvent, begin_timestamp);
 }
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
