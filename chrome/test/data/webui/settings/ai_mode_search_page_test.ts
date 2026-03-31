@@ -10,6 +10,7 @@ import {CrSettingsPrefs, OpenWindowProxyImpl} from 'chrome://settings/settings.j
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('AiModeSearchSubpage', function() {
   let openWindowProxy: TestOpenWindowProxy;
@@ -155,8 +156,9 @@ suite('AiModeSearchSubpage', function() {
         addDialog.shadowRoot!.querySelector<HTMLElement>('#add');
     assertTrue(!!dialogAddButton);
     assertFalse(dialogAddButton.hasAttribute('disabled'));
+    const closePromise1 = eventToPromise('close', addDialog);
     dialogAddButton.click();
-    await flushTasks();
+    await Promise.all([closePromise1, flushTasks()]);
 
     const exclusionsAfter = subpage.getSiteExclusions();
     assertEquals(
@@ -223,8 +225,9 @@ suite('AiModeSearchSubpage', function() {
     const saveButton =
         editDialog.shadowRoot!.querySelector<HTMLElement>('#add');
     assertTrue(!!saveButton);
+    const closePromise3 = eventToPromise('close', editDialog);
     saveButton.click();
-    await flushTasks();
+    await Promise.all([closePromise3, flushTasks()]);
 
     // Check list sorted
     items = siteList.querySelectorAll('.list-item');
