@@ -1,0 +1,46 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for themes on Android.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "components/sync/protocol/theme_types.proto";
+
+// Properties of theme sync objects for Android themes.
+message ThemeAndroidSpecifics {
+  // Whether the user has a custom theme.
+  optional bool use_custom_theme = 1;
+
+  // Info about the custom background (URL, collection ID, etc.).
+  optional NtpCustomBackground ntp_background = 2;
+
+  // The selected Chrome color.
+  // Note: `user_color_theme` and `chrome_color_info` refer to the same color
+  // theme and exist to allow cross-platform compatibility.
+  optional UserColorTheme user_color_theme = 3;
+
+  optional ChromeColorInfo chrome_color_info = 4;
+}
+
+// Information regarding the selected Chrome color on Android devices.
+// It is only used for sync between clank devices.
+message ChromeColorInfo {
+  // The selected Chrome color ID.
+  optional int32 theme_color_id = 1;
+
+  // The timestamp when the Chrome color was refreshed as part of the daily
+  // cycle.
+  optional int64 last_daily_update_timestamp_unix_epoch_millis = 2;
+}

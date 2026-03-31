@@ -79,6 +79,7 @@ sync_protocol_sources = [
   "tab_group_attribution_metadata.proto",
   "tab_navigation.proto",
   "test.proto",
+  "theme_android_specifics.proto",
   "theme_ios_specifics.proto",
   "theme_specifics.proto",
   "theme_types.proto",

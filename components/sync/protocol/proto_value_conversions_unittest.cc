@@ -120,6 +120,7 @@ DEFINE_SPECIFICS_TO_VALUE_TEST(session)
 DEFINE_SPECIFICS_TO_VALUE_TEST(shared_tab_group_data)
 DEFINE_SPECIFICS_TO_VALUE_TEST(sharing_message)
 DEFINE_SPECIFICS_TO_VALUE_TEST(theme)
+DEFINE_SPECIFICS_TO_VALUE_TEST(theme_android)
 DEFINE_SPECIFICS_TO_VALUE_TEST(theme_ios)
 DEFINE_SPECIFICS_TO_VALUE_TEST(typed_url)
 DEFINE_SPECIFICS_TO_VALUE_TEST(user_consent)
@@ -411,6 +412,41 @@ TEST(ProtoValueConversionsTest, GeminiThreadSpecificsToValue) {
   EXPECT_THAT(value.FindString("title"), Pointee(Eq("my_title")));
   EXPECT_THAT(value.FindString("last_turn_time_unix_epoch_millis"),
               Pointee(Eq("1770989828")));
+}
+
+TEST(ProtoValueConversionsTest, ThemeAndroidSpecificsToValue) {
+  sync_pb::ThemeAndroidSpecifics specifics;
+  specifics.set_use_custom_theme(true);
+
+  // Populate `ChromeColorInfo`.
+  auto* chrome_color_info = specifics.mutable_chrome_color_info();
+  chrome_color_info->set_theme_color_id(12);
+  chrome_color_info->set_last_daily_update_timestamp_unix_epoch_millis(
+      1770989828);
+
+  // Populate `NtpCustomBackground`.
+  auto* ntp_background = specifics.mutable_ntp_background();
+  ntp_background->set_url("https://example.com/img.png");
+  ntp_background->set_main_color(12345);
+  ntp_background->set_collection_id("collection_id");
+
+  base::DictValue value = ThemeAndroidSpecificsToValue(specifics).TakeDict();
+  EXPECT_FALSE(value.empty());
+
+  EXPECT_THAT(value.FindBool("use_custom_theme"), testing::Optional(true));
+
+  const base::DictValue* color_info_dict = value.FindDict("chrome_color_info");
+  ASSERT_TRUE(color_info_dict);
+  EXPECT_THAT(color_info_dict->FindString("theme_color_id"), Pointee(Eq("12")));
+  EXPECT_THAT(color_info_dict->FindString(
+                  "last_daily_update_timestamp_unix_epoch_millis"),
+              Pointee(Eq("1770989828")));
+
+  const base::DictValue* bg_dict = value.FindDict("ntp_background");
+  ASSERT_TRUE(bg_dict);
+  EXPECT_THAT(bg_dict->FindString("url"),
+              Pointee(Eq("https://example.com/img.png")));
+  EXPECT_THAT(bg_dict->FindString("main_color"), Pointee(Eq("12345")));
 }
 
 TEST(ProtoValueConversionsTest, ThemeIosSpecificsToValue) {
