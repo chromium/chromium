@@ -99,11 +99,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
             boolean wantBottomCornersRounded,
             boolean wantSeparator) {
         Assert.assertEquals(
-                wantTopCornersRounded, model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED));
+                wantTopCornersRounded, model.get(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED));
         Assert.assertEquals(
                 wantBottomCornersRounded,
-                model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
-        Assert.assertEquals(wantSeparator, model.get(DropdownCommonProperties.SHOW_DIVIDER));
+                model.get(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+        Assert.assertEquals(wantSeparator, model.get(SuggestionCommonProperties.SHOW_DIVIDER));
     }
 
     @Test

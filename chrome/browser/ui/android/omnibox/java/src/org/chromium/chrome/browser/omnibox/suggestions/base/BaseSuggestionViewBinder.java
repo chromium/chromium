@@ -33,7 +33,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -105,11 +104,11 @@ public final class BaseSuggestionViewBinder<T extends View>
             updateMargin(model, view);
         } else if (SuggestionCommonProperties.COLOR_SCHEME == propertyKey) {
             updateColorScheme(model, view);
-        } else if (DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
-                || DropdownCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
+        } else if (SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED == propertyKey
+                || SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED == propertyKey) {
             view.setRoundingEdges(
-                    model.get(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED),
-                    model.get(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
+                    model.get(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED),
+                    model.get(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED));
         } else if (BaseSuggestionViewProperties.ACTION_BUTTONS == propertyKey) {
             bindActionButtons(model, view, model.get(BaseSuggestionViewProperties.ACTION_BUTTONS));
         } else if (BaseSuggestionViewProperties.ON_FOCUS_VIA_SELECTION == propertyKey) {

@@ -102,7 +102,7 @@ class DropdownItemViewInfoListManager {
 
         // round the bottom corners of the last suggestion.
         if (previousItem != null) {
-            previousItem.model.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
+            previousItem.model.set(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
         }
 
         mManagedModel.set(suggestionsList);

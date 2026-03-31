@@ -37,7 +37,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.suggestions.DropdownCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.test.R;
@@ -248,8 +247,8 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void partialSuggestionRounding() {
-        mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
-        mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
+        mModel.set(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
+        mModel.set(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED, true);
 
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
@@ -260,8 +259,8 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void fullSuggestionRounding() {
-        mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
-        mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, true);
+        mModel.set(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, true);
+        mModel.set(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED, true);
 
         Assert.assertTrue(mBaseView.getClipToOutline());
         // Expect the RoundedCornerOutlineProvider. Fail if it's anything else.
@@ -272,8 +271,8 @@ public class BaseSuggestionViewBinderUnitTest {
 
     @Test
     public void noSuggestionRounding() {
-        mModel.set(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
-        mModel.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, false);
+        mModel.set(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false);
+        mModel.set(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED, false);
 
         Assert.assertFalse(mBaseView.getClipToOutline());
     }

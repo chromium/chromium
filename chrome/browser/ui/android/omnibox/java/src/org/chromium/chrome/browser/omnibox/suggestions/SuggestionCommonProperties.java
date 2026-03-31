@@ -8,7 +8,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -35,8 +35,22 @@ public @interface SuggestionCommonProperties {
     /** The device type for calculating the tile margin in the suggestion view. */
     WritableIntPropertyKey DEVICE_FORM_FACTOR = new WritableIntPropertyKey();
 
+    /** Whether the suggestion background's top corners should be rounded. */
+    WritableBooleanPropertyKey BG_TOP_CORNER_ROUNDED = new WritableBooleanPropertyKey();
+
+    /** Whether the suggestion background's bottom corners should be rounded. */
+    WritableBooleanPropertyKey BG_BOTTOM_CORNER_ROUNDED = new WritableBooleanPropertyKey();
+
+    /** Whether a divider should be shown at the bottom of the suggestion. */
+    WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(
-                    new PropertyKey[] {COLOR_SCHEME, LAYOUT_DIRECTION, DEVICE_FORM_FACTOR},
-                    DropdownCommonProperties.ALL_KEYS);
+            new PropertyKey[] {
+                COLOR_SCHEME,
+                LAYOUT_DIRECTION,
+                DEVICE_FORM_FACTOR,
+                BG_TOP_CORNER_ROUNDED,
+                BG_BOTTOM_CORNER_ROUNDED,
+                SHOW_DIVIDER
+            };
 }

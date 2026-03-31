@@ -103,10 +103,10 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
     public void onBindViewHolder_allItemsMustSupportDropdownCommonProperties() {
         // These properties must be respected by all Dropdown items.
         var commonModel =
-                new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
-                        .with(DropdownCommonProperties.SHOW_DIVIDER, true)
-                        .with(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, false)
-                        .with(DropdownCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false)
+                new PropertyModel.Builder(SuggestionCommonProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.SHOW_DIVIDER, true)
+                        .with(SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED, false)
+                        .with(SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED, false)
                         .build();
 
         for (@OmniboxSuggestionUiType int type = OmniboxSuggestionUiType.DEFAULT;

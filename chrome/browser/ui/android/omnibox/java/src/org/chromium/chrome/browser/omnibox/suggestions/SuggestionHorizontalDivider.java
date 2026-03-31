@@ -22,7 +22,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /**
  * Horizontal divider item decoration that clips the bottom of items with a rect of height 1dp. Only
- * clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER ==
+ * clips for items with an associated property model with SuggestionCommonProperties.SHOW_DIVIDER ==
  * true.
  */
 @NullMarked
@@ -60,6 +60,6 @@ public class SuggestionHorizontalDivider extends ItemDecoration {
         SimpleRecyclerViewAdapter.ViewHolder simpleRecyclerViewHolder =
                 (ViewHolder) parent.getChildViewHolder(view);
         var model = simpleRecyclerViewHolder.model;
-        return model != null && model.get(DropdownCommonProperties.SHOW_DIVIDER);
+        return model != null && model.get(SuggestionCommonProperties.SHOW_DIVIDER);
     }
 }

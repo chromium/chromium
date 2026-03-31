@@ -45,12 +45,12 @@ public class SuggestionHorizontalDividerTest {
     @Mock private Canvas mCanvas;
 
     private final PropertyModel mShowDividerModel =
-            new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
-                    .with(DropdownCommonProperties.SHOW_DIVIDER, true)
+            new PropertyModel.Builder(SuggestionCommonProperties.ALL_KEYS)
+                    .with(SuggestionCommonProperties.SHOW_DIVIDER, true)
                     .build();
     private final PropertyModel mNoDividerModel =
-            new PropertyModel.Builder(DropdownCommonProperties.ALL_KEYS)
-                    .with(DropdownCommonProperties.SHOW_DIVIDER, false)
+            new PropertyModel.Builder(SuggestionCommonProperties.ALL_KEYS)
+                    .with(SuggestionCommonProperties.SHOW_DIVIDER, false)
                     .build();
 
     private Activity mActivity;
