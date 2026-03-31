@@ -391,6 +391,16 @@ def _parse_non_proxy_natives(type_resolver, contents):
   return ret
 
 
+# javap shows inherited methods from interfaces / super classes, including when
+# they are identical but with broader return types. In order to avoid
+# collisions, remove these dupes by using the first one listed.
+def _filter_duplicate_return_types(called_by_natives):
+  cbn_by_key = {}
+  for cbn in called_by_natives:
+    cbn_by_key.setdefault((cbn.name, cbn.signature.param_types), cbn)
+  return list(cbn_by_key.values())
+
+
 # Regex to match a string like "@CalledByNative public void foo(int bar)".
 _CALLED_BY_NATIVE_REGEX = re.compile(
     r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
@@ -608,6 +618,7 @@ def parse_javap(filename, contents):
                              name=name,
                              signature=signature,
                              static='static' in modifiers))
+  called_by_natives = _filter_duplicate_return_types(called_by_natives)
   called_by_natives.sort()
   return ParsedFile(filename=filename,
                     type_resolver=type_resolver,

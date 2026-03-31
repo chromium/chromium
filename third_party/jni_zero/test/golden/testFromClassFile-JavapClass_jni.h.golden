@@ -306,17 +306,15 @@ class _CalledByNatives<::org::jni_zero::JJavapClass> {
     return Java_JavapClass_intMethod(env, *this_obj, p0);
   }
 
-  static void needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
+  static void needsMangling(JNIEnv* env, JniIntWrapper p0) {
     Java_JavapClass_needsMangling__int(env, p0);
   }
 
-  static void needsMangling__String(JNIEnv* env, const ::jni_zero::JavaRef<jstring>& p0) {
+  static void needsMangling(JNIEnv* env, const ::jni_zero::JavaRef<jstring>& p0) {
     Java_JavapClass_needsMangling__String(env, p0);
   }
 
-  static void needsMangling__java_util_ArrayList(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<::java::util::JArrayList>& p0) {
+  static void needsMangling(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JArrayList>& p0) {
     Java_JavapClass_needsMangling__java_util_ArrayList(env, p0);
   }
 

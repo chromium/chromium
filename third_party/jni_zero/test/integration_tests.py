@@ -313,6 +313,9 @@ class BaseTest(unittest.TestCase):
 
       logging.info('Running: %s', shlex.join(cmd))
       result = subprocess.run(cmd, capture_output=True, check=False, text=True)
+      if 'Traceback' in result.stderr:
+        sys.stderr.write(result.stderr)
+        result.check_returncode()
       self.assertIn('MyFile.java', result.stderr)
       self.assertIn(error_snippet, result.stderr)
       self.assertEqual(result.returncode, 1)
@@ -386,6 +389,10 @@ class Tests(BaseTest):
 
   def testFromClassFile(self):
     self._TestEndToEndGeneration(['JavapClass.class'])
+
+  def testJavaUtilList(self):
+    # Taken from android.jar's java/util/List.class.
+    self._TestEndToEndGeneration(['List.class'])
 
   def testUniqueAnnotations(self):
     self._TestEndToEndGeneration(['SampleUniqueAnnotations.java'], srcjar=True)
