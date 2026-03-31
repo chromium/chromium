@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +31,8 @@
 #include "chrome/test/base/test_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/prefs/pref_service.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
@@ -434,6 +437,22 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScriptWithCode) {
   ASSERT_TRUE(RunContentScriptTestCase("AddContentScriptWithCode",
+                                       GetTestUrl("empty.html").spec()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
+                       ExecuteScriptBadUrlFromOtherWebUi) {
+  // Load the victim WebUI first, so that its resources are available to fetch.
+  g_browser_process->local_state()->SetBoolean(
+      chrome_urls::kInternalOnlyUisEnabled, true);
+  content::WebContents* target_webui_window = browser()->OpenURL(
+      content::OpenURLParams(
+          GURL(chrome::kChromeUIWebUIJsErrorURL), content::Referrer(),
+          WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_TYPED, false),
+      /*navigation_handle_callback=*/{});
+  content::WaitForLoadStop(target_webui_window);
+
+  ASSERT_TRUE(RunContentScriptTestCase("ExecuteScriptBadUrlFromOtherWebUi",
                                        GetTestUrl("empty.html").spec()));
 }
 
