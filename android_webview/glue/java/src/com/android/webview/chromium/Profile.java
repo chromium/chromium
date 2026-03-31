@@ -190,6 +190,14 @@ public class Profile {
     }
 
     /**
+     * @return Max Prefetches set for the {@link Profile}
+     */
+    @UiThread
+    public int getMaxPrefetches() {
+        return mBrowserContext.getPrefetchManager().getMaxPrefetches();
+    }
+
+    /**
      * @param prefetchTTLSeconds Sets the TTL seconds for prefetch. If null, restores the default.
      */
     @UiThread
@@ -199,6 +207,14 @@ public class Profile {
             throw new IllegalArgumentException("Prefetch TTL seconds can not be negative.");
         }
         mBrowserContext.getPrefetchManager().setPrefetchTtlSeconds(prefetchTtlSeconds);
+    }
+
+    /**
+     * @return prefetchTTLSeconds The TTL seconds for the {@link Profile}.
+     */
+    @UiThread
+    public int getPrefetchTtlSeconds() {
+        return mBrowserContext.getPrefetchManager().getPrefetchTtlSeconds();
     }
 
     @UiThread

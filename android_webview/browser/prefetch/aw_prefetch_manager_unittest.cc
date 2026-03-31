@@ -39,22 +39,22 @@ class AwPrefetchManagerTest : public AwMetricsTestBase {
   std::unique_ptr<content::TestBrowserContext> browser_context_;
 };
 
-// Tests that setting the CacheConfig on the PrefetchManager applies it
-// correctly.
+// Tests GetMaxPrefetches and GetTtlInSec returns the correct values.
 TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   AwPrefetchManager prefetch_manager(browser_context_.get());
+
+  int actual_ttl_in_sec = 30 * 10;
+  size_t actual_max_prefetches = 5;
+
   prefetch_manager.SetTtlInSec(base::android::AttachCurrentThread(),
-                               /*ttl_in_sec=*/60 * 10);
-
+                               actual_ttl_in_sec);
   prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
-                                    /* max_prefetches=*/5);
+                                    actual_max_prefetches);
 
-  EXPECT_EQ(prefetch_manager.GetTtlInSecForTesting(
-                base::android::AttachCurrentThread()),
-            60 * 10);
-  EXPECT_EQ(prefetch_manager.GetMaxPrefetchesForTesting(
-                base::android::AttachCurrentThread()),
-            5u);
+  EXPECT_EQ(actual_ttl_in_sec,
+            prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()));
+  EXPECT_EQ(actual_max_prefetches, prefetch_manager.GetMaxPrefetches(
+                                       base::android::AttachCurrentThread()));
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {

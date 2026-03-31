@@ -394,12 +394,12 @@ void AwPrefetchManager::SetMaxPrefetches(JNIEnv* env,
       std::min(sanitized_max_prefetches, kAbsoluteMaxPrefetches));
 }
 
-int AwPrefetchManager::GetTtlInSecForTesting(JNIEnv* env) const {
+int AwPrefetchManager::GetTtlInSec(JNIEnv* env) const {
   return aw_prefetch_manager_data_.GetTtlInSec();
 }
 
-size_t AwPrefetchManager::GetMaxPrefetchesForTesting(JNIEnv* env) const {
-  return aw_prefetch_manager_data_.GetMaxPrefetchesForTesting();  // IN-TEST
+size_t AwPrefetchManager::GetMaxPrefetches(JNIEnv* env) const {
+  return aw_prefetch_manager_data_.GetMaxPrefetchesForTesting();
 }
 
 std::vector<AwPrefetchKey>

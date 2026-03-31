@@ -751,6 +751,8 @@ chromium-metrics-reviews@google.com.
   <int value="186" label="WebSettingsCompat.setIgnoreDuplicateNavThreshold"/>
   <int value="187" label="WebSettingsCompat.getIgnoreDuplicateNavThreshold"/>
   <int value="188" label="WebSettingsCompat.getMaxPrerenders"/>
+  <int value="189" label="WebSettingsCompat.getMaxPrefetches"/>
+  <int value="190" label="WebSettingsCompat.getPrefetchTtlSeconds"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

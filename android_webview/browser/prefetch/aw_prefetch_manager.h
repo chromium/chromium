@@ -126,11 +126,11 @@ class AwPrefetchManager {
   // Updates the maximum number of allowed prefetches in cache
   void SetMaxPrefetches(JNIEnv* env, std::optional<int> max_prefetches);
 
-  // Returns the Time-to-Live (TTL) for prefetched content in seconds.
-  int GetTtlInSecForTesting(JNIEnv* env) const;
+  // Returns the Time-To-Live (TTL) for the prefetched content in seconds.
+  int GetTtlInSec(JNIEnv* env) const;
 
   // Returns the maximum number of allowed prefetches in cache.
-  size_t GetMaxPrefetchesForTesting(JNIEnv* env) const;
+  size_t GetMaxPrefetches(JNIEnv* env) const;
 
   std::vector<AwPrefetchKey> GetAllPrefetchKeysForTesting() const;
 

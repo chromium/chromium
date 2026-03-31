@@ -196,6 +196,18 @@ public class SupportLibProfile implements ProfileBoundaryInterface {
         return mProfileImpl.getMaxPrerenders();
     }
 
+    @Override
+    public int getMaxPrefetches() {
+        recordApiCall(ApiCall.GET_MAX_PREFETCHES);
+        return mProfileImpl.getMaxPrefetches();
+    }
+
+    @Override
+    public int getPrefetchTtlSeconds() {
+        recordApiCall(ApiCall.GET_PREFETCH_TTL_SECONDS);
+        return mProfileImpl.getPrefetchTtlSeconds();
+    }
+
     /**
      * @deprecated Can be removed along with {@link
      *     org.chromium.support_lib_boundary.util.Features#SPECULATIVE_LOADING_CONFIG}

@@ -296,6 +296,8 @@ public class Features {
     // Profile.clearPrefetch
     public static final String PREFETCH_WITH_URL = "PREFETCH_URL_V5";
 
+    // Profile.getMaxPrefetches
+    // Profile.getPrefetchTtlSeconds
     // Profile.setMaxPrefetches
     // Profile.setPrefetchTtlSeconds
     public static final String PREFETCH_CACHE = "PREFETCH_CACHE_V1";

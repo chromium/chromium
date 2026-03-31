@@ -273,13 +273,21 @@ public class AwPrefetchManager {
         }
     }
 
-    public int getTtlInSecForTesting() {
-        return AwPrefetchManagerJni.get().getTtlInSecForTesting(mNativePrefetchManager); // IN-TEST
+    @UiThread
+    public int getMaxPrefetches() {
+        try (TraceEvent event = TraceEvent.scoped("WebView.Profile.Prefetch.GET_MAX_PREFETCHES")) {
+            assert ThreadUtils.runningOnUiThread();
+            return AwPrefetchManagerJni.get().getMaxPrefetches(mNativePrefetchManager);
+        }
     }
 
-    public int getMaxPrefetchesForTesting() {
-        return AwPrefetchManagerJni.get()
-                .getMaxPrefetchesForTesting(mNativePrefetchManager); // IN-TEST
+    @UiThread
+    public int getPrefetchTtlSeconds() {
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.Profile.Prefetch.GET_PREFETCH_TTL_SECONDS")) {
+            assert ThreadUtils.runningOnUiThread();
+            return AwPrefetchManagerJni.get().getTtlInSec(mNativePrefetchManager);
+        }
     }
 
     public int getNoPrefetchKeyForTesting() {
@@ -364,8 +372,8 @@ public class AwPrefetchManager {
                 long nativeAwPrefetchManager,
                 @JniType("std::optional<int>") @Nullable Integer maxPrefetches);
 
-        int getTtlInSecForTesting(long nativeAwPrefetchManager); // IN-TEST
+        int getTtlInSec(long nativeAwPrefetchManager);
 
-        int getMaxPrefetchesForTesting(long nativeAwPrefetchManager); // IN-TEST
+        int getMaxPrefetches(long nativeAwPrefetchManager);
     }
 }

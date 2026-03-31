@@ -280,13 +280,13 @@ public class AwPrefetchTest extends AwParameterizedTest {
                 () -> {
                     // Updating with negative values shouldn't be applied
                     prefetchManager.updatePrefetchConfiguration(-1, -1);
-                    Assert.assertTrue(prefetchManager.getTtlInSecForTesting() > 0);
-                    Assert.assertTrue(prefetchManager.getMaxPrefetchesForTesting() > 0);
+                    Assert.assertTrue(prefetchManager.getPrefetchTtlSeconds() > 0);
+                    Assert.assertTrue(prefetchManager.getMaxPrefetches() > 0);
 
                     // Updating with 0 shouldn't be applied as well.
                     prefetchManager.updatePrefetchConfiguration(0, 0);
-                    Assert.assertTrue(prefetchManager.getTtlInSecForTesting() > 0);
-                    Assert.assertTrue(prefetchManager.getMaxPrefetchesForTesting() > 0);
+                    Assert.assertTrue(prefetchManager.getPrefetchTtlSeconds() > 0);
+                    Assert.assertTrue(prefetchManager.getMaxPrefetches() > 0);
                 });
     }
 
@@ -299,8 +299,8 @@ public class AwPrefetchTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     prefetchManager.updatePrefetchConfiguration(60, 5);
-                    Assert.assertEquals(60, prefetchManager.getTtlInSecForTesting());
-                    Assert.assertEquals(5, prefetchManager.getMaxPrefetchesForTesting());
+                    Assert.assertEquals(60, prefetchManager.getPrefetchTtlSeconds());
+                    Assert.assertEquals(5, prefetchManager.getMaxPrefetches());
                 });
     }
 

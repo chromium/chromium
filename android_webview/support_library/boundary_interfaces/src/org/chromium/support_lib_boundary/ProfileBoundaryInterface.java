@@ -58,6 +58,10 @@ public interface ProfileBoundaryInterface {
 
     int getMaxPrerenders();
 
+    int getMaxPrefetches();
+
+    int getPrefetchTtlSeconds();
+
     void setSpeculativeLoadingConfig(/* SpeculativeLoadingConfig */ InvocationHandler config);
 
     void warmUpRendererProcess();
