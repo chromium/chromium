@@ -457,9 +457,11 @@ class DlpContentManager : public DlpContentObserver,
              static_cast<int>(DlpContentRestriction::kMaxValue) + 1>
       observer_lists_;
 
+  // TODO(crbug.com/498093983): remove when the DlpContentManagerAsh is no
+  // longer outliving the ActivationClient it observes.
   base::ScopedObservation<ash::BrowserController,
-                          ash::BrowserController::Observer>
-      browser_controller_observation_{this};
+                          ash::BrowserController::Observer>::
+      LeakedDanglingUntriaged browser_controller_observation_{this};
 
   // A helper structure that contains web contents which were reported during
   // the current screen share.
