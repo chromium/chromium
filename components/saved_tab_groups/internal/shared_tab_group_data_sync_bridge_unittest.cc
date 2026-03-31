@@ -2003,6 +2003,8 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
       "http://google.com/1", u"tab", group.saved_guid(), /*position=*/0));
   model()->AddedLocally(group);
 
+  // Update the group with an unexpected collaboration ID, the group should not
+  // be updated.
   sync_pb::SharedTabGroupDataSpecifics group_update_specifics =
       MakeTabGroupSpecifics("title", sync_pb::SharedTabGroup::BLUE);
   group_update_specifics.set_guid(group.saved_guid().AsLowercaseString());
@@ -2010,9 +2012,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                 group_update_specifics,
                 CollaborationId("unexpected_collaboration_id"))),
             std::nullopt);
+  EXPECT_EQ(model()->Get(group.saved_guid())->color(),
+            tab_groups::TabGroupColorId::kGrey);
 
+  // Update the tab with an unexpected collaboration ID, the tab should not be
+  // updated.
   sync_pb::SharedTabGroupDataSpecifics tab_update_specifics = MakeTabSpecifics(
-      "tab", GURL("http://google.com/1"),
+      "new tab title", GURL("http://google.com/new"),
       /*group_id=*/group.saved_guid(), GenerateRandomUniquePosition());
   tab_update_specifics.set_guid(
       group.saved_tabs()[0].saved_tab_guid().AsLowercaseString());
@@ -2020,6 +2026,7 @@ TEST_F(SharedTabGroupDataSyncBridgeTest,
                 tab_update_specifics,
                 CollaborationId("unexpected_collaboration_id"))),
             std::nullopt);
+  EXPECT_EQ(model()->Get(group.saved_guid())->saved_tabs()[0].title(), u"tab");
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldStoreLocalIdOnRemoteUpdate) {

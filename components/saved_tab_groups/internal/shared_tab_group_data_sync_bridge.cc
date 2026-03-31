@@ -1229,7 +1229,8 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
 
   CHECK(specifics.has_tab_group());
 
-  if (!model_wrapper_->GetGroup(group_guid)) {
+  const SavedTabGroup* existing_group = model_wrapper_->GetGroup(group_guid);
+  if (!existing_group) {
     // This is a new remotely created group. Add the group from sync into local
     // storage. Note that on some platforms new remote groups may open in the
     // tab strip, and associate its local group ID. This is currently prevented
@@ -1243,20 +1244,6 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
     return std::nullopt;
   }
 
-  // Update the existing group with remote data.
-  const SavedTabGroup* existing_group =
-      model_wrapper_->MergeRemoteGroupMetadata(
-          group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
-          SyncColorToTabGroupColor(specifics.tab_group().color()),
-          /*position=*/std::nullopt,
-          /*creator_cache_guid=*/std::nullopt,
-          /*last_updater_cache_guid=*/std::nullopt,
-          TimeFromWindowsEpochMicros(
-              specifics.update_time_windows_epoch_micros()),
-          collaboration_metadata.last_updated_by());
-  CHECK(existing_group);
-
-  // TODO(crbug.com/381540386): move this check before the merge.
   if (existing_group->collaboration_id() !=
       collaboration_metadata.collaboration_id()) {
     // Shared tab groups should never change collaboration IDs.
@@ -1264,6 +1251,17 @@ SharedTabGroupDataSyncBridge::AddGroupToLocalStorage(
         FROM_HERE, syncer::ModelError::Type::
                        kSharedTabGroupUnexpectedCollaborationIdForGroup);
   }
+
+  // Update the existing group with remote data.
+  existing_group = model_wrapper_->MergeRemoteGroupMetadata(
+      group_guid, base::UTF8ToUTF16(specifics.tab_group().title()),
+      SyncColorToTabGroupColor(specifics.tab_group().color()),
+      /*position=*/std::nullopt,
+      /*creator_cache_guid=*/std::nullopt,
+      /*last_updater_cache_guid=*/std::nullopt,
+      TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros()),
+      collaboration_metadata.last_updated_by());
+  CHECK(existing_group);
 
   // Create new specifics in case some fields were merged.
   sync_pb::SharedTabGroupDataSpecifics updated_specifics =
