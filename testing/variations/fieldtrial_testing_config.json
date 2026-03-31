@@ -21583,24 +21583,6 @@
             ]
         }
     ],
-    "SuppressMemoryListeners": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Win_Cros",
-                    "params": {
-                        "suppress_memory_listeners_mask": "0000000200000200000000000000000000000000000000000"
-                    },
-                    "enable_features": [
-                        "SuppressMemoryListeners"
-                    ]
-                }
-            ]
-        }
-    ],
     "SuppressesNetworkActivitiesOnSlowNetwork": [
         {
             "platforms": [

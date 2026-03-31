@@ -21,7 +21,7 @@ namespace {
 MemoryPressureListenerRegistry* g_memory_pressure_listener_registry = nullptr;
 
 BASE_FEATURE(kSuppressMemoryListeners,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
              FEATURE_ENABLED_BY_DEFAULT
 #else
              FEATURE_DISABLED_BY_DEFAULT
@@ -34,6 +34,8 @@ BASE_FEATURE_PARAM(std::string,
                    "suppress_memory_listeners_mask",
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
                    "0200200202220200020020020002020020000002000000020"
+#elif BUILDFLAG(IS_CHROMEOS)
+                   "0000000200000200000000000000000000000000000000000"
 #else
                    ""
 #endif
