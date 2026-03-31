@@ -72,10 +72,16 @@ gn_args.config(
 # Representative GN args for Android developer builds.
 gn_args.config(
     name = "android_developer",
+    args = {
+        # Developer uses build_server, but that needs autoninja. So disable static analysis on bots.
+        "android_static_analysis": "off",
+    },
     configs = [
         "android",
-        "arm64",
-        "developer",
+        "debug",
+        "minimal_symbols",
+        "shared",
+        "x64",
     ],
 )
 
