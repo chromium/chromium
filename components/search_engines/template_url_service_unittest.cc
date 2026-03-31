@@ -482,6 +482,54 @@ TEST_F(TemplateURLServiceUnitTest, GetCategorizedTemplateURLs_Sorting) {
                   HasShortName("X Unmanaged"), HasShortName("Y Unmanaged")));
 }
 
+TEST_F(TemplateURLServiceUnitTest,
+       GetDefaultSearchProviderIgnoringExtensionsFallbackMatch) {
+  // Verify that if the default search provider doesn't strictly match any
+  // fields in the search provider database, that we still locate the right
+  // entry.  See http://crbug.com/494210871.  This can happen because
+  // not all properties are stored in the database, so when a search provider
+  // is reloaded, it may fail to match.
+
+  // Add a standard search engine to the service.
+  TemplateURLData data;
+  data.SetShortName(u"Google");
+  data.SetKeyword(u"google.com");
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  data.image_translate_url = "https://www.google.com/image_translate";
+  data.sync_guid = "deterministic-guid-123";
+
+  TemplateURL* turl =
+      template_url_service().Add(std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  // Set it as the user-selected default.
+  template_url_service().SetUserSelectedDefaultSearchProvider(turl);
+
+  // Confirm strict match works initially.
+  EXPECT_EQ(
+      turl,
+      template_url_service().GetDefaultSearchProviderIgnoringExtensions());
+
+  // Simulate metadata drift in the "fresh" data from DefaultSearchManager.
+  // We'll create data that has the SAME GUID but DIFFERENT image_translate_url.
+  TemplateURLData drifted_data = data;
+  drifted_data.image_translate_url =
+      "https://www.google.com/new_image_translate";
+
+  // Bypass TemplateURLService and inject this into DefaultSearchManager
+  // so that GetDefaultSearchProviderIgnoringExtensions() sees the "drifted"
+  // version.
+  template_url_service().ApplyDefaultSearchChangeForTesting(
+      &drifted_data, DefaultSearchManager::FROM_USER);
+
+  // Verify that matching still finds the original TemplateURL via
+  // GUID even though TemplateURL::MatchesData would now fail due to
+  // image_translate_url mismatch.
+  const TemplateURL* matched_turl =
+      template_url_service().GetDefaultSearchProviderIgnoringExtensions();
+  EXPECT_EQ(turl, matched_turl);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 class TemplateURLServiceWithDatabaseUnitTest

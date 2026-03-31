@@ -1405,7 +1405,19 @@ TemplateURLService::GetDefaultSearchProviderIgnoringExtensions() const {
         return TemplateURL::MatchesData(turl_to_check.get(), next_search.get(),
                                         search_terms_data());
       });
-  return iter == template_urls_.end() ? nullptr : iter->get();
+
+  if (iter != template_urls_.end()) {
+    return iter->get();
+  }
+
+  // If a strict match failed, try to match by GUID.
+  // TODO(http://crbug.com/498242147): Properly address this mismatch.
+  const TemplateURL* guid_match = GetTemplateURLForGUID(next_search->sync_guid);
+  if (guid_match) {
+    return guid_match;
+  }
+
+  return nullptr;
 }
 
 bool TemplateURLService::IsSearchResultsPageFromDefaultSearchProvider(
