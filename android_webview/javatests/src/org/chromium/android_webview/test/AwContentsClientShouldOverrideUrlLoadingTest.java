@@ -534,12 +534,48 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                 false);
 
         int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
+        // Activate the link, but without involving user gesture.
         clickOnLinkUsingJs();
         mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
-        // It's not a server-side redirect.
-        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.isRedirect());
-        Assert.assertFalse(mShouldOverrideUrlLoadingHelper.hasUserGesture());
-        Assert.assertTrue(mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
+        Assert.assertFalse(
+                "JavaScript navigations should not count as redirects",
+                mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertFalse(
+                "This JavaScript navigation should be initiated without user gesture",
+                mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(
+                "This navigation should be for the main frame",
+                mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Navigation"})
+    public void testCalledWhenNavigatingFromJavaScriptUsingReplace_userGesture() throws Throwable {
+        standardSetup();
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+
+        final String redirectTargetUrl = createRedirectTargetPage();
+        mActivityTestRule.loadDataSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                getHtmlForPageWithJsReplaceLinkTo(redirectTargetUrl),
+                "text/html",
+                false);
+
+        int callCount = mShouldOverrideUrlLoadingHelper.getCallCount();
+        // Simulate the user tapping the link.
+        JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
+        mShouldOverrideUrlLoadingHelper.waitForCallback(callCount);
+        Assert.assertFalse(
+                "JavaScript navigations should not count as redirects",
+                mShouldOverrideUrlLoadingHelper.isRedirect());
+        Assert.assertTrue(
+                "User gesture should carry over into JavaScript navigation from the user input",
+                mShouldOverrideUrlLoadingHelper.hasUserGesture());
+        Assert.assertTrue(
+                "This navigation should be for the main frame",
+                mShouldOverrideUrlLoadingHelper.isOutermostMainFrame());
     }
 
     @Test
@@ -799,18 +835,24 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
                                 "<title>" + pageTitle + "</title>", redirectUrl));
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
-        // There is a slight difference between navigations caused by calling load and navigations
-        // caused by clicking on a link:
+        // There are differences between navigations caused by calling loadUrl() vs. a user clicking
+        // a link vs. initiated by JavaScript:
         //
-        //  * when using load the navigation is treated as if it came from the URL bar (has the
-        //    navigation type TYPED, doesn't have the has_user_gesture flag); thus the navigation
-        //    itself is not reported via shouldOverrideUrlLoading, but then if it has caused a
-        //    redirect, the redirect itself is reported;
+        // * via loadUrl(): these navigations don't go through shouldOverrideUrlLoading, however
+        //   if they trigger a redirect then that redirect will go through shouldOverrideUrlLoading.
         //
-        //  * when clicking on a link the navigation has the LINK type and has_user_gesture depends
-        //    on whether it was a real click done by the user, or has it been done by JS; on click,
-        //    both the initial navigation and the redirect are reported via
-        //    shouldOverrideUrlLoading.
+        // * via user clicking a link: these navigations always go through shouldOverrideUrlLoading
+        //   and `hasUserGesture == true` (if this was a genuine click with user gesture). If this
+        //   navigation triggers a redirect, then that redirect also goes through
+        //   shouldOverrideUrlLoading, however the redirect will have `hasUserGesture == false`.
+        //
+        // * via JavaScript: these navigations always go through shouldOverrideUrlLoading, but
+        //  `hasUserGesture` will depend on what caused the JavaScript to run. If the user clicks on
+        //  an element and then that element has JavaScript code in its `onclick` handler, then that
+        //  JavaScript code will have user gesture and navigations from this will have
+        //  `hasUserGesture == true`. Otherwise, JavaScript initiated navigations will have
+        //  `hasUserGesture == false`. The exception to this is test-only utility functions like
+        //  JSUtils.clickNodeWithUserGesture(), which will always have user gesture.
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), redirectUrl);
         AwWebResourceRequest request = mContentsClient.waitForShouldOverrideUrlLoading();
@@ -868,17 +910,37 @@ public class AwContentsClientShouldOverrideUrlLoadingTest extends AwParameterize
         // Simulate touch, hasUserGesture must be true only on the first call.
         JSUtils.clickNodeWithUserGesture(mAwContents.getWebContents(), "link");
 
+        // Verify the attributes for the initial request.
         request = mContentsClient.waitForShouldOverrideUrlLoading();
         Assert.assertEquals(redirectUrl, request.getUrl());
-        Assert.assertFalse(request.isRedirect());
-        Assert.assertTrue(request.hasUserGesture());
-        Assert.assertTrue(request.isOutermostMainFrame());
+        Assert.assertFalse(
+                "isRedirect() should be false for the initial request", request.isRedirect());
+        Assert.assertTrue(
+                "The initial request should have user gesture because it was initiated by a user"
+                        + " click",
+                request.hasUserGesture());
+        Assert.assertTrue(
+                "Only the outermost main frame should be navigating in this request.",
+                request.isOutermostMainFrame());
+        Assert.assertTrue(
+                "isOutermostMainFrame() should represent whether this request is happening in the"
+                        + " top-level main frame of the page",
+                request.isOutermostMainFrame());
 
+        // Verify the attributes for the redirect request.
         request = mContentsClient.waitForShouldOverrideUrlLoading();
         Assert.assertEquals(redirectTarget, request.getUrl());
-        Assert.assertEquals(serverSideRedirect, request.isRedirect());
-        Assert.assertFalse(request.hasUserGesture());
-        Assert.assertTrue(request.isOutermostMainFrame());
+        Assert.assertEquals(
+                "isRedirect() should match whether this test is using a server-side redirect",
+                serverSideRedirect,
+                request.isRedirect());
+        Assert.assertFalse(
+                "User gesture should be dropped with redirects, even if the original request had"
+                        + " a user gesture.",
+                request.hasUserGesture());
+        Assert.assertTrue(
+                "isOutermostMainFrame() should not change during a redirect",
+                request.isOutermostMainFrame());
         waitForRedirectsToFinish(redirectUrl, redirectTarget);
     }
 
