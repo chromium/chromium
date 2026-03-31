@@ -275,6 +275,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 origin,
                 options.isPaymentCredentialCreation,
                 remoteDesktopOrigin,
+                options.appidExclude,
                 (result) -> {
                     if (result.securityCheckResult != AuthenticatorStatus.SUCCESS) {
                         returnErrorAndResetCallback(
@@ -581,6 +582,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 origin,
                 payment != null,
                 remoteDesktopOrigin,
+                publicKeyOptions.extensions.appid,
                 (results) -> {
                     if (mCancellableUiState
                             == CancellableUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {

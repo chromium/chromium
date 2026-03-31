@@ -18621,6 +18621,7 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const url::Origin& effective_origin,
     bool is_payment_credential_get_assertion,
     const std::optional<url::Origin>& remote_desktop_client_override_origin,
+    const std::optional<std::string>& app_id,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
         callback) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
@@ -18636,6 +18637,24 @@ void RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     std::move(callback).Run(status, is_cross_origin);
     return;
+  }
+
+  if (app_id.has_value()) {
+    blink::mojom::RemoteDesktopClientOverridePtr remote_desktop_client_override;
+    if (remote_desktop_client_override_origin) {
+      remote_desktop_client_override =
+          blink::mojom::RemoteDesktopClientOverride::New(
+              *remote_desktop_client_override_origin, !is_cross_origin);
+    }
+    // `out_app_id` is ignored because the original string is passed to the
+    // credential provider on Android.
+    std::string out_app_id;
+    status = GetWebAuthRequestSecurityChecker()->ValidateAppIdExtension(
+        *app_id, effective_origin, remote_desktop_client_override, &out_app_id);
+    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      std::move(callback).Run(status, is_cross_origin);
+      return;
+    }
   }
 
   if (!GetContentClient()->browser()->IsSecurityLevelAcceptableForWebAuthn(
@@ -18665,9 +18684,11 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const url::Origin& effective_origin,
     bool is_payment_credential_creation,
     const std::optional<url::Origin>& remote_desktop_client_override_origin,
+    const std::optional<std::string>& app_id,
     base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
         callback) {
   bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
+
   WebAuthRequestSecurityChecker::RequestType request_type =
       is_payment_credential_creation
           ? WebAuthRequestSecurityChecker::RequestType::kMakePaymentCredential
@@ -18678,6 +18699,24 @@ void RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     std::move(callback).Run(status, is_cross_origin);
     return;
+  }
+
+  if (app_id.has_value()) {
+    blink::mojom::RemoteDesktopClientOverridePtr remote_desktop_client_override;
+    if (remote_desktop_client_override_origin) {
+      remote_desktop_client_override =
+          blink::mojom::RemoteDesktopClientOverride::New(
+              *remote_desktop_client_override_origin, !is_cross_origin);
+    }
+    // `out_app_id` is ignored because the original string is passed to the
+    // credential provider on Android.
+    std::string out_app_id;
+    status = GetWebAuthRequestSecurityChecker()->ValidateAppIdExtension(
+        *app_id, effective_origin, remote_desktop_client_override, &out_app_id);
+    if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
+      std::move(callback).Run(status, is_cross_origin);
+      return;
+    }
   }
 
   if (!GetContentClient()->browser()->IsSecurityLevelAcceptableForWebAuthn(

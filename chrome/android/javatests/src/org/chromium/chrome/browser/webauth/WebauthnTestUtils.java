@@ -367,6 +367,7 @@ public class WebauthnTestUtils {
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
                 @Nullable Origin remoteDesktopClientOverrideOrigin,
+                @Nullable String appId,
                 Callback<WebAuthSecurityChecksResults> callback) {
             mIsPaymentCredentialCreation = isPaymentCredentialCreation;
             super.performMakeCredentialWebAuthSecurityChecks(
@@ -374,6 +375,7 @@ public class WebauthnTestUtils {
                     effectiveOrigin,
                     isPaymentCredentialCreation,
                     remoteDesktopClientOverrideOrigin,
+                    appId,
                     callback);
         }
     }

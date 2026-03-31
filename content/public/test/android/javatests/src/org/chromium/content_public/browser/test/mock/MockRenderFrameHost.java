@@ -96,6 +96,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<WebAuthSecurityChecksResults> callback) {
         callback.onResult(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
     }
@@ -106,6 +107,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<WebAuthSecurityChecksResults> callback) {
         callback.onResult(new WebAuthSecurityChecksResults(AuthenticatorStatus.SUCCESS, false));
     }

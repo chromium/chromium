@@ -3048,6 +3048,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& effective_origin,
       bool is_payment_credential_get_assertion,
       const std::optional<url::Origin>& remote_desktop_client_override_origin,
+      const std::optional<std::string>& app_id,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback);
   void PerformMakeCredentialWebAuthSecurityChecks(
@@ -3055,6 +3056,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& effective_origin,
       bool is_payment_credential_creation,
       const std::optional<url::Origin>& remote_desktop_client_override_origin,
+      const std::optional<std::string>& app_id,
       base::OnceCallback<void(blink::mojom::AuthenticatorStatus, bool)>
           callback);
   void PerformReportWebAuthSecurityChecks(

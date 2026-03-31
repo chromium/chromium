@@ -945,6 +945,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
       /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -965,6 +966,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -985,11 +987,131 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
       /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
           }));
   EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformGetAssertionWebAuthSecurityChecks_AppId_Success) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  EXPECT_CALL(*browser_client_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
+      .WillOnce(testing::Return(true));
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/"https://owca.org/appid.json",
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformGetAssertionWebAuthSecurityChecks_AppId_Invalid) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  // AppId validation happens before IsSecurityLevelAcceptableForWebAuthn check.
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/"https://evil.com/appid.json",
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
+}
+
+TEST_F(
+    RenderFrameHostImplWebAuthnTest,
+    PerformGetAssertionWebAuthSecurityChecks_RemoteDesktopOrigin_AppIdMismatch) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  // AppId validation happens before IsSecurityLevelAcceptableForWebAuthn check.
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "owca.org", origin,
+      /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/
+      url::Origin::Create(GURL("https://evil.com")),
+      /*app_id=*/"https://owca.org/appid.json",
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::
+                                REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformGetAssertionWebAuthSecurityChecks_InvalidRemoteDesktopOrigin) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  EXPECT_CALL(*browser_client_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
+      .WillOnce(testing::Return(true));
+  // Security checks happen before IsSecurityLevelAcceptableForWebAuthn check.
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
+      "owca.org", origin,
+      /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/
+      url::Origin::Create(GURL("https://evil.com")),
+      /*app_id=*/std::nullopt,
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::
+                                REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformMakeCredentialWebAuthSecurityChecks_AppId_Success) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  EXPECT_CALL(*browser_client_,
+              IsSecurityLevelAcceptableForWebAuthn(main_test_rfh(), origin))
+      .WillOnce(testing::Return(true));
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/"https://owca.org/appid.json",
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(RenderFrameHostImplWebAuthnTest,
+       PerformMakeCredentialWebAuthSecurityChecks_AppId_Invalid) {
+  GURL url("https://owca.org");
+  const auto origin = url::Origin::Create(url);
+  std::optional<blink::mojom::AuthenticatorStatus> status;
+  main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
+      "owca.org", url::Origin::Create(url),
+      /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/"https://evil.com/appid.json",
+      base::BindLambdaForTesting(
+          [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
+            status = s;
+          }));
+  EXPECT_EQ(status.value(), blink::mojom::AuthenticatorStatus::INVALID_DOMAIN);
 }
 
 TEST_F(RenderFrameHostImplWebAuthnTest,
@@ -1004,6 +1126,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
       /*remote_desktop_client_override_origin=*/std::nullopt,
+      /*app_id=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;

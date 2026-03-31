@@ -213,6 +213,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             var result =
@@ -228,6 +229,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         effectiveOrigin,
                         isPaymentCredentialGetAssertion,
                         remoteDesktopClientOverrideOrigin,
+                        appId,
                         callback);
     }
 
@@ -248,6 +250,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
             var result =
@@ -264,6 +267,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                         effectiveOrigin,
                         isPaymentCredentialCreation,
                         remoteDesktopClientOverrideOrigin,
+                        appId,
                         callback);
     }
 
@@ -370,6 +374,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialGetAssertion,
                 @Nullable Origin remoteDesktopClientOverrideOrigin,
+                @Nullable String appId,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         void performMakeCredentialWebAuthSecurityChecks(
@@ -378,6 +383,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
                 Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation,
                 @Nullable Origin remoteDesktopClientOverrideOrigin,
+                @Nullable String appId,
                 Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
 
         void performReportWebAuthSecurityChecks(

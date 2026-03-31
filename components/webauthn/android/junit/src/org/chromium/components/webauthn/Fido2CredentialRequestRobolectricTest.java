@@ -167,7 +167,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Mockito.when(mFrameHost.getLastCommittedOrigin()).thenReturn(mOrigin);
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[4])
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
                                     .onResult(
                                             new WebAuthSecurityChecksResults(
                                                     AuthenticatorStatus.SUCCESS, false));
@@ -179,10 +179,11 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(Origin.class),
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
+                        Mockito.nullable(String.class),
                         any(Callback.class));
         Mockito.doAnswer(
                         (invocation) -> {
-                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[4])
+                            ((Callback<WebAuthSecurityChecksResults>) invocation.getArguments()[5])
                                     .onResult(
                                             new WebAuthSecurityChecksResults(
                                                     AuthenticatorStatus.SUCCESS, false));
@@ -194,6 +195,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(Origin.class),
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
+                        Mockito.nullable(String.class),
                         any(Callback.class));
 
         CredManSupportProvider.setupForTesting(
@@ -647,7 +649,7 @@ public class Fido2CredentialRequestRobolectricTest {
         var rpIdValidationCallback = new Callback[1];
         Mockito.doAnswer(
                         (invocation) -> {
-                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[4];
+                            rpIdValidationCallback[0] = (Callback) invocation.getArguments()[5];
                             return null;
                         })
                 .when(mFrameHost)
@@ -656,6 +658,7 @@ public class Fido2CredentialRequestRobolectricTest {
                         any(Origin.class),
                         anyBoolean(),
                         Mockito.nullable(Origin.class),
+                        Mockito.nullable(String.class),
                         any(Callback.class));
 
         handleGetCredentialRequest();

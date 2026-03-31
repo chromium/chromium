@@ -82,6 +82,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       bool is_payment_credential_get_assertion,
       const base::android::JavaRef<jobject>&
           remote_desktop_client_override_origin,
+      const base::android::JavaRef<jstring>& app_id,
       const base::android::JavaRef<jobject>& callback) const;
 
   void PerformMakeCredentialWebAuthSecurityChecks(
@@ -91,6 +92,7 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       bool is_payment_credential_creation,
       const base::android::JavaRef<jobject>&
           remote_desktop_client_override_origin,
+      const base::android::JavaRef<jstring>& app_id,
       const base::android::JavaRef<jobject>& callback) const;
 
   void PerformReportWebAuthSecurityChecks(

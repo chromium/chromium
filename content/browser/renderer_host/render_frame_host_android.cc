@@ -206,6 +206,7 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     bool is_payment_credential_get_assertion,
     const base::android::JavaRef<jobject>&
         remote_desktop_client_override_origin,
+    const base::android::JavaRef<jstring>& app_id,
     const base::android::JavaRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
   std::optional<url::Origin> remote_desktop_client_override_origin_optional;
@@ -213,10 +214,14 @@ void RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     remote_desktop_client_override_origin_optional =
         url::Origin::FromJavaObject(env, remote_desktop_client_override_origin);
   }
+  std::optional<std::string> app_id_optional;
+  if (!app_id.is_null()) {
+    app_id_optional = ConvertJavaStringToUTF8(env, app_id);
+  }
   render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_get_assertion,
-      remote_desktop_client_override_origin_optional,
+      remote_desktop_client_override_origin_optional, app_id_optional,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
              blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {
@@ -236,6 +241,7 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     bool is_payment_credential_creation,
     const base::android::JavaRef<jobject>&
         remote_desktop_client_override_origin,
+    const base::android::JavaRef<jstring>& app_id,
     const base::android::JavaRef<jobject>& callback) const {
   url::Origin origin = url::Origin::FromJavaObject(env, effective_origin);
   std::optional<url::Origin> remote_desktop_client_override_origin_optional;
@@ -243,10 +249,14 @@ void RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(
     remote_desktop_client_override_origin_optional =
         url::Origin::FromJavaObject(env, remote_desktop_client_override_origin);
   }
+  std::optional<std::string> app_id_optional;
+  if (!app_id.is_null()) {
+    app_id_optional = ConvertJavaStringToUTF8(env, app_id);
+  }
   render_frame_host_->PerformMakeCredentialWebAuthSecurityChecks(
       ConvertJavaStringToUTF8(env, relying_party_id), origin,
       is_payment_credential_creation,
-      remote_desktop_client_override_origin_optional,
+      remote_desktop_client_override_origin_optional, app_id_optional,
       base::BindOnce(
           [](base::android::ScopedJavaGlobalRef<jobject> callback,
              blink::mojom::AuthenticatorStatus status, bool is_cross_origin) {

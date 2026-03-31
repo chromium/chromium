@@ -166,12 +166,16 @@ public interface RenderFrameHost {
      *
      * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
      * client extension for this request, if present.
+     *
+     * <p>`appId` is the URL from the AppId extension for this request, if present. It is passed as
+     * a string because conversion and validation are done as part of the checks.
      */
     void performGetAssertionWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialGetAssertion,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**
@@ -186,12 +190,16 @@ public interface RenderFrameHost {
      *
      * <p>`remoteDesktopClientOverrideOrigin` is the origin from the RemoteDesktopClientOverride
      * client extension for this request, if present.
+     *
+     * <p>`appId` is the origin from the AppId extension for this request, if present. It is passed
+     * as a string because conversion and validation are done as part of the checks.
      */
     void performMakeCredentialWebAuthSecurityChecks(
             String relyingPartyId,
             Origin effectiveOrigin,
             boolean isPaymentCredentialCreation,
             @Nullable Origin remoteDesktopClientOverrideOrigin,
+            @Nullable String appId,
             Callback<WebAuthSecurityChecksResults> callback);
 
     /**
