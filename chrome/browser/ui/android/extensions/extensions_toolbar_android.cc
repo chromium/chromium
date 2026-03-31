@@ -53,6 +53,11 @@ ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
 
 ExtensionsToolbarAndroid::~ExtensionsToolbarAndroid() = default;
 
+bool ExtensionsToolbarAndroid::HasActivePopup() {
+  return Java_ExtensionsToolbarBridge_hasActivePopup(AttachCurrentThread(),
+                                                     java_object_);
+}
+
 void ExtensionsToolbarAndroid::TriggerPopup(
     const ToolbarActionsModel::ActionId& action_id,
     std::unique_ptr<ExtensionViewHost> host) {

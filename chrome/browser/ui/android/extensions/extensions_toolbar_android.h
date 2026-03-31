@@ -34,6 +34,9 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   // Shows the context menu for the given action ID.
   void ShowContextMenu(const ToolbarActionsModel::ActionId& action_id);
 
+  // Returns whether there is an active popup.
+  bool HasActivePopup();
+
   // ExtensionsToolbarViewModel::Delegate:
   std::unique_ptr<ExtensionActionViewModel> CreateActionViewModel(
       const ToolbarActionsModel::ActionId& action_id,

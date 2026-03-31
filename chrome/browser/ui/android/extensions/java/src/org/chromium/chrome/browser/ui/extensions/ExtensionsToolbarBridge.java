@@ -230,6 +230,14 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
+    public boolean hasActivePopup() {
+        // {@link mDelegate} should be set in {@code ExtensionActionListMediator}'s constructor.
+        assert mDelegate != null;
+
+        return mDelegate.hasActivePopup();
+    }
+
+    @CalledByNative
     public void onActionsInitialized() {
         for (Observer observer : mObservers) {
             observer.onActionsInitialized();
@@ -309,6 +317,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
 
         // Called when active popup should be hidden.
         void hideActivePopup();
+
+        // Returns whether there is an active popup.
+        boolean hasActivePopup();
     }
 
     @NativeMethods
