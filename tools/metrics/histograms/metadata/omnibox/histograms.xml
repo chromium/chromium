@@ -2601,6 +2601,46 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <token key="ComposeboxDragAndDropType" variants="ComposeboxDragAndDropType"/>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.ModelAtAbandon"
+    enum="ContextualSearchAimModel" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active model when a AI Omnibox session is ended. The model id
+    comes from the server driven config.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ModelAtNavigation"
+    enum="ContextualSearchAimModel" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the active model when a AI Omnibox session turns into a navigation.
+    The model id comes from the server driven config.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ModelButtonShown"
+    enum="ContextualSearchAimModel" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records all of the ai mode models that are shown as options when the popup
+    appearse. The model id comes from the server driven config.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.MobileFusebox.ModelButtonUsed"
+    enum="ContextualSearchAimModel" expires_after="2027-03-20">
+  <owner>skym@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the model that is selected when the user interacts with a model
+    button on the popup. The model id comes from the server driven config.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"
     expires_after="2026-11-11">
   <owner>ameurhosni@google.com</owner>

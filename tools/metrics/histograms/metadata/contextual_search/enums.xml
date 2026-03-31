@@ -37,18 +37,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//ui/webui/resources/cr_components/search/constants.ts:ComposeboxContextAddedMethod) -->
 
-<!-- LINT.IfChange(ContextualSearchAimModel) -->
-
-<enum name="ContextualSearchAimModel">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="GeminiRegular"/>
-  <int value="2" label="GeminiPro"/>
-  <int value="3" label="GeminiProAutoroute"/>
-  <int value="4" label="GeminiProNoGenUi"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode) -->
-
 <!-- LINT.IfChange(ContextualSearchAimTool) -->
 
 <enum name="ContextualSearchAimTool">
