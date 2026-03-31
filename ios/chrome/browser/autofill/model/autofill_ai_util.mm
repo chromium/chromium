@@ -39,7 +39,10 @@ bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile) {
              .value_or(false);
 }
 
-bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {
+bool CanPerformAutofillAiAction(
+    ProfileIOS* profile,
+    AutofillAiAction action,
+    std::optional<autofill::EntityType> entity_type) {
   EntityDataManager* entity_data_manager =
       IOSAutofillEntityDataManagerFactory::GetForProfile(profile);
   if (!entity_data_manager) {
@@ -70,7 +73,7 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
       SyncServiceFactory::GetForProfile(profile),
       IsWalletPublicPassStorageEnabled(profile), profile->IsOffTheRecord(),
-      GeoIpCountryCode(GetCountryCodeFromVariations()), action);
+      GeoIpCountryCode(GetCountryCodeFromVariations()), action, entity_type);
 }
 
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile) {

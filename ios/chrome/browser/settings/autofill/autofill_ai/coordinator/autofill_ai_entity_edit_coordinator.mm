@@ -9,6 +9,7 @@
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
@@ -29,8 +30,10 @@ namespace {
 
 // Returns an empty entity instance for the given type.
 autofill::EntityInstance GetEmptyEntityInstanceForType(
-    autofill::EntityType type) {
+    autofill::EntityType type,
+    autofill::EntityInstance::RecordType record_type) {
   autofill::EntityInstanceBuilder builder(type);
+  builder.SetRecordType(record_type);
 
   // Iterate through all attributes for this specific type.
   for (autofill::AttributeType attr_type : type.attributes()) {
@@ -38,26 +41,6 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
   }
 
   return builder.Build();
-}
-
-// Returns the entity instance if `entity_id` is given.
-// If `entity_id` is not given, then creates a new empty entity instance for
-// the given type.
-std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
-    std::optional<autofill::EntityInstance::EntityId> entity_id,
-    std::optional<autofill::EntityType> entity_type,
-    autofill::EntityDataManager* data_manager) {
-  if (entity_id.has_value()) {
-    base::optional_ref<const autofill::EntityInstance> instance =
-        data_manager->GetEntityInstance(*entity_id);
-    if (!instance.has_value()) {
-      return std::nullopt;
-    }
-    return *instance;
-  } else {
-    CHECK(entity_type.has_value());
-    return GetEmptyEntityInstanceForType(*entity_type);
-  }
 }
 
 }  // namespace
@@ -127,8 +110,33 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
           self.browser->GetProfile());
   CHECK(entityDataManager);
 
-  std::optional<autofill::EntityInstance> instance = GetOrCreateEntityInstance(
-      std::move(_entityID), std::move(_entityType), entityDataManager);
+  std::optional<autofill::EntityInstance> instance;
+  if (_editMode == AutofillAIEntityEditMode::kCreate) {
+    CHECK(_entityType.has_value());
+
+    // Default to local.
+    autofill::EntityInstance::RecordType targetRecordType =
+        autofill::EntityInstance::RecordType::kLocal;
+
+    if (autofill::CanPerformAutofillAiAction(
+            self.browser->GetProfile(),
+            autofill::AutofillAiAction::kImportToWallet, _entityType)) {
+      targetRecordType = autofill::EntityInstance::RecordType::kServerWallet;
+    }
+
+    instance = GetEmptyEntityInstanceForType(*_entityType, targetRecordType);
+  } else {
+    CHECK(_entityID.has_value());
+
+    // Fetch the existing entity.
+    base::optional_ref<const autofill::EntityInstance> existingInstance =
+        entityDataManager->GetEntityInstance(*_entityID);
+
+    if (existingInstance.has_value()) {
+      instance = *existingInstance;
+    }
+  }
+
   if (!instance.has_value()) {
     [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
     return;

@@ -22,7 +22,10 @@ const std::string GetCountryCodeFromVariations();
 bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile);
 
 // Returns YES if the Autofill AI action can be performed for the given profile.
-bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);
+bool CanPerformAutofillAiAction(
+    ProfileIOS* profile,
+    AutofillAiAction action,
+    std::optional<autofill::EntityType> entity_type = std::nullopt);
 
 // Returns whether Enhanced Autofill is enabled.
 bool IsEnhancedAutofillEnabled(ProfileIOS* profile);

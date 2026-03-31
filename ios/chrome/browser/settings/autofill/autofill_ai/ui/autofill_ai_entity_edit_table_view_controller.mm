@@ -33,6 +33,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // Denotes the entity is saved in wallet.
   BOOL _isServerWalletItem;
+
+  // The bottom save button displayed when creating a new entity.
+  ChromeButton* _saveButton;
 }
 
 #pragma mark - UIViewController
@@ -96,22 +99,21 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 #pragma mark - Setup
 
 - (void)setupBottomSaveButton {
-  ChromeButton* saveButton =
-      [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
-  saveButton.title =
+  _saveButton = [[ChromeButton alloc] initWithStyle:ChromeButtonStylePrimary];
+  _saveButton.title =
       l10n_util::GetNSString(IDS_IOS_SAVE_ENTITY_IN_SETTINGS_BUTTON_TEXT);
-  saveButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [saveButton addTarget:self
-                 action:@selector(didTapSaveNewEntity)
-       forControlEvents:UIControlEventTouchUpInside];
+  _saveButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_saveButton addTarget:self
+                  action:@selector(didTapSaveNewEntity)
+        forControlEvents:UIControlEventTouchUpInside];
 
-  [self.view addSubview:saveButton];
+  [self.view addSubview:_saveButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    [saveButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    [saveButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
-                                           constant:-32],
-    [saveButton.bottomAnchor
+    [_saveButton.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
+    [_saveButton.widthAnchor constraintEqualToAnchor:self.view.widthAnchor
+                                            constant:-32],
+    [_saveButton.bottomAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
                        constant:-16]
   ]];
@@ -170,11 +172,40 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)showLoadingState {
-  // TODO(crbug.com/493915491): Implement loading state.
+  _saveButton.enabled = NO;
+
+  UIButtonConfiguration* buttonConfig = _saveButton.configuration;
+  if (buttonConfig) {
+    buttonConfig.showsActivityIndicator = YES;
+    _saveButton.configuration = buttonConfig;
+  }
+
+  // Prevent user from interacting with the form or dismissing the view.
+  self.tableView.userInteractionEnabled = NO;
+  self.navigationItem.leftBarButtonItem.enabled = NO;
+  self.navigationItem.rightBarButtonItem.enabled = NO;
+
+  // Prevent swipe-to-dismiss for modals.
+  self.modalInPresentation = YES;
+  // Prevent edge-swipe back gesture.
+  self.navigationController.interactivePopGestureRecognizer.enabled = NO;
 }
 
 - (void)hideLoadingState {
-  // TODO(crbug.com/493915491): Implement hiding of loading state.
+  _saveButton.enabled = YES;
+
+  UIButtonConfiguration* buttonConfig = _saveButton.configuration;
+  if (buttonConfig) {
+    buttonConfig.showsActivityIndicator = NO;
+    _saveButton.configuration = buttonConfig;
+  }
+
+  // Restore user interaction.
+  self.tableView.userInteractionEnabled = YES;
+  self.navigationItem.leftBarButtonItem.enabled = YES;
+  self.navigationItem.rightBarButtonItem.enabled = YES;
+  self.modalInPresentation = NO;
+  self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
 - (void)didFinishSaving {

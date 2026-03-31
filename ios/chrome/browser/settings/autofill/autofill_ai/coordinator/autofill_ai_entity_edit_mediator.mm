@@ -183,9 +183,9 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 
   _entityInstance = builder.Build();
 
-  BOOL isEligibleForWalletStorage = autofill::IsMaskedStorageSupported(
+  BOOL isSaveAsynchronous = autofill::IsMaskedStorageSupported(
       _entityInstance->type(), _entityInstance->record_type());
-  if (isEligibleForWalletStorage && _walletPassManager) {
+  if (isSaveAsynchronous && _walletPassManager) {
     [self.consumer showLoadingState];
 
     autofill::EntityInstance originalEntity = *_entityInstance;
