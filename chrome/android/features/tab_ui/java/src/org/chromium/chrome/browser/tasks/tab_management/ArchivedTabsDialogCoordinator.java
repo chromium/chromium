@@ -618,7 +618,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mBackPressManager.addHandler(controller, BackPressHandler.Type.ARCHIVED_TABS_DIALOG);
 
         FrameLayout snackbarContainer = mDialogView.findViewById(R.id.snackbar_container);
-        mSnackbarOverrideToken = mSnackbarManager.pushParentViewToOverrideStack(snackbarContainer);
+        mSnackbarOverrideToken =
+                mSnackbarManager.pushParentViewToOverrideStack(
+                        snackbarContainer, /* additionalBottomMarginPxSupplier= */ null);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mDialogView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
         snackbarContainer.bringToFront();

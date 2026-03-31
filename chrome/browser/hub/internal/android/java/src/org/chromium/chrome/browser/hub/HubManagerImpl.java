@@ -320,8 +320,10 @@ public class HubManagerImpl implements HubManager, HubController {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     menuOrKeyboardActionHandler);
         }
+        boolean hasBottomToolbar = mHubCoordinator.hasBottomToolbar();
         mSnackbarOverrideToken =
                 mSnackbarManager.pushParentViewToOverrideStack(
-                        mHubCoordinator.getSnackbarContainer());
+                        mHubCoordinator.getSnackbarContainer(),
+                        hasBottomToolbar ? ObservableSuppliers.alwaysZero() : null);
     }
 }

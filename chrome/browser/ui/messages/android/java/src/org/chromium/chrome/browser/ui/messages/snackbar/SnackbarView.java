@@ -62,10 +62,10 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final ViewGroup mOriginalParent;
     private final int mMaxWidth;
     private final int mSnackbarMargin;
-    private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private final int mDefaultBottomMargin;
     private final Callback<Integer> mAdditionalBottomMarginPxObserver = this::updateBottomMargin;
     protected ViewGroup mParent;
+    private NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     protected Snackbar mSnackbar;
     private final View mRootContentView;
     private @ColorInt int mBackgroundColor;
@@ -280,15 +280,22 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     }
 
     /**
-     * @see SnackbarManager#overrideParent(ViewGroup)
+     * @see SnackbarManager#overrideParent(ViewGroup, NonNullObservableSupplier)
      */
-    void overrideParent(ViewGroup overridingParent) {
+    void overrideParent(
+            @Nullable ViewGroup overridingParent,
+            NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
         mParent = overridingParent == null ? mOriginalParent : overridingParent;
         if (mContainerView.getParent() != null) {
             ((ViewGroup) mContainerView.getParent()).removeView(mContainerView);
         }
         addToParent();
+
+        mAdditionalBottomMarginPxSupplier.removeObserver(mAdditionalBottomMarginPxObserver);
+        mAdditionalBottomMarginPxSupplier = additionalBottomMarginPxSupplier;
+        mAdditionalBottomMarginPxSupplier.addSyncObserverAndCallIfNonNull(
+                mAdditionalBottomMarginPxObserver);
     }
 
     boolean isShowing() {
@@ -484,11 +491,18 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
 
     private void updateBottomMargin(int additionalBottomMarginPx) {
         FrameLayout.LayoutParams lp = getLayoutParams();
-        lp.bottomMargin = mDefaultBottomMargin + additionalBottomMarginPx;
+        int newBottomMargin = mDefaultBottomMargin + additionalBottomMarginPx;
+        if (lp.bottomMargin == newBottomMargin) return;
+
+        lp.bottomMargin = newBottomMargin;
         mContainerView.setLayoutParams(lp);
     }
 
     public ViewGroup getViewForTesting() {
         return mSnackbarView;
+    }
+
+    public ViewGroup getContainerViewForTesting() {
+        return mContainerView;
     }
 }

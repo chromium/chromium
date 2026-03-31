@@ -317,7 +317,8 @@ class TabListEditorMediator
         assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
         mSnackbarOverrideToken =
-                mSnackbarManager.pushParentViewToOverrideStack(mTabListEditorLayout);
+                mSnackbarManager.pushParentViewToOverrideStack(
+                        mTabListEditorLayout, /* additionalBottomMarginPxSupplier= */ null);
         // Records to a histogram the time since an instance of TabListEditor was last opened
         // within an activity lifespan.
         TabUiMetricsHelper.recordEditorTimeSinceLastShownHistogram();

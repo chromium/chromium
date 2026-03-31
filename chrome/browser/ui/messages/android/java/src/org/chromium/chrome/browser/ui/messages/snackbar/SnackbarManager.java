@@ -109,6 +109,18 @@ public class SnackbarManager
         default void onDismissNoAction(@Nullable Object actionData) {}
     }
 
+    private static class OverridingContext {
+        public final ViewGroup parentView;
+        public final NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier;
+
+        OverridingContext(
+                ViewGroup parentView,
+                NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
+            this.parentView = parentView;
+            this.additionalBottomMarginPxSupplier = additionalBottomMarginPxSupplier;
+        }
+    }
+
     public static final int DEFAULT_SNACKBAR_DURATION_MS = 3000;
     // For snackbars with long strings where a longer duration is favorable.
     public static final int DEFAULT_SNACKBAR_DURATION_LONG_MS = 8000;
@@ -133,7 +145,7 @@ public class SnackbarManager
             };
     private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier;
     private final ViewGroup mOriginalParentView;
-    private final Deque<Pair<Integer, ViewGroup>> mParentViewOverrideStack = new ArrayDeque<>();
+    private final Deque<Pair<Integer, OverridingContext>> mParentOverrideStack = new ArrayDeque<>();
     private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
     private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
@@ -331,13 +343,25 @@ public class SnackbarManager
      * for all {@link SnackbarView}s until #popParentViewFromOverrideStack is called.
      *
      * @param parentView The new parent for snackbars, must be non-null.
+     * @param additionalBottomMarginPxSupplier The supplier publishes the changes of the additional
+     *     bottom margin in pixels. Passing null will use the default behavior of the root parent.
      * @return A token to be used when calling a corresponding pop.
      */
-    public int pushParentViewToOverrideStack(ViewGroup parentView) {
+    public int pushParentViewToOverrideStack(
+            ViewGroup parentView,
+            @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
         assert parentView != null;
         int overrideToken = mTokenHolder.acquireToken();
-        mParentViewOverrideStack.addFirst(new Pair<>(overrideToken, parentView));
-        overrideParent(parentView);
+        var nonNullAdditionalBottomMarginPxSupplier =
+                additionalBottomMarginPxSupplier == null
+                        ? mAdditionalBottomMarginPxSupplier
+                        : additionalBottomMarginPxSupplier;
+        mParentOverrideStack.addFirst(
+                new Pair<>(
+                        overrideToken,
+                        new OverridingContext(
+                                parentView, nonNullAdditionalBottomMarginPxSupplier)));
+        overrideParent(parentView, nonNullAdditionalBottomMarginPxSupplier);
         return overrideToken;
     }
 
@@ -352,13 +376,17 @@ public class SnackbarManager
      */
     public void popParentViewFromOverrideStack(int token) {
         assert token != TokenHolder.INVALID_TOKEN;
-        Pair<Integer, ViewGroup> parentViewPair = mParentViewOverrideStack.removeFirst();
-        assert parentViewPair.first.equals(token);
+        Pair<Integer, OverridingContext> parentPair = mParentOverrideStack.removeFirst();
+        assert parentPair.first.equals(token);
         mTokenHolder.releaseToken(token);
-        overrideParent(
-                mParentViewOverrideStack.isEmpty()
-                        ? mOriginalParentView
-                        : mParentViewOverrideStack.peekFirst().second);
+        if (mParentOverrideStack.isEmpty()) {
+            overrideParent(mOriginalParentView, mAdditionalBottomMarginPxSupplier);
+        } else {
+            OverridingContext nextOverridingContext = mParentOverrideStack.peekFirst().second;
+            overrideParent(
+                    nextOverridingContext.parentView,
+                    nextOverridingContext.additionalBottomMarginPxSupplier);
+        }
     }
 
     /**
@@ -377,16 +405,17 @@ public class SnackbarManager
 
     /**
      * Overrides the parent {@link ViewGroup} of the currently-showing snackbar. This method removes
-     * the snackbar from its original parent, and attaches it to the given parent. If <code>null
-     * </code> is given, the snackbar will be reattached to its original parent.
+     * the snackbar from its original parent, and attaches it to the given parent.
      *
-     * @param overridingParent The overriding parent for the current snackbar. If null, previous
-     *     calls of this method will be reverted.
+     * @param overridingParent The overriding parent for the current snackbar.
+     * @param additionalBottomMarginPxSupplier The supplier publishes the changes of the additional
+     *     bottom margin in pixels. May be null to use the default behavior of the parent.
      */
-    // TODO(crbug.com/355062900): Fix upstream tests which reference this method.
     @VisibleForTesting
-    public void overrideParent(ViewGroup overridingParent) {
-        if (mView != null) mView.overrideParent(overridingParent);
+    void overrideParent(
+            ViewGroup overridingParent,
+            NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
+        if (mView != null) mView.overrideParent(overridingParent, additionalBottomMarginPxSupplier);
     }
 
     /**
@@ -418,8 +447,12 @@ public class SnackbarManager
                 // If there is a temporary parent set, reparent accordingly. We override here
                 // instead of instantiating the new SnackbarView with the temporary parent, so
                 // that overriding with <code>null</code> will reparent to mSnackbarParentView.
-                if (!mParentViewOverrideStack.isEmpty()) {
-                    mView.overrideParent(mParentViewOverrideStack.peekFirst().second);
+                if (!mParentOverrideStack.isEmpty()) {
+                    OverridingContext nextOverridingContext =
+                            mParentOverrideStack.peekFirst().second;
+                    mView.overrideParent(
+                            nextOverridingContext.parentView,
+                            nextOverridingContext.additionalBottomMarginPxSupplier);
                 }
             } else {
                 viewChanged = mView.update(currentSnackbar);

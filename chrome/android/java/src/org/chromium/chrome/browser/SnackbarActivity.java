@@ -59,19 +59,22 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
     @Override
     public void setContentView(int layoutResId) {
         super.setContentView(layoutResId);
-        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+        mSnackbarManager.pushParentViewToOverrideStack(
+                getContentView(), /* additionalBottomMarginPxSupplier= */ null);
     }
 
     @Override
     public void setContentView(View view) {
         super.setContentView(view);
-        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+        mSnackbarManager.pushParentViewToOverrideStack(
+                getContentView(), /* additionalBottomMarginPxSupplier= */ null);
     }
 
     @Override
     public void setContentView(View view, ViewGroup.LayoutParams params) {
         super.setContentView(view, params);
-        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+        mSnackbarManager.pushParentViewToOverrideStack(
+                getContentView(), /* additionalBottomMarginPxSupplier= */ null);
     }
 
     @Override

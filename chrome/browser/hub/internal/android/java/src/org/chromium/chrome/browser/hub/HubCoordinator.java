@@ -376,6 +376,11 @@ public class HubCoordinator implements PaneHubController, BackPressHandler, OnPa
         }
     }
 
+    /** Returns whether the hub has a bottom toolbar. */
+    public boolean hasBottomToolbar() {
+        return mHubBottomToolbarCoordinator != null;
+    }
+
     private @Nullable Pane getFocusedPane() {
         return mPaneManager.getFocusedPaneSupplier().get();
     }

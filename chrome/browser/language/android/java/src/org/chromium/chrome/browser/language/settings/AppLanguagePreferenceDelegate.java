@@ -97,7 +97,8 @@ public class AppLanguagePreferenceDelegate {
                 // be popped.
                 mSnackbarToken =
                         mSnackbarManager.pushParentViewToOverrideStack(
-                                mActivity.findViewById(android.R.id.content));
+                                mActivity.findViewById(android.R.id.content),
+                                /* additionalBottomMarginPxSupplier= */ null);
             }
             mSnackbarManager.showSnackbar(mSnackbar);
             mSnackbar = null;

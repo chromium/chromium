@@ -22,6 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
@@ -75,6 +77,7 @@ public class SnackbarTest {
     private static FrameLayout sMainParent;
     private static FrameLayout sAlternateParent1;
     private static FrameLayout sAlternateParent2;
+    private SettableNonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private boolean mDismissed;
     private boolean mActionClicked;
     private final CallbackHelper mActionHelper = new CallbackHelper();
@@ -119,12 +122,13 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
+                    mAdditionalBottomMarginPxSupplier = ObservableSuppliers.createNonNull(0);
                     mManager =
                             new SnackbarManager(
                                     sActivity,
                                     sMainParent,
                                     null,
-                                    null,
+                                    mAdditionalBottomMarginPxSupplier,
                                     ((BlankUiTestActivity) sActivity).getModalDialogManager());
                     mManager.isShowingSupplier()
                             .addSyncObserverAndPostIfNonNull(
@@ -376,7 +380,7 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.overrideParent(sAlternateParent1);
+                    mManager.overrideParent(sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -399,7 +403,7 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.overrideParent(sAlternateParent1);
+                    mManager.overrideParent(sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -423,7 +427,7 @@ public class SnackbarTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     mManager.showSnackbar(snackbar);
-                    mManager.overrideParent(sAlternateParent1);
+                    mManager.overrideParent(sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden, but wasn't.",
@@ -446,7 +450,7 @@ public class SnackbarTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     mManager.showSnackbar(snackbar);
-                    mManager.overrideParent(sAlternateParent1);
+                    mManager.overrideParent(sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden, but wasn't.",
@@ -468,7 +472,8 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(sAlternateParent1);
+                    mManager.pushParentViewToOverrideStack(
+                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -492,7 +497,8 @@ public class SnackbarTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     mManager.showSnackbar(snackbar);
-                    mManager.pushParentViewToOverrideStack(sAlternateParent1);
+                    mManager.pushParentViewToOverrideStack(
+                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden, but wasn't.",
@@ -514,7 +520,8 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(sAlternateParent1);
+                    mManager.pushParentViewToOverrideStack(
+                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -527,7 +534,8 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(sAlternateParent2);
+                    mManager.pushParentViewToOverrideStack(
+                            sAlternateParent2, mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden by the next stack item, but wasn't.",
@@ -559,6 +567,68 @@ public class SnackbarTest {
                         mManager.isShowing()
                                 && mManager.getCurrentSnackbarViewForTesting().mParent
                                         == sMainParent);
+    }
+
+    @Test
+    @SmallTest
+    public void testPushParentViewToOverrideStack_UpdateBottomMargin() {
+        var marginSupplier =
+                ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNonNull(100));
+        final Snackbar snackbar =
+                Snackbar.make(
+                        "stack",
+                        mDismissController,
+                        Snackbar.TYPE_ACTION,
+                        Snackbar.UMA_TEST_SNACKBAR);
+
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mManager.showSnackbar(snackbar);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should have been shown.", () -> mManager.isShowing());
+
+        final int[] initialMargin = new int[1];
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    initialMargin[0] =
+                            ((FrameLayout.LayoutParams)
+                                            mManager.getCurrentSnackbarViewForTesting()
+                                                    .getContainerViewForTesting()
+                                                    .getLayoutParams())
+                                    .bottomMargin;
+                    mManager.pushParentViewToOverrideStack(sAlternateParent1, marginSupplier);
+                });
+        pollSnackbarCondition(
+                "Snackbar's parent should have been overridden, and margin applied.",
+                () ->
+                        mManager.isShowing()
+                                && mManager.getCurrentSnackbarViewForTesting().mParent
+                                        == sAlternateParent1
+                                && ((FrameLayout.LayoutParams)
+                                                        mManager.getCurrentSnackbarViewForTesting()
+                                                                .getContainerViewForTesting()
+                                                                .getLayoutParams())
+                                                .bottomMargin
+                                        == initialMargin[0] + 100);
+
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    marginSupplier.set(250);
+                });
+        pollSnackbarCondition(
+                "Snackbar's margin should have been updated.",
+                () ->
+                        mManager.isShowing()
+                                && ((FrameLayout.LayoutParams)
+                                                        mManager.getCurrentSnackbarViewForTesting()
+                                                                .getContainerViewForTesting()
+                                                                .getLayoutParams())
+                                                .bottomMargin
+                                        == initialMargin[0] + 250);
     }
 
     @Test
