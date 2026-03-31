@@ -137,14 +137,17 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
   // Maps restore window id to launch id.
   base::flat_map<int32_t, int32_t> restore_window_id_to_launch_id_;
 
-  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
+  // TODO(crbug.com/496468232): remove when the DeskTemplateReadHandler is no
+  // longer outliving the Env and AppRestoreArcInfo it observes.
+  base::ScopedObservation<aura::Env, aura::EnvObserver>::LeakedDanglingUntriaged
+      env_observer_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
   base::ScopedObservation<app_restore::AppRestoreArcInfo,
-                          app_restore::AppRestoreArcInfo::Observer>
-      arc_info_observer_{this};
+                          app_restore::AppRestoreArcInfo::Observer>::
+      LeakedDanglingUntriaged arc_info_observer_{this};
 };
 
 }  // namespace app_restore
