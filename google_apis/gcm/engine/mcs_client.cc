@@ -330,38 +330,41 @@ void MCSClient::SendMessage(const MCSMessage& message) {
         reinterpret_cast<mcs_proto::DataMessageStanza*>(
             packet_info->protobuf.get());
     CollapseKey collapse_key(*data_message);
-    if (collapse_key.IsValid() && collapse_key_map_.count(collapse_key) > 0) {
-      ReliablePacketInfo* original_packet = collapse_key_map_[collapse_key];
-      DVLOG(1) << "Found matching collapse key, Reusing persistent id of "
-               << original_packet->persistent_id;
-      original_packet->protobuf = std::move(packet_info->protobuf);
-      SetPersistentId(original_packet->persistent_id,
-                      original_packet->protobuf.get());
-      gcm_store_->OverwriteOutgoingMessage(
-          original_packet->persistent_id, message,
-          base::BindOnce(&MCSClient::OnGCMUpdateFinished,
-                         weak_ptr_factory_.GetWeakPtr()));
+    if (collapse_key.IsValid()) {
+      if (auto it = collapse_key_map_.find(collapse_key);
+          it != collapse_key_map_.end()) {
+        ReliablePacketInfo* original_packet = it->second;
+        DVLOG(1) << "Found matching collapse key, Reusing persistent id of "
+                 << original_packet->persistent_id;
+        original_packet->protobuf = std::move(packet_info->protobuf);
+        SetPersistentId(original_packet->persistent_id,
+                        original_packet->protobuf.get());
+        gcm_store_->OverwriteOutgoingMessage(
+            original_packet->persistent_id, message,
+            base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                           weak_ptr_factory_.GetWeakPtr()));
 
-      // The message is already queued, return.
-      return;
-    } else {
-      PersistentId persistent_id = GetNextPersistentId();
-      DVLOG(1) << "Setting persistent id to " << persistent_id;
-      packet_info->persistent_id = persistent_id;
-      SetPersistentId(persistent_id, packet_info->protobuf.get());
-      if (!gcm_store_->AddOutgoingMessage(
-              persistent_id,
-              MCSMessage(message.tag(), *(packet_info->protobuf)),
-              base::BindOnce(&MCSClient::OnGCMUpdateFinished,
-                             weak_ptr_factory_.GetWeakPtr()))) {
-        NotifyMessageSendStatus(message.GetProtobuf(),
-                                APP_QUEUE_SIZE_LIMIT_REACHED);
+        // The message is already queued, return.
         return;
       }
     }
 
-    if (collapse_key.IsValid())
+    PersistentId persistent_id = GetNextPersistentId();
+    DVLOG(1) << "Setting persistent id to " << persistent_id;
+    packet_info->persistent_id = persistent_id;
+    SetPersistentId(persistent_id, packet_info->protobuf.get());
+    if (!gcm_store_->AddOutgoingMessage(
+            persistent_id, MCSMessage(message.tag(), *(packet_info->protobuf)),
+            base::BindOnce(&MCSClient::OnGCMUpdateFinished,
+                           weak_ptr_factory_.GetWeakPtr()))) {
+      NotifyMessageSendStatus(message.GetProtobuf(),
+                              APP_QUEUE_SIZE_LIMIT_REACHED);
+      return;
+    }
+
+    if (collapse_key.IsValid()) {
       collapse_key_map_[collapse_key] = packet_info.get();
+    }
   } else if (!connection_factory_->IsEndpointReachable()) {
     DVLOG(1) << "No active connection, dropping message.";
     NotifyMessageSendStatus(message.GetProtobuf(), NO_CONNECTION_ON_ZERO_TTL);
