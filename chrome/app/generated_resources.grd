@@ -19860,6 +19860,9 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_UPDATER_EXPAND_ALL" desc="Label for a button that expands all collapsed items in a list.">
         Expand All
       </message>
+      <message name="IDS_UPDATER_EXPORT_HISTORY_FILE" desc="Label for the button that redirects users to Chrome's support tool, allowing them to export Chrome Updater's history files.">
+        Export History Files
+      </message>
       <message name="IDS_UPDATER_FILTER_CHIP_APP" desc="Text displayed in a filter chip showing the selected application's names or identifier strings.">
         App: <ph name="APPS">$1<ex>Google Chrome, Google Chrome Beta, Google Chrome Canary, {6BBAE539-2232-434A-A4E5-9A33560C6284}</ex></ph>
       </message>

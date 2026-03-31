@@ -26,6 +26,12 @@ export function getHtml(this: UpdaterAppElement) {
             $i18n{returnToLocal}
           </cr-button>
         ` : html`
+          <a href="chrome://support-tool/?module=CgEd" target="_blank"
+              rel="noopener noreferrer">
+            <cr-button>
+              $i18n{exportHistoryFile}
+            </cr-button>
+          </a>
           <cr-button @click="${this.onLoadHistoryClick}">
             $i18n{loadHistoryFile}
           </cr-button>

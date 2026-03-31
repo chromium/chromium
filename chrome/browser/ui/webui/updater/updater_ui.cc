@@ -119,6 +119,7 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
       {"eventTypeUPDATE", IDS_UPDATER_EVENT_TYPE_UPDATE},
       {"eventTypeUPDATER_PROCESS", IDS_UPDATER_EVENT_TYPE_UPDATER_PROCESS},
       {"expandAll", IDS_UPDATER_EXPAND_ALL},
+      {"exportHistoryFile", IDS_UPDATER_EXPORT_HISTORY_FILE},
       {"filterChipApp", IDS_UPDATER_FILTER_CHIP_APP},
       {"filterChipDate", IDS_UPDATER_FILTER_CHIP_DATE},
       {"filterChipEventType", IDS_UPDATER_FILTER_CHIP_EVENT_TYPE},
