@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_
 
 #include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/common/content_export.h"
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -74,9 +75,9 @@ MakeInitialResourceRequestWithoutHeadersForPrefetch(
 // Constructs a full `ResourceRequest`, based on
 // `MakeInitialResourceRequestWithoutHeadersForPrefetch()` and
 // `PrepareInitialHeadersForPrefetch()`.
-std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
-    const PrefetchRequest& prefetch_request,
-    bool is_decoy);
+CONTENT_EXPORT std::unique_ptr<network::ResourceRequest>
+MakeInitialResourceRequestForPrefetch(const PrefetchRequest& prefetch_request,
+                                      bool is_decoy);
 
 }  // namespace content
 

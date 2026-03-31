@@ -18,6 +18,7 @@
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
+#include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 #include "content/browser/preloading/prefetch/prefetch_servable_state.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_handle.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
@@ -73,32 +74,43 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
       const GURL& prefetch_url,
       SpeculationRulesPrefetchContainerOptions options = {}) {
     return PrefetchContainer::CreateForTesting(
-        PrefetchRequest::CreateRendererInitiated(
-            *main_rfhi(), options.document_token, prefetch_url,
-            PrefetchType(PreloadingTriggerType::kSpeculationRule,
-                         /*use_prefetch_proxy=*/true, options.eagerness),
-            blink::mojom::Referrer(),
-            std::make_optional(std::move(options.speculation_rules_tags)),
-            /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
-            options.prefetch_document_manager,
-            PreloadPipelineInfo::Create(
-                /*planned_max_preloading_type=*/PreloadingType::kPrefetch)));
+        CreateSpeculationRulesPrefetchRequest(prefetch_url, options));
+  }
+  std::unique_ptr<const PrefetchRequest> CreateSpeculationRulesPrefetchRequest(
+      const GURL& prefetch_url,
+      SpeculationRulesPrefetchContainerOptions options = {}) {
+    return PrefetchRequest::CreateRendererInitiated(
+        *main_rfhi(), options.document_token, prefetch_url,
+        PrefetchType(PreloadingTriggerType::kSpeculationRule,
+                     /*use_prefetch_proxy=*/true, options.eagerness),
+        blink::mojom::Referrer(),
+        std::make_optional(std::move(options.speculation_rules_tags)),
+        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+        options.prefetch_document_manager,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch));
   }
 
   std::unique_ptr<PrefetchContainer> CreateEmbedderPrefetchContainer(
       const GURL& prefetch_url,
       const std::optional<url::Origin> referring_origin = std::nullopt,
       bool use_prefetch_proxy = true) {
-    return PrefetchContainer::CreateForTesting(
-        PrefetchRequest::CreateBrowserInitiated(
-            *web_contents(), prefetch_url,
-            PrefetchType(PreloadingTriggerType::kEmbedder, use_prefetch_proxy),
-            test::kPreloadingEmbedderHistgramSuffixForTesting,
-            blink::mojom::Referrer(), std::move(referring_origin),
-            /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
-            PreloadPipelineInfo::Create(
-                /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-            /*attempt=*/nullptr));
+    return PrefetchContainer::CreateForTesting(CreateEmbedderPrefetchRequest(
+        prefetch_url, referring_origin, use_prefetch_proxy));
+  }
+  std::unique_ptr<const PrefetchRequest> CreateEmbedderPrefetchRequest(
+      const GURL& prefetch_url,
+      const std::optional<url::Origin> referring_origin = std::nullopt,
+      bool use_prefetch_proxy = true) {
+    return PrefetchRequest::CreateBrowserInitiated(
+        *web_contents(), prefetch_url,
+        PrefetchType(PreloadingTriggerType::kEmbedder, use_prefetch_proxy),
+        test::kPreloadingEmbedderHistgramSuffixForTesting,
+        blink::mojom::Referrer(), std::move(referring_origin),
+        /*no_vary_search_hint=*/std::nullopt, /*priority=*/std::nullopt,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+        /*attempt=*/nullptr);
   }
 
   std::unique_ptr<PrefetchContainer> CreateBrowserContextPrefetchContainer(
@@ -106,22 +118,30 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
       const net::HttpRequestHeaders& additional_headers = {},
       bool should_append_additional_headers = true) {
     return PrefetchContainer::CreateForTesting(
-        PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
-            browser_context(), prefetch_url,
-            PrefetchType(PreloadingTriggerType::kEmbedder,
-                         /*use_prefetch_proxy=*/true),
-            test::kPreloadingEmbedderHistgramSuffixForTesting,
-            blink::mojom::Referrer(),
-            /*javascript_enabled=*/true,
-            /*referring_origin=*/std::nullopt,
-            /*no_vary_search_hint=*/std::nullopt,
-            /*priority=*/PrefetchPriority::kHighest,
-            /*attempt=*/nullptr, additional_headers,
-            /*request_status_listener=*/nullptr, base::Minutes(10),
-            should_append_additional_headers,
-            /*should_disable_block_until_head_timeout=*/false,
-            /*should_bypass_http_cache=*/false));
+        CreateBrowserContextPrefetchRequest(prefetch_url, additional_headers,
+                                            should_append_additional_headers));
   }
+  std::unique_ptr<const PrefetchRequest> CreateBrowserContextPrefetchRequest(
+      const GURL& prefetch_url,
+      const net::HttpRequestHeaders& additional_headers = {},
+      bool should_append_additional_headers = true) {
+    return PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
+        browser_context(), prefetch_url,
+        PrefetchType(PreloadingTriggerType::kEmbedder,
+                     /*use_prefetch_proxy=*/true),
+        test::kPreloadingEmbedderHistgramSuffixForTesting,
+        blink::mojom::Referrer(),
+        /*javascript_enabled=*/true,
+        /*referring_origin=*/std::nullopt,
+        /*no_vary_search_hint=*/std::nullopt,
+        /*priority=*/PrefetchPriority::kHighest,
+        /*attempt=*/nullptr, additional_headers,
+        /*request_status_listener=*/nullptr, base::Minutes(10),
+        should_append_additional_headers,
+        /*should_disable_block_until_head_timeout=*/false,
+        /*should_bypass_http_cache=*/false);
+  }
+
   bool SetCookie(const GURL& url, const std::string& value) {
     std::unique_ptr<net::CanonicalCookie> cookie(
         net::CanonicalCookie::CreateForTesting(url, value, base::Time::Now(),
@@ -189,13 +209,13 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
        AddHeaderForEligibleUrlOnlyWhenNotInIncognito) {
   const GURL kTestEligibleUrl = GURL("https://google.com");
 
-  auto prefetch_container =
-      CreateSpeculationRulesPrefetchContainer(kTestEligibleUrl);
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
       {"1"}, {"2"});
 
-  prefetch_container->MakeInitialResourceRequest();
-  auto* request = prefetch_container->GetResourceRequest();
+  auto request = MakeInitialResourceRequestForPrefetch(
+      *CreateSpeculationRulesPrefetchRequest(kTestEligibleUrl),
+      /*is_decoy=*/false);
+
   // Don't add the header when in incognito mode.
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
@@ -206,13 +226,12 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
        NeverAddHeaderForNonEligibleUrl) {
   const GURL kTestNonEligibleUrl = GURL("https://non-eligible.com");
 
-  auto prefetch_container =
-      CreateSpeculationRulesPrefetchContainer(kTestNonEligibleUrl);
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
       {"1"}, {"2"});
 
-  prefetch_container->MakeInitialResourceRequest();
-  auto* request = prefetch_container->GetResourceRequest();
+  auto request = MakeInitialResourceRequestForPrefetch(
+      *CreateSpeculationRulesPrefetchRequest(kTestNonEligibleUrl),
+      /*is_decoy=*/false);
   // Don't ever add the header.
   EXPECT_FALSE(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
@@ -270,13 +289,13 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   additional_headers.SetHeader(variations::kClientDataHeader,
                                "test_client_data");
 
-  auto prefetch_container = CreateBrowserContextPrefetchContainer(
-      kTestEligibleUrl, additional_headers, false);
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
       {"1"}, {"2"});
 
-  prefetch_container->MakeInitialResourceRequest();
-  auto* request = prefetch_container->GetResourceRequest();
+  auto request = MakeInitialResourceRequestForPrefetch(
+      *CreateBrowserContextPrefetchRequest(kTestEligibleUrl, additional_headers,
+                                           false),
+      /*is_decoy=*/false);
 
   EXPECT_TRUE(request->headers.HasHeader(variations::kClientDataHeader));
   // It should be treated as non-trusted.
@@ -1754,49 +1773,46 @@ TEST_P(PrefetchContainerTest, SpeculationRulesTagsAddedToRequestHeader) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
 
-  auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
-      GURL("https://test.com"),
-      {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
-  prefetch_container->MakeInitialResourceRequest();
-  EXPECT_TRUE(prefetch_container->GetResourceRequest()
-                  ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+  auto request = MakeInitialResourceRequestForPrefetch(
+      *CreateSpeculationRulesPrefetchRequest(
+          GURL("https://test.com"),
+          {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})}),
+      /*is_decoy=*/false);
+  EXPECT_TRUE(request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
                   .has_value());
-  EXPECT_EQ(prefetch_container->GetResourceRequest()
-                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
-                .value(),
-            "\"tag1\", \"tag2\"");
+  EXPECT_EQ(
+      request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName).value(),
+      "\"tag1\", \"tag2\"");
 }
 
 TEST_P(PrefetchContainerTest, CrossSitePrefetchContainerNoSpeculationTag) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://other.com/referrer"));
 
-  auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
+  auto prefetch_request = CreateSpeculationRulesPrefetchRequest(
       GURL("https://test.com"),
       {.speculation_rules_tags = SpeculationRulesTags({"tag1", "tag2"})});
+  EXPECT_TRUE(prefetch_request->IsCrossOriginRequest(
+      url::Origin::Create(prefetch_request->key().url())));
 
-  EXPECT_TRUE(prefetch_container->request().IsCrossOriginRequest(
-      url::Origin::Create(prefetch_container->GetURL())));
   // Cross-site Speculation rules prefetch should not contain tag in the header.
-  prefetch_container->MakeInitialResourceRequest();
-  EXPECT_FALSE(prefetch_container->GetResourceRequest()
-                   ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+  auto request = MakeInitialResourceRequestForPrefetch(*prefetch_request,
+                                                       /*is_decoy=*/false);
+  EXPECT_FALSE(request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
                    .has_value());
 }
 
 TEST_P(PrefetchContainerTest, SpeculationRulesNoTagAddedToRequestHeader) {
   NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://test.com/referrer"));
-  auto prefetch_container =
-      CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"), {});
-  prefetch_container->MakeInitialResourceRequest();
-  EXPECT_TRUE(prefetch_container->GetResourceRequest()
-                  ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
+  auto request = MakeInitialResourceRequestForPrefetch(
+      *CreateSpeculationRulesPrefetchRequest(GURL("https://test.com"), {}),
+      /*is_decoy=*/false);
+  EXPECT_TRUE(request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
                   .has_value());
-  EXPECT_EQ(prefetch_container->GetResourceRequest()
-                ->headers.GetHeader(blink::kSecSpeculationTagsHeaderName)
-                .value(),
-            "null");
+  EXPECT_EQ(
+      request->headers.GetHeader(blink::kSecSpeculationTagsHeaderName).value(),
+      "null");
 }
 
 class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
