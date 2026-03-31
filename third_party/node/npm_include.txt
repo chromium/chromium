@@ -51,11 +51,15 @@
 @types/dom-webcodecs
 @types/dom-webcodecs/*.d.ts
 @types/emscripten/index.d.ts
+@types/esquery/index.d.ts
+@types/esquery/package.json
 @types/filesystem/index.d.ts
 @types/filewriter/index.d.ts
 @types/google.analytics
 @types/google.analytics/*.d.ts
 @types/mocha/index.d.ts
+@types/node/*.d.ts
+@types/node/package.json
 @types/offscreencanvas/index.d.ts
 @types/trusted-types
 @types/trusted-types/*.d.ts
@@ -66,11 +70,14 @@
 @types/webrtc
 @types/webrtc/*.d.ts
 @types/wicg-file-system-access/index.d.ts
+@typescript-eslint/parser/dist/**.d.ts
 @typescript-eslint/types/dist/**.d.ts
 @typescript-eslint/utils/dist/**.d.ts
+@typescript-eslint/typescript-estree/dist/**.d.ts
 /chai/index.js
 /chai/LICENSE
 /chai/package.json
+/eslint/lib/types/**.d.ts
 /messageformat/**/**.js
 /messageformat/**/**.d.ts
 /mocha/LICENSE
@@ -84,3 +91,4 @@
 /typescript/lib/_tsc.js
 /typescript/lib/tsserver.js
 /typescript/lib/typescript.js
+/typescript/lib/typescript.d.ts
