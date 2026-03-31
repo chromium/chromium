@@ -1020,10 +1020,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddCustomLayoutChildIfNeeded();
   void ClearCustomLayoutChild();
 
-  bool HitTestClippedOutByBorder(
-      const HitTestLocation&,
-      const PhysicalOffset& border_box_location) const;
-
   bool HitTestOverflowControl(HitTestResult&,
                               const HitTestLocation&,
                               const PhysicalOffset&) const;

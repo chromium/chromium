@@ -133,6 +133,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
                                const HitTestLocation&,
                                const PhysicalOffset& accumulated_offset,
                                HitTestPhase) const;
+  bool HitTestClippedOutByBorder(
+      const HitTestLocation&,
+      const PhysicalOffset& border_box_location) const;
 
   bool IsInSelfHitTestingPhase(HitTestPhase phase) const override {
     NOT_DESTROYED();

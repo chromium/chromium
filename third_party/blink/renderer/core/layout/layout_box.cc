@@ -105,7 +105,6 @@
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -116,7 +115,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
-#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -2060,40 +2058,6 @@ bool LayoutBox::HitTestOverflowControl(
   UpdateHitTestResult(result, local_point);
   return result.AddNodeToListBasedTestResult(
              NodeForHitTest(), hit_test_location) == kStopHitTesting;
-}
-
-namespace {
-
-bool HitTestClippedOutByBorderShape(const LayoutBox& box,
-                                    const HitTestLocation& hit_test_location,
-                                    const PhysicalOffset& border_box_location) {
-  PhysicalRect border_rect = box.PhysicalBorderBoxRect();
-  border_rect.Move(border_box_location);
-  if (box.ShouldApplyOverflowClipMargin()) {
-    border_rect.Expand(box.BorderOutsetsForClipping());
-  }
-  Path hit_shape =
-      ComputeBorderShapeOuterPath(box.StyleRef(), border_rect, &box);
-  return !hit_test_location.Intersects(hit_shape);
-}
-
-}  // namespace
-
-bool LayoutBox::HitTestClippedOutByBorder(
-    const HitTestLocation& hit_test_location,
-    const PhysicalOffset& border_box_location) const {
-  NOT_DESTROYED();
-
-  if (StyleRef().HasBorderShape()) {
-    return HitTestClippedOutByBorderShape(*this, hit_test_location,
-                                          border_box_location);
-  }
-
-  PhysicalRect border_rect = PhysicalBorderBoxRect();
-  border_rect.Move(border_box_location);
-  return !hit_test_location.Intersects(
-      ContouredBorderGeometry::PixelSnappedContouredBorder(StyleRef(),
-                                                           border_rect));
 }
 
 void LayoutBox::Paint(const PaintInfo& paint_info) const {

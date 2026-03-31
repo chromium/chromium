@@ -129,6 +129,23 @@ bool HitTestClippedOutByBorderShape(const LayoutBox& box,
 
 }  // namespace
 
+bool LayoutReplaced::HitTestClippedOutByBorder(
+    const HitTestLocation& hit_test_location,
+    const PhysicalOffset& border_box_location) const {
+  NOT_DESTROYED();
+
+  if (StyleRef().HasBorderShape()) {
+    return HitTestClippedOutByBorderShape(*this, hit_test_location,
+                                          border_box_location);
+  }
+
+  PhysicalRect border_rect = PhysicalBorderBoxRect();
+  border_rect.Move(border_box_location);
+  return !hit_test_location.Intersects(
+      ContouredBorderGeometry::PixelSnappedContouredBorder(StyleRef(),
+                                                           border_rect));
+}
+
 bool LayoutReplaced::NodeAtPoint(HitTestResult& result,
                                  const HitTestLocation& hit_test_location,
                                  const PhysicalOffset& accumulated_offset,
