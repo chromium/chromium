@@ -942,9 +942,9 @@ void KURL::InitInnerUrl() {
     return;
   }
   if (url::Parsed* inner_parsed = parsed_.inner_parsed()) {
-    inner_url_ = std::make_unique<KURL>(string_.GetString().Substring(
-        inner_parsed->scheme.begin,
-        inner_parsed->Length() - inner_parsed->scheme.begin));
+    auto scheme_begin = inner_parsed->scheme.begin;
+    inner_url_ = std::make_unique<KURL>(string_.GetString().substr(
+        scheme_begin, inner_parsed->Length() - scheme_begin));
   } else {
     inner_url_.reset();
   }

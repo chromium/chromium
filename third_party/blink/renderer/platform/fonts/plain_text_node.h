@@ -36,7 +36,7 @@ class PLATFORM_EXPORT PlainTextItem {
                 wtf_size_t length,
                 TextDirection dir,
                 const String& text_content)
-      : text_(text_content.Substring(start, length)),
+      : text_(text_content.substr(start, length)),
         start_offset_(start),
         length_(length),
         direction_(dir) {}
