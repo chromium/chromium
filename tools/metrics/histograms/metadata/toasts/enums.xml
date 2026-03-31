@@ -81,6 +81,7 @@ chromium-metrics-reviews@google.com.
              migrate failed)"/>
   <int value="29" label="Showed Record / Replay progress"/>
   <int value="30" label="Auto Sign-in Toast"/>
+  <int value="33" label="Saved Skill without Invoke Button"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

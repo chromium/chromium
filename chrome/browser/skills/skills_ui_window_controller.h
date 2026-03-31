@@ -31,7 +31,7 @@ class SkillsUiWindowController {
       BrowserWindowInterface* browser_window_interface);
 
   // Called when we want to update UI after a skill has been saved.
-  void OnSkillSaved(std::string_view skill_id);
+  void OnSkillSaved(std::string_view skill_id, bool hide_toast_button = false);
   // Called after a skill has been deleted from the UI.
   void OnSkillDeleted(std::string_view skill_id);
 

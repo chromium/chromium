@@ -51,7 +51,8 @@ enum class ToastId {
   kAutofillAiWalletErrorMessage = 28,
   kRecordReplay = 29,
   kAutoSignIn = 30,
-  kMaxValue = kAutoSignIn,
+  kSkillSavedWithoutInvokeButton = 33,
+  kMaxValue = kSkillSavedWithoutInvokeButton,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

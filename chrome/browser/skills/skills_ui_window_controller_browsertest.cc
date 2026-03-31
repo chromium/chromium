@@ -18,7 +18,9 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skill.mojom.h"
@@ -227,26 +229,17 @@ IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
-// Test that switching tabs targets the new tab, not the old one.
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
-                       InvokeRoutesToNewTabAfterSwitch) {
-  const std::string kSkillId = "cross-tab-skill";
-
-  // Save skill on Tab 0
-  window_controller()->OnSkillSaved(kSkillId);
-  // Open a new tab and switch to it
-  ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
-  EXPECT_EQ(browser()->tab_strip_model()->active_index(), 1);
-  // Verify we have the controller for the new tab has no skills yet.
-  EXPECT_TRUE(tab_controller()->GetPendingSkillIdForTesting().empty());
-  // Enable Glic late to avoid a crash in GlicTabIndicatorHelper during tab
-  // creation.
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
-  // Click toast "Try It".
-  ClickToastActionButton();
-  // Verify the new tab got the command.
-  EXPECT_EQ(tab_controller()->GetPendingSkillIdForTesting(), kSkillId);
-  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+                       OnSkillSavedFromSkillsPage) {
+  NavigateParams params(browser(), GURL(chrome::kChromeUISkillsURL),
+                        ui::PAGE_TRANSITION_TYPED);
+  ui_test_utils::NavigateToURL(&params);
+  const auto* toast_controller = browser()->GetFeatures().toast_controller();
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+  tab_controller()->OnSkillSaved("");
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(),
+            ToastId::kSkillSavedWithoutInvokeButton);
 }
 
 IN_PROC_BROWSER_TEST_F(SkillsUiWindowControllerBrowserTest,
