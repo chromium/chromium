@@ -265,8 +265,12 @@ public class AutocompleteController {
     public void onSuggestionsReceived(AutocompleteResult autocompleteResult, boolean isFinal) {
         mAutocompleteResult = autocompleteResult;
 
+        // Ensure any modifications to the mListeners that happen as part of suggestions dispatch is
+        // not causing issues with the ongoing dispatch action.
+        Set<OnSuggestionsReceivedListener> listeners = Set.copyOf(mListeners);
+
         // Notify callbacks of suggestions.
-        for (OnSuggestionsReceivedListener listener : mListeners) {
+        for (OnSuggestionsReceivedListener listener : listeners) {
             listener.onSuggestionsReceived(autocompleteResult, isFinal);
         }
     }
