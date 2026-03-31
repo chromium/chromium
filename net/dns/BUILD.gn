@@ -462,6 +462,7 @@ source_set("tests") {
     "filtering_details_url_generator_unittest.cc",
     "host_cache_unittest.cc",
     "host_resolver_cache_unittest.cc",
+    "host_resolver_dns_task_unittest.cc",
     "host_resolver_internal_result_unittest.cc",
     "host_resolver_manager_ipv6_reachability_override_unittest.cc",
     "host_resolver_manager_unittest.cc",

@@ -708,9 +708,11 @@ void HostResolverManager::Job::StartDnsTask(bool secure) {
   // running it, as a "started" job needs a task to be properly cleaned up.
   dns_task_ = std::make_unique<HostResolverDnsTask>(
       resolver_->dns_client_.get(), key_.host, key_.network_anonymization_key,
-      key_.query_types, &*key_.resolve_context, secure, key_.secure_dns_mode,
-      this, net_log_, tick_clock_, !tasks_.empty() /* fallback_available */,
-      https_svcb_options_);
+      key_.query_types, &*key_.resolve_context,
+      secure ? DnsTransactionFactory::AttemptMode::kHttp
+             : DnsTransactionFactory::AttemptMode::kClassic,
+      key_.secure_dns_mode, this, net_log_, tick_clock_,
+      !tasks_.empty() /* fallback_available */, https_svcb_options_);
   dns_task_executed_ = true;
   if (resolver_->IsHappyEyeballsV3Enabled()) {
     dns_task_results_manager_ = std::make_unique<DnsTaskResultsManager>(

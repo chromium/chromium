@@ -256,7 +256,7 @@ HostResolverDnsTask::HostResolverDnsTask(
     NetworkAnonymizationKey anonymization_key,
     DnsQueryTypeSet query_types,
     ResolveContext* resolve_context,
-    bool secure,
+    DnsTransactionFactory::AttemptMode attempt_mode,
     SecureDnsMode secure_dns_mode,
     Delegate* delegate,
     const NetLogWithSource& job_net_log,
@@ -267,7 +267,7 @@ HostResolverDnsTask::HostResolverDnsTask(
       host_(std::move(host)),
       anonymization_key_(std::move(anonymization_key)),
       resolve_context_(resolve_context->AsSafeRef()),
-      secure_(secure),
+      attempt_mode_(attempt_mode),
       secure_dns_mode_(secure_dns_mode),
       delegate_(delegate),
       net_log_(job_net_log),
@@ -278,7 +278,7 @@ HostResolverDnsTask::HostResolverDnsTask(
   DCHECK(client_);
   DCHECK(delegate_);
 
-  if (!secure_) {
+  if (!secure()) {
     DCHECK(client_->CanUseInsecureDnsTransactions());
   }
 
@@ -299,7 +299,7 @@ void HostResolverDnsTask::StartNextTransaction() {
   TransactionInfo transaction_info = std::move(transactions_needed_.front());
   transactions_needed_.pop_front();
 
-  DCHECK(IsAddressType(transaction_info.type) || secure_ ||
+  DCHECK(IsAddressType(transaction_info.type) || secure() ||
          client_->CanQueryAdditionalTypesViaInsecureDns());
 
   // Record how long this transaction has been waiting to be created.
@@ -363,12 +363,12 @@ DnsQueryTypeSet HostResolverDnsTask::MaybeDisableAdditionalQueries(
   }
 
   if (types.Has(DnsQueryType::HTTPS)) {
-    if (!secure_ && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
+    if (!secure() && !client_->CanQueryAdditionalTypesViaInsecureDns()) {
       https_disabled_ = true;
       types.Remove(DnsQueryType::HTTPS);
     } else {
       DCHECK(!httpssvc_metrics_);
-      httpssvc_metrics_.emplace(secure_);
+      httpssvc_metrics_.emplace(secure());
     }
   }
   DCHECK(!types.empty());
@@ -379,7 +379,7 @@ void HostResolverDnsTask::PushTransactionsNeeded(DnsQueryTypeSet query_types) {
   DCHECK(transactions_needed_.empty());
 
   if (query_types.Has(DnsQueryType::HTTPS) &&
-      features::kUseDnsHttpsSvcbEnforceSecureResponse.Get() && secure_) {
+      features::kUseDnsHttpsSvcbEnforceSecureResponse.Get() && secure()) {
     query_types.Remove(DnsQueryType::HTTPS);
     transactions_needed_.emplace_back(DnsQueryType::HTTPS,
                                       TransactionErrorBehavior::kFatalOrEmpty);
@@ -438,7 +438,7 @@ void HostResolverDnsTask::CreateAndStartTransaction(
   transaction_info.transaction =
       client_->GetTransactionFactory()->CreateTransaction(
           std::move(transaction_hostname),
-          DnsQueryTypeToQtype(transaction_info.type), net_log_, secure_ ? DnsTransactionFactory::AttemptMode::kHttp : DnsTransactionFactory::AttemptMode::kClassic,
+          DnsQueryTypeToQtype(transaction_info.type), net_log_, attempt_mode_,
           secure_dns_mode_, &*resolve_context_,
           fallback_available_ /* fast_timeout */);
   transaction_info.transaction->SetRequestPriority(delegate_->priority());
@@ -464,7 +464,7 @@ void HostResolverDnsTask::OnTimeout() {
 
     switch (transaction.type) {
       case DnsQueryType::HTTPS:
-        DCHECK(!secure_ ||
+        DCHECK(!secure() ||
                !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get());
         if (httpssvc_metrics_) {
           // Don't record provider ID for timeouts. It is not precisely known
@@ -682,7 +682,7 @@ bool HostResolverDnsTask::IsFatalTransactionFailure(
   if (transaction_error == OK || (transaction_error == ERR_NAME_NOT_RESOLVED &&
                                   response && response->IsValid())) {
     error = HttpsTransactionError::kNoError;
-  } else if (!secure_) {
+  } else if (!secure()) {
     // HTTPS failures are never fatal via insecure DNS.
     DCHECK(transaction_info.error_behavior !=
            TransactionErrorBehavior::kFatalOrEmpty);
@@ -827,7 +827,7 @@ void HostResolverDnsTask::HandleTransactionResults(
          transaction_results) {
       resolve_context_->host_resolver_cache()->Set(
           result->Clone(), anonymization_key_, HostResolverSource::DNS,
-          secure_);
+          secure());
     }
   }
 
@@ -908,7 +908,7 @@ void HostResolverDnsTask::OnTransactionsFinished(
           base::BindOnce(&HostResolverDnsTask::OnSortComplete,
                          weak_ptr_factory_.GetWeakPtr(),
                          tick_clock_->NowTicks(), std::move(saved_results_),
-                         secure_));
+                         secure()));
       return;
     }
   }
@@ -1031,14 +1031,14 @@ void HostResolverDnsTask::OnDeferredFailure(bool allow_fallback) {
   // Expect this to result in destroying `this` and thus cancelling any
   // remaining transactions.
   delegate_->OnDnsTaskComplete(task_start_time_, allow_fallback,
-                               std::move(results), secure_);
+                               std::move(results), secure());
 }
 
 void HostResolverDnsTask::OnSuccess(Results results) {
   net_log_.EndEvent(NetLogEventType::HOST_RESOLVER_DNS_TASK,
                     [&] { return NetLogResults(results); });
   delegate_->OnDnsTaskComplete(task_start_time_, /*allow_fallback=*/true,
-                               std::move(results), secure_);
+                               std::move(results), secure());
 }
 
 bool HostResolverDnsTask::AnyOfTypeTransactionsRemain(
@@ -1084,7 +1084,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
   if (AnyOfTypeTransactionsRemain({DnsQueryType::HTTPS})) {
     DCHECK(base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb));
 
-    if (secure_) {
+    if (secure()) {
       timeout_max = https_svcb_options_.secure_extra_time_max;
       extra_time_percent = https_svcb_options_.secure_extra_time_percent;
       timeout_min = https_svcb_options_.secure_extra_time_min;
@@ -1096,7 +1096,7 @@ void HostResolverDnsTask::MaybeStartTimeoutTimer() {
 
     // Skip timeout for secure requests if the timeout would be a fatal
     // failure.
-    if (secure_ && features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
+    if (secure() && features::kUseDnsHttpsSvcbEnforceSecureResponse.Get()) {
       timeout_max = base::TimeDelta();
       extra_time_percent = 0;
       timeout_min = base::TimeDelta();

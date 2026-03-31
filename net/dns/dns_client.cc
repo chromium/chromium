@@ -362,7 +362,7 @@ class DnsClientImpl : public DnsClient {
 
   void SetAddressSorterForTesting(
       std::unique_ptr<AddressSorter> address_sorter) override {
-    NOTIMPLEMENTED();
+    address_sorter_ = std::move(address_sorter);
   }
 
  private:
