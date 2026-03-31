@@ -3846,7 +3846,7 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, "q", &query_value));
   EXPECT_EQ(query_value, "hello");
 
-  // Assert: gession id is present.
+  // Assert: gsession id is present.
   std::string gsession_id_value;
   EXPECT_TRUE(net::GetValueForKeyInQuery(aim_url, kSessionIdQueryParameterKey,
                                          &gsession_id_value));

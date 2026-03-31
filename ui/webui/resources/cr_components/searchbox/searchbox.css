@@ -95,15 +95,6 @@
   padding-inline-end: 16px;
 }
 
-:host([searchbox-layout-mode='Compact']) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-start: 0;
-}
-
-:host([multi-line-enabled][searchbox-layout-mode='Compact']) cr-searchbox-input::part(searchbox-input) {
-  padding-bottom: 10px;
-  padding-top: 16px;
-}
-
 cr-searchbox-input::part(searchbox-input) {
   align-self: center;
   padding-top: 2px;
@@ -243,10 +234,6 @@ cr-searchbox-dropdown::part(dropdown-content) {
   min-height: 52px;
 }
 
-:host([searchbox-layout-mode^='Tall']) cr-searchbox-input::part(input-inner-container) {
-  padding-bottom: 14px;
-}
-
 #inputInnerBottomContainer {
   align-items: flex-start;
   display: flex;
@@ -261,77 +248,4 @@ cr-searchbox-dropdown::part(dropdown-content) {
 
 .searchbox-icon-button-container.voice {
   margin-inline-end: 4px;
-}
-
-:host([searchbox-layout-mode^='Tall']) {
-  --cr-searchbox-compose-button-position-top: 12px;
-  --cr-searchbox-dropdown-padding-top: 60px;
-  --cr-searchbox-height: 108px;
-  --cr-searchbox-input-padding-top_: 18px;
-}
-
-@media (forced-colors: active) {
-  :host([searchbox-layout-mode^='Tall']) .dropdownContainer {
-    border: 1px solid ActiveBorder;
-  }
-}
-
-:host([searchbox-layout-mode^='Tall']) cr-searchbox-input::part(searchbox-input) {
-  height: 44px;
-  padding-top: 14px;
-}
-
-:host([multi-line-enabled][searchbox-layout-mode^='Tall']) cr-searchbox-input::part(searchbox-input) {
-  height: auto;
-  padding-top: var(--cr-searchbox-input-padding-top_);
-}
-
-:host([searchbox-layout-mode^='Tall']:not([dropdown-is-visible]):not([input-focused_])) cr-searchbox-input::part(searchbox-input) {
-  padding-inline-start: 24px;
-}
-
-:host([searchbox-layout-mode^='Tall']:not([dropdown-is-visible]):not([input-focused_])) cr-searchbox-input::part(icon) {
-  display: none;
-}
-
-:host([searchbox-layout-mode^='Tall'][dropdown-is-visible]) cr-searchbox-input::part(icon),
-:host([searchbox-layout-mode^='Tall'][input-focused_]) cr-searchbox-input::part(icon) {
-  height: 24px;
-  top: var(--cr-searchbox-input-padding-top_);
-}
-
-:host-context([searchbox-layout-mode^='Tall']) #composeButton {
-  --cr-button-height: 36px;
-}
-
-:host([searchbox-layout-mode='Compact']) {
-  --cr-searchbox-border-radius: 30px;
-  --cr-searchbox-dropdown-padding-bottom: 10px;
-  --cr-searchbox-dropdown-padding-top: 10px;
-  --cr-searchbox-height: 56px;
-  /* Used in search-animated-glow-element. */
-  --search-animated-glow-drag-drop-placeholder-top: 16px;
-}
-
-:host([searchbox-layout-mode='Compact']) cr-searchbox-input::part(icon) {
-  display: none;
-}
-
-:host([searchbox-layout-mode='Compact']) .searchbox-icon-button-container {
-  top: 10px;
-}
-
-:host([searchbox-layout-mode='Compact'][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
-  inset-inline-end: calc(var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
-:host([searchbox-layout-mode='Compact'][compose-button-enabled]
-    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.voice {
-  inset-inline-end: calc(var(--cr-searchbox-voice-lens-size)
-      + var(--cr-searchbox-icon-spacing) + var(--cr-compose-button-width));
-}
-
-:host([searchbox-layout-mode='Compact'][dropdown-is-visible]) .dropdownContainer {
-  padding-bottom: 10px;
 }

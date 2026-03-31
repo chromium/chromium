@@ -167,11 +167,6 @@
   top: 8px;
 }
 
-:host-context([searchbox-layout-mode^='Tall']) .glow-container {
-  top: var(--cr-searchbox-compose-button-position-top);
-  transform: none;
-}
-
 /* A wrapper class to hold each gradient and its mask. Don't show unless on page
  * load or on hover. */
 .gradient-and-mask-wrapper {
