@@ -4380,6 +4380,7 @@ test("ash_unittests") {
     "system/toast/system_toast_view_unittest.cc",
     "system/toast/toast_manager_unittest.cc",
     "system/tracing_notification_controller_unittest.cc",
+    "system/tray/imaged_tray_icon_unittest.cc",
     "system/tray/size_range_layout_unittest.cc",
     "system/tray/status_area_overflow_button_tray_unittest.cc",
     "system/tray/tray_background_view_unittest.cc",
