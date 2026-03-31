@@ -14,18 +14,27 @@ import androidx.preference.Preference;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
+import org.chromium.chrome.browser.password_manager.settings.PasswordsPreference;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
+import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Home of Transactions fragment, the main entry point for all Autofill and Passwords settings. */
 @NullMarked
@@ -40,18 +49,26 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+    private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_and_passwords_settings_title));
         SettingsUtils.addPreferencesFromResource(this, R.xml.home_of_transactions_preferences);
 
-        findPreference(PREF_PASSWORDS)
-                .setOnPreferenceClickListener(
-                        preference -> {
-                            // TODO(crbug.com/488319892): Launch password manager.
-                            return true;
-                        });
+        PasswordsPreference passwordsPreference = findPreference(PREF_PASSWORDS);
+        passwordsPreference.setProfile(getProfile());
+        passwordsPreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
+        passwordsPreference.setOnPreferenceClickListener(
+                preference -> {
+                    PasswordManagerLauncher.showPasswordSettings(
+                            getContext(),
+                            getProfile(),
+                            ManagePasswordsReferrer.CHROME_SETTINGS_AUTOFILL_AND_PASSWORDS,
+                            mModalDialogManagerSupplier.asNonNull().get(),
+                            /* managePasskeys= */ false);
+                    return true;
+                });
 
         findPreference(PREF_AUTOFILL_PAYMENTS)
                 .setOnPreferenceClickListener(
@@ -115,6 +132,27 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         return true;
     }
 
+    private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
+        return new ChromeManagedPreferenceDelegate(getProfile()) {
+            @Override
+            public boolean isPreferenceControlledByPolicy(Preference preference) {
+                if (PREF_PASSWORDS.equals(preference.getKey())) {
+                    return UserPrefs.get(getProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                }
+                return false;
+            }
+
+            @Override
+            public boolean isPreferenceClickDisabled(Preference preference) {
+                if (PREF_PASSWORDS.equals(preference.getKey())) {
+                    return false;
+                }
+                return super.isPreferenceClickDisabled(preference);
+            }
+        };
+    }
+
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
                     HomeOfTransactionsFragment.class.getName(),
@@ -142,4 +180,10 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                     }
                 }
             };
+
+    @Initializer
+    public void setModalDialogManagerSupplier(
+            MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
+        mModalDialogManagerSupplier = modalDialogManagerSupplier;
+    }
 }

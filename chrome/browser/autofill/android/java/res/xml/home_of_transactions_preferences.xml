@@ -8,7 +8,7 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     android:orderingFromXml="false">
 
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+    <org.chromium.chrome.browser.password_manager.settings.PasswordsPreference
         android:key="autofill_and_passwords_gpm"
         android:order="1"
         android:title="@string/password_manager_settings_title"
