@@ -71,9 +71,9 @@ interface PageHandler {
 
 // Called from C++ side of chrome://skills (Browser -> Renderer)
 interface SkillsPage {
-  // Notifies the UI that a skill has been updated or added.
-  // This may be extended to support multiple skill updates in the future.
-  UpdateSkill(skills.mojom.Skill skill);
+  // Notifies the UI that a skill has been updated or added. All skills
+  // should be rerendered to show in the correct order.
+  UpdateSkills(array<skills.mojom.Skill> skills);
 
   // Notifies the UI that a skill has been deleted.
   // This may be extended to support multiple skill deletions in the future.

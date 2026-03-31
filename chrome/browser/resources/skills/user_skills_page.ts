@@ -10,7 +10,6 @@ import './icons.html.js';
 import './error_page.js';
 import './skills_empty.js';
 
-import {assert} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Skill} from './skill.mojom-webui.js';
@@ -52,17 +51,12 @@ export class UserSkillsPageElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     this.proxy_.handler.getInitialUserSkills().then(({skills}) => {
-      for (const skill of skills) {
-        assert(!this.skills_.has(skill.id));
-        this.skills_.set(skill.id, skill);
-      }
-      // Manually update as Lit does not detect changes in a map.
-      this.requestUpdate();
+      this.skills_ = new Map(skills.map(skill => [skill.id, skill]));
     });
 
     this.listenerIds_ = [
-      this.proxy_.callbackRouter.updateSkill.addListener(
-          this.updateSkill_.bind(this)),
+      this.proxy_.callbackRouter.updateSkills.addListener(
+          this.updateSkills_.bind(this)),
       this.proxy_.callbackRouter.removeSkill.addListener(
           this.removeSkill_.bind(this)),
     ];
@@ -80,10 +74,8 @@ export class UserSkillsPageElement extends CrLitElement {
     this.addSkillButtonDisabled_ = false;
   }
 
-  private updateSkill_(skill: Skill) {
-    this.skills_.set(skill.id, skill);
-    // Manually update as Lit does not detect changes in a map.
-    this.requestUpdate();
+  private updateSkills_(skills: Skill[]) {
+    this.skills_ = new Map(skills.map(skill => [skill.id, skill]));
   }
 
   private removeSkill_(skillId: string) {
