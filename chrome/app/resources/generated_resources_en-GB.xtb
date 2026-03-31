@@ -2252,6 +2252,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2518024842978892609">Use your client certificates</translation>
 <translation id="2518620532958109495">Allowed to enter full screen automatically</translation>
 <translation id="2519250377986324805">See how</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini needs your help to continue working on your task.</translation>
 <translation id="2519517390894391510">Certificate profile name</translation>
 <translation id="2520644704042891903">Waiting for available socket...</translation>
 <translation id="2521427645491031107">Apps sync is set in device Settings</translation>
@@ -4654,6 +4655,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4190492351494485814">For initial setup, you need to connect to the Internet so that files can sync to your Chromebook</translation>
 <translation id="4190828427319282529">Highlight keyboard focus</translation>
 <translation id="4191892134568599822">Receive with <ph name="FEATURE_NAME" />?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini is working on your task and will let you know if more action is needed.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" />Exclusive for <ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Generative AI is experimental, in early development and currently has limited availability.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">Trusted CA</translation>
@@ -5266,6 +5268,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4624054169152573743">Colour theme</translation>
 <translation id="4625078469366263107">Enable App</translation>
 <translation id="4625905218692741757">Grey default colour</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini paused your task. Return to Chrome to review it.</translation>
 <translation id="4627107755957573804">Allow sites and apps to upgrade existing accounts to use passkeys</translation>
 <translation id="4627442949885028695">Continue from another device</translation>
 <translation id="4628762811416793313">The Linux container setup did not complete. Please try again.</translation>
@@ -8310,6 +8313,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6798420440063423019">The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.</translation>
 <translation id="679845623837196966">Show reading list</translation>
 <translation id="6798578729981748444">To finish importing, close all Firefox windows.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini completed your task, you can view it in Chrome.</translation>
 <translation id="6798780071646309401">caps lock on</translation>
 <translation id="679905836499387150">Hidden toolbar buttons</translation>
 <translation id="6800893479155997609">Top apps for your <ph name="DEVICE_TYPE" /></translation>
@@ -9913,6 +9917,7 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7916364730877325865">Your organisation doesn't allow you to turn on sync with this account</translation>
 <translation id="791698251820376781">Your organisation doesn't allow you to sign in</translation>
 <translation id="7918257978052780342">Enrol</translation>
+<translation id="7918928051723770926">Task complete</translation>
 <translation id="7919123827536834358">Automatically translate these languages</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> s</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> can view <ph name="FILENAME" /></translation>
@@ -10402,6 +10407,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8244724656154470844">The update check failed.</translation>
 <translation id="8246776524656196770">Protect your security key with a PIN (Personal Identification Number)</translation>
 <translation id="824713170151383793">With DevTools</translation>
+<translation id="8247210755024677100">Signing in ...</translation>
 <translation id="8247795734638043885">Download insecure file</translation>
 <translation id="8248050856337841185">&amp;Paste</translation>
 <translation id="8248381369318572865">Access your microphone and analyse your speech</translation>
@@ -10845,6 +10851,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8557022314818157177">Keep touching your security key until your fingerprint is captured</translation>
 <translation id="8557100046150195444">Touch ID to continue</translation>
 <translation id="8557856025359704738">Next download is at <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">Set up Google Beam</translation>
 <translation id="8559858985063901027">Passkeys</translation>
 <translation id="8559961053328923750">Chrome limits the total amount of data that sites can share through the browser to measure ad performance</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Open All in &amp;New Window}=1{Open in &amp;New Window}other{Open All ({COUNT}) in &amp;New Window}}</translation>
@@ -11360,6 +11367,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8898786835233784856">Select Next Tab</translation>
 <translation id="8898790559170352647">Add your Microsoft account</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini stopped working on your task.</translation>
 <translation id="8899851313684471736">Open link in new &amp;window</translation>
 <translation id="8900413463156971200">Enable mobile</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> today.}other{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> before the deadline.}}</translation>

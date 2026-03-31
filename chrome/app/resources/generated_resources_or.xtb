@@ -2238,6 +2238,7 @@
 <translation id="2518024842978892609">ଆପଣଙ୍କ କ୍ଲାଏଣ୍ଟର ସାର୍ଟିଫିକେଟ୍‍ଗୁଡ଼ିକ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2518620532958109495">ସ୍ୱତଃ ପୂର୍ଣ୍ଣସ୍କ୍ରିନରେ ପ୍ରବେଶ କରିବା ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="2519250377986324805">କିପରି କରିବେ ତାହା ଦେଖନ୍ତୁ</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nଆପଣଙ୍କ ଟାସ୍କରେ କାମ କରିବା ଜାରି ରଖିବା ପାଇଁ Gemini ଆପଣଙ୍କ ସହାୟତା ଆବଶ୍ୟକ କରେ।</translation>
 <translation id="2519517390894391510">ସାର୍ଟିଫିକେଟ୍ ପ୍ରୋଫାଇଲ୍ ନାମ</translation>
 <translation id="2520644704042891903">ଉପଲବ୍ଧ ଥିବା ସକେଟ୍‍ ପାଇଁ ଅପେକ୍ଷାରତ...</translation>
 <translation id="2521427645491031107">ଆପ୍ସ ସିଙ୍କକୁ ଡିଭାଇସ ସେଟିଂସରେ ସେଟ କରାଯାଇଛି</translation>
@@ -4639,6 +4640,7 @@
 <translation id="4190492351494485814">ପ୍ରାରମ୍ଭିକ ସେଟଅପ ପାଇଁ, ଆପଣ ଇଣ୍ଟରନେଟ ସହ କନେକ୍ଟ କରିବା ଆବଶ୍ୟକ ଯାହା ଫଳରେ ଫାଇଲଗୁଡ଼ିକ ଆପଣଙ୍କ Chromebookରେ ସିଙ୍କ ହୋଇପାରିବ</translation>
 <translation id="4190828427319282529">କୀବୋର୍ଡ ଫୋକସ୍ ହାଇଲାଇଟ୍ କରନ୍ତୁ</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> ସହ ପାଇବେ?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini ଆପଣଙ୍କ ଟାସ୍କ ଉପରେ କାମ କରୁଛି ଏବଂ ଅଧିକ ପଦକ୍ଷେପ ଆବଶ୍ୟକ ହେଲେ ଆପଣଙ୍କୁ ଜଣାଇବ।</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> ପାଇଁ ଏକ୍ସକ୍ଲୁସିଭ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ପ୍ରାରମ୍ଭିକ ବିକାଶରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ସୀମିତ ଉପଲବ୍ଧତା ଅଛି।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">ବିଶ୍ୱସ୍ତ CA</translation>
@@ -5251,6 +5253,7 @@
 <translation id="4624054169152573743">ରଙ୍ଗ ଥିମ୍</translation>
 <translation id="4625078469366263107">ଆପ୍‍କୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="4625905218692741757">ଧୂସର ଡିଫଲ୍ଟ ରଙ୍ଗ</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini ଆପଣଙ୍କ ଟାସ୍କକୁ ବିରତ କରିଛି। ଏହାର ରିଭ୍ୟୁ କରିବା ପାଇଁ Chromeକୁ ଫେରନ୍ତୁ।</translation>
 <translation id="4627107755957573804">ପାସକୀ ବ୍ୟବହାର କରିବା ପାଇଁ ପୂର୍ବରୁ ଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ଅପଗ୍ରେଡ କରିବାକୁ ସାଇଟ ଏବଂ ଆପ୍ସକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4627442949885028695">ଅନ୍ୟ ଏକ ଡିଭାଇସ୍‍ରୁ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="4628762811416793313">Linux କଣ୍ଟେନର୍ ସେଟ୍‍ଅପ୍ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇ ନାହିଁ। ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
@@ -8293,6 +8296,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="6798420440063423019">ଭୁଲ PIN ବହୁତ ଥର ଲେଖାଯାଇଥିବା ଯୋଗୁଁ ସୁରକ୍ଷା କୀ ଲକ୍ ହୋଇଯାଇଛି। ଆପଣଙ୍କୁ ସୁରକ୍ଷା କୀ ରିସେଟ୍ କରିବାକୁ ହେବ।</translation>
 <translation id="679845623837196966">ପଢ଼ିବା ତାଲିକା ଦେଖାନ୍ତୁ</translation>
 <translation id="6798578729981748444">ଇମ୍ପୋର୍ଟିଂ ସମାପ୍ତ କରିବାକୁ ସମସ୍ତ Firefox ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ।</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini ଆପଣଙ୍କ ଟାସ୍କକୁ ସମ୍ପୂର୍ଣ୍ଣ କରିଛି, ଆପଣ ଏହାକୁ Chromeରେ ଭ୍ୟୁ କରିପାରିବେ।</translation>
 <translation id="6798780071646309401">caps lock ଚାଲୁ ଅଛି</translation>
 <translation id="679905836499387150">ଲୁକ୍କାୟିତ ଟୁଲବାର ବଟନଗୁଡ଼ିକ</translation>
 <translation id="6800893479155997609">ଆପଣଙ୍କ <ph name="DEVICE_TYPE" /> ପାଇଁ ଶ୍ରେଷ୍ଠ ଆପ୍ସ</translation>
@@ -9895,6 +9899,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7916364730877325865">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ ଏହି ଆକାଉଣ୍ଟ ସହ ସିଙ୍କ ଚାଲୁ କରିବାକୁ ଅନୁମତି ଦିଏ ନାହିଁ</translation>
 <translation id="791698251820376781">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାକୁ ଅନୁମତି ଦିଏ ନାହିଁ</translation>
 <translation id="7918257978052780342">ପଞ୍ଜିକରଣ କରନ୍ତୁ</translation>
+<translation id="7918928051723770926">ଟାସ୍କ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="7919123827536834358">ଏହି ଭାଷାଗୁଡ଼ିକରେ ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />ସେ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> ଦେଖିପାରିବ</translation>
@@ -10383,6 +10388,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8244724656154470844">ଅପଡେଟ ଯାଞ୍ଚ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="8246776524656196770">ଆପଣଙ୍କର ସୁରକ୍ଷା କୀ'କୁ ଏକ ପିନ୍ (ବ୍ୟକ୍ତିଗତ ଚିହ୍ନଟକରଣ ନମ୍ବର) ଦ୍ୱାରା ସୁରକ୍ଷିତ ରଖନ୍ତୁ</translation>
 <translation id="824713170151383793">DevTools ସହ</translation>
+<translation id="8247210755024677100">ସାଇନ ଇନ କରାଯାଉଛି ...</translation>
 <translation id="8247795734638043885">ଅସୁରକ୍ଷିତ ଫାଇଲ ଡାଉନଲୋଡ କରନ୍ତୁ</translation>
 <translation id="8248050856337841185">&amp;ପେଷ୍ଟ</translation>
 <translation id="8248381369318572865">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ଆକ୍ସେସ କରି ଆପଣଙ୍କ ସ୍ପିଚକୁ ବିଶ୍ଳେଷଣ କରନ୍ତୁ</translation>
@@ -10826,6 +10832,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8557022314818157177">ଆପଣଙ୍କର ଟିପଚିହ୍ନ କ୍ୟାପଚର୍ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଆପଣଙ୍କ ସୁରକ୍ଷା କୀକୁ ସ୍ପର୍ଶ କରି ଧରି ରଖନ୍ତୁ</translation>
 <translation id="8557100046150195444">ଜାରି ରଖିବାକୁ Touch ID</translation>
 <translation id="8557856025359704738">ପରବର୍ତ୍ତୀ ଡାଉନଲୋଡ <ph name="NEXT_DATE_DOWNLOAD" />ରେ ଅଛି।</translation>
+<translation id="8558063527625343224">Google Beam ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="8559858985063901027">ପାସକୀଗୁଡ଼ିକ</translation>
 <translation id="8559961053328923750">ବିଜ୍ଞାପନ ପରଫରମାନ୍ସ ମାପିବା ପାଇଁ ବ୍ରାଉଜର ମାଧ୍ୟମରେ ସାଇଟଗୁଡ଼ିକ ସେୟାର କରିପାରୁଥିବା ଡାଟାର ମୋଟ ପରିମାଣକୁ Chrome ସୀମିତ କରେ</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{ସମସ୍ତ URLକୁ &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}=1{&amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}other{ସମସ୍ତ ({COUNT})ଟି &amp;ନୂଆ ୱିଣ୍ଡୋରେ ଖୋଲନ୍ତୁ}}</translation>
@@ -11341,6 +11348,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8898786835233784856">ପରବର୍ତ୍ତୀ ଟାବ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8898790559170352647">ଆପଣଙ୍କ Microsoft ଆକାଉଣ୍ଟ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8898822736010347272">ନୂଆ ବିପଦଗୁଡ଼ିକୁ ଖୋଜି ପାଇବାରେ ଏବଂ ୱେବରେ ସମସ୍ତଙ୍କୁ ସୁରକ୍ଷା ଦେବାରେ ସାହାଯ୍ୟ କରିବାକୁ, ଆପଣ ଭିଜିଟ୍ କରୁଥିବା କିଛି ୱେବପୃଷ୍ଠାର URLଗୁଡ଼ିକ, ସୀମିତ ସିଷ୍ଟମ୍ ସୂଚନା ଏବଂ କିଛି ୱେବପୃଷ୍ଠାର ବିଷୟବସ୍ତୁ Googleକୁ ପଠାଏ।</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini ଆପଣଙ୍କ ଟାସ୍କରେ କାମ କରିବା ବନ୍ଦ କରିଦେଇଛି।</translation>
 <translation id="8899851313684471736">ନୂତନ ୱିଣ୍ଡୋରେ ଲିଙ୍କଗୁଡିକ ଖୋଲନ୍ତୁ</translation>
 <translation id="8900413463156971200">ସେଲ୍ୟୁଲାର୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେବା ଏବଂ ଆଜି ଏହି <ph name="DEVICE_TYPE" />କୁ ଫେରସ୍ତ କରିବା ଆବଶ୍ୟକ।}other{<ph name="MANAGER" /> ପାଇଁ ଆପଣଙ୍କୁ ଆପଣଙ୍କ ଡାଟାର ବ୍ୟାକଅପ୍ ନେବା ଏହି <ph name="DEVICE_TYPE" />କୁ ସମୟସୀମା ପୂର୍ବରୁ ଫେରସ୍ତ କରିବା ଆବଶ୍ୟକ।}}</translation>

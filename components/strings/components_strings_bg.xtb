@@ -1444,7 +1444,6 @@
 <translation id="3238395604961564389">Отваряне на връзката в прозорец в режим „инкогнито“</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да персонализирате облика на браузъра си</translation>
 <translation id="3240791268468473923">Листът за несъответстващи идентификационни данни за сигурни плащания е отворен</translation>
-<translation id="324180406144491771">Връзките от тип <ph name="HOST_NAME" /> са блокирани</translation>
 <translation id="3243650379537999343">Рисуване</translation>
 <translation id="3248329428895535435">Да не се показва на този сайт</translation>
 <translation id="3249102948665905108">Качването на файлове в(ъв) <ph name="CLOUD_PROVIDER" /> завърши с грешки</translation>
@@ -3367,6 +3366,7 @@
 <translation id="6246316216123107851">преди <ph name="NUM_DAYS" /> дни</translation>
 <translation id="6246382863801034910">Превозно средство</translation>
 <translation id="6246868321321344665">Организацията ви може да вижда данните за сърфирането, като например паролите и историята, както в служебния, така и в личния ви потребителски профил</translation>
+<translation id="6248988683584659830">Търсене в „Настройки“</translation>
 <translation id="6250932670816326647">Продукти за баня и за тялото</translation>
 <translation id="6251906504834538140">{0,plural, =1{Преместването на файла е блокирано}other{Преместването на <ph name="FILE_COUNT" /> файла е блокирано}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
@@ -3584,7 +3584,6 @@
 <translation id="6567832540451970450">Администраторът ви разрешава на този сайт достъп до <ph name="PERMISSION" /></translation>
 <translation id="6568793038316600992">Бутон „Управление на начините на плащане“. Активирайте, за да управлявате информацията си за плащане и данните за кредитните си карти в настройките на Chrome</translation>
 <translation id="6569060085658103619">Преглеждате страница на разширение</translation>
-<translation id="6571992525120410251">Попитайте <ph name="ENGINE_NAME" /> каквото и да е</translation>
 <translation id="6573200754375280815">Двойно перфориране отдясно</translation>
 <translation id="6573973523249076555">Google Chrome се опитва да попълни поверителната ви информация в(ъв) <ph name="APP_NAME" />.</translation>
 <translation id="6575408526598156416">Запазване в профила</translation>

@@ -622,7 +622,7 @@
 <translation id="3235242129752692527">Edit detail acara dan ketuk “Simpan”.</translation>
 <translation id="323863549127671026">Tab dan grup tab yang saat ini terbuka</translation>
 <translation id="3240426699337459095">Tautan disalin</translation>
-<translation id="3244271242291266297">BB</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3245744387817103524">Perubahan Anda tidak dapat disimpan.</translation>
 <translation id="3254806613790954367">Tab yang terakhir dibuka di semua perangkat Anda</translation>
 <translation id="325717987950204592">Ketuk "Privasi dan Keamanan"</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Tandai telah dibaca</translation>
 <translation id="428768789042547925">Yang Baru</translation>
 <translation id="429074084062258019">{count,plural, =1{Tambahkan Tab ke Grup}other{Tambahkan Tab ke Grup}}</translation>
+<translation id="4300830875340617674">Pindai kartu dan isi otomatis</translation>
 <translation id="4302061870579014542">Tetapkan posisi</translation>
 <translation id="4304713468139749426">Pengelola Sandi</translation>
 <translation id="4306349443295056740">Penandatanganan OCSP</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Aktifkan kamera</translation>
 <translation id="5229315183665181733">Edit Situs</translation>
+<translation id="5233111790346066304">Simpan file di Google Drive dan akses file kapan saja.</translation>
 <translation id="5233638681132016545">Tab baru</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}.}other{Bookmark disimpan di Akun Google Anda, {email}.}}</translation>
 <translation id="5234764350956374838">Tutup</translation>
@@ -1351,6 +1353,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="5819208479324046259">Dikelola oleh <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Menyinkronkan…</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Tidak dikenal</translation>
 <translation id="5838430324585198889">Dapatkan lebih banyak fitur untuk iPad Anda dengan aplikasi Google</translation>
 <translation id="583923961930319521">Gunakan sandi di semua perangkat Anda</translation>
@@ -1410,7 +1413,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6042308850641462728">Lainnya</translation>
 <translation id="6045460247888249350">Tambahkan judul</translation>
 <translation id="6052269326659653305">Ganti profil</translation>
-<translation id="605721222689873409">TT</translation>
+<translation id="605721222689873409">YY</translation>
 <translation id="6058415747854995776">Rekam Video</translation>
 <translation id="6059830886158432458">Kontrol artikel dan aktivitas Anda di sini</translation>
 <translation id="6063802271331271857">Remix gambar</translation>

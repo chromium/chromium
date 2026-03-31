@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Mark read</translation>
 <translation id="428768789042547925">What's new</translation>
 <translation id="429074084062258019">{count,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
+<translation id="4300830875340617674">Scan card and autofill</translation>
 <translation id="4302061870579014542">Set position</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4306349443295056740">OCSP signing</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Turn on camera</translation>
 <translation id="5229315183665181733">Edit site</translation>
+<translation id="5233111790346066304">Save files in your Google Drive and access them at any time.</translation>
 <translation id="5233638681132016545">New tab</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bookmark saved in your Google Account, {email}.}other{Bookmarks saved in your Google Account, {email}.}}</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -1351,6 +1353,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5819208479324046259">Managed by <ph name="MANAGER" />. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">Syncing…</translation>
+<translation id="5831217499016131155">Google Wallet</translation>
 <translation id="583281660410589416">Unknown</translation>
 <translation id="5838430324585198889">Unlock more features for your iPad with Google apps</translation>
 <translation id="583923961930319521">Use passwords on all your devices</translation>

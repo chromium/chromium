@@ -2254,6 +2254,7 @@
 <translation id="2518024842978892609">클라이언트 인증서 사용</translation>
 <translation id="2518620532958109495">전체 화면으로 자동 전환하도록 허용됨</translation>
 <translation id="2519250377986324805">방법 보기</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nGemini가 작업을 계속 진행하려면 사용자의 도움이 필요합니다.</translation>
 <translation id="2519517390894391510">인증서 프로필 이름</translation>
 <translation id="2520644704042891903">사용 가능한 소켓 대기 중...</translation>
 <translation id="2521427645491031107">앱 동기화는 시스템 설정에서 설정됩니다</translation>
@@ -4654,6 +4655,7 @@
 <translation id="4190492351494485814">초기 설정 시 파일이 Chromebook에 동기화될 수 있도록 인터넷에 연결해야 합니다.</translation>
 <translation id="4190828427319282529">키보드 포커스 강조표시</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" />(으)로 받기</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini가 작업을 처리 중이며 추가 조치가 필요한 경우 알려드리겠습니다.</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> 전용 기능입니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />생성형 AI는 실험 단계의 기술로 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">신뢰할 수 있는 CA</translation>
@@ -5266,6 +5268,7 @@
 <translation id="4624054169152573743">색상 테마</translation>
 <translation id="4625078469366263107">앱 사용</translation>
 <translation id="4625905218692741757">회색 기본 색상</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini가 작업을 일시중지했습니다. Chrome으로 돌아가서 검토하세요.</translation>
 <translation id="4627107755957573804">사이트 및 앱에서 기존 계정을 업그레이드하여 패스키를 사용하도록 허용합니다</translation>
 <translation id="4627442949885028695">다른 기기에서 계속</translation>
 <translation id="4628762811416793313">Linux 컨테이너 설정이 완료되지 않았습니다. 다시 시도해 주세요.</translation>
@@ -8310,6 +8313,7 @@
 <translation id="6798420440063423019">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 재설정해야 합니다.</translation>
 <translation id="679845623837196966">읽기 목록 표시</translation>
 <translation id="6798578729981748444">가져오기를 완료하려면 Firefox 창을 모두 닫으세요.</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini가 작업을 완료했습니다. Chrome에서 확인할 수 있습니다.</translation>
 <translation id="6798780071646309401">Caps Lock 사용</translation>
 <translation id="679905836499387150">숨겨진 툴바 버튼</translation>
 <translation id="6800893479155997609"><ph name="DEVICE_TYPE" />에 제공되는 인기 앱</translation>
@@ -9912,6 +9916,7 @@
 <translation id="7916364730877325865">조직에서 이 계정과의 동기화를 사용 설정하도록 허용하지 않습니다.</translation>
 <translation id="791698251820376781">조직에서 로그인을 허용하지 않음</translation>
 <translation id="7918257978052780342">등록</translation>
+<translation id="7918928051723770926">작업 완료</translation>
 <translation id="7919123827536834358">자동 번역할 언어</translation>
 <translation id="7919210519031517829"><ph name="DURATION" />초</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 볼 수 있습니다.</translation>
@@ -10401,6 +10406,7 @@
 <translation id="8244724656154470844">업데이트를 확인할 수 없습니다.</translation>
 <translation id="8246776524656196770">개인 식별 번호(PIN)를 사용해 보안 키를 보호합니다.</translation>
 <translation id="824713170151383793">DevTools 사용</translation>
+<translation id="8247210755024677100">로그인하는 중...</translation>
 <translation id="8247795734638043885">안전하지 않은 파일 다운로드</translation>
 <translation id="8248050856337841185">붙여넣기(&amp;P)</translation>
 <translation id="8248381369318572865">마이크에 액세스하여 음성을 분석합니다.</translation>
@@ -10844,6 +10850,7 @@
 <translation id="8557022314818157177">지문이 인식될 때까지 보안 키를 계속 터치하세요.</translation>
 <translation id="8557100046150195444">Touch ID로 인증하여 계속</translation>
 <translation id="8557856025359704738">다음 다운로드 날짜는 <ph name="NEXT_DATE_DOWNLOAD" />입니다.</translation>
+<translation id="8558063527625343224">Google Beam 설정</translation>
 <translation id="8559858985063901027">패스키</translation>
 <translation id="8559961053328923750">Chrome은 사이트에서 광고 실적을 측정하기 위해 브라우저를 통해 공유할 수 있는 데이터의 총량을 제한합니다.</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{새 창에서 모두 열기(N)}=1{새 창에서 열기(N)}other{새 창에서 {COUNT}개 모두 열기(N)}}</translation>
@@ -11359,6 +11366,7 @@
 <translation id="8898786835233784856">다음 탭 선택</translation>
 <translation id="8898790559170352647">Microsoft 계정 추가</translation>
 <translation id="8898822736010347272">새로운 위협을 발견하고 모든 웹 사용자를 보호하는데 도움을 주기 위해 방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠를 Google로 전송합니다.</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini가 작업을 중지했습니다.</translation>
 <translation id="8899851313684471736">새 창에서 링크 열기(&amp;W)</translation>
 <translation id="8900413463156971200">셀룰러 사용</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" />에서 오늘 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.}other{<ph name="MANAGER" />에서 기한 전에 데이터를 백업하고 이 <ph name="DEVICE_TYPE" /> 기기를 반납할 것을 요청합니다.}}</translation>

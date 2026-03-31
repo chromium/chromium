@@ -1444,7 +1444,6 @@
 <translation id="3238395604961564389">Άνοιγμα συνδέσμου σε παράθυρο για ανώνυμη περιήγηση</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να προσαρμόσετε την εμφάνιση του προγράμματος περιήγησης</translation>
 <translation id="3240791268468473923">Έχει ανοίξει το φύλλο μη αντιστοίχισης διαπιστευτηρίων με τα διαπιστευτήρια ασφαλούς πληρωμής</translation>
-<translation id="324180406144491771">Οι σύνδεσμοι <ph name="HOST_NAME" /> έχουν αποκλειστεί</translation>
 <translation id="3243650379537999343">Σχέδιο</translation>
 <translation id="3248329428895535435">Να μην εμφανίζεται σε αυτόν τον ιστότοπο</translation>
 <translation id="3249102948665905108">Η μεταφόρτωση του αρχείου στο <ph name="CLOUD_PROVIDER" /> ολοκληρώθηκε με σφάλματα</translation>
@@ -3367,6 +3366,7 @@
 <translation id="6246316216123107851">Πριν από <ph name="NUM_DAYS" /> ημέρες</translation>
 <translation id="6246382863801034910">Όχημα</translation>
 <translation id="6246868321321344665">Ο οργανισμός σας μπορεί να βλέπει δεδομένα περιήγησης, όπως κωδικούς πρόσβασης και ιστορικό, τόσο στα προφίλ εργασίας όσο και στα προσωπικά προφίλ</translation>
+<translation id="6248988683584659830">Αναζήτηση ρυθμίσεων</translation>
 <translation id="6250932670816326647">Προϊόντα μπάνιου και σώματος</translation>
 <translation id="6251906504834538140">{0,plural, =1{Η μετακίνηση του αρχείου αποκλείστηκε}other{Αποκλείστηκε η μετακίνηση <ph name="FILE_COUNT" /> αρχείων}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε αρχεία που έχετε κατεβάσει στο Chrome.</translation>
@@ -3585,7 +3585,6 @@
 <translation id="6567832540451970450">Ο διαχειριστής σας επιτρέπει την άδεια <ph name="PERMISSION" /> για αυτόν τον ιστότοπο</translation>
 <translation id="6568793038316600992">Κουμπί Διαχείριση τρόπων πληρωμής, ενεργοποιήστε το για να διαχειριστείτε τα στοιχεία πληρωμών και πιστωτικών καρτών από τις ρυθμίσεις του Chrome</translation>
 <translation id="6569060085658103619">Βλέπετε μια σελίδα επέκτασης</translation>
-<translation id="6571992525120410251">Ρωτήστε το <ph name="ENGINE_NAME" /> οτιδήποτε</translation>
 <translation id="6573200754375280815">Διπλό τρύπημα στα δεξιά</translation>
 <translation id="6573973523249076555">Το Google Chrome προσπαθεί να συμπληρώσει τις ευαίσθητες πληροφορίες σας στην εφαρμογή <ph name="APP_NAME" />.</translation>
 <translation id="6575408526598156416">Αποθήκευση στον λογαριασμό</translation>

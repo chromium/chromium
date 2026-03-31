@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">既読にする</translation>
 <translation id="428768789042547925">最新情報</translation>
 <translation id="429074084062258019">{count,plural, =1{タブをグループに追加}other{タブをグループに追加}}</translation>
+<translation id="4300830875340617674">カードをスキャンして自動入力</translation>
 <translation id="4302061870579014542">位置を設定</translation>
 <translation id="4304713468139749426">パスワード マネージャー</translation>
 <translation id="4306349443295056740">OCSP 署名</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">カメラをオンにする</translation>
 <translation id="5229315183665181733">サイトを編集</translation>
+<translation id="5233111790346066304">Google ドライブにファイルを保存して、いつでもアクセスできます。</translation>
 <translation id="5233638681132016545">新しいタブ</translation>
 <translation id="5234094073825090254">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました。}other{Google アカウント（{email}）にブックマークを保存しました。}}</translation>
 <translation id="5234764350956374838">閉じる</translation>
@@ -1351,6 +1353,7 @@
 <translation id="5819208479324046259"><ph name="MANAGER" /> によって管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同期しています…</translation>
+<translation id="5831217499016131155">Google ウォレット</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838430324585198889">Google のアプリをインストールして iPad をさらに活用しましょう</translation>
 <translation id="583923961930319521">すべてのデバイスでパスワードを使用する</translation>

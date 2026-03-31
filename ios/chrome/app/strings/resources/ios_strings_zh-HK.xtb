@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">標示為已讀</translation>
 <translation id="428768789042547925">最新資訊</translation>
 <translation id="429074084062258019">{count,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
+<translation id="4300830875340617674">掃瞄付款卡並自動填入</translation>
 <translation id="4302061870579014542">設定位置</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4306349443295056740">OCSP 簽署</translation>
@@ -1182,6 +1183,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">開啟攝錄機</translation>
 <translation id="5229315183665181733">編輯網站</translation>
+<translation id="5233111790346066304">將檔案儲存至「Google 雲端硬碟」，方便隨時存取。</translation>
 <translation id="5233638681132016545">新分頁</translation>
 <translation id="5234094073825090254">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})。}other{書籤已儲存至 Google 帳戶 ({email})。}}</translation>
 <translation id="5234764350956374838">關閉</translation>
@@ -1351,6 +1353,7 @@
 <translation id="5819208479324046259">由 <ph name="MANAGER" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5827266244928330802">Safari</translation>
 <translation id="5829649908290113115">同步中…</translation>
+<translation id="5831217499016131155">Google 電子錢包</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5838430324585198889">在 iPad 上使用 Google 應用程式，解鎖更多功能</translation>
 <translation id="583923961930319521">在所有裝置上使用密碼</translation>

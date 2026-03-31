@@ -1177,6 +1177,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2837891525090413132">Can ask to lock and use your keyboard</translation>
 <translation id="2839032553903800133">Notifications blocked</translation>
 <translation id="2839501879576190149">Fake site ahead</translation>
+<translation id="2840680829170913626">Content from the checkout page is shared with Google to offer these options. Payment plans are subject to eligibility. To hide pay later options in autofill, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Scroll and zoom your shared tab?</translation>
 <translation id="2851291081585704741">You're offline</translation>
 <translation id="2854163610915391726">Manage what Chrome info you save in your Google Account</translation>
@@ -1388,6 +1389,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3162070126914310576">This device can't be enrolled at the moment because your organisation unit has reached its initial enrolment limit. Contact your administrator for assistance.</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="316638481603975524">Can ask to install web apps</translation>
+<translation id="3166788340998560642">Chrome will offer to save it to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> next time you use it</translation>
 <translation id="3168744840365648658">Radio Equipment</translation>
 <translation id="3168938241115725594">Classic vehicles</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1444,7 +1446,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3238395604961564389">Open link in Incognito window</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to customise the look of your browser</translation>
 <translation id="3240791268468473923">Secure payment credential no matching credential sheet is opened</translation>
-<translation id="324180406144491771">'<ph name="HOST_NAME" />' links are blocked</translation>
 <translation id="3243650379537999343">Draw</translation>
 <translation id="3248329428895535435">Don't show on this site</translation>
 <translation id="3249102948665905108">File upload to <ph name="CLOUD_PROVIDER" /> completed with errors</translation>
@@ -3366,6 +3367,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> days ago</translation>
 <translation id="6246382863801034910">Vehicle</translation>
 <translation id="6246868321321344665">Your organisation can see browsing data, such as passwords and history in both work and personal profiles</translation>
+<translation id="6248988683584659830">Search settings</translation>
 <translation id="6250932670816326647">Bath and body products</translation>
 <translation id="6251906504834538140">{0,plural, =1{File blocked from moving}other{<ph name="FILE_COUNT" /> files blocked from moving}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage files that you have downloaded in Chrome</translation>
@@ -3583,7 +3585,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6567832540451970450">Your administrator allows <ph name="PERMISSION" /> for this site</translation>
 <translation id="6568793038316600992">Manage payment methods button, activate to manage your payments and credit card info in Chrome settings</translation>
 <translation id="6569060085658103619">You're viewing an extension page</translation>
-<translation id="6571992525120410251">Ask <ph name="ENGINE_NAME" /> anything</translation>
 <translation id="6573200754375280815">Dual punch right</translation>
 <translation id="6573973523249076555">Google Chrome is trying to fill your sensitive info on <ph name="APP_NAME" />.</translation>
 <translation id="6575408526598156416">Save in account</translation>

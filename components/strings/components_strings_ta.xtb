@@ -1443,7 +1443,6 @@
 <translation id="3238395604961564389">மறைநிலைச் சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />. உலாவியின் தோற்றத்தைப் பிரத்தியேகமாக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="3240791268468473923">பாதுகாப்பான பேமெண்ட் அனுமதிச் சான்றுகள் பொருந்தவில்லை என்பதற்கான தாள் திறக்கப்பட்டது</translation>
-<translation id="324180406144491771">“<ph name="HOST_NAME" />” இணைப்புகள் தடுக்கப்பட்டுள்ளன</translation>
 <translation id="3243650379537999343">வரை</translation>
 <translation id="3248329428895535435">இந்தத் தளத்தில் காட்டாதே</translation>
 <translation id="3249102948665905108">ஃபைல் <ph name="CLOUD_PROVIDER" />க்குப் பிழைகளுடன் பதிவேற்றப்பட்டது</translation>
@@ -3363,6 +3362,7 @@
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> நாட்களுக்கு முன்பு</translation>
 <translation id="6246382863801034910">வாகனம்</translation>
 <translation id="6246868321321344665">உங்களின் பணிக் கணக்குகள் மற்றும் தனிப்பட்ட கணக்குகளில் உள்ள கடவுச்சொற்கள், பதிவு போன்ற உலாவிய தரவை உங்கள் நிறுவனத்தால் பார்க்க முடியும்.</translation>
+<translation id="6248988683584659830">தேடல் அமைப்புகள்</translation>
 <translation id="6250932670816326647">குளியல் மற்றும் சருமத்திற்கான தயாரிப்புகள்</translation>
 <translation id="6251906504834538140">{0,plural, =1{ஃபைலை நகர்த்துவது தடுக்கப்பட்டது}other{<ph name="FILE_COUNT" /> ஃபைல்களை நகர்த்துவது தடுக்கப்பட்டது}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeமில் நீங்கள் பதிவிறக்கிய ஃபைல்களை நிர்வகிக்க, Tab பட்டனை அழுத்திவிட்டு Enter பட்டனை அழுத்துங்கள்</translation>
@@ -3580,7 +3580,6 @@
 <translation id="6567832540451970450">இந்தத் தளத்திற்கு <ph name="PERMISSION" /> அணுகலை உங்கள் நிர்வாகி அனுமதித்துள்ளார்</translation>
 <translation id="6568793038316600992">பேமெண்ட் முறைகளை நிர்வகிப்பதற்கான பட்டன், Chrome அமைப்புகளில் உங்கள் பேமெண்ட்டுகள், கிரெடிட் கார்டு ஆகியவை குறித்த தகவலை நிர்வகிக்க இதை இயக்குங்கள்</translation>
 <translation id="6569060085658103619">நீட்டிப்புப் பக்கத்தைப் பார்க்கிறீர்கள்</translation>
-<translation id="6571992525120410251"><ph name="ENGINE_NAME" /> இல் எதை வேண்டுமானாலும் கேளுங்கள்</translation>
 <translation id="6573200754375280815">டூயல் பஞ்ச் ரைட்</translation>
 <translation id="6573973523249076555">பாதுகாக்கவேண்டிய உங்கள் தகவலை <ph name="APP_NAME" /> இல் நிரப்ப Google Chrome முயல்கிறது.</translation>
 <translation id="6575408526598156416">கணக்கில் சேமி</translation>

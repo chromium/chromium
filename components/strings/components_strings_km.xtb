@@ -1449,7 +1449,6 @@
 <translation id="3238395604961564389">បើកតំណនៅក្នុងផ្ទាំងឯកជន</translation>
 <translation id="3240683217920639535"><ph name="MANAGE_CHROME_THEMES_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច tab រួចចុច Enter ដើម្បីប្ដូរ​រូបរាងនៃ​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក​តាមបំណង</translation>
 <translation id="3240791268468473923">សន្លឹក​ព័ត៌មានផ្ទៀងផ្ទាត់​ការបង់ប្រាក់​មានសុវត្ថិភាព ដែលគ្មានព័ត៌មានផ្ទៀងផ្ទាត់​ត្រូវគ្នា​ត្រូវបានបើក</translation>
-<translation id="324180406144491771">តំណ “<ph name="HOST_NAME" />” ត្រូវបាន​ទប់ស្កាត់</translation>
 <translation id="3243650379537999343">គូរ</translation>
 <translation id="3248329428895535435">កុំបង្ហាញ​នៅលើ​គេហទំព័រ​នេះ</translation>
 <translation id="3249102948665905108">ការបង្ហោះឯកសារទៅ <ph name="CLOUD_PROVIDER" /> បានចប់ដោយមានបញ្ហា</translation>
@@ -3372,6 +3371,7 @@
 <translation id="6246316216123107851"><ph name="NUM_DAYS" /> ថ្ងៃមុន</translation>
 <translation id="6246382863801034910">យានជំនិះ</translation>
 <translation id="6246868321321344665">ស្ថាប័ន​របស់អ្នក​អាច​មើលឃើញ​ទិន្នន័យរុករក ដូចជា​ពាក្យ​សម្ងាត់ និង​ប្រវត្តិ​ទាំង​នៅក្នុង​កម្រង​ព័ត៌មាន​ផ្ទាល់ខ្លួន និង​កម្រងព័ត៌មាន​ការងារ</translation>
+<translation id="6248988683584659830">ការកំណត់ការស្វែងរក</translation>
 <translation id="6250932670816326647">ផលិតផលសម្រាប់ការងូតទឹក និងសម្អាតរាងកាយ</translation>
 <translation id="6251906504834538140">{0,plural, =1{បានទប់ស្កាត់​មិនឱ្យ​ផ្លាស់ទី​ឯកសារ}other{បានទប់ស្កាត់​មិនឱ្យ​ផ្លាស់ទី​ឯកសារ <ph name="FILE_COUNT" />}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច "Tab" រួចចុច "Enter" ដើម្បីគ្រប់គ្រង​ឯកសារដែលអ្នក​បានទាញយកនៅ​ក្នុង Chrome</translation>
@@ -3589,7 +3589,6 @@
 <translation id="6567832540451970450">អ្នកគ្រប់គ្រងរបស់អ្នកអនុញ្ញាតឱ្យប្រើ<ph name="PERMISSION" />សម្រាប់គេហទំព័រនេះ</translation>
 <translation id="6568793038316600992">ប៊ូតុង "គ្រប់គ្រងវិធីបង់ប្រាក់", បើកដំណើរការ ដើម្បីគ្រប់គ្រងព័ត៌មានអំពីកាតឥណទាន និងការទូទាត់ប្រាក់របស់អ្នក​នៅក្នុងការកំណត់ Chrome</translation>
 <translation id="6569060085658103619">អ្នក​កំពុងមើល​ទំព័រ​កម្មវិធី​បន្ថែម</translation>
-<translation id="6571992525120410251">សួរ <ph name="ENGINE_NAME" /> អ្វីក៏បាន</translation>
 <translation id="6573200754375280815">ចោះ​ពីររន្ធ​ខាងស្ដាំ</translation>
 <translation id="6573973523249076555">Google Chrome កំពុង​ព្យាយាម​បំពេញ​ព័ត៌មានរសើប​របស់អ្នក​នៅលើ <ph name="APP_NAME" />។</translation>
 <translation id="6575408526598156416">រក្សាទុកនៅក្នុងគណនី</translation>
