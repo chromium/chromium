@@ -278,11 +278,6 @@ bool IsChromeLikelyDefaultBrowser7Days();
 bool IsChromePotentiallyNoLongerDefaultBrowser(int likelyDefaultInterval,
                                                int likelyNotDefaultInterval);
 
-// Returns true if the past behavior of the user indicates that the user fits
-// the categorization that would likely benefit from having Chrome set as their
-// default browser for the passed `type`. Returns false otherwise.
-bool IsLikelyInterestedDefaultBrowserUser(DefaultPromoType type);
-
 // Return YES if the user has seen a full screen promo recently, and shouldn't
 // see another one.
 bool UserInFullscreenPromoCooldown();

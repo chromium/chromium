@@ -3377,18 +3377,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="IOS.IsEligibleDefaultBrowserPromoUser" enum="BooleanEligible"
-    expires_after="2023-02-26">
-  <owner>thegreenfrog@chromium.org</owner>
-  <owner>rohitrao@chromium.org</owner>
-  <summary>
-    This metric reports whether the user was deemed eligible to be shown default
-    browser fullscreen promos. Eligibility currently includes signed-in users,
-    external intent app opens, clipboard copies, and GrowthKit opens. This
-    metric will be logged once per metrics log upload.
-  </summary>
-</histogram>
-
 <histogram name="IOS.IsEnabled.Password.BottomSheet" enum="Boolean"
     expires_after="2026-04-26">
   <owner>sugoi@chromium.org</owner>

@@ -49,15 +49,6 @@ void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
   SetValuesInStorage(values);
 }
 
-void SimulateUserInterestedDefaultBrowserUserActivity(
-    DefaultPromoType type,
-    const base::TimeDelta& timeAgo) {
-  std::vector<base::Time> times = LoadTimestampsForPromoType(type);
-  times.push_back(base::Time::Now() - timeAgo);
-
-  StoreTimestampsForPromoType(type, std::move(times));
-}
-
 void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
                                               int interaction_count) {
   NSDictionary<NSString*, NSObject*>* values = @{

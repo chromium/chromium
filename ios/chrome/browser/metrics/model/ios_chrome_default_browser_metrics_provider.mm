@@ -19,9 +19,6 @@ void ProvideUmaHistograms() {
                             IsChromeLikelyDefaultBrowser7Days());
   base::UmaHistogramBoolean("IOS.IsDefaultBrowser21",
                             IsChromeLikelyDefaultBrowser());
-  base::UmaHistogramBoolean(
-      "IOS.IsEligibleDefaultBrowserPromoUser",
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
 
   base::UmaHistogramBoolean("IOS.IsDefaultBrowser1",
                             IsChromeLikelyDefaultBrowserXDays(1));

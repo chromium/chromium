@@ -28,11 +28,6 @@ void SimulateUserInteractionWithPromos(const base::TimeDelta& timeAgo,
                                        int tailoredCount,
                                        int totalCount);
 
-// Overwrite local storage with the provided promo interest information.
-void SimulateUserInterestedDefaultBrowserUserActivity(
-    DefaultPromoType type,
-    const base::TimeDelta& timeAgo);
-
 // Overwrite local storage for non-modal promo interaction.
 void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
                                               int interaction_count);

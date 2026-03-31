@@ -19,11 +19,6 @@ void NotifyStartWithWidget(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
 void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
@@ -31,10 +26,6 @@ void NotifyStartWithURL(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
 void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
@@ -42,10 +33,6 @@ void NotifyCredentialExtensionUsed(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kMadeForIOSPromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
 void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker) {
@@ -53,10 +40,6 @@ void NotifyAutofillSuggestionsShown(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kMadeForIOSPromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
 }
 
 void NotifyPasswordAutofillSuggestionUsed(
@@ -65,10 +48,6 @@ void NotifyPasswordAutofillSuggestionUsed(
     tracker->NotifyEvent(
         feature_engagement::events::kStaySafePromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 }
 
 void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
@@ -76,10 +55,6 @@ void NotifyPasswordSavedOrUpdated(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kStaySafePromoConditionsMet);
   }
-
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
 }
 
 void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
@@ -87,9 +62,6 @@ void NotifyRemoteTabsGridViewed(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 }
 
 void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
@@ -97,9 +69,6 @@ void NotifyBookmarkAddOrEdit(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 }
 
 void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
@@ -107,9 +76,6 @@ void NotifyBookmarkManagerOpened(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 }
 
 void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
@@ -117,9 +83,6 @@ void NotifyBookmarkManagerClosed(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 }
 
 void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
@@ -127,9 +90,6 @@ void NotifyURLFromBookmarkOpened(feature_engagement::Tracker* tracker) {
     tracker->NotifyEvent(
         feature_engagement::events::kAllTabsPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
 }
 
 void NotifyOmniboxURLCopyPaste(feature_engagement::Tracker* tracker) {
@@ -144,9 +104,6 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
   if (is_off_record) {
     return;
@@ -166,9 +123,6 @@ void NotifyOmniboxTextCopyPasteAndNavigate(
     tracker->NotifyEvent(
         feature_engagement::events::kGenericDefaultBrowserPromoConditionsMet);
   }
-  // TODO(crbug.com/322358517): Continue logging to UserDefault until migration
-  // is verified on stable. Can be removed M127+.
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 }
 
 void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {

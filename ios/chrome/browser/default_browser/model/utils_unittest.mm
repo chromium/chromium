@@ -99,33 +99,6 @@ void SimulateUserInteractionWithFullscreenPromo(const base::TimeDelta& timeAgo,
   SetValuesInStorage(values);
 }
 
-// Tests interesting information for each type.
-TEST_F(DefaultBrowserUtilsTest, LogInterestingActivityEach) {
-  // General promo.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral));
-  ClearDefaultBrowserPromoData();
-
-  // Stay safe promo.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe));
-  ClearDefaultBrowserPromoData();
-
-  // Made for iOS promo.
-  EXPECT_FALSE(
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS));
-  ClearDefaultBrowserPromoData();
-
-  // All tabs promo.
-  EXPECT_FALSE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  EXPECT_TRUE(IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs));
-}
-
 // Tests logging user interactions with a non-modal promo multiple times with
 // the same current interactions count doesn't over-increment the value.
 TEST_F(DefaultBrowserUtilsTest,

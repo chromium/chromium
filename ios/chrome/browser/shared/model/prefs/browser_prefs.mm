@@ -1203,4 +1203,8 @@ void MigrateObsoleteUserDefault() {
   [defaults removeObjectForKey:@"fre_timestamp_migration_done"];
   [defaults removeObjectForKey:@"promo_interest_event_migration_done"];
   [defaults removeObjectForKey:@"promo_impressions_migration_done"];
+  [defaults removeObjectForKey:@"lastSignificantUserEvent"];
+  [defaults removeObjectForKey:@"lastSignificantUserEventMadeForIOS"];
+  [defaults removeObjectForKey:@"lastSignificantUserEventAllTabs"];
+  [defaults removeObjectForKey:@"lastSignificantUserEventStaySafe"];
 }
