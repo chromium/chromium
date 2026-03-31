@@ -516,6 +516,7 @@ public class OmniboxSuggestionsDropdownEmbedderImplTest {
         doReturn((int) (DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP * DIP_SCALE))
                 .when(mDisplay)
                 .getDisplayHeight();
+        mBottomWindowPadding = 45;
 
         Configuration newConfig = getConfiguration();
         newConfig.screenWidthDp = DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP + 1;
