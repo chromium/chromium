@@ -298,6 +298,24 @@ CGFloat const kChromeLogoHeight = 22;
 
   configuration.leadingConfiguration = imageConfiguration;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // The GPay pill icon is used as a trailing image in the cell when the feature
+  // kAutofillEnableWalletBrandingV2 is enabled and legal messages are present,
+  // as it indicates that the card will be saved to Google Wallet.
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableWalletBrandingV2) &&
+      (_legalMessages != nil || _legalMessages.count > 0)) {
+    ImageContentConfiguration* trailingImageConfiguration =
+        [[ImageContentConfiguration alloc] init];
+
+    trailingImageConfiguration.image =
+        MakeSymbolMulticolor(CustomSymbolWithPointSize(
+            kGPayPillIconSymbol, kGoogleWalletLogoHeight));
+
+    configuration.trailingConfiguration = trailingImageConfiguration;
+  }
+#endif
+
   cell.contentConfiguration = configuration;
 
   cell.selectionStyle = UITableViewCellSelectionStyleNone;

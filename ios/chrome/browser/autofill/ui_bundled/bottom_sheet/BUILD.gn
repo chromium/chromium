@@ -278,7 +278,12 @@ source_set("save_card_bottom_sheet_view_controller_unittest") {
   deps = [
     ":save_card_bottom_sheet_consumer",
     ":save_card_bottom_sheet_view_controller",
+    "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/strings:components_strings_grit",
+    "//ios/chrome/browser/autofill/model/message",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/table_view/content_configuration",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",
     "//testing/gtest",
