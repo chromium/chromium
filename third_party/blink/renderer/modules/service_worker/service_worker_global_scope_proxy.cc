@@ -146,8 +146,7 @@ void ServiceWorkerGlobalScopeProxy::DidCreateWorkerGlobalScope(
     WorkerOrWorkletGlobalScope* worker_global_scope) {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   DCHECK(!worker_global_scope_);
-  worker_global_scope_ =
-      static_cast<ServiceWorkerGlobalScope*>(worker_global_scope);
+  worker_global_scope_ = To<ServiceWorkerGlobalScope>(worker_global_scope);
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner =
       worker_global_scope->GetThread()->GetTaskRunner(
           TaskType::kInternalDefault);

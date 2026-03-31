@@ -390,9 +390,8 @@ void USB::AddedEventListener(const AtomicString& event_type,
     return;
   }
 
-  if (context->IsServiceWorkerGlobalScope()) {
-    auto* service_worker_global_scope =
-        static_cast<ServiceWorkerGlobalScope*>(context);
+  if (auto* service_worker_global_scope =
+          DynamicTo<ServiceWorkerGlobalScope>(context)) {
     if (service_worker_global_scope->did_evaluate_script()) {
       String message = String::Format(
           "Event handler of '%s' event must be added on the initial evaluation "
