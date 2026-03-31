@@ -1488,7 +1488,9 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     const GURL& url,
     const blink::StorageKey& storage_key,
     net::CookieSettingOverrides overrides) {
-  return AreThirdPartyCookiesGenerallyAllowed(browser_context, web_contents);
+  // Third-party cookie access is never allowed from opaque contexts.
+  return !storage_key.ForbidsUnpartitionedStorageAccess() &&
+         AreThirdPartyCookiesGenerallyAllowed(browser_context, web_contents);
 }
 
 bool AwContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(

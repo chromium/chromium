@@ -18,9 +18,13 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/unguessable_token.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace android_webview {
 
@@ -52,6 +56,17 @@ std::string StartupTaskExperimentToString(
   }
 }
 
+class TestAwContentBrowserClient : public AwContentBrowserClient {
+ public:
+  explicit TestAwContentBrowserClient(AwFeatureListCreator* creator)
+      : AwContentBrowserClient(creator) {}
+
+  MOCK_METHOD(bool,
+              AreThirdPartyCookiesGenerallyAllowed,
+              (content::BrowserContext*, content::WebContents*),
+              (override));
+};
+
 class AwContentBrowserClientTest
     : public testing::TestWithParam<StartupTaskExperiment> {
  public:
@@ -82,8 +97,9 @@ class AwContentBrowserClientTest
  protected:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  AwContentBrowserClient client_{
-      std::make_unique<AwFeatureListCreator>().get()};
+  std::unique_ptr<AwFeatureListCreator> feature_list_creator_{
+      std::make_unique<AwFeatureListCreator>()};
+  TestAwContentBrowserClient client_{feature_list_creator_.get()};
   scoped_refptr<base::SequencedTaskRunner> task_runner_ =
       base::ThreadPool::CreateSequencedTaskRunner({});
 };
@@ -197,6 +213,28 @@ TEST_P(AwContentBrowserClientTest, StartupStatesSetCorrectly) {
 
   client_.OnStartupComplete();
   EXPECT_FALSE(YieldToLooperChecker::GetInstance().ShouldYield());
+}
+
+TEST_P(AwContentBrowserClientTest, IsFullCookieAccessAllowed) {
+  GURL url("https://example.com");
+  blink::StorageKey storage_key_without_nonce =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
+  blink::StorageKey storage_key_with_nonce = blink::StorageKey::CreateWithNonce(
+      url::Origin::Create(url), base::UnguessableToken::Create());
+
+  // By default, AreThirdPartyCookiesGenerallyAllowed returns true if third
+  // party cookies are allowed, but we mock it here to isolate the test.
+  EXPECT_CALL(client_,
+              AreThirdPartyCookiesGenerallyAllowed(testing::_, testing::_))
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_TRUE(client_.IsFullCookieAccessAllowed(nullptr, nullptr, url,
+                                                storage_key_without_nonce,
+                                                net::CookieSettingOverrides()));
+
+  EXPECT_FALSE(client_.IsFullCookieAccessAllowed(
+      nullptr, nullptr, url, storage_key_with_nonce,
+      net::CookieSettingOverrides()));
 }
 
 INSTANTIATE_TEST_SUITE_P(
