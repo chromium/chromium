@@ -4762,7 +4762,7 @@
       default_value: "std::nullopt",
       type_name: "std::optional<StyleOverflowClipMargin>",
       converter: "ConvertOverflowClipMargin",
-      invalidate: ["layout"],
+      invalidate: ["box-paint-property", "layout"],
     },
     {
       name: "overflow-x",
@@ -4787,7 +4787,7 @@
       // Modifying overflow frequently should not be common, so we take it out.
       supports_incremental_style: false,
       idempotent: false,
-      invalidate: ["layout", "paint"],
+      invalidate: ["box-paint-property", "layout", "paint"],
     },
     {
       name: "overflow-y",
@@ -4808,7 +4808,7 @@
       // See comment on overflow-x.
       supports_incremental_style: false,
       idempotent: false,
-      invalidate: ["layout", "paint"],
+      invalidate: ["box-paint-property", "layout", "paint"],
     },
     {
       name: "-internal-overscroll-area",
@@ -4849,6 +4849,7 @@
         name: "overscroll-behavior",
         resolver: "horizontal",
       },
+      invalidate: ["box-paint-property"],
       valid_for_permission_element: true,
     },
     {
@@ -4864,6 +4865,7 @@
         name: "overscroll-behavior",
         resolver: "vertical",
       },
+      invalidate: ["box-paint-property"],
       valid_for_permission_element: true,
     },
     {
@@ -8693,7 +8695,7 @@
       // anchor() functions compute relative to the containing block that is
       // modified by position-area in AnchorEvaluatorImpl.
       priority: 1,
-      invalidate: ["layout", "out-of-flow", "paint", "box-paint-property"],
+      invalidate: ["box-paint-property", "layout", "out-of-flow", "paint"],
     },
     // Shorthands
     {
