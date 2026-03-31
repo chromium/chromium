@@ -799,17 +799,6 @@ bool ExtensionBrowserTest::NavigateToURL(content::WebContents* web_contents,
   return chrome_test_utils::NavigateToURL(web_contents, url);
 }
 
-bool ExtensionBrowserTest::NavigateToURL(BrowserWindowInterface* browser_window,
-                                         const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  NOTREACHED() << "Not supported on Android.";
-#else
-  auto* web_contents =
-      browser_window->GetTabStripModel()->GetActiveWebContents();
-  return NavigateToURL(web_contents, url);
-#endif
-}
-
 bool ExtensionBrowserTest::GetCurrentTabTitle(std::u16string* title) {
   content::WebContents* web_contents = GetActiveWebContents();
   if (!web_contents) {

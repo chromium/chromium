@@ -243,13 +243,6 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   [[nodiscard]] bool NavigateToURL(content::WebContents* web_contents,
                                    const GURL& url);
 
-  // Navigates the active tab in `browser_window` to a `url` in and waits until
-  // the load stops. Returns true on success.
-  // NOTE: Only supported on Win/Mac/Linux/ChromeOS. Intentionally fails on
-  // Android.
-  [[nodiscard]] bool NavigateToURL(BrowserWindowInterface* browser_window,
-                                   const GURL& url);
-
   // Puts the current tab title in |title|. Returns true on success.
   bool GetCurrentTabTitle(std::u16string* title);
 
