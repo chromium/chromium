@@ -39,6 +39,7 @@ import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -78,7 +79,10 @@ class DropdownItemViewInfoListBuilder {
      * @return AutocompleteUIContext with all necessary dependencies
      */
     private AutocompleteUIContext createUIContext(
-            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
+            Context context,
+            SuggestionHost host,
+            UrlBarEditingTextStateProvider textProvider,
+            OmniboxActionDelegate actionDelegate) {
         return new AutocompleteUIContext(
                 context,
                 host,
@@ -87,7 +91,8 @@ class DropdownItemViewInfoListBuilder {
                 mBookmarkState,
                 mActivityTabSupplier,
                 mShareDelegateSupplier,
-                mToolbarPositionSupplier);
+                mToolbarPositionSupplier,
+                actionDelegate);
     }
 
     /**
@@ -99,13 +104,17 @@ class DropdownItemViewInfoListBuilder {
      */
     @Initializer
     void initDefaultProcessors(
-            Context context, SuggestionHost host, UrlBarEditingTextStateProvider textProvider) {
+            Context context,
+            SuggestionHost host,
+            UrlBarEditingTextStateProvider textProvider,
+            OmniboxActionDelegate actionDelegate) {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         mImageSupplier =
                 OmniboxFeatures.isLowMemoryDevice() ? null : new OmniboxImageSupplier(context);
 
-        AutocompleteUIContext uiContext = createUIContext(context, host, textProvider);
+        AutocompleteUIContext uiContext =
+                createUIContext(context, host, textProvider, actionDelegate);
 
         mGroupSeparatorProcessor = new GroupSeparatorProcessor(uiContext.context);
         mHeaderProcessor = new HeaderProcessor(uiContext.context);

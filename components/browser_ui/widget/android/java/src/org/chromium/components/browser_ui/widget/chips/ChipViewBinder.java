@@ -50,6 +50,8 @@ public class ChipViewBinder {
                     .setTextAppearance(model.get(ChipProperties.PRIMARY_TEXT_APPEARANCE));
         } else if (ChipProperties.SELECTED == key) {
             chip.setSelected(model.get(ChipProperties.SELECTED));
+        } else if (ChipProperties.SELECT_HANDLER == key) {
+            chip.setSelectHandler(model.get(ChipProperties.SELECT_HANDLER));
         } else if (ChipProperties.TEXT == key) {
             chip.getPrimaryTextView().setText(model.get(ChipProperties.TEXT));
         } else if (ChipProperties.TEXT_MAX_WIDTH_PX == key) {

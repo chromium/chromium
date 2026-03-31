@@ -125,4 +125,12 @@ public abstract class OmniboxAction {
      * @return true if the interaction with the Omnibox should be concluded, false otherwise.
      */
     public abstract boolean execute(OmniboxActionDelegate delegate);
+
+    /**
+     * Called when the action is focused via keyboard navigation.
+     *
+     * @param isSelected whether the action is selected.
+     * @param delegate delegate capable of routing and executing variety of action-specific tasks
+     */
+    public void onActionFocusedFromKeyboard(boolean isSelected, OmniboxActionDelegate delegate) {}
 }

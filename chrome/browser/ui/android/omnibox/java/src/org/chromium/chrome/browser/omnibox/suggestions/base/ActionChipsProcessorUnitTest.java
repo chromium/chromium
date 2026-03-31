@@ -37,6 +37,7 @@ public class ActionChipsProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock SuggestionHost mSuggestionHost;
+    private @Mock OmniboxActionDelegate mActionDelegate;
 
     private ActionChipsProcessor mProcessor;
     private PropertyModel mModel;
@@ -44,7 +45,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mProcessor = new ActionChipsProcessor(mSuggestionHost);
+        mProcessor = new ActionChipsProcessor(mSuggestionHost, mActionDelegate);
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
     }
 

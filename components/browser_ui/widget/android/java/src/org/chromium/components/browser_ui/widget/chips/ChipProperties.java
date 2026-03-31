@@ -33,6 +33,13 @@ public class ChipProperties {
     public static final WritableObjectPropertyKey<Callback<PropertyModel>> CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * A means of handling selection/focus on a chip. The selection state is provided in the
+     * callback.
+     */
+    public static final WritableObjectPropertyKey<Callback<Boolean>> SELECT_HANDLER =
+            new WritableObjectPropertyKey<>();
+
     /** The description of the content inside the chip (for accessibility). */
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
@@ -67,6 +74,7 @@ public class ChipProperties {
             new PropertyKey[] {
                 APPLY_ICON_TINT,
                 CLICK_HANDLER,
+                SELECT_HANDLER,
                 CONTENT_DESCRIPTION,
                 ENABLED,
                 ICON,

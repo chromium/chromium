@@ -29,6 +29,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
@@ -86,6 +87,7 @@ public class ChipView extends LinearLayout {
     private @MonotonicNonNull LinearLayout mTextViewsWrapper;
     private @MonotonicNonNull AppCompatTextView mSecondaryText;
     private @Px int mMaxWidth = Integer.MAX_VALUE;
+    private @Nullable Callback<Boolean> mSelectHandler;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -704,5 +706,23 @@ public class ChipView extends LinearLayout {
                         : View.LAYOUT_DIRECTION_LTR;
 
         setLayoutDirection(layoutDirection);
+    }
+
+    /**
+     * Set a handler to be invoked when the selection state of the chip changes.
+     *
+     * @param selectHandler The callback to be invoked with the new selection state.
+     */
+    public void setSelectHandler(@Nullable Callback<Boolean> selectHandler) {
+        mSelectHandler = selectHandler;
+    }
+
+    @Override
+    public void setSelected(boolean isSelected) {
+        boolean wasSelected = isSelected();
+        super.setSelected(isSelected);
+        if (mSelectHandler != null && wasSelected != isSelected) {
+            mSelectHandler.onResult(isSelected);
+        }
     }
 }

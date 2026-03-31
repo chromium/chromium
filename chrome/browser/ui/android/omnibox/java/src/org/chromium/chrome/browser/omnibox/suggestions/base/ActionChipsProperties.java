@@ -33,7 +33,8 @@ public @interface ActionChipsProperties {
 
     /** Action Chip descriptors. */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    WritableObjectPropertyKey<ModelList> ACTION_CHIPS = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<ModelList> ACTION_CHIPS =
+            new WritableObjectPropertyKey<>();
 
     PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {ACTION_CHIPS};
 }
