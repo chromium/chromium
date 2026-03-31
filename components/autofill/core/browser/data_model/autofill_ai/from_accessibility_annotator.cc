@@ -38,9 +38,7 @@ constexpr std::optional<EntityType> FromAccessibilityAnnotator(
       case Src::kOrder:
         return Tgt::kOrder;
       case Src::kShipment:
-        // TODO(crbug.com/484094746): Map to `EntityTypeName::kShipment` once
-        // crrev.com/c/7573639 is submitted.
-        return std::nullopt;
+        return Tgt::kShipment;
       case Src::kDriversLicense:
         return Tgt::kDriversLicense;
       case Src::kPassport:
@@ -201,9 +199,20 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
             add(&aa::Order::grand_total, kOrderGrandTotal);
           },
 
-          [](const aa::Shipment& src) {
-            // TODO(crbug.com/484094746): Map to `EntityTypeName::kShipment`
-            // once crrev.com/c/7573639 is submitted.
+          [&](const aa::Shipment& src) {
+            auto add = [&](auto member, AttributeTypeName type_name) {
+              AddAttributeInstance(src, member, type_name, attributes);
+            };
+            add(&aa::Shipment::tracking_number, kShipmentTrackingNumber);
+            add(&aa::Shipment::associated_order_id, kShipmentOrderIds);
+            add(&aa::Shipment::carrier_name, kShipmentCarrierName);
+            add(&aa::Shipment::carrier_domain, kShipmentCarrierDomain);
+            add(&aa::Shipment::estimated_delivery_date,
+                kShipmentEstimatedDeliveryDate);
+            // TODO(crbug.com/484094746): Map `delivery_address` to
+            // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
+            // `std::string`, it's unclear how we can process this (here and in
+            // general).
           },
 
           [&](const aa::Passport& src) {
@@ -270,81 +279,76 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
                         /*frecency_override=*/"");
 }
 
-aa::QueryIntentType AttributeTypeToEntryType(AttributeType type) {
-#define ATTRIBUTE_TO_ENTRY(name) \
-  case AttributeTypeName::name:  \
+aa::QueryIntentType AttributeTypeToQueryIntentType(AttributeType type) {
+#define ATTRIBUTE_TO_QUERY_INTENT(name) \
+  case AttributeTypeName::name:         \
     return aa::QueryIntentType::name
 
   switch (type.name()) {
-    ATTRIBUTE_TO_ENTRY(kDriversLicenseName);
-    ATTRIBUTE_TO_ENTRY(kDriversLicenseState);
-    ATTRIBUTE_TO_ENTRY(kDriversLicenseNumber);
-    ATTRIBUTE_TO_ENTRY(kDriversLicenseIssueDate);
-    ATTRIBUTE_TO_ENTRY(kDriversLicenseExpirationDate);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationPassengerName);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationFlightNumber);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationTicketNumber);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationConfirmationCode);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationDepartureAirport);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationArrivalAirport);
-    ATTRIBUTE_TO_ENTRY(kFlightReservationDepartureDate);
-    ATTRIBUTE_TO_ENTRY(kKnownTravelerNumberName);
-    ATTRIBUTE_TO_ENTRY(kKnownTravelerNumberNumber);
-    ATTRIBUTE_TO_ENTRY(kKnownTravelerNumberExpirationDate);
-    ATTRIBUTE_TO_ENTRY(kNationalIdCardName);
-    ATTRIBUTE_TO_ENTRY(kNationalIdCardCountry);
-    ATTRIBUTE_TO_ENTRY(kNationalIdCardNumber);
-    ATTRIBUTE_TO_ENTRY(kNationalIdCardIssueDate);
-    ATTRIBUTE_TO_ENTRY(kNationalIdCardExpirationDate);
-    ATTRIBUTE_TO_ENTRY(kOrderAccount);
-    ATTRIBUTE_TO_ENTRY(kOrderDate);
-    ATTRIBUTE_TO_ENTRY(kOrderGrandTotal);
-    ATTRIBUTE_TO_ENTRY(kOrderId);
-    ATTRIBUTE_TO_ENTRY(kOrderMerchantDomain);
-    ATTRIBUTE_TO_ENTRY(kOrderMerchantName);
-    ATTRIBUTE_TO_ENTRY(kOrderProductNames);
-    ATTRIBUTE_TO_ENTRY(kPassportName);
-    ATTRIBUTE_TO_ENTRY(kPassportCountry);
-    ATTRIBUTE_TO_ENTRY(kPassportNumber);
-    ATTRIBUTE_TO_ENTRY(kPassportIssueDate);
-    ATTRIBUTE_TO_ENTRY(kPassportExpirationDate);
-    ATTRIBUTE_TO_ENTRY(kRedressNumberName);
-    ATTRIBUTE_TO_ENTRY(kRedressNumberNumber);
-    ATTRIBUTE_TO_ENTRY(kVehicleOwner);
-    ATTRIBUTE_TO_ENTRY(kVehiclePlateNumber);
-    ATTRIBUTE_TO_ENTRY(kVehiclePlateState);
-    ATTRIBUTE_TO_ENTRY(kVehicleVin);
-    ATTRIBUTE_TO_ENTRY(kVehicleMake);
-    ATTRIBUTE_TO_ENTRY(kVehicleModel);
-    ATTRIBUTE_TO_ENTRY(kVehicleYear);
-    // TODO(b/484094746): Add the shipment entities to AA.
-    case AttributeTypeName::kShipmentCarrierName:
-    case AttributeTypeName::kShipmentCarrierDomain:
-    case AttributeTypeName::kShipmentTrackingNumber:
-    case AttributeTypeName::kShipmentDeliveryZipCode:
+    ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseName);
+    ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseState);
+    ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseIssueDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kDriversLicenseExpirationDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationPassengerName);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationFlightNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationTicketNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationConfirmationCode);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationDepartureAirport);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationArrivalAirport);
+    ATTRIBUTE_TO_QUERY_INTENT(kFlightReservationDepartureDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kKnownTravelerNumberName);
+    ATTRIBUTE_TO_QUERY_INTENT(kKnownTravelerNumberNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kKnownTravelerNumberExpirationDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardName);
+    ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardCountry);
+    ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardIssueDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kNationalIdCardExpirationDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderAccount);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderGrandTotal);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderId);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderMerchantDomain);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderMerchantName);
+    ATTRIBUTE_TO_QUERY_INTENT(kOrderProductNames);
+    ATTRIBUTE_TO_QUERY_INTENT(kPassportName);
+    ATTRIBUTE_TO_QUERY_INTENT(kPassportCountry);
+    ATTRIBUTE_TO_QUERY_INTENT(kPassportNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kPassportIssueDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kPassportExpirationDate);
+    ATTRIBUTE_TO_QUERY_INTENT(kRedressNumberName);
+    ATTRIBUTE_TO_QUERY_INTENT(kRedressNumberNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehicleOwner);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehiclePlateNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehiclePlateState);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehicleVin);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehicleMake);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehicleModel);
+    ATTRIBUTE_TO_QUERY_INTENT(kVehicleYear);
+    ATTRIBUTE_TO_QUERY_INTENT(kShipmentCarrierName);
+    ATTRIBUTE_TO_QUERY_INTENT(kShipmentCarrierDomain);
+    ATTRIBUTE_TO_QUERY_INTENT(kShipmentTrackingNumber);
+    ATTRIBUTE_TO_QUERY_INTENT(kShipmentEstimatedDeliveryDate);
     case AttributeTypeName::kShipmentOrderIds:
+      return aa::QueryIntentType::kShipmentAssociatedOrderId;
     case AttributeTypeName::kShipmentOrderDates:
     case AttributeTypeName::kShipmentMerchantName:
     case AttributeTypeName::kShipmentProductNames:
-    case AttributeTypeName::kShipmentEstimatedDeliveryDate:
+    case AttributeTypeName::kShipmentDeliveryZipCode:
+      // TODO(crbug.com/484094746): Map `delivery_address` to
+      // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
+      // `std::string`, it's unclear how we can process this (here and in
+      // general).
       return aa::QueryIntentType::kUnknown;
   }
-#undef ATTRIBUTE_TO_ENTRY
+#undef ATTRIBUTE_TO_QUERY_INTENT
   return aa::QueryIntentType::kUnknown;
 }
 
 std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
   switch (type) {
     case aa::QueryIntentType::kUnknown:
-    // TODO(crbug.com/484094746): Map Shipment entities to Autofill once
-    // crrev.com/c/7573639 is submitted.
-    case aa::QueryIntentType::kShipmentFull:
-    case aa::QueryIntentType::kShipmentTrackingNumber:
-    case aa::QueryIntentType::kShipmentAssociatedOrderId:
-    case aa::QueryIntentType::kShipmentDeliveryAddress:
-    case aa::QueryIntentType::kShipmentCarrierName:
-    case aa::QueryIntentType::kShipmentCarrierDomain:
-    case aa::QueryIntentType::kShipmentEstimatedDeliveryDate:
       return u"";
     // Field types:
     // TODO(crbug.com/481979475): Use internationalization for these strings.
@@ -380,7 +384,8 @@ std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
     case aa::QueryIntentType::kRedressNumberFull:
     case aa::QueryIntentType::kKnownTravelerNumberFull:
     case aa::QueryIntentType::kDriversLicenseFull:
-    case aa::QueryIntentType::kOrderFull: {
+    case aa::QueryIntentType::kOrderFull:
+    case aa::QueryIntentType::kShipmentFull: {
       std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
       const auto* entity_type =
           data_type ? std::get_if<EntityType>(&*data_type) : nullptr;
@@ -428,7 +433,13 @@ std::u16string GetEntryTypeNameForI18n(aa::QueryIntentType type) {
     case aa::QueryIntentType::kOrderMerchantName:
     case aa::QueryIntentType::kOrderMerchantDomain:
     case aa::QueryIntentType::kOrderProductNames:
-    case aa::QueryIntentType::kOrderGrandTotal: {
+    case aa::QueryIntentType::kOrderGrandTotal:
+    case aa::QueryIntentType::kShipmentTrackingNumber:
+    case aa::QueryIntentType::kShipmentAssociatedOrderId:
+    case aa::QueryIntentType::kShipmentDeliveryAddress:
+    case aa::QueryIntentType::kShipmentCarrierName:
+    case aa::QueryIntentType::kShipmentCarrierDomain:
+    case aa::QueryIntentType::kShipmentEstimatedDeliveryDate: {
       std::optional<AtMemoryDataType> data_type = ToAtMemoryDataType(type);
       const auto* attribute_type =
           data_type ? std::get_if<AttributeType>(&*data_type) : nullptr;

@@ -70,7 +70,7 @@ MemorySearchResult CreateResultFromEntityAttribute(
     std::u16string other_value = other_attr.GetCompleteInfo(app_locale);
     if (!other_value.empty()) {
       QueryIntentType metadata_type =
-          AttributeTypeToEntryType(other_attr.type());
+          AttributeTypeToQueryIntentType(other_attr.type());
       entry.metadata_list.emplace_back(metadata_type,
                                        GetEntryTypeNameForI18n(metadata_type),
                                        std::move(other_value));
@@ -196,7 +196,8 @@ std::vector<MemorySearchResult> FetchAutofillAiEntityData(
       std::u16string attr_value = attr.GetCompleteInfo(app_locale);
       if (!attr_value.empty()) {
         values.push_back(attr_value);
-        QueryIntentType metadata_type = AttributeTypeToEntryType(attr.type());
+        QueryIntentType metadata_type =
+            AttributeTypeToQueryIntentType(attr.type());
         all_metadata.emplace_back(metadata_type,
                                   GetEntryTypeNameForI18n(metadata_type),
                                   std::move(attr_value));
@@ -218,7 +219,8 @@ std::vector<MemorySearchResult> FetchAutofillAiEntityData(
         continue;
       }
       entries.push_back(CreateResultFromEntityAttribute(
-          entity, attr, AttributeTypeToEntryType(attr.type()), app_locale));
+          entity, attr, AttributeTypeToQueryIntentType(attr.type()),
+          app_locale));
     }
   }
   return entries;

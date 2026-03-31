@@ -107,16 +107,34 @@ TEST(AtMemoryDataTypeTest, ToAtMemoryDataType) {
               Optional(VariantWith<AttributeType>(
                   AttributeType(AttributeTypeName::kOrderId))));
 
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kShipmentFull),
+              Optional(VariantWith<autofill::EntityType>(
+                  autofill::EntityType(EntityTypeName::kShipment))));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kShipmentTrackingNumber),
+              Optional(VariantWith<AttributeType>(
+                  AttributeType(AttributeTypeName::kShipmentTrackingNumber))));
+  EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kShipmentAssociatedOrderId),
+              Optional(VariantWith<AttributeType>(
+                  AttributeType(AttributeTypeName::kShipmentOrderIds))));
+
   EXPECT_THAT(ToAtMemoryDataType(QueryIntentType::kUnknown), Eq(std::nullopt));
 }
 
-TEST(AtMemoryDataTypeTest, AttributeTypeToEntryType) {
-  EXPECT_THAT(
-      AttributeTypeToEntryType(AttributeType(AttributeTypeName::kVehicleMake)),
-      Eq(accessibility_annotator::QueryIntentType::kVehicleMake));
-  EXPECT_THAT(AttributeTypeToEntryType(
+TEST(AtMemoryDataTypeTest, AttributeTypeToQueryIntentType) {
+  EXPECT_THAT(AttributeTypeToQueryIntentType(
+                  AttributeType(AttributeTypeName::kVehicleMake)),
+              Eq(accessibility_annotator::QueryIntentType::kVehicleMake));
+  EXPECT_THAT(AttributeTypeToQueryIntentType(
                   AttributeType(AttributeTypeName::kPassportNumber)),
               Eq(accessibility_annotator::QueryIntentType::kPassportNumber));
+  EXPECT_THAT(
+      AttributeTypeToQueryIntentType(
+          AttributeType(AttributeTypeName::kShipmentTrackingNumber)),
+      Eq(accessibility_annotator::QueryIntentType::kShipmentTrackingNumber));
+  EXPECT_THAT(
+      AttributeTypeToQueryIntentType(
+          AttributeType(AttributeTypeName::kShipmentOrderIds)),
+      Eq(accessibility_annotator::QueryIntentType::kShipmentAssociatedOrderId));
 }
 
 TEST(AtMemoryDataTypeTest, GetEntryTypeNameForI18n) {

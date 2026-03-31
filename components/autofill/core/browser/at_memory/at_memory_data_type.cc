@@ -23,6 +23,9 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
 #define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type)                 \
   case accessibility_annotator::QueryIntentType::intent_and_attribute_type: \
     return AttributeType(AttributeTypeName::intent_and_attribute_type)
+#define INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(intent, attribute_type) \
+  case accessibility_annotator::QueryIntentType::intent:           \
+    return AttributeType(AttributeTypeName::attribute_type)
 
   switch (query_intent_type) {
     INTENT_TO_FIELD_TYPE(kNameFull, NAME_FULL);
@@ -85,26 +88,29 @@ std::optional<AtMemoryDataType> ToAtMemoryDataType(
     INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantDomain);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderProductNames);
     INTENT_TO_ATTRIBUTE_TYPE(kOrderGrandTotal);
+    INTENT_TO_ENTITY_TYPE(kShipmentFull, kShipment);
+    INTENT_TO_ATTRIBUTE_TYPE(kShipmentTrackingNumber);
+    INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME(kShipmentAssociatedOrderId,
+                                       kShipmentOrderIds);
+    INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierName);
+    INTENT_TO_ATTRIBUTE_TYPE(kShipmentCarrierDomain);
+    INTENT_TO_ATTRIBUTE_TYPE(kShipmentEstimatedDeliveryDate);
     case accessibility_annotator::QueryIntentType::kUnknown:
     case accessibility_annotator::QueryIntentType::kIbanNickname:
     case accessibility_annotator::QueryIntentType::
         kFlightReservationArrivalDate:
-    // TODO(crbug.com/484094746): Map Shipment entities to Autofill once
-    // crrev.com/c/7573639 is submitted.
-    case accessibility_annotator::QueryIntentType::kShipmentFull:
-    case accessibility_annotator::QueryIntentType::kShipmentTrackingNumber:
-    case accessibility_annotator::QueryIntentType::kShipmentAssociatedOrderId:
+    // TODO(crbug.com/484094746): Map `delivery_address` to
+    // `kShipmentDeliveryZipCode`. Since `delivery_address` is a
+    // `std::string`, it's unclear how we can process this (here and in
+    // general).
     case accessibility_annotator::QueryIntentType::kShipmentDeliveryAddress:
-    case accessibility_annotator::QueryIntentType::kShipmentCarrierName:
-    case accessibility_annotator::QueryIntentType::kShipmentCarrierDomain:
-    case accessibility_annotator::QueryIntentType::
-        kShipmentEstimatedDeliveryDate:
       return std::nullopt;
   }
 
 #undef INTENT_TO_ATTRIBUTE_TYPE
 #undef INTENT_TO_ENTITY_TYPE
 #undef INTENT_TO_FIELD_TYPE
+#undef INTENT_TO_ATTRIBUTE_TYPE_WITH_NAME
 }
 
 }  // namespace autofill

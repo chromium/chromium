@@ -35,7 +35,7 @@ std::optional<EntityInstance> FromAccessibilityAnnotator(
     const accessibility_annotator::Entity& entity);
 
 // Translates Autofill attribute names to entry types.
-accessibility_annotator::QueryIntentType AttributeTypeToEntryType(
+accessibility_annotator::QueryIntentType AttributeTypeToQueryIntentType(
     AttributeType type);
 
 // Returns the localized name of the entry type.
