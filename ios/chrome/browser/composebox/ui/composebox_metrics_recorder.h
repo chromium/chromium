@@ -111,6 +111,9 @@ enum class ComposeboxDragAndDropType {
 - (void)recordAttachmentsMenuOpenedWithVisibleButtons:
     (std::vector<FuseboxAttachmentButtonType>)visibleButtons;
 
+// Records whether the user edited the text before entering AI Mode.
+- (void)recordTextEditedBeforeAiMode:(BOOL)edited;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_METRICS_RECORDER_H_

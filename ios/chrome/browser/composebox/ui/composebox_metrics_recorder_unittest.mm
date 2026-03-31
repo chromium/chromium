@@ -162,3 +162,12 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentsMenuOpenedWithVisibleButtons) {
       "Omnibox.MobileFusebox.AttachmentButtonShown",
       static_cast<int>(FuseboxAttachmentButtonType::kFiles), 1);
 }
+
+TEST_F(ComposeboxMetricsRecorderTest, TextEditedBeforeAiMode) {
+  [recorder_ recordTextEditedBeforeAiMode:YES];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.TextEditedBeforeAiMode", true, 1);
+  [recorder_ recordTextEditedBeforeAiMode:NO];
+  histogram_tester_.ExpectBucketCount(
+      "Omnibox.MobileFusebox.TextEditedBeforeAiMode", false, 1);
+}
