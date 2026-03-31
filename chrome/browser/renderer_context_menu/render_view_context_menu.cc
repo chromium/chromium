@@ -4412,6 +4412,7 @@ void RenderViewContextMenu::ExecGlic() {
       if (tab) {
         glic::GlicInvokeOptions options(
             glic::mojom::InvocationSource::kWebContentsContextMenu);
+        options.fre_override = glic::mojom::FreOverride::kTrustFirstInline;
         std::string arm = features::kGlicContextMenuArm.Get();
         if (arm == "arm2") {
           options.prompts.push_back(
