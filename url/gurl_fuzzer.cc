@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/gurl.h"
+
+#include <string_view>
+
 #include "base/at_exit.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/i18n/icu_util.h"
 #include "base/no_destructor.h"
-#include "url/gurl.h"
+#include "base/strings/string_view_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 struct TestCase {
   TestCase() { CHECK(base::i18n::InitializeICU()); }
@@ -41,29 +47,27 @@ void CheckReplaceComponentsPreservesSpec(const GURL& url) {
 }
 
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 1)
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> bytes) {
+  if (bytes.empty()) {
     return 0;
-  // SAFETY: libufzzer is responsible to pass valid `data` and `size`.
-  auto bytes = UNSAFE_BUFFERS(base::span<const uint8_t>(data, size));
+  }
   {
-    std::string_view string_piece_input(base::as_chars(bytes));
-    const GURL url_from_string_piece(string_piece_input);
+    const GURL url_from_string_piece(base::as_string_view(bytes));
     CheckIdempotency(url_from_string_piece);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece);
   }
   // Test for std::u16string_view if size is even.
-  if (size % sizeof(char16_t) == 0) {
-    std::u16string_view string_piece_input16(
-        reinterpret_cast<const char16_t*>(data), size / sizeof(char16_t));
-    const GURL url_from_string_piece16(string_piece_input16);
+  if (bytes.size() % sizeof(char16_t) == 0) {
+    const GURL url_from_string_piece16(
+        std::u16string_view(reinterpret_cast<const char16_t*>(bytes.data()),
+                            bytes.size() / sizeof(char16_t)));
     CheckIdempotency(url_from_string_piece16);
     CheckReplaceComponentsPreservesSpec(url_from_string_piece16);
   }
   // Resolve relative url tests.
   {
     constexpr size_t kSizeTBytes = sizeof(size_t);
-    if (size < kSizeTBytes + 1) {
+    if (bytes.size() < kSizeTBytes + 1) {
       return 0;
     }
     // `bytes` is split into three spans; `size_bytes`, `relative_chars`, and

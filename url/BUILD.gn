@@ -275,6 +275,7 @@ fuzzer_test("gurl_fuzzer") {
     ":url",
     "//base",
     "//base:i18n",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
   dict = "gurl_fuzzer.dict"
 }
