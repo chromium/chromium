@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
 class SidePanelEntryScope;
@@ -23,7 +24,10 @@ class View;
 class HistorySidePanelCoordinator {
  public:
   explicit HistorySidePanelCoordinator(BrowserWindowInterface* browser);
-  ~HistorySidePanelCoordinator() = default;
+  ~HistorySidePanelCoordinator();
+
+  DECLARE_USER_DATA(HistorySidePanelCoordinator);
+  static HistorySidePanelCoordinator* From(BrowserWindowInterface* interface);
 
   // Returns whether HistorySidePanelCoordinator is supported.
   // If this returns false, it should not be registered with the side
@@ -49,6 +53,9 @@ class HistorySidePanelCoordinator {
   std::string initial_query_;
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  ui::ScopedUnownedUserData<HistorySidePanelCoordinator>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_HISTORY_HISTORY_SIDE_PANEL_COORDINATOR_H_

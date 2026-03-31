@@ -277,10 +277,6 @@ class BrowserWindowFeatures {
     return cast_browser_controller_.get();
   }
 
-  HistorySidePanelCoordinator* history_side_panel_coordinator() {
-    return history_side_panel_coordinator_.get();
-  }
-
   BookmarksSidePanelCoordinator* bookmarks_side_panel_coordinator() {
     return bookmarks_side_panel_coordinator_.get();
   }

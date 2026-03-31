@@ -51,9 +51,8 @@ void SidePanelHelper::PopulateGlobalEntries(
 
   // Add history.
   if (HistorySidePanelCoordinator::IsSupported()) {
-    browser->browser_window_features()
-        ->history_side_panel_coordinator()
-        ->CreateAndRegisterEntry(window_registry);
+    HistorySidePanelCoordinator::From(browser)->CreateAndRegisterEntry(
+        window_registry);
   }
 
   // Add comments.
