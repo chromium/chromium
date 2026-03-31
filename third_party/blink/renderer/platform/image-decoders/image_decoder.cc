@@ -1044,6 +1044,11 @@ wtf_size_t ImagePlanes::RowBytes(cc::YUVIndex index) const {
 ColorProfile::ColorProfile(const skcms_ICCProfile& profile)
     : profile_(profile) {}
 
+ColorProfile::ColorProfile(
+    std::unique_ptr<SkCodecs::ICCProfileChromium> skia_profile)
+    : profile_(skia_profile->GetProfile()),
+      skia_profile_(std::move(skia_profile)) {}
+
 ColorProfile::~ColorProfile() = default;
 
 std::unique_ptr<ColorProfile> ColorProfile::Create(
@@ -1053,9 +1058,7 @@ std::unique_ptr<ColorProfile> ColorProfile::Create(
   if (!skia_profile) {
     return nullptr;
   }
-  auto result = std::make_unique<ColorProfile>(skia_profile->GetProfile());
-  result->skia_profile_ = std::move(skia_profile);
-  return result;
+  return std::make_unique<ColorProfile>(std::move(skia_profile));
 }
 
 ColorProfileTransform::ColorProfileTransform(

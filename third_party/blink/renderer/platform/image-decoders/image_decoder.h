@@ -123,6 +123,7 @@ class PLATFORM_EXPORT ColorProfile final {
 
  public:
   explicit ColorProfile(const skcms_ICCProfile&);
+  explicit ColorProfile(std::unique_ptr<SkCodecs::ICCProfileChromium>);
   ColorProfile(const ColorProfile&) = delete;
   ColorProfile& operator=(const ColorProfile&) = delete;
   static std::unique_ptr<ColorProfile> Create(base::span<const uint8_t> buffer);
