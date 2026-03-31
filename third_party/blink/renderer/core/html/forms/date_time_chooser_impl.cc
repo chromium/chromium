@@ -139,7 +139,7 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
           GetLocale().QueryString(IDS_FORM_OTHER_DATE_LABEL);
   }
 
-  AddString(
+  AddLiteral(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
       "content='light dark'><style>\n",
       data);
@@ -151,7 +151,7 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
       parameters_->type == InputType::Type::kDateTimeLocal) {
     data.Append(ChooserResourceLoader::GetTimePickerStyleSheet());
   }
-  AddString(
+  AddLiteral(
       "</style></head><body><div id=main>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
       data);
@@ -241,7 +241,7 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
                     .SerializeAsCSSColor(),
                 data);
   }
-  AddString("}\n", data);
+  AddLiteral("}\n", data);
 
   data.Append(ChooserResourceLoader::GetPickerCommonJS());
   data.Append(ChooserResourceLoader::GetSuggestionPickerJS());
@@ -253,7 +253,7 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
     data.Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
   }
   data.Append(ChooserResourceLoader::GetCalendarPickerJS());
-  AddString("</script></body>\n", data);
+  AddLiteral("</script></body>\n", data);
 }
 
 Element& DateTimeChooserImpl::OwnerElement() {

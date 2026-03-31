@@ -106,13 +106,13 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
       client_->ElementRectRelativeToLocalRoot(), frame_->View());
 
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
       "content='light dark'><style>\n",
       data);
   data.Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data.Append(ChooserResourceLoader::GetColorPickerStyleSheet());
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "</style></head><body>\n"
       "<div id='main'>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
@@ -143,11 +143,11 @@ void ColorChooserPopupUIController::WriteColorPickerDocument(
   AddLocalizedProperty("axFormatTogglerLabel", IDS_AX_COLOR_FORMAT_TOGGLER,
                        data);
   AddLocalizedProperty("axEyedropperLabel", IDS_AX_COLOR_EYEDROPPER, data);
-  PagePopupClient::AddString("};\n", data);
+  PagePopupClient::AddLiteral("};\n", data);
   data.Append(ChooserResourceLoader::GetPickerCommonJS());
   data.Append(ChooserResourceLoader::GetColorPickerJS());
   data.Append(ChooserResourceLoader::GetColorPickerCommonJS());
-  PagePopupClient::AddString("</script></body>\n", data);
+  PagePopupClient::AddLiteral("</script></body>\n", data);
 #endif
 }
 
@@ -165,14 +165,14 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
   gfx::Rect anchor_rect_in_screen = chrome_client_->LocalRootToScreenDIPs(
       client_->ElementRectRelativeToLocalRoot(), frame_->View());
 
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
       "content='light dark'><style>\n",
       data);
   data.Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data.Append(ChooserResourceLoader::GetColorSuggestionPickerStyleSheet());
   data.Append(ChooserResourceLoader::GetColorPickerStyleSheet());
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "</style></head><body>\n"
       "<div id='main'>Loading...</div><script>\n"
       "window.dialogArguments = {\n",
@@ -189,12 +189,12 @@ void ColorChooserPopupUIController::WriteColorSuggestionPickerDocument(
 #if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
-  PagePopupClient::AddString("};\n", data);
+  PagePopupClient::AddLiteral("};\n", data);
   data.Append(ChooserResourceLoader::GetPickerCommonJS());
   data.Append(ChooserResourceLoader::GetColorSuggestionPickerJS());
   data.Append(ChooserResourceLoader::GetColorPickerJS());
   data.Append(ChooserResourceLoader::GetColorPickerCommonJS());
-  PagePopupClient::AddString("</script></body>\n", data);
+  PagePopupClient::AddLiteral("</script></body>\n", data);
 }
 
 Locale& ColorChooserPopupUIController::GetLocale() {
@@ -261,12 +261,12 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
     return;
   // Notify the popup that there is a response from the eye dropper.
   SegmentedBuffer data;
-  PagePopupClient::AddString("window.updateData = {\n", data);
+  PagePopupClient::AddLiteral("window.updateData = {\n", data);
   AddProperty("success", success, data);
   // TODO(https://crbug.com/1351544): The EyeDropper should use Color or
   // SkColor4f.
   AddProperty("color", Color::FromRGBA32(color).SerializeAsCSSColor(), data);
-  PagePopupClient::AddString("}\n", data);
+  PagePopupClient::AddLiteral("}\n", data);
   Vector<char> flatten_data = std::move(data).CopyAs<Vector<char>>();
   popup_->PostMessageToPopup(
       String::FromUtf8(base::as_string_view(flatten_data)));

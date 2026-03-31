@@ -212,16 +212,16 @@ void ValidationMessageOverlayDelegate::CreatePage(const FrameOverlay& overlay) {
 }
 
 void ValidationMessageOverlayDelegate::WriteDocument(SegmentedBuffer& data) {
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "<!DOCTYPE html><head><meta charset='UTF-8'><meta name='color-scheme' "
       "content='light dark'><style>",
       data);
   data.Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_CSS));
-  PagePopupClient::AddString("</style></head>", data);
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral("</style></head>", data);
+  PagePopupClient::AddLiteral(
       Locale::DefaultLocale().IsRTL() ? "<body dir=rtl>" : "<body dir=ltr>",
       data);
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(
       "<div id=container>"
       "<div id=outer-arrow-top></div>"
       "<div id=inner-arrow-top></div>"
@@ -229,15 +229,15 @@ void ValidationMessageOverlayDelegate::WriteDocument(SegmentedBuffer& data) {
       "<main id=bubble-body>",
       data);
   data.Append(UncompressResourceAsBinary(IDR_VALIDATION_BUBBLE_ICON));
-  PagePopupClient::AddString(message_dir_ == TextDirection::kLtr
-                                 ? "<div dir=ltr id=main-message></div>"
-                                 : "<div dir=rtl id=main-message></div>",
-                             data);
-  PagePopupClient::AddString(sub_message_dir_ == TextDirection::kLtr
-                                 ? "<div dir=ltr id=sub-message></div>"
-                                 : "<div dir=rtl id=sub-message></div>",
-                             data);
-  PagePopupClient::AddString(
+  PagePopupClient::AddLiteral(message_dir_ == TextDirection::kLtr
+                                  ? "<div dir=ltr id=main-message></div>"
+                                  : "<div dir=rtl id=main-message></div>",
+                              data);
+  PagePopupClient::AddLiteral(sub_message_dir_ == TextDirection::kLtr
+                                  ? "<div dir=ltr id=sub-message></div>"
+                                  : "<div dir=rtl id=sub-message></div>",
+                              data);
+  PagePopupClient::AddLiteral(
       "</main>"
       "<div id=outer-arrow-bottom></div>"
       "<div id=inner-arrow-bottom></div>"
