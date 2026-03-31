@@ -43,7 +43,17 @@ public class MultiWindowTestUtils {
         if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);
     }
 
-    /* package */ static void createInstances(
+    /**
+     * Create test persisted instance state.
+     *
+     * @param numActive The number of active instances to create.
+     * @param numInactive The number of inactive instances to create.
+     * @param profileType The {@link SupportedProfileType} of the instances.
+     * @param startId The first instance id to use for the set of instances. Active Instances will
+     *     be created starting with this id followed by inactive instances with values incremented
+     *     by 1 for each persisted instance.
+     */
+    public static void createInstances(
             int numActive, int numInactive, @SupportedProfileType int profileType, int startId) {
         int start = startId;
         int end = start + numActive;

@@ -1047,6 +1047,21 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
+     * @param type A bit-int representing one or more {@link PersistedInstanceType}s.
+     * @return A set of instance ids of the specified {@code type} that are not marked for deletion.
+     */
+    public static Set<Integer> getUsableInstanceIds(@PersistedInstanceType int type) {
+        Set<Integer> ids = getPersistedInstanceIds(type);
+        Set<Integer> usableIds = new HashSet<>();
+        for (int id : ids) {
+            if (!ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) {
+                usableIds.add(id);
+            }
+        }
+        return usableIds;
+    }
+
+    /**
      * @return The instance ID of the Chrome window with a running activity that was accessed last.
      */
     public static int getInstanceIdForViewIntent() {

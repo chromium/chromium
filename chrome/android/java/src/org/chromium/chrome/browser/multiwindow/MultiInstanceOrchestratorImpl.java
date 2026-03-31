@@ -28,10 +28,8 @@ import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /** Implements {@link MultiInstanceOrchestrator} as a singleton. */
 @NullMarked
@@ -135,18 +133,6 @@ import java.util.Set;
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.TAB_REPARENTING_TO_INSTANCE_WITH_NO_ACTIVITY);
         }
-    }
-
-    @Override
-    public Set<Integer> getUsableWindowIds(@PersistedInstanceType int type) {
-        Set<Integer> ids = MultiWindowUtils.getPersistedInstanceIds(type);
-        Set<Integer> usableIds = new HashSet<>();
-        for (int id : ids) {
-            if (!ChromeMultiInstancePersistentStore.readMarkedForDeletion(id)) {
-                usableIds.add(id);
-            }
-        }
-        return usableIds;
     }
 
     /**

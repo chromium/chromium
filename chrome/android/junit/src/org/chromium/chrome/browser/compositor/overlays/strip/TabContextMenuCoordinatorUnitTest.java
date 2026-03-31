@@ -73,6 +73,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -80,6 +81,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -294,8 +296,12 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
         when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
                 .thenReturn(Collections.singletonList(INSTANCE_INFO_1));
-        when(mMultiInstanceOrchestrator.getUsableWindowIds(ACTIVE))
-                .thenReturn(Set.of(INSTANCE_ID_1));
+        // Create persisted instance state.
+        MultiWindowTestUtils.createInstances(
+                /* numActive= */ 3,
+                /* numInactive= */ 0,
+                SupportedProfileType.MIXED,
+                /* startId= */ INSTANCE_ID_1);
 
         // Mute related setup.
         when(mTab1.getWebContents()).thenReturn(mWebContents);

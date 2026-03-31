@@ -49,9 +49,6 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -103,7 +100,6 @@ public class TabWindowManagerImplUnitTest {
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private MultiInstanceManager mMultiInstanceManager;
-    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabModelSelectorFactory mTabModelSelectorFactory;
     @Mock private Destroyable mDestroyable;
     @Mock private TabModelSelector mTabModelSelector;
@@ -155,7 +151,6 @@ public class TabWindowManagerImplUnitTest {
                 };
 
         mSubject = createTabWindowManager(mockTabModelSelectorFactory);
-        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
     }
 
     private ActivityController<Activity> createActivity() {
@@ -1054,8 +1049,7 @@ public class TabWindowManagerImplUnitTest {
 
     @Test
     public void testKeepAllTabModelsLoaded() {
-        when(mMultiInstanceOrchestrator.getUsableWindowIds(PersistedInstanceType.ANY))
-                .thenReturn(Set.of(0, 1, 2));
+        Set<Integer> windowIds = Set.of(0, 1, 2);
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -1071,7 +1065,7 @@ public class TabWindowManagerImplUnitTest {
 
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
 
-        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
+        mSubject.keepAllTabModelsLoaded(windowIds, mProfile, mTabModelSelector);
         assertEquals(3, mSubject.getAllTabModelSelectors().size());
 
         ActivityController<Activity> activityController1 = createActivity();
@@ -1086,7 +1080,7 @@ public class TabWindowManagerImplUnitTest {
                 mMismatchedIndicesHandler0,
                 1);
 
-        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
+        mSubject.keepAllTabModelsLoaded(windowIds, mProfile, mTabModelSelector);
         assertEquals(3, mSubject.getAllTabModelSelectors().size());
 
         destroyActivity(activityController1);
@@ -1100,8 +1094,6 @@ public class TabWindowManagerImplUnitTest {
     @Test
     public void testKeepAllTabModelsLoaded_broadcast() {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
-        when(mMultiInstanceOrchestrator.getUsableWindowIds(PersistedInstanceType.ANY))
-                .thenReturn(Set.of(0));
 
         // The default mock TabModelSelectorFactory is hard to verify
         // broadcastSessionRestoreComplete with. So this test creates just enough to verify it
@@ -1118,7 +1110,7 @@ public class TabWindowManagerImplUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         TabWindowManager tabWindowManager = createTabWindowManager(mTabModelSelectorFactory);
 
-        tabWindowManager.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
+        tabWindowManager.keepAllTabModelsLoaded(Set.of(0), mProfile, mTabModelSelector);
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModel).broadcastSessionRestoreComplete();
     }
@@ -1131,9 +1123,6 @@ public class TabWindowManagerImplUnitTest {
         when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
                 .thenReturn(mTabGroupModelFilter);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
-        // This is the behavior a pre-31 device would exhibit.
-        when(mMultiInstanceOrchestrator.getUsableWindowIds(PersistedInstanceType.ANY))
-                .thenReturn(Collections.emptySet());
 
         ActivityController<Activity> activityController0 = createActivity();
         Activity activity0 = activityController0.get();
@@ -1148,7 +1137,8 @@ public class TabWindowManagerImplUnitTest {
                 0);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
 
-        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, mTabModelSelector);
+        // A pre-31 device would not use persisted window ids.
+        mSubject.keepAllTabModelsLoaded(Collections.emptySet(), mProfile, mTabModelSelector);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTabModel).broadcastSessionRestoreComplete();
@@ -1247,7 +1237,7 @@ public class TabWindowManagerImplUnitTest {
         assertFalse(mSubject.isAllTabStateInitialized());
         verify(observer, never()).onAllTabModelStateInitialized();
 
-        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, selector0);
+        mSubject.keepAllTabModelsLoaded(Set.of(0), mProfile, selector0);
         selector0.markTabStateInitialized();
 
         doReturn(true).when(mArchivedTabModelSelector).isTabStateInitialized();
@@ -1302,10 +1292,7 @@ public class TabWindowManagerImplUnitTest {
         assertFalse(mSubject.isAllTabStateInitialized());
         verify(observer, never()).onAllTabModelStateInitialized();
 
-        when(mMultiInstanceOrchestrator.getUsableWindowIds(PersistedInstanceType.ANY))
-                .thenReturn(Set.of(0, 1));
-
-        mSubject.keepAllTabModelsLoaded(mMultiInstanceManager, mProfile, selector0);
+        mSubject.keepAllTabModelsLoaded(Set.of(0, 1), mProfile, selector0);
 
         // Simulate initialization completion
         selector0.markTabStateInitialized();

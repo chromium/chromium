@@ -652,8 +652,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
         List<ListItem> result = new ArrayList<>();
 
-        Set<Integer> activeInstanceIds = mMultiInstanceOrchestrator.getUsableWindowIds(ACTIVE);
-
+        Set<Integer> activeInstanceIds = MultiWindowUtils.getUsableInstanceIds(ACTIVE);
         for (SavedTabGroup tabGroup : sortedTabGroups) {
             if (tabGroup.localId == null) continue;
             if (Objects.equals(groupToNotBeIncluded, tabGroup.localId.tabGroupId)) {

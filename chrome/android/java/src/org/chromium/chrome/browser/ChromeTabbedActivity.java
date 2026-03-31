@@ -186,6 +186,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -3802,7 +3803,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         Profile originalProfile = getProfileProviderSupplier().get().getOriginalProfile();
         TabWindowManagerSingleton.getInstance()
                 .keepAllTabModelsLoaded(
-                        mMultiInstanceManager, originalProfile, getTabModelSelector());
+                        MultiWindowUtils.getUsableInstanceIds(PersistedInstanceType.ANY),
+                        originalProfile,
+                        getTabModelSelector());
 
         VersioningMessageBanner.maybeShow(
                 activity, messageDispatcher, getModalDialogManager(), profile);

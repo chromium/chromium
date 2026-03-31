@@ -26,6 +26,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
@@ -229,13 +230,12 @@ public interface TabWindowManager {
     /**
      * Starts to initialize tab models for all windows with data. Some may be headless.
      *
-     * @param multiInstanceManager Used to fetch window ids.
+     * @param windowIds Set of persisted, usable window ids.
      * @param profile Used to scope access.
      * @param selector The current selector for the caller, used as a fallback when window
      *     information is not available.
      */
-    void keepAllTabModelsLoaded(
-            MultiInstanceManager multiInstanceManager, Profile profile, TabModelSelector selector);
+    void keepAllTabModelsLoaded(Set<Integer> windowIds, Profile profile, TabModelSelector selector);
 
     /**
      * Tries to discern the correct window id that contains a tab group. This may be a like activity
