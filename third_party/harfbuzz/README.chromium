@@ -13,8 +13,8 @@ License File: src/COPYING
 
 Description:
 HarfBuzz is a text shaping engine. It primarily supports OpenType, but also
-Apple Advanced Typography. Check “What is HarfBuzz?” chapter in the user manual
-here https://harfbuzz.github.io/what-is-harfbuzz.html for more inforamation on
+Apple Advanced Typography. Check "What is HarfBuzz?" chapter in the user manual
+here https://harfbuzz.github.io/what-is-harfbuzz.html for more information on
 what HarfBuzz do and what it doesn’t do.
 
 This copy of harfbuzz is usually updated by running
