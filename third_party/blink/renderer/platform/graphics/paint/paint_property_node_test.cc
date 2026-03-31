@@ -852,31 +852,4 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 }
 
-#if DCHECK_IS_ON()
-TEST_F(PaintPropertyNodeTest, PropertyTreePrinterLoopsAndDisconnected) {
-  auto* root1 = Create2DTranslation(t0(), 1, 1);
-  auto* child1 = Create2DTranslation(*root1, 2, 2);
-
-  // Create a loop.
-  const_cast<TransformPaintPropertyNode*>(root1)->SetParent(*child1);
-
-  // Disconnected subtree.
-  auto* root2 = Create2DTranslation(t0(), 3, 3);
-  auto* child2 = Create2DTranslation(*root2, 4, 4);
-
-  PropertyTreePrinter printer;
-  printer.AddNode(root1);
-  printer.AddNode(child1);
-  printer.AddNode(root2);
-  printer.AddNode(child2);
-
-  String output = printer.NodesAsTreeString();
-  LOG(INFO) << "property tree:\n" << output.Utf8();
-  EXPECT_FALSE(output.empty());
-
-  // Break the loop so tear down doesn't crash if it traverses parents.
-  const_cast<TransformPaintPropertyNode*>(root1)->SetParent(t0());
-}
-#endif
-
 }  // namespace blink

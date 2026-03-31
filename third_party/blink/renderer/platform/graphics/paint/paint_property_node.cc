@@ -117,47 +117,23 @@ String PropertyTreePrinter::NodesAsTreeString() {
     return "";
   }
   StringBuilder string_builder;
-  HeapHashSet<Member<const PaintPropertyNode>> visited;
-  size_t roots = 0;
-  for (const auto& n : nodes_) {
-    if (visited.Contains(n)) {
-      continue;
-    }
-    ++roots;
-    const PaintPropertyNode& unvisited_root = RootNode(*n.Get());
-    CHECK(!visited.Contains(&unvisited_root));
-    if (roots == 1 && unvisited_root.DebugName().empty()) {
-      const_cast<PaintPropertyNode*>(&unvisited_root)->SetDebugName("root");
-    } else if (roots == 2) {  // Only need to print disconnected subtrees once.
-      string_builder.Append("disconnected trees:\n");
-    }
-    BuildTreeString(string_builder, unvisited_root, 0, visited);
-  }
-
+  BuildTreeString(string_builder, RootNode(), 0);
   return string_builder.ToString();
 }
 
 String PropertyTreePrinter::PathAsString(const PaintPropertyNode& last_node) {
   for (const auto* n = &last_node; n; n = n->Parent()) {
-    wtf_size_t old_size = nodes_.size();
     AddNode(n);
-    if (nodes_.size() == old_size) {
-      break;
-    }
   }
   return NodesAsTreeString();
 }
 
-void PropertyTreePrinter::BuildTreeString(
-    StringBuilder& string_builder,
-    const PaintPropertyNode& node,
-    unsigned indent,
-    HeapHashSet<Member<const PaintPropertyNode>>& visited) {
+void PropertyTreePrinter::BuildTreeString(StringBuilder& string_builder,
+                                          const PaintPropertyNode& node,
+                                          unsigned indent) {
   for (unsigned i = 0; i < indent; i++) {
     string_builder.Append(' ');
   }
-
-  visited.insert(&node);
 
   string_builder.Append(node.DebugName());
   string_builder.Append(String::Format(" %p ", &node));
@@ -168,28 +144,21 @@ void PropertyTreePrinter::BuildTreeString(
 
   for (const auto& child_node : nodes_) {
     if (child_node->Parent() == &node) {
-      if (visited.Contains(child_node)) {
-        for (unsigned i = 0; i < indent + 2; i++) {
-          string_builder.Append(' ');
-        }
-        string_builder.Append(child_node->DebugName());
-        string_builder.Append(String::Format(" %p [LOOP]\n", child_node.Get()));
-      } else {
-        BuildTreeString(string_builder, *child_node, indent + 2, visited);
-      }
+      BuildTreeString(string_builder, *child_node, indent + 2);
     }
   }
 }
 
-const PaintPropertyNode& PropertyTreePrinter::RootNode(
-    const PaintPropertyNode& start_node) {
-  const PaintPropertyNode* root_node = &start_node;
-  HeapHashSet<Member<const PaintPropertyNode>> path;
-  while (!root_node->IsRoot() && !path.Contains(root_node)) {
-    path.insert(root_node);
-    root_node = root_node->Parent();
+const PaintPropertyNode& PropertyTreePrinter::RootNode() {
+  const auto* node = nodes_.back().Get();
+  while (!node->IsRoot()) {
+    node = node->Parent();
   }
-  return *root_node;
+  if (node->DebugName().empty()) {
+    const_cast<PaintPropertyNode*>(node)->SetDebugName("root");
+  }
+  nodes_.insert(node);
+  return *node;
 }
 
 #endif  // DCHECK_IS_ON()

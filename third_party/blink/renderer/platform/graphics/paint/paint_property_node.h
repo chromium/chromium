@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #if DCHECK_IS_ON()
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #endif
@@ -283,9 +282,9 @@ class PLATFORM_EXPORT PropertyTreePrinter {
  private:
   void BuildTreeString(StringBuilder& string_builder,
                        const PaintPropertyNode& node,
-                       unsigned indent,
-                       HeapHashSet<Member<const PaintPropertyNode>>& visited);
-  const PaintPropertyNode& RootNode(const PaintPropertyNode& start_node);
+                       unsigned indent);
+  const PaintPropertyNode& RootNode();
+
   HeapLinkedHashSet<Member<const PaintPropertyNode>> nodes_;
 };
 
