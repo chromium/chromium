@@ -73,7 +73,9 @@ class BotPlatformTest(unittest.TestCase):
         self.assertEqual(len(bot_configs), 1)
         config = bot_configs[0]
         self.assertEqual(config.name, 'speedometer3.crossbench')
-        self.assertSequenceEqual(config.arguments, ("--extra-flag", "--other"))
+        self.assertSequenceEqual(
+            config.arguments,
+            ("--extra-flag", "--other", "--enable-field-trials"))
 
   def testLoadScheduleFileWithFlagValues(self):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -92,8 +94,9 @@ class BotPlatformTest(unittest.TestCase):
         self.assertEqual(len(bot_configs), 1)
         config = bot_configs[0]
         self.assertEqual(config.name, 'speedometer3.crossbench')
-        self.assertSequenceEqual(config.arguments,
-                                 ("--extra-flag=1", "--other=value"))
+        self.assertSequenceEqual(
+            config.arguments,
+            ("--extra-flag=1", "--other=value", "--enable-field-trials"))
 
   def testLoadScheduleFileWithFlagValuesCommas(self):
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -116,9 +119,10 @@ class BotPlatformTest(unittest.TestCase):
         self.assertEqual(len(bot_configs), 1)
         config = bot_configs[0]
         self.assertEqual(config.name, 'speedometer3.crossbench')
-        self.assertSequenceEqual(config.arguments,
-                                 ("--extra-flag=1", "--other=value",
-                                  "--js-flags=--no-opt,--sparkplug"))
+        self.assertSequenceEqual(
+            config.arguments,
+            ("--extra-flag=1", "--other=value",
+             "--js-flags=--no-opt,--sparkplug", "--enable-field-trials"))
 
   def testLoadScheduleFileDuplicateBot(self):
     with tempfile.TemporaryDirectory() as tmpdir:

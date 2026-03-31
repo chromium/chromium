@@ -8,6 +8,10 @@ import json
 import os
 import unittest
 
+from core import path_util
+
+path_util.AddTelemetryToPath()
+
 from core import bot_platforms
 from core import sharding_map_generator
 
@@ -212,5 +216,5 @@ class TestShardingMapGenerator(unittest.TestCase):
         'cb_benchmark_0_name',
         sharding_map['2']['crossbench']['cb_benchmark_0']['crossbench_name'])
     self.assertEqual(
-        ['--my_arg'],
+        ['--my_arg', '--enable-field-trials'],
         sharding_map['2']['crossbench']['cb_benchmark_0']['arguments'])

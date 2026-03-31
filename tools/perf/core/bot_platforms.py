@@ -226,13 +226,21 @@ class CrossbenchConfig(BenchmarkConfig):
                crossbench_name: str,
                estimated_runtime: int = 60,
                stories=None,
-               flags: tuple[str, ...] = ()):
+               flags: tuple[str, ...] = (),
+               auto_enable_field_trials=True):
     super().__init__(name)
     self.crossbench_name = crossbench_name
     self.estimated_runtime = estimated_runtime
     self.stories = stories or ['default']
     self.arguments: tuple[str, ...] = flags
     self.repeat = 1
+    if auto_enable_field_trials:
+      # Somewhat hacky solution if we want to run without field trials.
+      if "--disable-field-trials" not in self.arguments and (
+          "--disable-field-trial-config" not in self.arguments):
+        self.arguments += ("--enable-field-trials", )
+    assert len(self.arguments) == len(set(
+        self.arguments)), (f"Found duplicate arguments in {self.arguments}")
 
   @property
   def extra_flags(self) -> tuple[str, ...]:
