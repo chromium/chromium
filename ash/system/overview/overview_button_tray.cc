@@ -39,12 +39,10 @@ namespace ash {
 
 namespace {
 
-bool ShouldButtonBeVisible() {
+bool ShouldButtonBeVisible(session_manager::SessionState state) {
   auto* shell = Shell::Get();
-  SessionControllerImpl* session_controller = shell->session_controller();
-  if (session_controller->GetSessionState() !=
-          session_manager::SessionState::ACTIVE ||
-      session_controller->IsRunningInAppMode()) {
+  if (state != session_manager::SessionState::ACTIVE ||
+      shell->session_controller()->IsRunningInAppMode()) {
     return false;
   }
 
@@ -66,10 +64,11 @@ OverviewButtonTray::OverviewButtonTray(Shelf* shelf)
                      /*tooltip=*/IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME,
                      /*accessibility_name=*/
                      IDS_ASH_OVERVIEW_BUTTON_ACCESSIBLE_NAME,
-                     TrayBackgroundViewCatalogName::kOverview),
-      scoped_session_observer_(this) {
+                     TrayBackgroundViewCatalogName::kOverview) {
   SetCallback(base::BindRepeating(&OverviewButtonTray::OnButtonPressed,
                                   base::Unretained(this)));
+
+  set_icon_visibility_callback(base::BindRepeating(&ShouldButtonBeVisible));
 
   image_view()->SetImage(ui::ImageModel::FromImageSkia(GetIconImage()));
 
@@ -110,11 +109,6 @@ void OverviewButtonTray::OnGestureEvent(ui::GestureEvent* event) {
     SplitViewController::Get(Shell::GetPrimaryRootWindow())
         ->OnOverviewButtonTrayLongPressed(event->location());
   }
-}
-
-void OverviewButtonTray::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  UpdateIconVisibility();
 }
 
 void OverviewButtonTray::OnTabletModeEventsBlockingChanged() {
@@ -206,7 +200,8 @@ void OverviewButtonTray::OnButtonPressed(const ui::Event& event) {
 }
 
 void OverviewButtonTray::UpdateIconVisibility() {
-  SetVisiblePreferred(ShouldButtonBeVisible());
+  SetVisiblePreferred(ShouldButtonBeVisible(
+      Shell::Get()->session_controller()->GetSessionState()));
 }
 
 gfx::ImageSkia OverviewButtonTray::GetIconImage() {

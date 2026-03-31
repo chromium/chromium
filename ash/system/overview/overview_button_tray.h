@@ -31,7 +31,6 @@ namespace ash {
 // This tray will only be visible while in this state. This tray does not
 // provide any bubble view windows.
 class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
-                                      public SessionObserver,
                                       public OverviewObserver,
                                       public TabletModeObserver,
                                       public ShelfConfig::Observer {
@@ -58,9 +57,6 @@ class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
   // OverviewObserver:
   void OnOverviewModeStarting() override;
   void OnOverviewModeEnded() override;
@@ -86,8 +82,6 @@ class ASH_EXPORT OverviewButtonTray : public ImagedTrayIcon,
   void UpdateIconVisibility();
 
   gfx::ImageSkia GetIconImage();
-
-  ScopedSessionObserver scoped_session_observer_;
 
   // Stores the timestamp of the last tap event time that happened while not
   // in overview mode. Used to check for double taps, which invoke quick switch.

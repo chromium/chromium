@@ -15,7 +15,7 @@ namespace ash {
 class Shelf;
 
 // Defines a shelf tray button that is used to toggle WM Mode on and off.
-class WmModeButtonTray : public ImagedTrayIcon, public SessionObserver {
+class WmModeButtonTray : public ImagedTrayIcon {
   METADATA_HEADER(WmModeButtonTray, ImagedTrayIcon)
 
  public:
@@ -34,14 +34,6 @@ class WmModeButtonTray : public ImagedTrayIcon, public SessionObserver {
   // No need to override since the icon and activation state of this tray will
   // change and get updated simultaneously in `UpdateButtonVisuals()`.
   void UpdateTrayItemColor(bool is_active) override {}
-
-  // SessionObserver:
-  void OnSessionStateChanged(session_manager::SessionState state) override;
-
- private:
-  // Updates the visibility of this tray button based on the current state of
-  // the user session (i.e. whether it's blocked or not).
-  void UpdateButtonVisibility();
 };
 
 }  // namespace ash

@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 
-bool ShouldButtonBeVisible() {
+bool ShouldButtonBeVisible(session_manager::SessionState state) {
   return !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
 
@@ -41,12 +41,10 @@ WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
   SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
-  Shell::Get()->session_controller()->AddObserver(this);
+  set_icon_visibility_callback(base::BindRepeating(&ShouldButtonBeVisible));
 }
 
-WmModeButtonTray::~WmModeButtonTray() {
-  Shell::Get()->session_controller()->RemoveObserver(this);
-}
+WmModeButtonTray::~WmModeButtonTray() = default;
 
 void WmModeButtonTray::UpdateButtonVisuals(bool is_wm_mode_active) {
   const ui::ColorId color_id =
@@ -63,16 +61,8 @@ void WmModeButtonTray::OnThemeChanged() {
 }
 
 void WmModeButtonTray::UpdateAfterLoginStatusChange() {
-  UpdateButtonVisibility();
-}
-
-void WmModeButtonTray::OnSessionStateChanged(
-    session_manager::SessionState state) {
-  UpdateButtonVisibility();
-}
-
-void WmModeButtonTray::UpdateButtonVisibility() {
-  SetVisiblePreferred(ShouldButtonBeVisible());
+  SetVisiblePreferred(ShouldButtonBeVisible(
+      Shell::Get()->session_controller()->GetSessionState()));
 }
 
 BEGIN_METADATA(WmModeButtonTray)

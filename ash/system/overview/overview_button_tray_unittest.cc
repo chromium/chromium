@@ -93,10 +93,7 @@ class OverviewButtonTrayTest : public AshTestBase {
     TabletModeController::SetUseScreenshotForTest(true);
   }
 
-  void NotifySessionStateChanged() {
-    GetTray()->OnSessionStateChanged(
-        Shell::Get()->session_controller()->GetSessionState());
-  }
+  void NotifySessionStateChanged() { GetTray()->UpdateIconVisibility(); }
 
   // Helper function to perform a double tap on the overview button tray.
   void PerformDoubleTap() {
