@@ -7,10 +7,14 @@ package org.chromium.chrome.browser.ui.app_rating;
 import android.app.Activity;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.segmentation_platform.SegmentationPlatformServiceFactory;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.segmentation_platform.ClassificationResult;
 import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.components.segmentation_platform.PredictionOptions;
@@ -30,6 +34,7 @@ import java.lang.ref.WeakReference;
 public class AppRatingPromoController {
     private final Profile mProfile;
     private final WeakReference<Activity> mActivityRef;
+    private @Nullable Tracker mTracker;
 
     public AppRatingPromoController(Profile profile, Activity activity) {
         mProfile = profile;
@@ -48,8 +53,12 @@ public class AppRatingPromoController {
             return;
         }
 
-        // TODO(crbug.com/493342419): Implement a 72-hour Clank-wide cooldown check to ensure
-        // that no other promotional UI has been shown recently.
+        mTracker = TrackerFactory.getTrackerForProfile(mProfile);
+        // Check if the 72-hour cooldown has passed (without actually claiming the UI yet).
+        // This fails fast to avoid waking up the Segmentation Service unnecessarily.
+        if (!mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
+            return;
+        }
 
         checkSegmentationResult();
     }
@@ -87,6 +96,14 @@ public class AppRatingPromoController {
             return;
         }
 
+        // Double-check eligibility and officially claim the UI state.
+        // This is necessary because another promo might have been triggered while we were waiting
+        // for the async segmentation result.
+        if (mTracker != null
+                && !mTracker.shouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
+            return;
+        }
+
         triggerAppRatingReviewFlow(activity);
     }
 
@@ -103,6 +120,10 @@ public class AppRatingPromoController {
                     // This callback only indicates that the API flow has finished (or failed
                     // silently). It does NOT mean the user saw the dialog or provided a rating.
                     // TODO(crbug.com/493340627): Log or update metrics */
+                    if (mTracker != null) {
+                        // Tell the tracker we're done so it releases the UI lock.
+                        mTracker.dismissed(FeatureConstants.APP_RATING_PROMPT_FEATURE);
+                    }
                 });
     }
 }
