@@ -29,6 +29,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
 namespace {
 // See the definition of `v8::internal::ScriptCompileTimerScope::CacheBehaviour`
 // in `v8/src/codegen/compiler.cc` for the correspondence.
@@ -491,3 +492,4 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 }
 
 }  // namespace content
+#endif  // !BUILDFLAG(IS_FUCHSIA)
