@@ -65,6 +65,7 @@
 #include "third_party/omnibox_proto/section_config.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
@@ -99,6 +100,9 @@ bool IsThinkingModel(omnibox::ModelMode model) {
 }
 
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(OmniboxContextMenuController,
+                                      kDeepResearchIdForTesting);
 
 OmniboxContextMenuController::OmniboxContextMenuController(
     OmniboxPopupFileSelector* file_selector,
@@ -291,6 +295,10 @@ void OmniboxContextMenuController::AddToolItems() {
       auto& menu_item_info = tool_info_[tool];
       AddItemWithIcon(next_command_id_, menu_item_info.menu_label,
                       menu_item_info.menu_icon);
+      if (tool == omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH) {
+        menu_model_->SetElementIdentifierAt(menu_model_->GetItemCount() - 1,
+                                            kDeepResearchIdForTesting);
+      }
       tool_for_command_id_[next_command_id_] = tool;
       next_command_id_++;
     }
@@ -302,6 +310,8 @@ void OmniboxContextMenuController::AddToolItems() {
 
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_DEEP_RESEARCH,
                                IDS_NTP_COMPOSE_DEEP_SEARCH, deep_search_icon);
+    menu_model_->SetElementIdentifierAt(menu_model_->GetItemCount() - 1,
+                                        kDeepResearchIdForTesting);
   }
 }
 

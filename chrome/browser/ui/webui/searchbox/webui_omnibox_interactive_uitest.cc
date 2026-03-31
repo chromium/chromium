@@ -10,10 +10,12 @@
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/omnibox/omnibox_context_menu_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_aim_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -40,12 +42,12 @@
 #include "ui/views/controls/webview/webview.h"
 
 namespace {
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPopupWebView);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebView);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAimPopupWebView);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
-const DeepQuery kClassicContextMenu = {"omnibox-popup-app", "#context",
-                                       "#entrypoint"};
+const DeepQuery kClassicContextMenu = {"omnibox-popup-app", "#context"};
 const DeepQuery kDropdownContent = {"omnibox-popup-app",
                                     "cr-searchbox-dropdown", "#content"};
 const DeepQuery kOmniboxPopup = {"omnibox-popup-app"};
@@ -108,12 +110,13 @@ class OmniboxWebUiInteractiveTestBase
   }
 
   auto WaitForClassicPopupReady() {
-    return Steps(InAnyContext(WaitForShow(
-                     OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-                 InAnyContext(InstrumentNonTabWebView(
-                     kPopupWebView, GetActiveClassicPopupWebView())),
-                 InSameContext(WaitForWebContentsReady(
-                     kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))));
+    return Steps(
+        InAnyContext(
+            WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
+        InAnyContext(InstrumentNonTabWebView(kClassicPopupWebView,
+                                             GetActiveClassicPopupWebView())),
+        InSameContext(WaitForWebContentsReady(
+            kClassicPopupWebView, GURL(chrome::kChromeUIOmniboxPopupURL))));
   }
 };
 
@@ -157,10 +160,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, PopupResurfaces) {
       EnterGeminiMode(),
       // With a query entered, no matches should show.
       EnterText(kOmniboxElementId, u"q"),
-      InAnyContext(WaitForElementToHide(kPopupWebView, kDropdownContent)),
+      InAnyContext(
+          WaitForElementToHide(kClassicPopupWebView, kDropdownContent)),
       // Pressing backspace should surface matches.
       SendKeyPress(kOmniboxElementId, ui::VKEY_BACK),
-      InAnyContext(WaitForElementToRender(kPopupWebView, kClassicMatchText)));
+      InAnyContext(
+          WaitForElementToRender(kClassicPopupWebView, kClassicMatchText)));
 }
 
 // Ensures matches show in Gemini mode when there is input, and that
@@ -172,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, GeminiHidesVerbatimMatch) {
       EnterGeminiMode(),
       // With a query entered, no suggestion match should be shown.
       EnterText(kOmniboxElementId, u"query"),
-      InAnyContext(WaitForElementToHide(kPopupWebView, kDropdownContent)),
+      InAnyContext(
+          WaitForElementToHide(kClassicPopupWebView, kDropdownContent)),
       // Confirming should navigate to the Gemini URL.
       Confirm(kOmniboxElementId),
       WaitForWebContentsNavigation(
@@ -194,9 +200,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest,
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
       EnterGeminiMode(),
       // Ensure the initial match is the default search suggestion.
-      WaitForVerbatimMatch(kPopupWebView, kClassicMatchText, "@gemini"),
+      WaitForVerbatimMatch(kClassicPopupWebView, kClassicMatchText, "@gemini"),
       // Clicking the top match should navigate to a Google search results page.
-      InSameContext(ClickElement(kPopupWebView, kClassicMatch)),
+      InSameContext(ClickElement(kClassicPopupWebView, kClassicMatch)),
       WaitForGoogleSearch(kNewTab, "%40gemini&oq=%40gemini"));
 }
 
@@ -250,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxWebUiInteractiveTest, AimEntryPointHidden) {
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
       WaitForClassicPopupReady(),
       // Ensure that there's no context menu button in the popup.
-      InAnyContext(EnsureNotPresent(kPopupWebView, kClassicContextMenu)));
+      InAnyContext(
+          EnsureNotPresent(kClassicPopupWebView, kClassicContextMenu)));
 }
 
 class OmniboxAimWebUiInteractiveTestBase
@@ -301,10 +308,10 @@ class OmniboxAimWebUiInteractiveTestBase
     return Steps(
         InAnyContext(
             WaitForShow(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
-        InAnyContext(
-            InstrumentNonTabWebView(kPopupWebView, GetActiveAimPopupWebView())),
+        InAnyContext(InstrumentNonTabWebView(kAimPopupWebView,
+                                             GetActiveAimPopupWebView())),
         InSameContext(WaitForWebContentsReady(
-            kPopupWebView, GURL(chrome::kChromeUIOmniboxPopupAimURL))));
+            kAimPopupWebView, GURL(chrome::kChromeUIOmniboxPopupAimURL))));
   }
 
   // Opens the AIM popup by clicking the page action icon.
@@ -313,7 +320,7 @@ class OmniboxAimWebUiInteractiveTestBase
         WaitForPageActionChipVisible(kActionAiMode),
         FocusElement(kOmniboxElementId),
         PressButton(kAiModePageActionIconElementId), WaitForAimPopupReady(),
-        InAnyContext(WaitForElementToRender(kPopupWebView, kAimInput)));
+        InAnyContext(WaitForElementToRender(kAimPopupWebView, kAimInput)));
   }
 
   // Opens the AIM popup in a new tab to ensure a clean state.
@@ -337,11 +344,11 @@ class OmniboxAimWebUiInteractiveTestBase
   auto InputAimPopupText(const std::string& text) {
     return Steps(
         InSameContext(ExecuteJsAt(
-            kPopupWebView, kAimInput,
+            kAimPopupWebView, kAimInput,
             base::StringPrintf("el => { el.value = '%s'; "
                                "el.dispatchEvent(new Event('input')); }",
                                text.c_str()))),
-        InAnyContext(WaitForAimInputValue(kPopupWebView, kAimInput, text)));
+        InAnyContext(WaitForAimInputValue(kAimPopupWebView, kAimInput, text)));
   }
 
   auto RemoveFocusFromPopup() {
@@ -353,7 +360,7 @@ class OmniboxAimWebUiInteractiveTestBase
 
   auto TriggerAimVoiceSearch(const std::string& result) {
     return Steps(InSameContext(ExecuteJsAt(
-        kPopupWebView, kVoiceSearch,
+        kAimPopupWebView, kVoiceSearch,
         base::StringPrintf("el => el.dispatchEvent(new CustomEvent("
                            "'voice-search-final-result', "
                            "{detail: '%s', bubbles: true, composed: true}))",
@@ -389,10 +396,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       // Open the AIM popup.
       OpenAimPopupInNewTab(),
       // Verify popup's web contents have focus.
-      CheckJsResult(kPopupWebView, "() => document.hasFocus()", true),
+      CheckJsResult(kAimPopupWebView, "() => document.hasFocus()", true),
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false),
       // Hide the popup.
-      InAnyContext(ExecuteJsAt(kPopupWebView, kCancelIcon, "el => el.click()")),
+      InAnyContext(
+          ExecuteJsAt(kAimPopupWebView, kCancelIcon, "el => el.click()")),
       InAnyContext(
           WaitForHide(OmniboxPopupPresenterBase::kRoundedResultsFrame)),
       // Verify location bar has focus.
@@ -411,10 +419,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       // Open the AIM popup.
       OpenAimPopupInNewTab(),
       // Verify web contents have focus.
-      CheckJsResult(kPopupWebView, "() => document.hasFocus()", true),
+      CheckJsResult(kAimPopupWebView, "() => document.hasFocus()", true),
       // Trigger a search.
       InputAimPopupText("foo"),
-      InSameContext(ClickElement(kPopupWebView, kAimSubmit)),
+      InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)),
       WaitForGoogleSearch(kNewTab, "foo"),
       // Verify tab has focus and not the location bar.
       CheckJsResult(kNewTab, "() => document.hasFocus()", true),
@@ -422,13 +430,31 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       AimEntryPointShownInClassicPopup) {
+                       ClassicContextMenuOpensDeepSearch) {
+  const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "cr-composebox",
+                               "cr-composebox-tool-chip"};
   RunTestSequence(
       SetAimEligibleResponse(),
+      // Open the classic popup.
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUINewTabURL)),
       FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
       WaitForClassicPopupReady(),
-      InAnyContext(WaitForElementToRender(kPopupWebView, kClassicContextMenu)));
+      // Wait for the context menu button to render in the popup.
+      InAnyContext(
+          WaitForElementToRender(kClassicPopupWebView, kClassicContextMenu)),
+      MayInvolveNativeContextMenu(
+          // Open the context menu and click "Deep Search".
+          InSameContext(
+              ClickElement(kClassicPopupWebView, kClassicContextMenu)),
+          InAnyContext(WaitForShow(
+              OmniboxContextMenuController::kDeepResearchIdForTesting)),
+          InSameContext(SelectMenuItem(
+              OmniboxContextMenuController::kDeepResearchIdForTesting)),
+          // Wait for classic popup to hide and AIM popup to show.
+          InAnyContext(WaitForHide(kClassicPopupWebView))),
+      WaitForAimPopupReady(),
+      // Wait for deep search chip to render in AIM popup.
+      InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, TextTransfersOnDismiss) {
@@ -507,7 +533,7 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimSearchFulfillmentTest,
          Then(param.submit_via_keyboard
                   ? InAnyContext(
                         SendKeyPress(kOmniboxElementId, ui::VKEY_RETURN))
-                  : InSameContext(ClickElement(kPopupWebView, kAimSubmit)))),
+                  : InSameContext(ClickElement(kAimPopupWebView, kAimSubmit)))),
       // Ensure tab navigates to a Google search results page.
       WaitForGoogleSearch(kNewTab, query));
 }

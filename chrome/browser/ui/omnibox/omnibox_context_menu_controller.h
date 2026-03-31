@@ -60,6 +60,7 @@ enum class OmniboxPopupState;
 // shown for the omnibox.
 class OmniboxContextMenuController : public ui::SimpleMenuModel::Delegate {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDeepResearchIdForTesting);
   explicit OmniboxContextMenuController(OmniboxPopupFileSelector* file_selector,
                                         content::WebContents* web_contents);
   struct TabInfo {
