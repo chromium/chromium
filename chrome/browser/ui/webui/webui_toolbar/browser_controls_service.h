@@ -18,8 +18,7 @@ class MetricsReporter;
 
 namespace browser_controls_api {
 
-class BrowserControlsService
-    : public browser_controls_api::mojom::BrowserControlsService {
+class BrowserControlsService : public mojom::BrowserControlsService {
  public:
   class BrowserControlsServiceDelegate {
    public:
@@ -41,16 +40,21 @@ class BrowserControlsService
   void SetDelegate(BrowserControlsServiceDelegate* delegate);
 
   // browser_controls_api::mojom::BrowserControlsService:
+  // TODO(crbug.com/445765534): migrate to straightline stub to eliminate the
+  // need for callbacks.
   void ReloadFromClick(
       bool bypass_cache,
-      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
-  void StopLoad() override;
-  void Back(const std::vector<mojom::ClickDispositionFlag>& flags) override;
-  void Forward(const std::vector<mojom::ClickDispositionFlag>& flags) override;
-  void BackButtonHovered() override;
-  void SplitActiveTab() override;
-  void NavigateHome(
-      const std::vector<mojom::ClickDispositionFlag>& click_flags) override;
+      const std::vector<mojom::ClickDispositionFlag>& click_flags,
+      ReloadFromClickCallback callback) override;
+  void StopLoad(StopLoadCallback callback) override;
+  void Back(const std::vector<mojom::ClickDispositionFlag>& flags,
+            BackCallback callback) override;
+  void Forward(const std::vector<mojom::ClickDispositionFlag>& flags,
+               ForwardCallback callback) override;
+  void BackButtonHovered(BackButtonHoveredCallback callback) override;
+  void SplitActiveTab(SplitActiveTabCallback callback) override;
+  void NavigateHome(const std::vector<mojom::ClickDispositionFlag>& click_flags,
+                    NavigateHomeCallback callback) override;
 
  private:
   // Callback for `MetricsReporter::Measure()`. Records the resulting

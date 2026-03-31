@@ -5,13 +5,15 @@
 module browser_controls_api.mojom;
 
 import "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom";
+import "mojo/public/mojom/base/empty.mojom";
+import "mojo/public/mojom/base/error.mojom";
 
 // BrowserControlsService defines methods to be called from the WebUI to the
 // browser-side. This interface consolidates various browser control actions.
 interface BrowserControlsService {
   // Stops the current page from loading. If the page is not in a loading
   // state, it is a no-op.
-  StopLoad();
+  StopLoad() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Reloads the current page. If the page is already in a loading state,
   // it will trigger another reload, and abort the previous one.
@@ -23,20 +25,25 @@ interface BrowserControlsService {
   // Note for reload button, the shift key and ctrl key are used to determine
   // whether the reload is a bypass_cache reload, and will not be passed via
   // `click_flags`.
-  ReloadFromClick(bool bypass_cache, array<ClickDispositionFlag> click_flags);
+  ReloadFromClick(
+      bool bypass_cache, array<ClickDispositionFlag> click_flags)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Enters split view mode for the active tab. Only called when not in split.
-  SplitActiveTab();
+  SplitActiveTab() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates back.
-  Back(array<ClickDispositionFlag> flags);
+  Back(array<ClickDispositionFlag> flags)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates forward.
-  Forward(array<ClickDispositionFlag> flags);
+  Forward(array<ClickDispositionFlag> flags)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Notifies that the back button was hovered.
-  BackButtonHovered();
+  BackButtonHovered() => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 
   // Navigates to the user's home page.
-  NavigateHome(array<ClickDispositionFlag> click_flags);
+  NavigateHome(array<ClickDispositionFlag> click_flags)
+      => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
