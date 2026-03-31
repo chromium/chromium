@@ -119,8 +119,10 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
     }
   }
 
+  scoped_refptr<CanvasResource> canvas_resource =
+      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
   return WebGPUMailboxTexture::FromCanvasResource(
-      dawn_control_client, device, usage,
+      dawn_control_client, device, usage, std::move(canvas_resource),
       std::move(recyclable_canvas_resource));
 }
 
@@ -129,10 +131,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromCanvasResource(
     scoped_refptr<DawnControlClientHolder> dawn_control_client,
     const wgpu::Device& device,
     wgpu::TextureUsage usage,
+    scoped_refptr<CanvasResource> canvas_resource,
     std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource) {
-  scoped_refptr<CanvasResource> canvas_resource =
-      recyclable_canvas_resource->resource_provider()->ProduceCanvasResource();
-
   if (!canvas_resource) {
     return nullptr;
   }
