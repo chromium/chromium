@@ -40,7 +40,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.app.reengagement.ReengagementActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -63,7 +62,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Integration tests for {@link ReengagementNotificationController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -275,7 +273,7 @@ public class ReengagementNotificationControllerIntegrationTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.DESKTOP) // Flaky on desktop crbug.com/497812812
+    @DisabledTest(message = "https://crbug.com/497812812")
     public void testReengagementActivity() throws Exception {
         WebPageStation blankPage = mTabbedActivityTestRule.startOnBlankPage();
         int initialTabCount =
