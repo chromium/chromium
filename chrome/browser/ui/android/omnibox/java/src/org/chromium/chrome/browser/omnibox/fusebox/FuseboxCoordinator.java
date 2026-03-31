@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -82,7 +81,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
-    private @Nullable Profile mLastProfile;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -161,21 +159,12 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     }
 
     @EnsuresNonNull("mMediator")
-    private void recreateMediatorIfProfileChanged(Profile profile) {
-        if (mLastProfile == profile) {
-            assumeNonNull(mMediator);
-            return;
-        }
+    private void ensureMediatorCreated() {
+        if (mMediator != null) return;
 
-        if (mMediator != null) {
-            mMediator.destroy();
-        }
-
-        mLastProfile = profile;
         mMediator =
                 new FuseboxMediator(
                         mContext,
-                        profile,
                         mWindowAndroid,
                         assumeNonNull(mModel),
                         assumeNonNull(mViewHolder),
@@ -221,9 +210,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      */
     public void beginInput(FuseboxSessionState session) {
         var composeBox = session.getComposeboxQueryControllerBridge();
-        Profile profile = session.getProfile();
-        // Abort early if there is no composebox or profile.
-        if (composeBox == null || profile == null) return;
+        if (composeBox == null) return;
 
         if (!mDeferredInitialized) {
             ensureDeferredInitialized();
@@ -257,7 +244,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             return;
         }
 
-        recreateMediatorIfProfileChanged(profile);
+        ensureMediatorCreated();
 
         mInput = session.getAutocompleteInput();
         mMediator.beginInput(session);
@@ -293,9 +280,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         return mViewHolder;
     }
 
-    void setMediatorForTesting(FuseboxMediator mediator, Profile profile) {
+    void setMediatorForTesting(FuseboxMediator mediator) {
         mMediator = mediator;
-        mLastProfile = profile;
     }
 
     @Nullable FuseboxMediator getMediatorForTesting() {

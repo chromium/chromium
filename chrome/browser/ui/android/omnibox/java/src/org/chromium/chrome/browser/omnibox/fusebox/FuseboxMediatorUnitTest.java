@@ -201,7 +201,6 @@ public class FuseboxMediatorUnitTest {
         mMediator =
                 new FuseboxMediator(
                         mContext,
-                        mProfile,
                         mWindowAndroid,
                         mModel,
                         mViewHolder,
@@ -214,6 +213,7 @@ public class FuseboxMediatorUnitTest {
     private FuseboxSessionState createSession() {
         var session = mock(FuseboxSessionState.class);
         lenient().doReturn(mAutocompleteController).when(session).getAutocompleteController();
+        lenient().doReturn(mProfile).when(session).getProfile();
         lenient().doReturn(mInput).when(session).getAutocompleteInput();
         lenient()
                 .doReturn(mComposeboxQueryControllerBridge)
