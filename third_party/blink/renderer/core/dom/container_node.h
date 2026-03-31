@@ -543,7 +543,7 @@ class CORE_EXPORT ContainerNode : public Node {
 
   bool RecheckNodeInsertionStructuralPrereq(const NodeVector&,
                                             const Node* next,
-                                            ExceptionState&);
+                                            ExceptionState&) const;
   inline bool CheckParserAcceptChild(const Node& new_child) const;
   inline bool IsHostIncludingInclusiveAncestorOfThis(const Node&,
                                                      ExceptionState&) const;
