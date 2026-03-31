@@ -22,9 +22,10 @@ bool StyleRecalcChange::TraversePseudoElements(const Element& element) const {
 }
 
 bool StyleRecalcChange::TraverseChild(const Node& node) const {
-  return ShouldRecalcStyleFor(node) || node.ChildNeedsStyleRecalc() ||
-         node.GetForceReattachLayoutTree() || RecalcContainerQueryDependent() ||
-         node.NeedsLayoutSubtreeUpdate() || RecalcDescendantContentVisibility();
+  return ShouldRecalcStyleFor(node) || MarkReattachLayoutTree() ||
+         node.ChildNeedsStyleRecalc() || node.GetForceReattachLayoutTree() ||
+         RecalcContainerQueryDependent() || node.NeedsLayoutSubtreeUpdate() ||
+         RecalcDescendantContentVisibility();
 }
 
 bool StyleRecalcChange::RecalcContainerQueryDependent(const Node& node) const {
