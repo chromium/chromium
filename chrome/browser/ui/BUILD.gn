@@ -367,7 +367,6 @@ static_library("ui") {
     "//chrome/browser/signin:impl",
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/site_protection",
-    "//chrome/browser/ssl",
     "//chrome/browser/status_icons",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",

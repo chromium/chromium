@@ -44,7 +44,6 @@ source_set("impl") {
     "//chrome/browser/page_info",
     "//chrome/browser/privacy_sandbox:headers",
     "//chrome/browser/serial",
-    "//chrome/browser/ssl",
     "//chrome/browser/vr",
   ]
 
