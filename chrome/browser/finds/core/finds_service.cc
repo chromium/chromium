@@ -54,10 +54,6 @@ constexpr base::TimeDelta kHistoryLookbackInterval = base::Days(7);
 // notification scheduling throttling safeguards.
 constexpr int kThresholdMinutesForTesting = 5;
 
-// The number of times a theme should be visited in order for a user to be
-// eligible to receive the opt in promo for finds.
-constexpr int kThemeUrlVisitCountForOptIn = 3;
-
 std::string FindsSuggestionResponseToHumanReadableString(
     const optimization_guide::proto::FindsSuggestionResponse& response) {
   std::vector<std::string> lines;
@@ -208,7 +204,11 @@ void FindsService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   // TODO(crbug.com/494040435): Add logic to clean out deprecated themes.
   registry->RegisterDictionaryPref(
       prefs::kFindsNotInterestedThemesLastTimestamp);
+  // TODO(crbug.com/497928018): Remove the deprecated user interacted pref.
   registry->RegisterBooleanPref(prefs::kFindsOptInPromoUserInteracted, false);
+  registry->RegisterIntegerPref(prefs::kFindsOptInPromoInteractedCount, 0);
+  registry->RegisterInt64Pref(prefs::kFindsOptInPromoLastInteractedTimestamp,
+                              0);
 }
 
 FindsService::FindsService(
@@ -282,7 +282,8 @@ void FindsService::RecordThemeURLVisited(
   // Increment the theme url visit count for the given theme type and notify
   // observers if the threshold is met.
   theme_url_visit_count_[theme_type]++;
-  if (theme_url_visit_count_[theme_type] >= kThemeUrlVisitCountForOptIn) {
+  if (theme_url_visit_count_[theme_type] >=
+      finds::features::kThemeUrlVisitCountForOptIn.Get()) {
     for (auto& observer : observers_) {
       observer.OnOptInCriteriaFulfilled();
     }
@@ -316,6 +317,9 @@ bool FindsService::ScheduleNotificationForInternalsPage() {
 }
 
 void FindsService::CheckFindsNotificationsEnabledAndMaybeExecute() {
+  // TODO(crbug.com/497928018): Remove this when deprecated pref removed.
+  pref_service_->ClearPref(prefs::kFindsOptInPromoUserInteracted);
+
 #if BUILDFLAG(IS_ANDROID)
   FindsServiceAndroid::CheckAreFindsNotificationsEnabledAndroid(
       base::BindOnce(&FindsService::OnCheckAreFindsNotificationsEnabled,

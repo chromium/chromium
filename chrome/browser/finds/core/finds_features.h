@@ -39,6 +39,18 @@ extern const base::FeatureParam<int> kNotificationStartTimeMinutes;
 // (start+window time) from now. This is tied to kNotificationStartTimeMinutes.
 extern const base::FeatureParam<int> kNotificationWindowTimeMinutes;
 
+// The maximum number of times the user needs to interact with the promo before
+// they are no longer prompted.
+extern const base::FeatureParam<int> kFindsOptInPromoMaxInteractedCount;
+
+// The amount of time in days that must pass since the last promo interaction
+// before the user can be prompted again.
+extern const base::FeatureParam<int> kFindsOptInPromoCooldownInDays;
+
+// The number of times a theme should be visited in order for a user to be
+// eligible to receive the opt in promo for finds.
+extern const base::FeatureParam<int> kThemeUrlVisitCountForOptIn;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_

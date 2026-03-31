@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.notifications.finds;
 
-import static org.chromium.chrome.browser.notifications.finds.ChromeFindsUtils.FINDS_OPT_IN_PROMO_USER_INTERACTED;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +29,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** Coordinator for the Chrome Finds opt-in bottom sheet. */
@@ -134,7 +131,7 @@ public class ChromeFindsOptInCoordinator {
                         ChromeFindsMetrics.recordOptInAccepted(/* firstTime= */ false);
                     }
 
-                    setUserInteracted();
+                    ChromeFindsUtils.setOptInPromoInteractedData(mProfile);
                 });
     }
 
@@ -165,7 +162,7 @@ public class ChromeFindsOptInCoordinator {
                         ChromeChannelDefinitions.getInstance(),
                         mContext.getResources())
                 .ensureInitializedAndDisabled(ChannelId.CHROME_FINDS);
-        setUserInteracted();
+        ChromeFindsUtils.setOptInPromoInteractedData(mProfile);
         ChromeFindsMetrics.recordOptOutClicked();
     }
 
@@ -185,11 +182,5 @@ public class ChromeFindsOptInCoordinator {
 
     private void dismiss() {
         mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-    }
-
-    private void setUserInteracted() {
-        // Write to UserPrefs that the user has already interacted with the Chrome
-        // Finds opt-in promo, the user should never see the opt-in bottom sheet again.
-        UserPrefs.get(mProfile).setBoolean(FINDS_OPT_IN_PROMO_USER_INTERACTED, true);
     }
 }

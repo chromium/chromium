@@ -17,8 +17,11 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,11 +29,16 @@ import java.lang.annotation.RetentionPolicy;
 /** Static utilities for Chrome Finds Notifications. */
 @NullMarked
 public class ChromeFindsUtils {
-    // LINT.IfChange(FindsOptInPromoInteractionPref)
+    // LINT.IfChange(FindsOptInPromoInteractionPrefs)
+    // Deprecated. Do not remove.
     public static final String FINDS_OPT_IN_PROMO_USER_INTERACTED =
             "finds.opt_in_promo.user_interacted";
+    public static final String FINDS_OPT_IN_PROMO_INTERACTED_COUNT =
+            "finds.opt_in_promo.interacted_count";
+    public static final String FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP =
+            "finds.opt_in_promo.last_interacted_timestamp";
 
-    // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPref)
+    // LINT.ThenChange(//chrome/browser/finds/core/finds_pref_names.cc:FindsOptInPromoInteractionPrefs)
 
     @IntDef({
         ChromeFindsOptInState.FIRST_TIME,
@@ -122,5 +130,18 @@ public class ChromeFindsUtils {
         }
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    /**
+     * Sets data indicating a user interaction with the Chrome Finds opt-in promo occurred by
+     * incrementing the interaction count and saving the current timestamp.
+     *
+     * @param profile The current user {@link Profile}.
+     */
+    public static void setOptInPromoInteractedData(Profile profile) {
+        PrefService prefs = UserPrefs.get(profile);
+        int count = prefs.getInteger(FINDS_OPT_IN_PROMO_INTERACTED_COUNT);
+        prefs.setInteger(FINDS_OPT_IN_PROMO_INTERACTED_COUNT, count + 1);
+        prefs.setLong(FINDS_OPT_IN_PROMO_LAST_INTERACTED_TIMESTAMP, System.currentTimeMillis());
     }
 }

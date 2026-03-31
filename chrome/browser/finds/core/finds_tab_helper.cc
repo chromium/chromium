@@ -8,6 +8,7 @@
 #include "base/android/device_info.h"
 #endif
 
+#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "chrome/browser/finds/core/finds_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -38,6 +39,24 @@ bool IsSupportedPlatform() {
   }
 #endif
   return true;
+}
+
+bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
+  const int64_t last_timestamp_value =
+      pref_service->GetInt64(prefs::kFindsOptInPromoLastInteractedTimestamp);
+  if (last_timestamp_value == 0) {
+    return true;
+  }
+
+  const base::Time last_interacted_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(last_timestamp_value);
+  return (base::Time::Now() - last_interacted_time) >=
+         base::Days(finds::features::kFindsOptInPromoCooldownInDays.Get());
+}
+
+bool IsFindsOptInPromoMaxCountExceeded(const PrefService* pref_service) {
+  return pref_service->GetInteger(prefs::kFindsOptInPromoInteractedCount) >=
+         finds::features::kFindsOptInPromoMaxInteractedCount.Get();
 }
 
 }  // namespace
@@ -71,8 +90,10 @@ void FindsTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Early exit if the opt in promo has already been shown.
-  if (pref_service_->GetBoolean(prefs::kFindsOptInPromoUserInteracted)) {
+  // Early exit if the opt in promo has already been interacted with enough
+  // times determined by max count, or if the cooldown has not passed yet.
+  if (IsFindsOptInPromoMaxCountExceeded(pref_service_) ||
+      !IsFindsOptInPromoCooldownPassed(pref_service_)) {
     return;
   }
 
