@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
@@ -482,16 +482,16 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     }
 
     /**
-     * Sets the {@link ExtensionToolbarCoordinator}.
+     * Sets the {@link ExtensionsToolbarCoordinator}.
      *
      * <p>This method is not called if the extension toolbar is unavailable. If it is called, it is
      * after native initialization.
      *
-     * @param extensionToolbarCoordinator The {@link ExtensionToolbarCoordinator} to be set.
+     * @param extensionsToolbarCoordinator The {@link ExtensionsToolbarCoordinator} to be set.
      */
-    public void setExtensionToolbarCoordinator(
-            ExtensionToolbarCoordinator extensionToolbarCoordinator) {
-        mToolbarLayout.setExtensionToolbarCoordinator(extensionToolbarCoordinator);
+    public void setExtensionsToolbarCoordinator(
+            ExtensionsToolbarCoordinator extensionsToolbarCoordinator) {
+        mToolbarLayout.setExtensionsToolbarCoordinator(extensionsToolbarCoordinator);
     }
 
     /** Returns the color of the hairline drawn underneath the toolbar. */

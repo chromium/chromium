@@ -65,7 +65,7 @@ android_library("core_java") {
     "java/src/org/chromium/chrome/browser/toolbar/bottom/BottomControlsViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewResourceFrameLayout.java",
     "java/src/org/chromium/chrome/browser/toolbar/bottom/ScrollingBottomViewSceneLayer.java",
-    "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionToolbarCoordinator.java",
+    "java/src/org/chromium/chrome/browser/toolbar/extensions/ExtensionsToolbarCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/forward_button/ForwardButtonCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButton.java",
     "java/src/org/chromium/chrome/browser/toolbar/home_button/HomeButtonCoordinator.java",

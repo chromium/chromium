@@ -29,7 +29,6 @@ android_library("java") {
     "ExtensionActionListMediator.java",
     "ExtensionActionListRecyclerView.java",
     "ExtensionActionPopup.java",
-    "ExtensionToolbarCoordinatorImpl.java",
     "ExtensionsMenuButtonViewBinder.java",
     "ExtensionsMenuCoordinator.java",
     "ExtensionsMenuItemProperties.java",
@@ -37,6 +36,7 @@ android_library("java") {
     "ExtensionsMenuMediator.java",
     "ExtensionsMenuProperties.java",
     "ExtensionsMenuViewBinder.java",
+    "ExtensionsToolbarCoordinatorImpl.java",
     "ExtensionsToolbarDragTouchHandler.java",
     "ExtensionsToolbarProperties.java",
   ]
@@ -126,7 +126,7 @@ robolectric_library("junit") {
 android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.toolbar"
-  sources = [ "ExtensionToolbarTest.java" ]
+  sources = [ "ExtensionsToolbarTest.java" ]
   deps = [
     ":java",
     "//base:base_java",

@@ -49,7 +49,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
-import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
@@ -143,7 +143,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param forwardButtonCoordinator The coordinator for the forward button.
      * @param homeButtonDisplay The {@link HomeButtonDisplay} to manage the display and behavior of
      *     home button(s). Should be null on custom tabs.
-     * @param extensionToolbarCoordinator Provides an {@link ExtensionToolbarCoordinator} for
+     * @param extensionsToolbarCoordinator Provides an {@link ExtensionsToolbarCoordinator} for
      *     interacting with extension-related toolbar UI.
      * @param normalThemeColorProvider The {@link ThemeColorProvider} for normal mode.
      * @param incognitoStateProvider The {@link IncognitoStateProvider} for observering incognito
@@ -180,15 +180,15 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * Sets the {@link ExtensionToolbarCoordinator}.
+     * Sets the {@link ExtensionsToolbarCoordinator}.
      *
      * <p>This method is not called if the extension toolbar is unavailable. If it is called, it is
      * after native initialization.
      *
-     * @param extensionToolbarCoordinator The {@link ExtensionToolbarCoordinator} to be set.
+     * @param extensionsToolbarCoordinator The {@link ExtensionsToolbarCoordinator} to be set.
      */
-    public void setExtensionToolbarCoordinator(
-            ExtensionToolbarCoordinator extensionToolbarCoordinator) {}
+    public void setExtensionsToolbarCoordinator(
+            ExtensionsToolbarCoordinator extensionsToolbarCoordinator) {}
 
     /**
      * @param overlay The coordinator for the texture version of the top toolbar.

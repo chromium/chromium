@@ -36,15 +36,15 @@ import org.chromium.ui.base.WindowAndroid;
  * when those classes are not compiled.
  *
  * <p>Call {@link #maybeCreate()} to instantiate an implementation of this interface ({@link
- * ExtensionToolbarCoordinatorImpl}) when it is available.
+ * extensionsToolbarCoordinatorImpl}) when it is available.
  */
 @NullMarked
-public interface ExtensionToolbarCoordinator extends Destroyable {
+public interface ExtensionsToolbarCoordinator extends Destroyable {
     /** Instantiates the implementation if it is available. */
     @Nullable
-    static ExtensionToolbarCoordinator maybeCreate(
+    static ExtensionsToolbarCoordinator maybeCreate(
             Context context,
-            ViewStub extensionToolbarStub,
+            ViewStub extensionsToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
             Profile profile,
@@ -59,14 +59,14 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             return null;
         }
 
-        ExtensionToolbarCoordinator coordinator =
-                ServiceLoaderUtil.maybeCreate(ExtensionToolbarCoordinator.class);
+        ExtensionsToolbarCoordinator coordinator =
+                ServiceLoaderUtil.maybeCreate(ExtensionsToolbarCoordinator.class);
         if (coordinator == null) {
             return null;
         }
         coordinator.initializeWithNative(
                 context,
-                extensionToolbarStub,
+                extensionsToolbarStub,
                 windowAndroid,
                 task,
                 profile,
@@ -88,7 +88,7 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
     @Initializer
     void initializeWithNative(
             Context context,
-            ViewStub extensionToolbarStub,
+            ViewStub extensionsToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
             Profile profile,

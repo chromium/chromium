@@ -155,7 +155,7 @@ class CrExtensionsToolbarTest : public ExtensionsBrowserTest {
   void RunTestCase(const std::string& testCase) {
     ExtensionsBrowserTest::RunTest(
         "extensions/toolbar_test.js",
-        base::StringPrintf("runMochaTest('ExtensionToolbarTest', '%s');",
+        base::StringPrintf("runMochaTest('ExtensionsToolbarTest', '%s');",
                            testCase.c_str()));
   }
 };

@@ -160,7 +160,7 @@ import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewResourceFrameLayout;
-import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.forward_button.ForwardButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.home_button.HomeButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator;
@@ -377,7 +377,7 @@ public class ToolbarManager
     private @MonotonicNonNull ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     private @MonotonicNonNull BackButtonCoordinator mBackButtonCoordinator;
     private @MonotonicNonNull ForwardButtonCoordinator mForwardButtonCoordinator;
-    private @Nullable ExtensionToolbarCoordinator mExtensionToolbarCoordinator;
+    private @Nullable ExtensionsToolbarCoordinator mExtensionsToolbarCoordinator;
 
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private int mFullscreenFocusToken = TokenHolder.INVALID_TOKEN;
@@ -2445,16 +2445,16 @@ public class ToolbarManager
 
         mOverrideUrlLoadingDelegate.setOpenGridTabSwitcherCallback(openGridTabSwitcherHandler);
 
-        ViewStub extensionToolbarStub =
-                mControlContainer.findViewById(R.id.extension_toolbar_container_stub);
-        if (extensionToolbarStub != null) {
+        ViewStub extensionsToolbarStub =
+                mControlContainer.findViewById(R.id.extensions_toolbar_container_stub);
+        if (extensionsToolbarStub != null) {
             ChromeAndroidTask task = mChromeAndroidTaskSupplier.get();
             // ChromeAndroidTask is available only on Desktop Android.
             if (task != null) {
-                mExtensionToolbarCoordinator =
-                        ExtensionToolbarCoordinator.maybeCreate(
+                mExtensionsToolbarCoordinator =
+                        ExtensionsToolbarCoordinator.maybeCreate(
                                 mActivity,
-                                extensionToolbarStub,
+                                extensionsToolbarStub,
                                 mWindowAndroid,
                                 task,
                                 assertNonNull(mTabModelSelector.getCurrentModel().getProfile()),
@@ -2464,8 +2464,8 @@ public class ToolbarManager
                                 (ToolbarTablet) mToolbarLayout,
                                 contextMenuPopulatorFactory,
                                 selectionDropdownMenuDelegate);
-                if (mExtensionToolbarCoordinator != null) {
-                    mToolbar.setExtensionToolbarCoordinator(mExtensionToolbarCoordinator);
+                if (mExtensionsToolbarCoordinator != null) {
+                    mToolbar.setExtensionsToolbarCoordinator(mExtensionsToolbarCoordinator);
                 }
             }
         }
@@ -2802,9 +2802,9 @@ public class ToolbarManager
             mTabSwitcherButtonCoordinator = null;
         }
 
-        if (mExtensionToolbarCoordinator != null) {
-            mExtensionToolbarCoordinator.destroy();
-            mExtensionToolbarCoordinator = null;
+        if (mExtensionsToolbarCoordinator != null) {
+            mExtensionsToolbarCoordinator.destroy();
+            mExtensionsToolbarCoordinator = null;
         }
 
         if (mCallbackController != null) {
@@ -3594,11 +3594,11 @@ public class ToolbarManager
     }
 
     /**
-     * @return The {@link ExtensionToolbarCoordinator} that manages the extension toolbar UI. null
+     * @return The {@link ExtensionsToolbarCoordinator} that manages the extension toolbar UI. null
      *     if extensions are not supported on this build.
      */
-    public @Nullable ExtensionToolbarCoordinator getExtensionToolbarCoordinator() {
-        return mExtensionToolbarCoordinator;
+    public @Nullable ExtensionsToolbarCoordinator getExtensionsToolbarCoordinator() {
+        return mExtensionsToolbarCoordinator;
     }
 
     /**

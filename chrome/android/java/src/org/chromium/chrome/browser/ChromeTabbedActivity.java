@@ -314,7 +314,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
-import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.AppLaunchDrawBlocker;
 import org.chromium.chrome.browser.ui.IncognitoRestoreAppLaunchDrawBlockerFactory;
@@ -4121,8 +4121,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
             RecordUserAction.record("MobileMenuRecentTabs");
         } else if (id == R.id.extensions_menu_menu_id) {
-            ExtensionToolbarCoordinator coordinator =
-                    getToolbarManager().getExtensionToolbarCoordinator();
+            ExtensionsToolbarCoordinator coordinator =
+                    getToolbarManager().getExtensionsToolbarCoordinator();
             coordinator.showExtensionsMenu();
             RecordUserAction.record("MobileMenuExtensionsMenu");
         } else if (id == R.id.manage_extensions_menu_id) {
@@ -4852,11 +4852,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (Boolean.TRUE.equals(result)) return result;
 
-        ExtensionToolbarCoordinator extensionToolbarCoordinator =
-                mRootUiCoordinator.getToolbarManager().getExtensionToolbarCoordinator();
-        if (extensionToolbarCoordinator != null) {
+        ExtensionsToolbarCoordinator extensionsToolbarCoordinator =
+                mRootUiCoordinator.getToolbarManager().getExtensionsToolbarCoordinator();
+        if (extensionsToolbarCoordinator != null) {
             // Handle extension shortcuts.
-            if (extensionToolbarCoordinator.dispatchKeyEvent(event)) {
+            if (extensionsToolbarCoordinator.dispatchKeyEvent(event)) {
                 result = true;
             }
         }

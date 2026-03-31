@@ -84,7 +84,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public ExtensionAction getAction(String actionId, @Nullable WebContents webContents) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return null;
         }
@@ -101,7 +101,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
             float scaleFactor) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return null;
         }
@@ -118,7 +118,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public String[] getAllActionIds() {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return new String[0];
         }
@@ -128,7 +128,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public String[] getPinnedActionIds() {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return new String[0];
         }
@@ -138,7 +138,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public boolean isActionDraggable(String actionId) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return false;
         }
@@ -149,7 +149,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public void executeUserAction(String actionId, @InvocationSource int source) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return;
         }
@@ -160,7 +160,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     public void movePinnedAction(String actionId, int targetIndex) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return;
         }

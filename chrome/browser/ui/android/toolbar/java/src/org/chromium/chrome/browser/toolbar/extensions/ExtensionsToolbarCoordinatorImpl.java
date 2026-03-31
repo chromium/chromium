@@ -43,10 +43,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.Collection;
 
-/** The implementation of {@link ExtensionToolbarCoordinator}. */
+/** The implementation of {@link extensionsToolbarCoordinator}. */
 @NullMarked
-@ServiceImpl(ExtensionToolbarCoordinator.class)
-public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordinator {
+@ServiceImpl(ExtensionsToolbarCoordinator.class)
+public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordinator {
     private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     // TODO(crbug.com/473396591): Remove once {link ExtensionActionsBridge} is deprecated.
@@ -78,7 +78,7 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     @Override
     public void initializeWithNative(
             Context context,
-            ViewStub extensionToolbarStub,
+            ViewStub extensionsToolbarStub,
             WindowAndroid windowAndroid,
             ChromeAndroidTask task,
             Profile profile,
@@ -91,8 +91,8 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
         mBridge = new ExtensionActionsBridge(task, profile);
         mProfile = profile;
 
-        extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
-        mContainer = (LinearLayout) extensionToolbarStub.inflate();
+        extensionsToolbarStub.setLayoutResource(R.layout.extensions_toolbar_container);
+        mContainer = (LinearLayout) extensionsToolbarStub.inflate();
 
         mExtensionsToolbarBridge = new ExtensionsToolbarBridge(task, profile);
 
@@ -220,13 +220,13 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
         // Trigger layout and wait for the toolbar to provide us with width allocation.
         ViewUtils.requestLayout(
-                mContainer, "ExtensionToolbarCoordinatorImpl.updateMenuButtonPinState()");
+                mContainer, "ExtensionsToolbarCoordinatorImpl.updateMenuButtonPinState()");
     }
 
     private boolean isMenuButtonPinned() {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
-            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ExtensionsToolbarCoordinatorImpl} should ideally be destroyed following {@code
             // ChromeAndroidTask}'s destruction, and it is currently being worked on.
             return true;
         }
@@ -246,17 +246,17 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     public class MenuButtonPinningDelegate {
         void setMenuButtonPinned(boolean pinned) {
-            ExtensionToolbarCoordinatorImpl.this.saveMenuButtonPinState(pinned);
+            ExtensionsToolbarCoordinatorImpl.this.saveMenuButtonPinState(pinned);
         }
 
         boolean isMenuButtonPinned() {
-            return ExtensionToolbarCoordinatorImpl.this.isMenuButtonPinned();
+            return ExtensionsToolbarCoordinatorImpl.this.isMenuButtonPinned();
         }
 
         void requestLayoutWithViewUtils() {
             // Trigger layout and wait for the toolbar to provide us with width allocation.
             ViewUtils.requestLayout(
-                    mContainer, "ExtensionToolbarCoordinatorImpl.requestLayoutWithViewUtils()");
+                    mContainer, "ExtensionsToolbarCoordinatorImpl.requestLayoutWithViewUtils()");
         }
     }
 

@@ -73,7 +73,7 @@ import java.util.List;
 // because android-desktop CQ builders run chrome_public_test_apk_desktop that only covers tests
 // specific to desktop.
 @ImportantFormFactors(DeviceFormFactor.DESKTOP)
-public class ExtensionToolbarTest {
+public class ExtensionsToolbarTest {
     @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
     @Rule

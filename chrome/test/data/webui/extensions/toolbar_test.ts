@@ -10,7 +10,7 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
 
-suite('ExtensionToolbarTest', function() {
+suite('ExtensionsToolbarTest', function() {
   let mockDelegate: TestService;
   let toolbar: ExtensionsToolbarElement;
 
