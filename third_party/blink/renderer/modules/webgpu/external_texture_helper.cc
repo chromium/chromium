@@ -27,36 +27,6 @@
 namespace blink {
 namespace {
 
-bool DrawVideoFrameIntoResourceProvider(
-    scoped_refptr<media::VideoFrame> frame,
-    CanvasNon2DResourceProviderSharedImage* resource_provider,
-    viz::RasterContextProvider* raster_context_provider,
-    media::PaintCanvasVideoRenderer* video_renderer) {
-  DCHECK(frame);
-  DCHECK(resource_provider);
-
-  if (frame->HasSharedImage()) {
-    if (!raster_context_provider) {
-      DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
-                     "RasterContextProvider.";
-      return false;  // Unable to get/create a shared main thread context.
-    }
-  }
-
-  cc::PaintFlags media_flags;
-  media_flags.setAlphaf(1.0f);
-  media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  media_flags.setBlendMode(SkBlendMode::kSrc);
-
-  media::PaintCanvasVideoRenderer::PaintParams params;
-  params.dest_rect = gfx::RectF(resource_provider->Size());
-  resource_provider->ExternalCanvasDrawHelper([&](cc::PaintCanvas& canvas) {
-    video_renderer->Paint(frame.get(), &canvas, media_flags, params,
-                          raster_context_provider);
-  });
-  return true;
-}
-
 wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
   switch (rotation) {
     case media::VIDEO_ROTATION_0:
@@ -418,8 +388,7 @@ ExternalTexture CreateExternalTexture(
   // PaintCanvasVideoRenderer.
   gfx::ColorSpace resource_color_space = src_color_space.GetAsRGB();
 
-  // Using DrawVideoFrameIntoResourceProvider() for uploading. Need to
-  // workaround issue crbug.com/1407112. It requires no color space
+  // We need to workaround issue crbug.com/1407112. It requires no color space
   // conversion when drawing video frame to resource provider.
   // Leverage Dawn to do the color space conversion.
   // TODO(crbug.com/1407112): Don't use compatRgbColorSpace but the
@@ -460,11 +429,25 @@ ExternalTexture CreateExternalTexture(
     resource_provider->EndExternalWrite(sync_token);
   } else {
     // Delegate video transformation to Dawn.
-    if (!DrawVideoFrameIntoResourceProvider(
-            std::move(media_video_frame), resource_provider,
-            raster_context_provider, video_renderer)) {
-      return {};
+    if (media_video_frame->HasSharedImage()) {
+      if (!raster_context_provider) {
+        DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
+                       "RasterContextProvider.";
+        return {};
+      }
     }
+
+    cc::PaintFlags media_flags;
+    media_flags.setAlphaf(1.0f);
+    media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
+    media_flags.setBlendMode(SkBlendMode::kSrc);
+
+    media::PaintCanvasVideoRenderer::PaintParams params;
+    params.dest_rect = gfx::RectF(resource_provider->Size());
+    resource_provider->ExternalCanvasDrawHelper([&](cc::PaintCanvas& canvas) {
+      video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
+                            params, raster_context_provider);
+    });
   }
 
   scoped_refptr<CanvasResource> canvas_resource =
