@@ -8,6 +8,7 @@
 
 #include <winnt.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -647,6 +648,17 @@ void FilePathWatcherImpl::ProcessNotificationBatch(
   while (has_next_entry) {
     const auto& file_notify_info =
         *reinterpret_cast<FILE_NOTIFY_INFORMATION*>(sub_span.data());
+
+    // `FILE_NOTIFY_INFORMATION` is a variable-length struct. Make note
+    // of the size of the current `file_notify_info` to ensure that
+    // we're not running off the end of `sub_span`.
+    const size_t file_name_bytes =
+        file_notify_info.FileNameLength / sizeof(wchar_t);
+    if (file_name_bytes + offsetof(FILE_NOTIFY_INFORMATION, FileNameLength) >
+        sub_span.size_bytes()) {
+      // Malformed info.
+      break;
+    }
 
     has_next_entry = file_notify_info.NextEntryOffset != 0;
     if (has_next_entry) {
