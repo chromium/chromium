@@ -20,16 +20,16 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
+import org.chromium.chrome.browser.ui.actions.button.ActionButtonData;
 
 /** Unit tests for {@link ActionRegistry}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ActionRegistryUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private FullButtonData mButtonData1;
-    @Mock private FullButtonData mButtonData2;
-    @Mock private Callback<FullButtonData> mButtonDataObserver;
+    @Mock private ActionButtonData mButtonData1;
+    @Mock private ActionButtonData mButtonData2;
+    @Mock private Callback<ActionButtonData> mButtonDataObserver;
 
     private ActionRegistry mActionRegistry;
 
