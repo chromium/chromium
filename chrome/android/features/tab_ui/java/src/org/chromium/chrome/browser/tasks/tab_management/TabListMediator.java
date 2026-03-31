@@ -148,6 +148,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -384,16 +385,22 @@ class TabListMediator implements TabListNotificationHandler {
                     if (tab == null) return;
 
                     PropertyModel model = mModelList.getModelFromTabId(tabId);
-                    List<Tab> groupTabs = getRelatedTabsForId(tabId);
-                    if (model == null && mActionsOnAllRelatedTabs) {
-                        for (Tab sibling : groupTabs) {
-                            model = mModelList.getModelFromTabId(sibling.getId());
-                            if (model != null) break;
-                        }
-                    }
                     if (model != null) {
+                        boolean isTabGroupCard = mActionsOnAllRelatedTabs && isTabInTabGroup(tab);
                         model.set(
-                                TabProperties.ACTOR_UI_STATE, getAggregatedActorUiState(groupTabs));
+                                TabProperties.ACTOR_UI_STATE,
+                                (isTabGroupCard || state.tabIndicator == TabIndicatorStatus.NONE)
+                                        ? null
+                                        : state);
+                    }
+
+                    if (mActionsOnAllRelatedTabs && isTabInTabGroup(tab)) {
+                        int index = getIndexForTabIdWithRelatedTabs(tabId);
+                        if (index != TabModel.INVALID_TAB_INDEX) {
+                            PropertyModel groupModel = mModelList.get(index).model;
+                            updateThumbnailFetcher(
+                                    groupModel, groupModel.get(TabProperties.TAB_ID));
+                        }
                     }
                 }
             };
@@ -2046,23 +2053,6 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private @Nullable UiTabState getAggregatedActorUiState(List<Tab> tabs) {
-        for (Tab tab : tabs) {
-            if (tab == null || !tab.isInitialized()) continue;
-
-            ActorUiTabController controller = ActorUiTabController.from(tab);
-            if (controller != null) {
-                UiTabState state = controller.getUiTabState();
-                // If at least one tab in the group is being acted on, the indicator will be shown
-                // on the tab group.
-                if (state != null && state.tabIndicator != TabIndicatorStatus.NONE) {
-                    return state;
-                }
-            }
-        }
-        return null;
-    }
-
     private void unbindTabActionStateProperties(PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, false);
         for (WritableObjectPropertyKey propertyKey : TabProperties.TAB_ACTION_STATE_OBJECT_KEYS) {
@@ -2234,11 +2224,13 @@ class TabListMediator implements TabListNotificationHandler {
     private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
         boolean isInTabGroup = isTabInTabGroup(tab);
+        ActorUiTabController controller = ActorUiTabController.from(tab);
         UiTabState initialState = null;
-        if (mActionsOnAllRelatedTabs && isInTabGroup) {
-            initialState = getAggregatedActorUiState(getRelatedTabsForId(tab.getId()));
-        } else {
-            initialState = getAggregatedActorUiState(List.of(tab));
+        if (controller != null && !(mActionsOnAllRelatedTabs && isInTabGroup)) {
+            UiTabState state = controller.getUiTabState();
+            if (state != null && state.tabIndicator != TabIndicatorStatus.NONE) {
+                initialState = state;
+            }
         }
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
@@ -3385,14 +3377,30 @@ class TabListMediator implements TabListNotificationHandler {
                             ? filter.getTabGroupColorWithFallback(
                                     assumeNonNull(tab.getTabGroupId()))
                             : null;
+
+            List<Integer> actingTabIds = Collections.emptyList();
+            if (mActionsOnAllRelatedTabs && isInTabGroup) {
+                actingTabIds = new ArrayList<>();
+                for (Tab groupTab : filter.getRelatedTabList(tabId)) {
+                    ActorUiTabController controller = ActorUiTabController.from(groupTab);
+                    if (controller != null) {
+                        UiTabState state = controller.getUiTabState();
+                        if (state != null && state.tabIndicator != TabIndicatorStatus.NONE) {
+                            actingTabIds.add(groupTab.getId());
+                        }
+                    }
+                }
+            }
+
             newFetcher =
                     new ThumbnailFetcher(
                             mThumbnailProvider,
-                            MultiThumbnailMetadata.createMetadataWithoutUrls(
+                            MultiThumbnailMetadata.createMetadataWithActingTabs(
                                     tabId,
                                     isInTabGroup,
                                     filter.getTabModel().isIncognitoBranded(),
-                                    tabGroupColor));
+                                    tabGroupColor,
+                                    actingTabIds));
         }
         model.set(THUMBNAIL_FETCHER, newFetcher);
     }

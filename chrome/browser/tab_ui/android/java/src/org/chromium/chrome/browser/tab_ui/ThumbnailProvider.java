@@ -33,18 +33,21 @@ public interface ThumbnailProvider {
         public final boolean isInTabGroup;
         public final boolean isIncognito;
         public final @Nullable @TabGroupColorId Integer tabGroupColor;
+        public final List<Integer> actingTabIds;
 
         private MultiThumbnailMetadata(
                 int tabId,
                 List<GURL> urlList,
                 boolean isInTabGroup,
                 boolean isIncognito,
-                @Nullable @TabGroupColorId Integer tabGroupColor) {
+                @Nullable @TabGroupColorId Integer tabGroupColor,
+                List<Integer> actingTabIds) {
             this.tabId = tabId;
             this.urlList = urlList;
             this.isInTabGroup = isInTabGroup;
             this.isIncognito = isIncognito;
             this.tabGroupColor = tabGroupColor;
+            this.actingTabIds = actingTabIds;
         }
 
         /** Create a {@link MultiThumbnailMetadata} object with a urlList. */
@@ -55,7 +58,12 @@ public interface ThumbnailProvider {
                 boolean isIncognito,
                 @Nullable @TabGroupColorId Integer tabGroupColor) {
             return new MultiThumbnailMetadata(
-                    tabId, urlList, isInTabGroup, isIncognito, tabGroupColor);
+                    tabId,
+                    urlList,
+                    isInTabGroup,
+                    isIncognito,
+                    tabGroupColor,
+                    Collections.emptyList());
         }
 
         /** Create a {@link MultiThumbnailMetadata} object without requiring a urlList. */
@@ -65,7 +73,29 @@ public interface ThumbnailProvider {
                 boolean isIncognito,
                 @Nullable @TabGroupColorId Integer tabGroupColor) {
             return new MultiThumbnailMetadata(
-                    tabId, Collections.emptyList(), isInTabGroup, isIncognito, tabGroupColor);
+                    tabId,
+                    Collections.emptyList(),
+                    isInTabGroup,
+                    isIncognito,
+                    tabGroupColor,
+                    Collections.emptyList());
+        }
+
+        /** Create a {@link MultiThumbnailMetadata} object with actingTabIds. */
+        public static MultiThumbnailMetadata createMetadataWithActingTabs(
+                int tabId,
+                boolean isInTabGroup,
+                boolean isIncognito,
+                @Nullable @TabGroupColorId Integer tabGroupColor,
+                List<Integer> actingTabIds) {
+            Collections.sort(actingTabIds);
+            return new MultiThumbnailMetadata(
+                    tabId,
+                    Collections.emptyList(),
+                    isInTabGroup,
+                    isIncognito,
+                    tabGroupColor,
+                    actingTabIds);
         }
 
         @Override
@@ -75,7 +105,8 @@ public interface ThumbnailProvider {
                     this.urlList,
                     this.isInTabGroup,
                     this.isIncognito,
-                    this.tabGroupColor);
+                    this.tabGroupColor,
+                    this.actingTabIds);
         }
 
         @Override
@@ -85,7 +116,8 @@ public interface ThumbnailProvider {
                     && Objects.equals(this.urlList, other.urlList)
                     && this.isInTabGroup == other.isInTabGroup
                     && this.isIncognito == other.isIncognito
-                    && Objects.equals(this.tabGroupColor, other.tabGroupColor);
+                    && Objects.equals(this.tabGroupColor, other.tabGroupColor)
+                    && Objects.equals(this.actingTabIds, other.actingTabIds);
         }
     }
 

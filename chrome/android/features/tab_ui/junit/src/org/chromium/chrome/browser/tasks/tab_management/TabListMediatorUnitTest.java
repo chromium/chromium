@@ -5746,6 +5746,52 @@ public class TabListMediatorUnitTest {
         assertNull(model.get(TabProperties.ACTOR_UI_STATE));
     }
 
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_TabGroup() {
+        // Create a tab group with Tab 1 and Tab 2.
+        List<Tab> groupTabs = List.of(mTab1, mTab2);
+        doReturn(groupTabs).when(mTabGroupModelFilter).getRelatedTabList(TAB1_ID);
+        doReturn(groupTabs).when(mTabGroupModelFilter).getRelatedTabList(TAB2_ID);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab1);
+        doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
+        doReturn(TAB1_ID).when(mTabGroupModelFilter).getGroupLastShownTabId(any());
+
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        setUpActorState(mTab2, TabIndicatorStatus.NONE);
+
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel groupModel = mModelList.get(0).model;
+        assertNull(groupModel.get(TabProperties.ACTOR_UI_STATE));
+
+        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
+                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
+        verify(mActorUiTabController, atLeastOnce()).addObserver(observerCaptor.capture());
+        ActorUiTabController.Observer actorObserver = observerCaptor.getValue();
+
+        // Set actor state on Tab 2 (hidden tab).
+        setUpActorState(mTab2, TabIndicatorStatus.DYNAMIC);
+        UiTabState newState2 =
+                new UiTabState(TAB2_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+        actorObserver.onUiTabStateChanged(newState2);
+
+        assertNull(groupModel.get(TabProperties.ACTOR_UI_STATE));
+
+        ThumbnailFetcher fetcher = groupModel.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(fetcher);
+
+        // Set actor state on Tab 1 (representative tab).
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        UiTabState newState1 =
+                new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+        actorObserver.onUiTabStateChanged(newState1);
+
+        assertNull(groupModel.get(TabProperties.ACTOR_UI_STATE));
+    }
+
     private void setUpTabGroupCardDescriptionString() {
         doAnswer(
                         invocation -> {

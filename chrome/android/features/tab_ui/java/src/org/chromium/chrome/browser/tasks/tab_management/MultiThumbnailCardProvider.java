@@ -95,6 +95,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final Paint mSelectedTextPaint;
     private final Drawable mEmptyThumbnailGhostLoadIllustration;
     private final Drawable mSelectedEmptyThumbnailGhostLoadIllustration;
+    private final Drawable mActingOverlayDrawable;
+    private final Drawable mSparkIconDrawable;
 
     private @ColorInt int mMiniThumbnailPlaceholderColor;
     private @Nullable @ColorInt Integer mGroupTintedMiniThumbnailPlaceholderColor;
@@ -122,6 +124,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         private final @ColorInt int mResolvedEmptyPlaceholderColor;
         private final @ColorInt int mResolvedTextColor;
         private final @ColorInt int mResolvedGhostIllustrationColor;
+        private final List<Integer> mActingTabIds;
 
         /**
          * Fetcher that get the thumbnail drawable depending on if the tab is selected.
@@ -141,6 +144,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             mResultCallback = Objects.requireNonNull(resultCallback);
             mMultiThumbnailMetadata = metadata;
             mIsTabSelected = isTabSelected;
+            mActingTabIds = metadata.actingTabIds;
 
             if (thumbnailSize.getHeight() <= 0 || thumbnailSize.getWidth() <= 0) {
                 float expectedThumbnailAspectRatio =
@@ -293,6 +297,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                 thumbnailItems[i] = thumbnailItemList.get(i);
             }
 
+            boolean anyHiddenTabActing = checkAnyHiddenTabActing(thumbnailItemList, tabsToShow);
+
             // Fetch and draw all.
             for (int i = 0; i < MAX_THUMBNAIL_COUNT; i++) {
                 ThumbnailItemMetadata thumbnailItem = thumbnailItems[i];
@@ -324,6 +330,9 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                     drawThumbnailBitmapOnCanvasWithFrame(
                             null, i, /* showGhostLoadIllustration= */ false);
                     if (mText != null && i == 3) {
+                        if (anyHiddenTabActing) {
+                            drawFaviconDrawableOnCanvasWithFrame(mSparkIconDrawable, i);
+                        }
                         // Draw the text exactly centered on the thumbnail rect.
                         Paint textPaint = mIsTabSelected ? mSelectedTextPaint : mTextPaint;
                         mCanvas.drawText(
@@ -448,6 +457,26 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             return thumbnailItems;
         }
 
+        private boolean checkAnyHiddenTabActing(
+                List<ThumbnailItemMetadata> thumbnailItemList, int tabsToShow) {
+            for (int i = tabsToShow; i < thumbnailItemList.size(); i++) {
+                Tab tab = thumbnailItemList.get(i).tab;
+                if (tab != null && mActingTabIds.contains(tab.getId())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private void drawActingOverlay(int index) {
+            mActingOverlayDrawable.setBounds(
+                    Math.round(mThumbnailRects.get(index).left),
+                    Math.round(mThumbnailRects.get(index).top),
+                    Math.round(mThumbnailRects.get(index).right),
+                    Math.round(mThumbnailRects.get(index).bottom));
+            mActingOverlayDrawable.draw(mCanvas);
+        }
+
         private void drawFavicon(
                 @Nullable Bitmap thumbnail,
                 int index,
@@ -456,8 +485,16 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             Tab tab = thumbnailItem.tab;
             drawThumbnailBitmapOnCanvasWithFrame(
                     thumbnail, index, /* showGhostLoadIllustration= */ true);
+
+            boolean isActing = tab != null && mActingTabIds.contains(tab.getId());
+
+            if (isActing) {
+                drawActingOverlay(index);
+            }
+
             if (lastFavicon.get() != null) {
-                drawFaviconThenMaybeSendBack(lastFavicon.get(), index);
+                drawFaviconThenMaybeSendBack(
+                        isActing ? mSparkIconDrawable : lastFavicon.get(), index);
             } else {
                 mTabListFaviconProvider.getFaviconDrawableForTabAsync(
                         new TabFaviconMetadata(
@@ -471,7 +508,8 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
                             }
 
                             lastFavicon.set(favicon);
-                            drawFaviconThenMaybeSendBack(favicon, index);
+                            drawFaviconThenMaybeSendBack(
+                                    isActing ? mSparkIconDrawable : favicon, index);
                         });
             }
         }
@@ -530,6 +568,14 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mSelectedEmptyThumbnailGhostLoadIllustration.setTint(
                 TabUiThemeProvider.getEmptyThumbnailColor(
                         mContext, false, true, /* colorId= */ null));
+
+        mActingOverlayDrawable =
+                assumeNonNull(
+                        AppCompatResources.getDrawable(
+                                mContext, R.drawable.actor_overlay_background));
+        mSparkIconDrawable =
+                assumeNonNull(
+                        AppCompatResources.getDrawable(mContext, R.drawable.ic_spark_blue_16dp));
 
         // Paint used to set base for thumbnails, in case mEmptyThumbnailPaint has transparency.
         mThumbnailBasePaint = new Paint(mEmptyThumbnailPaint);
