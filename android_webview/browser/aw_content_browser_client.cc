@@ -31,6 +31,7 @@
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
 #include "android_webview/browser/aw_web_contents_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
+#include "android_webview/browser/content_restriction/aw_content_restriction_url_loader_throttle.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
@@ -793,6 +794,14 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       hash_real_time_selection,
       /* async_check_tracker */ async_check_tracker,
       /*referring_app_info=*/std::nullopt));
+
+  if (browser_context &&
+      base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewContentRestrictionSupport)) {
+    result.push_back(std::make_unique<AwContentRestrictionURLLoaderThrottle>(
+        static_cast<AwBrowserContext*>(browser_context)
+            ->GetContentRestrictionManagerClient()));
+  }
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
