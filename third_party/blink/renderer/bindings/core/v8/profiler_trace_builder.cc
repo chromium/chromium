@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/bindings/core/v8/profiler_trace_builder.h"
+
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_marker.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_sample.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_stack.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_profiler_trace.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -43,13 +45,37 @@ ProfilerTraceBuilder::ProfilerTraceBuilder(ScriptState* script_state,
                                            base::TimeTicks time_origin)
     : script_state_(script_state),
       allowed_origin_(allowed_origin),
-      time_origin_(time_origin) {}
+      time_origin_(time_origin) {
+  ExecutionContext* execution_context = ExecutionContext::From(script_state_);
+  if (execution_context) {
+    is_cross_origin_isolated_ =
+        execution_context->CrossOriginIsolatedCapabilityOrDisabledWebSecurity();
+  }
+}
 
 void ProfilerTraceBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(frames_);
   visitor->Trace(stacks_);
   visitor->Trace(samples_);
+}
+
+std::optional<V8ProfilerMarker> ProfilerTraceBuilder::GetMarker(
+    const v8::EmbedderStateTag embedder_state,
+    const v8::StateTag fallback_state) {
+  if (!RuntimeEnabledFeatures::ExperimentalJSProfilerMarkersEnabled()) {
+    return std::nullopt;
+  }
+
+  std::optional<V8ProfilerMarker> marker =
+      BlinkStateToMarker(embedder_state, fallback_state);
+  if (!marker.has_value()) {
+    return marker;
+  }
+  if (!is_cross_origin_isolated_) {
+    marker = ProfileMarkerToPublicMarker(marker->AsEnum());
+  }
+  return marker;
 }
 
 void ProfilerTraceBuilder::AddSample(
@@ -72,7 +98,7 @@ void ProfilerTraceBuilder::AddSample(
   }
 
   if (std::optional<blink::V8ProfilerMarker> marker =
-          BlinkStateToMarker(embedder_state, state)) {
+          GetMarker(embedder_state, state)) {
     sample->setMarker(*marker);
   }
 

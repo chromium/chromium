@@ -129,6 +129,22 @@ class CORE_EXPORT ProfilerTraceBuilder final
         return VMStateToMarker(fallback_state);
     }
   }
+
+  inline std::optional<V8ProfilerMarker> ProfileMarkerToPublicMarker(
+      const V8ProfilerMarker::Enum marker) {
+    switch (marker) {
+      case V8ProfilerMarker::Enum::kStyle:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kStyle);
+      case V8ProfilerMarker::Enum::kLayout:
+        return V8ProfilerMarker(V8ProfilerMarker::Enum::kLayout);
+      default:
+        return std::optional<V8ProfilerMarker>();
+    }
+  }
+  std::optional<V8ProfilerMarker> GetMarker(
+      const v8::EmbedderStateTag state_tag,
+      const v8::StateTag fallback_state);
+
   // Discards metadata frames and performs an origin check on the given stack
   // frame, returning true if it either has the same origin as the profiler, or
   // if it should be shared cross origin.
@@ -138,6 +154,7 @@ class CORE_EXPORT ProfilerTraceBuilder final
 
   const SecurityOrigin* allowed_origin_;
   const base::TimeTicks time_origin_;
+  bool is_cross_origin_isolated_ = false;
 
   Vector<String> resources_;
   HeapVector<Member<ProfilerFrame>> frames_;
@@ -155,8 +172,14 @@ class CORE_EXPORT ProfilerTraceBuilder final
   // same-origin policy for the ScriptState that the trace belongs to.
   HashMap<int, bool> script_same_origin_cache_;
 
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
+                           AddVMStateMarkerCrossOriginIsolated);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
+                           AddEmbedderStateMarkerCrossOriginIsolated);
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddVMStateMarker);
   FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest, AddEmbedderStateMarker);
+  FRIEND_TEST_ALL_PREFIXES(ProfilerTraceBuilderTest,
+                           AddEmbedderStateMarkerFeatureDisabled);
 };
 
 }  // namespace blink
