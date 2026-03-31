@@ -4434,20 +4434,6 @@ inline constexpr char kUiPartialSwapName[] = "Partial swap";
 inline constexpr char kUiPartialSwapDescription[] =
     "Sets partial swap behavior.";
 
-inline constexpr char kTpcdHeuristicsGrantsName[] =
-    "Third-party Cookie Grants Heuristics Testing";
-inline constexpr char kTpcdHeuristicsGrantsDescription[] =
-    "Enables temporary storage access grants for certain user behavior "
-    "heuristics. See "
-    "https://github.com/amaliev/3pcd-exemption-heuristics/blob/main/"
-    "explainer.md for more details.";
-
-inline constexpr char kTpcdMetadataGrantsName[] =
-    "Third-Party Cookie Deprecation Metadata Grants for Testing";
-inline constexpr char kTpcdMetadataGrantsDescription[] =
-    "Provides a control for enabling/disabling Third-Party Cookie Deprecation "
-    "Metadata Grants (WRT its default state) for testing.";
-
 inline constexpr char kUndoMigrationOfSyncingUserToSignedInName[] =
     "Undo the migration of syncing users to signed-in state";
 inline constexpr char kUndoMigrationOfSyncingUserToSignedInDescription[] =

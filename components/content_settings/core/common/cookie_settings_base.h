@@ -96,7 +96,7 @@ class CookieSettingsBase {
     // kAllowBy3PCDMetadata = 3,
     // Allow by third-party cookies deprecation trial.
     kAllowBy3PCD = 4,
-    kAllowBy3PCDHeuristics = 5,
+    // kAllowBy3PCDHeuristics = 5,  // Deprecated
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
     // kAllowByCORSException = 8,  // Deprecated
@@ -489,11 +489,6 @@ class CookieSettingsBase {
   bool IsAllowedBySandboxValue(const GURL& url,
                                const GURL& first_party_url,
                                net::CookieSettingOverrides overrides) const;
-
-  bool IsAllowedBy3pcdHeuristicsGrantsSettings(
-      const GURL& url,
-      const GURL& first_party_url,
-      net::CookieSettingOverrides overrides) const;
 
   IsAllowedWithMetadata IsAllowedBy3pcdMetadataGrantsSettings(
       const GURL& url,

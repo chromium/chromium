@@ -75,8 +75,6 @@ net::CookieInclusionStatus::ExemptionReason GetExemptionReason(
   switch (allow_mechanism) {
     case AllowMechanism::kAllowByExplicitSetting:
       return ExemptionReason::kUserSetting;
-    case AllowMechanism::kAllowBy3PCDHeuristics:
-      return ExemptionReason::k3PCDHeuristics;
     case AllowMechanism::kAllowBy3PCDMetadataSourceUnspecified:
     case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
     case AllowMechanism::kAllowBy3PCDMetadataSource1pDt:

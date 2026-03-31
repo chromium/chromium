@@ -8991,20 +8991,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "tpcd-heuristics-grants",
-    "owners": [
-      "//chrome/browser/tpcd/OWNERS"
-    ],
-    "expiry_milestone": 137
-  },
-  {
-    "name": "tpcd-metadata-grants",
-    "owners": [
-      "//chrome/browser/tpcd/OWNERS"
-    ],
-    "expiry_milestone": 137
-  },
-  {
     "name": "traffic-counters",
     "owners": ["khorimoto@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 138

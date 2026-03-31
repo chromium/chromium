@@ -68,8 +68,6 @@ constexpr StorageAccessResult GetStorageAccessResult(
       return StorageAccessResult::ACCESS_ALLOWED_3PCD_TRIAL;
     case AllowMechanism::kAllowByTopLevel3PCD:
       return StorageAccessResult::ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL;
-    case AllowMechanism::kAllowBy3PCDHeuristics:
-      return StorageAccessResult::ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT;
     case AllowMechanism::kAllowByStorageAccess:
       return StorageAccessResult::ACCESS_ALLOWED_STORAGE_ACCESS_GRANT;
     case AllowMechanism::kAllowByTopLevelStorageAccess:
@@ -95,7 +93,6 @@ constexpr std::optional<SettingSource> GetSettingSource(
     case AllowMechanism::kAllowBy3PCDMetadataSourceCuj:
     case AllowMechanism::kAllowBy3PCDMetadataSourceGovEduTld:
     case AllowMechanism::kAllowBy3PCD:
-    case AllowMechanism::kAllowBy3PCDHeuristics:
     case AllowMechanism::kAllowByTopLevel3PCD:
       return SettingSource::kTpcdGrant;
     // Other mechanisms do not map to a `SettingSource`.
@@ -211,7 +208,6 @@ bool CookieSettingsBase::IsAnyTpcdMetadataAllowMechanism(
     case AllowMechanism::kAllowByExplicitSetting:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowBy3PCD:
-    case AllowMechanism::kAllowBy3PCDHeuristics:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
     case AllowMechanism::kAllowByTopLevel3PCD:
@@ -243,7 +239,6 @@ bool CookieSettingsBase::Is1PDtRelatedAllowMechanism(
     case AllowMechanism::kAllowByExplicitSetting:
     case AllowMechanism::kAllowByGlobalSetting:
     case AllowMechanism::kAllowBy3PCD:
-    case AllowMechanism::kAllowBy3PCDHeuristics:
     case AllowMechanism::kAllowByStorageAccess:
     case AllowMechanism::kAllowByTopLevelStorageAccess:
     case AllowMechanism::kAllowByEnterprisePolicyCookieAllowedForUrls:
@@ -282,8 +277,6 @@ CookieSettingsBase::AllowMechanismToMetadataSourceType(
     case AllowMechanism::kAllowBy3PCDMetadataSourceTest:
     case AllowMechanism::kAllowBy3PCDMetadataSourceDogFood:
       return MetadataSourceType::OtherMetadata;
-    case AllowMechanism::kAllowBy3PCDHeuristics:
-      return MetadataSourceType::Heuristics;
     case AllowMechanism::kNone:
     case AllowMechanism::kAllowByExplicitSetting:
     case AllowMechanism::kAllowByGlobalSetting:
@@ -529,20 +522,6 @@ CookieSettingsBase::IsAllowedBy3pcdMetadataGrantsSettings(
   return {allowed, std::move(info)};
 }
 
-bool CookieSettingsBase::IsAllowedBy3pcdHeuristicsGrantsSettings(
-    const GURL& url,
-    const GURL& first_party_url,
-    net::CookieSettingOverrides overrides) const {
-  return base::FeatureList::IsEnabled(
-             content_settings::features::kTpcdHeuristicsGrants) &&
-         features::kTpcdReadHeuristicsGrants.Get() &&
-         !overrides.Has(net::CookieSettingOverride::kSkipTPCDHeuristicsGrant) &&
-         ShouldConsiderMitigationsFor3pcd(overrides) &&
-         GetContentSetting(url, first_party_url,
-                           ContentSettingsType::TPCD_HEURISTICS_GRANTS,
-                           /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
-}
-
 bool CookieSettingsBase::IsAllowedByTopLevelStorageAccessGrant(
     const GURL& url,
     const GURL& first_party_url,
@@ -616,12 +595,6 @@ CookieSettingsBase::DecideAccess(const GURL& url,
   if (IsAllowedBySandboxValue(url, first_party_url, overrides)) {
     return AllowAllCookies{
         ThirdPartyCookieAllowMechanism::kAllowBySandboxValue};
-  }
-
-  if (IsAllowedBy3pcdHeuristicsGrantsSettings(url, first_party_url,
-                                              overrides)) {
-    return AllowAllCookies{
-        ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics};
   }
 
   // Enterprise Policies:
