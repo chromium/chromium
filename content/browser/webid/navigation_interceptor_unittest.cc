@@ -378,6 +378,7 @@ TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -800,6 +801,7 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -851,6 +853,7 @@ TEST_F(NavigationInterceptorTest,
 
   NavigateAndCommit(GURL("https://rp.example/"));
   InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(
           Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
@@ -909,6 +912,7 @@ TEST_F(NavigationInterceptorTest,
       ->NavigateAndCommit(GURL("https://idp.example/"));
 
   InterceptorMockNavigationHandle mock_navigation_handle(popup.get());
+  mock_navigation_handle.set_url(base_url_);
   EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
       .WillRepeatedly(Return(popup->GetPrimaryMainFrame()->GetGlobalId()));
   mock_navigation_handle.set_render_frame_host(popup->GetPrimaryMainFrame());
@@ -940,6 +944,60 @@ TEST_F(NavigationInterceptorTest,
   run_loop.Run();
 
   EXPECT_TRUE(connection_status_received);
+  EXPECT_TRUE(was_resumed);
+}
+
+TEST_F(NavigationInterceptorTest,
+       WillProcessResponseWithMismatchedOriginConnectionStatus) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  bool connection_status_received = false;
+  FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(base_url_), "1234",
+      base::BindLambdaForTesting([&](FederatedLoginResult result) {
+        connection_status_received = true;
+      }));
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  // The navigation is to attacker.example, but the embedder request is for
+  // idp.example.
+  mock_navigation_handle.set_url(GURL("https://attacker.example/"));
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-RP-Connection-Status",
+                     "status=\"connected\", account_id=\"1234\"");
+  mock_navigation_handle.set_response_headers(headers);
+
+  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  webid::NavigationInterceptor interceptor(
+      registry,
+      base::BindLambdaForTesting(
+          [](RenderFrameHost* rfh) -> RequestService* { return nullptr; }));
+
+  base::RunLoop run_loop;
+  bool was_resumed = false;
+  interceptor.set_resume_callback_for_testing(base::BindLambdaForTesting([&]() {
+    was_resumed = true;
+    run_loop.Quit();
+  }));
+
+  interceptor.WillStartRequest();
+  auto result = interceptor.WillProcessResponse();
+  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+
+  run_loop.Run();
+
+  // The connection status header should be ignored due to origin mismatch.
+  EXPECT_FALSE(connection_status_received);
   EXPECT_TRUE(was_resumed);
 }
 

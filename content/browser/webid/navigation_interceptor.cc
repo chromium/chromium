@@ -210,7 +210,10 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
         FederatedEmbedderLoginRequest::Get(
             WebContents::FromRenderFrameHost(rfh));
     // The server can send this header without embedder login request.
-    if (embedder_login_request) {
+    if (embedder_login_request &&
+        net::SchemefulSite::IsSameSite(
+            embedder_login_request->idp_origin(),
+            url::Origin::Create(navigation_handle()->GetURL()))) {
       if (account_id == embedder_login_request->account_id()) {
         embedder_login_request->OnFederatedResultReceived(
             FederatedLoginResult::kSuccess);
