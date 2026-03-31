@@ -311,8 +311,16 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest, QueuePromoIfAnotherActive) {
       WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }
 
+// TODO(crbug.com/497983821): Flaky on ChromeOS and Linux
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile \
+  DISABLED_HideOverflowButtonWithinGracePeriodIfNewProfile
+#else
+#define MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile \
+  HideOverflowButtonWithinGracePeriodIfNewProfile
+#endif
 IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
-                       HideOverflowButtonWithinGracePeriodIfNewProfile) {
+                       MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile) {
   auto* service =
       UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
   service->user_education_storage_service()
