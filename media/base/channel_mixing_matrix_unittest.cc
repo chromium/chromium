@@ -9,7 +9,9 @@
 #include <array>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "media/base/channel_mixer.h"
+#include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -273,6 +275,128 @@ TEST(ChannelMixingMatrixTest, 5Point1To1Point1) {
   EXPECT_EQ(1.0f, matrix[1][3]);
   EXPECT_EQ(0.0f, matrix[1][4]);
   EXPECT_EQ(0.0f, matrix[1][5]);
+}
+
+TEST(ChannelMixingMatrixTest, 5Point1Point4To5Point1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
+
+  ChannelLayout input_layout = CHANNEL_LAYOUT_5_1_4;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_5_1;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  // Note: 1/sqrt(2) is shown as 0.707.
+  //
+  // Input: 5.1.4
+  // L  R  C  LFE  SL  SR  TFL  TFR  TBL  TBR
+  //
+  // Output: 5.1
+  //       L  R  C  LFE  SL  SR  TFL    TFR    TBL    TBR
+  // L     1  0  0   0   0   0   0      0      0      0
+  // R     0  1  0   0   0   0   0      0      0      0
+  // C     0  0  1   0   0   0   0      0      0      0
+  // LFE   0  0  0   1   0   0   0      0      0      0
+  // SL    0  0  0   0   1   0   0.707  0      0.707  0
+  // SR    0  0  0   0   0   1   0      0.707  0      0.707
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(6u, matrix.size());
+
+  EXPECT_EQ(10u, matrix[0].size());
+  EXPECT_EQ(1.0f, matrix[0][0]);
+  EXPECT_EQ(0.0f, matrix[0][6]);
+
+  EXPECT_EQ(10u, matrix[1].size());
+  EXPECT_EQ(1.0f, matrix[1][1]);
+  EXPECT_EQ(0.0f, matrix[1][7]);
+
+  EXPECT_EQ(10u, matrix[2].size());
+  EXPECT_EQ(1.0f, matrix[2][2]);
+  EXPECT_EQ(0.0f, matrix[2][6]);
+
+  EXPECT_EQ(10u, matrix[3].size());
+  EXPECT_EQ(1.0f, matrix[3][3]);
+
+  EXPECT_EQ(10u, matrix[4].size());
+  EXPECT_EQ(1.0f, matrix[4][4]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[4][8]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[4][6]);
+
+  EXPECT_EQ(10u, matrix[5].size());
+  EXPECT_EQ(1.0f, matrix[5][5]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[5][9]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[5][7]);
+}
+
+TEST(ChannelMixingMatrixTest, 7Point1Point4To7Point1) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnableHighChannelLayouts);
+
+  ChannelLayout input_layout = CHANNEL_LAYOUT_7_1_4;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_7_1;
+  std::vector<std::vector<float>> matrix;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  // Note: 1/sqrt(2) is shown as 0.707.
+  //
+  // Input: 7.1.4
+  // L  R  C  LFE  BL  BR  SL  SR  TFL  TFR  TBL  TBR
+  //
+  // Output: 7.1
+  //       L  R  C  LFE  BL  BR  SL  SR  TFL    TFR    TBL    TBR
+  // L     1  0  0   0   0   0   0   0   0      0      0      0
+  // R     0  1  0   0   0   0   0   0   0      0      0      0
+  // C     0  0  1   0   0   0   0   0   0      0      0      0
+  // LFE   0  0  0   1   0   0   0   0   0      0      0      0
+  // BL    0  0  0   0   1   0   0   0   0      0      0.707  0
+  // BR    0  0  0   0   0   1   0   0   0      0      0      0.707
+  // SL    0  0  0   0   0   0   1   0   0.707  0      0      0
+  // SR    0  0  0   0   0   0   0   1   0      0.707  0      0
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(8u, matrix.size());
+
+  EXPECT_EQ(12u, matrix[0].size());
+  EXPECT_EQ(1.0f, matrix[0][0]);
+  EXPECT_EQ(0.0f, matrix[0][8]);
+
+  EXPECT_EQ(12u, matrix[1].size());
+  EXPECT_EQ(1.0f, matrix[1][1]);
+  EXPECT_EQ(0.0f, matrix[1][9]);
+
+  EXPECT_EQ(12u, matrix[2].size());
+  EXPECT_EQ(1.0f, matrix[2][2]);
+  EXPECT_EQ(0.0f, matrix[2][8]);
+
+  EXPECT_EQ(12u, matrix[3].size());
+  EXPECT_EQ(1.0f, matrix[3][3]);
+
+  EXPECT_EQ(12u, matrix[4].size());
+  EXPECT_EQ(1.0f, matrix[4][4]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[4][10]);
+  EXPECT_EQ(0.0f, matrix[4][8]);
+
+  EXPECT_EQ(12u, matrix[5].size());
+  EXPECT_EQ(1.0f, matrix[5][5]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[5][11]);
+  EXPECT_EQ(0.0f, matrix[5][9]);
+
+  EXPECT_EQ(12u, matrix[6].size());
+  EXPECT_EQ(1.0f, matrix[6][6]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[6][8]);
+  EXPECT_EQ(0.0f, matrix[6][10]);
+
+  EXPECT_EQ(12u, matrix[7].size());
+  EXPECT_EQ(1.0f, matrix[7][7]);
+  EXPECT_FLOAT_EQ(ChannelMixer::kHalfPower, matrix[7][9]);
+  EXPECT_EQ(0.0f, matrix[7][11]);
 }
 
 TEST(ChannelMixingMatrixTest, DiscreteToDiscrete) {

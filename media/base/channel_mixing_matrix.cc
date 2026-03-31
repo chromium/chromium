@@ -39,6 +39,10 @@ static void ValidateLayout(ChannelLayout layout) {
               ChannelOrder(layout, BACK_RIGHT) >= 0);
     DCHECK_EQ(ChannelOrder(layout, LEFT_OF_CENTER) >= 0,
               ChannelOrder(layout, RIGHT_OF_CENTER) >= 0);
+    DCHECK_EQ(ChannelOrder(layout, TOP_FRONT_LEFT) >= 0,
+              ChannelOrder(layout, TOP_FRONT_RIGHT) >= 0);
+    DCHECK_EQ(ChannelOrder(layout, TOP_BACK_LEFT) >= 0,
+              ChannelOrder(layout, TOP_BACK_RIGHT) >= 0);
   } else {
     DCHECK_EQ(layout, CHANNEL_LAYOUT_MONO);
   }
@@ -230,6 +234,48 @@ bool ChannelMixingMatrix::CreateTransformationMatrix(
       // Mix LR of center into front center.
       Mix(LEFT_OF_CENTER, CENTER, ChannelMixer::kHalfPower);
       Mix(RIGHT_OF_CENTER, CENTER, ChannelMixer::kHalfPower);
+    }
+  }
+
+  // Mix top front LR into: LR of center || side LR || front LR || front center.
+  if (IsUnaccounted(TOP_FRONT_LEFT)) {
+    if (HasOutputChannel(LEFT_OF_CENTER)) {
+      // Mix top front LR into LR of center.
+      Mix(TOP_FRONT_LEFT, LEFT_OF_CENTER, ChannelMixer::kHalfPower);
+      Mix(TOP_FRONT_RIGHT, RIGHT_OF_CENTER, ChannelMixer::kHalfPower);
+    } else if (HasOutputChannel(SIDE_LEFT)) {
+      // Mix top front LR into side LR.
+      Mix(TOP_FRONT_LEFT, SIDE_LEFT, ChannelMixer::kHalfPower);
+      Mix(TOP_FRONT_RIGHT, SIDE_RIGHT, ChannelMixer::kHalfPower);
+    } else if (HasOutputChannel(LEFT)) {
+      // Mix top front LR into front LR.
+      Mix(TOP_FRONT_LEFT, LEFT, ChannelMixer::kHalfPower);
+      Mix(TOP_FRONT_RIGHT, RIGHT, ChannelMixer::kHalfPower);
+    } else {
+      // Mix top front LR into front center.
+      Mix(TOP_FRONT_LEFT, CENTER, ChannelMixer::kHalfPower);
+      Mix(TOP_FRONT_RIGHT, CENTER, ChannelMixer::kHalfPower);
+    }
+  }
+
+  // Mix top back LR into: back LR || side LR || front LR || front center.
+  if (IsUnaccounted(TOP_BACK_LEFT)) {
+    if (HasOutputChannel(BACK_LEFT)) {
+      // Mix top back LR into back LR.
+      Mix(TOP_BACK_LEFT, BACK_LEFT, ChannelMixer::kHalfPower);
+      Mix(TOP_BACK_RIGHT, BACK_RIGHT, ChannelMixer::kHalfPower);
+    } else if (HasOutputChannel(SIDE_LEFT)) {
+      // Mix top back LR into side LR.
+      Mix(TOP_BACK_LEFT, SIDE_LEFT, ChannelMixer::kHalfPower);
+      Mix(TOP_BACK_RIGHT, SIDE_RIGHT, ChannelMixer::kHalfPower);
+    } else if (HasOutputChannel(LEFT)) {
+      // Mix top back LR into front LR.
+      Mix(TOP_BACK_LEFT, LEFT, ChannelMixer::kHalfPower);
+      Mix(TOP_BACK_RIGHT, RIGHT, ChannelMixer::kHalfPower);
+    } else {
+      // Mix top back LR into front center.
+      Mix(TOP_BACK_LEFT, CENTER, ChannelMixer::kHalfPower);
+      Mix(TOP_BACK_RIGHT, CENTER, ChannelMixer::kHalfPower);
     }
   }
 
