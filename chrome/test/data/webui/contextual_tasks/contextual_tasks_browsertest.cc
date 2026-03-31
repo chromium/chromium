@@ -28,9 +28,9 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
 
 // TODO(crbug.com/480689282): Flaky on ChromeOS debug.
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_App App
-#else
 #define MAYBE_App DISABLED_App
+#else
+#define MAYBE_App App
 #endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
