@@ -180,12 +180,20 @@ TEST_F(SaveCardBottomSheetCoordinatorTest,
       initWithBaseViewController:mock_base_view_controller
                          browser:browser_.get()];
 
-  OCMExpect([mock_base_view_controller
-                presentViewController:
-                    [OCMArg isKindOfClass:[ScannedCardBottomSheetViewController
-                                              class]]
-                             animated:YES
-                           completion:[OCMArg any]])
+  OCMExpect(
+      [mock_base_view_controller
+          presentViewController:[OCMArg checkWithBlock:^BOOL(
+                                            id viewController) {
+            if ([viewController isKindOfClass:[UINavigationController class]]) {
+              UINavigationController* navigationController =
+                  (UINavigationController*)viewController;
+              return [navigationController.viewControllers.firstObject
+                  isKindOfClass:[ScannedCardBottomSheetViewController class]];
+            }
+            return NO;
+          }]
+                       animated:YES
+                     completion:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
         void (^completionBlock)(void);
         [invocation getArgument:&completionBlock atIndex:4];

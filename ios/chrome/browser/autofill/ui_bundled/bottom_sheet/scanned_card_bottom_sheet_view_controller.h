@@ -7,8 +7,9 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/save_card_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
-#import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
+@protocol SaveCardBottomSheetDataSource;
 @protocol SaveCardBottomSheetMutator;
 @protocol SaveCardBottomSheetDelegate;
 
@@ -16,8 +17,8 @@
 // It allows users to scan a card and then edit/confirm the details before
 // saving.
 @interface ScannedCardBottomSheetViewController
-    : TableViewBottomSheetViewController <SaveCardBottomSheetConsumer,
-                                          CreditCardScannerConsumer>
+    : ChromeTableViewController <SaveCardBottomSheetConsumer,
+                                 CreditCardScannerConsumer>
 
 // Mutator for handling user actions (e.g., saving the edited card).
 @property(nonatomic, weak) id<SaveCardBottomSheetMutator> mutator;
@@ -28,6 +29,10 @@
 // Data source for the bottom sheet. Provides the logos and accessibility
 // labels used in the view.
 @property(nonatomic, weak) id<SaveCardBottomSheetDataSource> dataSource;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 @end
 

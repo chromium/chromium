@@ -666,6 +666,9 @@
       <message name="IDS_IOS_AUTOFILL_EMAIL" desc="Title of the field of a profile address representing the email address of the addressee. [Length: 15em] [iOS only]">
         Email
       </message>
+      <message name="IDS_IOS_AUTOFILL_EXP_DATE" desc="Title of the field representing the expiration date of a credit card. [iOS only]">
+        Expiration Date
+      </message>
       <message name="IDS_IOS_AUTOFILL_EXP_MONTH" desc="Title of the field representing the expiration month of a credit card. [Length: 15em] [iOS only]">
         Expiration month
       </message>
@@ -723,6 +726,9 @@
       <message name="IDS_IOS_AUTOFILL_REAUTH_REASON" desc="Message explaining that the reason why we are requiring the user to re-authenticate is to be able to use the password. This is shown by iOS in the Touch ID reauthentication system dialogue, right under the OS string 'Touch ID for $BROWSER_NAME'. [CHAR_LIMIT=22]">
         Use password
       </message>
+      <message name="IDS_IOS_AUTOFILL_SAVE_AND_AUTOFILL" desc="Title for the button to save a credit card and autofill the form. [iOS only]">
+        Save and autofill
+      </message>
       <message name="IDS_IOS_AUTOFILL_SAVE_CARD" desc="Title for the view for saving a credit card. [Length: 15em] [iOS only]">
         Save card
       </message>
@@ -737,6 +743,9 @@
       </message>
       <message name="IDS_IOS_AUTOFILL_SAVE_ELLIPSIS" desc="Title for the button that presents the View for Saving a credit card. The ellipsis indicate that a following action (the presentation) will take place. [Length: 10em] [iOS only]">
         Save…
+      </message>
+      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_CVC" desc="The placeholder text for credit card security code in the payments card unmask dialog. [iOS only]">
+        CVC
       </message>
       <message name="IDS_IOS_AUTOFILL_SECURITY_CODE" desc="Title of the field representing the CVC of a credit card. [Length: 4em] [iOS only]">
         Security code

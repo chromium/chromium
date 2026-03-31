@@ -90,6 +90,15 @@
 
     _mediator.consumer = _scannedCardViewController;
 
+    // Wrap the view controller in a UINavigationController.
+    // `ScannedCardBottomSheetViewController` uses this to display a title and
+    // cancel button.
+    UINavigationController* navigationController =
+        [[UINavigationController alloc]
+            initWithRootViewController:_scannedCardViewController];
+
+    navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+
     __weak __typeof(self) weakSelf = self;
     // The ScannedCardBottomSheetViewController must already be in the view
     // hierarchy to serve as the baseViewController for the
@@ -98,7 +107,7 @@
     // the camera UI over it. Once the scan finishes and the camera dismisses,
     // the recognized data is fed back to the view controller, leaving the user
     // with a pre-populated, editable form.
-    [self.baseViewController presentViewController:_scannedCardViewController
+    [self.baseViewController presentViewController:navigationController
                                           animated:YES
                                         completion:^{
                                           [weakSelf setInitialVoiceOverFocus];
