@@ -2073,6 +2073,34 @@ public class LocationBarMediatorTest {
         Mockito.clearInvocations(mLocationBarTablet, mLocationBarEmbedder);
     }
 
+    @Test
+    public void testOnSearchBoxHintTextChanged_UpdatesHintText() {
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        doReturn("search engine hint text")
+                .when(mSearchEngineUtils)
+                .getOmniboxHintText(anyInt(), any());
+
+        mMediator.onSearchBoxHintTextChanged();
+
+        verify(mUrlCoordinator).setUrlBarHintText(eq("search engine hint text"));
+    }
+
+    @Test
+    public void testOnSearchBoxHintTextChanged_EmbedderControlledHint_DoesNotUpdateHintText() {
+        mUiOverrides.setEmbedderControlledHint(true);
+
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mMediator.onSearchBoxHintTextChanged();
+
+        verify(mUrlCoordinator, never()).setUrlBarHintText(any());
+    }
+
     private FuseboxSessionState getSession() {
         return FuseboxSessionState.from(mLocationBarDataProvider);
     }

@@ -12,10 +12,12 @@ public class LocationBarEmbedderUiOverrides {
     private boolean mForcedPhoneStyleOmnibox;
     private boolean mLensEntrypointAllowed;
     private boolean mVoiceEntrypointAllowed;
+    private boolean mIsEmbedderControlledHint;
 
     public LocationBarEmbedderUiOverrides() {
         mLensEntrypointAllowed = true;
         mVoiceEntrypointAllowed = true;
+        mIsEmbedderControlledHint = false;
     }
 
     /**
@@ -66,6 +68,23 @@ public class LocationBarEmbedderUiOverrides {
      */
     public LocationBarEmbedderUiOverrides setVoiceEntrypointAllowed(boolean isAllowed) {
         mVoiceEntrypointAllowed = isAllowed;
+        return this;
+    }
+
+    /** Whether the hint text is explicitly controlled by the embedder. */
+    public boolean isEmbedderControlledHint() {
+        return mIsEmbedderControlledHint;
+    }
+
+    /**
+     * Specify whether the hint text is completely controlled by the embedder. Set this to true for
+     * contexts with specific hint text.
+     *
+     * @param isControlled whether embedder controls the hint.
+     * @return {@code this} for call chaining.
+     */
+    public LocationBarEmbedderUiOverrides setEmbedderControlledHint(boolean isControlled) {
+        mIsEmbedderControlledHint = isControlled;
         return this;
     }
 }

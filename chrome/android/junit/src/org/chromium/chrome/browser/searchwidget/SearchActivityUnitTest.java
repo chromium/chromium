@@ -397,6 +397,7 @@ public class SearchActivityUnitTest {
                 mDataProvider.getPageClassification(/* prefetch= */ false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
+        assertTrue(mActivity.getEmbedderUiOverridesForTesting().isEmbedderControlledHint());
 
         verify(mStatusCoordinator).setOnStatusIconNavigateBackButtonPress(any());
     }

@@ -2247,6 +2247,7 @@ class LocationBarMediator
         // Edge case / SearchActivity could be triggering focus before Profile (and by proxy -
         // SearchEngineUtils) is available.
         if (mSearchEngineUtils == null) return;
+        if (mEmbedderUiOverrides.isEmbedderControlledHint()) return;
 
         @AutocompleteRequestType
         int requestType =
