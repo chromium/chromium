@@ -12,7 +12,6 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
-#include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -34,7 +33,6 @@ class GlicInstanceMetrics;
 // A stub implementation of GlicUiEmbedder for floating UIs.
 class GlicFloatingUi : public GlicUiEmbedder,
                        public Host::EmbedderDelegate,
-                       public GlicWindowEventObserver::Delegate,
                        public LocalHotkeyManager::Panel,
                        public views::WidgetObserver,
                        public web_modal::WebContentsModalDialogManagerDelegate,
@@ -84,10 +82,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void OnReload() override;
   void OnMicrophoneStatusChanged(mojom::MicrophoneStatus status) override;
 
-  // GlicWindowEventObserver::Delegate:
-  GlicWindowAnimator* window_animator() override;
-  void OnDragComplete() override;
-
   // views::WidgetObserver implementation, monitoring the glic window widget.
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
@@ -120,10 +114,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
-  GlicWindowEventObserver* GetWindowEventObserverForTesting() {
-    return window_event_observer_.get();
-  }
-
  private:
   void ClearWebContentsDelegate();
   GlicWidget* GetGlicWidget() const;
@@ -148,7 +138,6 @@ class GlicFloatingUi : public GlicUiEmbedder,
   // Must outlive `glic_widget_`
   std::unique_ptr<views::WidgetDelegate> glic_delegate_;
   std::unique_ptr<GlicWidget> glic_widget_;
-  std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
   mojom::PanelState panel_state_;
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

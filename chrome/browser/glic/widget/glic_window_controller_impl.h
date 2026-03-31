@@ -25,7 +25,6 @@
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/widget/glic_window_config.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
-#include "chrome/browser/glic/widget/glic_window_event_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
@@ -65,7 +64,6 @@ class GlicWindowControllerImpl
       public Host::Observer,
       public web_modal::WebContentsModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost,
-      public GlicWindowEventObserver::Delegate,
       public LocalHotkeyManager::Panel {
  public:
   GlicWindowControllerImpl(const GlicWindowControllerImpl&) = delete;
@@ -117,16 +115,6 @@ class GlicWindowControllerImpl
   void Reload(content::RenderFrameHost* render_frame_host) override;
   bool IsWarmed() const override;
   base::WeakPtr<GlicWindowControllerInterface> GetWeakPtr() override;
-
-  // GlicWindowEventObserver::Delegate:
-  GlicWindowAnimator* window_animator() override;
-
-  // Handles end-of-drag:
-  //  - If glic is within attachment distance of a browser window's glic button,
-  //    attach the glic window to the button's position.
-  //  - If glic is still detached and has moved to a display with a different
-  //    work area size, possibly resize the window.
-  void OnDragComplete() override;
 
   base::WeakPtr<views::View> GetView() override;
   GlicWidget* GetGlicWidget() const override;
@@ -368,7 +356,6 @@ class GlicWindowControllerImpl
   raw_ptr<GlicView> glic_view_;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
-  std::unique_ptr<GlicWindowEventObserver> window_event_observer_;
 
   // True if we've hit a login page (and have not yet shown).
   bool login_page_committed_ = false;

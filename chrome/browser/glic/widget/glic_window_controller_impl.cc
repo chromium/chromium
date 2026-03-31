@@ -275,7 +275,6 @@ void GlicWindowControllerImpl::OnDisplayMetricsChanged(
   }
 
   MaybeAdjustSizeForDisplay(/*animate=*/false);
-  window_event_observer_->AdjustPositionIfNeeded();
 }
 
 void GlicWindowControllerImpl::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
@@ -544,11 +543,6 @@ void GlicWindowControllerImpl::AfterViewShown() {
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
     GlicLoadedAndReadyToDisplay();
-  } else if (IsDetached() && !base::FeatureList::IsEnabled(
-                                 features::kGlicHandleDraggingNatively)) {
-    // This adds dragging functionality to special case panels (e.g. error,
-    // offline, loading).
-    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
   }
 }
 
@@ -589,9 +583,6 @@ void GlicWindowControllerImpl::SetupAndShowGlicWidget(Browser* browser) {
       glic_widget_->GetWeakPtr(),
       base::BindRepeating(&GlicWindowControllerImpl::MaybeSetWidgetCanResize,
                           weak_ptr_factory_.GetWeakPtr()));
-
-  window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
-      glic_widget_->GetWeakPtr(), this);
 
   glic_widget_->Show();
 
@@ -723,10 +714,6 @@ void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
   // Whenever the glic window is shown, it should have focus.
   GetGlicView()->GetWebContents()->Focus();
 
-  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
-    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
-  }
-
   NotifyIfPanelStateChanged();
 }
 
@@ -749,10 +736,6 @@ base::WeakPtr<views::View> GlicWindowControllerImpl::GetView() {
     return view->GetWeakPtr();
   }
   return nullptr;
-}
-
-GlicWindowAnimator* GlicWindowControllerImpl::window_animator() {
-  return glic_window_animator_.get();
 }
 
 GlicWidget* GlicWindowControllerImpl::GetGlicWidget() const {
@@ -792,9 +775,6 @@ void GlicWindowControllerImpl::Detach() {
 
   // Open the panel detached.
   SetupAndShowGlicWidget(current_browser);
-  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
-    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
-  }
 
   SetWindowState(State::kOpen);
   NotifyIfPanelStateChanged();
@@ -1045,7 +1025,6 @@ void GlicWindowControllerImpl::ResetAndHidePanel() {
   // detached, attached or currently closed.
 
   // Floating Panel State
-  window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
@@ -1116,21 +1095,6 @@ mojom::PanelState GlicWindowControllerImpl::GetPanelState() {
 bool GlicWindowControllerImpl::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   return IsShowing();
-}
-
-void GlicWindowControllerImpl::OnDragComplete() {
-  if (AlwaysDetached()) {
-    // Do not handle attachment.
-    return;
-  }
-  BrowserWindowInterface* browser = FindBrowserForAttachment();
-  // No browser within attachment range.
-  if (!browser) {
-    return;
-  }
-  // Attach to the found browser.
-  AttachToBrowser(*browser->GetBrowserForMigrationOnly(),
-                  AttachChangeReason::kDrag);
 }
 
 void GlicWindowControllerImpl::HandleGlicButtonIndicator() {

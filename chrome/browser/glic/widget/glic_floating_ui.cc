@@ -147,8 +147,6 @@ void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
       glic_widget_->GetWeakPtr(),
       base::BindRepeating(&GlicFloatingUi::MaybeSetWidgetCanResize,
                           weak_ptr_factory_.GetWeakPtr()));
-  window_event_observer_ = std::make_unique<GlicWindowEventObserver>(
-      glic_widget_->GetWeakPtr(), this);
   glic_widget_observation_.Observe(GetGlicWidget());
 }
 
@@ -163,14 +161,6 @@ void GlicFloatingUi::Resize(const gfx::Size& size,
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
   }
-}
-
-GlicWindowAnimator* GlicFloatingUi::window_animator() {
-  return glic_window_animator_.get();
-}
-
-void GlicFloatingUi::OnDragComplete() {
-  NOTIMPLEMENTED();
 }
 
 void GlicFloatingUi::FocusIfOpen() {
@@ -330,12 +320,6 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   GetGlicView()->UpdateBackgroundColor();
   application_hotkey_manager_->InitializeAccelerators();
   glic_panel_hotkey_manager_->InitializeAccelerators();
-
-  // TODO: Set up manual resize.
-  if (!base::FeatureList::IsEnabled(features::kGlicHandleDraggingNatively)) {
-    window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
-  }
-
   ConfigureWebContentsModalDialogs();
 }
 
@@ -350,7 +334,6 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
     screenshot_capturer_->CloseScreenPicker();
   }
   FloatingPanelCanAttachChanged(false);
-  window_event_observer_.reset();
   glic_window_animator_.reset();
   glic_widget_observation_.Reset();
   glic_widget_.reset();
