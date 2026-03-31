@@ -351,6 +351,17 @@ public class TemplateUrlService {
     }
 
     /**
+     * Finds the TemplateUrl for the search engine for the given keyword.
+     *
+     * @param keyword The templateUrl keyword to look up.
+     * @return A {@link TemplateUrl} of the specified search engine, or null if not found.
+     */
+    public @Nullable TemplateUrl getTemplateUrlForKeyword(String keyword) {
+        return TemplateUrlServiceJni.get()
+                .getTemplateUrlForKeyword(mNativeTemplateUrlServiceAndroid, keyword);
+    }
+
+    /**
      * Finds the URL for the search engine for the given keyword.
      *
      * @param keyword The templateUrl keyword to look up.
@@ -670,6 +681,9 @@ public class TemplateUrlService {
                 @Nullable String alternateTerm,
                 boolean shouldPrefetch,
                 String protocolVersion);
+
+        TemplateUrl getTemplateUrlForKeyword(
+                long nativeTemplateUrlServiceAndroid, @JniType("std::u16string") String keyword);
 
         String getSearchEngineUrlFromTemplateUrl(
                 long nativeTemplateUrlServiceAndroid, String keyword);

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.status;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -17,7 +18,9 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -35,13 +38,16 @@ import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.util.DrawableUtils;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -108,6 +114,9 @@ public class StatusMediator
     private @Nullable CookieControlsBridge mCookieControlsBridge;
     private @Nullable SearchEngineUtils mSearchEngineUtils;
     private @Nullable StatusIconResource mSearchEngineIcon;
+    private @Nullable NullableObservableSupplier<SiteSearchData> mSiteSearchDataSupplier;
+    private final Callback<@Nullable SiteSearchData> mSiteSearchDataObserver =
+            this::onSiteSearchDataChanged;
     private int mLastTabId;
     private boolean mCurrentTabCrashed;
     private Drawable mDefaultStatusBackground;
@@ -608,6 +617,9 @@ public class StatusMediator
 
     /** Returns status icon resource for the user-selected default search engine. */
     private StatusIconResource getStatusIconResourceForSearchEngineIcon() {
+        StatusIconResource extensionIcon = getStatusIconResourceForExtensionSuppliedDSE();
+        if (extensionIcon != null) return extensionIcon;
+
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             return new StatusIconResource(
@@ -622,6 +634,26 @@ public class StatusMediator
         }
 
         return mSearchEngineIcon;
+    }
+
+    private @Nullable StatusIconResource getStatusIconResourceForExtensionSuppliedDSE() {
+        if (mSiteSearchDataSupplier == null) return null;
+
+        SiteSearchData siteSearchData = mSiteSearchDataSupplier.get();
+        TemplateUrlService turlService = mTemplateUrlServiceSupplier.get();
+        if (siteSearchData == null || turlService == null) return null;
+
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return null;
+
+        TemplateUrl templateUrl = turlService.getTemplateUrlForKeyword(siteSearchData.keyword);
+        if (templateUrl == null || templateUrl.getProvidingExtensionId() == null) return null;
+
+        Bitmap customIcon =
+                ExtensionUi.getExtensionOmniboxIcon(profile, templateUrl.getProvidingExtensionId());
+        if (customIcon == null) return null;
+
+        return new StatusIconResource("site_search_icon", customIcon, 0);
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
@@ -811,6 +843,20 @@ public class StatusMediator
     public void onSearchEngineIconChanged(@Nullable StatusIconResource newIcon) {
         mSearchEngineIcon = newIcon;
         maybeUpdateStatusIconForSearchEngineIcon();
+    }
+
+    void setSiteSearchDataSupplier(@Nullable NullableObservableSupplier<SiteSearchData> supplier) {
+        if (mSiteSearchDataSupplier != null) {
+            mSiteSearchDataSupplier.removeObserver(mSiteSearchDataObserver);
+        }
+        mSiteSearchDataSupplier = supplier;
+        if (mSiteSearchDataSupplier != null) {
+            mSiteSearchDataSupplier.addSyncObserverAndCallIfNonNull(mSiteSearchDataObserver);
+        }
+    }
+
+    private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     void setTranslationX(float translationX) {

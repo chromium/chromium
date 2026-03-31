@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.graphics.Bitmap;
+
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -36,5 +39,10 @@ public class FakeExtensionUiBackend implements ExtensionUiBackend {
     @Override
     public boolean isEnabled(Profile profile) {
         return mEnabled;
+    }
+
+    @Override
+    public @Nullable Bitmap getExtensionOmniboxIcon(Profile profile, String extensionId) {
+        return null;
     }
 }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import android.graphics.Bitmap;
+
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,4 +34,13 @@ public interface ExtensionUiBackend {
      * <p>You can assume that the return value never changes for the lifetime of the profile.
      */
     boolean isEnabled(Profile profile);
+
+    /**
+     * Fetches the omnibox icon for a given extension ID.
+     *
+     * @param profile The current Profile.
+     * @param extensionId The extension ID.
+     * @return The extension's icon as a Bitmap, or null if not found.
+     */
+    @Nullable Bitmap getExtensionOmniboxIcon(Profile profile, String extensionId);
 }

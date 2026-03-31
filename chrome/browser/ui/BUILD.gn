@@ -1063,6 +1063,7 @@ static_library("ui") {
       ]
 
       deps += [
+        "//chrome/browser/extensions/api/omnibox",
         "//chrome/browser/extensions/api/web_navigation",
         "//chrome/browser/ui/android/extensions:jni_headers",
         "//extensions/browser:extension_action_enums",

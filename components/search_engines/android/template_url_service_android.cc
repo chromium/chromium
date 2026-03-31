@@ -358,6 +358,18 @@ TemplateUrlServiceAndroid::GetUrlForContextualSearchQuery(
   return url::GURLAndroid::EmptyGURL(env);
 }
 
+base::android::ScopedJavaLocalRef<jobject>
+TemplateUrlServiceAndroid::GetTemplateUrlForKeyword(
+    JNIEnv* env,
+    const std::u16string& keyword) {
+  TemplateURL* template_url =
+      template_url_service_->GetTemplateURLForKeyword(keyword);
+  if (!template_url) {
+    return nullptr;
+  }
+  return CreateTemplateUrlAndroid(env, template_url);
+}
+
 base::android::ScopedJavaLocalRef<jstring>
 TemplateUrlServiceAndroid::GetSearchEngineUrlFromTemplateUrl(
     JNIEnv* env,

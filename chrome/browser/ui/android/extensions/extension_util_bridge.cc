@@ -10,6 +10,11 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/files/file_util.h"
+#include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/buildflags/buildflags.h"
+#include "ui/gfx/android/java_bitmap.h"
+#include "ui/gfx/image/image.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionUtilBridge_jni.h"
@@ -54,5 +59,21 @@ std::optional<std::vector<base::FilePath>> GetOrCreateEmptyFilesUnderDownloads(
 }
 
 }  // namespace extensions
+
+// static
+base::android::ScopedJavaLocalRef<jobject>
+JNI_ExtensionUtilBridge_GetExtensionOmniboxIcon(
+    JNIEnv* env,
+    Profile* profile,
+    const std::string& extension_id) {
+  CHECK(profile);
+
+  gfx::Image image =
+      extensions::OmniboxAPI::Get(profile)->GetOmniboxIcon(extension_id);
+  if (!image.IsEmpty()) {
+    return gfx::ConvertToJavaBitmap(image.AsBitmap());
+  }
+  return nullptr;
+}
 
 DEFINE_JNI(ExtensionUtilBridge)
