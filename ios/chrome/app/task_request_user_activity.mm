@@ -319,6 +319,10 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
 }
 
 - (void)execute {
+  // Ignore invalid user activities.
+  if (_userActivityType == UserActivityType::kInvalid) {
+    return;
+  }
   SceneState* sceneState = [self sceneStateFromSessionID];
   CHECK(sceneState);
   Browser* browser =
@@ -431,7 +435,7 @@ std::vector<GURL> GetURLsFromOpenInChromeIntent(INIntent* intent) {
       // TODO(crbug.com/492115056): Add implementation.
       break;
     case UserActivityType::kInvalid:
-      return;
+      NOTREACHED();
   }
 
   // Handle the case where multiple URLS need to be opened.
