@@ -4,6 +4,8 @@
 
 #include "services/audio/input_stream.h"
 
+#include <inttypes.h>
+
 #include <string>
 #include <utility>
 
@@ -14,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/audio/audio_manager.h"
 #include "media/base/audio_parameters.h"
@@ -112,12 +115,13 @@ InputStream::InputStream(
   DCHECK(created_callback_);
   DCHECK(delete_callback_);
   DCHECK(params.IsValid());
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   TRACE_EVENT_BEGIN("audio", "audio::InputStream",
                     perfetto::Track::FromPointer(this));
   TRACE_EVENT_BEGIN("audio", "InputStream", perfetto::Track::FromPointer(this),
                     "device id", device_id, "params",
                     params.AsHumanReadableString());
-  SendLogMessage("%s", GetCtorLogString(device_id, params, enable_agc).c_str());
+  SendLogMessage(GetCtorLogString(device_id, params, enable_agc));
 
   // |this| owns these objects, so unretained is safe.
   base::RepeatingClosure error_handler =
@@ -148,11 +152,14 @@ InputStream::InputStream(
       audio_manager, this, writer_.get(), std::move(reference_signal_provider),
       aecdump_recording_manager, ml_model_manager, std::move(processing_config),
       std::move(maybe_create_loopback_mixin_cb), params, device_id, enable_agc);
+  SendLogMessage(base::StringPrintf(
+      "Create => (duration=%" PRId64 " ms)",
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 InputStream::~InputStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  SendLogMessage("Dtor()");
+  const base::TimeTicks start_time = base::TimeTicks::Now();
 
   if (log_)
     log_->OnClosed();
@@ -169,39 +176,44 @@ InputStream::~InputStream() {
     std::move(created_callback_).Run(nullptr, false, std::nullopt);
   }
 
-  if (!controller_) {
-    // Didn't initialize properly, nothing to clean up.
-    return;
+  if (controller_) {
+    // TODO(crbug.com/40558532): remove InputController::Close() after
+    // content/ streams are removed, destructor should suffice.
+    controller_->Close();
   }
-
-  // TODO(crbug.com/40558532): remove InputController::Close() after
-  // content/ streams are removed, destructor should suffice.
-  controller_->Close();
 
   TRACE_EVENT_END("audio",
                   /* InputStream */ perfetto::Track::FromPointer(this));
   TRACE_EVENT_END("audio",
                   /* audio::InputStream */ perfetto::Track::FromPointer(this));
+
+  SendLogMessage(base::StringPrintf(
+      "Dtor => (completed, duration=%" PRId64 " ms)",
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void InputStream::SetOutputDeviceForAec(const std::string& output_device_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(controller_);
   controller_->SetOutputDeviceForAec(output_device_id);
-  SendLogMessage("%s({output_device_id=%s})", __func__,
-                 output_device_id.c_str());
+  SendLogMessage(base::StringPrintf("%s({output_device_id=%s})", __func__,
+                                    output_device_id.c_str()));
 }
 
 void InputStream::Record() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   DCHECK(controller_);
   TRACE_EVENT_INSTANT("audio", "Record", perfetto::Track::FromPointer(this));
-  SendLogMessage("%s()", __func__);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  SendLogMessage(base::StringPrintf("%s()", __func__));
   controller_->Record();
   if (observer_)
     observer_->DidStartRecording();
   if (log_)
     log_->OnStarted();
+  SendLogMessage(base::StringPrintf(
+      "%s() => (duration=%" PRId64 " ms)", __func__,
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void InputStream::SetVolume(double volume) {
@@ -209,6 +221,8 @@ void InputStream::SetVolume(double volume) {
   DCHECK(controller_);
   TRACE_EVENT_INSTANT("audio", "SetVolume", perfetto::Track::FromPointer(this),
                       "volume", volume);
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  SendLogMessage(base::StringPrintf("%s({volume=%.2f})", __func__, volume));
 
   if (volume < 0 || volume > 1) {
     receiver_.ReportBadMessage("Invalid volume");
@@ -219,14 +233,18 @@ void InputStream::SetVolume(double volume) {
   controller_->SetVolume(volume);
   if (log_)
     log_->OnSetVolume(volume);
+  SendLogMessage(base::StringPrintf(
+      "%s({volume=%.2f}) => (duration=%" PRId64 " ms)", __func__, volume,
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 void InputStream::OnCreated(bool initially_muted) {
   TRACE_EVENT_INSTANT("audio", "Created", perfetto::Track::FromPointer(this),
                       "initially muted", initially_muted);
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  SendLogMessage("%s({muted=%s})", __func__,
-                 base::ToString(initially_muted).c_str());
+  const base::TimeTicks start_time = base::TimeTicks::Now();
+  SendLogMessage(base::StringPrintf("%s({muted=%s})", __func__,
+                                    base::ToString(initially_muted).c_str()));
 
   base::UnsafeSharedMemoryRegion shared_memory_region =
       writer_->TakeSharedMemoryRegion();
@@ -242,6 +260,10 @@ void InputStream::OnCreated(bool initially_muted) {
       .Run({std::in_place, std::move(shared_memory_region),
             std::move(socket_handle)},
            initially_muted, id_);
+  SendLogMessage(base::StringPrintf(
+      "%s({muted=%s}) => (completed, duration=%" PRId64 " ms)", __func__,
+      base::ToString(initially_muted).c_str(),
+      (base::TimeTicks::Now() - start_time).InMilliseconds()));
 }
 
 DisconnectReason InputErrorToDisconnectReason(InputController::ErrorCode code) {
@@ -276,8 +298,8 @@ void InputStream::OnError(InputController::ErrorCode error_code) {
   client_->OnError(InputControllerErrorToStreamError(error_code));
   if (log_)
     log_->OnError();
-  UNSAFE_TODO(SendLogMessage("%s({error_code=%s})", __func__,
-                             ErrorCodeToString(error_code)));
+  SendLogMessage(base::StringPrintf("%s({error_code=%s})", __func__,
+                                    ErrorCodeToString(error_code)));
   OnStreamError(InputErrorToDisconnectReason(error_code));
 }
 
@@ -307,7 +329,7 @@ void InputStream::OnStreamError(
       observer_.ResetWithReason(static_cast<uint32_t>(reason_to_report.value()),
                                 std::string());
     }
-    SendLogMessage("%s()", __func__);
+    SendLogMessage(base::StringPrintf("%s()", __func__));
   }
 
   // Defer callback so we're not destructed while in the constructor.
@@ -323,16 +345,13 @@ void InputStream::CallDeleter() {
   std::move(delete_callback_).Run(this);
 }
 
-void InputStream::SendLogMessage(const char* format, ...) {
+void InputStream::SendLogMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  if (!log_)
+  if (!log_) {
     return;
-  va_list args;
-  va_start(args, format);
-  log_->OnLogMessage(
-      "audio::IS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
-      base::StringPrintf(" [id=%s]", id_.ToString().c_str()));
-  va_end(args);
+  }
+  log_->OnLogMessage("audio::IS::" + message +
+                     base::StringPrintf(" [id=%s]", id_.ToString().c_str()));
 }
 
 }  // namespace audio
