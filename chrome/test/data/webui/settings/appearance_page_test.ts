@@ -513,6 +513,7 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
 
     createAppearancePage();
+    appearancePage.set('prefs.vertical_tabs.enabled.value', true);
     await microtasksFinished();
   });
 
@@ -521,6 +522,7 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
   });
 
   test('Toggle updates vertical_tabs.expand_on_hover pref', async function() {
+    assertTrue(appearancePage.get('prefs.vertical_tabs.enabled.value'));
     assertFalse(
         appearancePage.get('prefs.vertical_tabs.expand_on_hover.value'));
 
@@ -550,12 +552,25 @@ suite('VerticalTabsExpandOnHoverSettings', () => {
     });
 
     createAppearancePage();
+    appearancePage.set('prefs.vertical_tabs.enabled.value', true);
     await microtasksFinished();
 
-    const toggle =
-        appearancePage.shadowRoot!.querySelector('#showExpandOnHover');
-    assertTrue(!toggle || (toggle as HTMLElement).hidden);
+    const toggle = appearancePage.shadowRoot!.querySelector(
+        '#showVerticalTabsExpandOnHover');
+    assertTrue(!toggle);
   });
+
+  test(
+      'Toggle is hidden when vertical tabs pref is disabled', async function() {
+        createAppearancePage();
+        appearancePage.set('prefs.vertical_tabs.enabled.value', false);
+        await microtasksFinished();
+
+        const toggle = appearancePage.shadowRoot!.querySelector(
+            '#showVerticalTabsExpandOnHover');
+
+        assertTrue(!toggle);
+      });
 });
 
 suite('TabStripComboButtonSettings', () => {

@@ -577,6 +577,12 @@ export class SettingsAppearancePageElement extends
     this.appearanceBrowserProxy_.recordHoverCardImagesEnabledChanged(enabled);
   }
 
+  private showVerticalTabsExpandOnHoverSetting_(): boolean {
+    return this.showVerticalTabsExpandOnHoverEnabled_ &&
+        this.getPref<boolean>('vertical_tabs.enabled').value;
+  }
+
+
   private onManagedDialogClosed_() {
     this.showManagedThemeDialog_ = false;
   }

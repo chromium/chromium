@@ -183,7 +183,10 @@
           </div>
         </template>
 
-        <template is="dom-if" if="[[showVerticalTabsExpandOnHoverEnabled_]]">
+        <template is="dom-if"
+            if="[[showVerticalTabsExpandOnHoverSetting_(
+              showVerticalTabsExpandOnHoverEnabled_,
+              prefs.vertical_tabs.enabled.value)]]">
           <settings-toggle-button
               id="showVerticalTabsExpandOnHover"
               pref="{{prefs.vertical_tabs.expand_on_hover}}"
