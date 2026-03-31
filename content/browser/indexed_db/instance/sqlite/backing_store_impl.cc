@@ -4,6 +4,7 @@
 
 #include "content/browser/indexed_db/instance/sqlite/backing_store_impl.h"
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
@@ -40,7 +41,7 @@ BackingStoreImpl::BackingStoreImpl(
       blob_storage_context_(blob_storage_context),
       lock_database_(std::move(lock_database)),
       on_blob_activity_(std::move(on_blob_activity)),
-      is_force_closing_(std::make_unique<base::AtomicFlag>()) {}
+      is_force_closing_(std::make_unique<std::atomic_bool>(false)) {}
 
 BackingStoreImpl::~BackingStoreImpl() = default;
 
@@ -73,7 +74,7 @@ bool BackingStoreImpl::CanOpportunisticallyClose() const {
 }
 
 void BackingStoreImpl::OnForceClosing() {
-  is_force_closing_->Set();
+  is_force_closing_->store(true, std::memory_order_relaxed);
 }
 
 void BackingStoreImpl::SignalWhenDestructionComplete(
@@ -254,7 +255,7 @@ void BackingStoreImpl::DestroyConnection(const std::u16string& name,
   std::unique_ptr<DatabaseConnection> connection =
       std::move(open_connections_.extract(name).mapped());
 
-  if (is_force_closing_->IsSet()) {
+  if (is_force_closing_->load(std::memory_order_relaxed)) {
     // Run the cleanup task synchronously.
     std::move(*connection).GetCleanupTask().Run(/*force_closing=*/true);
     return;
@@ -281,8 +282,11 @@ void BackingStoreImpl::DestroyConnection(const std::u16string& name,
       FROM_HERE,
       // `Unretained` is safe here because `is_force_closing_` is moved to
       // `cleanup_task_runner_` before `this` is destroyed.
-      base::BindOnce(&base::AtomicFlag::IsSet,
-                     base::Unretained(is_force_closing_.get()))
+      base::BindOnce(
+          [](const std::atomic_bool* flag) {
+            return flag->load(std::memory_order_relaxed);
+          },
+          base::Unretained(is_force_closing_.get()))
           .Then(std::move(*connection).GetCleanupTask()),
       base::BindOnce(&BackingStoreImpl::OnCleanupComplete,
                      weak_factory_.GetWeakPtr(), name, std::move(locks)));

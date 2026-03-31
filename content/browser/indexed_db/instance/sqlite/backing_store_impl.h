@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_IMPL_H_
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_SQLITE_BACKING_STORE_IMPL_H_
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -15,7 +16,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/synchronization/atomic_flag.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
@@ -141,7 +141,7 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   // other databases. Set while and only while `cleanups_in_progress_` is not 0.
   scoped_refptr<base::SequencedTaskRunner> cleanup_task_runner_;
 
-  std::unique_ptr<base::AtomicFlag> is_force_closing_;
+  std::unique_ptr<std::atomic_bool> is_force_closing_;
 
   base::WeakPtrFactory<BackingStoreImpl> weak_factory_{this};
 };
