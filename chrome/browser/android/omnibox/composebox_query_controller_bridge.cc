@@ -201,6 +201,12 @@ std::optional<lens::ImageEncodingOptions> ComposeboxQueryControllerBridge::
   return std::nullopt;
 }
 
+contextual_search::ContextualSearchSessionHandle*
+ComposeboxQueryControllerBridge::
+    GetOrCreateSessionHandleForQueryContextualizer() {
+  return session_handle_.get();
+}
+
 void ComposeboxQueryControllerBridge::OnPageContextIneligible() {
   // No-op.
 }
@@ -339,8 +345,12 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
   if (query_contextualizer_) {
     query_contextualizer_->Contextualize(
         /*task_id=*/std::nullopt, query_text, /*tabs_to_recontextualize=*/{},
-        /*tabs_to_force_contextualize=*/{}, session_handle_.get(),
-        std::move(callback));
+        /*tabs_to_force_contextualize=*/{},
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+                   ignored_handle) { std::move(closure).Run(); },
+            std::move(callback)));
   } else {
     std::move(callback).Run();
   }

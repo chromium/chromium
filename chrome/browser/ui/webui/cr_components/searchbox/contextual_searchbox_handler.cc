@@ -326,6 +326,11 @@ void ContextualSearchboxHandler::OnTabProcessedForQueryContextualization(
   // No-op.
 }
 
+contextual_search::ContextualSearchSessionHandle*
+ContextualSearchboxHandler::GetOrCreateSessionHandleForQueryContextualizer() {
+  return GetContextualSessionHandle();
+}
+
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
                                             tabs::TabInterface* tab,
                                             int index) {
@@ -840,11 +845,23 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
             sessions::SessionTabHelper::IdForTab(active_web_contents).id();
         query_contextualizer_->Contextualize(
             GetTaskId(), query_text, {active_tab_id}, {},
-            GetContextualSessionHandle(),
-            base::BindOnce(&ContextualSearchboxHandler::ComputeAndOpenQueryUrl,
-                           weak_ptr_factory_.GetWeakPtr(), query_text,
-                           disposition, aim_entry_point,
-                           std::move(additional_params)));
+            base::BindOnce(
+                [](base::WeakPtr<ContextualSearchboxHandler> self,
+                   const std::string& query, WindowOpenDisposition disp,
+                   omnibox::ChromeAimEntryPoint entry_point,
+                   std::map<std::string, std::string> params,
+                   base::WeakPtr<
+                       contextual_search::ContextualSearchSessionHandle>
+                       handle) {
+                  // The session handle is accessed via
+                  // GetContextualSessionHandle(), so we ignore it here.
+                  if (self) {
+                    self->ComputeAndOpenQueryUrl(query, disp, entry_point,
+                                                 std::move(params));
+                  }
+                },
+                weak_ptr_factory_.GetWeakPtr(), query_text, disposition,
+                aim_entry_point, std::move(additional_params)));
         return;
       }
     }

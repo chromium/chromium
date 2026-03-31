@@ -132,6 +132,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnPageContextIneligible() override;
   void OnTabProcessedForQueryContextualization(
       contextual_tasks::QueryContextualizer::TabId id) override;
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateSessionHandleForQueryContextualizer() override;
 
   OmniboxController* GetOmniboxControllerForTesting() const {
     return omnibox_controller();

@@ -338,11 +338,19 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
   recontextualization_pending_count_++;
   recontextualizer_->Contextualize(
       task_id, query, tabs_to_recontextualize, tabs_to_force_contextualize,
-      session_handle,
       base::BindOnce(
-          &ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage,
-          weak_factory_.GetWeakPtr(), query, task_id,
-          has_visual_selection ? overlay_token : std::nullopt));
+          [](base::WeakPtr<ContextualTasksComposeboxHandler> handler,
+             std::string query, std::optional<base::Uuid> task_id,
+             std::optional<base::UnguessableToken> token,
+             base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+                 handle) {
+            // The session handle is accessed via GetContextualSessionHandle(),
+            // so we ignore it here.
+            if (handler) {
+              handler->ContinueCreateAndSendQueryMessage(query, task_id, token);
+            }
+          },
+          weak_factory_.GetWeakPtr(), query, task_id, overlay_token));
 }
 
 contextual_tasks::ContextualTasksService*
@@ -454,6 +462,12 @@ void ContextualTasksComposeboxHandler::OnPageContextIneligible() {
 void ContextualTasksComposeboxHandler::OnTabProcessedForQueryContextualization(
     contextual_tasks::QueryContextualizer::TabId id) {
   pending_delayed_tab_ids_.erase(id);
+}
+
+contextual_search::ContextualSearchSessionHandle*
+ContextualTasksComposeboxHandler::
+    GetOrCreateSessionHandleForQueryContextualizer() {
+  return GetContextualSessionHandle();
 }
 
 void ContextualTasksComposeboxHandler::ContinueCreateAndSendQueryMessage(

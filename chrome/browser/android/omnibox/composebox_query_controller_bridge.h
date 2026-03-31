@@ -103,6 +103,8 @@ class ComposeboxQueryControllerBridge
   bool IsTabValid(contextual_tasks::QueryContextualizer::TabId id) override;
   std::optional<lens::ImageEncodingOptions>
   GetTabViewportEncodingOptionsForQueryContextualizer() override;
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateSessionHandleForQueryContextualizer() override;
   void OnPageContextIneligible() override;
   void OnTabProcessedForQueryContextualization(
       contextual_tasks::QueryContextualizer::TabId id) override;

@@ -275,6 +275,8 @@ class ContextualSearchboxHandler
   GetTabViewportEncodingOptionsForQueryContextualizer() override;
   void OnPageContextIneligible() override;
   void OnTabProcessedForQueryContextualization(int32_t id) override;
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateSessionHandleForQueryContextualizer() override;
 
   std::unique_ptr<contextual_search::InputStateModel> input_state_model_;
 
