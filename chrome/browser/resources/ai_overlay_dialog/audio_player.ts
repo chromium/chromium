@@ -8,7 +8,9 @@
 export class AudioPlayer {
   private readonly sampleRate: number;
   private audioContext: AudioContext|null = null;
+  private analyser: AnalyserNode|null = null;
   private nextStartTime: number = 0;
+  private sources: AudioBufferSourceNode[] = [];
 
   private onDone?: () => void;
   private onStart?: () => void;
@@ -20,6 +22,22 @@ export class AudioPlayer {
     this.onStart = onStart;
     this.sampleRate = sampleRate;
     this.audioContext = new AudioContext({sampleRate: this.sampleRate});
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.fftSize = 256;
+  }
+
+  getEnergy(): number {
+    if (!this.analyser) {
+      return 0;
+    }
+    const dataArray = new Float32Array(this.analyser.fftSize);
+    this.analyser.getFloatTimeDomainData(dataArray);
+    let sumSquares = 0.0;
+    for (let i = 0; i < dataArray.length; i++) {
+      const val = dataArray[i]!;
+      sumSquares += val * val;
+    }
+    return Math.sqrt(sumSquares / dataArray.length);
   }
 
   play(base64Data: string) {
@@ -49,13 +67,22 @@ export class AudioPlayer {
   }
 
   playBuffer(buffer: AudioBuffer) {
-    if (!this.audioContext) {
+    if (!this.audioContext || !this.analyser) {
       return;
     }
 
     const source = this.audioContext.createBufferSource();
     source.buffer = buffer;
+    source.connect(this.analyser);
     source.connect(this.audioContext.destination);
+
+    source.onended = () => {
+      const index = this.sources.indexOf(source);
+      if (index > -1) {
+        this.sources.splice(index, 1);
+      }
+    };
+    this.sources.push(source);
 
     const now = this.audioContext.currentTime;
     if (this.nextStartTime < now) {
@@ -76,8 +103,12 @@ export class AudioPlayer {
   }
 
   stop() {
-    this.audioContext?.close();
-    this.audioContext = new AudioContext({sampleRate: this.sampleRate});
+    for (const source of this.sources) {
+      source.disconnect();
+      source.stop();
+    }
+    this.sources = [];
     this.nextStartTime = 0;
+    clearTimeout(this.doneTimeout);
   }
 }

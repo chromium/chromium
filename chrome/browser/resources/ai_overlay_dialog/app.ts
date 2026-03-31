@@ -123,6 +123,7 @@ export class AppElement extends CrLitElement {
   private configPromise: Promise<ConversationConfig>;
   private unregisterPageContextListeners: (() => void)|null;
   private transcriptionTimeout: number = 0;
+  private energyAnimationId: number|null = null;
 
   protected get uiState(): UiState {
     if (this.isConnecting) {
@@ -236,6 +237,37 @@ export class AppElement extends CrLitElement {
       this.stopConversation();
     }
   };
+
+  private energyAnimationLoop = () => {
+    if (this.energyAnimationId === null) {
+      return;
+    }
+
+    let energy = 0;
+    if (this.isSpeaking && this.audioPlayer) {
+      energy = this.audioPlayer.getEnergy();
+    } else if (this.audioCapturer) {
+      energy = this.audioCapturer.getEnergy();
+    }
+
+    this.pageHandler.updateAudioEnergy(energy);
+
+    this.energyAnimationId = requestAnimationFrame(this.energyAnimationLoop);
+  };
+
+  private startEnergyAnimation() {
+    if (this.energyAnimationId === null) {
+      this.energyAnimationId = requestAnimationFrame(this.energyAnimationLoop);
+    }
+  }
+
+  private stopEnergyAnimation() {
+    if (this.energyAnimationId !== null) {
+      cancelAnimationFrame(this.energyAnimationId);
+      this.energyAnimationId = null;
+      this.pageHandler.updateAudioEnergy(0.0);
+    }
+  }
 
   private onAudioInput(sampleRate: number, data: string) {
     this.conversation?.sendAudio(sampleRate, data);
@@ -358,9 +390,11 @@ export class AppElement extends CrLitElement {
         this.audioCapturer.start(
             this.onAudioInput.bind(this, this.audioCapturer.getSampleRate()));
       }
+      this.startEnergyAnimation();
     }
 
     if (state === State.STOPPED) {
+      this.stopEnergyAnimation();
       this.isConnecting = false;
       this.mockButtons = [];
       this.blobCapturer = null;

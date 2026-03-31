@@ -24,6 +24,9 @@ interface PageHandler {
 
   // Executes a tool by name with JSON arguments. Returns the result as JSON.
   ExecuteTool(string name, string json_args) => (string json_result);
+
+  // Sends the current audio volume (0.0 to 1.0) to animate the toolbar button.
+  UpdateAudioEnergy(float energy);
 };
 
 // Implemented by the WebUI (TypeScript/JS). Called by the Browser C++.

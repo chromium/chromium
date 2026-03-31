@@ -21,6 +21,10 @@
 
 class BrowserWindowInterface;
 
+namespace actions {
+class ActionItem;
+}
+
 struct ToolResponse {
   base::DictValue data;
   bool is_silent = false;
@@ -49,6 +53,7 @@ class AiOverlayDialogPageHandler
   void ExecuteTool(const std::string& name,
                    const std::string& json_args,
                    ExecuteToolCallback callback) override;
+  void UpdateAudioEnergy(float energy) override;
 
   void DidChangePage(const GURL& url,
                      const std::optional<std::u16string>& title,
@@ -129,6 +134,7 @@ class AiOverlayDialogPageHandler
   mojo::Remote<blink::mojom::AnnotationAgentContainer> annotation_container_;
   mojo::Remote<ai_overlay_dialog::mojom::Page> page_;
   raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<actions::ActionItem> overlay_action_item_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_AI_OVERLAY_DIALOG_AI_OVERLAY_DIALOG_PAGE_HANDLER_H_

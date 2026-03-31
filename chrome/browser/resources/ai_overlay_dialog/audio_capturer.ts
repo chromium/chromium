@@ -17,6 +17,7 @@ export interface AudioCapturer {
   start(onAudioCallback: (data: string) => void): Promise<boolean>;
   stop(): void;
   getSampleRate(): number;
+  getEnergy(): number;
 }
 
 /**
@@ -24,6 +25,7 @@ export interface AudioCapturer {
  */
 export class MicrophoneAudioCapturer implements AudioCapturer {
   private audioContext: AudioContext|null = null;
+  private analyser: AnalyserNode|null = null;
   private stream: MediaStream;
   private processor: AudioWorkletNode|null = null;
   private onAudioCallback: ((data: string) => void)|null = null;
@@ -34,14 +36,31 @@ export class MicrophoneAudioCapturer implements AudioCapturer {
     this.stream = stream;
   }
 
+  getEnergy(): number {
+    if (!this.analyser) {
+      return 0;
+    }
+    const dataArray = new Float32Array(this.analyser.fftSize);
+    this.analyser.getFloatTimeDomainData(dataArray);
+    let sumSquares = 0.0;
+    for (let i = 0; i < dataArray.length; i++) {
+      const val = dataArray[i]!;
+      sumSquares += val * val;
+    }
+    return Math.sqrt(sumSquares / dataArray.length);
+  }
+
   async start(onAudioCallback: (data: string) => void): Promise<boolean> {
     this.onAudioCallback = onAudioCallback;
     this.audioContext = new AudioContext({sampleRate: this.sampleRate});
+    this.analyser = this.audioContext.createAnalyser();
+    this.analyser.fftSize = 256;
 
     await this.audioContext.audioWorklet.addModule('audio_processor.js');
 
     const source = this.audioContext.createMediaStreamSource(this.stream);
     this.processor = new AudioWorkletNode(this.audioContext, 'audio-processor');
+    source.connect(this.analyser);
 
     this.processor.port.onmessage = (event) => {
       if (event.data.type === 'audio') {
@@ -60,6 +79,7 @@ export class MicrophoneAudioCapturer implements AudioCapturer {
     this.stream.getTracks().forEach(track => track.stop());
     this.audioContext?.close();
     this.processor = null;
+    this.analyser = null;
     this.audioContext = null;
     this.onAudioCallback = null;
   }
@@ -134,6 +154,10 @@ export class BlobAudioCapturer implements AudioCapturer {
     this.audioContext = null;
     this.onAudioCallback = null;
     this.isInjecting = false;
+  }
+
+  getEnergy(): number {
+    return this.audioPlayer.getEnergy();
   }
 
   getSampleRate() {
