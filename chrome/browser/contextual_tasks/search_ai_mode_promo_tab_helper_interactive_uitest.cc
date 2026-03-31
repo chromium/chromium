@@ -19,6 +19,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -60,8 +61,10 @@ class SearchAiModePromoTabHelperInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   SearchAiModePromoTabHelperInteractiveUiTest() {
-    signin_promo_feature_list_.InitAndEnableFeature(
-        switches::kEnableSearchAIModeSigninPromo);
+    signin_promo_feature_list_.InitWithFeatures(
+        {switches::kEnableSearchAIModeSigninPromo,
+         contextual_tasks::kContextualTasks},
+        {});
   }
 
   void SetUpOnMainThread() override {
