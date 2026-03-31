@@ -14,7 +14,7 @@
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/ui/webui/extensions/extension_basic_info.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -44,7 +44,7 @@ base::DictValue GetPrerenderInfo(Profile* profile) {
 
 base::ListValue GetExtensionInfo(Profile* profile) {
   base::ListValue extension_list;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   auto* extension_registrar = extensions::ExtensionRegistrar::Get(profile);
   if (extension_registrar) {
     const extensions::ExtensionSet extensions =

@@ -5263,6 +5263,8 @@ static_library("ui") {
 
   if (enable_extensions_core) {
     sources += [
+      "webui/extensions/extension_basic_info.cc",
+      "webui/extensions/extension_basic_info.h",
       "webui/extensions/extension_icon_source.cc",
       "webui/extensions/extension_icon_source.h",
       "webui/extensions/extensions_internals_source.cc",
@@ -5335,8 +5337,6 @@ static_library("ui") {
       "views/extensions/extension_view_views.cc",
       "views/extensions/extension_view_views.h",
       "views/javascript_app_modal_event_blocker.h",
-      "webui/extensions/extension_basic_info.cc",
-      "webui/extensions/extension_basic_info.h",
       "webui/extensions_zero_state_promo/zero_state_promo_page_handler.cc",
       "webui/extensions_zero_state_promo/zero_state_promo_page_handler.h",
       "webui/extensions_zero_state_promo/zero_state_promo_ui.cc",
