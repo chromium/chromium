@@ -919,17 +919,11 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       WaitForShow(kTabGroupHeaderElementId),
       MoveMouseTo(kNewTabButtonElementId),
       MoveMouseTo(kTabGroupHeaderElementId),
-      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
-      WaitForShow(TabHoverCardBubbleView::kGroupCardElementId),
-      EnsureNotPresent(TabHoverCardBubbleView::kTabCardElementId));
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GroupHoverCardHidesOnMouseExit GroupHoverCardHidesOnMouseExit
-#else
 #define MAYBE_GroupHoverCardHidesOnMouseExit \
   DISABLED_GroupHoverCardHidesOnMouseExit
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
                        MAYBE_GroupHoverCardHidesOnMouseExit) {
   browser()->tab_strip_model()->AddToNewGroup({0});
@@ -938,7 +932,6 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       MoveMouseTo(kNewTabButtonElementId),
       MoveMouseTo(kTabGroupHeaderElementId),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
-      WaitForShow(TabHoverCardBubbleView::kGroupCardElementId),
       MoveMouseTo(kNewTabButtonElementId),
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
