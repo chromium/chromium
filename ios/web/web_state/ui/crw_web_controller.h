@@ -10,6 +10,7 @@
 #import "base/values.h"
 #import "ios/web/web_state/ui/crw_touch_tracking_recognizer.h"
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
+#import "ios/web/web_state/web_view_pass_key.h"
 
 namespace web {
 
@@ -201,6 +202,11 @@ class WebStateImpl;
 
 // Creates a web view if it's not yet created. Returns the web view.
 - (WKWebView*)ensureWebViewCreated;
+
+// Returns the WKWebView instance if it exists (guarded by a passkey).
+// Access to this function is restricted. See web_view_pass_key.h for more
+// context.
+- (WKWebView*)webViewWithPassKey:(web::WebViewPassKey)passKey;
 
 // Removes the webView from the view hierarchy. The `shutdown` parameter
 // indicates if this method was called in a shutdown context.

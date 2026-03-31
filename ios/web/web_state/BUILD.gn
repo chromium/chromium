@@ -8,6 +8,7 @@ source_set("web_state") {
   deps = [
     ":policy_decision_state_tracker",
     ":web_state_impl_header",
+    ":web_view_pass_key",
     "//base",
     "//build:blink_buildflags",
     "//components/security_state/core",
@@ -69,8 +70,14 @@ source_set("web_state") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+source_set("web_view_pass_key") {
+  sources = [ "web_view_pass_key.h" ]
+  deps = [ "//base" ]
+}
+
 source_set("web_state_impl_header") {
   deps = [
+    ":web_view_pass_key",
     "//base",
     "//ios/web/navigation:core",
     "//ios/web/public",

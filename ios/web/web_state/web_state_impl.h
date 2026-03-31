@@ -27,6 +27,7 @@
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
+#import "ios/web/web_state/web_view_pass_key.h"
 #import "url/gurl.h"
 #import "url/origin.h"
 
@@ -36,6 +37,7 @@
 @class UIViewController;
 @protocol CRWFindInteraction;
 enum WKPermissionDecision : NSInteger;
+@class WKWebView;
 
 namespace web {
 
@@ -274,6 +276,12 @@ class WebStateImpl final : public WebState {
   // Returns a CRWWebViewNavigationProxy protocol that can be used to access
   // navigation related functions on the main WKWebView.
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const;
+
+  // Returns the WKWebView of the WebState if it exists.
+  //
+  // Access to this function is restricted. See web_view_pass_key.h for more
+  // context.
+  WKWebView* GetWebView(WebViewPassKey pass_key);
 
   // Broadcasts a JavaScript message to request the frameId of all frames.
   void RetrieveExistingFrames();

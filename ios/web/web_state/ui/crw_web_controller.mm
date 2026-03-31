@@ -67,6 +67,7 @@
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
 #import "ios/web/web_state/web_view_internal_creation_util.h"
+#import "ios/web/web_state/web_view_pass_key.h"
 #import "net/base/apple/url_conversions.h"
 #import "services/metrics/public/cpp/ukm_builders.h"
 #import "url/gurl.h"
@@ -1427,6 +1428,11 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
   WKWebViewConfiguration* config =
       [self webViewConfigurationProvider].GetWebViewConfiguration();
   return [self ensureWebViewCreatedWithConfiguration:config];
+}
+
+// Returns the WKWebView instance if it exists.
+- (WKWebView*)webViewWithPassKey:(web::WebViewPassKey)passKey {
+  return self.webView;
 }
 
 // Creates a web view with given `config`. No-op if web view is already created.
