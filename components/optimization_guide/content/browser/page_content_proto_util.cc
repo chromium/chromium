@@ -993,6 +993,19 @@ class Converter {
         return base::unexpected("could not find render_frame_info for iframe");
       }
 
+      // Security check: Verify that the child frame is a child of the current
+      // frame.
+      content::RenderFrameHost* child_rfh =
+          content::RenderFrameHost::FromFrameToken(
+              render_frame_info->global_frame_token);
+      content::RenderFrameHost* parent_rfh =
+          content::RenderFrameHost::FromFrameToken(source_frame_token);
+      if (child_rfh && parent_rfh &&
+          child_rfh->GetParentOrOuterDocument() != parent_rfh) {
+        return base::unexpected(
+            "compromised renderer: iframe is not a child of the current frame");
+      }
+
       auto* proto_iframe_data =
           proto_node->mutable_content_attributes()->mutable_iframe_data();
       if (frame_token.Is<blink::RemoteFrameToken>()) {

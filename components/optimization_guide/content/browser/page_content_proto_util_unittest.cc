@@ -10,6 +10,7 @@
 #include "components/optimization_guide/content/browser/mock_autofill_annotations_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1903,6 +1904,107 @@ TEST_F(PageContentProtoUtilTest,
   ASSERT_EQ(form_control_data_proto.coarse_autofill_field_type_size(), 1);
   EXPECT_EQ(form_control_data_proto.coarse_autofill_field_type(0),
             proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD);
+}
+
+TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
+  content::RenderViewHostTestEnabler rvh_test_enabler;
+
+  auto browser_context = std::make_unique<content::TestBrowserContext>();
+  content::WebContents::CreateParams create_params(browser_context.get());
+  std::unique_ptr<content::TestWebContents> web_contents(
+      content::TestWebContents::Create(create_params));
+  web_contents->NavigateAndCommit(GURL("https://example.com"));
+
+  content::RenderFrameHost* main_rfh = web_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* child_rfh1 =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("child1");
+  child_rfh1 = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://child1.com"), child_rfh1);
+  content::RenderFrameHost* child_rfh2 =
+      content::RenderFrameHostTester::For(main_rfh)->AppendChild("child2");
+  child_rfh2 = content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://child2.com"), child_rfh2);
+
+  auto main_frame_token = main_rfh->GetGlobalFrameToken();
+  // child1 and child2 must be RemoteFrameTokens from the perspective of the
+  // frame that includes them to trigger cross-frame recursion.
+  blink::RemoteFrameToken child1_remote_token(
+      child_rfh1->GetFrameToken().value());
+  blink::RemoteFrameToken child2_remote_token(
+      child_rfh2->GetFrameToken().value());
+
+  auto child1_token = child_rfh1->GetGlobalFrameToken();
+
+  // child1 claims child2 is its child.
+  auto child1_content = CreatePageContent();
+
+  auto child1_frame_data = blink::mojom::AIPageContentFrameData::New();
+  child1_frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  child1_content->frame_data = std::move(child1_frame_data);
+
+  auto malicious_iframe_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe);
+  auto iframe_data = blink::mojom::AIPageContentIframeData::New();
+  iframe_data->frame_token = child2_remote_token;
+
+  malicious_iframe_node->content_attributes->iframe_data =
+      std::move(iframe_data);
+
+  child1_content->root_node->children_nodes.emplace_back(
+      std::move(malicious_iframe_node));
+
+  // We need a page_content_map that includes both main frame and child1.
+  AIPageContentMap page_content_map;
+  auto root_content = CreatePageContent();
+  root_content->root_node->children_nodes.emplace_back(
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe));
+
+  auto main_frame_data = blink::mojom::AIPageContentFrameData::New();
+  main_frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  root_content->frame_data = std::move(main_frame_data);
+
+  auto main_iframe_data = blink::mojom::AIPageContentIframeData::New();
+  main_iframe_data->frame_token = child1_remote_token;
+
+  root_content->root_node->children_nodes.back()
+      ->content_attributes->iframe_data = std::move(main_iframe_data);
+
+  page_content_map[main_frame_token] = std::move(root_content);
+  page_content_map[child1_token] = std::move(child1_content);
+
+  auto get_render_frame_info = base::BindLambdaForTesting(
+      [&](int child_process_id,
+          blink::FrameToken token) -> std::optional<RenderFrameInfo> {
+        content::RenderFrameHost* rfh = nullptr;
+        if (token == main_frame_token.frame_token) {
+          rfh = main_rfh;
+        } else if (token == child1_remote_token) {
+          rfh = child_rfh1;
+        } else if (token == child2_remote_token) {
+          rfh = child_rfh2;
+        }
+        if (!rfh) {
+          return std::nullopt;
+        }
+        RenderFrameInfo render_frame_info;
+        render_frame_info.global_frame_token = rfh->GetGlobalFrameToken();
+        render_frame_info.source_origin = rfh->GetLastCommittedOrigin();
+        render_frame_info.url = rfh->GetLastCommittedURL();
+        render_frame_info.serialized_server_token = token.ToString();
+        return render_frame_info;
+      });
+
+  AIPageContentResult page_content;
+  FrameTokenSet frame_token_set;
+  EXPECT_THAT(
+      ConvertAIPageContentToProto(blink::mojom::AIPageContentOptions::New(),
+                                  main_frame_token, page_content_map,
+                                  get_render_frame_info, frame_token_set,
+                                  page_content),
+      base::test::ErrorIs(
+          "compromised renderer: iframe is not a child of the current frame"));
 }
 
 class PageContentProtoUtilCreditCardRedactionTest
