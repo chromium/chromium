@@ -3,12 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
+from typing import Any, List
 import unittest
 
-from typing import List, Any
-from dataclasses import dataclass
 from parameterized import parameterized
-
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
@@ -163,7 +162,7 @@ class TestActionXmlValidation(unittest.TestCase):
     # raise ValueError.
     with self.assertRaises(ValueError) as error_ctx:
       action_utils.ParseActionFile(current_xml)
-    self.assertTrue('obsolete' in str(error_ctx.exception))
+    self.assertIn('obsolete', str(error_ctx.exception))
 
   def testTwoDescriptions(self):
     current_xml = ACTIONS_XML.format(owners=TWO_OWNERS,
@@ -175,12 +174,12 @@ class TestActionXmlValidation(unittest.TestCase):
     # raise ValueError.
     with self.assertRaises(ValueError) as error_ctx:
       action_utils.ParseActionFile(current_xml)
-    self.assertTrue('description' in str(error_ctx.exception))
+    self.assertIn('description', str(error_ctx.exception))
 
 
 class TestActionXmlPrettyPrint(unittest.TestCase):
 
-  @dataclass(frozen=True)
+  @dataclasses.dataclass(frozen=True)
   class _TestScenario:
     # Input
     owner: str
@@ -194,14 +193,15 @@ class TestActionXmlPrettyPrint(unittest.TestCase):
     expected_xml: str
 
     @classmethod
-    def Create(cls,
-               owner: str = NO_VALUE,
-               description: str = NO_VALUE,
-               obsolete: str = NO_VALUE,
-               not_user_triggered=NO_VALUE,
-               generated_actions: List[str] = [],
-               comment: str = NO_VALUE,
-               expected_xml=NO_VALUE) -> "TestCase":
+    def Create(
+        cls,
+        owner: str = NO_VALUE,
+        description: str = NO_VALUE,
+        obsolete: str = NO_VALUE,
+        not_user_triggered=NO_VALUE,
+        generated_actions: List[str] = [],
+        comment: str = NO_VALUE,
+        expected_xml=NO_VALUE) -> 'TestActionXmlPrettyPrint._TestScenario':
       return cls(owner=owner,
                  description=description,
                  obsolete=obsolete,
@@ -211,36 +211,36 @@ class TestActionXmlPrettyPrint(unittest.TestCase):
                  expected_xml=expected_xml)
 
   @parameterized.expand([
-      ("testNoOwner",
+      ('testNoOwner',
        _TestScenario.Create(description=DESCRIPTION,
                             expected_xml=NO_OWNER_EXPECTED_XML)),
-      ("testOneOwnerOneDescription",
+      ('testOneOwnerOneDescription',
        _TestScenario.Create(owner=ONE_OWNER,
                             description=DESCRIPTION,
                             expected_xml=ONE_OWNER_EXPECTED_XML)),
-      ("testTwoOwners",
+      ('testTwoOwners',
        _TestScenario.Create(owner=TWO_OWNERS,
                             description=DESCRIPTION,
                             expected_xml=TWO_OWNERS_EXPECTED_XML)),
-      ("testNoDescription",
+      ('testNoDescription',
        _TestScenario.Create(owner=TWO_OWNERS,
                             expected_xml=NO_DESCRIPTION_EXPECTED_XML)),
-      ("testObsolete",
+      ('testObsolete',
        _TestScenario.Create(owner=TWO_OWNERS,
                             description=DESCRIPTION,
                             obsolete=OBSOLETE,
                             expected_xml=OBSOLETE_EXPECTED_XML)),
-      ("testGeneratedNewActions",
+      ('testGeneratedNewActions',
        _TestScenario.Create(owner=TWO_OWNERS,
                             description=DESCRIPTION,
                             generated_actions=['action2'],
                             expected_xml=ADD_ACTION_EXPECTED_XML)),
-      ("testComment",
+      ('testComment',
        _TestScenario.Create(owner=TWO_OWNERS,
                             description=DESCRIPTION,
                             comment=COMMENT,
                             expected_xml=COMMENT_EXPECTED_XML)),
-      ("testNotUserTriggered",
+      ('testNotUserTriggered',
        _TestScenario.Create(description=DESCRIPTION,
                             not_user_triggered=NOT_USER_TRIGGERED,
                             expected_xml=NOT_USER_TRIGGERED_EXPECTED_XML))
@@ -253,13 +253,13 @@ class TestActionXmlPrettyPrint(unittest.TestCase):
         comment=test_scenario.comment,
         not_user_triggered=test_scenario.not_user_triggered)
     updated_xml = extract_actions.UpdateXml(
-        input_xml, generated_actions_names=test_scenario.generated_actions)
+        input_xml, generated_actions_names=set(test_scenario.generated_actions))
     self.assertEqual(updated_xml, test_scenario.expected_xml)
 
   def testVariantPrettyPrint(self):
     """Tests that tokens and variants are preserved when pretty-printing."""
     xml_result = extract_actions.UpdateXml(XML_WITH_TOKEN,
-                                           generated_actions_names=[])
+                                           generated_actions_names=set([]))
     self.assertMultiLineEqual(XML_WITH_TOKEN_PRETTY_PRINTED, xml_result)
 
 

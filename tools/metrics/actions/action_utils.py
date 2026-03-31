@@ -12,12 +12,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from typing import Dict, List, Tuple, Optional
+from typing import cast, Dict, List, Tuple, Optional
 from xml.dom import minidom
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
+
 
 class Error(Exception):
   pass
@@ -202,7 +203,7 @@ def _ExtractText(parent_dom: minidom.Element, tag_name: str) -> List[str]:
 
 def ParseActionFile(
     file_content: str
-) -> Tuple[Dict[str, Action], List[minidom.Node], Dict[str, List[Variant]]]:
+) -> Tuple[Dict[str, Action], List[minidom.Comment], Dict[str, List[Variant]]]:
   """Parse the XML data currently stored in the file.
 
   Args:
@@ -220,13 +221,14 @@ def ParseActionFile(
   """
   dom = minidom.parseString(file_content)
 
-  comment_nodes: List[minidom.Node] = []
+  comment_nodes: List[minidom.Comment] = []
   # Get top-level comments. It is assumed that all comments are placed before
   # <actions> tag. Therefore the loop will stop if it encounters a non-comment
   # node.
   for node in dom.childNodes:
     if node.nodeType == minidom.Node.COMMENT_NODE:
-      comment_nodes.append(node)
+      comment_node = cast(minidom.Comment, node)
+      comment_nodes.append(comment_node)
     else:
       break
 
@@ -314,8 +316,8 @@ def _CreateActionVariantsFor(action: Action) -> Dict[str, Action]:
 
   current_token = action.tokens[0]
   if not current_token.variants:
-    raise ValueError(f"Action {action} does not have variants"
-                     " for {current_token.key} token.")
+    raise ValueError(f'Action {action} does not have variants'
+                     f' for {current_token.key} token.')
 
   for variant in current_token.variants:
     ret_val |= _CreateActionVariantsFor(

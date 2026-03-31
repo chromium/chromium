@@ -21,12 +21,7 @@ tools/metrics/common/models.py:124: error: List comprehension has incompatible t
 tools/metrics/common/models.py:222: error: Invalid self argument "Node" to attribute function "appendChild" with type "Callable[[DocumentFragment | Attr | Element | Document, _ChildNodePlusFragmentVar], _ChildNodePlusFragmentVar]"  [misc]
 tools/metrics/common/models.py:504: error: Return type "Mapping[str, NodeType]" of "GetNodeTypes" incompatible with return type "dict[str, NodeType]" in supertype "NodeType"  [override]
 tools/metrics/common/models.py:513: error: Argument 1 to "update" of "MutableMapping" has incompatible type "dict[str, NodeType]"; expected "SupportsKeysAndGetItem[str, ObjectNodeType]"  [arg-type]
-tools/metrics/actions/extract_actions.py:37: error: Cannot find implementation or library stub for module named "HTMLParser"  [import-not-found]
-tools/metrics/actions/extract_actions.py:37: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
-tools/metrics/actions/extract_actions.py:715: error: Value of type variable "_DocumentChildrenVar" of "appendChild" of "Document" cannot be "Node"  [type-var]
-tools/metrics/actions/extract_actions.py:742: error: Need type annotation for "actions" (hint: "actions: set[<type>] = ...")  [var-annotated]
 tools/metrics/actions/extract_actions_test.py:10: error: Skipping analyzing "parameterized": module is installed, but missing library stubs or py.typed marker  [import-untyped]
-tools/metrics/actions/extract_actions_test.py:204: error: Name "TestCase" is not defined  [name-defined]
-tools/metrics/actions/extract_actions_test.py:256: error: Argument "generated_actions_names" to "UpdateXml" has incompatible type "list[str]"; expected "set[str]"  [arg-type]
+tools/metrics/actions/extract_actions_test.py:10: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
 tools/metrics/histograms/histogram_configuration_model.py:48: error: Argument "text_attribute" to "ObjectNodeType" has incompatible type "bool"; expected "str | None"  [arg-type]
 tools/metrics/histograms/histogram_configuration_model.py:103: error: Argument "text_attribute" to "ObjectNodeType" has incompatible type "bool"; expected "str | None"  [arg-type]

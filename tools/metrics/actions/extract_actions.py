@@ -25,24 +25,20 @@ from __future__ import print_function
 __author__ = 'evanm (Evan Martin)'
 
 import ast
-import copy
+from html import parser
 import logging
 import os
 import re
 import sys
+from typing import Callable, Dict, List, Optional
 from xml.dom import minidom
-from typing import Dict, List, Optional
-
-if sys.version_info.major == 2:
-  from HTMLParser import HTMLParser
-else:
-  from html.parser import HTMLParser
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.actions_model as actions_model
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+
 
 USER_METRICS_ACTION_RE = re.compile(
     r"""
@@ -145,20 +141,19 @@ SHARE_TARGETS = {
 }
 
 
-def AddComputedActions(actions):
+def AddComputedActions(actions: set[str]) -> None:
   """Add computed actions to the actions list.
 
   Arguments:
     actions: set of actions to add to.
   """
-
   # Actions for back_forward_menu_model.cc.
-  for dir in ('BackMenu_', 'ForwardMenu_'):
-    actions.add(dir + 'ShowFullHistory')
-    actions.add(dir + 'Popup')
+  for direction in ('BackMenu_', 'ForwardMenu_'):
+    actions.add(direction + 'ShowFullHistory')
+    actions.add(direction + 'Popup')
     for i in range(1, 20):
-      actions.add(dir + 'HistoryClick' + str(i))
-      actions.add(dir + 'ChapterClick' + str(i))
+      actions.add(direction + 'HistoryClick' + str(i))
+      actions.add(direction + 'ChapterClick' + str(i))
 
   # Actions for sharing_hub_bubble_controller.cc and
   # sharing_hub_sub_menu_model.cc.
@@ -166,7 +161,7 @@ def AddComputedActions(actions):
     actions.add('SharingHubDesktop.%s' % share_target)
 
 
-def AddPDFPluginActions(actions):
+def AddPDFPluginActions(actions: set[str]) -> None:
   """Add actions that are sent by the PDF plugin.
 
   Arguments
@@ -191,7 +186,7 @@ def AddPDFPluginActions(actions):
   actions.add('PDF_Unsupported_XFA')
 
 
-def AddBookmarkManagerActions(actions):
+def AddBookmarkManagerActions(actions: set[str]) -> None:
   """Add actions that are used by BookmarkManager.
 
   Arguments
@@ -224,7 +219,7 @@ def AddBookmarkManagerActions(actions):
   actions.add('BookmarkManager_NavigateTo_SubFolder')
 
 
-def AddBookmarkUsageActions(actions):
+def AddBookmarkUsageActions(actions: set[str]) -> None:
   """Add actions related to bookmarks usage.
 
   Arguments
@@ -244,13 +239,13 @@ def AddBookmarkUsageActions(actions):
   actions.add('Bookmarks.Opened.LocalStorageSyncing')
 
 
-def AddChromeOSActions(actions):
-  """Add actions reported by non-Chrome processes in Chrome OS.
+def AddChromeOSActions(actions: set[str]) -> None:
+  """Add actions reported by non-Chrome processes in ChromeOS.
 
   Arguments:
     actions: set of actions to add to.
   """
-  # Actions sent by Chrome OS update engine.
+  # Actions sent by ChromeOS update engine.
   actions.add('Updater.ServerCertificateChanged')
   actions.add('Updater.ServerCertificateFailed')
 
@@ -261,7 +256,7 @@ def AddExtensionActions(actions):
   Arguments:
     actions: set of actions to add to.
   """
-  # Actions sent by Chrome OS File Browser.
+  # Actions sent by ChromeOS File Browser.
   actions.add('FileBrowser.CreateNewFolder')
   actions.add('FileBrowser.PhotoEditor.Edit')
   actions.add('FileBrowser.PhotoEditor.View')
@@ -375,7 +370,7 @@ def GrepForActions(path, actions):
                         (path, line_number))
 
 
-class WebUIActionsParser(HTMLParser):
+class WebUIActionsParser(parser.HTMLParser):
   """Parses an HTML file, looking for all tags with a 'metric' attribute.
   Adds user actions corresponding to any metrics found.
 
@@ -384,7 +379,7 @@ class WebUIActionsParser(HTMLParser):
   """
 
   def __init__(self, actions):
-    HTMLParser.__init__(self)
+    parser.HTMLParser.__init__(self)
     self.actions = actions
 
   def handle_starttag(self, tag, attrs):
@@ -414,7 +409,7 @@ class WebUIActionsParser(HTMLParser):
       self.actions.add(attrs['metric'])
 
 
-def GrepForWebUIActions(path, actions):
+def GrepForWebUIActions(path: str, actions: set[str]) -> None:
   """Grep a WebUI source file for elements with associated metrics.
 
   Arguments:
@@ -422,23 +417,24 @@ def GrepForWebUIActions(path, actions):
     actions: set of actions to add to
   """
   close_called = False
+  action_parser = None
   try:
-    parser = WebUIActionsParser(actions)
+    action_parser = WebUIActionsParser(actions)
     with open(path, encoding='utf-8') as file:
-      parser.feed(file.read())
+      action_parser.feed(file.read())
     # An exception can be thrown by parser.close(), so do it in the try to
     # ensure the path of the file being parsed gets printed if that happens.
     close_called = True
-    parser.close()
+    action_parser.close()
   except Exception as e:
-    print("Error encountered for path %s" % path)
+    print('Error encountered for path %s' % path)
     raise e
   finally:
-    if not close_called:
-      parser.close()
+    if action_parser and not close_called:
+      action_parser.close()
 
 
-def GrepForDevToolsActions(path, actions):
+def GrepForDevToolsActions(path: str, actions: set[str]) -> None:
   """Grep a DevTools source file for calls to UserMetrics functions.
 
   Arguments:
@@ -465,7 +461,9 @@ def GrepForDevToolsActions(path, actions):
       logging.warning(str(e))
 
 
-def WalkDirectory(root_path, actions, extensions, callback):
+def WalkDirectory(root_path: str, actions: set[str],
+                  extensions: tuple[str, ...] | str,
+                  callback: Callable[[str, set[str]], None]):
   """Walk directory chooses which files to process based on a set
    of extensions, and runs the callback function on them.
 
@@ -476,11 +474,6 @@ def WalkDirectory(root_path, actions, extensions, callback):
     Note: Files starting with a `.` will be ignored by default. See
     comments in implementation.
   """
-
-  # Convert `extensions` to tuple if it is not one already
-  if type(extensions) != tuple:
-    extensions = (extensions, )
-
   for path, dirs, files in os.walk(root_path):
     if 'third_party' in dirs:
       dirs.remove('third_party')
@@ -489,15 +482,13 @@ def WalkDirectory(root_path, actions, extensions, callback):
     if '.git' in dirs:
       dirs.remove('.git')
     for file in files:
-      """splitext() returns an empty extension |ext| for files
-      starting with `.`, as a result, files starting with a `.` will
-      be ignored (unless the |extensions| tuple includes an empty
-      element). Beware of allowing the callback() to run on all files
-      that start with a `.`: the callback needs to be resilient to
-      different file formats (binary, ASCII, etc.) and may also end
-      up processing many files that don't need to be processed, wasting
-      time.
-      """
+      # splitext() returns an empty extension |ext| for files starting with `.`,
+      # as a result, files starting with a `.` will be ignored (unless the
+      # |extensions| tuple includes an empty element). Beware of allowing the
+      # callback() to run on all files that start with a `.`: the callback needs
+      # to be resilient to different file formats (binary, ASCII, etc.) and may
+      # also end up processing many files that don't need to be processed,
+      # wasting time.
       filename, ext = os.path.splitext(file)
       if ext in extensions and not filename.endswith('test'):
         callback(os.path.join(path, file), actions)
@@ -639,7 +630,6 @@ def _CreateActionTag(doc: minidom.Document,
   Returns:
     An action tag Element with proper children elements.
   """
-
   action_dom = doc.createElement('action')
   action_dom.setAttribute('name', action.name)
 
@@ -696,7 +686,7 @@ def _CreateActionTag(doc: minidom.Document,
 
 
 def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
-                comment_nodes: List[minidom.Node],
+                comment_nodes: List[minidom.Comment],
                 variants_dict: Dict[str, List[action_utils.Variant]]) -> str:
   """Given a list of actions, create a well-printed minidom document.
 
@@ -739,7 +729,7 @@ def PrettyPrint(actions_dict: Dict[str, action_utils.Action],
 
 def _GeneratedActions() -> set[str]:
   """Returns list of name of the actions that are generated programmatically"""
-  actions = set()
+  actions: set[str] = set()
   AddComputedActions(actions)
   AddWebUIActions(actions)
   AddDevToolsActions(actions)
@@ -771,6 +761,7 @@ def UpdateXml(
       actions_dict[action_name] = action_utils.Action(action_name, None, [])
 
   return PrettyPrint(actions_dict, comment_nodes, variants_dict)
+
 
 def main(argv):
   presubmit_util.DoPresubmitMain(argv,
