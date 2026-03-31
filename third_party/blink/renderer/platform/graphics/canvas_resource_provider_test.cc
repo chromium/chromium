@@ -529,9 +529,9 @@ TEST_F(CanvasResourceProviderTest,
   ASSERT_TRUE(image);
   auto new_image = provider->Snapshot();
   EXPECT_EQ(image->GetSharedImage(), new_image->GetSharedImage());
-  EXPECT_EQ(provider->ProduceCanvasResource(FlushReason::kOther)
-                ->GetClientSharedImage(),
-            image->GetSharedImage());
+  EXPECT_EQ(
+      provider->ProduceCanvasResource(FlushReason::kOther)->GetSharedImage(),
+      image->GetSharedImage());
 
   // Resource updated after draw.
   provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kWhite);

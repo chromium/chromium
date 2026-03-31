@@ -53,7 +53,7 @@ struct CanvasResourceDispatcher::ExportedResource {
 
   void ReleaseResource(gpu::SharedImageExportResult shared_image_export_result,
                        bool is_lost) {
-    auto sync_token = resource_->GetClientSharedImage()->EndExport(
+    auto sync_token = resource_->GetSharedImage()->EndExport(
         std::move(shared_image_export_result));
     ReleaseResource(sync_token, is_lost);
   }

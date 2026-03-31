@@ -476,8 +476,7 @@ ExternalTexture CreateExternalTexture(
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
       WebGPUMailboxTexture::FromCanvasResource(
           device->GetDawnControlClient(), device->GetHandle(),
-          wgpu::TextureUsage::TextureBinding,
-          canvas_resource->GetClientSharedImage(),
+          wgpu::TextureUsage::TextureBinding, canvas_resource->GetSharedImage(),
           canvas_resource->sync_token(), std::move(recyclable_canvas_resource));
   if (!mailbox_texture) {
     return {};

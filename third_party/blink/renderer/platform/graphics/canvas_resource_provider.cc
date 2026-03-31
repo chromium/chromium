@@ -509,7 +509,7 @@ scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
   // invocation of EndAccess() will generate a new sync token.
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
-  return resource_->GetClientSharedImage();
+  return resource_->GetSharedImage();
 }
 
 void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
@@ -636,9 +636,8 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
     DCHECK(IsResourceUsable(resource_.get()));
     dst_access = resource_->BeginAccess(/*readonly=*/false);
     if (must_preserve_content_on_copy_on_write_) {
-      auto old_mailbox =
-          old_resource_shared_image->GetClientSharedImage()->mailbox();
-      auto mailbox = resource()->GetClientSharedImage()->mailbox();
+      auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
+      auto mailbox = resource()->GetSharedImage()->mailbox();
       auto src_access = old_resource->BeginAccess(/*readonly=*/true);
       RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
                                          Size().width(), Size().height());
@@ -691,9 +690,8 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal(bool is_overwrite) {
   resource_ = NewOrRecycledResource();
   dst_access = resource_->BeginAccess(/*readonly=*/false);
   if (must_preserve_content_on_copy_on_write_ && !is_overwrite) {
-    auto old_mailbox =
-        old_resource_shared_image->GetClientSharedImage()->mailbox();
-    auto mailbox = resource()->GetClientSharedImage()->mailbox();
+    auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
+    auto mailbox = resource()->GetSharedImage()->mailbox();
     auto src_access = old_resource->BeginAccess(/*readonly=*/true);
     RasterInterface()->CopySharedImage(old_mailbox, mailbox, 0, 0, 0, 0,
                                        Size().width(), Size().height());
@@ -755,7 +753,7 @@ bool Canvas2DResourceProviderSharedImage::WritePixelsForCanvas2D(
   // Verify that this is the case and update the code here.
   must_preserve_content_on_copy_on_write_ = true;
 
-  auto client_si = resource()->GetClientSharedImage();
+  auto client_si = resource()->GetSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), x, y,
                                  client_si->GetTextureTarget(),
                                  SkPixmap(orig_info, pixels, row_bytes));
@@ -806,7 +804,7 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
   // Verify that this is the case and update the code here.
   must_preserve_content_on_copy_on_write_ = true;
 
-  auto client_si = resource()->GetClientSharedImage();
+  auto client_si = resource()->GetSharedImage();
   RasterInterface()->WritePixels(client_si->mailbox(), /*dst_x_offset=*/0,
                                  /*dst_y_offset=*/0,
                                  client_si->GetTextureTarget(), subset);
@@ -837,7 +835,7 @@ bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
   EndWriteAccess();
   auto dst_access = WillDrawInternal(/*is_overwrite=*/true);
 
-  auto dst_client_si = resource()->GetClientSharedImage();
+  auto dst_client_si = resource()->GetSharedImage();
   if (!dst_client_si) {
     resource()->EndAccess(std::move(dst_access));
     return false;
@@ -877,7 +875,7 @@ CanvasNon2DResourceProviderSharedImage::BeginExternalWrite(
   auto access = WillDrawInternal(is_overwrite);
   resource_->EndAccess(std::move(access));
   internal_access_sync_token = resource_->sync_token();
-  return resource_->GetClientSharedImage();
+  return resource_->GetSharedImage();
 }
 
 base::ByteSize CanvasResourceProviderSharedImage::EstimatedSizeInBytes() const {
@@ -1188,7 +1186,7 @@ void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
       /*msaa_sample_count=*/use_msaa ? 1 : 0,
       use_msaa ? gpu::raster::MsaaMode::kDMSAA : gpu::raster::MsaaMode::kNoMSAA,
       can_use_lcd_text, /*visible=*/true, GetColorSpace(),
-      /*hdr_headroom=*/0.f, resource()->GetClientSharedImage()->mailbox().name);
+      /*hdr_headroom=*/0.f, resource()->GetSharedImage()->mailbox().name);
 
   ri->RasterCHROMIUM(
       list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,
@@ -1966,7 +1964,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushCanvas(bool is_overwrite) {
                                      : gpu::raster::MsaaMode::kNoMSAA,
                             can_use_lcd_text, /*visible=*/true, GetColorSpace(),
                             /*hdr_headroom=*/0.f,
-                            resource()->GetClientSharedImage()->mailbox().name);
+                            resource()->GetSharedImage()->mailbox().name);
 
     ri->RasterCHROMIUM(
         list.get(), GetOrCreateCanvasImageProvider(), size, full_raster_rect,

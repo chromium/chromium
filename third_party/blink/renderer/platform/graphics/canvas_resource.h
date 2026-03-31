@@ -78,15 +78,9 @@ class PLATFORM_EXPORT CanvasResource : public gpu::ClientImage {
   virtual bool IsValid() const = 0;
 
   // The bounds for this resource.
-  gfx::Size Size() const { return GetClientSharedImage()->size(); }
+  gfx::Size Size() const { return GetSharedImage()->size(); }
   base::ByteSize EstimatedSizeInBytes() const {
-    return GetClientSharedImage()->EstimatedSizeInBytes();
-  }
-
-  // The ClientSharedImage containing information on the SharedImage
-  // attached to the resource.
-  const scoped_refptr<gpu::ClientSharedImage>& GetClientSharedImage() const {
-    return GetSharedImage();
+    return GetSharedImage()->EstimatedSizeInBytes();
   }
 
   // A CanvasResource is not thread-safe and does not allow concurrent usage

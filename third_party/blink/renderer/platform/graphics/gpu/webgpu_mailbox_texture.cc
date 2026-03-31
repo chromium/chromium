@@ -126,9 +126,8 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUMailboxTexture::FromStaticBitmapImage(
   }
 
   return WebGPUMailboxTexture::FromCanvasResource(
-      dawn_control_client, device, usage,
-      canvas_resource->GetClientSharedImage(), canvas_resource->sync_token(),
-      std::move(recyclable_canvas_resource));
+      dawn_control_client, device, usage, canvas_resource->GetSharedImage(),
+      canvas_resource->sync_token(), std::move(recyclable_canvas_resource));
 }
 
 // static
