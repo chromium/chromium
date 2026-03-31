@@ -100,6 +100,9 @@ PrefetchRequest::PrefetchRequest(
           should_disable_block_until_head_timeout),
       should_bypass_http_cache_(should_bypass_http_cache),
       initiator_info_(std::move(initiator_info)) {
+  // This can be called from non-main thread, which means that this
+  // should not touch any UI thread bound objects mentioned in the
+  // header's comment about the thread model.
   CHECK(preload_pipeline_info_);
   if (prefetch_type_.IsRendererInitiated()) {
     CHECK(GetRendererInitiatorInfo());
@@ -131,6 +134,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateRendererInitiated(
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(referring_document_token, url),
@@ -168,6 +172,7 @@ std::unique_ptr<const PrefetchRequest> PrefetchRequest::CreateBrowserInitiated(
     base::WeakPtr<PreloadingAttempt> attempt,
     PreloadingHoldbackStatus holdback_status_override,
     std::optional<base::TimeDelta> ttl) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
@@ -209,6 +214,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
     bool should_append_variations_header,
     bool should_disable_block_until_head_timeout,
     bool should_bypass_http_cache) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return std::make_unique<PrefetchRequest>(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
