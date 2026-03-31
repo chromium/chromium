@@ -140,7 +140,6 @@ def _jni_function_name(called_by_native):
 def method_definition(sb, cbn):
   java_class = cbn.java_class
   java_class_name = cbn.java_class.nested_name
-  reciever_arg_is_class = cbn.static or cbn.is_constructor
   return_type = cbn.return_type
   is_void = return_type.is_void()
   return_type_cpp = _return_type_cpp_non_mirror(return_type)
@@ -149,7 +148,7 @@ def method_definition(sb, cbn):
   sb(f'Java_{java_class_name}_{cbn.method_id_function_name}')
   with sb.param_list() as plist:
     plist.append('JNIEnv* env')
-    if not reciever_arg_is_class:
+    if not cbn.static:
       plist.append('const ::jni_zero::JavaRef<jobject>& obj')
     plist.extend(f'{_param_type_cpp_non_mirror(p.java_type)} {p.cpp_name()}'
                  for p in cbn.params)
@@ -157,7 +156,7 @@ def method_definition(sb, cbn):
   with sb.block(after='\n'):
     sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
     class_accessor = header_common.class_accessor_expression(java_class)
-    receiver_arg = 'clazz' if reciever_arg_is_class else 'obj.obj()'
+    receiver_arg = 'clazz' if cbn.static else 'obj.obj()'
 
     sb(f'jclass clazz = {class_accessor};\n')
     if is_void:
@@ -167,7 +166,10 @@ def method_definition(sb, cbn):
       sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz, {default_value});\n')
 
     checked_str = 'false' if cbn.unchecked else 'true'
-    method_id_type = 'TYPE_STATIC' if cbn.static else 'TYPE_INSTANCE'
+    if cbn.static and not cbn.is_constructor:
+      method_id_type = 'TYPE_STATIC'
+    else:
+      method_id_type = 'TYPE_INSTANCE'
     sb(f'::jni_zero::internal::JniJavaCallContext<{checked_str}> '
        f'call_context;\n')
     with sb.statement():

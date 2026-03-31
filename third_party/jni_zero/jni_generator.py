@@ -157,17 +157,16 @@ class CalledByNative:
     self.static = parsed_called_by_native.static
     self.unchecked = parsed_called_by_native.unchecked or unchecked
     self.java_class = parsed_called_by_native.java_class
+    self.return_type = self.signature.return_type
     self.is_constructor = self.name == '<init>'
 
     # Computed once we know if overloads exist.
     self.method_id_function_name = None
 
-  @property
-  def return_type(self):
-    # Set the return type of constructors to for simpler codegen logic.
+    # Set the return type & static of constructors to for simpler codegen logic.
     if self.is_constructor:
-      return self.java_class.as_type()
-    return self.signature.return_type
+      self.static = True
+      self.return_type = self.java_class.as_type()
 
   @property
   def params(self):
