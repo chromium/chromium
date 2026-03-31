@@ -26,6 +26,8 @@
 #include <unicode/uchar.h>
 #include <unicode/uvernum.h>
 
+#include <array>
+
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/break_iterator_data_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -43,7 +45,9 @@ namespace blink {
 // - 1 indicates additional break opportunities. 0 indicates to fallback to
 //   normal line break, not "prohibit break."
 // clang-format off
-static const unsigned char kBreakAllLineBreakClassTable[][BA_LB_COUNT / 8 + 1] = {
+static constexpr std::array<std::array<unsigned char, BA_LB_COUNT / 8 + 1>,
+                            BA_LB_COUNT>
+    kBreakAllLineBreakClassTable = {{
   // XX AI AL B2 BA BB BK CB            SA SG SP SY ZW NL WJ H2             HH
   //            CL CM CR EX GL HY ID IN             H3 JL JT JV CP CJ HL RI
   //                        IS LF NS NU OP PO PR QU             EB EM ZWJ AK AP AS VF VI
@@ -103,7 +107,7 @@ static const unsigned char kBreakAllLineBreakClassTable[][BA_LB_COUNT / 8 + 1] =
   // Added in ICU 78, see uchar.h and https://www.unicode.org/reports/tr14/#HH
   { 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000, 0b00000000 }, // HH
 #endif
-};
+}};
 // clang-format on
 
 static_assert(std::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
@@ -122,9 +126,11 @@ static inline bool ShouldBreakAfterBreakAll(ULineBreak last_line_break,
                                             ULineBreak line_break) {
   if (line_break >= 0 && line_break < BA_LB_COUNT && last_line_break >= 0 &&
       last_line_break < BA_LB_COUNT) {
-    const unsigned char* table_row =
-        UNSAFE_TODO(kBreakAllLineBreakClassTable[last_line_break]);
-    return UNSAFE_TODO(table_row[line_break / 8]) & (0x80 >> (line_break % 8));
+    const size_t last_line_break_index = last_line_break;
+    const size_t line_break_index = line_break;
+    return kBreakAllLineBreakClassTable[last_line_break_index]
+                                       [line_break_index / 8] &
+           (0x80 >> (line_break_index % 8));
   }
   return false;
 }
@@ -170,9 +176,11 @@ struct LazyLineBreakIterator::Context {
     DCHECK_GE(index, start_offset);
     CHECK_LE(index, len);
     if (index > start_offset) {
-      last = ContextChar(UNSAFE_TODO(str[index - 1]));
+      // SAFETY: `index <= len`, and `index > start_offset` guarantees
+      // `index - 1` is a valid character within `str`.
+      last = ContextChar(UNSAFE_BUFFERS(str[index - 1]));
       if (index > start_offset + 1) {
-        last_last_ch = UNSAFE_TODO(str[index - 2]);
+        last_last_ch = UNSAFE_BUFFERS(str[index - 2]);
       }
     }
   }
@@ -181,7 +189,8 @@ struct LazyLineBreakIterator::Context {
     if (index >= len) [[unlikely]] {
       return false;
     }
-    current = ContextChar(UNSAFE_TODO(str[index]));
+    // SAFETY: `index < len` was checked above.
+    current = ContextChar(UNSAFE_BUFFERS(str[index]));
     return true;
   }
 
@@ -346,8 +355,9 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
           break;
         }
         next_break = following + start_offset_;
-        if (disable_soft_hyphen_ && next_break > 0 &&
-            UNSAFE_TODO(str[next_break - 1]) == uchar::kSoftHyphen)
+        if (disable_soft_hyphen_ && next_break > 0 && next_break <= len &&
+            // SAFETY: `next_break` is checked to be within `(0, len]`.
+            UNSAFE_BUFFERS(str[next_break - 1]) == uchar::kSoftHyphen)
             [[unlikely]] {
           continue;
         }
