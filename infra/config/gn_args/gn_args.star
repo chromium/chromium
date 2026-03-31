@@ -951,6 +951,21 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "mac_developer",
+    # This configuration is commonly used, but there are other frequently used
+    # configurations as well.
+    args = {
+        "is_debug": False,
+    },
+    configs = [
+        "no_symbols",
+        "static",
+        "mac",
+        "arm64",
+    ],
+)
+
+gn_args.config(
     name = "mac_strip",
     args = {
         "enable_stripping": True,

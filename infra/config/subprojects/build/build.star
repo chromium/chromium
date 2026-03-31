@@ -734,9 +734,9 @@ This builder measures build performance for Mac developer builds, by simulating 
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "mac", "arm64"]),
-        "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "mac", "arm64"]),
-        "siso_no_clang_modules": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "mac", "arm64", "no_clang_modules"]),
+        "ninja": gn_args.config(configs = ["mac_developer", "remoteexec", "no_siso", "reclient"]),
+        "siso_native": gn_args.config(configs = ["mac_developer", "remoteexec", "no_reclient"]),
+        "siso_no_clang_modules": gn_args.config(configs = ["mac_developer", "remoteexec", "no_reclient", "no_clang_modules"]),
     },
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,

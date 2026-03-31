@@ -2,9 +2,9 @@
   "phases": {
     "ninja": {
       "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 2,
+        "is_component_build": false,
+        "is_debug": false,
+        "symbol_level": 0,
         "target_cpu": "arm64",
         "target_os": "mac",
         "use_reclient": true,
@@ -14,9 +14,9 @@
     },
     "siso_native": {
       "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 2,
+        "is_component_build": false,
+        "is_debug": false,
+        "symbol_level": 0,
         "target_cpu": "arm64",
         "target_os": "mac",
         "use_reclient": false,
@@ -26,9 +26,9 @@
     },
     "siso_no_clang_modules": {
       "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
-        "symbol_level": 2,
+        "is_component_build": false,
+        "is_debug": false,
+        "symbol_level": 0,
         "target_cpu": "arm64",
         "target_os": "mac",
         "use_clang_modules": false,
