@@ -99,3 +99,25 @@ source_set("backend_factory") {
     deps += [ "//chrome/browser/policy:path_parser" ]
   }
 }
+
+if (!is_android) {
+  source_set("startup_import_factory") {
+    sources = [
+      "startup_passwords_import_service_factory.cc",
+      "startup_passwords_import_service_factory.h",
+    ]
+
+    deps = [
+      ":factories",
+      "//base",
+      "//chrome/browser/affiliations",
+      "//chrome/browser/password_manager:startup_import",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common:channel_info",
+      "//chrome/common:non_code_constants",
+      "//components/keyed_service/core",
+      "//components/version_info:channel",
+      "//content/public/browser",
+    ]
+  }
+}

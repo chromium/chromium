@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/startup_passwords_import_service_factory.h"
+#include "chrome/browser/password_manager/factories/startup_passwords_import_service_factory.h"
 
 #include "base/command_line.h"
 #include "base/logging.h"

@@ -13,8 +13,6 @@ if (!is_android) {
     sources = [
       "startup_passwords_import_service.cc",
       "startup_passwords_import_service.h",
-      "startup_passwords_import_service_factory.cc",
-      "startup_passwords_import_service_factory.h",
       "startup_passwords_importer.cc",
       "startup_passwords_importer.h",
     ]
