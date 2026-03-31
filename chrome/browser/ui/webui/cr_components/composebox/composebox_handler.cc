@@ -263,8 +263,8 @@ void ComposeboxHandler::SubmitQuery(
         input_state.active_tool, input_state.active_model, active_input_types);
   }
 
-  ComputeAndOpenQueryUrl(query_text, disposition, aim_entrypoint,
-                         std::move(additional_params));
+  ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entrypoint,
+                               std::move(additional_params));
 }
 
 void ComposeboxHandler::OpenUrl(GURL url,

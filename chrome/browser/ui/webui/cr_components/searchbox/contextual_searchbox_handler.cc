@@ -787,6 +787,23 @@ void ContextualSearchboxHandler::OpenAutocompleteMatch(uint8_t line,
                                           meta_key, shift_key);
 }
 
+void ContextualSearchboxHandler::OnContextUploadStatusChanged(
+    const base::UnguessableToken& context_token,
+    lens::MimeType mime_type,
+    contextual_search::ContextUploadStatus context_upload_status,
+    const std::optional<contextual_search::ContextUploadErrorType>&
+        error_type) {
+  if (IsRemoteBound()) {
+    page_->OnContextualInputStatusChanged(context_token, context_upload_status,
+                                          error_type);
+  }
+
+  // Ensure `input_state_model_` is updated when file is uploaded.
+  if (input_state_model_) {
+    input_state_model_->OnContextChanged();
+  }
+}
+
 void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                              uint8_t mouse_button,
                                              bool alt_key,
@@ -803,6 +820,15 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
           omnibox_controller()->client()->GetPageClassification(
               /*is_prefetch=*/false));
 
+  ContextualizeQueryAndOpenUrl(query_text, disposition, aim_entry_point,
+                               /*additional_params=*/{});
+}
+
+void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
+    const std::string& query_text,
+    WindowOpenDisposition disposition,
+    omnibox::ChromeAimEntryPoint aim_entry_point,
+    std::map<std::string, std::string> additional_params) {
   if (query_contextualizer_) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
@@ -818,31 +844,14 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
             base::BindOnce(&ContextualSearchboxHandler::ComputeAndOpenQueryUrl,
                            weak_ptr_factory_.GetWeakPtr(), query_text,
                            disposition, aim_entry_point,
-                           std::map<std::string, std::string>()));
+                           std::move(additional_params)));
         return;
       }
     }
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
-                         /*additional_params=*/{});
-}
-
-void ContextualSearchboxHandler::OnContextUploadStatusChanged(
-    const base::UnguessableToken& context_token,
-    lens::MimeType mime_type,
-    contextual_search::ContextUploadStatus context_upload_status,
-    const std::optional<contextual_search::ContextUploadErrorType>&
-        error_type) {
-  if (IsRemoteBound()) {
-    page_->OnContextualInputStatusChanged(context_token, context_upload_status,
-                                          error_type);
-  }
-
-  // Ensure `input_state_model_` is updated when file is uploaded.
-  if (input_state_model_) {
-    input_state_model_->OnContextChanged();
-  }
+                         std::move(additional_params));
 }
 
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
