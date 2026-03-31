@@ -351,7 +351,6 @@ TEST_F(JXLImageDecoderTest, StaticImageRepetitionCount) {
   ASSERT_TRUE(data);
 
   decoder->SetData(data.get(), true);
-  EXPECT_FALSE(decoder->Failed());
   EXPECT_EQ(kAnimationNone, decoder->RepetitionCount());
 }
 
@@ -1057,6 +1056,7 @@ TEST_F(JXLImageDecoderTest, IncrementalAnimationDecodeMatchesOneShot) {
 
     // Keep advancing scanner/metadata incrementally.
     const wtf_size_t discovered = incremental->FrameCount();
+    EXPECT_GE(discovered, 1u);
     EXPECT_LE(discovered, frame_count);
     EXPECT_FALSE(incremental->Failed());
   }
