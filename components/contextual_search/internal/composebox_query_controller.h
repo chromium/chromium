@@ -81,6 +81,7 @@ class ComposeboxQueryController
 
   // ContextualSearchContextController:
   void InitializeIfNeeded() override;
+  void SetIsBackgrounded(bool backgrounded) override;
   void CreateSearchUrl(
       std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
       base::OnceCallback<void(GURL)> callback) override;
@@ -510,6 +511,9 @@ class ComposeboxQueryController
 
   // The last received cluster info.
   std::optional<lens::LensOverlayClusterInfo> cluster_info_ = std::nullopt;
+
+  // Whether the app is currently in the background.
+  bool is_backgrounded_ = false;
 
   // The number of times fetching cluster info has failed.
   int cluster_info_retries_ = 0;

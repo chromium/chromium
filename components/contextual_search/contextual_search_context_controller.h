@@ -182,6 +182,9 @@ class ContextualSearchContextController {
   // Called when a UI is associated with the context controller.
   virtual void InitializeIfNeeded() = 0;
 
+  // Set whether or not the context controller is backgrounded.
+  virtual void SetIsBackgrounded(bool backgrounded) = 0;
+
   // Called when a query has been submitted. `query_start_time` is the time
   // that the user clicked the submit button.
   virtual void CreateSearchUrl(

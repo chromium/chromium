@@ -78,6 +78,14 @@ void ContextualSearchSessionHandle::NotifySessionStarted() {
   }
 }
 
+void ContextualSearchSessionHandle::SetIsBackgrounded(bool backgrounded) {
+  // TODO(crbug.com/496926563): Add UMA logging for backgrounding to the
+  // metrics recorder.
+  if (auto* controller = GetController()) {
+    controller->SetIsBackgrounded(backgrounded);
+  }
+}
+
 void ContextualSearchSessionHandle::NotifySessionAbandoned() {
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     metrics_recorder->NotifySessionStateChanged(

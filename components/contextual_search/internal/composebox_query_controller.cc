@@ -383,6 +383,29 @@ std::optional<std::string> ComposeboxQueryController::MimeTypeToString(
   }
 }
 
+void ComposeboxQueryController::SetIsBackgrounded(bool backgrounded) {
+  if (is_backgrounded_ == backgrounded) {
+    return;
+  }
+  is_backgrounded_ = backgrounded;
+  if (is_backgrounded_) {
+    // Reset fetchers to stop in-flight requests and prevent new ones. We do
+    // not call ClearClusterInfo or ResetRequestClusterInfoState because we want
+    // to preserve the current backoff/retry state and any existing valid
+    // cluster info data while backgrounded. We only invalidate the state to
+    // ensure it gets re-fetched upon foregrounding.
+    cluster_info_endpoint_fetcher_.reset();
+    cluster_info_access_token_fetcher_.reset();
+    if (query_controller_state_ != QueryControllerState::kOff) {
+      SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
+    }
+  } else {
+    if (query_controller_state_ == QueryControllerState::kClusterInfoInvalid) {
+      FetchClusterInfo();
+    }
+  }
+}
+
 void ComposeboxQueryController::InitializeIfNeeded() {
   if (query_controller_state_ == QueryControllerState::kOff) {
     // The query controller state starts at kOff. If it is set to any other
@@ -1339,6 +1362,9 @@ void ComposeboxQueryController::SendInteractionRequest(
 }
 
 void ComposeboxQueryController::FetchClusterInfo() {
+  if (is_backgrounded_) {
+    return;
+  }
   SetQueryControllerState(QueryControllerState::kAwaitingClusterInfoResponse);
 
   // There should not be any in-flight cluster info access token request.
@@ -1397,6 +1423,9 @@ void ComposeboxQueryController::SendClusterInfoNetworkRequest(
 
 void ComposeboxQueryController::HandleClusterInfoResponse(
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {
+  if (is_backgrounded_) {
+    return;
+  }
   cluster_info_endpoint_fetcher_.reset();
 
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
