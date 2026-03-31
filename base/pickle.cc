@@ -113,10 +113,7 @@ template <typename T>
   }
 
   if (result_int < 0) {
-    // TODO(https://crbug.com/479458085): It seems inconsistent for this to
-    // return an error but *not* clear `reader`, but that would be a behavioral
-    // change compared to the pre-spanified code. The existing behavior is
-    // covered by `PickleTest.NegativeLengthDoesNotPreventFutureReads`.
+    SkipToEnd(reader);
     return false;
   }
 
@@ -212,10 +209,7 @@ bool PickleIterator::ReadLong(long* result) {
     return false;
   }
   if (!IsValueInRangeForNumericType<long>(result_int64)) {
-    // TODO(https://crbug.com/479458085): It seems inconsistent for this to
-    // return an error but *not* clear `reader_`, but that would be a behavioral
-    // change compared to the pre-spanified code. The existing behavior is
-    // covered by `PickleTest.LongOverflowDoesNotPreventFutureReads`.
+    SkipToEnd(reader_);
     return false;
   }
   *result = static_cast<long>(result_int64);
@@ -284,8 +278,8 @@ bool PickleIterator::ReadString16(std::u16string* result) {
     // overflow. If there were ever a method like
     // `ReadChar16(const char16_t* data, size_t length)` where the length may
     // exceed `INT_MAX`, then the overflow would be possible. In any case, the
-    // checked multiplication is good for future-proofing, though we likely want
-    // to clear `reader` in this case (https://crbug.com/479458085).
+    // checked multiplication is good for future-proofing.
+    SkipToEnd(reader_);
     return false;
   }
 

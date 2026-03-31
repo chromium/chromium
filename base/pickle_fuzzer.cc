@@ -6,9 +6,10 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <string>
 #include <string_view>
-#include <tuple>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
@@ -34,78 +35,79 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       base::Pickle::WithUnownedBuffer(UNSAFE_BUFFERS(base::span(data, size)));
   base::PickleIterator iter(pickle);
   for (int i = 0; i < kIterations; i++) {
-    uint8_t read_type = data_provider.ConsumeIntegral<uint8_t>();
-    switch (read_type % kReadDataTypes) {
+    uint8_t read_type =
+        data_provider.ConsumeIntegral<uint8_t>() % kReadDataTypes;
+    bool ok = false;
+    switch (read_type) {
       case 0: {
-        bool result = 0;
-        std::ignore = iter.ReadBool(&result);
+        bool result = false;
+        ok = iter.ReadBool(&result);
         break;
       }
       case 1: {
         int result = 0;
-        std::ignore = iter.ReadInt(&result);
+        ok = iter.ReadInt(&result);
         break;
       }
       case 2: {
         long result = 0;
-        std::ignore = iter.ReadLong(&result);
+        ok = iter.ReadLong(&result);
         break;
       }
       case 3: {
         uint16_t result = 0;
-        std::ignore = iter.ReadUInt16(&result);
+        ok = iter.ReadUInt16(&result);
         break;
       }
       case 4: {
         uint32_t result = 0;
-        std::ignore = iter.ReadUInt32(&result);
+        ok = iter.ReadUInt32(&result);
         break;
       }
       case 5: {
         int64_t result = 0;
-        std::ignore = iter.ReadInt64(&result);
+        ok = iter.ReadInt64(&result);
         break;
       }
       case 6: {
         uint64_t result = 0;
-        std::ignore = iter.ReadUInt64(&result);
+        ok = iter.ReadUInt64(&result);
         break;
       }
       case 7: {
         float result = 0;
-        std::ignore = iter.ReadFloat(&result);
+        ok = iter.ReadFloat(&result);
         break;
       }
       case 8: {
         double result = 0;
-        std::ignore = iter.ReadDouble(&result);
+        ok = iter.ReadDouble(&result);
         break;
       }
       case 9: {
         std::string result;
-        std::ignore = iter.ReadString(&result);
+        ok = iter.ReadString(&result);
         break;
       }
       case 10: {
         std::string_view result;
-        std::ignore = iter.ReadStringPiece(&result);
+        ok = iter.ReadStringPiece(&result);
         break;
       }
       case 11: {
         std::u16string result;
-        std::ignore = iter.ReadString16(&result);
+        ok = iter.ReadString16(&result);
         break;
       }
       case 12: {
-        std::ignore = iter.ReadData();
+        ok = iter.ReadData().has_value();
         break;
       }
       case 13: {
         const char* data_result = nullptr;
         int read_length =
             data_provider.ConsumeIntegralInRange(0, kMaxReadLength);
-        std::ignore =
-            iter.ReadBytes(&data_result, static_cast<size_t>(read_length));
+        ok = iter.ReadBytes(&data_result, static_cast<size_t>(read_length));
         break;
       }
       case 14: {
@@ -116,15 +118,18 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       }
       case 15: {
         size_t result = 0;
-        std::ignore = iter.ReadLength(&result);
+        ok = iter.ReadLength(&result);
         break;
       }
       case 16: {
-        std::ignore = iter.SkipBytes(static_cast<size_t>(
+        ok = iter.SkipBytes(static_cast<size_t>(
             data_provider.ConsumeIntegralInRange(0, kMaxSkipBytes)));
         break;
       }
     }
+    // Any failure should cause the iterator to be poisoned
+    // (https://crbug.com/479458085).
+    CHECK(ok || iter.ReachedEnd()) << static_cast<int>(read_type);
   }
 
   return 0;
