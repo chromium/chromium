@@ -487,8 +487,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     /**
-     * Given an address and a list of sets of websites, returns a new site with the same origin
-     * as |address| which has merged into it the permissions and storage info of the matching input
+     * Given an address and a list of sets of websites, returns a new site with the same origin as
+     * |address| which has merged into it the permissions and storage info of the matching input
      * sites. If a permission is found more than once, the one found first is used and the latter
      * are ignored. This should not drop any relevant data as there should not be duplicates like
      * that in the first place.
@@ -870,6 +870,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
             ChromeButtonPreference buttonPreference =
                     replaceWithReadOnlyButtonPreference(
                             preference, overrideSummary, ContentSetting.BLOCK);
+            // For the Permissions row with the subscribe button we do not want for the whole row to
+            // be selectable. It will lead to TalkBack issues.
+            buttonPreference.setSelectable(false);
             buttonPreference.setButton(
                     R.string.notifications_permission_subscribe,
                     R.string.notifications_permission_subscribe_a11y,
@@ -1819,8 +1822,8 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     }
 
     /**
-     * Ensures preference exists before removing to avoid NPE in
-     * {@link PreferenceScreen#removePreference}.
+     * Ensures preference exists before removing to avoid NPE in {@link
+     * PreferenceScreen#removePreference}.
      */
     private void removePreferenceSafely(CharSequence prefKey) {
         Preference preference = findPreference(prefKey);
