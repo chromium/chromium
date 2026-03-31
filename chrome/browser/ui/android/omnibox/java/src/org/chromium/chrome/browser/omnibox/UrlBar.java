@@ -573,7 +573,7 @@ public class UrlBar extends AutocompleteEditText {
             }
 
             // Ensure the display text is visible after updating the URL direction.
-            scrollDisplayText(mCurrentScrollType);
+            scrollDisplayText(mCurrentScrollType, /* originChanged= */ false);
         }
     }
 
@@ -758,14 +758,16 @@ public class UrlBar extends AutocompleteEditText {
      * @param scrollType What type of scroll should be applied to the text.
      * @param scrollToIndex The index that should be scrolled to, which only applies to {@link
      *     ScrollType#SCROLL_TO_TLD}.
+     * @param originChanged Whether the origin has changed since the last call to setScrollState.
      */
-    public void setScrollState(@ScrollType int scrollType, int scrollToIndex) {
+    public void setScrollState(
+            @ScrollType int scrollType, int scrollToIndex, boolean originChanged) {
         if (scrollType == ScrollType.SCROLL_TO_TLD) {
             mOriginEndIndex = scrollToIndex;
         } else {
             mOriginEndIndex = 0;
         }
-        scrollDisplayText(scrollType);
+        scrollDisplayText(scrollType, originChanged);
     }
 
     /**
@@ -810,9 +812,10 @@ public class UrlBar extends AutocompleteEditText {
      * @param scrollType What type of scroll to perform. SCROLL_TO_TLD: Scrolls the omnibox text to
      *     bring the TLD into view. SCROLL_TO_BEGINNING: Scrolls text that's too long to fit in the
      *     omnibox to the beginning so we can see the first character.
+     * @param originChanged Whether the origin has changed since the last call to scrollDisplayText
      */
     @VisibleForTesting
-    public void scrollDisplayText(@ScrollType int scrollType) {
+    public void scrollDisplayText(@ScrollType int scrollType, boolean originChanged) {
         // It's possible that text layout is not available right now. This could happen when the
         // call is made before the text could be measured. Fall back to safe defaults, even if not
         // correct for RTL layouts - this should be very rare (~10 cases per day worldwide).
@@ -836,7 +839,11 @@ public class UrlBar extends AutocompleteEditText {
 
         int measuredWidth = getVisibleMeasuredViewportWidth();
 
-        if (scrollType == mPreviousScrollType
+        // If the origin changes, we should avoid applying this optimization, which could cause us
+        // to fail to emphasize the tld in cases where we navigate from, e.g. domain.com to
+        // domain.com.sub
+        if (!originChanged
+                && scrollType == mPreviousScrollType
                 && measuredWidth == mPreviousScrollViewWidth
                 // Font size is float but it changes in discrete range (eg small font, big font),
                 // therefore false negative using regular equality is unlikely.
@@ -1107,7 +1114,7 @@ public class UrlBar extends AutocompleteEditText {
         // scroll position.
         if (mPendingScroll || mPreviousScrollViewWidth != getVisibleMeasuredViewportWidth()) {
             boolean isLayoutRequestedBeforeScrollDisplayText = isLayoutRequested();
-            scrollDisplayText(mCurrentScrollType);
+            scrollDisplayText(mCurrentScrollType, /* originChanged= */ false);
             // Confirmation check: be sure we don't re-request layout as a result of something that
             // happens in scrollDisplayText(). However, isLayoutRequested could be true before
             // scrollDisplayText() due to what happened within super.layout(), e.g. clear focus.
@@ -1307,5 +1314,9 @@ public class UrlBar extends AutocompleteEditText {
 
     /* package */ boolean hasPendingDisplayTextScrollForTesting() {
         return mPendingScroll;
+    }
+
+    /* package */ void setVisibleTextPrefixHintForTesting(CharSequence hintForTesting) {
+        mVisibleTextPrefixHint = hintForTesting;
     }
 }

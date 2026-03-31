@@ -10,7 +10,7 @@ import android.content.Context;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Range;
-import android.view.View;
+import android.view.View.OnKeyListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
@@ -20,6 +20,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarTextContextMenuDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.AutocompleteText;
 import org.chromium.chrome.browser.omnibox.UrlBarProperties.UrlBarTextState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -27,10 +28,13 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisSpan;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+import java.util.Objects;
 
 /** Handles collecting and pushing state information to the UrlBar model. */
 @NullMarked
-class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
+class UrlBarMediator implements UrlBarTextContextMenuDelegate {
     private final Context mContext;
     private final PropertyModel mModel;
     private final Callback<Boolean> mOnFocusChangeCallback;
@@ -38,7 +42,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     private boolean mHasFocus;
 
     private UrlBarData mUrlBarData = UrlBarData.EMPTY;
-    private @ScrollType int mScrollType = UrlBar.ScrollType.NO_SCROLL;
+    private @ScrollType int mScrollType = ScrollType.NO_SCROLL;
     private Range<Integer> mSelection = UrlBarData.SELECT_ALL;
 
     // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
@@ -68,7 +72,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         mModel.set(UrlBarProperties.TEXT_CHANGE_LISTENER, this::onTextChanged);
         mModel.set(UrlBarProperties.SHOW_HINT_TEXT, true);
         setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
-        pushTextToModel();
+        pushTextToModel(/* originChanged= */ false);
     }
 
     public void destroy() {
@@ -94,9 +98,9 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
 
     /**
      * Sets a listener for url key events. See the {@link
-     * UrlBarCoordinator#setKeyDownListener(View.OnKeyListener)}.
+     * UrlBarCoordinator#setKeyDownListener(OnKeyListener)}.
      */
-    public void setKeyDownListener(View.OnKeyListener listener) {
+    public void setKeyDownListener(OnKeyListener listener) {
         mModel.set(UrlBarProperties.KEY_DOWN_LISTENER, listener);
     }
 
@@ -113,7 +117,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         assert data != null;
 
         if (data.originEndIndex == data.originStartIndex) {
-            scrollType = UrlBar.ScrollType.SCROLL_TO_BEGINNING;
+            scrollType = ScrollType.SCROLL_TO_BEGINNING;
         }
 
         // Do not scroll to the end of the host for URLs such as data:, javascript:, etc...
@@ -122,7 +126,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 && data.originEndIndex == data.displayText.length()) {
             String scheme = data.url.getScheme();
             if (!TextUtils.isEmpty(scheme) && !UrlBarData.SCHEMES_TO_SPLIT.contains(scheme)) {
-                scrollType = UrlBar.ScrollType.SCROLL_TO_BEGINNING;
+                scrollType = ScrollType.SCROLL_TO_BEGINNING;
             }
         }
 
@@ -131,11 +135,13 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 && mScrollType == scrollType) {
             return false;
         }
+
+        boolean originChanged = !Objects.equals(getOrigin(mUrlBarData.url), getOrigin(data.url));
         mUrlBarData = data;
         mScrollType = scrollType;
         mSelection = selection;
 
-        pushTextToModel();
+        pushTextToModel(originChanged);
         return true;
     }
 
@@ -143,7 +149,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         return mUrlBarData;
     }
 
-    private void pushTextToModel() {
+    private void pushTextToModel(boolean originChanged) {
         CharSequence text;
         if (mShowOriginOnly && mUrlBarData.originStartIndex != mUrlBarData.originEndIndex) {
             text =
@@ -158,7 +164,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
             textForAutofillServices = mUrlBarData.url.getSpec();
         }
 
-        @ScrollType int scrollType = mHasFocus ? UrlBar.ScrollType.NO_SCROLL : mScrollType;
+        @ScrollType int scrollType = mHasFocus ? ScrollType.NO_SCROLL : mScrollType;
         if (text == null) text = "";
 
         UrlBarTextState state =
@@ -167,7 +173,8 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                         textForAutofillServices,
                         scrollType,
                         mUrlBarData.originEndIndex,
-                        mSelection);
+                        mSelection,
+                        originChanged);
         mModel.set(UrlBarProperties.TEXT_STATE, state);
         updateShowHintText(text.toString());
     }
@@ -240,6 +247,10 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
                 new AutocompleteText(userText, autocompleteText, additionalText, siteSearchLabel));
     }
 
+    private @Nullable GURL getOrigin(@Nullable GURL gurl) {
+        return gurl != null ? gurl.getOrigin() : null;
+    }
+
     private void onUrlFocusChange(boolean focus) {
         mHasFocus = focus;
 
@@ -252,7 +263,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         boolean textChangedInFocusCallback =
                 mModel.get(UrlBarProperties.TEXT_STATE) != preCallbackState;
         if (!textChangedInFocusCallback) {
-            pushTextToModel();
+            pushTextToModel(/* originChanged= */ false);
         }
         updateShowHintText(mUrlBarData.displayText.toString());
     }
@@ -427,7 +438,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         // TODO(https://crbm/411135455): Reconsider the disparate mechanisms we have for UrlBar
         // truncation.
         mShowOriginOnly = showOriginOnly;
-        pushTextToModel();
+        pushTextToModel(/* originChanged= */ false);
     }
 
     void setUseSmallText(boolean useSmallText) {

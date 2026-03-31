@@ -41,17 +41,21 @@ class UrlBarProperties {
         /** Specifies how the text should be selected in the focused state. */
         public final Range<Integer> selection;
 
+        public final boolean originChanged;
+
         public UrlBarTextState(
                 CharSequence text,
                 CharSequence textForAutofillServices,
                 @ScrollType int scrollType,
                 int scrollToIndex,
-                Range<Integer> selection) {
+                Range<Integer> selection,
+                boolean originChanged) {
             this.text = text;
             this.textForAutofillServices = textForAutofillServices;
             this.scrollType = scrollType;
             this.scrollToIndex = scrollToIndex;
             this.selection = selection;
+            this.originChanged = originChanged;
         }
 
         @Override

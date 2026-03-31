@@ -95,7 +95,7 @@ public class UrlBarUiUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mUrlBar.setText(text);
-                    mUrlBar.setScrollState(scrollType, scrollIndex);
+                    mUrlBar.setScrollState(scrollType, scrollIndex, false);
                 });
         waitForUrlBarLayout();
     }

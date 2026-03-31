@@ -72,7 +72,7 @@ class UrlBarViewBinder {
             view.setIgnoreTextChangesForAutocomplete(true);
             view.setTextWithTruncation(state.text, state.scrollType, state.scrollToIndex);
             view.setTextForAutofillServices(state.textForAutofillServices);
-            view.setScrollState(state.scrollType, state.scrollToIndex);
+            view.setScrollState(state.scrollType, state.scrollToIndex, state.originChanged);
             view.setIgnoreTextChangesForAutocomplete(false);
             if (view.hasFocus()) {
                 // NOTE: Selection applied from here MAY be overridden by the OS if the focus came
