@@ -36,7 +36,11 @@ namespace views {
 class WebView;
 }  // namespace views
 
-// A view that displays the toolbar as a WebView.
+// A view that displays one or more adjacent controls on the toolbar as a single
+// WebView. Which controls are displayed is controlled by the IsWebUI*Enabled()
+// series of methods declared in chrome/browser/ui/ui_features.h. Enabling
+// features to display toolbar components that are non-adjacent will result in
+// incorrect display order of buttons on the toolbar.
 class WebUIToolbarWebView
     : public views::View,
       public content::WebContentsObserver,
@@ -175,16 +179,34 @@ class WebUIToolbarWebView
   void OnTouchUiChanged();
   void PostPushNavigationState();
   void PushNavigationState(uint64_t state_generation);
-  toolbar_ui_api::mojom::NavigationControlsState last_queued_state_;
   toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
+
+  // The most recent NavigationControlsState, consisting of the state of all
+  // controls managed by the toolbar. This may or may not have been sent to
+  // `web_ui`. If this state has not yet been sent, then there must be a pending
+  // PushNavigationState() call, with a value of `current_state_generation_`.
+  toolbar_ui_api::mojom::NavigationControlsState last_queued_state_;
+
+  // This is incremented each time `last_queued_state_` is updated. If it does
+  // not match the value passed to PushNavigationState(), then that method does
+  // nothing, and there should be another pending task to run
+  // PushNavigationState() with the current value.
   uint64_t current_state_generation_ = 0;
 
   InitializationState initialization_state_ =
       InitializationState::kUninitialized;
 
-  raw_ptr<views::WebView> web_view_ = nullptr;
+  // The WebView displaying the toolbar. Initialized during construction, and
+  // not modified afterwards. Cannot be null.
+  raw_ptr<views::WebView> web_view_;
+
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
+
+  // Classes that manage individual controls. They are responsible for informing
+  // `this` when the state of the control changes. Though most are statically
+  // declared here, they should not be active unless their Init() method is called
+  // which is only done if their corresponding feature flag is enabled.
   WebUIReloadControl reload_control_;
   WebUISplitTabsControl split_tabs_control_;
   WebUIHomeControl home_control_;
@@ -192,12 +214,20 @@ class WebUIToolbarWebView
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;
   WebUIPinnedToolbarActions pinned_toolbar_actions_;
+
   raw_ptr<const base::TickClock> clock_;
   base::OnceClosure did_first_non_empty_paint_callback_;
   bool has_finished_first_non_empty_paint_ = false;
+
+  // How many times the toolbar WebUI has crashed. Cleared after 10s has passed
+  // without a crash.
   uint32_t crash_count_ = 0;
+
   base::TimeTicks last_crash_time_;
+
   base::CallbackListSubscription touch_ui_subscription_;
+
+  // Extra space to put before the back button, which is the first button.
   int back_button_leading_margin_ = 0;
 
   base::WeakPtrFactory<WebUIToolbarWebView> weak_ptr_factory_{this};
