@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,27 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, ShowAndClose) {
       Check([&]() { return WasDialogClosed(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, SendsRequestHeader) {
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+  ASSERT_TRUE(tab);
+
+  const GURL onboarding_url("about:blank");
+  RunTestSequence(Do([&]() { OpenDialog(*tab, onboarding_url); }),
+                  WaitForShow(IndigoOnboardingDialog::kWebViewId),
+                  InstrumentNonTabWebView(kDialogWebContentsId,
+                                          IndigoOnboardingDialog::kWebViewId),
+                  WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+                  CheckView(
+                      IndigoOnboardingDialog::kWebViewId,
+                      [](views::WebView* web_view) {
+                        content::NavigationEntry* entry =
+                            web_view->GetWebContents()
+                                ->GetController()
+                                .GetLastCommittedEntry();
+                        return entry ? entry->GetExtraHeaders() : std::string();
+                      },
+                      testing::HasSubstr("X-Chrome-Onboarding: ?1")));
+}
 
 IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, JSWindowClose) {
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();

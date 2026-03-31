@@ -137,8 +137,9 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(tabs::TabInterface& tab,
         return tab ? tab->GetBrowserWindowInterface() : nullptr;
       },
       tab.GetWeakPtr()));
-  web_view->GetWebContents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(onboarding_url));
+  content::NavigationController::LoadURLParams load_params(onboarding_url);
+  load_params.extra_headers = "X-Chrome-Onboarding: ?1";
+  web_view->GetWebContents()->GetController().LoadURLWithParams(load_params);
   web_view->SetPreferredSize(kMinSize);
   web_view->EnableSizingFromWebContents(kMinSize, kMaxSize);
   web_view->SetProperty(views::kElementIdentifierKey, kWebViewId);
