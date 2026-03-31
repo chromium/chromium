@@ -173,9 +173,10 @@ void UploadDataStream::OnReadCompleted(int result) {
   if (result > 0) {
     current_position_ += result;
     if (!is_chunked_) {
-      DCHECK_LE(current_position_, total_size_);
-      if (current_position_ == total_size_)
+      CHECK_LE(current_position_, total_size_);
+      if (current_position_ == total_size_) {
         is_eof_ = true;
+      }
     }
   }
 

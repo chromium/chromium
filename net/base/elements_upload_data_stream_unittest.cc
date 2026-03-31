@@ -137,6 +137,24 @@ class MockUploadElementReader : public UploadElementReader {
   int read_result_ = OK;
 };
 
+class SimpleHugeElementReader : public UploadElementReader {
+ public:
+  explicit SimpleHugeElementReader(uint64_t length) : length_(length) {}
+
+  int Init(CompletionOnceCallback callback) override { return OK; }
+  uint64_t GetContentLength() const override { return length_; }
+  uint64_t BytesRemaining() const override { return length_; }
+  bool IsInMemory() const override { return true; }
+  int Read(IOBuffer* buf,
+           int buf_length,
+           CompletionOnceCallback callback) override {
+    return 0;
+  }
+
+ private:
+  uint64_t length_;
+};
+
 }  // namespace
 
 class ElementsUploadDataStreamTest : public PlatformTest,
@@ -841,6 +859,20 @@ TEST_F(ElementsUploadDataStreamTest, InitDuringAsyncRead) {
 
   // Make sure callbacks are not called for cancelled operations.
   EXPECT_FALSE(read_callback1.have_result());
+}
+
+// Regression test for http://crbug.com/497450574.
+TEST_F(ElementsUploadDataStreamTest, TotalSizeOverflow) {
+  element_readers_.push_back(std::make_unique<SimpleHugeElementReader>(
+      std::numeric_limits<uint64_t>::max()));
+  element_readers_.push_back(std::make_unique<SimpleHugeElementReader>(10));
+
+  std::unique_ptr<UploadDataStream> stream(
+      std::make_unique<ElementsUploadDataStream>(std::move(element_readers_),
+                                                 0));
+
+  ASSERT_THAT(stream->Init(CompletionOnceCallback(), NetLogWithSource()),
+              IsError(ERR_FILE_TOO_BIG));
 }
 
 }  // namespace net
