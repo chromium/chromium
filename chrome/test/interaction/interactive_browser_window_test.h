@@ -27,6 +27,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/base_window.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -37,7 +38,7 @@
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/interaction/interactive_views_test.h"
+#include "ui/views/interaction/mouse/interactive_mouse_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
@@ -52,7 +53,7 @@
 // existing browser test class using `InteractiveBrowserTestT<T>` - or just use
 // `InteractiveBrowserTest`, which *is* a test fixture (preferred; see below).
 class InteractiveBrowserWindowTestApi
-    : virtual public ui::test::InteractiveTestApi {
+    : virtual public views::test::InteractiveMouseTestApi {
  public:
   InteractiveBrowserWindowTestApi();
   ~InteractiveBrowserWindowTestApi() override;
@@ -529,8 +530,9 @@ class InteractiveBrowserWindowTestT : public T,
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
     private_test_impl().DoTestSetUp();
-    private_test_impl().set_default_context(
-        BrowserElements::From(GetBrowserWindow())->GetContext());
+    private_test_impl().SetDefaultContext(
+        BrowserElements::From(GetBrowserWindow())->GetContext(),
+        GetBrowserWindow()->GetWindow()->GetNativeWindow());
   }
 
   void TearDownOnMainThread() override {

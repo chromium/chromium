@@ -895,8 +895,6 @@ static_library("test_support") {
       "../browser/ui/test/test_browser_dialog.h",
       "../browser/ui/test/test_browser_ui.cc",
       "../browser/ui/test/test_browser_ui.h",
-      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.cc",
-      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.cc",
       "../browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h",
       "../browser/ui/views/performance_controls/test_support/memory_saver_unit_test_mixin.h",
@@ -11049,6 +11047,8 @@ if (!is_android) {
       "../browser/ui/views/autofill/popup/popup_view_views_test_api.h",
       "../browser/ui/views/create_application_shortcut_view_test_support.cc",
       "../browser/ui/views/create_application_shortcut_view_test_support.h",
+      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.cc",
+      "../browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h",
       "../browser/ui/views/tabs/hovercard/tab_hover_card_test_util.cc",
       "../browser/ui/views/tabs/hovercard/tab_hover_card_test_util.h",
       "../browser/ui/views/web_apps/web_app_dialog_test_utils.cc",
@@ -11134,7 +11134,7 @@ if (!is_android) {
       "//mojo/public/cpp/system",
       "//ui/base/interaction:test_support",
       "//ui/views/interaction:test_support",
-      "//ui/views/interaction:test_support_mouse",
+      "//ui/views/interaction/mouse:test_support",
     ]
 
     deps = [

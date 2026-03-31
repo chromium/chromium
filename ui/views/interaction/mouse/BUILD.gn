@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "interaction_test_util_mouse.cc",
+    "interaction_test_util_mouse.h",
+    "interactive_mouse_test.cc",
+    "interactive_mouse_test.h",
+    "interactive_mouse_test_internal.cc",
+    "interactive_mouse_test_internal.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+    "//ui/views",
+  ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+}

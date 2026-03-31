@@ -20,7 +20,6 @@ source_set("unit_tests") {
 
   deps = [
     ":test_support",
-    ":test_support_mouse",
     "//base",
     "//base/test:test_support",
     "//ui/accessibility:ax_base",
@@ -49,7 +48,6 @@ source_set("test_support") {
   ]
 
   deps = [
-    ":test_support_mouse",
     "//base",
     "//base/test:test_support",
     "//ui/accessibility:ax_base",
@@ -61,25 +59,5 @@ source_set("test_support") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
-  }
-}
-
-source_set("test_support_mouse") {
-  testonly = true
-  sources = [
-    "interaction_test_util_mouse.cc",
-    "interaction_test_util_mouse.h",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ui/base:test_support",
-    "//ui/base/interaction:test_support",
-    "//ui/views",
-  ]
-
-  if (use_aura) {
-    deps += [ "//ui/aura" ]
   }
 }

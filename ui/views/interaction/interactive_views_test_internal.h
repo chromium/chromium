@@ -25,7 +25,6 @@
 #include "ui/base/interaction/interactive_test_internal.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 
 namespace views {
@@ -50,17 +49,8 @@ class InteractiveViewsTestPrivate
   ~InteractiveViewsTestPrivate() override;
 
   // base::test::internal::InteractiveTestPrivate:
-  void OnSequenceComplete() override;
-  void OnSequenceAborted(
-      const ui::InteractionSequence::AbortedData& data) override;
   void DoTestSetUp() override;
   void DoTestTearDown() override;
-
-  InteractionTestUtilMouse& mouse_util() { return *mouse_util_; }
-
-  InteractionTestUtilMouse::GestureParams GetGestureParamsForStep(
-      ui::TrackedElement* el,
-      const ui::InteractionSequence* seq);
 
   // Represents a temporary data stucture used when building Views hierarchies
   // into `DebugTreeNode`s.
@@ -111,9 +101,6 @@ class InteractiveViewsTestPrivate
 
   std::optional<DebugTreeNode> DebugDumpElement(
       const ui::TrackedElement* el) const;
-
-  // Provides mouse input simulation.
-  std::unique_ptr<InteractionTestUtilMouse> mouse_util_;
 
   std::unique_ptr<WidgetFocusSupplierFrame> widget_focus_supplier_frame_;
 };

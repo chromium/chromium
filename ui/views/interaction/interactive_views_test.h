@@ -33,7 +33,6 @@
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interactive_views_test_internal.h"
 #include "ui/views/interaction/polling_view_observer.h"
 #include "ui/views/test/views_test_base.h"
@@ -58,10 +57,6 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
  public:
   InteractiveViewsTestApi();
   ~InteractiveViewsTestApi() override;
-
-  // Returns an object that can be used to inject mouse inputs. Generally,
-  // prefer to use methods like MoveMouseTo, MouseClick, and DragMouseTo.
-  InteractionTestUtilMouse& mouse_util() { return test_impl_->mouse_util(); }
 
   // Shorthand to convert a tracked element into a View. The element should be
   // a views::TrackedElementViews and of type `T`.
@@ -289,89 +284,6 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
   // Has no effect if the view is not in a scroll container.
   [[nodiscard]] static StepBuilder ScrollIntoView(ElementSpecifier view);
 
-  // Indicates that the center point of the target element should be used for a
-  // mouse move.
-  struct CenterPoint {};
-
-  // Function that returns a destination for a move or drag.
-  using AbsolutePositionCallback = base::OnceCallback<gfx::Point()>;
-
-  // Specifies an absolute position for a mouse move or drag that does not need
-  // a reference element.
-  using AbsolutePositionSpecifier = std::variant<
-      // Use this specific position. This value is stored when the sequence is
-      // created; use gfx::Point* if you want to capture a point during sequence
-      // execution.
-      gfx::Point,
-      // As above, but the position is read from the reference on execution
-      // instead of copied when the test sequence is constructed. Use this when
-      // you want to calculate and cache a point during test execution for later
-      // use. The pointer must remain valid through the end of the test.
-      std::reference_wrapper<gfx::Point>,
-      // Use the return value of the supplied callback
-      AbsolutePositionCallback>;
-
-  // Specifies how the `reference_element` should be used (or not) to generate a
-  // target point for a mouse move.
-  using RelativePositionCallback =
-      base::OnceCallback<gfx::Point(ui::TrackedElement* reference_element)>;
-
-  // Specifies how the target position of a mouse operation (in screen
-  // coordinates) will be determined.
-  using RelativePositionSpecifier = std::variant<
-      // Default to the centerpoint of the reference element, which should be a
-      // views::View.
-      CenterPoint,
-      // Use the return value of the supplied callback.
-      RelativePositionCallback>;
-
-  // Move the mouse to the specified `position` in screen coordinates. The
-  // `reference` element will be used based on how `position` is specified.
-  //
-  // This verb is only available in interactive test suites; see
-  // `RequireInteractiveTest()`.
-  [[nodiscard]] StepBuilder MoveMouseTo(AbsolutePositionSpecifier position);
-  [[nodiscard]] StepBuilder MoveMouseTo(
-      ElementSpecifier reference,
-      RelativePositionSpecifier position = CenterPoint());
-
-  // Clicks mouse button `button` at the current cursor position.
-  //
-  // This verb is only available in interactive test suites; see
-  // `RequireInteractiveTest()`.
-  //
-  // The optional `modifier_keys` parameter can be set to any combination of
-  // `ui_controls::AcceleratorState`.
-  [[nodiscard]] StepBuilder ClickMouse(
-      ui_controls::MouseButton button = ui_controls::LEFT,
-      bool release = true,
-      int modifier_keys = ui_controls::kNoAccelerator);
-
-  // Depresses the left mouse button at the current cursor position and drags to
-  // the target `position`. The `reference` element will be used based on how
-  // `position` is specified.
-  //
-  // This verb is only available in interactive test suites; see
-  // `RequireInteractiveTest()`.
-  [[nodiscard]] StepBuilder DragMouseTo(AbsolutePositionSpecifier position,
-                                        bool release = true);
-  [[nodiscard]] StepBuilder DragMouseTo(
-      ElementSpecifier reference,
-      RelativePositionSpecifier position = CenterPoint(),
-      bool release = true);
-
-  // Releases the specified mouse button. Use when you previously called
-  // ClickMouse() or DragMouseTo() with `release` = false.
-  //
-  // This verb is only available in interactive test suites; see
-  // `RequireInteractiveTest()`.
-  //
-  // The optional `modifier_keys` parameter can be set to any combination of
-  // `ui_controls::AcceleratorState`.
-  [[nodiscard]] StepBuilder ReleaseMouse(
-      ui_controls::MouseButton button = ui_controls::LEFT,
-      int modifier_keys = ui_controls::kNoAccelerator);
-
   // As IfElement(), but `condition` takes a single argument that is a const
   // View pointer. If `element` is not a view of type V, then the test will
   // fail.
@@ -413,24 +325,6 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
       ThenBlock then_steps,
       ElseBlock else_steps = Else());
 
-  // On some platforms, context menu operations run in an OS message pump that
-  // ignores non-input events, so async Kombucha does not work, as the posted
-  // tasks won't be run.
-  //
-  // Wrap any context menu operation (including the triggering event, if it is a
-  // `ClickMouse(ui_controls::RIGHT)`) up to and including the step that closes
-  // the context menu in this modifier. If your test fails to close the context
-  // menu, it may hang, as there is no single automated way to clean up context
-  // menus in Views.
-  template <typename... Args>
-  [[nodiscard]] static MultiStep MayInvolveNativeContextMenu(Args&&... args) {
-#if BUILDFLAG(IS_MAC)
-    return WithoutDelay(std::forward<Args>(args)...);
-#else
-    return Steps(std::forward<Args>(args)...);
-#endif
-  }
-
   // Sets the context widget. Must be called before RunTestSequence() or any of
   // the mouse functions.
   void SetContextWidget(Widget* context_widget);
@@ -447,12 +341,6 @@ class InteractiveViewsTestApi : virtual public ui::test::InteractiveTestApi {
   static views::View* FindMatchingView(const views::View* from,
                                        ViewMatcher& matcher,
                                        bool recursive);
-
-  // Converts a *PositionSpecifier to an appropriate *PositionCallback.
-  static RelativePositionCallback GetPositionCallback(
-      AbsolutePositionSpecifier spec);
-  static RelativePositionCallback GetPositionCallback(
-      RelativePositionSpecifier spec);
 
   // Creates the follow-up step for a mouse action.
   StepBuilder CreateMouseFollowUpStep(std::string_view description);

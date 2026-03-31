@@ -24,7 +24,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
-#include "ui/views/interaction/interaction_test_util_mouse.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/interaction/widget_focus_observer.h"
 #include "ui/views/test/widget_test.h"
@@ -225,19 +224,6 @@ InteractiveViewsTestPrivate::InteractiveViewsTestPrivate(
 
 InteractiveViewsTestPrivate::~InteractiveViewsTestPrivate() = default;
 
-void InteractiveViewsTestPrivate::OnSequenceComplete() {
-  if (mouse_util_) {
-    mouse_util_->CancelAllGestures();
-  }
-}
-
-void InteractiveViewsTestPrivate::OnSequenceAborted(
-    const ui::InteractionSequence::AbortedData& data) {
-  if (mouse_util_) {
-    mouse_util_->CancelAllGestures();
-  }
-}
-
 void InteractiveViewsTestPrivate::DoTestSetUp() {
   // Frame should exist from set up to tear down, to prevent framework/system
   // listeners from receiving events outside of the test.
@@ -248,16 +234,6 @@ void InteractiveViewsTestPrivate::DoTestSetUp() {
 void InteractiveViewsTestPrivate::DoTestTearDown() {
   // Avoid doing any widget focus tracking after the test completes.
   widget_focus_supplier_frame_.reset();
-}
-
-InteractionTestUtilMouse::GestureParams
-InteractiveViewsTestPrivate::GetGestureParamsForStep(
-    ui::TrackedElement* el,
-    const ui::InteractionSequence* seq) {
-  // Get the native window.
-  gfx::NativeWindow window = test_impl().GetNativeWindowFor(el);
-  return InteractionTestUtilMouse::GestureParams(
-      window, seq->IsCurrentStepImmediateForTesting());
 }
 
 gfx::NativeWindow InteractiveViewsTestPrivate::GetNativeWindowFromElement(

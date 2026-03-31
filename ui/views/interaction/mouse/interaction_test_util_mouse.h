@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
-#define UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
+#ifndef UI_VIEWS_INTERACTION_MOUSE_INTERACTION_TEST_UTIL_MOUSE_H_
+#define UI_VIEWS_INTERACTION_MOUSE_INTERACTION_TEST_UTIL_MOUSE_H_
 
 #include <list>
 #include <memory>
@@ -190,4 +190,4 @@ bool InteractionTestUtilMouse::PerformGestures(const GestureParams& params,
 
 }  // namespace views::test
 
-#endif  // UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
+#endif  // UI_VIEWS_INTERACTION_MOUSE_INTERACTION_TEST_UTIL_MOUSE_H_

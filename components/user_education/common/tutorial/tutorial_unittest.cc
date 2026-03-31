@@ -33,6 +33,7 @@
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/base/interaction/interactive_test.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace user_education {
 
@@ -1120,7 +1121,8 @@ class ConditionalTutorialTest
     InteractiveTestMixin<TutorialTest>::SetUp();
     EXPECT_CALL(completed_, Run).Times(1);
     first_anchor_.Show();
-    private_test_impl().set_default_context(first_anchor_.context());
+    private_test_impl().SetDefaultContext(first_anchor_.context(),
+                                          gfx::NativeWindow());
   }
 
  protected:

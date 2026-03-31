@@ -252,6 +252,28 @@ base::WeakPtr<InteractiveTestPrivate> InteractiveTestPrivate::GetAsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+void InteractiveTestPrivate::SetDefaultContext(
+    ElementContext context,
+    gfx::NativeWindow default_context_window) {
+  default_context_ = context;
+  if (default_context_window) {
+    if (!default_context_window_) {
+      default_context_window_ = std::make_unique<NativeWindowReference>();
+    }
+    default_context_window_->SetWindow(default_context_window);
+  } else {
+    default_context_window_.reset();
+  }
+  for (auto& framework : framework_implementations_) {
+    framework.OnDefaultContextSet();
+  }
+}
+
+gfx::NativeWindow InteractiveTestPrivate::GetDefaultContextWindow() const {
+  return default_context_window_ ? default_context_window_->GetWindow()
+                                 : gfx::NativeWindow();
+}
+
 gfx::NativeWindow InteractiveTestPrivate::GetNativeWindowFor(
     const ui::TrackedElement* el) const {
   gfx::NativeWindow window = gfx::NativeWindow();
