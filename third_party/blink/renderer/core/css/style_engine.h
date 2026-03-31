@@ -1226,6 +1226,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   // The @view-transition rule currently applying to the document.
   CascadeLayered<StyleRuleViewTransition> view_transition_rule_;
+  CascadeLayered<StyleRuleViewTransition> view_transition_preview_rule_;
 
   // Cache for sharing ImageResourceContent between CSSValues referencing the
   // same URL.

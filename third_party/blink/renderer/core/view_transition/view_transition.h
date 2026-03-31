@@ -88,6 +88,12 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                                                          ViewTransitionState,
                                                          Delegate*);
 
+  // Creates a ViewTransition to display a preview of a cross-document
+  // navigation.
+  static ViewTransition* CreatePreview(Document*,
+                                       const Vector<String>& types,
+                                       Delegate*);
+
   // Script-based constructor.
   ViewTransition(PassKey,
                  Element*,
@@ -106,6 +112,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
                  Delegate*);
   // Navigation-initiated from-snapshot constructor.
   ViewTransition(PassKey, Document*, ViewTransitionState, Delegate*);
+  // Navigation preview constructor.
+  ViewTransition(PassKey, Document*, const Vector<String>& types, Delegate*);
 
   DOMViewTransition* GetScriptDelegate() { return script_delegate_.Get(); }
 
@@ -241,6 +249,8 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     return creation_type_ == CreationType::kFromSnapshot;
   }
 
+  bool IsPreview() const { return creation_type_ == CreationType::kPreview; }
+
   // Notifies the transition that frames are being produced and that the
   // transition can start the animation phase (starting by capturing the
   // incoming elements). No-op unless the transition is created from a
@@ -328,6 +338,10 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     // Created when a navigation is initiated to the Document associated with
     // this ViewTransition.
     kFromSnapshot,
+
+    // Created when displaying a preview in preparation for a cross-document
+    // navigation.
+    kPreview
   };
 
   // Note the states are possibly overly verbose, and several states can
@@ -348,6 +362,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     // Navigation specific states.
     kTransitionStateCallbackDispatched,
     kWaitForRenderBlock,
+    kPreview,
 
     // Callback states.
     kDOMCallbackRunning,

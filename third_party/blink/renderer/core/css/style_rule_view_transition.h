@@ -12,11 +12,18 @@ namespace blink {
 
 class CORE_EXPORT StyleRuleViewTransition : public StyleRuleBase {
  public:
+  enum class NavigationType {
+    kAuto,
+    kNone,
+    kPreview,
+    kUnspecified,
+  };
   explicit StyleRuleViewTransition(CSSPropertyValueSet&);
   StyleRuleViewTransition(const StyleRuleViewTransition&);
   ~StyleRuleViewTransition();
 
-  const CSSValue* GetNavigation() const;
+  NavigationType GetNavigation() const;
+  const CSSValue* GetNavigationValue() const { return navigation_.Get(); }
 
   const Vector<String>& GetTypes() const { return types_; }
 

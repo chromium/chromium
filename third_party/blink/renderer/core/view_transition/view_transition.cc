@@ -108,6 +108,8 @@ const char* ViewTransition::StateToString(State state) {
       return "DOMCallbackFinished";
     case State::kAnimateTagDiscovery:
       return "AnimateTagDiscovery";
+    case State::kPreview:
+      return "Preview";
     case State::kAnimateRequestPending:
       return "AnimateRequestPending";
     case State::kAnimating:
@@ -199,6 +201,14 @@ ViewTransition* ViewTransition::CreateForSnapshotForNavigation(
       delegate);
 }
 
+// static
+ViewTransition* ViewTransition::CreatePreview(Document* document,
+                                              const Vector<String>& types,
+                                              Delegate* delegate) {
+  return MakeGarbageCollected<ViewTransition>(PassKey(), document, types,
+                                              delegate);
+}
+
 ViewTransition::ViewTransition(PassKey,
                                Document* document,
                                const ViewTransitionToken& transition_token,
@@ -258,11 +268,32 @@ ViewTransition::ViewTransition(PassKey,
   ProcessCurrentState();
 }
 
+ViewTransition::ViewTransition(PassKey,
+                               Document* document,
+                               const Vector<String>& types,
+                               Delegate* delegate)
+    : ExecutionContextLifecycleObserver(document->GetExecutionContext()),
+      creation_type_(CreationType::kPreview),
+      document_(document),
+      scope_(document->documentElement()),
+      has_document_scope_(true),
+      delegate_(delegate),
+      style_tracker_(
+          MakeGarbageCollected<ViewTransitionStyleTracker>(*document_,
+                                                           transition_token_)),
+      script_delegate_(MakeGarbageCollected<DOMViewTransition>(
+          *document_->GetExecutionContext(),
+          *this)) {
+  InitTypes(types);
+  ProcessCurrentState();
+}
+
 void ViewTransition::SkipTransition(PromiseResponse response) {
   DCHECK_NE(response, PromiseResponse::kResolve);
   pending_skip_view_transitions_ = false;
-  if (IsTerminalState(state_))
+  if (IsTerminalState(state_)) {
     return;
+  }
 
   // If we already started processing the transition (i.e. we're beyond capture
   // tag discovery), then send a release directive. We don't do this, if we're
@@ -295,6 +326,8 @@ void ViewTransition::SkipTransition(PromiseResponse response) {
   if (delegate_) {
     delegate_->OnTransitionFinished(this);
   }
+
+  // TODO(nrosenthal): skip preview state when skipping transition?
 
   // Cleanup logic which is tied to ViewTransition objects created using the
   // script API. script_delegate_ is cleared when the Document is being torn
@@ -373,7 +406,8 @@ bool ViewTransition::CanAdvanceTo(State state) const {
       return state == State::kCaptured || state == State::kAborted;
     case State::kCaptured:
       return state == State::kDOMCallbackRunning ||
-             state == State::kDOMCallbackFinished || state == State::kAborted ||
+             state == State::kDOMCallbackFinished || state == State::kPreview ||
+             state == State::kAborted ||
              state == State::kTransitionStateCallbackDispatched;
     case State::kTransitionStateCallbackDispatched:
       // This transition must finish on a ViewTransition bound to the new
@@ -384,6 +418,8 @@ bool ViewTransition::CanAdvanceTo(State state) const {
     case State::kDOMCallbackRunning:
       return state == State::kDOMCallbackFinished || state == State::kAborted;
     case State::kDOMCallbackFinished:
+      return state == State::kAnimateTagDiscovery || state == State::kAborted;
+    case State::kPreview:
       return state == State::kAnimateTagDiscovery || state == State::kAborted;
     case State::kAnimateTagDiscovery:
       return state == State::kAnimateRequestPending || state == State::kAborted;
@@ -418,6 +454,7 @@ bool ViewTransition::StateRunsInViewTransitionStepsDuringMainFrame(
     case State::kWaitForRenderBlock:
     case State::kDOMCallbackRunning:
     case State::kDOMCallbackFinished:
+    case State::kPreview:
     case State::kAnimateTagDiscovery:
     case State::kAnimateRequestPending:
       return false;
@@ -545,42 +582,60 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kCaptured: {
         style_tracker_->CaptureResolved();
-        if (creation_type_ == CreationType::kForSnapshot) {
-          DCHECK(transition_state_callback_);
-          ViewTransitionState view_transition_state =
-              style_tracker_->GetViewTransitionState();
-          CHECK_EQ(view_transition_state.transition_token, transition_token_);
+        switch (creation_type_) {
+          case CreationType::kScript: {
+            CHECK(script_delegate_);
+            script_delegate_->InvokeDOMChangeCallback();
 
-          process_next_state =
-              AdvanceTo(State::kTransitionStateCallbackDispatched);
-          DCHECK(process_next_state);
+            // Since invoking the callback could yield (at least when devtools
+            // breakpoint is hit, but maybe in other situations), we could have
+            // timed out already. Make sure we don't advance the state out of a
+            // terminal state.
+            if (IsTerminalState(state_)) {
+              break;
+            }
 
-          std::move(transition_state_callback_)
-              .Run(std::move(view_transition_state));
-          break;
+            process_next_state = AdvanceTo(State::kDOMCallbackRunning);
+            DCHECK(process_next_state);
+            break;
+          }
+          case CreationType::kForSnapshot: {
+            DCHECK(transition_state_callback_);
+            ViewTransitionState view_transition_state =
+                style_tracker_->GetViewTransitionState();
+            CHECK_EQ(view_transition_state.transition_token, transition_token_);
+
+            process_next_state =
+                AdvanceTo(State::kTransitionStateCallbackDispatched);
+            DCHECK(process_next_state);
+
+            std::move(transition_state_callback_)
+                .Run(std::move(view_transition_state));
+            break;
+          }
+          case CreationType::kPreview: {
+            process_next_state = AdvanceTo(State::kPreview);
+            DCHECK(process_next_state);
+            break;
+          }
+          default:
+            NOTREACHED();
         }
 
-        // The following logic is only executed for ViewTransition objects
-        // created by the script API.
-        CHECK_EQ(creation_type_, CreationType::kScript);
-        CHECK(script_delegate_);
-        script_delegate_->InvokeDOMChangeCallback();
-
-        // Since invoking the callback could yield (at least when devtools
-        // breakpoint is hit, but maybe in other situations), we could have
-        // timed out already. Make sure we don't advance the state out of a
-        // terminal state.
-        if (IsTerminalState(state_)) {
-          break;
-        }
-
-        process_next_state = AdvanceTo(State::kDOMCallbackRunning);
-        DCHECK(process_next_state);
         break;
       }
 
       case State::kWaitForRenderBlock:
         DCHECK(WaitsForNotification(state_));
+        break;
+
+      case State::kPreview:
+        CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+        // TODO(nrosenthal): reflect "preview" state in CSS (@navigation?
+        // pseudo-class?)
+        ResumeRendering();
+        process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
+        DCHECK(process_next_state);
         break;
 
       case State::kDOMCallbackRunning:
@@ -761,8 +816,9 @@ void ViewTransition::Trace(Visitor* visitor) const {
 bool ViewTransition::MatchForOnlyChild(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
-  if (!style_tracker_)
+  if (!style_tracker_) {
     return false;
+  }
   return style_tracker_->MatchForOnlyChild(pseudo_id, view_transition_name);
 }
 
@@ -827,8 +883,9 @@ void ViewTransition::OnCapturePhaseComplete() {
 }
 
 void ViewTransition::NotifyDOMCallbackFinished(bool success) {
-  if (IsTerminalState(state_))
+  if (IsTerminalState(state_)) {
     return;
+  }
 
   CHECK_EQ(state_, State::kDOMCallbackRunning);
 
@@ -968,8 +1025,9 @@ void ViewTransition::RunViewTransitionStepsDuringMainFrame() {
   }
 
   base::AutoReset<bool> scope(&in_main_lifecycle_update_, true);
-  if (StateRunsInViewTransitionStepsDuringMainFrame(state_))
+  if (StateRunsInViewTransitionStepsDuringMainFrame(state_)) {
     ProcessCurrentState();
+  }
 
   if (pending_skip_view_transitions_ ||
       (style_tracker_ &&
@@ -998,28 +1056,32 @@ CSSStyleSheet* ViewTransition::UAStyleSheet() const {
   // TODO(vmpstr): We can still request getComputedStyle(html,
   // "::view-transition-pseudo") outside of a page transition. What should we
   // return in that case?
-  if (!style_tracker_)
+  if (!style_tracker_) {
     return nullptr;
+  }
   return &style_tracker_->UAStyleSheet();
 }
 
 void ViewTransition::WillCommitCompositorFrame() {
   // There should only be 1 commit when we're in the capturing phase and
   // rendering is paused immediately after it finishes.
-  if (state_ == State::kCapturing)
+  if (state_ == State::kCapturing) {
     PauseRendering();
+  }
 }
 
 gfx::Size ViewTransition::GetSnapshotRootSize() const {
-  if (!style_tracker_)
+  if (!style_tracker_) {
     return gfx::Size();
+  }
 
   return style_tracker_->GetSnapshotRootSize();
 }
 
 gfx::Vector2d ViewTransition::GetFrameToSnapshotRootOffset() const {
-  if (!style_tracker_)
+  if (!style_tracker_) {
     return gfx::Vector2d();
+  }
 
   return style_tracker_->GetFrameToSnapshotRootOffset();
 }
@@ -1050,8 +1112,9 @@ bool ViewTransition::HasIncompatibleStyle() const {
 void ViewTransition::PauseRendering() {
   DCHECK(!rendering_paused_scope_);
 
-  if (!document_->GetPage() || !document_->View())
+  if (!document_->GetPage() || !document_->View()) {
     return;
+  }
 
   rendering_paused_scope_.emplace(*scope_, has_document_scope_);
   document_->GetPage()->GetChromeClient().UnregisterFromCommitObservation(this);
@@ -1077,8 +1140,9 @@ void ViewTransition::PauseRendering() {
 }
 
 void ViewTransition::OnRenderingPausedTimeout() {
-  if (!rendering_paused_scope_)
+  if (!rendering_paused_scope_) {
     return;
+  }
 
   ResumeRendering();
   SkipTransition(PromiseResponse::kRejectTimeout);
@@ -1137,8 +1201,9 @@ void ViewTransition::LogMessageToConsole(const String& message) {
 }
 
 void ViewTransition::ResumeRendering() {
-  if (!rendering_paused_scope_)
+  if (!rendering_paused_scope_) {
     return;
+  }
 
   TRACE_EVENT_END("blink", perfetto::Track::FromPointer(this));
   if (rendering_paused_scope_->ShouldThrottleRendering() && document_->View()) {
@@ -1151,8 +1216,9 @@ void ViewTransition::ActivateFromSnapshot() {
   CHECK(IsForNavigationOnNewDocument());
   TRACE_EVENT0("blink", "ViewTransition::ActivateFromSnapshot");
 
-  if (state_ != State::kWaitForRenderBlock)
+  if (state_ != State::kWaitForRenderBlock) {
     return;
+  }
 
   LocalDOMWindow* window = document_->domWindow();
   CHECK(window);

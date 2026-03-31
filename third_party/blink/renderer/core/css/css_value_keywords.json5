@@ -1894,6 +1894,7 @@
     // @view-transition navigation
     // auto
     // none
+    "preview",
 
     // view-transition-capture-mode
     "layered",

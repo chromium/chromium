@@ -67,6 +67,9 @@ class CORE_EXPORT ViewTransitionSupplement
       Document&,
       ViewTransitionState transition_state);
 
+  void StartNavigationPreviewIfNeeded();
+  void AbortNavigationPreview();
+
   // Abort any ongoing transitions in the document.
   static void AbortTransition(Document&);
 
@@ -95,8 +98,10 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // TODO(https://crbug.com/1422251): Expand this to receive a the full set of
   // @view-transition options.
-  void OnViewTransitionsStyleUpdated(bool cross_document_enabled,
-                                     const Vector<String>& types);
+  void OnViewTransitionsStyleUpdated(
+      bool cross_document_enabled,
+      const Vector<String>& types,
+      const std::optional<Vector<String>>& preview_types);
 
   // Notifies that the `body` element has been parsed and will be added to the
   // Document.
@@ -166,6 +171,7 @@ class CORE_EXPORT ViewTransitionSupplement
       viz::ViewTransitionElementResourceId::kInvalidLocalId;
 
   Vector<String> cross_document_types_;
+  std::optional<Vector<String>> preview_types_;
 
   bool in_get_computed_style_scope_ = false;
   bool last_update_had_computed_style_scope_ = false;

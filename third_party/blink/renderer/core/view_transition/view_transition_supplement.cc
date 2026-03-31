@@ -196,6 +196,29 @@ void ViewTransitionSupplement::SnapshotDocumentForNavigation(
       document, navigation_id, std::move(params), std::move(callback));
 }
 
+void ViewTransitionSupplement::StartNavigationPreviewIfNeeded() {
+  if (!preview_types_) {
+    return;
+  }
+
+  CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+
+  if (document_transition_) {
+    document_transition_->SkipTransition();
+  }
+
+  CHECK(!document_transition_);
+  document_transition_ =
+      ViewTransition::CreatePreview(document_, *preview_types_, this);
+}
+
+void ViewTransitionSupplement::AbortNavigationPreview() {
+  if (document_transition_ && document_transition_->IsPreview()) {
+    CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+    document_transition_->SkipTransition();
+  }
+}
+
 void ViewTransitionSupplement::StartTransition(
     Document& document,
     const blink::ViewTransitionToken& navigation_id,
@@ -206,11 +229,8 @@ void ViewTransitionSupplement::StartTransition(
   // https://drafts.csswg.org/css-view-transitions-2/#setup-outbound-transition.
 
   if (document_transition_) {
-    // TODO(nrosenthal): limit eligible animations to those that started after
-    // navigation was initiated and have a short while before they are scheduled
-    // to end.
-    if (RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled() &&
-        document_transition_->HasActiveAnimations()) {
+    if (document_transition_->IsPreview()) {
+      CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
       pending_navigation_transition_.emplace(PendingNavigationTransition{
           navigation_id, std::move(params), std::move(callback)});
       return;
@@ -260,11 +280,12 @@ void ViewTransitionSupplement::OnTransitionFinished(
     ViewTransition* transition) {
   CHECK(transition);
 
-  // Clear the transition so it can be garbage collected if needed (and to
-  // prevent callers of GetTransition thinking there's an ongoing transition).
+  // Clear the ongoing transition. Proceed with cross-document transition if
+  // this was a preview.
   if (transition == document_transition_) {
+    CHECK(transition->IsPreview() || !pending_navigation_transition_);
     document_transition_ = nullptr;
-    if (pending_navigation_transition_) {
+    if (pending_navigation_transition_ && document_->View()) {
       CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
       document_->GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(
@@ -418,8 +439,8 @@ void ViewTransitionSupplement::AddPendingRequest(
   // Schedule a new frame.
   document_->View()->ScheduleAnimation();
 
-  // Ensure paint artifact compositor does an update, since that's the mechanism
-  // we use to pass transition requests to the compositor.
+  // Ensure paint artifact compositor does an update, since that's the
+  // mechanism we use to pass transition requests to the compositor.
   document_->View()->SetPaintArtifactCompositorNeedsUpdate();
 }
 
@@ -430,12 +451,14 @@ ViewTransitionSupplement::TakePendingRequests() {
 
 void ViewTransitionSupplement::OnViewTransitionsStyleUpdated(
     bool cross_document_enabled,
-    const Vector<String>& types) {
+    const Vector<String>& types,
+    const std::optional<Vector<String>>& preview_types) {
   SetCrossDocumentOptIn(
       cross_document_enabled
           ? mojom::blink::ViewTransitionSameOriginOptIn::kEnabled
           : mojom::blink::ViewTransitionSameOriginOptIn::kDisabled);
   cross_document_types_ = types;
+  preview_types_ = preview_types;
 }
 
 void ViewTransitionSupplement::WillInsertBody() {

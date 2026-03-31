@@ -2721,16 +2721,28 @@ void StyleEngine::UpdateViewTransitionOptIn() {
   // TODO(https://crbug.com/1463966): This will likely need to change to a
   // CSSValueList if we want to support multiple tokens as a trigger.
   Vector<String> types;
+  std::optional<Vector<String>> preview_types =
+      view_transition_preview_rule_.value
+          ? std::make_optional(view_transition_preview_rule_.value->GetTypes())
+          : std::nullopt;
   if (view_transition_rule_.value) {
-    types = view_transition_rule_.value->GetTypes();
-    if (const CSSValue* value = view_transition_rule_.value->GetNavigation()) {
-      cross_document_enabled =
-          To<CSSIdentifierValue>(value)->GetValueID() == CSSValueID::kAuto;
+    switch (view_transition_rule_.value->GetNavigation()) {
+      case StyleRuleViewTransition::NavigationType::kAuto:
+        cross_document_enabled = true;
+        types = view_transition_rule_.value->GetTypes();
+        break;
+      case StyleRuleViewTransition::NavigationType::kNone:
+        cross_document_enabled = false;
+        break;
+      case StyleRuleViewTransition::NavigationType::kUnspecified:
+        break;
+      default:
+        NOTREACHED();
     }
   }
 
   GetDocument().GetViewTransitions().OnViewTransitionsStyleUpdated(
-      cross_document_enabled, types);
+      cross_document_enabled, types, preview_types);
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
@@ -3497,6 +3509,17 @@ void StyleEngine::AddViewTransitionRules(const ActiveStyleSheetVector& sheets) {
             : nullptr;
     for (const CascadeLayered<StyleRuleViewTransition>& rule :
          rule_set->ViewTransitionRules()) {
+      if (rule.value->GetNavigation() ==
+          StyleRuleViewTransition::NavigationType::kPreview) {
+        CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+        if (!view_transition_preview_rule_.value ||
+            CascadeLayerMap::CompareLayerOrder(
+                layer_map, view_transition_preview_rule_, rule) <= 0) {
+          view_transition_preview_rule_ = rule;
+        }
+        continue;
+      }
+
       if (!view_transition_rule_.value ||
           CascadeLayerMap::CompareLayerOrder(layer_map, view_transition_rule_,
                                              rule) <= 0) {
@@ -4755,6 +4778,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
   visitor->Trace(view_transition_rule_);
+  visitor->Trace(view_transition_preview_rule_);
   visitor->Trace(style_image_cache_);
   visitor->Trace(fill_or_clip_path_uri_value_cache_);
   visitor->Trace(style_containment_scope_tree_);

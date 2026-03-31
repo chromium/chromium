@@ -58,7 +58,8 @@ DOMViewTransition::DOMViewTransition(ExecutionContext& execution_context,
     : DOMViewTransition(execution_context,
                         view_transition,
                         /*update_dom_callback=*/nullptr) {
-  if (view_transition.IsForNavigationOnNewDocument()) {
+  if (view_transition.IsForNavigationOnNewDocument() ||
+      view_transition.IsPreview()) {
     // In a cross-document view transition, the DOM is "updated" by the
     // navigation so by the time we create this object (in the pagereveal
     // event), the update is complete.

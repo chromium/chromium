@@ -42,7 +42,7 @@ String CSSViewTransitionRule::cssText() const {
 }
 
 String CSSViewTransitionRule::navigation() const {
-  if (const CSSValue* value = view_transition_rule_->GetNavigation()) {
+  if (const CSSValue* value = view_transition_rule_->GetNavigationValue()) {
     return value->CssText();
   }
 

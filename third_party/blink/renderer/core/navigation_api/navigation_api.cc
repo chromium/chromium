@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -900,6 +901,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   } else if (params->event_type != NavigateEventType::kCrossDocument) {
     navigate_event->React(script_state);
   } else {
+    window_->document()->GetViewTransitions().StartNavigationPreviewIfNeeded();
     navigate_event->MaybeDeferCrossDocumentCommit(script_state, params);
   }
 
@@ -918,6 +920,9 @@ void NavigationApi::InformAboutCanceledNavigation(
       tracker && reason != CancelNavigationReason::kNavigateEvent) {
     tracker->ResetSameDocumentNavigationTasks();
   }
+
+  window_->document()->GetViewTransitions().AbortNavigationPreview();
+
   if (reason == CancelNavigationReason::kDropped) {
     has_dropped_navigation_ = true;
     return;

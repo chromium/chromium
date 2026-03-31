@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 
 #include "base/memory/values_equivalent.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -40,8 +41,26 @@ StyleRuleViewTransition::StyleRuleViewTransition(
 
 StyleRuleViewTransition::~StyleRuleViewTransition() = default;
 
-const CSSValue* StyleRuleViewTransition::GetNavigation() const {
-  return navigation_.Get();
+StyleRuleViewTransition::NavigationType StyleRuleViewTransition::GetNavigation()
+    const {
+  if (!navigation_) {
+    return NavigationType::kUnspecified;
+  }
+  if (navigation_->IsIdentifierValue()) {
+    const CSSIdentifierValue* identifier =
+        To<CSSIdentifierValue>(navigation_.Get());
+    switch (identifier->GetValueID()) {
+      case CSSValueID::kNone:
+        return NavigationType::kNone;
+      case CSSValueID::kAuto:
+        return NavigationType::kAuto;
+      case CSSValueID::kPreview:
+        return NavigationType::kPreview;
+      default:
+        NOTREACHED();
+    }
+  }
+  return NavigationType::kAuto;
 }
 
 void StyleRuleViewTransition::TraceAfterDispatch(
