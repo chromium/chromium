@@ -24,6 +24,7 @@ enum UiState {
   CONNECTING = 'connecting',
   SPEAKING = 'speaking',
   IDLE = 'idle',
+  ERROR = 'error',
 }
 
 interface MockAudioButton {
@@ -42,21 +43,6 @@ interface ResourceBundle {
   listeningBlob: Blob;
   instruction: string;
 }
-
-// TODO(bokan): Allow providing this via a switch so we can remove it.
-const DEFAULT_API_CONFIG = {
-  endpointUrl:
-      'wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent',
-  model: 'models/gemini-3.1-flash-live-preview',
-};
-
-const DEFAULT_PERSONA: Persona = {
-  id: 'chromium',
-  name: 'TheButton',
-  persona: 'You are a friendly assistant that lives in a button in Chrome\'s ' +
-      'overlay dialog',
-  voice: 'Puck',
-};
 
 function log(msg: string, ...args: any[]) {
   console.info(`[${performance.now().toFixed(2)}] [App] ${msg}`, ...args);
@@ -100,6 +86,9 @@ export class AppElement extends CrLitElement {
       listeningBlobUrl: {
         type: String,
       },
+      connectionFailed: {
+        type: Boolean,
+      },
     };
   }
 
@@ -109,6 +98,7 @@ export class AppElement extends CrLitElement {
   protected accessor transcription: string = '';
   protected accessor talkingBlobUrl: string = '';
   protected accessor listeningBlobUrl: string = '';
+  protected accessor connectionFailed = false;
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
@@ -120,12 +110,15 @@ export class AppElement extends CrLitElement {
   // initialize so keep track of any page context that arrives before those are
   // setup so that it can be provided when these objects initialize.
   private initialPageContext?: PageContext;
-  private configPromise: Promise<ConversationConfig>;
   private unregisterPageContextListeners: (() => void)|null;
   private transcriptionTimeout: number = 0;
   private energyAnimationId: number|null = null;
 
   protected get uiState(): UiState {
+    if (this.connectionFailed) {
+      return UiState.ERROR;
+    }
+
     if (this.isConnecting) {
       return UiState.CONNECTING;
     }
@@ -156,28 +149,6 @@ export class AppElement extends CrLitElement {
 
   constructor() {
     super();
-
-    const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
-    const initializedPromise = this.initializeResourceBundle(ttcBundleUrl);
-    initializedPromise.then((bundle: ResourceBundle) => {
-      console.info('Blobs initialized');
-      this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
-      this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
-    });
-    this.configPromise = initializedPromise.then((bundle: ResourceBundle) => {
-      // Locally specified key overrides the fetched one.
-      const apiKey =
-          loadTimeData.getString('apiKey') || bundle.apiConfig.apiKey;
-      return {
-        persona: bundle.persona,
-        system_instruction: bundle.instruction,
-        api_config: {
-          ...bundle.apiConfig,
-          apiKey,
-        },
-      };
-    });
-    initializedPromise.catch(e => console.error('Failed to fetch bundle: ', e));
 
     // Setup Mojo connection
     this.pageCallbackRouter = new PageCallbackRouter();
@@ -346,30 +317,41 @@ export class AppElement extends CrLitElement {
       return;
     }
 
-    if (!this.conversation) {
-      this.isConnecting = true;
-      let config: ConversationConfig|undefined;
-      try {
-        config = await this.configPromise;
-      } catch (e) {
-        console.warn('Using DEFAULT ApiConfig');
-        config = {
-          persona: DEFAULT_PERSONA,
-          system_instruction: '${persona}',
-          api_config: {
-            ...DEFAULT_API_CONFIG,
-            apiKey: loadTimeData.getString('apiKey'),
-          },
-        };
-      }
-      this.conversation = this.createConversation(config);
-    }
-
-    log('Attempting to connect. conversation state is not connected.');
     this.isConnecting = true;
-    this.conversation.start().catch(e => {
-      console.error('[App] Failed to start conversation:', e);
-    });
+    this.connectionFailed = false;
+
+    try {
+      const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
+      const bundle = await this.initializeResourceBundle(ttcBundleUrl);
+
+      console.info('Bundle initialized');
+      this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
+      this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
+
+      // Locally specified key overrides the fetched one.
+      const apiKey =
+          loadTimeData.getString('apiKey') || bundle.apiConfig.apiKey;
+      const config: ConversationConfig = {
+        persona: bundle.persona,
+        system_instruction: bundle.instruction,
+        api_config: {
+          ...bundle.apiConfig,
+          apiKey,
+        },
+      };
+
+      if (!this.conversation) {
+        this.conversation = this.createConversation(config);
+      }
+
+      log('Attempting to connect. conversation state is not connected.');
+      await this.conversation.start();
+    } catch (e) {
+      this.connectionFailed = true;
+      console.error('startConversation failed: ', e);
+    } finally {
+      this.isConnecting = false;
+    }
   }
 
   private stopConversation() {
@@ -452,7 +434,6 @@ export class AppElement extends CrLitElement {
 
     if (!Array.isArray(personaConfig.personas) ||
         personaConfig.personas[0] === undefined) {
-      console.warn('Invalid persona config', personaConfig);
       throw new Error('Invalid persona config');
     }
 

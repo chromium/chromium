@@ -85,6 +85,10 @@ video[hidden],
   animation: talking-pulse 0.85s infinite linear;
 }
 
+#stateButton.error {
+  background-color: var(--color-ref-error50);
+}
+
 @keyframes connecting-pulse {
   0% {
     transform: scale(0.80);

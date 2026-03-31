@@ -61,22 +61,22 @@ AiOverlayDialogUntrustedUI::AiOverlayDialogUntrustedUI(content::WebUI* web_ui)
       "connect-src 'self' wss://generativelanguage.googleapis.com;");
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  std::string ttc_bundle_url =
-      command_line->GetSwitchValueASCII(switches::kTtcBundleUrl);
-  if (!ttc_bundle_url.empty()) {
+  GURL ttc_bundle_url =
+      GURL(command_line->GetSwitchValueASCII(switches::kTtcBundleUrl));
+  if (ttc_bundle_url.is_valid()) {
     html_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::MediaSrc,
         base::StrCat({"media-src 'self' chrome-untrusted://resources data: "
                       "blob: ",
-                      ttc_bundle_url, ";"}));
+                      ttc_bundle_url.GetWithEmptyPath().spec(), ";"}));
     html_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::ConnectSrc,
         base::StrCat({"connect-src 'self' ",
                       "wss://generativelanguage.googleapis.com ",
-                      ttc_bundle_url, ";"}));
+                      ttc_bundle_url.GetWithEmptyPath().spec(), ";"}));
+    html_source->AddString("ttcBundleUrl", ttc_bundle_url.spec());
   }
 
-  html_source->AddString("ttcBundleUrl", ttc_bundle_url);
   html_source->AddString("apiKey", features::kAiOverlayDialogApiKey.Get());
 }
 
