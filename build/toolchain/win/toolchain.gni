@@ -362,6 +362,12 @@ template("msvc_toolchain") {
         "//build/rust/gni_impl/rustc_wrapper.py",
       ]
 
+      if (host_os == "win") {
+        rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc.exe" ]
+      } else {
+        rustc_wrapper_inputs += [ "//third_party/rust-toolchain/bin/rustc" ]
+      }
+
       tool("rust_staticlib") {
         libname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
         rspfile = rustc_rsp_path
