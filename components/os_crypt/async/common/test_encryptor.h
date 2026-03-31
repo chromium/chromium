@@ -16,8 +16,6 @@ namespace os_crypt_async {
 // not encryption services are available to higher level tests.
 class TestEncryptor : public Encryptor {
  public:
-  TestEncryptor() = delete;
-
   // Encryptor overrides.
   bool IsEncryptionAvailable() const override;
   bool IsDecryptionAvailable() const override;
@@ -36,6 +34,8 @@ class TestEncryptor : public Encryptor {
 
  private:
   friend class TestOSCryptAsync;
+
+  TestEncryptor() = default;
 
   TestEncryptor(
       KeyRing keys,

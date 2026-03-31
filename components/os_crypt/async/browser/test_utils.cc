@@ -58,6 +58,10 @@ class TestOSCryptAsync : public OSCryptAsync {
     return GetTestEncryptorForTesting().Clone(option);
   }
 
+  static TestEncryptor GetTestEncryptorWithoutKeysForTesting() {
+    return TestEncryptor();
+  }
+
  private:
   TestEncryptor encryptor_;
   const bool is_sync_for_unittests_;
@@ -70,6 +74,10 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
 
 TestEncryptor GetTestEncryptorForTesting(Encryptor::Option option) {
   return TestOSCryptAsync::CloneEncryptorForTesting(option);
+}
+
+TestEncryptor GetTestEncryptorWithoutKeysForTesting() {
+  return TestOSCryptAsync::GetTestEncryptorWithoutKeysForTesting();
 }
 
 }  // namespace os_crypt_async

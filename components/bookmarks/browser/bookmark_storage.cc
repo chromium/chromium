@@ -259,15 +259,8 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
           case StorageFileEncryptionType::kEncrypted: {
             CHECK(encryptor);
             std::string encrypted_json_content;
-            if (!encryptor->data.EncryptString(json_content,
-                                               &encrypted_json_content)) {
-              RecordSerializationResult(
-                  start_time,
-                  metrics::ImportantFileWriterType::kBookmarkStorageEncrypted,
-                  metrics::BookmarksSerializationResult::kEncryptionFailed);
-              return std::nullopt;
-            }
-
+            const bool encryption_succeeded = encryptor->data.EncryptString(
+                json_content, &encrypted_json_content);
             if (ShouldWriteBookmarksToSecondaryFileOnDisk()) {
               // Also write the unencrypted data to disk. Make sure this second
               // write is performed after the first one is completed.
@@ -278,6 +271,13 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
                           &base::ImportantFileWriter::WriteFileAtomically),
                       secondary_file_path, std::move(json_content),
                       kBookmarkStorageHistogramSuffix));
+            }
+            if (!encryption_succeeded) {
+              RecordSerializationResult(
+                  start_time,
+                  metrics::ImportantFileWriterType::kBookmarkStorageEncrypted,
+                  metrics::BookmarksSerializationResult::kEncryptionFailed);
+              return std::nullopt;
             }
             RecordSerializationResult(
                 start_time,

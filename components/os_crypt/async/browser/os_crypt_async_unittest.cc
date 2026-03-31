@@ -495,6 +495,14 @@ TEST_F(OSCryptAsyncTest, TestEncryptorIsEncryptionAvailable) {
   EXPECT_TRUE(encryptor.IsEncryptionAvailable());
 }
 
+TEST_F(OSCryptAsyncTest, TestEncryptorWithoutKeysInterface) {
+  auto encryptor = GetTestEncryptorWithoutKeysForTesting();
+  auto ciphertext = encryptor.EncryptString("testsecrets");
+  ASSERT_FALSE(ciphertext);
+  ASSERT_FALSE(encryptor.IsEncryptionAvailable());
+  ASSERT_FALSE(encryptor.IsDecryptionAvailable());
+}
+
 class FailingKeyProvider : public TestKeyProvider {
  public:
   FailingKeyProvider(KeyProvider::KeyError reason, const std::string& name)

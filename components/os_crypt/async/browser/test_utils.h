@@ -31,6 +31,10 @@ std::unique_ptr<OSCryptAsync> GetTestOSCryptAsyncForTesting(
 TestEncryptor GetTestEncryptorForTesting(
     Encryptor::Option option = Encryptor::Option::kNone);
 
+// Obtain a test Encryptor that doesn't have any encryption keys. This
+// Encryptor will fail all encryption/decryption operations.
+TestEncryptor GetTestEncryptorWithoutKeysForTesting();
+
 }  // namespace os_crypt_async
 
 #endif  // COMPONENTS_OS_CRYPT_ASYNC_BROWSER_TEST_UTILS_H_

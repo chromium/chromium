@@ -386,10 +386,6 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
   histogram_tester.ExpectTotalCount(
       "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
   histogram_tester.ExpectTotalCount(
-      base::StrCat(
-          {"ImportantFile.WriteDuration", GetHistogramImportantFileSuffix()}),
-      1);
-  histogram_tester.ExpectTotalCount(
       base::StrCat({"Bookmarks.Storage.TimeToSerialize",
                     GetHistogramImportantFileSuffix()}),
       1);
@@ -446,6 +442,53 @@ TEST_P(BookmarkStorageWithSecondayFileTest,
   task_environment.FastForwardUntilNoTasksRemain();
   EXPECT_FALSE(base::PathExists(backup_file_path));
   EXPECT_FALSE(base::PathExists(encrypted_backup_file_path));
+}
+
+TEST_P(BookmarkStorageWithSecondayFileTest,
+       ShouldSaveUnencryptedEvenIfEncryptionFails) {
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
+
+  const base::FilePath bookmarks_file_path =
+      GetTestBookmarksFileNameInNewTempDir();
+  const base::FilePath encrypted_bookmarks_file_path =
+      GetTestEncryptedBookmarksFileNameInNewTempDir();
+
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place,
+          os_crypt_async::GetTestEncryptorWithoutKeysForTesting());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor,
+      bookmarks_file_path, encrypted_bookmarks_file_path);
+
+  storage.ScheduleSave();
+  EXPECT_TRUE(storage.HasScheduledSaveForTesting());
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Bookmarks.BookmarksSerializationResult",
+                    GetHistogramImportantFileSuffix()}),
+      metrics::BookmarksSerializationResult::kEncryptionFailed, 1);
+
+  // No encryption file should have been written.
+  ASSERT_FALSE(base::PathExists(encrypted_bookmarks_file_path));
+  histogram_tester.ExpectTotalCount(
+      "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 0);
+
+  // Clear text file should have been written.
+  std::optional<base::DictValue> file_content =
+      ReadFileToDict(bookmarks_file_path);
+  BookmarkCodec codec;
+  base::DictValue expected_file_content = codec.Encode(
+      model->bookmark_bar_node(), model->other_node(), model->mobile_node(),
+      model->client()->EncodeLocalOrSyncableBookmarkSyncMetadata());
+  EXPECT_EQ(expected_file_content, *file_content);
+  histogram_tester.ExpectTotalCount(
+      "ImportantFile.WriteDuration.BookmarkStorage", 1);
 }
 
 TEST_P(BookmarkStorageWithSecondayFileTest,
