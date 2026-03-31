@@ -11076,6 +11076,26 @@
             ]
         }
     ],
+    "GlicTieredRolloutV2": [
+        {
+            "platforms": [
+                "chromeos",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "glic-tiered-rollout-v2-eligible-tiers": "1,2"
+                    },
+                    "enable_features": [
+                        "GlicTieredRolloutV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicToolbarHeightSidePanel": [
         {
             "platforms": [
