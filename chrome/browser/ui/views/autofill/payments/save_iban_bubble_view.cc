@@ -78,8 +78,12 @@ void SaveIbanBubbleView::Hide() {
 
 void SaveIbanBubbleView::AddedToWidget() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto image_view = std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_IBAN_LOTTIE));
+  auto image_view =
+      std::make_unique<views::ImageView>(bundle.GetThemedLottieImageNamed(
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableWalletBrandingV2)
+              ? IDR_AUTOFILL_SAVE_IBAN_TO_WALLET_LOTTIE
+              : IDR_AUTOFILL_SAVE_IBAN_LOTTIE));
   image_view->GetViewAccessibility().SetIsInvisible(true);
 
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));

@@ -175,7 +175,10 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
     case PaymentsBubbleType::kUploadSave:
     case PaymentsBubbleType::kUploadInProgress:
     case PaymentsBubbleType::kUploadComplete:
-      lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
+      lottie_resource_id = base::FeatureList::IsEnabled(
+                               features::kAutofillEnableWalletBrandingV2)
+                               ? IDR_AUTOFILL_SAVE_CARD_TO_WALLET_LOTTIE
+                               : IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
       break;
     case PaymentsBubbleType::kLocalCvcSave:
     case PaymentsBubbleType::kUploadCvcSave:
