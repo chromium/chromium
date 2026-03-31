@@ -2789,11 +2789,13 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
     {flags_ui::kGenericExperimentChoiceEnabled, switches::kEnableFeatures,
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
-     "SendTabToSelfPropagateNavigationHistory"},
+     "SendTabToSelfPropagateNavigationHistory,"
+     "SendTabToSelfImprovedLastActiveLabels"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateScrollPosition,"
-     "SendTabToSelfPropagateNavigationHistory"},
+     "SendTabToSelfPropagateNavigationHistory,"
+     "SendTabToSelfImprovedLastActiveLabels"},
 };
 
 // The choices for --enable-experimental-cookie-features. This really should

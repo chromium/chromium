@@ -29,6 +29,7 @@
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
 #include "components/sync/model/entity_change.h"
@@ -103,6 +104,7 @@ base::flat_map<std::string, base::Time> GetSessionTimestamps(
 struct DeviceWithTimestamp {
   raw_ptr<const syncer::DeviceInfo> device;
   base::Time last_active;
+  bool has_high_precision = false;
 };
 
 // Returns a list of devices with the last active timestamp for each device.
@@ -116,11 +118,15 @@ std::vector<DeviceWithTimestamp> GetDevicesWithLastActiveTime(
 
   for (const syncer::DeviceInfo* device : all_devices) {
     base::Time last_active = device->last_updated_timestamp();
+    bool has_high_precision = false;
     auto it = session_timestamps.find(device->guid());
     if (it != session_timestamps.end()) {
       last_active = std::max(last_active, it->second);
+      // If the device has a session timestamp, it is highly precise.
+      has_high_precision = true;
     }
-    devices_with_timestamps.emplace_back(device, last_active);
+    devices_with_timestamps.emplace_back(device, last_active,
+                                         has_high_precision);
   }
   return devices_with_timestamps;
 }
@@ -537,7 +543,8 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
     auto it = std::ranges::find(devices_with_timestamps, info.device,
                                 &DeviceWithTimestamp::device);
     return TargetDeviceInfo(info.display_name, info.device->guid(),
-                            info.device->form_factor(), it->last_active);
+                            info.device->form_factor(), it->last_active,
+                            it->has_high_precision);
   });
 }
 

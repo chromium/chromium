@@ -623,6 +623,15 @@
       <message name="IDS_SEND_TAB_TO_SELF_DEVICE_LAST_UPDATE_DAYS" desc="The label of valid device button inside omnibox bubble or the Send Tab To Self dialog, which shows the last activated time of a valid device.">
         {DAYS, plural, =0 {Active today} =1 {Active 1 day ago} other {Active # days ago}}
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_NOW" desc="The label of valid device button inside omnibox bubble, which shows the last activated time of a valid device.">
+        Active now
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_MINUTES" desc="The label of valid device button inside omnibox bubble, which shows the last activated time of a valid device.">
+        {MINUTES, plural, =1 {Active 1 minute ago} other {Active # minutes ago}}
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_ACTIVE_HOURS" desc="The label of valid device button inside omnibox bubble, which shows the last activated time of a valid device.">
+        {HOURS, plural, =1 {Active 1 hour ago} other {Active # hours ago}}
+      </message>
 
     </messages>
   </release>

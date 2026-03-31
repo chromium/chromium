@@ -1080,7 +1080,8 @@ TEST_F(SendTabToSelfBridgeTest,
   open_tabs_ui_delegate()->SetForeignSessions({&session});
 
   TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
-                                        device->form_factor(), session_time);
+                                        device->form_factor(), session_time,
+                                        /*has_high_precision_timestamp=*/true);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(expected_device_info));
@@ -1108,7 +1109,8 @@ TEST_F(SendTabToSelfBridgeTest,
   open_tabs_ui_delegate()->SetForeignSessions({&session});
 
   TargetDeviceInfo expected_device_info(device->client_name(), device->guid(),
-                                        device->form_factor(), device_time);
+                                        device->form_factor(), device_time,
+                                        /*has_high_precision_timestamp=*/true);
 
   EXPECT_THAT(bridge()->GetTargetDeviceInfoSortedList(),
               ElementsAre(expected_device_info));

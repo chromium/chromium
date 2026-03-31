@@ -22,7 +22,8 @@ struct TargetDeviceInfo {
   TargetDeviceInfo(const std::string& device_name,
                    const std::string& cache_guid,
                    const syncer::DeviceInfo::FormFactor form_factor,
-                   base::Time last_updated_timestamp);
+                   base::Time last_updated_timestamp,
+                   bool has_high_precision_timestamp = false);
   TargetDeviceInfo(const TargetDeviceInfo& other);
   ~TargetDeviceInfo();
 
@@ -30,6 +31,9 @@ struct TargetDeviceInfo {
 
   // Returns a localized string representing the time since the device was last
   // updated.
+  // The string is formatted as follows:
+  // - "< 1 minute": "Active now"
+  // - ">= 1 minute": "Active X minutes/hours/days ago"
   std::u16string GetLastActiveTimeForDisplay() const;
 
   // Device display name.
@@ -40,6 +44,9 @@ struct TargetDeviceInfo {
   syncer::DeviceInfo::FormFactor form_factor;
   // Last updated timestamp.
   base::Time last_updated_timestamp;
+  // Whether the device timestamp is highly precise (e.g. from sessions sync)
+  // rather than just day-granularity.
+  bool has_high_precision_timestamp;
 };
 
 }  // namespace send_tab_to_self
