@@ -68,11 +68,13 @@ void LiveTranslateController::GetTranslation(const std::string& result,
                                              std::string target_language,
                                              TranslateEventCallback callback) {
   base::UmaHistogramSparse(
+      "Accessibility.LiveTranslate.GetTranslation.SourceLanguage",
+      base::HashMetricName(
+          speech::GetBCP47LanguageCodeFromSodaLanguage(source_language)
+              .value_or(source_language)));
+  base::UmaHistogramSparse(
       "Accessibility.LiveTranslate.GetTranslation.TargetLanguage",
       base::HashMetricName(target_language));
-  base::UmaHistogramSparse(
-      "Accessibility.LiveTranslate.GetTranslation.SourceLanguage",
-      base::HashMetricName(source_language));
 
   if (base::FeatureList::IsEnabled(
           live_caption::kLiveCaptionOnDeviceTranslation)) {
