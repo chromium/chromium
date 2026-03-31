@@ -224,13 +224,12 @@ bool ImageBitmapRenderingContext::PushFrame() {
 
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  resource_provider_for_offscreen_canvas_->ExternalCanvasDrawHelper(
-      [&](cc::PaintCanvas& canvas) {
-        canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
-                         SkSamplingOptions(), &paint_flags);
-      });
   scoped_refptr<CanvasResource> resource =
-      resource_provider_for_offscreen_canvas_->ProduceCanvasResource();
+      resource_provider_for_offscreen_canvas_->DoExternalDrawAndProduceResource(
+          [&](cc::PaintCanvas& canvas) {
+            canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
+                             SkSamplingOptions(), &paint_flags);
+          });
   Host()->PushFrame(std::move(resource));
   return true;
 }

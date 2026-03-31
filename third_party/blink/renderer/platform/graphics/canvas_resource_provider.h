@@ -706,6 +706,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void ExternalCanvasDrawHelper(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
+  scoped_refptr<CanvasResource> DoExternalDrawAndProduceResource(
+      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
+
   scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
       ImageOrientation orientation);

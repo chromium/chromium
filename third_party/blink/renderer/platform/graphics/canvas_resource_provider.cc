@@ -1020,6 +1020,13 @@ void CanvasNon2DResourceProviderSharedImage::ExternalCanvasDrawHelper(
   draw_callback(GetCanvasDeprecated());
 }
 
+scoped_refptr<CanvasResource>
+CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndProduceResource(
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
+  ExternalCanvasDrawHelper(draw_callback);
+  return ProduceCanvasResource();
+}
+
 scoped_refptr<StaticBitmapImage>
 CanvasNon2DResourceProviderSharedImage::DoExternalDrawAndSnapshot(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
