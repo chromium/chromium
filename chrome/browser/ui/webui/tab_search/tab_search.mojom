@@ -46,9 +46,6 @@ struct Tab {
   // The alert states of the tab.
   array<tabs.mojom.TabAlertState> alert_states;
 
-  // The index of the tab in the current tab strip.
-  int32 index;
-
   // The unique identifier of the tab.
   int32 tab_id;
 

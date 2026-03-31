@@ -16,7 +16,6 @@ export function createTab(overrides: Partial<Tab>): Tab {
         faviconUrl: null,
         groupId: null,
         alertStates: [],
-        index: 0,
         isDefaultFavicon: false,
         lastActiveElapsedText: '',
         lastActiveTimeTicks: {internalValue: BigInt(0)},
@@ -38,7 +37,6 @@ export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
     createTab({
       active: false,
       alertStates: [TabAlertState.kMediaRecording],
-      index: 0,
       tabId: 1,
       title: 'Meet',
       url: 'https://meet.google.com/',
@@ -46,7 +44,6 @@ export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
     }),
     createTab({
       active: false,
-      index: 1,
       tabId: 2,
       title: 'Google',
       url: 'https://www.google.com',
@@ -54,7 +51,6 @@ export const SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB: Window[] = [{
     }),
     createTab({
       active: false,
-      index: 2,
       tabId: 3,
       title: 'Example',
       url: 'https://www.example.com',
@@ -76,14 +72,12 @@ export const SAMPLE_WINDOW_DATA: Window[] = [
         lastActiveTimeTicks: {internalValue: BigInt(5)},
       }),
       createTab({
-        index: 1,
         tabId: 5,
         title: 'Amazon',
         url: 'https://www.amazon.com',
         lastActiveTimeTicks: {internalValue: BigInt(4)},
       }),
       createTab({
-        index: 2,
         tabId: 6,
         title: 'Apple',
         url: 'https://www.apple.com',
@@ -97,21 +91,18 @@ export const SAMPLE_WINDOW_DATA: Window[] = [
     height: SAMPLE_WINDOW_HEIGHT,
     tabs: [
       createTab({
-        index: 0,
         tabId: 2,
         title: 'Bing',
         url: 'https://www.bing.com/',
         lastActiveTimeTicks: {internalValue: BigInt(2)},
       }),
       createTab({
-        index: 1,
         tabId: 3,
         title: 'Yahoo',
         url: 'https://www.yahoo.com',
         lastActiveTimeTicks: {internalValue: BigInt(1)},
       }),
       createTab({
-        index: 2,
         tabId: 4,
         title: 'Apple',
         url: 'https://www.apple.com/',
@@ -159,10 +150,8 @@ export function sampleSiteNames(count: number): string[] {
 
 /**
  * Generates sample tabs based on some given site names.
- * @param hasIndex Whether the items have an index property.
  */
-export function generateSampleTabsFromSiteNames(
-    siteNames: string[], hasIndex: boolean = true): Tab[] {
+export function generateSampleTabsFromSiteNames(siteNames: string[]): Tab[] {
   return siteNames.map((siteName, i) => {
     return createTab({
       tabId: i + 1,
@@ -170,7 +159,6 @@ export function generateSampleTabsFromSiteNames(
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
-      index: hasIndex ? i : 0,
     });
   });
 }
