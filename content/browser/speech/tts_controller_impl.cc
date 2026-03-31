@@ -1011,6 +1011,10 @@ void TtsControllerImpl::WebContentsDestroyed() {
   StopCurrentUtteranceAndRemoveUtterancesMatching(web_contents());
 }
 
+void TtsControllerImpl::PrimaryPageChanged(Page& page) {
+  StopCurrentUtteranceAndRemoveUtterancesMatching(web_contents());
+}
+
 void TtsControllerImpl::OnVisibilityChanged(Visibility visibility) {
   if (visibility == Visibility::HIDDEN && stop_speaking_when_hidden_)
     StopCurrentUtteranceAndRemoveUtterancesMatching(web_contents());

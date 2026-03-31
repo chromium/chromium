@@ -625,6 +625,21 @@ TEST_F(TtsControllerTest, StopsWhenWebContentsDestroyed) {
   EXPECT_FALSE(TtsControllerCurrentUtterance());
 }
 
+TEST_F(TtsControllerTest, StopsWhenWebContentsPrimaryPageChanged) {
+  std::unique_ptr<TestWebContents> web_contents = CreateWebContents();
+  std::unique_ptr<TtsUtteranceImpl> utterance =
+      CreateUtteranceImpl(web_contents.get());
+
+  controller()->SpeakOrEnqueue(std::move(utterance));
+  EXPECT_TRUE(controller()->IsSpeaking());
+  EXPECT_TRUE(TtsControllerCurrentUtterance());
+
+  web_contents->NavigateAndCommit(GURL("https://example.com"));
+  // Navigating to a new page should reset
+  // |TtsController::current_utterance_|.
+  EXPECT_FALSE(TtsControllerCurrentUtterance());
+}
+
 TEST_F(TtsControllerTest, StartsQueuedUtteranceWhenWebContentsDestroyed) {
   std::unique_ptr<WebContents> web_contents1 = CreateWebContents();
   std::unique_ptr<WebContents> web_contents2 = CreateWebContents();
