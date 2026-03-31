@@ -5,45 +5,63 @@
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 
 #include "base/functional/bind.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "components/one_time_tokens/core/browser/email_one_time_token_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace one_time_tokens {
 
 GmailOtpBackend::~GmailOtpBackend() = default;
 
 // static
-std::unique_ptr<GmailOtpBackend> GmailOtpBackend::Create() {
-  return std::make_unique<GmailOtpBackendImpl>();
+std::unique_ptr<GmailOtpBackend> GmailOtpBackend::Create(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return std::make_unique<GmailOtpBackendImpl>(std::move(url_loader_factory));
 }
 
-GmailOtpBackendImpl::GmailOtpBackendImpl() = default;
+GmailOtpBackendImpl::GmailOtpBackendImpl(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : url_loader_factory_(std::move(url_loader_factory)) {}
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 
 ExpiringSubscription GmailOtpBackendImpl::Subscribe(base::Time expiration,
                                                     Callback callback) {
-  ExpiringSubscription subscription =
-      subscription_manager_.Subscribe(expiration, std::move(callback));
-  RetrieveGmailOtpIfNeeded();
-  return subscription;
+  // TODO(crbug.com/478840436): To preserve the general contract, adding a new
+  // subscriber should check a cache if any recent tickles arrived and request
+  // OTPs them immediately - as if those tickles arrived just after the
+  // subscription.
+  return subscription_manager_.Subscribe(expiration, std::move(callback));
 }
 
-void GmailOtpBackendImpl::RetrieveGmailOtpIfNeeded() {
-  if (has_pending_request_ || !subscription_manager_.GetNumberSubscribers()) {
+void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendTickle(
+    const GmailOtpBackendImpl::EncryptedMessageReference&
+        encrypted_message_reference) {
+  RetrieveGmailOtp(encrypted_message_reference);
+}
+
+void GmailOtpBackendImpl::RetrieveGmailOtp(
+    const GmailOtpBackendImpl::EncryptedMessageReference&
+        encrypted_message_reference) {
+  // TODO(crbug.com/478840436) Fix the race condition where a second tickle
+  // arrives while a pending request is in flight. The solution is probably
+  // just to remove the has_pending_request_ from this class. Unlike SMS OTPs
+  // multiple different requests may be sent in parallel, each looking up a
+  // different encrypted_message_reference.
+  if (has_pending_request_ ||
+      subscription_manager_.GetNumberSubscribers() == 0) {
     return;
   }
-
   has_pending_request_ = true;
-  // TODO(crbug.com/463944653): Replace with a real implementation.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
+  auto request = std::make_unique<EmailOneTimeTokenFetcher>(
+      url_loader_factory_, encrypted_message_reference.value());
+  auto* request_ptr = request.get();
+  request_ptr->Start(
       base::BindOnce(&GmailOtpBackendImpl::OnResponseFromGmailOtpBackend,
-                     weakptr_factory_.GetWeakPtr(),
-                     base::ok(OneTimeToken(OneTimeTokenType::kGmail, "123456",
-                                           base::Time::Now()))));
+                     weakptr_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
+    std::unique_ptr<EmailOneTimeTokenFetcher> request,
     base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply) {
   has_pending_request_ = false;
   if (!reply.has_value()) {
@@ -54,9 +72,5 @@ void GmailOtpBackendImpl::OnResponseFromGmailOtpBackend(
   const OneTimeToken& token = reply.value();
   subscription_manager_.Notify(base::ok(token));
 }
-
-void GmailOtpBackendImpl::OnIncomingOneTimeTokenBackendTickle(
-    const GmailOtpBackendImpl::EncryptedMessageReference&
-        encrypted_message_reference) {}
 
 }  // namespace one_time_tokens

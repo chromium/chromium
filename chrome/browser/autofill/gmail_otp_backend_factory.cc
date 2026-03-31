@@ -9,6 +9,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 
 // static
 one_time_tokens::GmailOtpBackend* GmailOtpBackendFactory::GetForProfile(
@@ -32,5 +33,8 @@ GmailOtpBackendFactory::~GmailOtpBackendFactory() = default;
 std::unique_ptr<KeyedService>
 GmailOtpBackendFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return one_time_tokens::GmailOtpBackend::Create();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return one_time_tokens::GmailOtpBackend::Create(
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
