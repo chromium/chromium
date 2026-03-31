@@ -783,6 +783,8 @@ extern const base::FeatureParam<int> kGlicGuestUrlPresetType;
 
 #if BUILDFLAG(ENABLE_PDF)
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPdfGlicSummarize);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kPdfGlicSummarizeArm;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPdfGlicSummarizeFre);
 #endif
 

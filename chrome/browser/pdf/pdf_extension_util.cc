@@ -457,14 +457,19 @@ bool ShouldShowGlicSummarizeButton(content::BrowserContext* context) {
     return false;
   }
 
-  // If the user has not passed FRE, and `kPdfGlicSummarizeFre` is false, then
-  // don't show the button.
-  if (!base::FeatureList::IsEnabled(features::kPdfGlicSummarizeFre) &&
-      !glic::GlicEnabling::HasConsentedForProfile(profile)) {
+  if (!base::FeatureList::IsEnabled(features::kPdfGlicSummarize)) {
     return false;
   }
 
-  return base::FeatureList::IsEnabled(features::kPdfGlicSummarize);
+  if (glic::GlicEnabling::HasConsentedForProfile(profile)) {
+    return true;
+  }
+
+  if (glic::GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile)) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace pdf_extension_util
