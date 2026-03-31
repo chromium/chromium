@@ -152,11 +152,6 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
     const std::u16string& text,
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(destination_url, content::Referrer(), disposition,
-                             transition, false),
-      /*navigation_handle_callback=*/{});
-
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (AutocompleteMatch::IsSearchType(match.type)) {
     if (auto* telemetry_service =
@@ -165,6 +160,11 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
     }
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+  web_contents_->OpenURL(
+      content::OpenURLParams(destination_url, content::Referrer(), disposition,
+                             transition, false),
+      /*navigation_handle_callback=*/{});
 }
 
 base::WeakPtr<OmniboxClient> SearchboxOmniboxClient::AsWeakPtr() {
