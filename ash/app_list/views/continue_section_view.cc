@@ -20,7 +20,6 @@
 #include "ash/app_list/views/app_list_view_util.h"
 #include "ash/app_list/views/continue_task_view.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

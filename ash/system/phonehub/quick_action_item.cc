@@ -6,7 +6,6 @@
 
 #include <string_view>
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"

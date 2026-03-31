@@ -17,7 +17,6 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/screen_util.h"

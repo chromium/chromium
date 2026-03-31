@@ -5,7 +5,6 @@
 #include "ash/system/update/quick_settings_notice_view.h"
 
 #include "ash/public/cpp/ash_view_ids.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/typography.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"

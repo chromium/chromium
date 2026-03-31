@@ -18,7 +18,6 @@
 #include "base/timer/timer.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"

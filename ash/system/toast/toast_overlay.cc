@@ -9,7 +9,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/system/toast_data.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/public/cpp/style/color_provider.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

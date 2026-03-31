@@ -20,7 +20,6 @@
 #include "base/functional/callback_helpers.h"
 #include "build/branding_buildflags.h"
 #include "chromeos/ash/grit/ash_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

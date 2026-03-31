@@ -10,7 +10,6 @@
 
 #include "ash/power/hid_battery_util.h"
 #include "ash/public/cpp/notification_utils.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"

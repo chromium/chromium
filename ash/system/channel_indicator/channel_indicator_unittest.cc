@@ -5,7 +5,6 @@
 #include "ash/system/channel_indicator/channel_indicator.h"
 
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"

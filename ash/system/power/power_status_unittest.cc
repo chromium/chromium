@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"

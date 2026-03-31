@@ -4,7 +4,6 @@
 
 #include "ash/system/bluetooth/bluetooth_device_list_item_battery_view.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"

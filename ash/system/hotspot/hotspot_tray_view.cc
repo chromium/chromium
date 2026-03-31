@@ -5,7 +5,6 @@
 #include "ash/system/hotspot/hotspot_tray_view.h"
 
 #include "ash/public/cpp/hotspot_config_service.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"

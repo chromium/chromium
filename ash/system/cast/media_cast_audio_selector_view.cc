@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
-#include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"

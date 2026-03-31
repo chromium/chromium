@@ -21,7 +21,6 @@
 #include "ash/system/mahi/mahi_animation_utils.h"
 #include "ash/system/mahi/resources/grit/mahi_resources.h"
 #include "chromeos/constants/chromeos_features.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

@@ -17,7 +17,6 @@
 #include "base/auto_reset.h"
 #include "base/strings/string_number_conversions.h"
 #include "cc/paint/paint_flags.h"
-#include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/hotseat_widget.h"

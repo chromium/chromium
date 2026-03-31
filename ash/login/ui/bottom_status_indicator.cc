@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "ash/login/ui/bottom_status_indicator.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"

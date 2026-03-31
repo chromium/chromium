@@ -30,7 +30,6 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/shelf_model.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
 #include "ash/shelf/shelf_test_util.h"

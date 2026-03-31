@@ -9,7 +9,6 @@
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"

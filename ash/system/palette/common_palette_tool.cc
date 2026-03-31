@@ -4,7 +4,6 @@
 
 #include "ash/system/palette/common_palette_tool.h"
 
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/palette/palette_ids.h"
 #include "ash/system/palette/palette_tool_manager.h"
