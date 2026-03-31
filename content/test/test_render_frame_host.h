@@ -253,7 +253,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
 
  protected:
   void SendCommitNavigation(
-      mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,
@@ -277,7 +276,6 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token) override;
   void SendCommitFailedNavigation(
-      mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,

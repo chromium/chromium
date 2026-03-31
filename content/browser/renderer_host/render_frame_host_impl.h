@@ -3378,7 +3378,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // made to mojom::NavigationClient.
   // These exist to be overridden in tests to retain mojo callbacks.
   virtual void SendCommitNavigation(
-      mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,
@@ -3402,7 +3401,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token);
   virtual void SendCommitFailedNavigation(
-      mojom::NavigationClient* navigation_client,
       NavigationRequest* navigation_request,
       blink::mojom::CommonNavigationParamsPtr common_params,
       blink::mojom::CommitNavigationParamsPtr commit_params,

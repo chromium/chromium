@@ -13176,9 +13176,6 @@ void RenderFrameHostImpl::CommitNavigation(
       navigation_request->set_fetch_later_loader_factory_context(context);
     }
 
-    mojom::NavigationClient* navigation_client =
-        navigation_request->GetCommitNavigationClient();
-
     // Record the metrics about the state of the old main frame at the moment
     // when we navigate away from it as it matters for whether the page
     // is eligible for being put into back-forward cache.
@@ -13228,8 +13225,8 @@ void RenderFrameHostImpl::CommitNavigation(
     }
 
     SendCommitNavigation(
-        navigation_client, navigation_request, std::move(common_params),
-        std::move(commit_params), std::move(head), std::move(response_body),
+        navigation_request, std::move(common_params), std::move(commit_params),
+        std::move(head), std::move(response_body),
         std::move(url_loader_client_endpoints),
         std::move(subresource_loader_factories),
         std::move(subresource_overrides), std::move(controller),
@@ -13284,18 +13281,14 @@ void RenderFrameHostImpl::FailedNavigation(
           /*local_resource_loader_config=*/nullptr, bypass_redirect_checks);
   recreate_default_url_loader_factory_after_network_service_crash_ = true;
 
-  mojom::NavigationClient* navigation_client =
-      navigation_request->GetCommitNavigationClient();
-
   blink::mojom::PolicyContainerPtr policy_container =
       navigation_request->CreatePolicyContainerForBlink();
 
   SendCommitFailedNavigation(
-      navigation_client, navigation_request, common_params.Clone(),
-      commit_params.Clone(), has_stale_copy_in_cache, error_code,
-      extended_error_code, error_page_content,
-      std::move(subresource_loader_factories), document_token,
-      navigation_request->devtools_navigation_token(),
+      navigation_request, common_params.Clone(), commit_params.Clone(),
+      has_stale_copy_in_cache, error_code, extended_error_code,
+      error_page_content, std::move(subresource_loader_factories),
+      document_token, navigation_request->devtools_navigation_token(),
       std::move(policy_container));
 
   // TODO(crbug.com/40149432): support UKM source creation for failed
@@ -16898,7 +16891,6 @@ void RenderFrameHostImpl::UpdateOrDisableCompositorMetricRecorder() const {
 }
 
 void RenderFrameHostImpl::SendCommitNavigation(
-    mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::CommitNavigationParamsPtr commit_params,
@@ -17053,7 +17045,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
   commit_params->commit_sent = base::TimeTicks::Now();
   {
     auto scope = MakeUrgentMessageScopeIfNeeded();
-    navigation_client->CommitNavigation(
+    navigation_request->GetCommitNavigationClient()->CommitNavigation(
         std::move(common_params), std::move(commit_params),
         std::move(response_head), std::move(response_body),
         std::move(url_loader_client_endpoints),
@@ -17076,7 +17068,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
 }
 
 void RenderFrameHostImpl::SendCommitFailedNavigation(
-    mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
     blink::mojom::CommonNavigationParamsPtr common_params,
     blink::mojom::CommitNavigationParamsPtr commit_params,
@@ -17089,7 +17080,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container) {
-  DCHECK(navigation_client && navigation_request);
+  DCHECK(navigation_request && navigation_request->GetCommitNavigationClient());
   DCHECK_NE(GURL(), common_params->url);
   DCHECK_NE(net::OK, error_code);
 
@@ -17109,7 +17100,7 @@ void RenderFrameHostImpl::SendCommitFailedNavigation(
 
   {
     auto scope = MakeUrgentMessageScopeIfNeeded();
-    navigation_client->CommitFailedNavigation(
+    navigation_request->GetCommitNavigationClient()->CommitFailedNavigation(
         std::move(common_params), std::move(commit_params),
         has_stale_copy_in_cache, error_code, extended_error_code,
         navigation_request->GetResolveErrorInfo(), error_page_content,
