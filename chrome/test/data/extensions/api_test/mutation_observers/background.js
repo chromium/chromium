@@ -3,20 +3,20 @@
 // found in the LICENSE file.
 
 window.addEventListener('DOMContentLoaded', function() {
-  var body = document.body;
-  var div = body.appendChild(document.createElement('div'));
-  var input1 = body.appendChild(document.createElement('input'));
-  var input2 = body.appendChild(document.createElement('input'));
+  const body = document.body;
+  const div = body.appendChild(document.createElement('div'));
+  const input1 = body.appendChild(document.createElement('input'));
+  const input2 = body.appendChild(document.createElement('input'));
 
   input1.focus();
   input1.addEventListener('blur', function() {
     div.setAttribute('baz', 'bat');
   });
 
-  var success = false;
-  var mutationsDelivered = false;
+  let success = false;
+  let mutationsDelivered = false;
 
-  var observer = new MutationObserver(function() {
+  const observer = new MutationObserver(function() {
     mutationsDelivered = true;
     if (success)
       chrome.test.succeed();

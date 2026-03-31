@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 chrome.tabs.query({active: true}, function(tabs) {
   const tab = tabs[0];

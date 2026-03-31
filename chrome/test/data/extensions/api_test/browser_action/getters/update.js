@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var pass = chrome.test.callbackPass;
+const pass = chrome.test.callbackPass;
 
 chrome.test.runTests([
   function getBadgeText() {
     chrome.browserAction.getBadgeText({}, pass(function(result) {
-      chrome.test.assertEq("Text", result);
+      chrome.test.assertEq('Text', result);
     }));
   },
 
@@ -26,7 +26,7 @@ chrome.test.runTests([
 
   function getTitle() {
     chrome.browserAction.getTitle({}, pass(function(result) {
-      chrome.test.assertEq("Title", result);
+      chrome.test.assertEq('Title', result);
     }));
   }
 ]);

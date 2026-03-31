@@ -7,7 +7,7 @@
 // Tests don't start running until an async call to
 // chrome.mimeHandlerPrivate.getStreamInfo() completes, so queue any messages
 // received until that point.
-var queuedMessages = [];
+const queuedMessages = [];
 
 function queueMessage(event) {
   queuedMessages.push(event);
@@ -15,11 +15,11 @@ function queueMessage(event) {
 
 window.addEventListener('message', queueMessage, false);
 
-var streamDetails;
+let streamDetails;
 
 function fetchUrl(url) {
   return new Promise(function(resolve, reject) {
-    var request = new XMLHttpRequest();
+    const request = new XMLHttpRequest();
     request.onload = function() {
       resolve({
         status: request.status,
@@ -63,14 +63,14 @@ function dummyTouchStartHandler(e) {
 }
 
 function ensurePageIsScrollable() {
-  document.body.style = " width: 100%; height: 100%; overflow: scroll;";
-  let div = document.createElement("div");
-  div.style = "width: 1000px; height: 500px; margin: 50%;";
+  document.body.style = ' width: 100%; height: 100%; overflow: scroll;';
+  const div = document.createElement('div');
+  div.style = 'width: 1000px; height: 500px; margin: 50%;';
   document.body.appendChild(div);
   window.scrollTo(0, 0);
 }
 
-var tests = [
+const tests = [
   function testBasic() {
     checkStreamDetails('testBasic.csv', false);
     fetchUrl(streamDetails.streamUrl)
@@ -87,14 +87,14 @@ var tests = [
 
   function testIframe() {
     checkStreamDetails('testIframe.csv', true);
-    var printMessageArrived = new Promise(function(resolve, reject) {
+    const printMessageArrived = new Promise(function(resolve, reject) {
       window.addEventListener('message', function(event) {
         chrome.test.assertEq('print', event.data.type);
         resolve();
       }, false);
     });
-    var contentRead = fetchUrl(streamDetails.streamUrl)
-        .then(expectSuccessfulRead);
+    const contentRead =
+        fetchUrl(streamDetails.streamUrl).then(expectSuccessfulRead);
     Promise.all([printMessageArrived, contentRead]).then(chrome.test.succeed);
   },
 
@@ -115,8 +115,8 @@ var tests = [
   },
 
   function testPostMessage() {
-    var expectedMessages = ['hey', 100, 25.0];
-    var messagesReceived = 0;
+    const expectedMessages = ['hey', 100, 25.0];
+    let messagesReceived = 0;
     function handleMessage(event) {
       if (event.data == 'succeed' &&
           messagesReceived == expectedMessages.length) {
@@ -127,7 +127,7 @@ var tests = [
         event.source.postMessage(event.data, '*');
         messagesReceived++;
       } else if (event.data != 'initBeforeUnload') {
-        chrome.test.fail('unexpected message ' + event.data);
+        chrome.test.fail(`unexpected message ${event.data}`);
       }
     }
     window.addEventListener('message', handleMessage, false);
@@ -171,8 +171,8 @@ var tests = [
       });
     }
     checkStreamDetails('testFullscreen.csv', false);
-    var calls = 0;
-    var windowId;
+    let calls = 0;
+    let windowId;
     window.addEventListener('webkitfullscreenchange', async e => {
       switch (calls) {
         case 0:  // On fullscreen entered.
@@ -228,8 +228,8 @@ var tests = [
 
   function testFullscreenEscape() {
     checkStreamDetails('testFullscreenEscape.csv', false);
-    var calls = 0;
-    var windowId;
+    let calls = 0;
+    let windowId;
     window.addEventListener('webkitfullscreenchange', async e => {
       switch(calls) {
         case 0: // On fullscreen entered.
@@ -269,7 +269,7 @@ var tests = [
 
   function testTargetBlankAnchor() {
     checkStreamDetails('testTargetBlankAnchor.csv', false);
-    var anchor = document.createElement('a');
+    const anchor = document.createElement('a');
     anchor.href = 'about:blank';
     anchor.target = '_blank';
     document.body.appendChild(anchor);
@@ -298,7 +298,7 @@ var tests = [
   },
 ];
 
-var testsByName = {};
+const testsByName = {};
 for (let i = 0; i < tests.length; i++) {
   testsByName[tests[i].name] = tests[i];
 }
@@ -309,8 +309,8 @@ chrome.mimeHandlerPrivate.getStreamInfo(function(streamInfo) {
 
   // If the name of the file we're handling matches the name of a test, run that
   // test.
-  var urlComponents = streamInfo.originalUrl.split('/');
-  var test = urlComponents[urlComponents.length - 1].split('.')[0];
+  const urlComponents = streamInfo.originalUrl.split('/');
+  const test = urlComponents[urlComponents.length - 1].split('.')[0];
   streamDetails = streamInfo;
   if (testsByName[test]) {
     window.removeEventListener('message', queueMessage);
@@ -318,7 +318,7 @@ chrome.mimeHandlerPrivate.getStreamInfo(function(streamInfo) {
   }
 
   // Run the test for data URLs.
-  if (streamInfo.originalUrl.startsWith("data:")) {
+  if (streamInfo.originalUrl.startsWith('data:')) {
     window.removeEventListener('message', queueMessage);
     chrome.test.runTests([testsByName['testDataUrlLong']]);
   }

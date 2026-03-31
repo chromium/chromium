@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 function getImageData() {
-  var canvas = new OffscreenCanvas(10, 100);
-  var ctx = canvas.getContext("2d");
+  const canvas = new OffscreenCanvas(10, 100);
+  const ctx = canvas.getContext('2d');
 
-  ctx.fillStyle = "green";
+  ctx.fillStyle = 'green';
   ctx.fillRect(10, 10, 100, 100);
 
   return ctx.getImageData(50, 50, 100, 100);

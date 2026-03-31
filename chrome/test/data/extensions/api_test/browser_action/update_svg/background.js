@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
 
 function updateBrowserAction() {
   chrome.browserAction.setTitle({title: 'Modified'}, function() {

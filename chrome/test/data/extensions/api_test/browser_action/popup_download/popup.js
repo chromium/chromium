@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 function run_tests() {
-  var anchor = document.querySelector("a");
+  const anchor = document.querySelector('a');
   anchor.click();
 }
 
-window.addEventListener("load", function() {
+window.addEventListener('load', function() {
     chrome.test.notifyPass();
 }, false);
