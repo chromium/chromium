@@ -26,6 +26,7 @@
 #include "third_party/blink/public/common/shared_storage/module_script_downloader.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-blink.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom-blink.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage_worklet_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/tokens/tokens.mojom-blink.h"

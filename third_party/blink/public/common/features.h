@@ -741,6 +741,11 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInlineScriptCache);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     size_t,
     kInlineScriptCacheMinScriptLength);
+// Defines the timeout for the cache lookup in inline script cache. This is just
+// a safety guard for scenarios like the cache backend freeze or worker thread
+// crash.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kInlineScriptCacheTimeout);
 
 // This flag is used to set field parameters to choose predictor we use when
 // kResamplingInputEvents is disabled. It's used for gathering accuracy metrics

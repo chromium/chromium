@@ -1049,6 +1049,11 @@ BASE_FEATURE_PARAM(size_t,
                    &kInlineScriptCache,
                    "min_script_length",
                    1024);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kInlineScriptCacheTimeout,
+                   &kInlineScriptCache,
+                   "timeout",
+                   base::Milliseconds(100));
 
 BASE_FEATURE(kInputPredictorTypeChoice, base::FEATURE_DISABLED_BY_DEFAULT);
 
