@@ -285,11 +285,8 @@ bool PrintJobWorkerOop::SpoolPage(PrintedPage* page) {
 bool PrintJobWorkerOop::SpoolDocument() {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  const MetafilePlayer* metafile = document()->GetMetafile();
-  DCHECK(metafile);
-  base::MappedReadOnlyRegion region_mapping =
-      metafile->GetDataAsSharedMemoryRegion();
-  if (simulate_spooling_memory_errors_ || !region_mapping.IsValid()) {
+  PrintedDocument::DocumentData document_data = document()->GetDocumentData();
+  if (simulate_spooling_memory_errors_ || !document_data.data.IsValid()) {
     PRINTER_LOG(ERROR)
         << "Spooling document via service failed due to shared memory error.";
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -303,8 +300,8 @@ bool PrintJobWorkerOop::SpoolDocument() {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&PrintJobWorkerOop::SendRenderPrintedDocument,
-                     ui_weak_factory_.GetWeakPtr(), metafile->GetDataType(),
-                     std::move(region_mapping.region)));
+                     ui_weak_factory_.GetWeakPtr(), document_data.data_type,
+                     std::move(document_data.data)));
   return true;
 }
 

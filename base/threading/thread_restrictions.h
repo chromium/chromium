@@ -391,9 +391,11 @@ class LocalPrinterHandlerDefault;
 #if BUILDFLAG(IS_MAC)
 class PrintBackendServiceImpl;
 #endif
+class MetafilePlayer;
 class PrintBackendServiceManager;
 class PrintPreviewUIUntrusted;
 class PrinterQuery;
+void DumpMetafileIfDebugEnabled(const std::u16string&, const MetafilePlayer*);
 base::FilePath GetAbsoluteSystemDestinationLocation(const base::FilePath&);
 }  // namespace printing
 namespace proxy_resolver {
@@ -691,6 +693,9 @@ class BASE_EXPORT ScopedAllowBlocking {
       base::FilePath* file_path);  // http://crbug.com/110709
   friend bool disk_cache::CleanupDirectorySync(const base::FilePath&);
   friend bool gl::init::InitializeStaticGLBindings(gl::GLImplementationParts);
+  friend void printing::DumpMetafileIfDebugEnabled(
+      const std::u16string&,
+      const printing::MetafilePlayer*);
   friend base::FilePath printing::GetAbsoluteSystemDestinationLocation(
       const base::FilePath&);
 

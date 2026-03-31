@@ -10,8 +10,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
@@ -35,6 +37,11 @@ class PrintingContext;
 class COMPONENT_EXPORT(PRINTING) PrintedDocument
     : public base::RefCountedThreadSafe<PrintedDocument> {
  public:
+  struct DocumentData {
+    base::ReadOnlySharedMemoryRegion data;
+    mojom::MetafileDataType data_type;
+  };
+
   // The cookie shall be unique and has a specific relationship with its
   // originating source and settings.
   PrintedDocument(std::unique_ptr<PrintSettings> settings,
@@ -67,16 +74,21 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   void RemovePage(const PrintedPage* page);
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Sets the document data. Note: locks for a short amount of time.
+  // Sets the document data.
+  // Note: locks for a short amount of time.
   void SetDocument(std::unique_ptr<MetafilePlayer> metafile);
 
-  // Retrieves the metafile with the data to print. Lock must be held when
-  // calling this function
-  const MetafilePlayer* GetMetafile();
+  // Returns where there is a document to print.
+  // Note: locks for a short amount of time.
+  bool HasDocument() const;
 
-// Draws the page in the context.
-// Note: locks for a short amount of time in debug only.
+  // Retrieves the document data to print.
+  // Note: locks for a short amount of time.
+  DocumentData GetDocumentData() const;
+
 #if BUILDFLAG(IS_WIN)
+  // Draws the page in the context.
+  // Note: locks for a short amount of time in debug only.
   // This is applicable when using the Windows GDI print API.
   mojom::ResultCode RenderPrintedPage(const PrintedPage& page,
                                       PrintingContext* context) const;
@@ -201,7 +213,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   mutable base::Lock lock_;
 
   // All the mutable members.
-  Mutable mutable_;
+  Mutable mutable_ GUARDED_BY(lock_);
 
   // All the immutable members.
   const Immutable immutable_;

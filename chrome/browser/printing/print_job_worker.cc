@@ -180,7 +180,7 @@ void PrintJobWorker::OnNewPage() {
 #endif  // BUILDFLAG(IS_WIN)
 
   if (do_spool_document) {
-    if (!document_->GetMetafile()) {
+    if (!document_->HasDocument()) {
       PostWaitForPage();
       return;
     }

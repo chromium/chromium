@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -62,15 +63,21 @@ void DebugDumpPageTask(const std::u16string& doc_name,
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-void DebugDumpTask(const std::u16string& doc_name,
-                   const MetafilePlayer* metafile) {
-  DCHECK(PrintedDocument::HasDebugDumpPath());
+}  // namespace
+
+// Not in an anonymous namespace so it can be friends with
+// base::ScopedAllowBlocking.
+void DumpMetafileIfDebugEnabled(const std::u16string& doc_name,
+                                const MetafilePlayer* metafile) {
+  if (!PrintedDocument::HasDebugDumpPath()) {
+    return;
+  }
 
   static constexpr base::FilePath::CharType kExtension[] =
       FILE_PATH_LITERAL(".pdf");
-
-  std::u16string name = doc_name;
-  base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
+  base::ScopedAllowBlocking allow_blocking;
+  base::FilePath path =
+      PrintedDocument::CreateDebugDumpPath(doc_name, kExtension);
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
 #if BUILDFLAG(IS_ANDROID)
@@ -79,6 +86,8 @@ void DebugDumpTask(const std::u16string& doc_name,
   metafile->SaveTo(&file);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
+
+namespace {
 
 void DebugDumpDataTask(const std::u16string& doc_name,
                        const base::FilePath::StringType& extension,
@@ -170,27 +179,30 @@ void PrintedDocument::RemovePage(const PrintedPage* page) {
 #endif  // BUILDFLAG(IS_WIN)
 
 void PrintedDocument::SetDocument(std::unique_ptr<MetafilePlayer> metafile) {
-  {
-    base::AutoLock lock(lock_);
-    mutable_.metafile_ = std::move(metafile);
-  }
+  DumpMetafileIfDebugEnabled(name(), metafile.get());
 
-  if (HasDebugDumpPath()) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&DebugDumpTask, name(), mutable_.metafile_.get()));
-  }
+  base::AutoLock lock(lock_);
+  mutable_.metafile_ = std::move(metafile);
 }
 
-const MetafilePlayer* PrintedDocument::GetMetafile() {
-  return mutable_.metafile_.get();
+bool PrintedDocument::HasDocument() const {
+  base::AutoLock lock(lock_);
+  return !!mutable_.metafile_;
+}
+
+PrintedDocument::DocumentData PrintedDocument::GetDocumentData() const {
+  base::AutoLock lock(lock_);
+  base::MappedReadOnlyRegion region_mapping =
+      mutable_.metafile_->GetDataAsSharedMemoryRegion();
+  return {std::move(region_mapping.region), mutable_.metafile_->GetDataType()};
 }
 
 mojom::ResultCode PrintedDocument::RenderPrintedDocument(
     PrintingContext* context) {
   base::AutoLock lock(lock_);
-  mojom::ResultCode result = context->PrintDocument(
-      *GetMetafile(), *immutable_.settings_, mutable_.expected_page_count_);
+  mojom::ResultCode result =
+      context->PrintDocument(*mutable_.metafile_, *immutable_.settings_,
+                             mutable_.expected_page_count_);
   if (result != mojom::ResultCode::kSuccess)
     return result;
 
