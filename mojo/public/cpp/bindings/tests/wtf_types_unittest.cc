@@ -69,7 +69,7 @@ class WTFTypesTest : public testing::Test {
   // strs[1] is empty.
   strs[1] = "";
   strs[2] = kHelloWorld;
-  strs[3] = ::blink::String::FromUTF8(kUTF8HelloWorld);
+  strs[3] = ::blink::String::FromUtf8(kUTF8HelloWorld);
 
   return strs;
 }
@@ -79,7 +79,7 @@ class WTFTypesTest : public testing::Test {
   // A null string as value.
   str_map.insert("0", ::blink::String());
   str_map.insert("1", kHelloWorld);
-  str_map.insert("2", ::blink::String::FromUTF8(kUTF8HelloWorld));
+  str_map.insert("2", ::blink::String::FromUtf8(kUTF8HelloWorld));
 
   return str_map;
 }
@@ -140,7 +140,7 @@ TEST_F(WTFTypesTest, Serialization_WTFVectorInlineCapacity) {
   // strs[1] is empty.
   strs[1] = "";
   strs[2] = kHelloWorld;
-  strs[3] = ::blink::String::FromUTF8(kUTF8HelloWorld);
+  strs[3] = ::blink::String::FromUtf8(kUTF8HelloWorld);
   auto cloned_strs = strs;
 
   mojo::Message message(0, 0, 0, 0, nullptr);

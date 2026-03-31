@@ -84,14 +84,6 @@ class WTF_EXPORT String {
   [[nodiscard]] static String FromUtf8(std::string_view s) {
     return FromUtf8(base::as_byte_span(s));
   }
-  // FromUTF8() is deprecated. Use FromUtf8() instead.
-  [[nodiscard]] static String FromUTF8(base::span<const uint8_t> chars) {
-    return FromUtf8(chars);
-  }
-  // FromUTF8() is deprecated. Use FromUtf8() instead.
-  [[nodiscard]] static String FromUTF8(std::string_view s) {
-    return FromUtf8(base::as_byte_span(s));
-  }
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.

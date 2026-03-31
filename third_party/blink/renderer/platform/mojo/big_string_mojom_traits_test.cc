@@ -44,7 +44,7 @@ TEST(BigStringMojomTraitsTest, BigString_Short) {
 
   // Replace the "o"s in "hello world" with "o"s with acute, so that |str| is
   // 16-bit.
-  str = String::FromUTF8("hell\xC3\xB3 w\xC3\xB3rld");
+  str = String::FromUtf8("hell\xC3\xB3 w\xC3\xB3rld");
   ASSERT_FALSE(str.Is8Bit());
 
   ASSERT_TRUE(

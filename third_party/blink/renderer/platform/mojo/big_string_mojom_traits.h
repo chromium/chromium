@@ -34,7 +34,7 @@ struct PLATFORM_EXPORT StructTraits<mojo_base::mojom::BigStringDataView,
     if (!buffer.size()) {
       *out = blink::g_empty_string;
     } else {
-      *out = blink::String::FromUTF8(base::span(buffer));
+      *out = blink::String::FromUtf8(base::span(buffer));
     }
     return true;
   }

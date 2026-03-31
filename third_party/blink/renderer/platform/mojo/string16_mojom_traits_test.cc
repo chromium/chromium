@@ -27,7 +27,7 @@ TEST(String16MojomTraitsTest, String16) {
 
   // Replace the "o"s in "hello world" with "o"s with acute, so that |str| is
   // 16-bit.
-  str = String::FromUTF8("hell\xC3\xB3 w\xC3\xB3rld");
+  str = String::FromUtf8("hell\xC3\xB3 w\xC3\xB3rld");
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::String16>(
@@ -67,7 +67,7 @@ TEST(String16MojomTraitsTest, BigString16_Short) {
 
   // Replace the "o"s in "hello world" with "o"s with acute, so that |str| is
   // 16-bit.
-  str = String::FromUTF8("hell\xC3\xB3 w\xC3\xB3rld");
+  str = String::FromUtf8("hell\xC3\xB3 w\xC3\xB3rld");
 
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojo_base::mojom::blink::BigString16>(

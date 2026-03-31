@@ -30,7 +30,7 @@ blink::StringUtf8Adaptor StringTraits<blink::String>::GetUTF8(
 // static
 bool StringTraits<blink::String>::Read(StringDataView input,
                                        blink::String* output) {
-  blink::String result = blink::String::FromUTF8(input.value());
+  blink::String result = blink::String::FromUtf8(input.value());
   output->swap(result);
   return true;
 }
