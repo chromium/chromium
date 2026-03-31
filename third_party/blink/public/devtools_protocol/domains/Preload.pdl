@@ -77,6 +77,7 @@ experimental domain Preload
       Network.LoaderId loaderId
       SpeculationAction action
       string url
+      optional boolean formSubmission
       optional SpeculationTargetHint targetHint
 
   # Lists sources for a preloading attempt, specifically the ids of rule sets

@@ -51,12 +51,13 @@ String GetProtocolRuleSetErrorMessage(const SpeculationRuleSet& rule_set) {
 struct PreloadingAttemptKey {
   mojom::blink::SpeculationAction action;
   KURL url;
+  bool form_submission;
   mojom::blink::SpeculationTargetHint target_hint;
 };
 
 bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
-  return std::tie(a.action, a.url, a.target_hint) ==
-         std::tie(b.action, b.url, b.target_hint);
+  return std::tie(a.action, a.url, a.form_submission, a.target_hint) ==
+         std::tie(b.action, b.url, b.form_submission, b.target_hint);
 }
 
 struct PreloadingAttemptKeyHashTraits
@@ -64,6 +65,7 @@ struct PreloadingAttemptKeyHashTraits
   static unsigned GetHash(const PreloadingAttemptKey& key) {
     unsigned hash = blink::GetHash(key.action);
     hash = HashInts(hash, blink::GetHash(key.url));
+    hash = HashInts(hash, blink::GetHash(key.form_submission));
     hash = HashInts(hash, blink::GetHash(key.target_hint));
     return hash;
   }
@@ -72,20 +74,23 @@ struct PreloadingAttemptKeyHashTraits
 
   static PreloadingAttemptKey EmptyValue() {
     return {mojom::blink::SpeculationAction::kPrefetch, KURL(),
+            /*form_submission=*/false,
             mojom::blink::SpeculationTargetHint::kNoHint};
   }
 
   static bool IsDeletedValue(const PreloadingAttemptKey& key) {
     const PreloadingAttemptKey deleted_value = {
         mojom::blink::SpeculationAction::kPrerender, KURL(),
+        /*form_submission=*/false,
         mojom::blink::SpeculationTargetHint::kNoHint};
     return key == deleted_value;
   }
 
   static void ConstructDeletedValue(PreloadingAttemptKey& slot) {
-    new (&slot) PreloadingAttemptKey{
-        mojom::blink::SpeculationAction::kPrerender, KURL(),
-        mojom::blink::SpeculationTargetHint::kNoHint};
+    new (&slot)
+        PreloadingAttemptKey{mojom::blink::SpeculationAction::kPrerender,
+                             KURL(), /*form_submission=*/false,
+                             mojom::blink::SpeculationTargetHint::kNoHint};
   }
 };
 
@@ -123,6 +128,11 @@ BuildProtocolPreloadingAttemptKey(const PreloadingAttemptKey& key,
           .setAction(GetProtocolSpeculationAction(key.action))
           .setUrl(key.url)
           .build();
+
+  if (key.form_submission) {
+    preloading_attempt_key->setFormSubmission(key.form_submission);
+  }
+
   std::optional<String> target_hint_str =
       GetProtocolSpeculationTargetHint(key.target_hint);
   if (target_hint_str) {
@@ -250,6 +260,7 @@ void InspectorPreloadAgent::SpeculationCandidatesUpdated(
       preloading_attempts;
   for (SpeculationCandidate* candidate : candidates) {
     PreloadingAttemptKey key = {candidate->action(), candidate->url(),
+                                candidate->form_submission(),
                                 candidate->target_hint()};
     auto& value = preloading_attempts
                       .insert(key, HeapVector<Member<SpeculationCandidate>>())

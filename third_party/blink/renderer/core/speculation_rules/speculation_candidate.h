@@ -49,6 +49,7 @@ class CORE_EXPORT SpeculationCandidate
   mojom::blink::SpeculationTargetHint target_hint() const {
     return target_hint_;
   }
+  bool form_submission() const { return form_submission_; }
   mojom::blink::SpeculationEagerness eagerness() const { return eagerness_; }
   SpeculationRuleSet* rule_set() const { return rule_set_.Get(); }
   // Only set for candidates derived from a document rule (is null for

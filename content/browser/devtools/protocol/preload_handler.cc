@@ -410,6 +410,7 @@ void PreloadHandler::DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
+    bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
@@ -426,6 +427,9 @@ void PreloadHandler::DidUpdatePrerenderStatus(
           .SetAction(SpeculationActionToProtocol(action))
           .SetUrl(prerender_url.spec())
           .Build();
+  if (form_submission) {
+    preloading_attempt_key->SetFormSubmission(true);
+  }
   std::optional<protocol::Preload::SpeculationTargetHint> protocol_target_hint =
       GetProtocolSpeculationTargetHint(target_hint);
   if (protocol_target_hint.has_value()) {
@@ -576,10 +580,9 @@ void PreloadHandler::SendCurrentPreloadStatus() {
     for (const auto& [key, data] : preload_storage->prerender_data_map()) {
       DidUpdatePrerenderStatus(
           initiator_devtools_navigation_token,
-          blink::mojom::SpeculationAction::kPrerender,
-          /*prerender_url=*/key.first,
-          /*target_hint=*/key.second, data.preload_pipeline_id, data.outcome,
-          data.status, data.disallowed_mojo_interface,
+          blink::mojom::SpeculationAction::kPrerender, key.prerender_url,
+          key.form_submission, key.target_hint, data.preload_pipeline_id,
+          data.outcome, data.status, data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
     }
     for (const auto& [key, data] :
@@ -587,9 +590,9 @@ void PreloadHandler::SendCurrentPreloadStatus() {
       DidUpdatePrerenderStatus(
           initiator_devtools_navigation_token,
           blink::mojom::SpeculationAction::kPrerenderUntilScript,
-          /*prerender_url=*/key.first,
-          /*target_hint=*/key.second, data.preload_pipeline_id, data.outcome,
-          data.status, data.disallowed_mojo_interface,
+          key.prerender_url, key.form_submission, key.target_hint,
+          data.preload_pipeline_id, data.outcome, data.status,
+          data.disallowed_mojo_interface,
           data.mismatched_headers.empty() ? nullptr : &data.mismatched_headers);
     }
   }

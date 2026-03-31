@@ -860,6 +860,7 @@ void DidUpdatePrerenderStatus(
     const base::UnguessableToken& initiator_devtools_navigation_token,
     blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
+    bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome status,
@@ -882,13 +883,14 @@ void DidUpdatePrerenderStatus(
   // We update DevToolsPreloadStorage, even if there are no active DevTools
   // sessions, to persist the latest status update.
   devtools_preload_storage->UpdatePrerenderStatus(
-      action, prerender_url, target_hint, preload_pipeline_id, status,
-      prerender_status, disallowed_mojo_interface, mismatched_headers);
+      action, prerender_url, form_submission, target_hint, preload_pipeline_id,
+      status, prerender_status, disallowed_mojo_interface, mismatched_headers);
 
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, action, prerender_url,
-                   target_hint, preload_pipeline_id, status, prerender_status,
-                   disallowed_mojo_interface, mismatched_headers);
+                   form_submission, target_hint, preload_pipeline_id, status,
+                   prerender_status, disallowed_mojo_interface,
+                   mismatched_headers);
 }
 
 namespace {

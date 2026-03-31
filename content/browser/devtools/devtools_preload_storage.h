@@ -31,6 +31,7 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   void UpdatePrerenderStatus(
       blink::mojom::SpeculationAction action,
       const GURL& prerender_url,
+      bool form_submission,
       std::optional<blink::mojom::SpeculationTargetHint>,
       const base::UnguessableToken& preload_pipeline_id,
       PreloadingTriggeringOutcome outcome,
@@ -51,8 +52,13 @@ class DevToolsPreloadStorage : public DocumentUserData<DevToolsPreloadStorage> {
   using PrefetchDataMap = std::map<PrefetchKey, PrefetchData>;
   const PrefetchDataMap& prefetch_data_map() { return prefetch_data_map_; }
 
-  using PrerenderKey =
-      std::pair<GURL, std::optional<blink::mojom::SpeculationTargetHint>>;
+  struct PrerenderKey {
+    GURL prerender_url;
+    bool form_submission;
+    std::optional<blink::mojom::SpeculationTargetHint> target_hint;
+
+    auto operator<=>(const PrerenderKey&) const = default;
+  };
   struct PrerenderData {
     PrerenderData();
     PrerenderData(const PrerenderData& other);

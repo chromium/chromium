@@ -42,13 +42,16 @@ void DevToolsPreloadStorage::UpdatePrefetchStatus(
 void DevToolsPreloadStorage::UpdatePrerenderStatus(
     blink::mojom::SpeculationAction action,
     const GURL& prerender_url,
+    bool form_submission,
     std::optional<blink::mojom::SpeculationTargetHint> target_hint,
     const base::UnguessableToken& preload_pipeline_id,
     PreloadingTriggeringOutcome outcome,
     std::optional<PrerenderFinalStatus> status,
     const std::optional<std::string>& disallowed_mojo_interface,
     const std::vector<PrerenderMismatchedHeaders>* mismatched_headers) {
-  PrerenderKey key = std::make_pair(prerender_url, target_hint);
+  PrerenderKey key = {.prerender_url = prerender_url,
+                      .form_submission = form_submission,
+                      .target_hint = target_hint};
   PrerenderData data;
   data.preload_pipeline_id = preload_pipeline_id;
   data.outcome = outcome;
@@ -83,13 +86,15 @@ void DevToolsPreloadStorage::SpeculationCandidatesUpdated(
         break;
       case blink::mojom::SpeculationAction::kPrerender:
         prerender_keys_from_candidates.insert(
-            std::make_pair(candidate_ptr->url,
-                           candidate_ptr->target_browsing_context_name_hint));
+            {.prerender_url = candidate_ptr->url,
+             .form_submission = candidate_ptr->form_submission,
+             .target_hint = candidate_ptr->target_browsing_context_name_hint});
         break;
       case blink::mojom::SpeculationAction::kPrerenderUntilScript:
         prerender_until_script_keys_from_candidates.insert(
-            std::make_pair(candidate_ptr->url,
-                           candidate_ptr->target_browsing_context_name_hint));
+            {.prerender_url = candidate_ptr->url,
+             .form_submission = candidate_ptr->form_submission,
+             .target_hint = candidate_ptr->target_browsing_context_name_hint});
         break;
     };
   }
