@@ -163,8 +163,10 @@ class AndroidStreamReaderURLLoaderTest : public ::testing::Test {
     network::ResourceRequest request;
     request.url = GURL("https://www.example.com/");
     request.method = "GET";
+    request.site_for_cookies = net::SiteForCookies::FromUrl(request.url);
     request.resource_type =
         static_cast<int>(blink::mojom::ResourceType::kSubResource);
+    request.trusted_params = network::ResourceRequest::TrustedParams();
     return request;
   }
 
@@ -445,6 +447,17 @@ TEST_F(AndroidStreamReaderURLLoaderTest, ProcessSetCookieHeadersOnRequest) {
   EXPECT_EQ(base::flat_set<std::string>(
                 {cookie_header_value_a, cookie_header_value_b}),
             cookie_headers);
+}
+
+// For https://crbug.com/497440158.
+TEST_F(AndroidStreamReaderURLLoaderTest, CopiesTrustedParams) {
+  network::ResourceRequest request = CreateRequest();
+  std::unique_ptr<network::TestURLLoaderClient> client =
+      std::make_unique<network::TestURLLoaderClient>();
+  AndroidStreamReaderURLLoader* loader =
+      CreateLoader(request, client.get(), std::make_unique<FakeInputStream>());
+  EXPECT_TRUE(loader->ResourceRequestForTesting());
+  EXPECT_TRUE(loader->ResourceRequestForTesting()->trusted_params.has_value());
 }
 
 }  // namespace embedder_support

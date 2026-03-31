@@ -117,6 +117,10 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
 
+  network::ResourceRequest* ResourceRequestForTesting() {
+    return &resource_request_;
+  }
+
  private:
   bool ParseRange(const net::HttpRequestHeaders& headers);
   void OnInputStreamOpened(

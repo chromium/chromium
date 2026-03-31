@@ -74,6 +74,7 @@ network::ResourceRequest CopyResourceRequest(
   new_request.url = request.url;
   new_request.mode = request.mode;
   new_request.headers = request.headers;
+  new_request.trusted_params = request.trusted_params;
   return new_request;
 }
 
