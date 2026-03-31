@@ -1,0 +1,65 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "third_party/blink/renderer/core/html/forms/html_submit_button_behavior.h"
+
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/custom/element_internals.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/labels_node_list.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
+namespace blink {
+
+HTMLSubmitButtonBehavior* HTMLSubmitButtonBehavior::Create(
+    ExecutionContext* execution_context) {
+  return MakeGarbageCollected<HTMLSubmitButtonBehavior>();
+}
+
+HTMLSubmitButtonBehavior::HTMLSubmitButtonBehavior() = default;
+
+HTMLSubmitButtonBehavior::~HTMLSubmitButtonBehavior() = default;
+
+const AtomicString& HTMLSubmitButtonBehavior::DefaultAriaRole() const {
+  DEFINE_STATIC_LOCAL(const AtomicString, button_role, ("button"));
+  return button_role;
+}
+
+const char* HTMLSubmitButtonBehavior::BehaviorName() const {
+  return "HTMLSubmitButtonBehavior";
+}
+
+HTMLFormElement* HTMLSubmitButtonBehavior::form(
+    ExceptionState& exception_state) const {
+  ElementInternals* internals = GetElementInternals();
+  if (!internals) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The behavior is not attached to an element.");
+    return nullptr;
+  }
+  // Use ListedElement::Form() from the internals.
+  return internals->Form();
+}
+
+LabelsNodeList* HTMLSubmitButtonBehavior::labels(
+    ExceptionState& exception_state) const {
+  ElementInternals* internals = GetElementInternals();
+  if (!internals) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The behavior is not attached to an element.");
+    return nullptr;
+  }
+  // Delegate to ElementInternals::labels() which handles form-associated
+  // custom element labels.
+  return internals->labels(exception_state);
+}
+
+void HTMLSubmitButtonBehavior::Trace(Visitor* visitor) const {
+  ElementBehavior::Trace(visitor);
+}
+
+}  // namespace blink

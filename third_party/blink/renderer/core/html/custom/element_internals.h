@@ -83,9 +83,8 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   const FrozenArray<Element>* GetElementArrayAttribute(
       const QualifiedName& attribute) const;
 
-  // Platform-provided behaviors
+  // Platform-provided behaviors.
   const FrozenArray<ElementBehavior>& behaviors() const;
-  void SetBehaviors(HeapVector<Member<ElementBehavior>> behaviors);
 
   const FrozenArray<Element>* ariaControlsElements() const;
   void setAriaControlsElements(GCedHeapVector<Member<Element>>* given_elements);
@@ -110,6 +109,12 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   const HashMap<QualifiedName, AtomicString>& GetAttributes() const;
 
  private:
+  friend class HTMLElement;
+
+  // Sets behaviors during attachInternals(). Can only be called once.
+  void SetBehaviors(HeapVector<Member<ElementBehavior>> behaviors,
+                    ExceptionState& exception_state);
+
   bool IsTargetFormAssociated() const;
 
   // ListedElement overrides:

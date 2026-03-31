@@ -19,6 +19,11 @@ bool ElementBehavior::HandleActivation(Event&) {
   return false;
 }
 
+void ElementBehavior::SetElementInternals(ElementInternals* internals) {
+  CHECK(!internals_) << "Behavior is already attached to an element.";
+  internals_ = internals;
+}
+
 void ElementBehavior::Trace(Visitor* visitor) const {
   visitor->Trace(internals_);
   ScriptWrappable::Trace(visitor);

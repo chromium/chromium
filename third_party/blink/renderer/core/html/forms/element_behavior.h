@@ -32,6 +32,14 @@ class CORE_EXPORT ElementBehavior : public ScriptWrappable {
   // override this to provide appropriate roles (e.g., "button").
   virtual const AtomicString& DefaultAriaRole() const = 0;
 
+  // Returns the human-readable name of this behavior type
+  // (e.g., "HTMLSubmitButtonBehavior"). Used for deduplication and error
+  // messages.
+  virtual const char* BehaviorName() const = 0;
+
+  ElementInternals* GetElementInternals() const { return internals_; }
+  void SetElementInternals(ElementInternals* internals);
+
   void Trace(Visitor* visitor) const override;
 
  protected:

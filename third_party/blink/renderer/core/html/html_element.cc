@@ -3903,12 +3903,12 @@ ElementInternals* HTMLElement::attachInternals(
   ElementInternals& internals = EnsureElementInternals();
 
   // Handle behaviors option if provided.
-  if (RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled()) {
-    HeapVector<Member<ElementBehavior>> behaviors;
-    if (options && options->hasBehaviors()) {
-      behaviors = options->behaviors();
+  if (RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled() && options &&
+      options->hasBehaviors()) {
+    internals.SetBehaviors(options->behaviors(), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
     }
-    internals.SetBehaviors(std::move(behaviors));
   }
 
   return &internals;

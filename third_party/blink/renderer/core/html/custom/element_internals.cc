@@ -410,13 +410,41 @@ const FrozenArray<Element>* ElementInternals::GetElementArrayAttribute(
 
 const FrozenArray<ElementBehavior>& ElementInternals::behaviors() const {
   DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
-  DCHECK(behaviors_);
+  if (!behaviors_) {
+    DEFINE_STATIC_LOCAL(Persistent<FrozenArray<ElementBehavior>>, empty,
+                        (MakeGarbageCollected<FrozenArray<ElementBehavior>>()));
+    return *empty;
+  }
   return *behaviors_;
 }
 
 void ElementInternals::SetBehaviors(
-    HeapVector<Member<ElementBehavior>> behaviors) {
+    HeapVector<Member<ElementBehavior>> behaviors,
+    ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::ElementInternalsBehaviorsEnabled());
+
+  HashSet<String> seen_names;
+  for (ElementBehavior* behavior : behaviors) {
+    String name(behavior->BehaviorName());
+    // Check for duplicate instances or duplicate types (same BehaviorName).
+    if (seen_names.Contains(name)) {
+      exception_state.ThrowTypeError("Only one instance of " + name +
+                                     " is allowed per element.");
+      return;
+    }
+    // Check if the behavior is already attached to another element.
+    if (behavior->GetElementInternals()) {
+      exception_state.ThrowTypeError(
+          name + " instance is already attached to another element.");
+      return;
+    }
+    seen_names.insert(name);
+  }
+
+  // All behaviors validated. Attach and create the frozen array.
+  for (ElementBehavior* behavior : behaviors) {
+    behavior->SetElementInternals(this);
+  }
   behaviors_ =
       MakeGarbageCollected<FrozenArray<ElementBehavior>>(std::move(behaviors));
 }

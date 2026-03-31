@@ -5,6 +5,7 @@
 // Platform-provided behavior base interface.
 // Behaviors can be attached to custom elements via
 // attachInternals({ behaviors: [...] }).
+// https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md
 [
   Exposed=Window,
   RuntimeEnabled=ElementInternalsBehaviors
