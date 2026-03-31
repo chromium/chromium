@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -31,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for the Search in Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -65,6 +67,7 @@ public class SettingsSearchCoordinatorTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/498165874: Flaky on android-desktop.
     public void testRecentSearchIsRestored() throws Throwable {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
