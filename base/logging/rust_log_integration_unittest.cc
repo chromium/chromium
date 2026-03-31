@@ -76,7 +76,8 @@ TEST_F(RustLogIntegrationTest, MAYBE_Placeholders) {
 }
 
 // TODO(crbug.com/374023535): Logging does not work in component builds.
-#if defined(COMPONENT_BUILD)
+// TODO(crbug.com/497896152): Re-enable this test on Linux and ChromeOS.
+#if defined(COMPONENT_BUILD) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Panic DISABLED_Panic
 #else
 #define MAYBE_Panic Panic
