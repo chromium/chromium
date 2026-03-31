@@ -241,6 +241,13 @@ constexpr auto kPageActionProperties =
                 .element_identifier = kBookmarkStarViewElementId,
             },
         },
+        {
+            kActionGlicContextualCueing,
+            {
+                .histogram_name = "Glic",
+                .type = PageActionIconType::kGlic,
+            },
+        },
     });
 
 constexpr bool CheckIgnoreFlagUsage() {
