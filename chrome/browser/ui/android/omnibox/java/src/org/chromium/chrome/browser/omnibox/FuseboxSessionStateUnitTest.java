@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -31,6 +35,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.url.GURL;
 
 /** Unit tests for {@link FuseboxSessionState}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -103,5 +108,108 @@ public class FuseboxSessionStateUnitTest {
         OmniboxFeatures.sShowModelPicker.setForTesting(false);
         FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
         assertFalse(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+    }
+
+    @Test
+    public void testFrom() {
+        doReturn("Title").when(mLocationBarDataProvider).getTitle();
+        doReturn(new GURL("https://www.google.com"))
+                .when(mLocationBarDataProvider)
+                .getCurrentGurl();
+        doReturn(1).when(mLocationBarDataProvider).getPageClassification(false);
+
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        assertNotNull(session);
+        assertEquals("Title", session.getAutocompleteInput().getPageTitle());
+        assertEquals(
+                "https://www.google.com/", session.getAutocompleteInput().getPageUrl().getSpec());
+        assertEquals(1, session.getAutocompleteInput().getPageClassification());
+    }
+
+    @Test
+    public void testActivate() {
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        assertFalse(session.isSessionActive());
+        assertNull(session.getProfile());
+
+        Runnable onFullyActivated = mock(Runnable.class);
+        session.activate(mProfileSupplier, onFullyActivated);
+
+        assertTrue(session.isSessionActive());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(mProfile, session.getProfile());
+        assertEquals(mAutocompleteController, session.getAutocompleteController());
+        assertEquals(
+                mComposeboxQueryControllerBridge, session.getComposeboxQueryControllerBridge());
+        assertNotNull(session.getFuseboxAttachmentModelList());
+        verify(onFullyActivated).run();
+        verify(mAutocompleteController)
+                .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
+
+        // Simulate re-activation
+        clearInvocations(mAutocompleteController);
+        session.activate(mProfileSupplier, onFullyActivated);
+        verify(mAutocompleteController)
+                .setComposeboxQueryControllerBridge(mComposeboxQueryControllerBridge);
+    }
+
+    @Test
+    public void testActivate_nullComposebox() {
+        ComposeboxQueryControllerBridge.setInstanceForTesting(null);
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        assertFalse(session.isSessionActive());
+        assertNull(session.getProfile());
+
+        Runnable onFullyActivated = mock(Runnable.class);
+        session.activate(mProfileSupplier, onFullyActivated);
+
+        assertTrue(session.isSessionActive());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(mProfile, session.getProfile());
+        assertEquals(mAutocompleteController, session.getAutocompleteController());
+        assertNull(session.getComposeboxQueryControllerBridge());
+        assertNull(session.getFuseboxAttachmentModelList());
+        verify(onFullyActivated).run();
+
+        verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
+
+        // Simulate re-activation
+        clearInvocations(mAutocompleteController);
+        session.activate(mProfileSupplier, onFullyActivated);
+        verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
+    }
+
+    @Test
+    public void testDeactivate() {
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(mProfileSupplier, null);
+        RobolectricUtil.runAllBackgroundAndUi();
+        assertTrue(session.isSessionActive());
+
+        session.deactivate();
+        assertFalse(session.isSessionActive());
+        assertNull(session.getProfile());
+        assertNull(session.getAutocompleteController());
+        assertNull(session.getComposeboxQueryControllerBridge());
+        assertNull(session.getFuseboxAttachmentModelList());
+        verify(mAutocompleteController).setComposeboxQueryControllerBridge(null);
+    }
+
+    @Test
+    public void testDestroy() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(true);
+        FuseboxSessionState session = FuseboxSessionState.from(mLocationBarDataProvider);
+        session.activate(mProfileSupplier, null);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertTrue(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        session.destroy();
+        assertFalse(session.getAutocompleteInput().getToolModeSupplier().hasObservers());
+        assertNull(session.getProfile());
+        assertNull(session.getAutocompleteController());
+        assertNull(session.getComposeboxQueryControllerBridge());
+        assertNull(session.getFuseboxAttachmentModelList());
     }
 }

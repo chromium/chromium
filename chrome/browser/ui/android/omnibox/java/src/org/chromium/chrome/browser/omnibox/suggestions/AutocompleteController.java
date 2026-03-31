@@ -355,6 +355,8 @@ public class AutocompleteController {
 
     public void setComposeboxQueryControllerBridge(
             @Nullable ComposeboxQueryControllerBridge bridge) {
+        // This may - and occasionally will - happen during shutdown.
+        if (mNativeController == 0) return;
         AutocompleteControllerJni.get()
                 .setComposeboxQueryControllerBridge(
                         mNativeController, bridge == null ? 0L : bridge.getNativeInstance());
