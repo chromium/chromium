@@ -27,15 +27,6 @@ chromium-metrics-reviews@google.com.
   <variant name="PassthroughProgramCache"/>
 </variants>
 
-<variants name="ExoSurfaceCodePaths">
-  <variant name="AppendContentsToFrame"/>
-  <variant name="ForceRGBAForOpaque"/>
-  <variant name="Occluded"/>
-  <variant name="ProtectedVideoType"/>
-  <variant name="SolidColorDrawQuad"/>
-  <variant name="TextureDrawQuad"/>
-</variants>
-
 <variants name="GpuPersistentCacheType">
   <variant name="Ganesh"/>
   <variant name="GraphiteDawn"/>
@@ -2059,18 +2050,6 @@ chromium-metrics-reviews@google.com.
     Records the SharedImageFormat type for an Exo Buffer that is initialized
     with a GpuMemoryBufferHandle. Logged once per Exo Buffer creation.
   </summary>
-</histogram>
-
-<histogram name="Graphics.Exo.Surface.{ExoSurfaceCodePaths}" enum="Boolean"
-    expires_after="2026-04-26">
-  <owner>fangzhoug@chromium.org</owner>
-  <owner>petermcneeley@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@google.com</owner>
-  <summary>
-    Track usage of different code paths in Exo surface code. We should monitor
-    and remove all deprecated code path if they have never been executed.
-  </summary>
-  <token key="ExoSurfaceCodePaths" variants="ExoSurfaceCodePaths"/>
 </histogram>
 
 <histogram name="NPU.Intel.DeviceId" enum="IntelNpuDeviceId"

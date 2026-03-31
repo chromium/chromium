@@ -1580,7 +1580,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                                     bool needs_full_damage,
                                     std::optional<float> device_scale_factor,
                                     viz::CompositorFrame* frame) {
-  UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.AppendContentsToFrame", true);
   const std::unique_ptr<viz::CompositorRenderPass>& render_pass =
       frame->render_pass_list.back();
   gfx::PointF parent_to_root_dp = gfx::ScalePoint(
@@ -1707,7 +1706,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       CHECK(current_resource_->id);
       frame->resource_list.push_back(*current_resource_);
     }
-    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.Occluded", true);
     return;
   }
 
@@ -1745,7 +1743,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       // us to treat client buffers as rgbx. For an example see b/305977429
       const bool force_rgbx_for_opaque =
           are_contents_opaque && current_resource_has_alpha_;
-      UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.TextureDrawQuad", true);
       viz::SharedQuadState* quad_state =
           render_pass->CreateAndAppendSharedQuadState();
       quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
@@ -1765,7 +1762,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                            /*is_tex_coords_normalized=*/false);
 
       if (force_rgbx_for_opaque) {
-        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ForceRGBAForOpaque", true);
         texture_quad->set_force_rgbx();
       }
 
@@ -1780,7 +1776,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       if (state_.basic_state.only_visible_on_secure_output &&
           state_.buffer.has_value() && state_.buffer->buffer() &&
           state_.buffer->buffer()->NeedsHardwareProtection()) {
-        UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.ProtectedVideoType", true);
         texture_quad->protected_video_type =
             gfx::ProtectedVideoType::kHardwareProtected;
       }
@@ -1793,7 +1788,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
     }
     frame->resource_list.push_back(*current_resource_);
   } else if (state_.basic_state.alpha != 0.0f) {
-    UMA_HISTOGRAM_BOOLEAN("Graphics.Exo.Surface.SolidColorDrawQuad", true);
     viz::SharedQuadState* quad_state =
         render_pass->CreateAndAppendSharedQuadState();
     quad_state->SetAll(quad_to_target_transform, quad_rect, quad_rect, msk,
