@@ -24,22 +24,6 @@
 
 namespace send_tab_to_self {
 
-SendTabToSelfPageHandler::PendingRequest::PendingRequest()
-    : start_time(base::TimeTicks::Now()) {}
-
-SendTabToSelfPageHandler::PendingRequest::PendingRequest(PendingRequest&&) =
-    default;
-
-SendTabToSelfPageHandler::PendingRequest&
-SendTabToSelfPageHandler::PendingRequest::operator=(PendingRequest&&) = default;
-
-SendTabToSelfPageHandler::PendingRequest::~PendingRequest() = default;
-
-SendTabToSelfPageHandler::SendTabToSelfPageHandler(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SendTabToSelfPageHandler>(*web_contents) {}
-
 SendTabToSelfPageHandler::~SendTabToSelfPageHandler() = default;
 
 // static
@@ -77,53 +61,15 @@ void SendTabToSelfPageHandler::SendTabToDevice(
                                               std::move(request));
 }
 
-void SendTabToSelfPageHandler::MaybeExtractFormFields(PendingRequest& request) {
-  if (request.url == web_contents()->GetLastCommittedURL() &&
-      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
-    request.page_context.form_field_info =
-        ExtractFormFieldsFromWebContents(web_contents());
-  }
+void SendTabToSelfPageHandler::SetSelectorGenerationTimeoutForTesting(
+    base::TimeDelta timeout) {
+  selector_generation_timeout_for_testing_ = timeout;
 }
 
-void SendTabToSelfPageHandler::RequestScrollPositionSelectorAndSendRequest(
-    base::Token request_token,
-    PendingRequest request) {
-  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
-  if (!main_frame) {
-    SendFinalizedRequest(
-        std::move(request),
-        ScrollPositionGenerationOutcome::kMainFrameUnavailable);
-    return;
-  }
-
-  request.main_frame_id = main_frame->GetGlobalId();
-
-  if (request.main_frame_id != last_main_frame_id_) {
-    text_fragment_receiver_.reset();
-    last_main_frame_id_ = request.main_frame_id;
-  }
-
-  pending_requests_[request_token] = std::move(request);
-
-  if (!text_fragment_receiver_.is_bound()) {
-    main_frame->GetRemoteInterfaces()->GetInterface(
-        text_fragment_receiver_.BindNewPipeAndPassReceiver());
-  }
-
-  text_fragment_receiver_->RequestSelectorForViewportCenter(
-      base::BindOnce(&SendTabToSelfPageHandler::SelectorGeneratedForRequest,
-                     weak_ptr_factory_.GetWeakPtr(), request_token));
-
-  // A 200ms timeout is implemented to avoid delaying the sharing process. If
-  // the selector generation takes longer, or if the page is navigated or
-  // destroyed, the tab is sent without the scroll position information.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          &SendTabToSelfPageHandler::SelectorGenerationTimedOutForRequest,
-          weak_ptr_factory_.GetWeakPtr(), request_token),
-      GetSelectorGenerationTimeout());
-}
+SendTabToSelfPageHandler::SendTabToSelfPageHandler(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SendTabToSelfPageHandler>(*web_contents) {}
 
 void SendTabToSelfPageHandler::PrimaryPageChanged(content::Page& /*page*/) {
   for (auto& [token, request] : pending_requests_) {
@@ -137,6 +83,17 @@ void SendTabToSelfPageHandler::PrimaryPageChanged(content::Page& /*page*/) {
 void SendTabToSelfPageHandler::WebContentsDestroyed() {
   pending_requests_.clear();
 }
+
+SendTabToSelfPageHandler::PendingRequest::PendingRequest()
+    : start_time(base::TimeTicks::Now()) {}
+
+SendTabToSelfPageHandler::PendingRequest::PendingRequest(PendingRequest&&) =
+    default;
+
+SendTabToSelfPageHandler::PendingRequest&
+SendTabToSelfPageHandler::PendingRequest::operator=(PendingRequest&&) = default;
+
+SendTabToSelfPageHandler::PendingRequest::~PendingRequest() = default;
 
 void SendTabToSelfPageHandler::SelectorGeneratedForRequest(
     base::Token request_token,
@@ -191,6 +148,46 @@ void SendTabToSelfPageHandler::CancelPendingRequest(base::Token request_token) {
                        ScrollPositionGenerationOutcome::kMainFrameChanged);
 }
 
+void SendTabToSelfPageHandler::RequestScrollPositionSelectorAndSendRequest(
+    base::Token request_token,
+    PendingRequest request) {
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
+  if (!main_frame) {
+    SendFinalizedRequest(
+        std::move(request),
+        ScrollPositionGenerationOutcome::kMainFrameUnavailable);
+    return;
+  }
+
+  request.main_frame_id = main_frame->GetGlobalId();
+
+  if (request.main_frame_id != last_main_frame_id_) {
+    text_fragment_receiver_.reset();
+    last_main_frame_id_ = request.main_frame_id;
+  }
+
+  pending_requests_[request_token] = std::move(request);
+
+  if (!text_fragment_receiver_.is_bound()) {
+    main_frame->GetRemoteInterfaces()->GetInterface(
+        text_fragment_receiver_.BindNewPipeAndPassReceiver());
+  }
+
+  text_fragment_receiver_->RequestSelectorForViewportCenter(
+      base::BindOnce(&SendTabToSelfPageHandler::SelectorGeneratedForRequest,
+                     weak_ptr_factory_.GetWeakPtr(), request_token));
+
+  // A 200ms timeout is implemented to avoid delaying the sharing process. If
+  // the selector generation takes longer, or if the page is navigated or
+  // destroyed, the tab is sent without the scroll position information.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SendTabToSelfPageHandler::SelectorGenerationTimedOutForRequest,
+          weak_ptr_factory_.GetWeakPtr(), request_token),
+      GetSelectorGenerationTimeout());
+}
+
 std::pair<ScrollPositionGenerationOutcome, ScrollPosition>
 SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
     const PendingRequest& request,
@@ -228,6 +225,14 @@ SendTabToSelfPageHandler::ProcessSelectorGenerationResult(
   scroll_position.text_fragment = TextFragmentData(*fragment);
   return {ScrollPositionGenerationOutcome::kSuccess,
           std::move(scroll_position)};
+}
+
+void SendTabToSelfPageHandler::MaybeExtractFormFields(PendingRequest& request) {
+  if (request.url == web_contents()->GetLastCommittedURL() &&
+      base::FeatureList::IsEnabled(kSendTabToSelfPropagateFormFields)) {
+    request.page_context.form_field_info =
+        ExtractFormFieldsFromWebContents(web_contents());
+  }
 }
 
 void SendTabToSelfPageHandler::SendFinalizedRequest(
@@ -270,11 +275,6 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
   if (request.result_callback) {
     std::move(request.result_callback).Run(SendTabToSelfResult::kSuccess);
   }
-}
-
-void SendTabToSelfPageHandler::SetSelectorGenerationTimeoutForTesting(
-    base::TimeDelta timeout) {
-  selector_generation_timeout_for_testing_ = timeout;
 }
 
 base::TimeDelta SendTabToSelfPageHandler::GetSelectorGenerationTimeout() const {
