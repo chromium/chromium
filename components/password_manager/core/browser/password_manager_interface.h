@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/observer_list_types.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -34,6 +35,14 @@ class PasswordManagerClient;
 // Abstract interface for PasswordManagers.
 class PasswordManagerInterface : public FormSubmissionObserver {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Notifies that a login was successful. `pending_form` is the
+    // form corresponding to the pending credentials to be saved/updated in the
+    // database.
+    virtual void OnLoginSuccessful(const PasswordForm& pending_form) = 0;
+  };
+
   PasswordManagerInterface() = default;
   ~PasswordManagerInterface() override = default;
 
@@ -217,6 +226,9 @@ class PasswordManagerInterface : public FormSubmissionObserver {
 
   // Returns true if a form manager is processing a password update.
   virtual bool IsFormManagerPendingPasswordUpdate() const = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 };
 
 }  // namespace password_manager

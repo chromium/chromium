@@ -167,8 +167,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
 
   base::test::TestFuture<void> future;
 
-  cleaning_service()->ClearPermissions(credential, kSignonRealm,
-                                       future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(credential, kSignonRealm,
+                                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -265,8 +265,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearPermissions(credential, std::nullopt,
-                                       future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(credential, std::nullopt,
+                                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -343,8 +343,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearPermissions(credential, std::nullopt,
-                                       future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(credential, std::nullopt,
+                                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -402,8 +402,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.type = CredentialType::kPassword;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearPermissions(credential, kExcludedSignonRealm,
-                                       future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, kExcludedSignonRealm, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_TRUE(store()
@@ -464,8 +464,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.type = CredentialType::kPassword;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearPermissions(credential, kSignonRealm,
-                                       future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(credential, kSignonRealm,
+                                                  future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // PSL and grouped matches should NOT be touched.

@@ -19,6 +19,8 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -195,6 +197,8 @@ void ActorLoginDelegateImpl::AttemptLogin(
     return;
   }
 
+  last_attempted_credential_ = std::make_unique<Credential>(credential);
+
   // Store the callback to mark as active
   pending_attempt_login_done_callback_ = std::move(done_callback);
   action_sequence_delegate_ = std::move(action_sequence_delegate);
@@ -253,12 +257,52 @@ void ActorLoginDelegateImpl::AttemptLogin(
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                          weak_ptr_factory_.GetWeakPtr())));
+  if (credential.type == CredentialType::kPassword && should_store_permission) {
+    observation_.Reset();
+    observation_.Observe(password_manager);
+  }
+
   credential_filler_->AttemptLogin(password_manager);
+}
+
+void ActorLoginDelegateImpl::OnLoginSuccessful(
+    const password_manager::PasswordForm& form) {
+  observation_.Reset();
+  if (!last_attempted_credential_ ||
+      last_attempted_credential_->type != CredentialType::kPassword) {
+    return;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kActorLoginConflictingPermissionCleanup)) {
+    return;
+  }
+
+  // The delegate only observes the password manager for password-based logins,
+  // which are meant to store a permanent permission if successful.
+  // Still, to make sure the login does correspond to the filled credential,
+  // check the form against the cached last used credential.
+  // TODO(crbug.com/494551592): Replace url comparison with signon_realm
+  // comparison.
+  if (form.actor_login_approved &&
+      form.username_value == last_attempted_credential_->username &&
+      ActorLoginFormFinder::GetSourceSiteOrAppFromUrl(form.url) ==
+          last_attempted_credential_->source_site_or_app) {
+    auto* cleaning_service =
+        ActorLoginPermissionCleaningServiceFactory::GetForProfile(
+            Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+    CHECK(cleaning_service);
+    cleaning_service->ClearConflictingPermissions(
+        *last_attempted_credential_, form.signon_realm, base::DoNothing());
+    last_attempted_credential_.reset();
+  }
 }
 
 void ActorLoginDelegateImpl::WebContentsDestroyed() {
   get_credentials_helper_.reset();
   credential_filler_.reset();
+  observation_.Reset();
   client_ = nullptr;
 }
 

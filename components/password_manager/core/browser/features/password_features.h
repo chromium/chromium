@@ -18,6 +18,9 @@ namespace password_manager::features {
 
 #if !BUILDFLAG(IS_IOS)
 BASE_DECLARE_FEATURE(kActorLogin);
+// Killswitch for the conflicting permission cleanup. Conflicting permissions
+// are the ones granted for 2 different accounts on the same website.
+BASE_DECLARE_FEATURE(kActorLoginConflictingPermissionCleanup);
 // Enables a click using the actor framework for federated logins without
 // heuristics.
 BASE_DECLARE_FEATURE(kActorLoginFederatedClickFromActor);

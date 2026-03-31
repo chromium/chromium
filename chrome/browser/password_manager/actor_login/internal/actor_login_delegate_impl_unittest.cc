@@ -16,6 +16,8 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -70,6 +72,7 @@ using testing::_;
 using testing::An;
 using testing::Eq;
 using testing::NiceMock;
+using testing::Optional;
 using testing::Return;
 using testing::ReturnRef;
 using testing::WithArg;
@@ -124,6 +127,19 @@ class FakePasswordManagerClient
   }
   scoped_refptr<password_manager::TestPasswordStore> profile_store_;
   scoped_refptr<password_manager::TestPasswordStore> account_store_;
+};
+
+class MockActorLoginPermissionCleaningService
+    : public ActorLoginPermissionCleaningService {
+ public:
+  MockActorLoginPermissionCleaningService() = default;
+  ~MockActorLoginPermissionCleaningService() override = default;
+  MOCK_METHOD(void,
+              ClearConflictingPermissions,
+              (const Credential& credential,
+               std::optional<std::string> signon_realm,
+               base::OnceClosure done_callback),
+              (override));
 };
 
 class MockPasswordManagerDriver
@@ -809,6 +825,162 @@ TEST_F(ActorLoginDelegateImplTest,
       static_cast<int>(ActorLoginSelectedAccountType::kPassword));
   ukm_recorder.ExpectEntryMetric(
       entries[1], ukm::builders::Actor_Login::kAccountAutoSelectedName, true);
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       AttemptLoginRegistersObserverAndTriggersCleanup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kActorLoginConflictingPermissionCleanup);
+
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(kTestUsername, url, origin);
+  credential.type = CredentialType::kPassword;
+  credential.source_site_or_app =
+      base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
+
+  SetUpActorCredentialFillerDeps();
+
+  EXPECT_CALL(mock_password_manager_, AddObserver(delegate_.get()));
+
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          base::DoNothing(),
+                          /*action_sequence_delegate=*/nullptr);
+
+  // Now simulate a successful login notification.
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.signon_realm = base::UTF16ToUTF8(credential.source_site_or_app);
+  form.username_value = kTestUsername;
+  form.actor_login_approved = true;
+
+  EXPECT_CALL(mock_password_manager_, RemoveObserver(delegate_.get()));
+
+  auto* cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  EXPECT_CALL(*cleaning_service,
+              ClearConflictingPermissions(Eq(credential),
+                                          Optional(form.signon_realm), _));
+
+  delegate_->OnLoginSuccessful(form);
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       OnLoginSuccessful_NoAttemptedCredential_NoCleanup) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL(kTestUrl);
+
+  // Simulate a successful login notification WITHOUT a preceding AttemptLogin.
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.username_value = u"username";
+  form.actor_login_approved = true;
+
+  auto* cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  EXPECT_CALL(*cleaning_service, ClearConflictingPermissions).Times(0);
+
+  delegate_->OnLoginSuccessful(form);
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       OnLoginSuccessful_MismatchedUsername_NoCleanup) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
+  credential.type = CredentialType::kPassword;
+  credential.source_site_or_app =
+      base::UTF8ToUTF16(url.GetWithEmptyPath().spec());
+
+  SetUpActorCredentialFillerDeps();
+
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          base::DoNothing(),
+                          /*action_sequence_delegate=*/nullptr);
+
+  // Simulate a successful login notification with a DIFFERENT username.
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.username_value = u"wrong_username";
+  form.actor_login_approved = true;
+
+  auto* cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  EXPECT_CALL(*cleaning_service, ClearConflictingPermissions).Times(0);
+
+  delegate_->OnLoginSuccessful(form);
+}
+
+TEST_F(ActorLoginDelegateImplTest,
+       OnLoginSuccessful_MismatchedRealm_NoCleanup) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kActorLogin);
+  GURL url = GURL(kTestUrl);
+  url::Origin origin = url::Origin::Create(url);
+  Credential credential = CreateTestCredential(u"username", url, origin);
+  credential.type = CredentialType::kPassword;
+  credential.source_site_or_app = u"https://some-other-site.com/";
+
+  SetUpActorCredentialFillerDeps();
+
+  delegate_->AttemptLogin(credential, /*should_store_permission=*/true,
+                          mqls_logger(), base::TimeTicks::Now(),
+                          base::DoNothing(),
+                          /*action_sequence_delegate=*/nullptr);
+
+  password_manager::PasswordForm form;
+  form.url = url;  // This will return "https://example.com/" which doesn't
+                   // match the credential.
+  form.username_value = u"username";
+  form.actor_login_approved = true;
+
+  auto* cleaning_service =
+      static_cast<MockActorLoginPermissionCleaningService*>(
+          ActorLoginPermissionCleaningServiceFactory::GetInstance()
+              ->SetTestingFactoryAndUse(
+                  profile(),
+                  base::BindRepeating([](content::BrowserContext* context)
+                                          -> std::unique_ptr<KeyedService> {
+                    return std::make_unique<
+                        NiceMock<MockActorLoginPermissionCleaningService>>();
+                  })));
+
+  EXPECT_CALL(*cleaning_service, ClearConflictingPermissions).Times(0);
+
+  delegate_->OnLoginSuccessful(form);
 }
 
 TEST_F(ActorLoginDelegateImplTest,

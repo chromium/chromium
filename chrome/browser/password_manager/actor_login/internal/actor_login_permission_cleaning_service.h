@@ -10,11 +10,8 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "url/origin.h"
 
 namespace actor_login {
 
@@ -38,9 +35,10 @@ class ActorLoginPermissionCleaningService : public KeyedService {
   // permission to skip, so as to not remove the newly granted permission.
   // `signon_realm` is only needed if the new permission was granted
   // to a password credential.
-  virtual void ClearPermissions(const Credential& credential,
-                                std::optional<std::string> signon_realm,
-                                base::OnceClosure done_callback) = 0;
+  virtual void ClearConflictingPermissions(
+      const Credential& credential,
+      std::optional<std::string> signon_realm,
+      base::OnceClosure done_callback) = 0;
 };
 
 }  // namespace actor_login

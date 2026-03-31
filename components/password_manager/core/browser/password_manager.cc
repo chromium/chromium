@@ -825,6 +825,14 @@ void PasswordManager::UpdateFormManagers() {
   }
 }
 
+void PasswordManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PasswordManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void PasswordManager::DropFormManagers() {
   ResetFormsAndPredictionsCache();
   owned_submitted_form_manager_.reset();
@@ -1594,6 +1602,9 @@ void PasswordManager::OnLoginSuccessful() {
       submitted_form->federation_origin,
       submitted_manager->GetPendingCredentials().username_value);
   client_->NotifyOnSuccessfulLogin(submitted_form->username_value);
+  for (Observer& observer : observers_) {
+    observer.OnLoginSuccessful(submitted_manager->GetPendingCredentials());
+  }
 
   auto submission_event =
       submitted_manager->GetSubmittedForm()->submission_event;

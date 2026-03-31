@@ -44,9 +44,9 @@ class ActorLoginPermissionCleaningServiceImpl
   void Shutdown() override;
 
   // ActorLoginPermissionCleaningService:
-  void ClearPermissions(const Credential& credential,
-                        std::optional<std::string> signon_realm,
-                        base::OnceClosure done_callback) override;
+  void ClearConflictingPermissions(const Credential& credential,
+                                   std::optional<std::string> signon_realm,
+                                   base::OnceClosure done_callback) override;
 
  private:
   void OnCleanerDone(ActorLoginDuplicatePermissionCleaner* cleaner);

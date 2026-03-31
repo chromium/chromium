@@ -149,6 +149,8 @@ class MockPasswordManager : public password_manager::PasswordManagerInterface {
               (override));
 #endif
   MOCK_METHOD(bool, IsFormManagerPendingPasswordUpdate, (), (const override));
+  MOCK_METHOD(void, AddObserver, (Observer*), (override));
+  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
 };
 }  // namespace password_manager
 

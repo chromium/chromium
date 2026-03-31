@@ -33,7 +33,7 @@ void ActorLoginPermissionCleaningServiceImpl::Shutdown() {
   active_cleaners_.clear();
 }
 
-void ActorLoginPermissionCleaningServiceImpl::ClearPermissions(
+void ActorLoginPermissionCleaningServiceImpl::ClearConflictingPermissions(
     const Credential& credential,
     std::optional<std::string> signon_realm,
     base::OnceClosure done_callback) {
