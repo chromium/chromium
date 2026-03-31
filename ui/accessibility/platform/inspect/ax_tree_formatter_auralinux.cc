@@ -231,7 +231,7 @@ void AXTreeFormatterAuraLinux::AddHypertextProperties(
 
       AtkHyperlink* link = atk_hypertext_get_link(hypertext, link_index);
       if (!link)
-        continue;  // TODO(aleventhal) Change to DCHECK(link);
+        continue;  // ATK may return null; skip gracefully in inspector code.
 
 #if DCHECK_IS_ON()
       AtkObject* link_obj = atk_hyperlink_get_object(link, 0);

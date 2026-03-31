@@ -474,8 +474,6 @@ class AX_EXPORT AXNode final {
   //
   // This is how displayed text and embedded objects are represented in
   // ATK and IAccessible2 APIs.
-  //
-  // TODO(nektar): Consider changing the return value to std::string.
   const std::u16string& GetHypertext() const;
 
   // Temporary accessor methods until hypertext is fully migrated to this class.
