@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
@@ -287,6 +288,7 @@ public class OmniboxPedalsTest {
 
     @Test
     @MediumTest
+    @DisabledTest // Flaky: crbug.com/495701957
     public void testPedalsStartedOnTabEnterKeyStroke() throws Exception {
         setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
 
