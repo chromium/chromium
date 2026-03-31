@@ -12,8 +12,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "components/gapis/features.h"
 #include "components/gapis/proto/obtain_token.pb.h"
 #include "google_apis/credentials_mode.h"
 #include "net/base/load_flags.h"
@@ -22,12 +24,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace gapis {
-
-BASE_FEATURE(kEnableGapis, base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 constexpr char kObtainTokenEndpoint[] = "token";
@@ -99,10 +99,20 @@ void TokenDownloader::FetchToken(FetchTokenCallback callback,
 void TokenDownloader::OnSimpleLoaderComplete(
     std::optional<std::string> response_body) {
   timer_.Stop();
+
+  CHECK(simple_url_loader_);
+  DVLOG(1) << "Token downloader completed, net error: "
+           << simple_url_loader_->NetError();
+  if (simple_url_loader_->ResponseInfo() &&
+      simple_url_loader_->ResponseInfo()->headers) {
+    DVLOG(1) << "Token downloader completed, HTTP response code: "
+             << simple_url_loader_->ResponseInfo()->headers->response_code();
+  }
   simple_url_loader_.reset();
 
   gapis_pb::ObtainTokenResponse response_proto;
   if (!response_body || !response_proto.ParseFromString(*response_body)) {
+    DVLOG(1) << "Failed to parse response";
     std::move(fetch_token_callback_).Run(std::string());
     return;
   }

@@ -242,7 +242,6 @@ test("components_unittests") {
     "//components/favicon_base:unit_tests",
     "//components/feature_engagement:unit_tests",
     "//components/filename_generation:unit_tests",
-    "//components/gapis:unit_tests",
     "//components/gcm_driver:unit_tests",
     "//components/gcm_driver/crypto:unit_tests",
     "//components/google/core/common:unit_tests",
@@ -420,6 +419,11 @@ test("components_unittests") {
       "//components/supervised_user/test_support:account_repository_unit_tests",
     ]
   }
+
+  if (is_linux) {
+    deps += [ "//components/gapis:unit_tests" ]
+  }
+
   if (is_android) {
     deps += [
       "//components/security_state/content/android:unit_tests",

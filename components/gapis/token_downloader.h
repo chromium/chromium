@@ -22,8 +22,6 @@ class SimpleURLLoader;
 
 namespace gapis {
 
-BASE_DECLARE_FEATURE(kEnableGapis);
-
 class TokenDownloader {
  public:
   using FetchTokenCallback = base::OnceCallback<void(const std::string&)>;

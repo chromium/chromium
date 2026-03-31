@@ -7842,6 +7842,13 @@ static_library("browser") {
         [ "//chrome/browser/ui/webui/tab_strip_internals:impl" ]
   }
 
+  if (is_linux) {
+    deps += [
+      "//chrome/browser/gapis",
+      "//components/gapis",
+    ]
+  }
+
   if (enable_spellcheck) {
     sources += [
       "spellchecker/spell_check_host_chrome_impl.cc",

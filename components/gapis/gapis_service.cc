@@ -5,12 +5,17 @@
 #include "components/gapis/gapis_service.h"
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+#include "components/gapis/features.h"
 #include "components/gapis/gapis_manager.h"
 #include "components/gapis/token_downloader.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/sync/base/sync_util.h"
+#include "components/version_info/channel.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace gapis {
@@ -25,6 +30,7 @@ GapisService::GapisService(
           syncer::GetSyncServiceURL(*base::CommandLine::ForCurrentProcess(),
                                     channel)) {
   CHECK(base::FeatureList::IsEnabled(kEnableGapis));
+  DVLOG(1) << "GapisService URL: " << service_url_;
 }
 
 GapisService::~GapisService() = default;
@@ -50,6 +56,8 @@ void GapisService::OnAccessTokenFetched(
   ongoing_access_token_fetch_.reset();
   if (error.state() != GoogleServiceAuthError::NONE) {
     // Access token fetch failed.
+    DVLOG(1) << "GapisService access token fetch failed with error: "
+             << error.state();
     return;
   }
 
@@ -70,6 +78,7 @@ void GapisService::OnAppTokenFetched(const std::string& app_token) {
   ongoing_app_token_downloader_.reset();
   CHECK(!ongoing_access_token_fetch_);
   if (app_token.empty()) {
+    DVLOG(1) << "GapisService app token fetch failed";
     return;
   }
 

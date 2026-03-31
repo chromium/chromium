@@ -552,6 +552,11 @@
 #include "chrome/browser/sessions/session_service_factory.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/gapis/gapis_service_factory.h"
+#include "components/gapis/features.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
 #endif
@@ -993,6 +998,11 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS)
   GalleryWatchManager::EnsureFactoryBuilt();
 #endif
+#if BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(gapis::kEnableGapis)) {
+    GapisServiceFactory::GetInstance();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
   glic::GlicKeyedServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   tabs::GlicActorTaskIconManagerFactory::GetInstance();

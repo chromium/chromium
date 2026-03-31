@@ -261,6 +261,11 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/gapis/gapis_service_factory.h"
+#include "components/gapis/gapis_service.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service_factory.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -783,6 +788,14 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
     new BookmarkModelLoadedObserver(this, model);
   }
 #endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Bootstrap and initialize the Gapis service.
+  if (gapis::GapisService* gapis_service =
+          GapisServiceFactory::GetForProfile(this)) {
+    gapis_service->FetchAppTokenIfNeeded();
+  }
+#endif  // BUILDFLAG(IS_LINUX)
 
   // The ad service might not be available for some irregular profiles, like the
   // System Profile.

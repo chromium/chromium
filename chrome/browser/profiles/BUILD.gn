@@ -636,6 +636,13 @@ source_set("profiles_extra_parts_impl") {
     deps += [ "//chrome/browser/captive_portal" ]
   }
 
+  if (is_linux) {
+    deps += [
+      "//chrome/browser/gapis",
+      "//components/gapis",
+    ]
+  }
+
   if (!is_android) {
     deps += [
       "//chrome/browser/password_manager/factories:startup_import_factory",

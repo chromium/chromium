@@ -4,6 +4,8 @@
 
 static_library("gapis") {
   sources = [
+    "features.cc",
+    "features.h",
     "gapis_manager.cc",
     "gapis_manager.h",
     "gapis_service.cc",
