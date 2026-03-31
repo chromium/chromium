@@ -333,7 +333,7 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
 
   if (IsGeminiCopresenceEnabled() || IsGeminiFloatyAllPagesEnabled()) {
     const GURL& url = web_state_->GetVisibleURL();
-    if (!url.SchemeIsHTTPOrHTTPS() || IsAimRelatedUrl(url)) {
+    if (!IsUrlEligibleForGemini(url)) {
       return false;
     }
   }
@@ -342,10 +342,21 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
          IsGeminiFloatyAllPagesEnabled();
 }
 
-bool BwgTabHelper::IsAimRelatedUrl(const GURL& url) {
-  return (google_util::IsGoogleSearchUrl(url) ||
-          google_util::IsGoogleHomePageUrl(url) || IsAimZeroStateURL(url)) &&
-         IsGeminiCopresenceSRPCheckEnabled();
+bool BwgTabHelper::IsUrlEligibleForGemini(const GURL& url) {
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+
+  if (IsAimZeroStateURL(url) || IsAimURL(url) ||
+      google_util::IsGoogleHomePageUrl(url)) {
+    return false;
+  }
+
+  if (google_util::IsGoogleSearchUrl(url)) {
+    return !IsGeminiCopresenceSRPCheckEnabled();
+  }
+
+  return true;
 }
 
 #pragma mark - WebStateObserver
