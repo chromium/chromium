@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -192,6 +193,8 @@ public class LocationBarLayout extends ConstraintLayout {
     /* package */ void setDeleteButtonBackground(@DrawableRes int resourceId) {
         mDeleteButton.setBackgroundResource(resourceId);
     }
+
+    /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {}
 
     /* package */ void setLensButtonTint(ColorStateList colorStateList) {
         ImageViewCompat.setImageTintList(mLensButton, colorStateList);

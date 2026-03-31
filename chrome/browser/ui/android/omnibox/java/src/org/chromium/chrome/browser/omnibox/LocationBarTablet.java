@@ -28,7 +28,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -44,6 +46,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private static final float OVERLAY_Z_TRANSLATION = 1.0f;
     private static final float NEUTRAL_Z_TRANSLATION = 0.0f;
     private final LayerDrawable mFocusedPopupDrawable;
+    private LayerDrawable mUnfocusedDrawable;
 
     private View mLocationBarIcon;
     private View mBookmarkButton;
@@ -86,10 +89,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
         mFocusedPopupDrawable =
                 (LayerDrawable)
                         assumeNonNull(
-                                AppCompatResources.getDrawable(
-                                        context,
+                                context.getDrawable(
                                         R.drawable
                                                 .modern_toolbar_tablet_text_box_background_focused_popup));
+        mFocusedPopupDrawable.mutate();
         mGlifBorderDrawable = new GlifStrokeDrawable(context);
         mHandler = new Handler();
     }
@@ -97,6 +100,9 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+
+        mUnfocusedDrawable = (LayerDrawable) getBackground();
+        mUnfocusedDrawable.mutate();
 
         mLocationBarIcon = findViewById(R.id.location_bar_status_icon);
         mBookmarkButton = findViewById(R.id.bookmark_button);
@@ -389,6 +395,38 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     }
 
     @Override
+    /* package */ void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        super.updateVisualsForState(brandedColorScheme);
+
+        Context context = getContext();
+        GradientDrawable outerRect =
+                (GradientDrawable)
+                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
+        if (outerRect != null) {
+            outerRect.setColor(
+                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
+                            context, brandedColorScheme));
+        }
+
+        GradientDrawable innerRect =
+                (GradientDrawable)
+                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_inner_bg);
+        if (innerRect != null) {
+            innerRect.setColor(
+                    OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                            context, brandedColorScheme));
+        }
+
+        GradientDrawable unfocusedRect =
+                (GradientDrawable) mUnfocusedDrawable.findDrawableByLayerId(R.id.unfocused_bg);
+        if (unfocusedRect != null) {
+            unfocusedRect.setColor(
+                    OmniboxResourceProvider.getTabletToolbarTextBoxBackgroundColor(
+                            context, brandedColorScheme));
+        }
+    }
+
+    @Override
     /* package */ void setLocationBarButtonTranslationForNtpAnimation(float translationX) {
         super.setLocationBarButtonTranslationForNtpAnimation(translationX);
         mBookmarkButton.setTranslationX(translationX);
@@ -457,7 +495,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             mFocusedPopupDrawable.setDrawableByLayerId(R.id.glif_border_layer, null);
             // Reset our background to reflect non-zero suggestion count, which is the typical
             // state. Not setting this risks visual glitches when returning to the fusebox.
-            setBackgroundResource(R.drawable.modern_toolbar_tablet_text_box_background);
+            setBackground(mUnfocusedDrawable);
         }
         adjustBackgroundForSuggestions();
         setLayoutParams(layoutParams);
@@ -529,7 +567,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private void adjustBackgroundForSuggestions() {
         if (mFuseboxState == FuseboxState.DISABLED) return;
         LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) getLayoutParams();
-        GradientDrawable outerRect = (GradientDrawable) mFocusedPopupDrawable.getDrawable(0);
+        GradientDrawable outerRect =
+                (GradientDrawable)
+                        mFocusedPopupDrawable.findDrawableByLayerId(R.id.focused_popup_bg);
+
         Resources resources = getResources();
         int inset =
                 resources.getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);

@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-  <item>
+  <item android:id="@+id/focused_popup_bg">
     <shape
         android:shape="rectangle">
       <solid android:color="@color/omnibox_suggestion_dropdown_bg"/>
@@ -17,6 +17,7 @@ found in the LICENSE file.
     </shape>
   </item>
   <item
+      android:id="@+id/focused_popup_inner_bg"
       android:start="@dimen/location_bar_tablet_fusebox_popup_inset"
       android:end="@dimen/location_bar_tablet_fusebox_popup_inset"
       android:top="@dimen/location_bar_tablet_fusebox_popup_inset"
