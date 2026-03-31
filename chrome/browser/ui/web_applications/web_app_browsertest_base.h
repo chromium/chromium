@@ -45,10 +45,23 @@ using WebAppBrowserTestBaseParent = ChromeOSBrowserUITest;
 using WebAppBrowserTestBaseParent = MixinBasedInProcessBrowserTest;
 #endif
 
-// Base class for tests of user interface support for web applications.
-// Have ability to perform dynamic test data loading using
-// RegisterPortReplacementHandler, and mock .well-known file fetch for
-// app migration using RegisterAssociatedOriginWellKnownHandler.
+// This is the recommended base class for Web App browsertests. It provides
+// essential baseline functionality, including:
+// 1. Automatic faking of OS integration (e.g. creating desktop shortcuts) via
+//   `OsIntegrationTestOverrideImpl` (inspect via `os_integration_override()`).
+// 2. Dynamic replacement of $PORT in static test data via
+//    RegisterPortReplacementHandler
+// 3. Dynamically serving .well-known file for app migration and scope
+//    extensions using RegisterAssociatedOriginWellKnownHandler.
+// 4. Waiting for the WebAppProvider system to fully start in SetUpOnMainThread.
+//
+// Like all browsertests, this runs a real browser, meaning the full
+// `WebAppProvider` system starts automatically during profile initialization.
+// Faking dependencies is rarely needed and generally discouraged in
+// browsertests. To fake a dependency, use a `FakeWebAppProviderCreator` in the
+// test fixture's constructor to intercept the provider creation before the
+// system starts. For more details, see:
+// chrome/browser/web_applications/docs/testing.md
 class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
