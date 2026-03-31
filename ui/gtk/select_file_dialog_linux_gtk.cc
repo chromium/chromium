@@ -16,6 +16,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -651,8 +652,12 @@ void SelectFileDialogLinuxGtk::OnUpdatePreview(GtkWidget* chooser) {
 
   // Don't attempt to open anything which isn't a regular file. If a named pipe,
   // this may hang. See https://crbug.com/534754.
+  // Don't attempt to preview files over 100MB to avoid excessive memory use
+  // and crashes when decoding very large images.
   struct stat stat_buf;
-  if (stat(filename, &stat_buf) != 0 || !S_ISREG(stat_buf.st_mode)) {
+  constexpr base::ByteSize kMaxPreviewFileSize = base::MiBU(100);
+  if (stat(filename, &stat_buf) != 0 || !S_ISREG(stat_buf.st_mode) ||
+      static_cast<uint64_t>(stat_buf.st_size) > kMaxPreviewFileSize.InBytes()) {
     g_free(filename);
     gtk_file_chooser_set_preview_widget_active(GTK_FILE_CHOOSER(chooser),
                                                FALSE);
