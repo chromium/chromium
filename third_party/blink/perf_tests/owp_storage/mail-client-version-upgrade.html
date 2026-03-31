@@ -11,7 +11,7 @@
       unit: 'ms',
       iterationCount: 20,
       tracingCategories: 'IndexedDB',
-      traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::createIndexRequestSetup', 'IDBObjectStore::deleteIndex', 'IDBObjectStore::index'],
+      traceEventsToMeasure: ['Transaction::lifetime', 'IDBObjectStore::createIndex'],
       path: "resources/mail-client-version-upgrade-runner.html"
     }
     PerfTestRunner.measurePageLoadTimeAfterDoneMessage(test);
