@@ -9,6 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 /** EventConstants contains the String name of all in-product help events. */
 @NullMarked
 public final class EventConstants {
+    // EVENT_CONSTANTS_JAVA_CLASS_START
 
     /** AdaptiveButtonInTopToolbarCustomization add to bookmarks events. */
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_OPENED =
@@ -255,6 +256,8 @@ public final class EventConstants {
      * User performed a web search for a query by choosing the Web Search option on the popup menu.
      */
     public static final String WEB_SEARCH_PERFORMED = "web_search_performed";
+
+    // EVENT_CONSTANTS_JAVA_CLASS_END
 
     /** Do not instantiate. */
     private EventConstants() {}
