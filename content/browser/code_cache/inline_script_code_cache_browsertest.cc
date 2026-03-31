@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/test/browser_test.h"
@@ -227,8 +228,14 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
   uint32_t served_count_ = 0;
 };
 
+// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_CacheProducedOnSecondAttempt DISABLED_CacheProducedOnSecondAttempt
+#else
+#define MAYBE_CacheProducedOnSecondAttempt CacheProducedOnSecondAttempt
+#endif
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       CacheProducedOnSecondAttempt) {
+                       MAYBE_CacheProducedOnSecondAttempt) {
   GURL url =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
 
@@ -285,8 +292,14 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
   }
 }
 
+// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_CacheSharedOnDifferentPage DISABLED_CacheSharedOnDifferentPage
+#else
+#define MAYBE_CacheSharedOnDifferentPage CacheSharedOnDifferentPage
+#endif
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       CacheSharedOnDifferentPage) {
+                       MAYBE_CacheSharedOnDifferentPage) {
   GURL url_1 =
       embedded_test_server()->GetURL("example.com", "/inline-script.html");
   GURL url_2 =
@@ -366,7 +379,13 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
       CacheBehaviourNameToInt("kNoCacheBecauseScriptTooSmall"), num_tries);
 }
 
-IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, IsolatedByNik) {
+// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_IsolatedByNik DISABLED_IsolatedByNik
+#else
+#define MAYBE_IsolatedByNik IsolatedByNik
+#endif
+IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, MAYBE_IsolatedByNik) {
   GURL top_domain_a =
       embedded_test_server()->GetURL("a.example", "/empty.html");
   GURL iframe_domain_b =
@@ -434,8 +453,16 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, IsolatedByNik) {
   }
 }
 
+// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
+#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_ProducedCacheHitsOnAnotherProcess \
+  DISABLED_ProducedCacheHitsOnAnotherProcess
+#else
+#define MAYBE_ProducedCacheHitsOnAnotherProcess \
+  ProducedCacheHitsOnAnotherProcess
+#endif
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
-                       ProducedCacheHitsOnAnotherProcess) {
+                       MAYBE_ProducedCacheHitsOnAnotherProcess) {
   GURL url = embedded_test_server()->GetURL("a.example", "/inline-script.html");
 
   // Step 1: Load the page first time.
