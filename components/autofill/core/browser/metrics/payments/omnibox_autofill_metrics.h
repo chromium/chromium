@@ -26,12 +26,17 @@ enum class OmniboxAutofillShowChipDecisionPart1 {
   // The user did not have any cards saved, so nothing can be autofilled.
   kNoCreditCardsSaved = 1,
 
-  // Expected remaining buckets:
-  //  kNotCompleteCreditCardForm = 2,
-  //  kCouldNotDeduceCardNumberField = 3,
-  //  kNonAllowlistedIframe = 4,
+  // Fetching the form via its FormGlobalId failed.
+  kCouldNotFindCachedForm = 2,
 
-  kSuccess = 5,
+  // The form did not have a credit card number and expiration date on it.
+  kNotCompleteCreditCardForm = 3,
+
+  // Expected remaining buckets:
+  //  kCouldNotDeduceCardNumberField = 4,
+  //  kNonAllowlistedIframe = 5,
+
+  kSuccess = 6,
 
   kMaxValue = kSuccess,
 };

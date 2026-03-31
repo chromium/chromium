@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -232,6 +233,80 @@ TEST_F(OmniboxAutofillDelegateTest,
       .AddCreditCard(test::GetMaskedServerCard());
 
   FormData form = CreateTestCreditCardFormData();
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kSuccess, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_MissingCreditCardNumberField_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Create a credit card form, but don't include a card number field.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
+
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNotCompleteCreditCardForm, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_MissingCreditCardExpiration_Aborts) {
+  base::HistogramTester histogram_tester;
+
+  // Create a credit card form, but don't include a expiration date fields.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
+
+  FormsSeen({form});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OmniboxAutofill.ShowChipDecisionPart1",
+      OmniboxAutofillShowChipDecisionPart1::kNotCompleteCreditCardForm, 1);
+}
+
+TEST_F(OmniboxAutofillDelegateTest,
+       OnFieldTypesDetermined_AcceptsMinimalCreditCardForm) {
+  base::HistogramTester histogram_tester;
+
+  // Create a credit card form, including only card number and expiration.
+  FormData form;
+  form.set_name(u"MyForm");
+  form.set_url(GURL("https://myform.com/form.html"));
+  form.set_action(GURL("https://myform.com/submit.html"));
+  autofill_client().set_last_committed_primary_main_frame_url(form.url());
+  test_api(form).Append(CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                            FormControlType::kInputText));
+  test_api(form).Append(
+      CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
+
   FormsSeen({form});
 
   histogram_tester.ExpectUniqueSample(

@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
@@ -62,6 +63,21 @@ void OmniboxAutofillDelegate::OnFieldTypesDetermined(
           .empty()) {
     LogOmniboxAutofillShowChipDecisionPart1(
         OmniboxAutofillShowChipDecisionPart1::kNoCreditCardsSaved);
+    return;
+  }
+
+  // The parsed form must have credit card number and expiration date fields.
+  const FormStructure* form_structure = manager.FindCachedFormById(form_id);
+  if (!form_structure) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kCouldNotFindCachedForm);
+    return;
+  }
+  if (!form_structure->IsCompleteCreditCardForm(
+          autofill::FormStructure::CreditCardFormCompleteness::
+              kCompleteCreditCardForm)) {
+    LogOmniboxAutofillShowChipDecisionPart1(
+        OmniboxAutofillShowChipDecisionPart1::kNotCompleteCreditCardForm);
     return;
   }
 

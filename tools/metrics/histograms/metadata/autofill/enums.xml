@@ -5302,7 +5302,9 @@ Called by update_autofill_enums.py.-->
 <enum name="OmniboxShowChipDecisionPart1">
   <int value="0" label="Aborted; autofill payment methods policy disabled"/>
   <int value="1" label="Aborted; no credit cards saved"/>
-  <int value="5" label="All prior checks passed; started IntersectionObserver"/>
+  <int value="2" label="Aborted; failed to fetch cached form"/>
+  <int value="3" label="Aborted; card number or expiration date field missing"/>
+  <int value="6" label="All prior checks passed; started IntersectionObserver"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/omnibox_autofill_metrics.h:OmniboxAutofillShowChipDecisionPart1) -->
