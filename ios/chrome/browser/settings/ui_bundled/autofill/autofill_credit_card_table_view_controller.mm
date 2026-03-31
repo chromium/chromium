@@ -895,6 +895,11 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 // Function that is invoked when the reauth is finished, and handles the reauth
 // result.
 - (void)handleReauthenticationResult:(ReauthenticationResult)result {
+  // If the settings have been dismissed, return early to avoid a crash.
+  if (_settingsAreDismissed || !_personalDataManager) {
+    return;
+  }
+
   // Get the original value.
   BOOL mandatoryReauthEnabled = _personalDataManager->payments_data_manager()
                                     .IsPaymentMethodsMandatoryReauthEnabled();
