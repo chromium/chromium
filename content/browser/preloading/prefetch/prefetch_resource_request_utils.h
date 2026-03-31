@@ -36,27 +36,15 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header);
 
-// Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
-// Note that `request_url` and `prefetch_request.url` / `resource_request`
-// (that `request_headers` belongs)'s `url` can be different when called from
-// `PrefetchContainer::PrepareUpdateHeaders()`.
-void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
-                         const GURL& request_url,
-                         const PrefetchRequest& prefetch_request);
-
-// Adds Speculation Rules Tags headers for a prefetch request to `request_url`
-// to `headers`.
-// Note that `request_url` and `prefetch_request.url` / `resource_request`
-// (that `request_headers` belongs)'s `url` can be different when called from
-// `PrefetchContainer::PrepareUpdateHeaders()`.
-void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
-                              const GURL& request_url,
-                              const PrefetchRequest& prefetch_request);
-
-// TODO(crbug.com/483079815): We won't need to expose this once we
-// move the whole `MakeInitialResourceRequest` to here.
-void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
-                          const PrefetchRequest& prefetch_request);
+// Returns a tuple of `PrefetchUpdateHeadersParams`s that indicates the header
+// modification upon redirect, to be passed to
+// `PrefetchContainer::UpdateResourceRequest()` and
+// `URLLoader::FollowRedirect()`, respectively.
+// TODO(crbug.com/467177773): Ideally these two should be equal, but currently
+// we are incrementally adding headers to the latter.
+std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
+PrepareRedirectHeadersForPrefetch(const GURL& request_url,
+                                  const PrefetchRequest& prefetch_request);
 
 // Adds "X-Client-Data" header for a prefetch request to `request_url`.
 // `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
@@ -68,17 +56,6 @@ void AddVariationsHeaderForPrefetch(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations);
-
-void MaybeApplyOverrideForWebContentsUserAgentHeader(
-    net::HttpRequestHeaders& request_headers,
-    const GURL& request_url,
-    const PrefetchRequest& prefetch_request);
-void AddClientHintsHeaders(net::HttpRequestHeaders& request_headers,
-                           const url::Origin& origin,
-                           const PrefetchRequest& prefetch_request);
-void MaybeApplyOverrideForDevtoolsUserAgentHeader(
-    net::HttpRequestHeaders& request_headers,
-    const PrefetchRequest& prefetch_request);
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>
 MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(

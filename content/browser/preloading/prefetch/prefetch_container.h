@@ -358,13 +358,6 @@ class CONTENT_EXPORT PrefetchContainer
   // Adds `url` (the next URL to prefetch) to |redirect_chain_|.
   void AddRedirectHop(const GURL& url);
 
-  // Returns a tuple of `PrefetchUpdateHeadersParams`s that indicates the header
-  // modification upon redirect, to be passed to `UpdateResourceRequest()` and
-  // `URLLoader::FollowRedirect()`, respectively.
-  // TODO(crbug.com/467177773): Ideally these two should be equal, but currently
-  // we are incrementally adding headers to the latter.
-  std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
-  PrepareUpdateHeaders(const GURL& url) const;
   // Performs the actual modification to `resource_request_` upon redirect.
   void UpdateResourceRequest(const net::RedirectInfo& redirect_info,
                              PrefetchUpdateHeadersParams params);

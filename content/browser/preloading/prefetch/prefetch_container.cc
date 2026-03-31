@@ -55,7 +55,6 @@
 #include "net/url_request/redirect_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
@@ -759,116 +758,6 @@ void PrefetchContainer::OnEligibilityCheckComplete(
   }
 }
 
-std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
-PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
-  // There are sometimes other headers that are modified during navigation
-  // redirects; see |NavigationRequest::OnRedirectChecksComplete| (including
-  // some which are added by throttles). These aren't yet supported for
-  // prefetch, including browsing topics.
-
-  PrefetchUpdateHeadersParams updates_for_resource_request;
-  PrefetchUpdateHeadersParams updates_for_follow_redirect;
-
-  // ------------------------------------------------------------------------
-  // `Sec-Purpose`:
-  AddSecPurposeHeader(updates_for_resource_request.modified_headers, url,
-                      request());
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-    AddSecPurposeHeader(updates_for_follow_redirect.modified_headers, url,
-                        request());
-  }
-
-  // ------------------------------------------------------------------------
-  // `Sec-Speculation-Tags`:
-  updates_for_resource_request.removed_headers.push_back(
-      blink::kSecSpeculationTagsHeaderName);
-  AddSpeculationTagsHeader(updates_for_resource_request.modified_headers, url,
-                           request());
-  if (base::FeatureList::IsEnabled(
-          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-    updates_for_follow_redirect.removed_headers.push_back(
-        blink::kSecSpeculationTagsHeaderName);
-    AddSpeculationTagsHeader(updates_for_follow_redirect.modified_headers, url,
-                             request());
-  }
-
-  // ------------------------------------------------------------------------
-  // Embedder headers:
-  {
-    std::vector<std::string> removed_headers;
-    net::HttpRequestHeaders modified_headers;
-    net::HttpRequestHeaders modified_cors_exempt_headers;
-    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
-        url, removed_headers, modified_headers, modified_cors_exempt_headers);
-    auto add_embedder_headers = [&](PrefetchUpdateHeadersParams& params) {
-      params.removed_headers.reserve(params.removed_headers.size() +
-                                     removed_headers.size());
-      params.removed_headers.insert(params.removed_headers.end(),
-                                    removed_headers.begin(),
-                                    removed_headers.end());
-      params.modified_headers.MergeFrom(modified_headers);
-      params.modified_cors_exempt_headers.MergeFrom(
-          modified_cors_exempt_headers);
-    };
-    add_embedder_headers(updates_for_resource_request);
-    add_embedder_headers(updates_for_follow_redirect);
-  }
-
-  // ------------------------------------------------------------------------
-  // WebContents override (`User-Agent`):
-  // TODO(crbug.com/441612842): Support User-Agent overrides, which is applied
-  // for the initial request by
-  // `MaybeApplyOverrideForWebContentsUserAgentHeader()`.
-
-  // ------------------------------------------------------------------------
-  // Client Hints:
-  // DevTools overrides (User-Agent Client Hints):
-  // Remove any existing client hints headers, then (re-)add the new client
-  // hints that are appropriate for the redirect.
-  if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
-    const auto& client_hints = network::GetClientHintToNameMap();
-    updates_for_resource_request.removed_headers.reserve(
-        updates_for_resource_request.removed_headers.size() +
-        client_hints.size());
-    for (const auto& [_, header] : client_hints) {
-      updates_for_resource_request.removed_headers.push_back(header);
-    }
-    AddClientHintsHeaders(updates_for_resource_request.modified_headers,
-                          url::Origin::Create(url), request());
-
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-      updates_for_follow_redirect.removed_headers.reserve(
-          updates_for_follow_redirect.removed_headers.size() +
-          client_hints.size());
-      for (const auto& [_, header] : client_hints) {
-        updates_for_follow_redirect.removed_headers.push_back(header);
-      }
-      AddClientHintsHeaders(updates_for_follow_redirect.modified_headers,
-                            url::Origin::Create(url), request());
-    }
-  }
-
-  // ------------------------------------------------------------------------
-  // Devtools override (`User-Agent`, `Accept-Language`, non-UA Client Hints):
-  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
-  // override of non-UA Client Hints.
-  {
-    MaybeApplyOverrideForDevtoolsUserAgentHeader(
-        updates_for_resource_request.modified_headers, request());
-
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
-      MaybeApplyOverrideForDevtoolsUserAgentHeader(
-          updates_for_follow_redirect.modified_headers, request());
-    }
-  }
-
-  return std::make_tuple(std::move(updates_for_resource_request),
-                         std::move(updates_for_follow_redirect));
-}
-
 void PrefetchContainer::UpdateResourceRequest(
     const net::RedirectInfo& redirect_info,
     PrefetchUpdateHeadersParams update_headers_params) {
@@ -1362,7 +1251,7 @@ void PrefetchContainer::SimulatePrefetchRedirectedForTest(  // IN-TEST
   OnEligibilityCheckComplete(eligibility);
 
   auto [updates_for_resource_request, updates_for_follow_redirect] =
-      PrepareUpdateHeaders(redirect_info.new_url);
+      PrepareRedirectHeadersForPrefetch(redirect_info.new_url, request());
   UpdateResourceRequest(redirect_info, std::move(updates_for_resource_request));
 }
 

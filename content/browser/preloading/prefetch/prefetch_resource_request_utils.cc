@@ -77,6 +77,7 @@ void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
 
 // ------------------------------------------------------------------------
 // [2] `Sec-Purpose`:
+// Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
 void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
                          const GURL& request_url,
                          const PrefetchRequest& prefetch_request) {
@@ -116,6 +117,8 @@ void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
 
 // ------------------------------------------------------------------------
 // [2] `Sec-Speculation-Tags`:
+// Adds Speculation Rules Tags headers for a prefetch request to `request_url`
+// to `request_headers`.
 void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
                               const GURL& request_url,
                               const PrefetchRequest& prefetch_request) {
@@ -136,6 +139,8 @@ void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
 
 // ------------------------------------------------------------------------
 // [2] `X-Client-Data`:
+// Adds "X-Client-Data" header for a prefetch request to `request_url`.
+// `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
 void AddVariationsHeaderForPrefetch(
     net::HttpRequestHeaders& cors_exempt_headers,
     const GURL& request_url,
@@ -421,6 +426,119 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
                                                prefetch_request);
 
   return params;
+}
+
+std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
+PrepareRedirectHeadersForPrefetch(const GURL& request_url,
+                                  const PrefetchRequest& prefetch_request) {
+  // There are sometimes other headers that are modified during navigation
+  // redirects; see `NavigationRequest::OnRedirectChecksComplete` (including
+  // some which are added by throttles). These aren't yet supported for
+  // prefetch, including browsing topics.
+
+  PrefetchUpdateHeadersParams updates_for_resource_request;
+  PrefetchUpdateHeadersParams updates_for_follow_redirect;
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Purpose`:
+  AddSecPurposeHeader(updates_for_resource_request.modified_headers,
+                      request_url, prefetch_request);
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+    AddSecPurposeHeader(updates_for_follow_redirect.modified_headers,
+                        request_url, prefetch_request);
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] `Sec-Speculation-Tags`:
+  updates_for_resource_request.removed_headers.push_back(
+      blink::kSecSpeculationTagsHeaderName);
+  AddSpeculationTagsHeader(updates_for_resource_request.modified_headers,
+                           request_url, prefetch_request);
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+    updates_for_follow_redirect.removed_headers.push_back(
+        blink::kSecSpeculationTagsHeaderName);
+    AddSpeculationTagsHeader(updates_for_follow_redirect.modified_headers,
+                             request_url, prefetch_request);
+  }
+
+  // ------------------------------------------------------------------------
+  // [2] Embedder headers:
+  {
+    std::vector<std::string> removed_headers;
+    net::HttpRequestHeaders modified_headers;
+    net::HttpRequestHeaders modified_cors_exempt_headers;
+    GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
+        request_url, removed_headers, modified_headers,
+        modified_cors_exempt_headers);
+    auto add_embedder_headers = [&](PrefetchUpdateHeadersParams& params) {
+      params.removed_headers.reserve(params.removed_headers.size() +
+                                     removed_headers.size());
+      params.removed_headers.insert(params.removed_headers.end(),
+                                    removed_headers.begin(),
+                                    removed_headers.end());
+      params.modified_headers.MergeFrom(modified_headers);
+      params.modified_cors_exempt_headers.MergeFrom(
+          modified_cors_exempt_headers);
+    };
+    add_embedder_headers(updates_for_resource_request);
+    add_embedder_headers(updates_for_follow_redirect);
+  }
+
+  // ------------------------------------------------------------------------
+  // [3] WebContents override (`User-Agent`):
+  // TODO(crbug.com/441612842): Support User-Agent overrides, which is applied
+  // for the initial request by
+  // `MaybeApplyOverrideForWebContentsUserAgentHeader()`.
+
+  // ------------------------------------------------------------------------
+  // [2] Client Hints:
+  // [4] DevTools overrides (User-Agent Client Hints):
+  // Remove any existing client hints headers, then (re-)add the new client
+  // hints that are appropriate for the redirect.
+  if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
+    const auto& client_hints = network::GetClientHintToNameMap();
+    updates_for_resource_request.removed_headers.reserve(
+        updates_for_resource_request.removed_headers.size() +
+        client_hints.size());
+    for (const auto& [_, header] : client_hints) {
+      updates_for_resource_request.removed_headers.push_back(header);
+    }
+    AddClientHintsHeaders(updates_for_resource_request.modified_headers,
+                          url::Origin::Create(request_url), prefetch_request);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+      updates_for_follow_redirect.removed_headers.reserve(
+          updates_for_follow_redirect.removed_headers.size() +
+          client_hints.size());
+      for (const auto& [_, header] : client_hints) {
+        updates_for_follow_redirect.removed_headers.push_back(header);
+      }
+      AddClientHintsHeaders(updates_for_follow_redirect.modified_headers,
+                            url::Origin::Create(request_url), prefetch_request);
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
+  // Hints):
+  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
+  // override of non-UA Client Hints.
+  {
+    MaybeApplyOverrideForDevtoolsUserAgentHeader(
+        updates_for_resource_request.modified_headers, prefetch_request);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+      MaybeApplyOverrideForDevtoolsUserAgentHeader(
+          updates_for_follow_redirect.modified_headers, prefetch_request);
+    }
+  }
+
+  return std::make_tuple(std::move(updates_for_resource_request),
+                         std::move(updates_for_follow_redirect));
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>

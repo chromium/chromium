@@ -1205,7 +1205,8 @@ void PrefetchService::OnGotEligibilityForRedirect(
   }
 
   auto [updates_for_resource_request, updates_for_follow_redirect] =
-      prefetch_container->PrepareUpdateHeaders(redirect_info.new_url);
+      PrepareRedirectHeadersForPrefetch(redirect_info.new_url,
+                                        prefetch_container->request());
 
   prefetch_container->UpdateResourceRequest(
       redirect_info, std::move(updates_for_resource_request));
