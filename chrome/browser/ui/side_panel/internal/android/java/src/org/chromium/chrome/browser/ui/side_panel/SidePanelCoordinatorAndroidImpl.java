@@ -71,6 +71,11 @@ public final class SidePanelCoordinatorAndroidImpl implements SidePanelCoordinat
         mSidePanelContainerCoordinator.populateContent(new SidePanelContent(sidePanelNativeView));
     }
 
+    @CalledByNative
+    private void removeContent() {
+        mSidePanelContainerCoordinator.removeContent();
+    }
+
     @NativeMethods
     interface Natives {
         /**

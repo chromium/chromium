@@ -62,7 +62,24 @@ void SidePanelCoordinatorAndroid::ShowFrom(
 void SidePanelCoordinatorAndroid::Close(SidePanelEntry::PanelType panel_type,
                                         SidePanelEntryHideReason hide_reason,
                                         bool suppress_animations) {
-  // TODO(crbug.com/493930383): Implement this.
+  if (!IsSidePanelShowing(panel_type)) {
+    return;
+  }
+
+  std::optional<UniqueKey> key = current_key(panel_type);
+  CHECK(key) << "Current key should exist when side panel is showing.";
+
+  SidePanelEntry* entry = GetEntryForUniqueKey(*key);
+  CHECK(entry) << "SidePanelEntry should exist when side panel is showing.";
+
+  entry->OnEntryWillHide(hide_reason);
+  Java_SidePanelCoordinatorAndroidImpl_removeContent(
+      base::android::AttachCurrentThread(), java_coordinator());
+
+  // TODO(crbug.com/493930383): Clear current key and trigger OnEntryHidden()
+  // when animation ends.
+  SetCurrentKey(panel_type, /*new_key=*/std::nullopt);
+  entry->OnEntryHidden();
 }
 
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
