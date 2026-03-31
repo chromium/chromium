@@ -8809,21 +8809,6 @@
             ]
         }
     ],
-    "EnableADPFBoostRateLimit": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFBoostRateLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableADPFIgnoreThrottledTime": [
         {
             "platforms": [

@@ -176,14 +176,9 @@ class AdpfHintSession : public HintSession {
  private:
   bool ShouldScheduleForEfficiency() const;
   void UpdateEfficiencyHintIfNeeded(const bool);
-  void UpdateLastFrameReportTime();
   void CloseSessionImpl(base::WaitableEvent* session_closed);
   void SetThreadsImpl(std::vector<int> thread_ids);
 
-  const bool rate_limit_boost_;
-  const base::TimeDelta rate_limit_boost_min_wait_;
-
-  base::TimeTicks last_frame_report_time_ = base::TimeTicks();
   const raw_ptr<APerformanceHintSession> hint_session_;
   const raw_ptr<HintSessionFactoryImpl> factory_;
   base::TimeDelta target_duration_;
@@ -244,10 +239,7 @@ AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
                                  HintSessionFactoryImpl* factory,
                                  base::TimeDelta target_duration,
                                  SessionType type)
-    : rate_limit_boost_(
-          base::FeatureList::IsEnabled(features::kEnableADPFBoostRateLimit)),
-      rate_limit_boost_min_wait_(features::kAdpfBoostRateLimitMinWait.Get()),
-      hint_session_(session),
+    : hint_session_(session),
       factory_(factory),
       target_duration_(target_duration),
       type_(type) {
@@ -307,10 +299,6 @@ bool AdpfHintSession::ShouldScheduleForEfficiency() const {
   }
 }
 
-void AdpfHintSession::UpdateLastFrameReportTime() {
-  last_frame_report_time_ = base::TimeTicks::Now();
-}
-
 void AdpfHintSession::UpdateEfficiencyHintIfNeeded(
     const bool prefer_efficient_scheduling) {
   if (prefer_efficiency_applied_ == prefer_efficient_scheduling ||
@@ -357,7 +345,6 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
                       "target_duration_ms", target_duration_.InMillisecondsF());
   AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
       hint_session_, frame_duration.InNanoseconds());
-  UpdateLastFrameReportTime();
 }
 
 void AdpfHintSession::SetPreferPowerEfficientScheduling(
@@ -423,12 +410,6 @@ void AdpfHintSession::NotifyWorkloadIncrease() {
 
 void AdpfHintSession::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
-  if (rate_limit_boost_ &&
-      base::TimeTicks::Now() <=
-          last_frame_report_time_ + rate_limit_boost_min_wait_) {
-    TRACE_EVENT_INSTANT("android.adpf", "Skip WakeUp");
-    return;
-  }
   if (ShouldUseWorkloadReset()) {
     NotifyWorkloadReset();
   } else {
