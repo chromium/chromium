@@ -327,6 +327,11 @@ def _CheckOrderedStringFile(input_api, output_api):
 
 def _CheckOrderedFlagsFile(input_api, output_api):
     """ Checks that the flag description files are alphabetically ordered"""
+    # The order_flags.py script calls `gclient root` which is not available
+    # on Windows CI bots, causing all CLs that touch
+    # ios_chrome_flag_descriptions.{h,cc} to fail presubmit on Windows.
+    if input_api.platform == 'win32':
+        return []
     h_file = None
     cc_file = None
     for f in input_api.AffectedFiles(include_deletes=False):
