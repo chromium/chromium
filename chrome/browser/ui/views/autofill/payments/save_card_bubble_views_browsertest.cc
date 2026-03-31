@@ -152,11 +152,11 @@ const double kFakeGeolocationLongitude = 4.56;
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
 
-// Params of the test indicate whether the experiment to reposition the bubble
-// ToS message is enabled, and whether page action is migrated to the new page
-// action framework.
+// Params of the test indicate whether the experiment to migrate page action to
+// the new page action framework, and whether Wallet branding V2 is enabled.
 struct SaveCardBubbleViewsBrowserTestParams {
   bool is_page_action_migration_enabled = false;
+  bool is_wallet_branding_v2_enabled = false;
 };
 
 class SaveCardBubbleViewsFullFormBrowserTest
@@ -188,6 +188,13 @@ class SaveCardBubbleViewsFullFormBrowserTest
             is_page_action_migration_enabled ? "true" : "false",
         }},
     });
+    if (IsWalletBrandingV2Enabled()) {
+      enabled_features.push_back(
+          {features::kAutofillEnableWalletBrandingV2, {}});
+    } else {
+      disabled_features.emplace_back(features::kAutofillEnableWalletBrandingV2);
+    }
+
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
     CHECK_EQ(IsPageActionMigrationEnabled(), is_page_action_migration_enabled);
@@ -414,6 +421,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   bool IsPageActionMigrationEnabled() {
     return IsPageActionMigrated(PageActionIconType::kSaveCard);
+  }
+
+  bool IsWalletBrandingV2Enabled() {
+    return GetParam().is_wallet_branding_v2_enabled;
   }
 
   inline views::Combobox* month_input() {
@@ -1141,7 +1152,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTestSettings,
 // Tests the local save bubble. Ensures that the bubble behaves correctly if
 // dismissed and then immediately torn down (e.g. by closing browser window)
 // before the asynchronous close completes. Regression test for
-// https://crbug.com/842577 .
+// https://crbug.com/842577.
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
                        Local_SynchronousCloseAfterAsynchronousClose) {
   FillForm();
@@ -1150,6 +1161,8 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   SaveCardBubbleViews* bubble = GetSaveCardBubbleViews();
   EXPECT_TRUE(bubble);
   views::Widget* bubble_widget = bubble->GetWidget();
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
   EXPECT_TRUE(bubble_widget);
   EXPECT_TRUE(bubble_widget->IsVisible());
   bubble->Hide();
@@ -1852,6 +1865,25 @@ IN_PROC_BROWSER_TEST_P(
       FindViewInBubbleById(DialogViewId::EXPIRATION_DATE_DROPBOX_MONTH));
 }
 
+// Tests the upload save bubble. Ensures that the bubble surfaces the correct
+// view (card label icon or expiration date) based on the Wallet branding V2
+// flag.
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
+    Upload_ShouldShowCorrectViewBasedOnWalletBrandingV2Flag) {
+  SetupSyncAndHideAccountNameEmailProfile();
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  if (IsWalletBrandingV2Enabled()) {
+    EXPECT_TRUE(FindViewInBubbleById(DialogViewId::GPAY_PILL_ICON));
+    EXPECT_FALSE(FindViewInBubbleById(DialogViewId::EXPIRATION_DATE_LABEL));
+  } else {
+    EXPECT_FALSE(FindViewInBubbleById(DialogViewId::GPAY_PILL_ICON));
+    EXPECT_TRUE(FindViewInBubbleById(DialogViewId::EXPIRATION_DATE_LABEL));
+  }
+}
+
 // Tests the upload save bubble. Ensures that if the expiration date drop down
 // box is changing, [Save] button will change status correctly.
 IN_PROC_BROWSER_TEST_P(
@@ -2443,6 +2475,17 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   }
 }
 
+// Tests the local save bubble. Ensures that the bubble always surfaces the
+// expiration date.
+IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
+                       Local_ShouldShowExpirationDateLabel) {
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  EXPECT_FALSE(FindViewInBubbleById(DialogViewId::GPAY_PILL_ICON));
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::EXPIRATION_DATE_LABEL));
+}
+
 // Tests the manage cards bubble. Ensures that it shows up by clicking the
 // credit card icon.
 IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
@@ -2548,19 +2591,22 @@ IN_PROC_BROWSER_TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     SaveCardBubbleViewsFullFormBrowserTest,
-    ::testing::ConvertGenerator(::testing::Bool(),
-                                [](bool migration_enabled) {
-                                  return SaveCardBubbleViewsBrowserTestParams{
-                                      .is_page_action_migration_enabled =
-                                          migration_enabled,
-                                  };
-                                }),
+    ::testing::ConvertGenerator(
+        ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+        [](const std::tuple<bool, bool>& params) {
+          return SaveCardBubbleViewsBrowserTestParams{
+              .is_page_action_migration_enabled = std::get<0>(params),
+              .is_wallet_branding_v2_enabled = std::get<1>(params)};
+        }),
     [](const ::testing::TestParamInfo<
         SaveCardBubbleViewsFullFormBrowserTest::ParamType>& info) {
-      return base::StrCat({
-          info.param.is_page_action_migration_enabled ? "NewPageAction"
-                                                      : "OldPageAction",
-      });
+      return base::StrCat({info.param.is_page_action_migration_enabled
+                               ? "NewPageAction"
+                               : "OldPageAction",
+                           "_",
+                           info.param.is_wallet_branding_v2_enabled
+                               ? "WalletBrandingV2Enabled"
+                               : "WalletBrandingV2Disabled"});
     });
 
 INSTANTIATE_TEST_SUITE_P(

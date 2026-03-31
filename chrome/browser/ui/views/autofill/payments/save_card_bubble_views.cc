@@ -264,16 +264,37 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
                                  views::MaximumFlexSizeRule::kUnbounded)
             .WithOrder(2));
   } else if (!card.IsExpired(base::Time::Now())) {
-    card_identifier_view->AddChildView(std::make_unique<views::Label>(
-        kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
-        views::style::STYLE_SECONDARY));
-    // Add card expiration date for card saves.
-    auto* expiration_date_label =
-        card_identifier_view->AddChildView(std::make_unique<views::Label>(
-            card.AbbreviatedExpirationDateForDisplay(false),
-            views::style::CONTEXT_DIALOG_BODY_TEXT,
-            views::style::STYLE_SECONDARY));
-    expiration_date_label->SetID(DialogViewId::EXPIRATION_DATE_LABEL);
+    if (controller()->GetPaymentsBubbleType() ==
+            PaymentsBubbleType::kUploadSave &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillEnableWalletBrandingV2)) {
+      // For upload saves, show a Google Pay pill image instead of the card's
+      // expiration date.
+      auto* gpay_pill_icon = card_identifier_view->AddChildView(
+          views::Builder<views::ImageView>()
+              .SetImage(ui::ImageModel::FromImage(
+                  ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                      IDR_AUTOFILL_GOOGLE_PAY_PILL)))
+              .SetProperty(views::kFlexBehaviorKey,
+                           views::FlexSpecification(
+                               views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded)
+                               .WithAlignment(views::LayoutAlignment::kEnd))
+              .Build());
+      gpay_pill_icon->SetID(DialogViewId::GPAY_PILL_ICON);
+    } else {
+      card_identifier_view->AddChildView(std::make_unique<views::Label>(
+          kEllipsisDotSeparator, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_SECONDARY));
+      // Add card expiration date for card saves.
+      auto* expiration_date_label =
+          card_identifier_view->AddChildView(std::make_unique<views::Label>(
+              card.AbbreviatedExpirationDateForDisplay(false),
+              views::style::CONTEXT_DIALOG_BODY_TEXT,
+              views::style::STYLE_SECONDARY));
+      expiration_date_label->SetID(DialogViewId::EXPIRATION_DATE_LABEL);
+    }
   }
 
   return card_identifier_view;
