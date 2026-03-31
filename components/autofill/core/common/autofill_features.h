@@ -400,6 +400,8 @@ COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoPolicyAndExtentionToggleIndicators);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPage);
+COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kYourSavedInfoSettingsPageShoppingIntegration);
 
 }  // namespace autofill::features
 

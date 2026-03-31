@@ -1140,4 +1140,9 @@ BASE_FEATURE(kYourSavedInfoPolicyAndExtentionToggleIndicators,
 // settings.
 BASE_FEATURE(kYourSavedInfoSettingsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Defines if the shipping and order data is included in the "Your Saved Info"
+// settings page.
+BASE_FEATURE(kYourSavedInfoSettingsPageShoppingIntegration,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace autofill::features
