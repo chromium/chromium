@@ -33,10 +33,10 @@ class MODULES_EXPORT WebGLContextObjectSupport : public ScriptWrappable {
   bool IsWebGL2() const { return is_webgl2_; }
   bool IsLost() const { return is_lost_; }
 
-  // How many context losses there were, to check whether a WebGLObject was
-  // created since the last context resoration or before that (and hence invalid
-  // to use).
-  uint32_t NumberOfContextLosses() const { return number_of_context_losses_; }
+  // Which "generation" the context is on (essentially, how many times it has
+  // been restored), to check whether a WebGLObject was created since the last
+  // context restoration, or before that (and hence invalid to use).
+  uint64_t GetContextGeneration() const { return context_generation_; }
 
   bool ExtensionEnabled(WebGLExtensionName name) const {
     return extensions_enabled_.test(name);
@@ -65,7 +65,7 @@ class MODULES_EXPORT WebGLContextObjectSupport : public ScriptWrappable {
   std::bitset<kWebGLExtensionNameCount> extensions_enabled_ = {};
   raw_ptr<gpu::gles2::GLES2Interface> gles2_interface_ = nullptr;
 
-  uint32_t number_of_context_losses_ = 0;
+  uint64_t context_generation_ = 0;
   bool is_lost_ = true;
   bool is_webgl2_;
 };

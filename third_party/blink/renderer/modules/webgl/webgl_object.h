@@ -123,9 +123,9 @@ class WebGLObject : public ScriptWrappable {
 
   GLuint object_ = 0;
 
-  // This was the number of context losses of the object's associated
-  // WebGLContext at the time this object was created.
-  uint32_t cached_number_of_context_losses_;
+  // The context generation number of the associated WebGLContext when the
+  // object was created, to prevent reuse in later generations.
+  uint64_t context_generation_at_creation_;
 
   unsigned attachment_count_ = 0;
 
