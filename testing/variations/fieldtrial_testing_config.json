@@ -20207,6 +20207,21 @@
             ]
         }
     ],
+    "SearchPrefetchIgnoreSaverModesOnPress": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SearchPrefetchIgnoreSaverModesOnPress"
+                    ]
+                }
+            ]
+        }
+    ],
     "SecurePaymentConfirmationUxRefresh": [
         {
             "platforms": [
