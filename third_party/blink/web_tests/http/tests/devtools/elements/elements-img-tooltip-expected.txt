@@ -1,6 +1,0 @@
-Tests the tooltip for the image on hover.
-
-{"renderedWidth":215,"renderedHeight":174}
-{"renderedWidth":20,"renderedHeight":20}
-{"renderedWidth":10,"renderedHeight":10}
-
