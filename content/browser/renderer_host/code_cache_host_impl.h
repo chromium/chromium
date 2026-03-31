@@ -5,8 +5,11 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_CODE_CACHE_HOST_IMPL_H_
 #define CONTENT_BROWSER_RENDERER_HOST_CODE_CACHE_HOST_IMPL_H_
 
+#include <stdint.h>
+
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -110,6 +113,12 @@ class CONTENT_EXPORT CodeCacheHostImpl : public blink::mojom::CodeCacheHost {
       storage::mojom::CacheStorageControl* cache_storage_control);
 
   static void SetUseEmptySecondaryKeyForTesting();
+
+  // Source-keyed code cache is currently looked up only by renderers. The
+  // browser-side fetch functionality is provided for testing.
+  virtual void FetchSourceKeyedCachedCodeForTesting(
+      base::span<const uint8_t> source_hash,
+      base::OnceCallback<void(mojo_base::BigBuffer)> callback) = 0;
 
  protected:
   CodeCacheHostImpl(

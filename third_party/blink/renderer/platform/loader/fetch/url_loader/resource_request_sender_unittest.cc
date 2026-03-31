@@ -288,6 +288,9 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
                                     const KURL& url,
                                     base::Time expected_response_time,
                                     mojo_base::BigBuffer data) override {}
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const blink::Vector<uint8_t>& script_hash,
+      mojo_base::BigBuffer data) override {}
   void FetchCachedCode(mojom::blink::CodeCacheType cache_type,
                        const KURL& url,
                        FetchCachedCodeCallback callback) override {

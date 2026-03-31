@@ -35,6 +35,10 @@ class CONTENT_EXPORT SharedStorageCodeCacheHostProxy
                                     base::Time expected_response_time,
                                     mojo_base::BigBuffer data) override;
 
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const std::vector<uint8_t>& source_hash,
+      mojo_base::BigBuffer data) override;
+
   void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                        const GURL& url,
                        FetchCachedCodeCallback callback) override;

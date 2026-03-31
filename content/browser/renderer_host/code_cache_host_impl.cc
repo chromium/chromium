@@ -4,21 +4,29 @@
 
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/check_is_test.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
+#include "components/persistent_cache/entry_metadata.h"
 #include "components/persistent_cache/pending_backend.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
@@ -37,6 +45,7 @@
 #include "net/base/io_buffer.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -56,6 +65,7 @@ enum class Operation {
   kWrite,
 };
 
+// TODO(crbug.com/492899973): Refactor to use `RenderFrameHost*`.
 bool CheckSecurityForAccessingCodeCacheData(const GURL& resource_url,
                                             ChildProcessId render_process_id,
                                             Operation operation) {
@@ -309,10 +319,20 @@ class NoopCodeCacheHost : public CodeCacheHostImpl {
                                     base::Time expected_response_time,
                                     mojo_base::BigBuffer data) override {}
 
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const std::vector<uint8_t>& source_hash,
+      mojo_base::BigBuffer data) override {}
+
   void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                        const GURL& url,
                        FetchCachedCodeCallback callback) override {
     std::move(callback).Run({}, {});
+  }
+
+  void FetchSourceKeyedCachedCodeForTesting(
+      base::span<const uint8_t> source_hash,
+      base::OnceCallback<void(mojo_base::BigBuffer)> callback) override {
+    std::move(callback).Run({});
   }
 
   void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
@@ -360,6 +380,15 @@ class LocalCodeCacheHost : public CodeCacheHostImpl {
     }
   }
 
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const std::vector<uint8_t>& source_hash,
+      mojo_base::BigBuffer data) override {
+    // Source-keyed cache is currently only used by Blink's inline script cache,
+    // which uses PersistentCache and therefore must be handled in
+    // `CodeCacheWithPersistentCacheHost`.
+    mojo::ReportBadMessage("Not using PersistentCache");
+  }
+
   void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                        const GURL& url,
                        FetchCachedCodeCallback callback) override {
@@ -380,6 +409,15 @@ class LocalCodeCacheHost : public CodeCacheHostImpl {
     } else {
       std::move(callback).Run(base::Time(), {});
     }
+  }
+
+  void FetchSourceKeyedCachedCodeForTesting(
+      base::span<const uint8_t> source_hash,
+      base::OnceCallback<void(mojo_base::BigBuffer)> callback) override {
+    // Source-keyed cache is currently only used by Blink's inline script cache,
+    // which uses PersistentCache and therefore must be handled in
+    // `CodeCacheWithPersistentCacheHost`.
+    NOTREACHED() << "Not using PersistentCache";
   }
 
   void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
@@ -499,7 +537,10 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
       : CodeCacheHostImpl(render_process_id,
                           std::move(generated_code_cache_context),
                           nik,
-                          storage_key) {
+                          storage_key),
+        is_source_keyed_cache_enabled_(
+            ShouldEnableSourceKeyedCache(storage_key.origin().scheme(),
+                                         render_process_id)) {
     CHECK(this->generated_code_cache_context());
   }
 
@@ -539,6 +580,27 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
                                    .InMicroseconds()});
   }
 
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const std::vector<uint8_t>& source_hash,
+      mojo_base::BigBuffer data) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    // This CHECK must always pass because the mojo interface ensures the length
+    // of `source_hash` is 32.
+    CHECK_EQ(source_hash.size(), 32u);
+
+    if (!is_source_keyed_cache_enabled_) {
+      return;
+    }
+
+    ASSIGN_OR_RETURN(std::string cache_id,
+                     GetCacheId(blink::mojom::CodeCacheType::kJavascript),
+                     [] {});
+
+    generated_code_cache_context()->InsertIntoPersistentCacheCollection(
+        cache_id, /*cache_key=*/blink::ComposeSourceKeyedCacheKey(source_hash),
+        std::move(data), /*metadata=*/{});
+  }
+
   // Note: In an operational browser, `FetchCachedCode` is implemented in
   // renderers in `CodeCacheWithPersistentCacheHostImpl`. Ideally, this
   // implementation would be nothing more than `NOTREACHED()`. In light of the
@@ -576,6 +638,35 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
     }
   }
 
+  void FetchSourceKeyedCachedCodeForTesting(
+      base::span<const uint8_t> source_hash,
+      base::OnceCallback<void(mojo_base::BigBuffer)> callback) override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK_EQ(source_hash.size(), 32u);
+
+    if (!is_source_keyed_cache_enabled_) {
+      std::move(callback).Run({});
+      return;
+    }
+
+    ASSIGN_OR_RETURN(std::string cache_id,
+                     GetCacheId(blink::mojom::CodeCacheType::kJavascript),
+                     [&callback] { std::move(callback).Run({}); });
+
+    if (auto metadata_and_content =
+            generated_code_cache_context()->FindInPersistentCacheCollection(
+                cache_id,
+                /*cache_key=*/blink::ComposeSourceKeyedCacheKey(source_hash));
+        metadata_and_content.has_value() &&
+        metadata_and_content->content.size() > 0) {
+      // Cache hit with content.
+      std::move(callback).Run(std::move(metadata_and_content->content));
+    } else {
+      // Cache miss or error.
+      std::move(callback).Run(mojo_base::BigBuffer());
+    }
+  }
+
   void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
                            const GURL& url) override {
     // `PersistentCache` does not expose the ability to delete specific entries.
@@ -589,6 +680,8 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
   }
 
  private:
+  const bool is_source_keyed_cache_enabled_;
+
   // Returns the identifier by which this host's storage for data of type
   // `cache_type` is known by the PersistentCacheCollection; or no value in case
   // no data should be cached.
@@ -658,6 +751,28 @@ class CodeCacheWithPersistentCacheHost : public CodeCacheHostImpl {
       case blink::mojom::CodeCacheType::kWebAssembly:
         return GeneratedCodeCache::CodeCacheType::kWebAssembly;
     }
+  }
+
+  static bool ShouldEnableSourceKeyedCache(std::string_view document_scheme,
+                                           ChildProcessId render_process_id) {
+    // Source-keyed cache only supports HTTP(S).
+    if (document_scheme != url::kHttpsScheme &&
+        document_scheme != url::kHttpScheme) {
+      return false;
+    }
+    ProcessLock process_lock =
+        ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(
+            render_process_id);
+    if (!process_lock.IsLockedToSite()) {
+      // We can't tell for certain whether this renderer is doing something
+      // malicious, but we don't trust it enough to store data.
+      return false;
+    }
+    // Disable if `process_lock` is for WebUI or extensions.
+    return !process_lock.MatchesScheme(content::kChromeUIScheme) &&
+           !process_lock.MatchesScheme(content::kChromeUIUntrustedScheme) &&
+           !blink::CommonSchemeRegistry::IsExtensionScheme(
+               std::string(process_lock.GetProcessLockURL().scheme()));
   }
 };
 #endif  // !BUILDFLAG(IS_FUCHSIA)

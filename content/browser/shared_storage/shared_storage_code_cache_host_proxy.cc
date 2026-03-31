@@ -5,7 +5,9 @@
 #include "content/browser/shared_storage/shared_storage_code_cache_host_proxy.h"
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "components/persistent_cache/pending_backend.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -39,6 +41,14 @@ void SharedStorageCodeCacheHostProxy::DidGenerateCacheableMetadata(
   }
   actual_code_cache_host_->DidGenerateCacheableMetadata(
       cache_type, url, expected_response_time, std::move(data));
+}
+
+void SharedStorageCodeCacheHostProxy::DidGenerateSourceKeyedCacheableMetadata(
+    const std::vector<uint8_t>& source_hash,
+    mojo_base::BigBuffer data) {
+  // Shared Storage does not use a code cache when
+  // UsePersistentCacheForCodeCache is enabled.
+  NOTREACHED();
 }
 
 void SharedStorageCodeCacheHostProxy::FetchCachedCode(

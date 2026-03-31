@@ -338,6 +338,14 @@ class MockMojomCoceCacheHost : public blink::mojom::blink::CodeCacheHost {
     data_ = std::move(data);
   }
 
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const blink::Vector<uint8_t>& source_hash,
+      mojo_base::BigBuffer data) override {
+    // Shared Storage does not use a code cache when
+    // UsePersistentCacheForCodeCache is enabled.
+    NOTREACHED();
+  }
+
   void FetchCachedCode(mojom::CodeCacheType cache_type,
                        const KURL& url,
                        FetchCachedCodeCallback callback) override {

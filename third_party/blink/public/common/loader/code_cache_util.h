@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/common/common_export.h"
 
 class GURL;
@@ -33,9 +35,17 @@ inline constexpr size_t kCodeCacheTimestampCachedMetaSize =
 // The prefix prepended to a resource URL to form its code cache key.
 inline constexpr char kCodeCacheKeyPrefix[] = "_key";
 
+// The prefix prepended to a script digest to form its code cache key.
+inline constexpr char kSourceKeyedCodeCacheKeyPrefix[] = "_digest";
+
 // Returns the key with which a resource URL's compiled code should be
 // associated in the code cache.
 BLINK_COMMON_EXPORT std::string UrlToCodeCacheKey(const GURL& url);
+
+// Returns the key with which compiled code should be associated in the
+// source-keyed code cache.
+BLINK_COMMON_EXPORT base::HeapArray<uint8_t> ComposeSourceKeyedCacheKey(
+    base::span<const uint8_t> source_hash);
 
 }  // namespace blink
 

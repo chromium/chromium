@@ -30,6 +30,7 @@
 #include "third_party/blink/public/test/test_web_frame_content_dumper.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 #include "url/url_util.h"
 
 namespace content_settings {
@@ -214,6 +215,9 @@ class ContentSettingsAgentImplBrowserTest
                                       const GURL& url,
                                       base::Time expected_response_time,
                                       mojo_base::BigBuffer data) override {}
+    void DidGenerateSourceKeyedCacheableMetadata(
+        const std::vector<uint8_t>& source_hash,
+        mojo_base::BigBuffer data) override {}
     void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                          const GURL& url,
                          FetchCachedCodeCallback callback) override {

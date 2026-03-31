@@ -7,7 +7,6 @@ module blink.mojom;
 import "components/persistent_cache/mojom/persistent_cache.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // Enumeration of distinct code cache types.
@@ -18,7 +17,7 @@ enum CodeCacheType {
 
 // Interface to the code cache in the browser process. Renderer processes
 // can use this interface to persistently store and retrieve executable code
-// generated for a URL.
+// generated for a key (url or source hash).
 interface CodeCacheHost {
   // Requests a pending backend for an independent read-only connection to a
   // PersistentCache for the specified `cache_type`. `pending_backend` will be
@@ -26,12 +25,17 @@ interface CodeCacheHost {
   GetPendingBackend(CodeCacheType cache_type) =>
       (persistent_cache.mojom.PendingReadOnlyBackend? pending_backend);
 
-  // Requests that the browser cache |data| associated with |url| and
-  // |expected_response_time|.
+  // Requests that the browser cache `data` associated with `url` and
+  // `expected_response_time`.
   DidGenerateCacheableMetadata(CodeCacheType cache_type,
                                url.mojom.Url url,
                                mojo_base.mojom.Time expected_response_time,
                                mojo_base.mojom.BigBuffer data);
+
+  // Requests that the browser cache `data` associated with `script_hash`.
+  DidGenerateSourceKeyedCacheableMetadata(
+    array<uint8, 32> script_hash,
+    mojo_base.mojom.BigBuffer data);
 
   FetchCachedCode(CodeCacheType cache_type, url.mojom.Url url) =>
       (mojo_base.mojom.Time response_time, mojo_base.mojom.BigBuffer data);

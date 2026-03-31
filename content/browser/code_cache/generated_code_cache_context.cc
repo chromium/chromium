@@ -236,7 +236,7 @@ GeneratedCodeCacheContext::ShareReadOnlyConnection(
 
 void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     const std::string& context_key,
-    base::span<const uint8_t> resource_key,
+    base::span<const uint8_t> cache_key,
     base::span<const uint8_t> content,
     persistent_cache::EntryMetadata metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -245,8 +245,8 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
     return;
   }
 
-  RETURN_IF_ERROR(persistent_cache_collection_->Insert(
-                      context_key, resource_key, content, metadata),
+  RETURN_IF_ERROR(persistent_cache_collection_->Insert(context_key, cache_key,
+                                                       content, metadata),
                   [](persistent_cache::TransactionError error) {
                     // TODO(crbug.com/374930286): Handle or at least address
                     // permanent errors.
@@ -257,7 +257,7 @@ void GeneratedCodeCacheContext::InsertIntoPersistentCacheCollection(
 std::optional<GeneratedCodeCacheContext::MetadataAndContent>
 GeneratedCodeCacheContext::FindInPersistentCacheCollection(
     const std::string& context_key,
-    base::span<const uint8_t> resource_key) {
+    base::span<const uint8_t> cache_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!persistent_cache_collection_) {
@@ -275,7 +275,7 @@ GeneratedCodeCacheContext::FindInPersistentCacheCollection(
 
   ASSIGN_OR_RETURN(std::optional<persistent_cache::EntryMetadata> metadata,
                    persistent_cache_collection_->Find(
-                       context_key, resource_key, std::move(buffer_provider)),
+                       context_key, cache_key, std::move(buffer_provider)),
                    // An adapter that is invoked on error. Its return value
                    // percolates up out of this function.
                    [](persistent_cache::TransactionError error)

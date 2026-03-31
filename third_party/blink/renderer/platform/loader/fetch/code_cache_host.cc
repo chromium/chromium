@@ -12,7 +12,9 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
@@ -25,6 +27,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -106,6 +109,13 @@ class CodeCacheWithPersistentCacheHostImpl
                                     ::mojo_base::BigBuffer data) override {
     async_host_.AsyncCall(&AsyncCodeCacheHost::DidGenerateCacheableMetadata)
         .WithArgs(cache_type, url, expected_response_time, std::move(data));
+  }
+
+  void DidGenerateSourceKeyedCacheableMetadata(
+      const Vector<uint8_t>& script_hash,
+      mojo_base::BigBuffer data) override {
+    // TODO(crbug.com/488755561): Implement this function.
+    NOTIMPLEMENTED();
   }
 
   void FetchCachedCode(mojom::blink::CodeCacheType cache_type,

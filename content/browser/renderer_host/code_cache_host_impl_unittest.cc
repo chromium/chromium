@@ -4,6 +4,13 @@
 
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 
+#include <stdint.h>
+
+#include <array>
+#include <ranges>
+#include <string>
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -22,17 +29,20 @@
 #include "content/browser/process_lock.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/url_info.h"
+#include "content/public/common/child_process_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "net/base/features.h"
 #include "net/http/http_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -383,6 +393,208 @@ TEST_P(CodeCacheHostImplTest, PersistentCacheWriteAndReadFullIsolationSetup) {
   }
 }
 
+TEST_P(CodeCacheHostImplTest, GetPendingBackend) {
+  base::RunLoop run_loop;
+
+  const GURL url("http://example.com/script.js");
+  net::NetworkIsolationKey nik(net::SchemefulSite{url},
+                               net::SchemefulSite{url});
+  const ChildProcessId process_id(12);
+  SetupRendererWithLock(process_id, url);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto host = CodeCacheHostImpl::Create(
+            process_id, generated_code_cache_context_, nik,
+            blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+        for (auto cache_type : {blink::mojom::CodeCacheType::kJavascript,
+                                blink::mojom::CodeCacheType::kWebAssembly}) {
+          base::test::TestFuture<
+              std::optional<persistent_cache::PendingBackend>>
+              future;
+          host->GetPendingBackend(cache_type, future.GetCallback());
+          EXPECT_TRUE(future.Get().has_value());
+        }
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_P(CodeCacheHostImplTest, SourceKeyedCacheWriteAndRead) {
+  const std::string data_str = "some data";
+  const mojo_base::BigBuffer data(base::as_byte_span(data_str));
+  const GURL url("http://example.com/script.js");
+
+  const std::string script_source = "console.log(42)";
+  const std::array<uint8_t, 32> source_hash =
+      crypto::hash::Sha256(script_source);
+
+  net::NetworkIsolationKey nik(net::SchemefulSite{url},
+                               net::SchemefulSite{url});
+  const ChildProcessId process_id(12);
+  SetupRendererWithLock(process_id, url);
+
+  {
+    base::RunLoop runloop;
+    auto quit_closure = runloop.QuitClosure();
+
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_.get(), FROM_HERE,
+        base::BindLambdaForTesting([&]() {
+          auto host = CodeCacheHostImpl::Create(
+              process_id, generated_code_cache_context_, nik,
+              blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+          host->DidGenerateSourceKeyedCacheableMetadata(
+              std::vector(std::from_range, source_hash), data.Clone());
+
+          host->FetchSourceKeyedCachedCodeForTesting(
+              source_hash,
+              base::BindOnce(
+                  [](base::RepeatingClosure quit_closure,
+                     std::string expected_data, mojo_base::BigBuffer data) {
+                    EXPECT_EQ(
+                        expected_data,
+                        std::string(reinterpret_cast<const char*>(data.data()),
+                                    data.size()));
+                    quit_closure.Run();
+                  },
+                  quit_closure, data_str));
+        }));
+    runloop.Run();
+  }
+
+  // Isolation check: a different site shouldn't have access.
+  {
+    base::RunLoop runloop;
+    auto quit_closure = runloop.QuitClosure();
+
+    GURL other_url("http://other.example/script.js");
+    net::NetworkIsolationKey other_nik(net::SchemefulSite{other_url},
+                                       net::SchemefulSite{other_url});
+    const ChildProcessId other_process_id(24);
+    SetupRendererWithLock(other_process_id, other_url);
+
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_.get(), FROM_HERE,
+        base::BindLambdaForTesting([&]() {
+          auto host = CodeCacheHostImpl::Create(
+              other_process_id, generated_code_cache_context_, other_nik,
+              blink::StorageKey::CreateFirstParty(
+                  url::Origin::Create(other_url)));
+
+          host->FetchSourceKeyedCachedCodeForTesting(
+              source_hash, base::BindOnce(
+                               [](base::RepeatingClosure quit_closure,
+                                  mojo_base::BigBuffer data) {
+                                 EXPECT_EQ(data.size(), 0U);
+                                 quit_closure.Run();
+                               },
+                               quit_closure));
+        }));
+    runloop.Run();
+  }
+}
+
+TEST_P(CodeCacheHostImplTest,
+       SourceKeyedCacheLockedAndUnlockedProcessesShareNoData) {
+  const std::string data_str = "some data";
+  const mojo_base::BigBuffer data(base::as_byte_span(data_str));
+  const std::string other_data_str = "some other data";
+  const mojo_base::BigBuffer other_data(base::as_byte_span(other_data_str));
+
+  const GURL url("http://example.com/script.js");
+  const url::Origin origin = url::Origin::Create(url);
+  const std::string script_source = "console.log(42)";
+  const std::array<uint8_t, 32> source_hash =
+      crypto::hash::Sha256(script_source);
+  const std::vector<uint8_t> source_hash_vec(std::from_range, source_hash);
+
+  net::NetworkIsolationKey nik(net::SchemefulSite{url},
+                               net::SchemefulSite{url});
+
+  const ChildProcessId locked_process_id(12);
+  SetupRendererWithLock(locked_process_id, url);
+
+  const ChildProcessId unlocked_process_id(24);
+
+  // Locked process stores data.
+  {
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_.get(), FROM_HERE,
+        base::BindLambdaForTesting([&]() {
+          auto host = CodeCacheHostImpl::Create(
+              locked_process_id, generated_code_cache_context_, nik,
+              blink::StorageKey::CreateFirstParty(origin));
+
+          host->DidGenerateSourceKeyedCacheableMetadata(source_hash_vec,
+                                                        data.Clone());
+        }));
+  }
+
+  // Unlocked process.
+  {
+    base::RunLoop runloop;
+
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_.get(), FROM_HERE,
+        base::BindLambdaForTesting([&]() {
+          base::test::TestFuture<mojo_base::BigBuffer> fetch_future;
+
+          auto host = CodeCacheHostImpl::Create(
+              unlocked_process_id, generated_code_cache_context_, nik,
+              blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+          // Unlocked process cannot read cache from the locked process.
+          host->FetchSourceKeyedCachedCodeForTesting(
+              source_hash, fetch_future.GetCallback());
+          EXPECT_EQ(fetch_future.Get().size(), 0U);
+          fetch_future.Clear();
+
+          // Unlocked process cannot store any data because the site has already
+          // been locked to a process.
+          host->DidGenerateSourceKeyedCacheableMetadata(source_hash_vec,
+                                                        other_data.Clone());
+          host->FetchSourceKeyedCachedCodeForTesting(
+              source_hash, fetch_future.GetCallback());
+          EXPECT_EQ(fetch_future.Get().size(), 0U);
+
+          runloop.Quit();
+        }));
+    runloop.Run();
+  }
+
+  // Locked process cannot access data stored from shared context.
+  {
+    base::RunLoop runloop;
+    auto quit_closure = runloop.QuitClosure();
+
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_.get(), FROM_HERE,
+        base::BindLambdaForTesting([&]() {
+          auto host = CodeCacheHostImpl::Create(
+              locked_process_id, generated_code_cache_context_, nik,
+              blink::StorageKey::CreateFirstParty(url::Origin::Create(url)));
+
+          host->FetchSourceKeyedCachedCodeForTesting(
+              source_hash,
+              base::BindOnce(
+                  [](base::RepeatingClosure quit_closure,
+                     std::string expected_data, mojo_base::BigBuffer data) {
+                    EXPECT_EQ(
+                        expected_data,
+                        std::string(reinterpret_cast<const char*>(data.data()),
+                                    data.size()));
+                    quit_closure.Run();
+                  },
+                  quit_closure, data_str));
+        }));
+    runloop.Run();
+  }
+}
+
 // Tests that a WebUI page does not see a resource cached by an open web site.
 TEST_P(CodeCacheHostImplTest, WebUiObliviousToOpenWeb) {
   base::RunLoop run_loop;
@@ -624,6 +836,101 @@ TEST_P(CodeCacheHostImplTest, SandboxedIframeObliviousToOpenWeb) {
               EXPECT_EQ(found_data.size(), 0U);
               run_loop.Quit();
             }));
+      }));
+
+  run_loop.Run();
+}
+
+TEST_P(CodeCacheHostImplTest, SourceKeyedCacheWebUiObliviousToOpenWeb) {
+  base::RunLoop run_loop;
+
+  const std::string script_source = "console.log(42)";
+  const std::array<uint8_t, 32> source_hash =
+      crypto::hash::Sha256(script_source);
+
+  static constexpr ChildProcessId kOpenWebProcessId(12);
+  const GURL open_web_site("https://external.example/");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  static constexpr ChildProcessId kWebUiProcessId(13);
+  const GURL web_ui_site(
+      base::StrCat({kChromeUIScheme, "://some.chrome.page"}));
+  SetupRendererWithLock(kWebUiProcessId, web_ui_site);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        open_web_host->DidGenerateSourceKeyedCacheableMetadata(
+            std::vector(std::from_range, source_hash),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+
+        auto web_ui_host = CodeCacheHostImpl::Create(
+            kWebUiProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_ui_site},
+                                     net::SchemefulSite{web_ui_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(web_ui_site)));
+        base::test::TestFuture<mojo_base::BigBuffer> fetch_future;
+        web_ui_host->FetchSourceKeyedCachedCodeForTesting(
+            source_hash, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get().size(), 0U);
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+TEST_P(CodeCacheHostImplTest, OpenWebObliviousToSourceKeyedWebUi) {
+  base::RunLoop run_loop;
+
+  const std::string script_source = "console.log(42)";
+  const std::array<uint8_t, 32> source_hash =
+      crypto::hash::Sha256(script_source);
+
+  static constexpr ChildProcessId kWebUiProcessId(12);
+  const GURL web_ui_site(base::StrCat({kChromeUIScheme, "://settings"}));
+  SetupRendererWithLock(kWebUiProcessId, web_ui_site);
+
+  static constexpr ChildProcessId kOpenWebProcessId(13);
+  const GURL open_web_site("https://external.example");
+  SetupRendererWithLock(kOpenWebProcessId, open_web_site);
+
+  GeneratedCodeCacheContext::RunOrPostTask(
+      generated_code_cache_context_.get(), FROM_HERE,
+      base::BindLambdaForTesting([&]() {
+        base::test::TestFuture<mojo_base::BigBuffer> fetch_future;
+
+        auto web_ui_host = CodeCacheHostImpl::Create(
+            kWebUiProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{web_ui_site},
+                                     net::SchemefulSite{web_ui_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(web_ui_site)));
+        web_ui_host->DidGenerateSourceKeyedCacheableMetadata(
+            std::vector(std::from_range, source_hash),
+            mojo_base::BigBuffer(base::byte_span_from_cstring("hi")));
+        // WebUI sites cannot store any data.
+        web_ui_host->FetchSourceKeyedCachedCodeForTesting(
+            source_hash, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get().size(), 0U);
+        fetch_future.Clear();
+
+        auto open_web_host = CodeCacheHostImpl::Create(
+            kOpenWebProcessId, generated_code_cache_context_,
+            net::NetworkIsolationKey(net::SchemefulSite{open_web_site},
+                                     net::SchemefulSite{open_web_site}),
+            blink::StorageKey::CreateFirstParty(
+                url::Origin::Create(open_web_site)));
+        open_web_host->FetchSourceKeyedCachedCodeForTesting(
+            source_hash, fetch_future.GetCallback());
+        EXPECT_EQ(fetch_future.Get().size(), 0U);
+        run_loop.Quit();
       }));
 
   run_loop.Run();
