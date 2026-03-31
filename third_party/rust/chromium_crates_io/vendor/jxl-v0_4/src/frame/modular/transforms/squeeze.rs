@@ -453,6 +453,7 @@ simd_function!(
     }
 );
 
+#[inline(always)]
 pub fn do_hsqueeze_step(
     in_avg: &ImageRect<'_, i32>,
     in_res: &ImageRect<'_, i32>,
@@ -467,10 +468,11 @@ pub fn do_hsqueeze_step(
         return;
     }
 
-    let (w, h) = in_res.size();
+    let w = in_res.size().0;
     // Another shortcut: when output row has just 1px
     if w == 0 {
-        for y in 0..h {
+        let out_h = out.data.size().1;
+        for y in 0..out_h {
             out.data.row_mut(y)[0] = in_avg.row(y)[0];
         }
         return;
@@ -596,8 +598,10 @@ fn vsqueeze_scalar(
         let avg_row = in_avg.row(0);
         let res_row = in_res.row(0);
         let avg_row_next = if !has_tail && (h == 1) {
-            debug_assert!(in_next_avg.is_none());
-            in_avg.row(0)
+            match in_next_avg {
+                None => in_avg.row(0),
+                Some(mc) => mc.row(0),
+            }
         } else {
             in_avg.row(1)
         };
@@ -648,6 +652,7 @@ simd_function!(
     }
 );
 
+#[inline(always)]
 pub fn do_vsqueeze_step(
     in_avg: &ImageRect<'_, i32>,
     in_res: &ImageRect<'_, i32>,

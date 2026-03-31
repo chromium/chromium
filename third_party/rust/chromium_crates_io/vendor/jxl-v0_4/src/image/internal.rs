@@ -122,7 +122,7 @@ impl RawImageBuffer {
         }
     }
 
-    #[inline]
+    #[inline(always)]
     pub(super) fn byte_size(&self) -> (usize, usize) {
         (self.bytes_per_row, self.num_rows)
     }

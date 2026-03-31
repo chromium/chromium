@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "jxl_macros"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "proc-macro-error2",
  "proc-macro2",

@@ -167,6 +167,10 @@ pub enum Error {
     PatchesOutOfBounds(String, usize, usize, usize),
     #[error("Patches cannot use frames saved post color transforms")]
     PatchesPostColorTransform(),
+    #[error(
+        "Patches with extra-channel upsampling {1} that does not match non-1 color upsampling ({0}) are unsupported"
+    )]
+    PatchesUnsupportedMixedUpsampling(u32, u32),
     #[error("Too many {0}: {1}, limit is {2}")]
     PatchesTooMany(String, usize, usize),
     #[error("Reference too large: {0}, limit is {1}")]

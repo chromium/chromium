@@ -222,6 +222,8 @@ fn compute_properties(
     references: &Image<i32>,
     property_buffer: &mut [i32],
 ) -> i64 {
+    assert!(property_buffer.len() >= NUM_NONREF_PROPERTIES);
+
     let PredictionData {
         left,
         top,

@@ -57,14 +57,20 @@ impl Frame {
             None,
         }
         let (converter, constant_alpha) = match data_format {
-            JxlDataFormat::U8 { bit_depth } => (
-                DataFormatConverter::U8(ConvertF32ToU8Stage::new(0, bit_depth)),
-                RowBuffer::new_filled(DataTypeTag::U8, ulen, &(1u8 << bit_depth).to_ne_bytes())?,
-            ),
-            JxlDataFormat::U16 { bit_depth, .. } => (
-                DataFormatConverter::U16(ConvertF32ToU16Stage::new(0, bit_depth)),
-                RowBuffer::new_filled(DataTypeTag::U16, ulen, &(1u16 << bit_depth).to_ne_bytes())?,
-            ),
+            JxlDataFormat::U8 { bit_depth } => {
+                let alpha = ((1u16 << bit_depth) - 1) as u8;
+                (
+                    DataFormatConverter::U8(ConvertF32ToU8Stage::new(0, bit_depth)),
+                    RowBuffer::new_filled(DataTypeTag::U8, ulen, &alpha.to_ne_bytes())?,
+                )
+            }
+            JxlDataFormat::U16 { bit_depth, .. } => {
+                let alpha = ((1u32 << bit_depth) - 1) as u16;
+                (
+                    DataFormatConverter::U16(ConvertF32ToU16Stage::new(0, bit_depth)),
+                    RowBuffer::new_filled(DataTypeTag::U16, ulen, &alpha.to_ne_bytes())?,
+                )
+            }
             JxlDataFormat::F16 { .. } => (
                 DataFormatConverter::F16(ConvertF32ToF16Stage::new(0)),
                 RowBuffer::new_filled(
@@ -222,13 +228,26 @@ impl Frame {
                     DataFormatConverter::None => &upsampled_rows,
                 };
 
-                let input_no_alpha = [&save_input[0], &save_input[1], &save_input[2]];
-                let input_alpha = [
-                    &save_input[0],
-                    &save_input[1],
-                    &save_input[2],
-                    &constant_alpha,
-                ];
+                let input_no_alpha = match color_type {
+                    JxlColorType::Bgr | JxlColorType::Bgra => {
+                        [&save_input[2], &save_input[1], &save_input[0]]
+                    }
+                    _ => [&save_input[0], &save_input[1], &save_input[2]],
+                };
+                let input_alpha = match color_type {
+                    JxlColorType::Bgra => [
+                        &save_input[2],
+                        &save_input[1],
+                        &save_input[0],
+                        &constant_alpha,
+                    ],
+                    _ => [
+                        &save_input[0],
+                        &save_input[1],
+                        &save_input[2],
+                        &constant_alpha,
+                    ],
+                };
 
                 save_stage.save_lowmem(
                     if color_type.has_alpha() {

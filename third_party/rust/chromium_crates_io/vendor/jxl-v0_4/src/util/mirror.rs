@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file.
 
 /// Mirror-reflects a value v to fit in a [0; s) range.
+#[inline(always)]
 pub fn mirror(mut v: isize, s: usize) -> usize {
     // TODO(veluca): consider speeding this up if needed.
     loop {

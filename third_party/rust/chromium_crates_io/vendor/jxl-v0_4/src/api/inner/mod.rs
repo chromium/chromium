@@ -157,6 +157,10 @@ impl JxlDecoderInner {
     /// the decoder which container box position to seek to and how many visible
     /// frames to skip before the target frame. The caller must provide raw file
     /// input starting from `seek_target.decode_start_file_offset`.
+    ///
+    /// After seeking the first time, scanned frame information will no longer
+    /// be updated. If you seek before having completed decoding once, the scanned
+    /// frames might be incomplete.
     pub fn start_new_frame(&mut self, seek_target: VisibleFrameSeekTarget) {
         self.box_parser
             .reset_for_codestream_seek(seek_target.remaining_in_box);
