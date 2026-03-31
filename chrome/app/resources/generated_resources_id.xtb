@@ -3363,7 +3363,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3241810535741601486">Perubahan ini bersifat permanen dan tidak dapat dibatalkan. Update yang diperpanjang berlaku untuk semua pengguna perangkat ini. <ph name="LINK_START" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3243017971870859287">Membaca nomor seri perangkat dan komponen ChromeOS Flex</translation>
 <translation id="324366796737464147">Peredam bising</translation>
-<translation id="3244271242291266297">BB</translation>
+<translation id="3244271242291266297">MM</translation>
 <translation id="3244294424315804309">Lanjutkan mematikan suara</translation>
 <translation id="3247006341013237647">Atur tab?</translation>
 <translation id="3247649647204519958">Dari sini, Anda dapat melihat dan mengelola izin ekstensi untuk situs yang Anda buka</translation>
@@ -4256,7 +4256,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3820749202859700794">Kurva eliptis SECG secp521r1 (alias NIST P-521)</translation>
 <translation id="3821074617718452587">Notifikasi Phone Hub</translation>
 <translation id="3821372858277557370">{NUM_EXTENSIONS,plural, =1{Ekstensi telah disetujui}other{# ekstensi telah disetujui}}</translation>
-<translation id="3822426549715448461">HH</translation>
+<translation id="3822426549715448461">DD</translation>
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823310065043511710">Sebaiknya sediakan ruang minimal <ph name="INSTALL_SIZE" /> untuk Linux.</translation>
 <translation id="3824621460022590830">Token pendaftaran perangkat tidak valid. Hubungi pemilik atau administrator perangkat Anda. Kode error: <ph name="ERROR_CODE" />.</translation>
