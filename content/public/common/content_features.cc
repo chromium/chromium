@@ -688,6 +688,10 @@ BASE_FEATURE(kOverscrollHistoryNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Allow starting prefetch request from off the main thread. Please see
+// crbug.com/452389538 for more details.
+BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use code paths for prefetch/prerender integration.
 // See also `kPrerender2FallbackPrefetchSpecRules`.
 BASE_FEATURE(kPrefetchPrerenderIntegration, base::FEATURE_DISABLED_BY_DEFAULT);

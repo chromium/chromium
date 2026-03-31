@@ -78,6 +78,8 @@ public class ContentFeatureList {
 
     public static final String CONTINUE_GESTURE_ON_LOSING_FOCUS = "ContinueGestureOnLosingFocus";
 
+    public static final String PREFETCH_OFF_THE_MAIN_THREAD = "PrefetchOffTheMainThread";
+
     public static final String SMART_ZOOM = "SmartZoom";
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =

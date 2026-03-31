@@ -4,8 +4,8 @@
 
 #include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
 
-#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
