@@ -66,6 +66,10 @@ MockDialAppDiscoveryService::PassCallback() {
   return std::move(app_info_cb_);
 }
 
+bool MockDialAppDiscoveryService::HasPendingCallback() const {
+  return !app_info_cb_.is_null();
+}
+
 TestDialURLFetcher::TestDialURLFetcher(
     DialURLFetcher::SuccessCallback success_cb,
     DialURLFetcher::ErrorCallback error_cb,

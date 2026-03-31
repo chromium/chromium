@@ -80,8 +80,11 @@ class DialActivityManagerTest : public testing::Test {
     loader_factory_.AddResponse(activity.launch_info.app_launch_url,
                                 std::move(response_head), "",
                                 network::URLLoaderCompletionStatus());
-    EXPECT_CALL(*this, OnAppLaunchResult(true));
-    base::RunLoop().RunUntilIdle();
+    base::RunLoop run_loop;
+    EXPECT_CALL(*this, OnAppLaunchResult(true))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
 
     auto routes = manager_.GetRoutes();
     EXPECT_EQ(1u, routes.size());
@@ -129,9 +132,13 @@ class DialActivityManagerTest : public testing::Test {
     loader_factory_.AddResponse(
         app_instance_url, network::mojom::URLResponseHead::New(), "",
         network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
+    base::RunLoop run_loop;
+    EXPECT_CALL(app_discovery_service_, DoFetchDialAppInfo(_, _))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
     EXPECT_CALL(*this,
                 OnStopAppResult(_, Not(mojom::RouteRequestResultCode::OK)));
-    base::RunLoop().RunUntilIdle();
+    run_loop.Run();
     return activity;
   }
 
@@ -217,8 +224,10 @@ TEST_F(DialActivityManagerTest, LaunchAppFails) {
       activity->launch_info.app_launch_url,
       network::mojom::URLResponseHead::New(), "",
       network::URLLoaderCompletionStatus(net::HTTP_SERVICE_UNAVAILABLE));
-  EXPECT_CALL(*this, OnAppLaunchResult(false));
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, OnAppLaunchResult(false))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 
   // Activity is removed on failure.
   EXPECT_TRUE(manager_.GetRoutes().empty());
@@ -248,9 +257,11 @@ TEST_F(DialActivityManagerTest, StopApp) {
   loader_factory_.AddResponse(app_instance_url,
                               network::mojom::URLResponseHead::New(), "",
                               network::URLLoaderCompletionStatus());
+  base::RunLoop run_loop;
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
-                                     mojom::RouteRequestResultCode::OK));
-  base::RunLoop().RunUntilIdle();
+                                     mojom::RouteRequestResultCode::OK))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 
   EXPECT_TRUE(manager_.GetRoutes().empty());
 }
@@ -271,9 +282,11 @@ TEST_F(DialActivityManagerTest, StopAppUseFallbackURL) {
   loader_factory_.AddResponse(app_instance_url,
                               network::mojom::URLResponseHead::New(), "",
                               network::URLLoaderCompletionStatus());
+  base::RunLoop run_loop;
   EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
-                                     mojom::RouteRequestResultCode::OK));
-  base::RunLoop().RunUntilIdle();
+                                     mojom::RouteRequestResultCode::OK))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
 
   EXPECT_TRUE(manager_.GetRoutes().empty());
 }
@@ -303,6 +316,37 @@ TEST_F(DialActivityManagerTest, TryToStopAppThatIsAlreadyStopped) {
 
   // |manager_|, upon learning that the app's state is already |kStopped|,
   // should remove the route.
+  EXPECT_TRUE(manager_.GetRoutes().empty());
+}
+
+TEST_F(DialActivityManagerTest, StopAppMaliciousLocationHeader) {
+  auto activity =
+      DialActivity::From(presentation_id_, sink_, source_id_, origin_);
+  ASSERT_TRUE(activity);
+  manager_.AddActivity(*activity);
+
+  // Malicious URL targeting localhost
+  GURL malicious_url("http://127.0.0.1:8080/api/admin/delete_all");
+
+  // Launch the app and receive the malicious LOCATION header
+  TestLaunchApp(*activity, std::nullopt, malicious_url);
+
+  // When stopping the app, it should NOT send a request to the malicious URL.
+  // Instead, it should use the fallback URL because the malicious one was
+  // rejected.
+  GURL fallback_url(activity->launch_info.app_launch_url.spec() + "/run");
+  manager_.SetExpectedRequest(fallback_url, "DELETE", std::nullopt);
+  StopApp(activity->route.media_route_id());
+
+  loader_factory_.AddResponse(fallback_url,
+                              network::mojom::URLResponseHead::New(), "",
+                              network::URLLoaderCompletionStatus());
+  base::RunLoop run_loop;
+  EXPECT_CALL(*this, OnStopAppResult(testing::Eq(std::nullopt),
+                                     mojom::RouteRequestResultCode::OK))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+  run_loop.Run();
+
   EXPECT_TRUE(manager_.GetRoutes().empty());
 }
 

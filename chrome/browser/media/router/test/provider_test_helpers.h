@@ -97,6 +97,7 @@ class MockDialAppDiscoveryService : public DialAppDiscoveryService {
                void(const MediaSink::Id& sink_id, const std::string& app_name));
 
   DialAppInfoCallback PassCallback();
+  bool HasPendingCallback() const;
 
  private:
   DialAppInfoCallback app_info_cb_;

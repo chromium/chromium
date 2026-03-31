@@ -30,7 +30,8 @@ GURL GetAppURL(const MediaSinkInternal& sink, const std::string& app_name) {
 // Returns the Application Instance URL from the POST response headers given by
 // |response_info|.
 GURL GetApplicationInstanceURL(
-    const network::mojom::URLResponseHead& response_info) {
+    const network::mojom::URLResponseHead& response_info,
+    const net::IPAddress& expected_ip) {
   if (!response_info.headers) {
     return GURL();
   }
@@ -50,6 +51,12 @@ GURL GetApplicationInstanceURL(
 
   GURL app_instance_url(*location_header);
   if (!app_instance_url.is_valid() || !app_instance_url.SchemeIs("http")) {
+    return GURL();
+  }
+
+  net::IPAddress host_address;
+  if (!net::ParseURLHostnameToAddress(app_instance_url.host(), &host_address) ||
+      host_address != expected_ip) {
     return GURL();
   }
 
@@ -301,7 +308,8 @@ void DialActivityManager::OnLaunchSuccess(const MediaRoute::Id& route_id,
       record->pending_launch_request->fetcher->GetResponseHead();
 
   DCHECK(response_info);
-  record->app_instance_url = GetApplicationInstanceURL(*response_info);
+  record->app_instance_url = GetApplicationInstanceURL(
+      *response_info, record->activity.sink.dial_data().ip_address);
   record->state = DialActivityManager::Record::State::kLaunched;
   std::move(record->pending_launch_request->callback).Run(true);
   record->pending_launch_request.reset();
