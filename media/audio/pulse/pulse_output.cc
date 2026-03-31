@@ -70,8 +70,11 @@ PulseAudioOutputStream::PulseAudioOutputStream(
                                          base::Unretained(manager_),
                                          /*trace_start=*/false)) {
   CHECK(params_.IsValid());
-  SendLogMessage("%s({device_id=%s}, {params=[%s]})", __func__,
-                 device_id.c_str(), params.AsHumanReadableString().c_str());
+  if (ShouldLog()) {
+    SendLogMessage(base::StringPrintf("%s({device_id=%s}, {params=[%s]})",
+                                      __func__, device_id.c_str(),
+                                      params.AsHumanReadableString().c_str()));
+  }
   audio_bus_ = AudioBus::Create(params_);
 }
 
@@ -85,13 +88,18 @@ PulseAudioOutputStream::~PulseAudioOutputStream() {
 
 bool PulseAudioOutputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  SendLogMessage("%s()", __func__);
+  if (ShouldLog()) {
+    SendLogMessage(base::StringPrintf("%s()", __func__));
+  }
   bool result = pulse::CreateOutputStream(
       &pa_mainloop_, &pa_context_, &pa_stream_, params_, device_id_,
       AudioManager::GetGlobalAppName(), &StreamNotifyCallback,
       &StreamRequestCallback, this);
   if (!result) {
-    SendLogMessage("%s => (ERROR: failed to open PA stream)", __func__);
+    if (ShouldLog()) {
+      SendLogMessage(base::StringPrintf(
+          "%s => (ERROR: failed to open PA stream)", __func__));
+    }
   }
   return result;
 }
@@ -137,7 +145,9 @@ void PulseAudioOutputStream::Reset() {
 
 void PulseAudioOutputStream::Close() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  SendLogMessage("%s()", __func__);
+  if (ShouldLog()) {
+    SendLogMessage(base::StringPrintf("%s()", __func__));
+  }
 
   Reset();
 
@@ -150,14 +160,12 @@ void PulseAudioOutputStream::Close() {
 // sufficient to simply always flush upon Start().
 void PulseAudioOutputStream::Flush() {}
 
-void PulseAudioOutputStream::SendLogMessage(const char* format, ...) {
-  if (log_callback_.is_null())
+void PulseAudioOutputStream::SendLogMessage(const std::string& message) {
+  if (!ShouldLog()) {
     return;
-  va_list args;
-  va_start(args, format);
-  log_callback_.Run("PAOS::" + UNSAFE_TODO(base::StringPrintV(format, args)) +
+  }
+  log_callback_.Run("PAOS::" + message +
                     base::StringPrintf(" [this=%p]", this));
-  va_end(args);
 }
 
 void PulseAudioOutputStream::FulfillWriteRequest(size_t requested_bytes) {
@@ -260,7 +268,9 @@ void PulseAudioOutputStream::Start(AudioSourceCallback* callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   CHECK(callback);
   CHECK(pa_stream_);
-  SendLogMessage("%s()", __func__);
+  if (ShouldLog()) {
+    SendLogMessage(base::StringPrintf("%s()", __func__));
+  }
 
   AutoPulseLock auto_lock(pa_mainloop_);
 
@@ -284,7 +294,9 @@ void PulseAudioOutputStream::Start(AudioSourceCallback* callback) {
 
 void PulseAudioOutputStream::Stop() {
   DCHECK(thread_checker_.CalledOnValidThread());
-  SendLogMessage("%s()", __func__);
+  if (ShouldLog()) {
+    SendLogMessage(base::StringPrintf("%s()", __func__));
+  }
 
   // Cork (pause) the stream.  Waiting for the main loop lock will ensure
   // outstanding callbacks have completed.

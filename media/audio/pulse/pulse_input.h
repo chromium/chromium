@@ -50,8 +50,10 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
   void SetOutputDeviceForAec(const std::string& output_device_id) override;
 
  private:
+  bool ShouldLog() const { return !log_callback_.is_null(); }
+
   // Helper method used for sending native logs to the registered client.
-  PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
+  void SendLogMessage(const std::string& message);
 
   // PulseAudio Callbacks.
   static void ReadCallback(pa_stream* handle, size_t length, void* user_data);
