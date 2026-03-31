@@ -2,7 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! FOR_RELEASE: Docs
+//! This crate defines proc-macros for deriving the `MojomParse` trait (and
+//! `PrimitiveEnum`, which also derives `MojomParse`).
+//!
+//! The behavior of the proc macros is conceptually very simple: we require
+//! every field to implement `MojomParse` independently, and then just invoke
+//! those implementations for each field.
+//!
+//! These macros are necessary because Rust does not support reflection; in
+//! order to iterate over the fields of a struct, we need to use compile-time
+//! syntax processing (that is, a proc-macro).
+//!
+//! When deriving `PrimitiveEnum`, we instead implement traits that allow easy
+//! conversion between the enum and `i32`, then use those to implement
+//! `MojomParse`.
 
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
@@ -276,7 +289,7 @@ pub fn derive_primitiveenum(input: proc_macro::TokenStream) -> proc_macro::Token
             panic!("Mojom enums must not have any variants with fields!")
         }
 
-        // FOR_RELEASE: See if any variants have a "default" attribute
+        // TODO(crbug.com/496945860): See if any variants have a "default" attribute
         default_variant = None; // Silence compiler until we do that
 
         let discriminant = compute_next_discriminant(&mut next_discriminant, variant.discriminant);

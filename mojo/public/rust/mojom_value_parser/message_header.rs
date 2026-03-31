@@ -5,7 +5,7 @@
 //! This module defines the format of mojom message headers, and the code to
 //! parse them. These headers are always the first thing in a mojom message.
 //!
-//! They are encoded as a regular mojom struct; however, that encoding makes
+//! Headers are encoded as a regular mojom struct; however, that encoding makes
 //! use of mojom's versioning feature, which is not yet implemented in the
 //! parser. Since headers are unavoidable, we define special parsing logic for
 //! them.
@@ -21,8 +21,8 @@
 //! field, which is fundamental enough that we should avoid special-casing it
 //! if possible.
 //!
-//! FOR_RELEASE: Once we completely support versioning, move all of this into
-//! `bindings/message_header.rs`.
+//! TODO(crbug.com/496924230): Once we completely support versioning, move all
+//! of this into `bindings/message_header.rs`.
 
 use crate::errors::*;
 use crate::parse_primitives::*;

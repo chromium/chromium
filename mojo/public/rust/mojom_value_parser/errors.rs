@@ -2,9 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Errors that the parser might return. User-visible.
-//! FOR_RELEASE: Docs
+//! This module defines errors that the parser might return.
+//!
+//! These errors are user-visible. However, they unavoidably refer to internal
+//! details of the parser, so it is not expected that the typical developer will
+//! interact with them. Most of the time, if one of these errors occurs, the
+//! process will be terminated and the error description will only appear in an
+//! error log.
 
+/// This is the return type of most parsing functions.
 pub type ParsingResult<T> = Result<T, ParsingError>;
 impl std::error::Error for ParsingError {}
 

@@ -18,13 +18,13 @@
 //!
 //! All parsers ensure that enough data exists, and return an error result if
 //! not.
+//!
+//! This strategy basically re-invents `nom`, but so long as it's limited to
+//! this crate, it's convenient to have our own version where we can tailor the
+//! behavior and input/output types.
 
-// FOR_RELEASE: This strategy basically re-invents nom, so we should consider
-// switching to that if we intend to keep going down this route.
-
-// FOR_RELEASE: The original doc says everything is little-endian, but someone
-// told me it might all be host-endian. Figure that out before it causes
-// problems.
+// TODO(crbug.com/496946897): Figure out if integers are encoded as
+// little-endian or host-endian.
 
 use crate::ast::UntypedHandle;
 use crate::errors::*;

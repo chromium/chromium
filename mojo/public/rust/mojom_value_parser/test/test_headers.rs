@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Verifies that our custom header (de)serialization works as expected.
+//! This module verifies that our custom header (de)serialization works as
+//! expected.
 //!
 //! Mojom headers are versioned, but the mojom value parser doesn't support
 //! versioning yet. Therefore, we have a custom parsing function for headers;

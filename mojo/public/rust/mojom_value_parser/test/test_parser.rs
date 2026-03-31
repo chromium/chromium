@@ -2,17 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Tests parsing and deparsing of values.
+//! This module validates the parsing/deparsing steps which translate between
+//! `MojomValue` and `[u8]`.
 //!
-//! FOR_RELEASE: Fill this out.
+//! The tests in this file operate by manually specifying the expected binary
+//! encoding for a given `MojomValue`. For convenience, the bytes are specified
+//! using a textual format designed for this purpose. For details, see
+//! `mojo/public/cpp/bindings/tests/validation_test_input_parser.h`.
 //!
-//! Note that this only focuses on testing the parsing/deparsing stage. We rely
-//! on test_mojomparse.rs to verify that the translations to/from rust types
-//! are accurate.
+//! For each test case, we specify a Rust value and the encoded binary it should
+//! correspond to, then we convert each of them to the other and make sure we
+//! get the expected value.
 //!
-//! The types in this file correspond to those defined in
+//! Note that although the tests in this file are converting between Rust types
+//! and `[u8]`, we have separate tests for the Rust <-> `MojomValue` step of the
+//! conversion in `test_mojomparse.rs`. This this file can be seen as only
+//! testing `MojomValue` <-> `[u8]` step.
+//!
+//! The types in this file are defined in
 //! //mojo/public/rust/test_mojom/parser_unittests.mojom
-
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
     "//mojo/public/rust/mojom_value_parser:parser_unittests_rust";
@@ -44,8 +52,8 @@ where
             // We currently don't do anything with handles, so only look at the data field
             .data;
 
-        // FOR_RELEASE: It would be nice to use the `verify_` macros from googletest
-        // that return a result, if we get access to them.
+        // TODO(crbug.com/456214728):: It would be nice to use the `verify_` macros from
+        // googletest that return a result, if we get access to them.
         expect_eq!(
             &value,
             &parse_single_value_for_testing(wire_data.as_ref(), &mut [], T::wire_type())?
@@ -85,8 +93,8 @@ where
         let mojom_value: MojomValue = value.into();
         let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
 
-        // FOR_RELEASE: It would be nice to use the `verify_` macros from googletest
-        // that return a result, if we get access to them.
+        // TODO(crbug.com/456214728): It would be nice to use the `verify_` macros from
+        // googletest that return a result, if we get access to them.
         expect_true!(equivalent_value(
             &mojom_value,
             &parse_single_value_for_testing(wire_data.as_ref(), &mut handles, T::wire_type())?

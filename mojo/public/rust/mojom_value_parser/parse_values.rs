@@ -8,19 +8,21 @@
 //! module need to know the type of the data they're parsing. Their job is to
 //! take an encoded value and produce a MojomValue of the corresponding type.
 //!
-//! These functions encode knowledge of Mojom's wire format, and are independent
-//! of any particular message.
-
-// IMPORTANT! These functions require the input MojomTypes to have
-// their fields in wire order. Use pack_mojom_type in pack.rs to ensure this.
-// In the future, we'll probably need a separate type for wire order, since
-// (at the very least) MojomType can't handle bitfields.
+//! The structure of this file mirrors the AST structure: there is generally one
+//! function for each AST type. The "core" functionality is in
+//! `parse_structured_body`, which is called by various more specialized
+//! functions (`deparse_struct`, `deparse_array`, etc). Each of those functions
+//! operates by transforming their particular object into something that looks
+//! like a struct, so it can then be parsed by the same code as other
+//! structured data.
 
 use crate::ast::*;
 use crate::errors::*;
 use crate::parse_primitives::*;
 use std::collections::BTreeMap;
 use std::sync::Arc;
+
+use itertools::Itertools;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(
@@ -96,25 +98,11 @@ fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<(
 /// Check if the parsed keys for a map have duplicates, and error out if so.
 ///
 /// This function promises not to mutate `keys` if it returns `Ok()`.
-/// FOR_RELEASE: Get itertools approved and use that instead.
 fn check_for_duplicate_keys(offset: usize, keys: &mut [MojomValue]) -> ParsingResult<()> {
-    // Check by inserting the keys into a hashset.
-    // insert returns false if the value was already present.
-    // Note that inserting references still compares the underlying values.
-    let mut unique_keys = std::collections::HashSet::new();
-    let mut dup_idx = 0;
-    let dup_exists = keys.iter().enumerate().any(|(idx, item)| {
-        if !unique_keys.insert(item) {
-            dup_idx = idx;
-            true
-        } else {
-            false
-        }
-    });
-    if dup_exists {
-        Err(ParsingError::duplicate_map_key(offset, std::mem::take(&mut keys[dup_idx])))
+    if let Some(dup) = keys.iter_mut().duplicates().next() {
+        return Err(ParsingError::duplicate_map_key(offset, std::mem::take(dup)));
     } else {
-        Ok(())
+        return Ok(());
     }
 }
 

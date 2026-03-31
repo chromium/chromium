@@ -33,6 +33,7 @@ rust_static_library("mojom_value_parser_core") {
   deps = [
     "../system",
     "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/itertools/v0_14:lib",
     "//third_party/rust/ordered_float/v5:lib",
   ]
 

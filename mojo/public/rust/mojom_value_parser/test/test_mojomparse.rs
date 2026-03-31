@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! Verifies that the MojomParse attribute is correctly derived.
+//! This module verifies that the MojomParse attribute is correctly derived.
 //!
-//! FOR_RELEASE: Rewrite the below comment to be clearer.
+//! The tests in this file operate by taking various Rust types that implement
+//! the `MojomParse` trait, and manually writing out what ASTs (`MojomType`,
+//! `MojomWireType`) they should correspond to. The Rust types are generated
+//! from `../test_util/parser_unittests.test-mojom`.
 //!
-//! Testing strategy: The existing tests for mojom bindings are end-to-end,
-//! relying on mojom files to specify their inputs and outputs. However, we
-//! want to unit-test the parser and deparser alone. Since they take ASTs as
-//! input, we first validate that the bindings generate the correct ASTs, and
-//! then we can use the bindings to generate various parser/deparser tests.
+//! For each type, we then ensure:
+//! 1. The `MojomParse` trait generates the expected `MojomType`.
+//! 2. That `MojomType` packs to the expected `MojomWireType`.
+//! 3. A value of of that type turns into an equivalent `MojomValue`, and
+//!    vice-versa.
 //!
-//! The types in this file correspond to those defined in
-//! //mojo/public/rust/test_mojom/parser_unittests.mojom
+//! In other words, this file unit-tests the different parts of the
+//! Rust Value <-> `MojomValue` translation. The actual binary encoding
+//! (`MojomValue` <-> [u8]) is tested in `test_parser.rs`.
 
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";

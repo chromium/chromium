@@ -7,16 +7,31 @@
 //!
 //! The canonical implementation lives in
 //! mojo/public/tools/mojom/mojom/generate/pack.py. We re-implement it here so
-//! that we can run it at compile-time instead of bindings-generation-time.
+//! that we can run it at runtime time instead of bindings-generation time.
+//! Ideally we would run it at compile time and embed the resulting wire type
+//! in the generated code, but since wire types involve heap allocations they
+//! aren't valid constants.
 //!
 //! At a high level, the algorithm is as follows: put the fields in declaration
 //! order, and then move fields backwards into empty padding bytes whenever
-//! possible. Note that nested structures (structs and arrays) are represented
-//! as 8-byte pointers.
-
-// FOR_RELEASE: There are additional complications for nullable types (which
-// get split into two fields), and booleans (which get packed together as
-// bitfields.)
+//! there's enough room. Note that nested structures (structs, arrays, and
+//! sometimes unions) are represented as 8-byte pointers.
+//!
+//! As an optimization, booleans get packed together as a bitfield instead of
+//! each getting their own byte. When packing a boolean, if there's an existing
+//! boolean earlier in the message, the later one will get assigned to the
+//! second bit of the prior one. The next boolean we see will get assigned to
+//! bit 3, and so on until the byte is full, at which point the process starts
+//! over with the next boolean we see.
+//!
+//! When a primitive is nullable, it gets split into two fields: a tag bit,
+//! followed by a value field. These fields get packed separately and are not
+//! necessarily contiguous (the tag bit will likely get lumped in with other
+//! booleans).
+//!
+//! A useful property of this algorithm is that if a field A appears before B,
+//! and sizeof(A) < sizeof(B), then A is guaranteed to still appear before B in
+//! the packed representation.
 
 use crate::ast::*;
 use std::collections::BTreeMap;
@@ -305,7 +320,10 @@ pub fn pack_struct_field(
 
 // Create a set of bitfields which contain exactly `n` bools, with ordinals
 // increasing from 0 to n-1.
-fn pack_n_bits(n: usize, is_tag_bits: bool) -> Vec<StructuredBodyElementMixed<'static>> {
+fn pack_n_bits<'a>(
+    n: usize,
+    is_tag_bits: bool,
+) -> impl Iterator<Item = StructuredBodyElementMixed<'a>> {
     let num_full_bitfields = n / 8; // Round down
     let remaining_bools = n % 8;
     let num_partial_bitfields = if remaining_bools == 0 { 0 } else { 1 };
@@ -324,37 +342,36 @@ fn pack_n_bits(n: usize, is_tag_bits: bool) -> Vec<StructuredBodyElementMixed<'s
         }))
     }
 
-    bitfields.into_iter().map(StructuredBodyElement::Bitfield).collect()
+    bitfields.into_iter().map(StructuredBodyElement::Bitfield)
 }
 
 /// Create a structured body out of an array. This can be thought of as part of
 /// the packing algorithm, but we can't actually run it until we know the number
 /// of elements in the array.
-///
-/// FOR_RELEASE: It would be nice to return an iterator directly, but the
-/// cleanest way to do that (AFAIK) is to use itertools::Either, and that crate
-/// isn't yet approved for use in chromium.
 pub fn pack_array_body<'a>(
     element_type: &'a MojomWireType,
     num_elements: usize,
-) -> Vec<StructuredBodyElementMixed<'a>> {
+) -> impl Iterator<Item = StructuredBodyElementMixed<'a>> + 'a {
     // If the array contains nullable primitives, then each element needs a tag
     // bit. Those tag bits appear at the beginning of the array body, in order,
     // before any of the array elements.
-    let tag_bits =
-        if element_type.is_nullable_primitive() { pack_n_bits(num_elements, true) } else { vec![] };
+    let tag_bits = if element_type.is_nullable_primitive() {
+        pack_n_bits(num_elements, true)
+    } else {
+        pack_n_bits(0, true) // Returns an empty iterator
+    };
 
     let packed_body = match element_type {
         // If the array contains booleans we'll need to convert them to bitfields
         // with the proper ordinals
         MojomWireType::Leaf { leaf_type: PackedLeafType::Bool, .. } => {
-            pack_n_bits(num_elements, false)
+            itertools::Either::Left(pack_n_bits(num_elements, false))
         }
         // All non-bool types just pack as themselves, in order
-        _ => (0..num_elements)
-            .map(|idx| StructuredBodyElement::SingleValue(idx, element_type))
-            .collect(),
+        _ => itertools::Either::Right(
+            (0..num_elements).map(move |idx| StructuredBodyElement::SingleValue(idx, element_type)),
+        ),
     };
 
-    tag_bits.into_iter().chain(packed_body).collect()
+    tag_bits.chain(packed_body)
 }

@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//! ALL the parsing!
-//
-// FOR_RELEASE: Figure out the organization of this crate, what needs to be
-// public, etc. For now, just export everything blindly.
+//! This is the root of the `mojom_value_parser_core` crate. It has all the
+//! actual parsing and deparsing logic.
+//!
+//! Since Chromium's testing model puts tests in a different crate, we just
+//! blindly re-export everything so we can use it elsewhere. Users should not
+//! depend on this crate; instead, they should use the `mojom_value_parser`
+//! crate (rooted in `lib_pub.rs`), which only exports the `api` module and some
+//! fundamental types.
 
 mod api;
 mod ast;

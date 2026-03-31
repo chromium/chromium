@@ -17,10 +17,7 @@ use std::sync::Arc;
 
 pub use system::mojo_types::UntypedHandle;
 
-// FOR_RELEASE: The current AST is dead simple: standard recursive data
-// structures. We'll probably need an intermediate one as well to represent data
-// on the wire, since it doesn't quite match the MojomValue structure (e.g.
-// packed bitfields). For a more optimized version, we could look into
+// TODO (crbug.com/496912351): For a more optimized version, we could look into
 // flat ASTs (using a single vector instead of a nested recursive structure).
 
 /// Representation of a type that can appear in a .mojom file.
@@ -60,9 +57,6 @@ pub enum MojomType {
 ///
 /// Note: the Hash trait is used to verify that maps don't have duplicate keys;
 /// the Ord trait is used so we can store these in BTreeMaps.
-// FOR_RELEASE: For the first iteration of the parser where we don't worry
-// about trying to be zero-copy, we just have this type own all its data.
-// We should migrate to a view type when we figure out how.
 #[derive(Debug, PartialEq, PartialOrd, Ord, Eq, Hash, Default)]
 pub enum MojomValue {
     /// This value is only produced during parsing/deparsing to serve as a
@@ -227,7 +221,6 @@ pub enum PackedStructuredType {
 #[derive(Debug, Clone, PartialEq)]
 /// An array on the wire may originate from one of three Mojom types:
 /// An unsized array, A size N array, or a string.
-/// FOR_RELEASE: Arrays of nullables may also be their own category?
 pub enum PackedArrayType {
     UnsizedArray,
     SizedArray(usize),
