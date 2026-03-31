@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "components/lens/contextual_input.h"
@@ -75,6 +76,9 @@ enum class ContextUploadErrorType {
 
 // Struct containing file information for a file upload.
 struct FileInfo {
+  // TODO(crbug.com/497396516): after fixing the issue, remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   FileInfo();
   FileInfo(const FileInfo& other);
