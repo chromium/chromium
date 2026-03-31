@@ -95,56 +95,59 @@ SendTabToSelfPageHandler::PendingRequest::operator=(PendingRequest&&) = default;
 
 SendTabToSelfPageHandler::PendingRequest::~PendingRequest() = default;
 
+std::optional<SendTabToSelfPageHandler::PendingRequest>
+SendTabToSelfPageHandler::TakePendingRequest(base::Token request_token) {
+  auto it = pending_requests_.find(request_token);
+  if (it == pending_requests_.end()) {
+    return std::nullopt;
+  }
+
+  PendingRequest request = std::move(it->second);
+  pending_requests_.erase(it);
+  return request;
+}
+
 void SendTabToSelfPageHandler::SelectorGeneratedForRequest(
     base::Token request_token,
     const std::string& selector,
     shared_highlighting::LinkGenerationError error,
     shared_highlighting::LinkGenerationReadyStatus /*ready_status*/) {
-  auto it = pending_requests_.find(request_token);
-  if (it == pending_requests_.end()) {
+  std::optional<PendingRequest> request = TakePendingRequest(request_token);
+  if (!request) {
     return;
   }
 
-  PendingRequest request = std::move(it->second);
-  pending_requests_.erase(it);
-
   std::pair<ScrollPositionGenerationOutcome, ScrollPosition> result =
-      ProcessSelectorGenerationResult(request, selector, error);
-  request.page_context.scroll_position = std::move(result.second);
+      ProcessSelectorGenerationResult(*request, selector, error);
+  request->page_context.scroll_position = std::move(result.second);
 
-  SendFinalizedRequest(std::move(request), result.first);
+  SendFinalizedRequest(std::move(*request), result.first);
 }
 
 void SendTabToSelfPageHandler::SelectorGenerationTimedOutForRequest(
     base::Token request_token) {
-  auto it = pending_requests_.find(request_token);
-  if (it == pending_requests_.end()) {
+  std::optional<PendingRequest> request = TakePendingRequest(request_token);
+  if (!request) {
     return;
   }
-
-  PendingRequest request = std::move(it->second);
-  pending_requests_.erase(it);
 
   content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   ScrollPositionGenerationOutcome outcome =
       ScrollPositionGenerationOutcome::kBrowserTimeout;
-  if (!main_frame || main_frame->GetGlobalId() != request.main_frame_id) {
+  if (!main_frame || main_frame->GetGlobalId() != request->main_frame_id) {
     outcome = ScrollPositionGenerationOutcome::kMainFrameChanged;
   }
 
-  SendFinalizedRequest(std::move(request), outcome);
+  SendFinalizedRequest(std::move(*request), outcome);
 }
 
 void SendTabToSelfPageHandler::CancelPendingRequest(base::Token request_token) {
-  auto it = pending_requests_.find(request_token);
-  if (it == pending_requests_.end()) {
+  std::optional<PendingRequest> request = TakePendingRequest(request_token);
+  if (!request) {
     return;
   }
 
-  PendingRequest request = std::move(it->second);
-  pending_requests_.erase(it);
-
-  SendFinalizedRequest(std::move(request),
+  SendFinalizedRequest(std::move(*request),
                        ScrollPositionGenerationOutcome::kMainFrameChanged);
 }
 
@@ -235,6 +238,21 @@ void SendTabToSelfPageHandler::MaybeExtractFormFields(PendingRequest& request) {
   }
 }
 
+void SendTabToSelfPageHandler::MaybeExtractNavigationHistory(
+    PendingRequest& request) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory)) {
+    content::NavigationController& controller = web_contents()->GetController();
+    std::vector<sessions::SerializedNavigationEntry> navigations;
+    for (int i = 0; i < controller.GetEntryCount(); ++i) {
+      navigations.push_back(
+          sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
+              i, controller.GetEntryAtIndex(i)));
+    }
+    request.navigation_history = NavigationHistory(
+        std::move(navigations), controller.GetCurrentEntryIndex());
+  }
+}
+
 void SendTabToSelfPageHandler::SendFinalizedRequest(
     PendingRequest request,
     std::optional<ScrollPositionGenerationOutcome> outcome) {
@@ -255,22 +273,12 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
     }
     return;
   }
-  NavigationHistory navigation_history;
-  if (base::FeatureList::IsEnabled(kSendTabToSelfPropagateNavigationHistory)) {
-    content::NavigationController& controller = web_contents()->GetController();
-    std::vector<sessions::SerializedNavigationEntry> navigations;
-    for (int i = 0; i < controller.GetEntryCount(); ++i) {
-      navigations.push_back(
-          sessions::ContentSerializedNavigationBuilder::FromNavigationEntry(
-              i, controller.GetEntryAtIndex(i)));
-    }
-    navigation_history = NavigationHistory(std::move(navigations),
-                                           controller.GetCurrentEntryIndex());
-  }
+
+  MaybeExtractNavigationHistory(request);
 
   model->AddEntry(request.url, request.title, request.target_device_guid,
                   std::move(request.page_context),
-                  std::move(navigation_history));
+                  std::move(request.navigation_history));
 
   if (request.result_callback) {
     std::move(request.result_callback).Run(SendTabToSelfResult::kSuccess);

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PAGE_HANDLER_H_
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PAGE_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -13,6 +14,7 @@
 #include "base/token.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
+#include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -77,9 +79,12 @@ class SendTabToSelfPageHandler
     std::string title;
     base::TimeTicks start_time;
     PageContext page_context;
+    NavigationHistory navigation_history;
     content::GlobalRenderFrameHostId main_frame_id;
     base::OnceCallback<void(SendTabToSelfResult)> result_callback;
   };
+
+  std::optional<PendingRequest> TakePendingRequest(base::Token request_token);
 
   void SelectorGeneratedForRequest(
       base::Token request_token,
@@ -101,6 +106,8 @@ class SendTabToSelfPageHandler
       shared_highlighting::LinkGenerationError error);
 
   void MaybeExtractFormFields(PendingRequest& request);
+
+  void MaybeExtractNavigationHistory(PendingRequest& request);
 
   void SendFinalizedRequest(
       PendingRequest request,
