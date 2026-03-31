@@ -16,6 +16,8 @@ include_rules = [
   "+third_party/coremltools/mlmodel/format",
   "+third_party/flatbuffers/src/include/flatbuffers",
   "+third_party/fp16/src/include/fp16.h",
+  "+third_party/fuzztest/src/fuzztest/fuzztest.h",
+  "+third_party/fuzztest/src/fuzztest/googletest_fixture_adapter.h",
   "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
   "+third_party/litert",
   "+third_party/microsoft_dxheaders",

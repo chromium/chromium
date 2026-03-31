@@ -312,6 +312,29 @@ source_set("tests") {
   }
 }
 
+test("webnn_graph_impl_fuzzer") {
+  sources = [
+    "webnn_graph_impl_fuzzer.cc",
+    "webnn_test_utils.cc",
+    "webnn_test_utils.h",
+  ]
+
+  fuzztests = [ "WebNNGraphImplFuzzer.SingleOpConv2d" ]
+
+  deps = [
+    ":webnn_service",
+    ":webnn_test_support",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//services/webnn/public/cpp",
+    "//services/webnn/public/mojom",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
 mojolpm_fuzzer_test("webnn_graph_mojolpm_textproto_fuzzer") {
   sources = [ "webnn_graph_mojolpm_fuzzer.cc" ]
 
