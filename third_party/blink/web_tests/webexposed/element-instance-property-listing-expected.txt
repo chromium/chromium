@@ -1290,6 +1290,7 @@ html element ul
     property compact
     property type
 html element usermedia
+    property error
     property initialPermissionStatus
     property invalidReason
     property isValid

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -39,7 +40,10 @@ void UserMediaRequestProviderCallbacks::OnError(
     const V8MediaStreamError* error,
     CaptureController* capture_controller,
     UserMediaRequestResult result) {
-  // TODO: b/494194590: Handle errors
+  if (element_) {
+    HTMLUserMediaElementMediaStream::From(*element_).SetError(error);
+    element_->DispatchEvent(*Event::Create(event_type_names::kStream));
+  }
 }
 
 void UserMediaRequestProviderCallbacks::Trace(Visitor* visitor) const {

@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_HTML_USER_MEDIA_ELEMENT_MEDIA_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_HTML_USER_MEDIA_ELEMENT_MEDIA_STREAM_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -21,16 +22,23 @@ class MODULES_EXPORT HTMLUserMediaElementMediaStream final
 
   static HTMLUserMediaElementMediaStream& From(HTMLUserMediaElement&);
   static MediaStream* stream(HTMLUserMediaElement&);
+  static const V8UnionDOMExceptionOrOverconstrainedError* error(
+      HTMLUserMediaElement& element);
 
   explicit HTMLUserMediaElementMediaStream(HTMLUserMediaElement&);
 
   MediaStream* GetMediaStream() const { return media_stream_.Get(); }
   void SetMediaStream(MediaStream* stream) { media_stream_ = stream; }
 
+  void SetError(const V8UnionDOMExceptionOrOverconstrainedError* error) {
+    error_ = error;
+  }
+
   void Trace(Visitor*) const override;
 
  private:
   Member<MediaStream> media_stream_;
+  Member<const V8UnionDOMExceptionOrOverconstrainedError> error_;
 };
 
 }  // namespace blink

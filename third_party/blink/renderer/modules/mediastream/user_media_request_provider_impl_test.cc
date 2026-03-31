@@ -5,23 +5,35 @@
 #include "third_party/blink/renderer/modules/mediastream/user_media_request_provider_impl.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_domexception_overconstrainederror.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/events/event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_user_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/mediastream/html_user_media_element_media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
-#include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 
 namespace blink {
 
-class UserMediaRequestProviderImplTest : public PageTestBase {};
+class UserMediaRequestProviderImplTest : public PageTestBase {
+ public:
+  void SetUp() override {
+    PageTestBase::SetUp();
+    UserMediaRequestProviderImpl::ProvideTo(*GetDocument().domWindow());
+  }
+};
 
 // Verifies that the provider doesn't crash when attempting to process a request
 // without a valid UserMediaClient.
 TEST_F(UserMediaRequestProviderImplTest, StartRequestEarlyExitNoClient) {
-  UserMediaRequestProviderImpl::ProvideTo(*GetDocument().domWindow());
   auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
@@ -32,7 +44,6 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestEarlyExitNoClient) {
 // Verifies that StartRequest gracefully exits and makes no changes when an
 // active stream is already present.
 TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveStreamExists) {
-  UserMediaRequestProviderImpl::ProvideTo(*GetDocument().domWindow());
   auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
@@ -61,6 +72,44 @@ TEST_F(UserMediaRequestProviderImplTest, CallbacksOnSuccessWithStream) {
 
   // The stream should have been set on the element.
   EXPECT_EQ(HTMLUserMediaElementMediaStream::stream(*element), stream);
+}
+
+class TestEventListener : public NativeEventListener {
+ public:
+  void Invoke(ExecutionContext*, Event* event) override { fired_ = true; }
+  bool fired() const { return fired_; }
+
+ private:
+  bool fired_ = false;
+};
+
+TEST_F(UserMediaRequestProviderImplTest, CallbacksOnError) {
+  auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  auto* callbacks =
+      MakeGarbageCollected<UserMediaRequestProviderCallbacks>(element);
+
+  // Set up event listener
+  auto* listener = MakeGarbageCollected<TestEventListener>();
+  element->addEventListener(event_type_names::kStream, listener);
+
+  EXPECT_EQ(HTMLUserMediaElementMediaStream::error(*element), nullptr);
+
+  DOMException* dom_exception =
+      DOMException::Create("Some error message", "NotFoundError");
+  V8MediaStreamError* error =
+      MakeGarbageCollected<V8UnionDOMExceptionOrOverconstrainedError>(
+          dom_exception);
+  callbacks->OnError(nullptr, error, nullptr, UserMediaRequestResult());
+
+  // Check that the event was fired and the error was set
+  EXPECT_TRUE(listener->fired());
+  EXPECT_NE(HTMLUserMediaElementMediaStream::error(*element), nullptr);
+  EXPECT_TRUE(
+      HTMLUserMediaElementMediaStream::error(*element)->IsDOMException());
+  EXPECT_EQ(HTMLUserMediaElementMediaStream::error(*element)
+                ->GetAsDOMException()
+                ->name(),
+            "NotFoundError");
 }
 
 }  // namespace blink

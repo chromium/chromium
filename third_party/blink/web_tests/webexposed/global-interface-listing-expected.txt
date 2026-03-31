@@ -5445,6 +5445,7 @@ interface HTMLUnknownElement : HTMLElement
 interface HTMLUserMediaElement : HTMLElement
     static method isTypeSupported
     attribute @@toStringTag
+    getter error
     getter initialPermissionStatus
     getter invalidReason
     getter isValid
