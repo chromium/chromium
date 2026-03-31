@@ -10,7 +10,10 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @implementation LabelContentView {
+  // The configuration for this view.
   LabelContentConfiguration* _configuration;
+
+  // The label to display the text.
   UILabel* _label;
 }
 
@@ -58,6 +61,8 @@
   _label.textAlignment = NSTextAlignmentRight;
   [self addSubview:_label];
   AddSameConstraints(_label, self);
+  [_label setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 - (void)applyConfiguration {

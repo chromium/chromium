@@ -9,8 +9,20 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+
+// The maximum width of the date picker or the label in the Autofill AI Entity
+// Edit View. This is used to prevent it occupying more space than needed in the
+// table view cell.
+const CGFloat kAutofillAIEntityEditDateMaxWidth = 150.0;
+
+}  // namespace
+
 @implementation DatePickerContentView {
+  // The configuration for this view.
   DatePickerContentConfiguration* _configuration;
+
+  // The compact date picker.
   UIDatePicker* _picker;
 }
 
@@ -26,8 +38,11 @@
 
     _configuration = [configuration copy];
     [self applyConfiguration];
-
     AddSameConstraints(_picker, self);
+    NSLayoutConstraint* maxWidthConstraint = [_picker.widthAnchor
+        constraintLessThanOrEqualToConstant:kAutofillAIEntityEditDateMaxWidth];
+    maxWidthConstraint.priority = UILayoutPriorityRequired - 1;
+    maxWidthConstraint.active = YES;
   }
   return self;
 }
@@ -73,7 +88,7 @@
                 action:_configuration.selector
       forControlEvents:UIControlEventValueChanged];
   _picker.date = _configuration.date ?: [NSDate date];
-  _picker.tintColor = [UIColor colorNamed:kBlue300Color];
+  _picker.tintColor = [UIColor colorNamed:kBlue600Color];
   _picker.userInteractionEnabled = _configuration.userInteractionEnabled;
 }
 
