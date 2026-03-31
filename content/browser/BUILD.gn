@@ -1607,6 +1607,8 @@ source_set("browser") {
     "preloading/prefetch/no_vary_search_helper.h",
     "preloading/prefetch/pre_prefetch_handle_impl.cc",
     "preloading/prefetch/pre_prefetch_handle_impl.h",
+    "preloading/prefetch/pre_prefetch_service_impl.cc",
+    "preloading/prefetch/pre_prefetch_service_impl.h",
     "preloading/prefetch/prefetch_canary_checker.cc",
     "preloading/prefetch/prefetch_canary_checker.h",
     "preloading/prefetch/prefetch_container.cc",

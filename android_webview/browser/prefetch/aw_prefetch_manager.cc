@@ -106,7 +106,12 @@ class AwPrefetchRequestStatusListener
 };
 
 AwPrefetchManager::AwPrefetchManager(content::BrowserContext* browser_context)
-    : browser_context_(*browser_context) {
+    : browser_context_(*browser_context),
+      aw_pre_prefetch_service_(
+          base::FeatureList::IsEnabled(
+              features::kWebViewPrefetchOffTheMainThread)
+              ? content::PrePrefetchService::Create(&browser_context_.get())
+              : nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT_INSTANT("android_webview",
                       "AwPrefetchManager::AwPrefetchManager");
@@ -302,10 +307,21 @@ int AwPrefetchManager::StartRequest(
     DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
     CHECK(base::FeatureList::IsEnabled(
         features::kWebViewPrefetchOffTheMainThread));
-    // TODO(crbug.com/452406598, crbug.com/452389538): Start PrePrefetch via
-    // `PrePrefetchService`.
-    pre_prefetch_handle = nullptr;
-    NOTIMPLEMENTED();
+    CHECK(aw_pre_prefetch_service_);
+    pre_prefetch_handle = aw_pre_prefetch_service_->StartPrePrefetchRequest(
+        pf_url, AW_PREFETCH_METRICS_SUFFIX,
+        GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+        expected_no_vary_search,
+        base::FeatureList::IsEnabled(
+            ::features::kWebViewPrefetchHighestPrefetchPriority)
+            ? std::optional(content::PrefetchPriority::kHighest)
+            : std::nullopt,
+        additional_headers, std::move(request_status_listener),
+        base::Seconds(aw_prefetch_manager_data_.GetTtlInSec()),
+        /*should_append_variations_header=*/false,
+        base::FeatureList::IsEnabled(
+            kWebViewPrefetchDisableBlockUntilHeadTimeout),
+        should_bypass_http_cache);
   } else {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     prefetch_handle = browser_context_->StartBrowserPrefetchRequest(

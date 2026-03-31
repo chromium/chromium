@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -260,7 +261,9 @@ TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
 TEST_F(AwPrefetchManagerNoNetworkServiceDedicatedThreadTest,
        DeduplicationWebViewPrefetchOffTheMainThreadEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kWebViewPrefetchOffTheMainThread);
+  feature_list.InitWithFeatures({features::kWebViewPrefetchOffTheMainThread,
+                                 ::features::kPrefetchOffTheMainThread},
+                                {});
 
   const std::string prefetch_url = "https://example.com";
   const int ttl_in_sec = 10;

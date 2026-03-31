@@ -307,7 +307,9 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewPrefetchOffTheMainThread"})
+    @CommandLineFlags.Add({
+        "disable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
     public void
             testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_OMTPrefetchDisabled() {
         testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
@@ -316,7 +318,9 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewPrefetchOffTheMainThread"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
     public void
             testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_OMTPrefetchEnabled() {
         testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
@@ -389,7 +393,9 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"disable-features=WebViewPrefetchOffTheMainThread"})
+    @CommandLineFlags.Add({
+        "disable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
     public void
             testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_OMTPrefetchDisabled() {
         testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();
@@ -398,7 +404,9 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=WebViewPrefetchOffTheMainThread"})
+    @CommandLineFlags.Add({
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
     public void
             testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_OMTPrefetchEnabled() {
         testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();

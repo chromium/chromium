@@ -11,7 +11,7 @@ namespace content {
 
 PrePrefetchHandleImpl::PrePrefetchHandleImpl() {
   CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
-  DCHECK(!BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
 }
 
 PrePrefetchHandleImpl::~PrePrefetchHandleImpl() = default;

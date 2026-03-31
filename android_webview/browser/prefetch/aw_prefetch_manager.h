@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/pre_prefetch_handle.h"
+#include "content/public/browser/pre_prefetch_service.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -169,6 +170,11 @@ class AwPrefetchManager {
       const base::android::JavaRef<jobject>& callback_executor);
 
   const raw_ref<content::BrowserContext> browser_context_;
+
+  // Since `AwPrefetchManager` is owned by `AwBrowserContext(Store)` as a static
+  // `base::NoDestructor`, `content::PrePrefetchService`'s dtor will never be
+  // called.
+  const std::unique_ptr<content::PrePrefetchService> aw_pre_prefetch_service_;
 
   // Manages all the mutable states of `this`. Acquires a lock internally so
   // it should be thread safe from any accesses from any threads.
