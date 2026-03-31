@@ -268,24 +268,33 @@ SmartCardService::GetNewConnectionWatcher(const std::string& reader) {
 }
 
 void SmartCardService::OnMojoWatcherPipeClosed() {
-  auto receiver_id = connection_watcher_receivers_.current_receiver();
+  RemoveConnectionWatcher(
+      connection_watcher_receivers_.current_receiver(),
+      SmartCardConnectionClosedReason::kSmartCardConnectionClosedDisconnect);
+}
+
+void SmartCardService::RemoveConnectionWatcher(
+    mojo::ReceiverId receiver_id,
+    SmartCardConnectionClosedReason reason) {
   auto reader_it = reader_names_per_watcher_.find(receiver_id);
   if (reader_it == reader_names_per_watcher_.end()) {
     return;
   }
   const std::string& reader = reader_it->second;
   auto reader_ids_it = connection_watchers_per_reader_.find(reader);
-  if (reader_ids_it == connection_watchers_per_reader_.end()) {
-    return;
+  if (reader_ids_it != connection_watchers_per_reader_.end()) {
+    reader_ids_it->second.erase(receiver_id);
+    if (reader_ids_it->second.empty()) {
+      connection_watchers_per_reader_.erase(reader_ids_it);
+    }
   }
-  reader_ids_it->second.erase(receiver_id);
   reader_names_per_watcher_.erase(reader_it);
 
   if (reader_names_per_watcher_.empty()) {
     GetSmartCardDelegate().NotifyLastConnectionLost(render_frame_host());
   }
-  RecordSmartCardConnectionClosedReason(
-      SmartCardConnectionClosedReason::kSmartCardConnectionClosedDisconnect);
+  RecordSmartCardConnectionClosedReason(reason);
+  connection_watcher_receivers_.Remove(receiver_id);
 }
 
 void SmartCardService::OnPermissionRevoked(const url::Origin& origin) {
@@ -304,10 +313,9 @@ void SmartCardService::OnPermissionRevoked(const url::Origin& origin) {
     base::Extend(watchers_of_connections_to_remove, receiver_ids);
   }
   for (const auto& receiver_id : watchers_of_connections_to_remove) {
-    connection_watcher_receivers_.Remove(receiver_id);
-    RecordSmartCardConnectionClosedReason(
-        SmartCardConnectionClosedReason::
-            kSmartCardConnectionClosedPermissionRevoked);
+    RemoveConnectionWatcher(receiver_id,
+                            SmartCardConnectionClosedReason::
+                                kSmartCardConnectionClosedPermissionRevoked);
   }
 }
 

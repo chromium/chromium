@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
+#include "content/browser/smart_card/smart_card_histograms.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/smart_card_delegate.h"
@@ -82,6 +83,8 @@ class CONTENT_EXPORT SmartCardService
   GetNewConnectionWatcher(const std::string& reader);
 
   void OnMojoWatcherPipeClosed();
+  void RemoveConnectionWatcher(mojo::ReceiverId receiver_id,
+                               SmartCardConnectionClosedReason reason);
 
   // Sends SmartCardContext calls to the platform's PC/SC stack.
   // Maps a wrapper context to its corresponding real context.

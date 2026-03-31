@@ -2034,6 +2034,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, WatcherClosedWhenPermissionExpired) {
             }));
     EXPECT_CALL(delegate, HasReaderPermission(_, "Fake reader"))
         .WillOnce(Return(false));
+    EXPECT_CALL(delegate, NotifyLastConnectionLost(_));
   }
 
   EXPECT_TRUE(ExecJs(shell(), R"(
