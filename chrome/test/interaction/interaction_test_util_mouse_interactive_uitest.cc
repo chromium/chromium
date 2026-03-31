@@ -33,8 +33,7 @@ class InteractionTestUtilMouseUiTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    mouse_ = std::make_unique<Mouse>(
-        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget());
+    mouse_ = std::make_unique<Mouse>(browser()->window()->GetNativeWindow());
     CHECK(mouse_->SetTouchMode(GetParam()));
   }
 

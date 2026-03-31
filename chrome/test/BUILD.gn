@@ -11133,6 +11133,8 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
       "//mojo/public/cpp/system",
       "//ui/base/interaction:test_support",
+      "//ui/views/interaction:test_support",
+      "//ui/views/interaction:test_support_mouse",
     ]
 
     deps = [

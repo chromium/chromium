@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/gfx/native_ui_types.h"
-#include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/client/drag_drop_client.h"
@@ -41,7 +40,7 @@
 namespace views::test {
 
 namespace {
-raw_ptr<InteractionTestUtilMouse> g_current_mouse_util = nullptr;
+InteractionTestUtilMouse* g_current_mouse_util = nullptr;
 
 void PostTask(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
@@ -194,9 +193,6 @@ class InteractionTestUtilMouse::DragEnder
 };
 
 #endif  // defined(USE_AURA)
-
-InteractionTestUtilMouse::InteractionTestUtilMouse(views::Widget* widget)
-    : InteractionTestUtilMouse(widget->GetNativeWindow()) {}
 
 InteractionTestUtilMouse::~InteractionTestUtilMouse() {
   CHECK(!performing_gestures_)

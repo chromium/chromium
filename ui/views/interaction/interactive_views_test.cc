@@ -298,7 +298,7 @@ void InteractiveViewsTestApi::SetContextWidget(Widget* widget) {
     CHECK(!test_impl_->mouse_util_)
         << "Changing the context widget during a test is not supported.";
     test_impl_->mouse_util_ =
-        std::make_unique<InteractionTestUtilMouse>(widget);
+        std::make_unique<InteractionTestUtilMouse>(widget->GetNativeWindow());
   } else {
     private_test_impl().set_default_context(ui::ElementContext());
     test_impl_->mouse_util_.reset();

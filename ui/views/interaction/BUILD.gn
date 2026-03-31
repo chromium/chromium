@@ -1,0 +1,85 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
+import("//testing/test.gni")
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "element_tracker_views_unittest.cc",
+    "element_tracker_widget_state_unittest.cc",
+    "interaction_sequence_views_unittest.cc",
+    "interaction_test_util_views_unittest.cc",
+    "interactive_views_test_unittest.cc",
+    "view_focus_observer_unittest.cc",
+    "widget_focus_observer_unittest.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":test_support_mouse",
+    "//base",
+    "//base/test:test_support",
+    "//ui/accessibility:ax_base",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "interaction_test_util_views.cc",
+    "interaction_test_util_views.h",
+    "interactive_views_test.cc",
+    "interactive_views_test.h",
+    "interactive_views_test_internal.cc",
+    "interactive_views_test_internal.h",
+    "polling_view_observer.h",
+    "view_focus_observer.cc",
+    "view_focus_observer.h",
+    "widget_focus_observer.cc",
+    "widget_focus_observer.h",
+  ]
+
+  deps = [
+    ":test_support_mouse",
+    "//base",
+    "//base/test:test_support",
+    "//ui/accessibility:ax_base",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}
+
+source_set("test_support_mouse") {
+  testonly = true
+  sources = [
+    "interaction_test_util_mouse.cc",
+    "interaction_test_util_mouse.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//ui/base:test_support",
+    "//ui/base/interaction:test_support",
+    "//ui/views",
+  ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+}

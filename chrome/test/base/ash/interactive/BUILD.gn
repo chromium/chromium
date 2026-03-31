@@ -52,5 +52,8 @@ source_set("test_support") {
     "//chromeos/services/network_config/public/mojom",
   ]
 
-  public_deps = [ "//ui/base/interaction:test_support" ]
+  public_deps = [
+    "//ui/base/interaction:test_support",
+    "//ui/views/interaction:test_support",
+  ]
 }

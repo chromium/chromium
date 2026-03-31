@@ -19,11 +19,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_ui_types.h"
 
-namespace views {
-
-class Widget;
-
-namespace test {
+namespace views::test {
 
 // Class which provides useful primitives for controlling the mouse and then
 // cleaning up mouse state (even if a test fails). As this object does control
@@ -35,7 +31,7 @@ class InteractionTestUtilMouse {
   // Construct for a particular window or browser. This is required because the
   // util object may need access to a drag controller, which is most easily
   // accessed via the window.
-  explicit InteractionTestUtilMouse(Widget* widget);
+  explicit InteractionTestUtilMouse(gfx::NativeWindow window);
 
   ~InteractionTestUtilMouse();
   InteractionTestUtilMouse(const InteractionTestUtilMouse&) = delete;
@@ -134,8 +130,6 @@ class InteractionTestUtilMouse {
   void CancelAllGestures();
 
  private:
-  explicit InteractionTestUtilMouse(gfx::NativeWindow window);
-
   // Helper methods for adding gestures to a gesture list.
   static void AddGestures(MouseGestures& gestures, MouseGesture to_add);
   static void AddGestures(MouseGestures& gestures, MouseGestures to_add);
@@ -194,7 +188,6 @@ bool InteractionTestUtilMouse::PerformGestures(const GestureParams& params,
   return PerformGesturesImpl(params, std::move(gesture_list));
 }
 
-}  // namespace test
-}  // namespace views
+}  // namespace views::test
 
 #endif  // UI_VIEWS_INTERACTION_INTERACTION_TEST_UTIL_MOUSE_H_
