@@ -31,6 +31,7 @@
 #include "llvm/Support/TargetSelect.h"
 #include "partition_alloc_project.h"
 #include "project.h"
+#include "skia_project.h"
 
 namespace {
 
@@ -50,11 +51,14 @@ ProjectName g_project;
 const Project* GetProject() {
   static constexpr ChromeProject kChromeProject;
   static constexpr PartitionAllocProject kPartitionAllocProject;
+  static constexpr SkiaProject kSkiaProject;
   switch (g_project) {
     case ProjectName::kChrome:
       return &kChromeProject;
     case ProjectName::kPartitionAlloc:
       return &kPartitionAllocProject;
+    case ProjectName::kSkia:
+      return &kSkiaProject;
     default:
       llvm_unreachable("Unhandled project type in GetProject()");
   }

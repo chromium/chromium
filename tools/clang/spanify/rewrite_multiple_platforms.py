@@ -28,9 +28,13 @@ PROJECTS = {
         'base/allocator/partition_allocator/src',
         'tool_arg':
         '--project=partition_alloc',
-        'build_targets': [
-            '//base/allocator/partition_allocator/src/partition_alloc:'
-        ],
+        'build_targets':
+        ['//base/allocator/partition_allocator/src/partition_alloc'],
+    },
+    'skia': {
+        'compile_dirs': 'third_party/skia',
+        'tool_arg': '--project=skia',
+        'build_targets': ['//third_party/skia']
     },
 }
 
