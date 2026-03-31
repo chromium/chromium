@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//components/optimization_guide/features.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("optimization_guide") {
@@ -164,14 +162,9 @@ if (!is_android) {
       "model_execution/model_execution_validation_browsertest.cc",
       "optimization_guide_keyed_service_browsertest.cc",
       "optimization_guide_tab_url_provider_browsertest.cc",
+      "prediction/prediction_manager_browsertest.cc",
+      "prediction/prediction_model_store_browsertest.cc",
     ]
-
-    if (build_with_tflite_lib) {
-      sources += [
-        "prediction/prediction_manager_browsertest.cc",
-        "prediction/prediction_model_store_browsertest.cc",
-      ]
-    }
 
     deps = [
       ":optimization_guide",

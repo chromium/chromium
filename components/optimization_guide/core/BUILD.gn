@@ -454,17 +454,14 @@ static_library("core") {
     "//components/leveldb_proto",
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/core:interfaces",
+    "//components/optimization_guide/core/inference",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//third_party/re2",
-  ]
-  if (build_with_tflite_lib) {
-    public_deps += [
-      "//components/optimization_guide/core/inference",
 
-      # TODO: crbug.com/421262905 - Don't provide compression_utils
-      "//third_party/zlib/google:compression_utils",
-    ]
-  }
+    # TODO: crbug.com/421262905 - Don't provide compression_utils
+    "//third_party/zlib/google:compression_utils",
+  ]
+
   if (build_with_model_execution) {
     public_deps += [ ":manifest_broker" ]
   }
@@ -654,11 +651,8 @@ group("test_support") {
     ":filters_test_support",
     ":hints_test_support",
     ":model_execution_test_support",
+    "//components/optimization_guide/core/inference:test_support",
   ]
-  if (build_with_tflite_lib) {
-    public_deps +=
-        [ "//components/optimization_guide/core/inference:test_support" ]
-  }
 }
 
 if (is_ios) {
@@ -884,6 +878,7 @@ source_set("unit_tests") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/core/inference:unit_tests",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
@@ -892,9 +887,6 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  if (build_with_tflite_lib) {
-    deps += [ "//components/optimization_guide/core/inference:unit_tests" ]
-  }
 }
 
 bundle_data("unit_tests_bundle_data") {

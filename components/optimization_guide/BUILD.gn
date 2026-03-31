@@ -4,10 +4,7 @@ import("//third_party/mediapipe/features.gni")
 
 buildflag_header("machine_learning_tflite_buildflags") {
   header = "machine_learning_tflite_buildflags.h"
-  flags = [
-    "BUILD_WITH_MEDIAPIPE_LIB=$build_with_mediapipe_lib",
-    "BUILD_WITH_TFLITE_LIB=$build_with_tflite_lib",
-  ]
+  flags = [ "BUILD_WITH_MEDIAPIPE_LIB=$build_with_mediapipe_lib" ]
 }
 
 buildflag_header("optimization_guide_buildflags") {

@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/optimization_guide/core/inference/model_validator.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
@@ -24,15 +25,10 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/core/inference/model_validator.h"
-#endif  // BUILD_WITH_TFLITE_LIB
 
 namespace {
 
@@ -74,7 +70,6 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
   if (!opt_guide_service) {
     return;
   }
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   if (switches::ShouldValidateModel()) {
     // Create the validator object which will get destroyed when the model
     // load is complete.
@@ -83,7 +78,6 @@ ModelValidatorKeyedService::ModelValidatorKeyedService(Profile* profile)
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
   }
-#endif  // BUILD_WITH_TFLITE_LIB
   if (switches::ShouldValidateModelExecution()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     if (!identity_manager) {
