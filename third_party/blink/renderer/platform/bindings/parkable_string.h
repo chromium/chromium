@@ -8,8 +8,10 @@
 #include <cstdint>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -391,6 +393,36 @@ class PLATFORM_EXPORT ParkableString final {
   bool IsNull() const { return !impl_; }
   unsigned length() const { return impl_ ? impl_->length() : 0; }
   bool may_be_parked() const { return impl_ && impl_->may_be_parked(); }
+
+  // A reference wrapper to hold the digest of a string. `DigestHolder` and the
+  // return value of `DigestHolder::Get()` shall not outlive the original
+  // `ParableString`.
+  class DigestHolder {
+   public:
+    ~DigestHolder() = default;
+
+    explicit DigestHolder(const SecureStringDigest* digest)
+        : holder_(std::in_place_index<0>, digest) {}
+    explicit DigestHolder(std::unique_ptr<SecureStringDigest> digest)
+        : holder_(std::in_place_index<1>, std::move(digest)) {}
+
+    [[nodiscard]] const SecureStringDigest& Get() const LIFETIME_BOUND {
+      const SecureStringDigest* digest =
+          std::visit([](const auto& e) { return e.get(); }, holder_);
+      CHECK(digest);
+      CHECK_EQ(digest->size(), kSha256Bytes);
+      return *digest;
+    }
+
+   private:
+    // Must be a valid pointer.
+    const std::variant<raw_ptr<const SecureStringDigest>,
+                       std::unique_ptr<const SecureStringDigest>>
+        holder_;
+  };
+
+  // The returned `DigestHolder` shouldn't outlive `this`.
+  [[nodiscard]] DigestHolder Digest() const LIFETIME_BOUND;
 
   ParkableStringImpl* Impl() const { return impl_ ? impl_.get() : nullptr; }
   // Returns an unparked version of the string.

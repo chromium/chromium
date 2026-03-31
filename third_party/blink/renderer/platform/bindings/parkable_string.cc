@@ -1087,6 +1087,18 @@ bool ParkableString::Is8Bit() const {
   return impl_->is_8bit();
 }
 
+ParkableString::DigestHolder ParkableString::Digest() const {
+  // If `may_be_parked()` is true, `impl_` must have its pre-computed digest.
+  // In this case, the raw pointer to the `SecureStringDigest` is available,
+  // and we don't have to release it. Otherwise, the digest should be computed
+  // by `ParkableStringImpl::HashString()`. In this case, the function returns
+  // `std::unique_ptr`, meaning that we have obligation to call its destructor
+  // properly. `DigestHoler` is a wrapper to veil this difference.
+  return impl_ && may_be_parked()
+             ? DigestHolder(impl_->digest())
+             : DigestHolder(ParkableStringImpl::HashString(ToString().Impl()));
+}
+
 const String& ParkableString::ToString() const {
   return impl_ ? impl_->ToString() : g_empty_string;
 }

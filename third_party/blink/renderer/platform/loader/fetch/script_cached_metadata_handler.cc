@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -116,25 +117,12 @@ ScriptCachedMetadataHandlerWithHashing::ScriptCachedMetadataHandlerWithHashing(
 void ScriptCachedMetadataHandlerWithHashing::Check(
     CodeCacheHost* code_cache_host,
     const ParkableString& source_text) {
-  std::unique_ptr<SecureStringDigest> digest_holder;
-  const SecureStringDigest* digest;
-  // ParkableStrings have usually already computed the digest unless they're
-  // quite short (see ParkableStringManager::ShouldPark), so usually we can just
-  // use the pre-existing digest.
-  ParkableStringImpl* impl = source_text.Impl();
-  if (impl && impl->may_be_parked()) {
-    digest = impl->digest();
-  } else {
-    const String& unparked = source_text.ToString();
-    digest_holder = ParkableStringImpl::HashString(unparked.Impl());
-    digest = digest_holder.get();
-  }
-
-  CHECK_EQ(digest->size(), kSha256Bytes);
+  const ParkableString::DigestHolder digest_holder = source_text.Digest();
+  const SecureStringDigest& digest = digest_holder.Get();
 
   if (hash_state_ != kUninitialized) {
     // Compare the hash of the new source text with the one previously loaded.
-    if (base::span(*digest) != hash_) {
+    if (base::span(digest) != hash_) {
       // If this handler was previously checked and is now being checked again
       // with a different hash value, then something bad happened. We expect the
       // handler to only be used with one script source text.
@@ -147,7 +135,7 @@ void ScriptCachedMetadataHandlerWithHashing::Check(
 
   // Remember the computed hash so that it can be used when saving data to
   // persistent storage.
-  base::span(hash_).copy_from(*digest);
+  base::span(hash_).copy_from(digest);
   hash_state_ = kChecked;
 }
 
