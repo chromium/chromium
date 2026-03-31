@@ -2517,11 +2517,13 @@ TEST_F(PopupViewViewsTest, SearchBar_QueryIsSetAsFilterToController) {
     EXPECT_CALL(
         controller(),
         SetFilter(std::optional(AutofillPopupController::SuggestionFilter(
-            AutofillPopupController::StringFilter(u"search input")))));
+                      AutofillPopupController::StringFilter(u"search input"))),
+                  AutofillPopupController::FilterSource::kInputChanged));
     EXPECT_CALL(check, Call);
     EXPECT_CALL(
         controller(),
-        SetFilter(std::optional<AutofillPopupController::SuggestionFilter>()));
+        SetFilter(std::optional<AutofillPopupController::SuggestionFilter>(),
+                  AutofillPopupController::FilterSource::kInputChanged));
   }
 
   test_api(view()).SetSearchQuery(u"search input");
@@ -2578,7 +2580,8 @@ TEST_F(PopupViewViewsTest, TabbedPane_SuggestionFilteredForInitialShow) {
 
   EXPECT_CALL(controller(),
               SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  kDefaultSuggestionTabIndex))));
+                            kDefaultSuggestionTabIndex)),
+                        AutofillPopupController::FilterSource::kTabSelected));
 
   CreateAndShowView({SuggestionType::kCreditCardEntry},
                     /*widget_params=*/std::nullopt,
@@ -2809,9 +2812,11 @@ TEST_F(PopupViewViewsTest, AtMemory_KeyboardNavigation) {
       .Times(testing::AnyNumber());
 
   // RETURN triggers filter update when no suggestion is selected.
-  EXPECT_CALL(controller(),
-              SetFilter(Eq(AutofillPopupController::SuggestionFilter(
-                  AutofillPopupController::StringFilter(u"query")))));
+  EXPECT_CALL(
+      controller(),
+      SetFilter(Eq(AutofillPopupController::SuggestionFilter(
+                    AutofillPopupController::StringFilter(u"query"))),
+                AutofillPopupController::FilterSource::kSearchSubmitted));
   test_api(view()).SetSearchQuery(u"query");
   event.windows_key_code = ui::VKEY_RETURN;
   EXPECT_TRUE(test_api(view()).HandleKeyPressEvent(event));

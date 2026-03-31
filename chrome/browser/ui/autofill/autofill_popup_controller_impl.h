@@ -112,7 +112,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
       const SuggestionButtonAction& button_action) override;
   const std::vector<SuggestionFilterMatch>& GetSuggestionFilterMatches()
       const override;
-  void SetFilter(std::optional<SuggestionFilter> filter) override;
+  void SetFilter(std::optional<SuggestionFilter> filter,
+                 FilterSource source) override;
   bool HasFilteredOutSuggestions() const override;
   bool ShouldShowNoSuggestionsMessage() const override;
   bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
@@ -187,7 +188,7 @@ class AutofillPopupControllerImpl : public AutofillPopupController,
   // Attempts to start an asynchronous search query if the current filling
   // product supports it. Returns `true` if the search process was initiated or
   // handled.
-  bool TryStartSearch();
+  bool TryStartSearch(FilterSource source);
 
   void UpdateFilteredSuggestions();
 

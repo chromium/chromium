@@ -30,6 +30,16 @@ class AutofillPopupController : public AutofillSuggestionController {
   // input or the index of the tab that the suggestion will be shown.
   using SuggestionFilter = std::variant<StringFilter, SuggestionTabIndex>;
 
+  // Origin of a filtration request.
+  enum class FilterSource {
+    // The filter changed due to typing into the search bar input.
+    kInputChanged,
+    // The user explicitly submitted the search (e.g. by hitting Enter).
+    kSearchSubmitted,
+    // The user switched the active tab in the tabbed pane.
+    kTabSelected,
+  };
+
   // Suggestions consist of multiple parts (e.g., main text, labels). The filter
   // match structure reveals how a suggestion was found, enabling
   // the highlighting of these parts.
@@ -85,7 +95,8 @@ class AutofillPopupController : public AutofillSuggestionController {
   // related methods (like `GetLineCount()`). When the filter changes, previous
   // suggestion indices (used in many `AutofillSuggestionController` methods,
   // e.g. `RemoveSuggestion()`) become invalid.
-  virtual void SetFilter(std::optional<SuggestionFilter> filter) = 0;
+  virtual void SetFilter(std::optional<SuggestionFilter> filter,
+                         FilterSource source) = 0;
 
   // Returns whethere there is at least one suggestion filtered out. It implies
   // that the filter is not empty, and if it's set to `nullopt`,

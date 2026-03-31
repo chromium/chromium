@@ -34,6 +34,7 @@ void AccessibilityQueryService::Shutdown() {
 
 void AccessibilityQueryService::Query(
     std::u16string_view query,
+    bool full_search,
     base::RepeatingCallback<void(MemorySearchResults)> update_callback) {
   if (data_providers_.empty()) {
     update_callback.Run(

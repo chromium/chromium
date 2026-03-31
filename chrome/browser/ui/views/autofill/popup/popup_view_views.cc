@@ -600,7 +600,8 @@ bool PopupViewViews::HandleKeyPressEventForAtMemory(
       }
       if (search_bar_) {
         controller_->SetFilter(
-            AutofillPopupController::StringFilter(search_bar_->GetText()));
+            AutofillPopupController::StringFilter(search_bar_->GetText()),
+            AutofillPopupController::FilterSource::kSearchSubmitted);
         return true;
       }
       return false;
@@ -835,7 +836,8 @@ void PopupViewViews::SearchBarOnInputChanged(std::u16string_view query) {
     controller_->SetFilter(
         query.empty() ? std::nullopt
                       : std::optional(AutofillPopupController::StringFilter(
-                            std::u16string(query))));
+                            std::u16string(query))),
+        AutofillPopupController::FilterSource::kInputChanged);
   }
 }
 
@@ -1361,7 +1363,8 @@ void PopupViewViews::CreateTabbedPaneView() {
   tabbed_pane->SetListener(this);
 
   // Filter suggestions for the default tab.
-  controller_->SetFilter(kDefaultSuggestionTabIndex);
+  controller_->SetFilter(kDefaultSuggestionTabIndex,
+                         AutofillPopupController::FilterSource::kTabSelected);
 
   tabbed_pane_ = AddChildView(std::move(tabbed_pane));
 }

@@ -65,7 +65,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_AfterShutdown) {
   service->Shutdown();
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().entries.empty());
@@ -80,7 +81,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_NoProviders) {
       std::move(providers), /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().entries.empty());
@@ -106,7 +108,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_MultipleProviders) {
   fake_data_provider2->set_results({result2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get().entries.size(), 2u);
@@ -130,7 +133,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_Success) {
   fake_data_provider->set_results({result});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"what is my name", future.GetRepeatingCallback());
+  service->Query(u"what is my name", /*full_search=*/false,
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get().entries.size(), 1u);
@@ -148,7 +152,8 @@ TEST_F(AccessibilityQueryServiceTest, Query_UnknownIntent) {
       std::move(providers), /*remote_model_executor=*/nullptr);
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"random query", future.GetRepeatingCallback());
+  service->Query(u"random query", /*full_search=*/false,
+                 future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().entries.empty());
@@ -173,7 +178,7 @@ TEST_F(AccessibilityQueryServiceTest, Query_WithFilterWords) {
   fake_data_provider->set_results({entry1, entry2});
 
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in San Diego",
+  service->Query(u"What's my home address in San Diego", /*full_search=*/false,
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());
@@ -200,7 +205,7 @@ TEST_F(AccessibilityQueryServiceTest,
   // "New York" won't match "San Diego", so it should fallback to returning all
   // results for that intent.
   base::test::TestFuture<MemorySearchResults> future;
-  service->Query(u"What's my home address in New York",
+  service->Query(u"What's my home address in New York", /*full_search=*/false,
                  future.GetRepeatingCallback());
 
   ASSERT_TRUE(future.Wait());

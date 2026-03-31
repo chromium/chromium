@@ -915,10 +915,11 @@ AutofillPopupControllerImpl::GetSuggestionFilterMatches() const {
 }
 
 void AutofillPopupControllerImpl::SetFilter(
-    std::optional<SuggestionFilter> filter) {
+    std::optional<SuggestionFilter> filter,
+    FilterSource source) {
   filter_ = std::move(filter);
 
-  if (TryStartSearch()) {
+  if (TryStartSearch(source)) {
     return;
   }
 
@@ -926,7 +927,7 @@ void AutofillPopupControllerImpl::SetFilter(
   OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true);
 }
 
-bool AutofillPopupControllerImpl::TryStartSearch() {
+bool AutofillPopupControllerImpl::TryStartSearch(FilterSource source) {
   if (suggestions_filling_product_ != FillingProduct::kAtMemory) {
     return false;
   }
@@ -978,7 +979,7 @@ bool AutofillPopupControllerImpl::TryStartSearch() {
       };
 
   query_service->Query(
-      **string_filter,
+      **string_filter, /*full_search=*/source == FilterSource::kSearchSubmitted,
       base::BindRepeating(
           [](base::WeakPtr<AutofillPopupControllerImpl> self,
              Suggestion (*transform)(
@@ -1014,7 +1015,7 @@ void AutofillPopupControllerImpl::OnPopupPainted() {
 void AutofillPopupControllerImpl::OnTabSelected(
     int tab_index,
     TabbedPaneTabType tabbed_pane_tab_type) {
-  SetFilter(SuggestionTabIndex(tab_index));
+  SetFilter(SuggestionTabIndex(tab_index), FilterSource::kTabSelected);
   if (delegate_) {
     delegate_->OnTabSelected(tabbed_pane_tab_type);
   }

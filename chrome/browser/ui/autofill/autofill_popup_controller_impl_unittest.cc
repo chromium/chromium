@@ -564,11 +564,13 @@ TEST_F(AutofillPopupControllerImplTest, AtMemoryShowsSearchBarAndNoFiltering) {
 
   EXPECT_EQ(controller.GetMainFillingProduct(), FillingProduct::kAtMemory);
 
-  EXPECT_CALL(*client().accessibility_query_service(), Query)
+  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
       .WillOnce(base::test::RunOnceCallback<
-                1>(accessibility_annotator::MemorySearchResults(
+                2>(accessibility_annotator::MemorySearchResults(
           accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
-  controller.SetFilter(AutofillPopupController::StringFilter(u"nono"));
+
+  controller.SetFilter(AutofillPopupController::StringFilter(u"nono"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
 }
 
@@ -595,11 +597,13 @@ TEST_F(AutofillPopupControllerImplTest,
 
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
-  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
 
   EXPECT_CALL(*client().popup_view(),
               OnSuggestionsChanged(/*prefer_prev_arrow_side=*/true));
-  controller.SetFilter(std::nullopt);
+  controller.SetFilter(std::nullopt,
+                       AutofillPopupController::FilterSource::kInputChanged);
 }
 
 TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
@@ -615,7 +619,8 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"Ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"Ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 2u);
   EXPECT_THAT(controller.GetSuggestionFilterMatches(),
@@ -627,11 +632,13 @@ TEST_F(AutofillPopupControllerImplTest, SuggestionFiltering_MatchingMainText) {
                       .main_text_match = gfx::Range(0, 2),
                   }));
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"abcdefg"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"abcdefg"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 0u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 
-  controller.SetFilter(std::nullopt);
+  controller.SetFilter(std::nullopt,
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 }
@@ -647,7 +654,8 @@ TEST_F(AutofillPopupControllerImplTest,
                       Suggestion(u"axx", SuggestionType::kAutocompleteEntry),
                   });
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
 
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion)
@@ -657,7 +665,8 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 1u);
 
-  controller.SetFilter(std::nullopt);
+  controller.SetFilter(std::nullopt,
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_EQ(controller.GetSuggestionFilterMatches().size(), 0u);
 }
@@ -680,7 +689,8 @@ TEST_F(AutofillPopupControllerImplTest,
                                  std::move(footer_suggestion2),
                              });
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 4u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
@@ -688,14 +698,16 @@ TEST_F(AutofillPopupControllerImplTest,
                           Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"abc"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"abc"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 3u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kAddressEntry),
                           Field(&Suggestion::type, kSeparator),
                           Field(&Suggestion::type, kUndoOrClear)));
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"abcdef"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"abcdef"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_THAT(controller.GetSuggestions(),
               ElementsAre(Field(&Suggestion::type, kSeparator),
@@ -719,13 +731,15 @@ TEST_F(AutofillPopupControllerImplTest,
 
   ASSERT_EQ(controller.GetSuggestions().size(), 3u);
 
-  controller.SetFilter(kDefaultSuggestionTabIndex);
+  controller.SetFilter(kDefaultSuggestionTabIndex,
+                       AutofillPopupController::FilterSource::kTabSelected);
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
   EXPECT_THAT(
       controller.GetSuggestions(),
       ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry)));
 
-  controller.SetFilter(kPayLaterSuggestionTabIndex);
+  controller.SetFilter(kPayLaterSuggestionTabIndex,
+                       AutofillPopupController::FilterSource::kTabSelected);
   EXPECT_EQ(controller.GetSuggestions().size(), 2u);
   EXPECT_THAT(
       controller.GetSuggestions(),
@@ -744,10 +758,12 @@ TEST_F(AutofillPopupControllerImplTest,
                                  Suggestion(u"abxy", kAddressEntry),
                              });
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_FALSE(controller.HasFilteredOutSuggestions());
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"abc"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"abc"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_TRUE(controller.HasFilteredOutSuggestions());
 }
 
@@ -770,11 +786,12 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithResults_NoMessage) {
       accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess,
       {entry});
 
-  EXPECT_CALL(*client().accessibility_query_service(), Query)
-      .WillOnce(base::test::RunOnceCallback<1>(result));
+  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
+      .WillOnce(base::test::RunOnceCallback<2>(result));
 
   client().suggestion_controller(manager()).SetFilter(
-      AutofillPopupController::StringFilter(u"res"));
+      AutofillPopupController::StringFilter(u"res"),
+      AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_FALSE(client().suggestion_controller(manager())
                    .ShouldShowNoSuggestionsMessage());
 }
@@ -783,13 +800,14 @@ TEST_F(AutofillPopupControllerImplTest, AtMemory_FilterWithNoResults_ShowMessage
   ShowSuggestions(manager(), std::vector<SuggestionType>{},
                   AutofillSuggestionTriggerSource::kAtMemory);
 
-  EXPECT_CALL(*client().accessibility_query_service(), Query)
+  EXPECT_CALL(*client().accessibility_query_service(), Query(_, _, _))
       .WillOnce(base::test::RunOnceCallback<
-                1>(accessibility_annotator::MemorySearchResults(
+                2>(accessibility_annotator::MemorySearchResults(
           accessibility_annotator::MemorySearchStatus::kFinalResponseSuccess)));
 
   client().suggestion_controller(manager()).SetFilter(
-      AutofillPopupController::StringFilter(u"abc"));
+      AutofillPopupController::StringFilter(u"abc"),
+      AutofillPopupController::FilterSource::kInputChanged);
   // In the mock/test environment, we ensure GetSuggestions() is empty.
   test_api(static_cast<AutofillPopupControllerImpl&>(
                client().suggestion_controller(manager())))
@@ -813,7 +831,8 @@ TEST_F(
 
   ASSERT_EQ(controller.GetSuggestions().size(), 2u);
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"ab"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   EXPECT_EQ(controller.GetSuggestions().size(), 1u);
 }
 
@@ -830,7 +849,8 @@ TEST_F(AutofillPopupControllerImplTest,
               DidAcceptSuggestion(
                   _, EqualsSuggestionMetadata({.from_search_result = true})));
 
-  controller.SetFilter(AutofillPopupController::StringFilter(u"main_text"));
+  controller.SetFilter(AutofillPopupController::StringFilter(u"main_text"),
+                       AutofillPopupController::FilterSource::kInputChanged);
   controller.AcceptSuggestion(
       /*index=*/0, AutofillMetrics::SuggestionAcceptedMethod::kMouse);
 }
