@@ -25,6 +25,7 @@
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "services/accessibility/buildflags.h"
@@ -185,6 +186,8 @@ auto RunNetworkService(
   if (GetNetworkBinderCreationCallbackForTesting()) {
     std::move(GetNetworkBinderCreationCallbackForTesting()).Run(binders.get());
   }
+  mojo::InterfaceEndpointClient::SetThreadNameSuffixForMetrics(
+      "NetworkServiceOutOfProcess");
   return std::make_unique<network::NetworkService>(
       std::move(binders), std::move(receiver),
       /*delay_initialization_until_set_client=*/true);

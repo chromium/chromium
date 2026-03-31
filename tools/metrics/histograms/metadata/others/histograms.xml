@@ -5379,6 +5379,7 @@ chromium-metrics-reviews@google.com.
     <variant name="Default"/>
     <variant name="GpuMain"/>
     <variant name="NetworkService"/>
+    <variant name="NetworkServiceOutOfProcess"/>
     <variant name="RendererMain"/>
     <variant name="VizCompositor"/>
   </token>
