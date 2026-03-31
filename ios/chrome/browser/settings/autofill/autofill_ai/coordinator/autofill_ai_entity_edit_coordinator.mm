@@ -213,8 +213,9 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
                          settingsView:YES
           previousViewControllerTitle:_viewController.title];
 
-  [_baseNavigationController pushViewController:countrySelectionController
-                                       animated:YES];
+  [_viewController.navigationController
+      pushViewController:countrySelectionController
+                animated:YES];
 }
 
 - (void)didTapEditInWalletButton:
@@ -230,13 +231,13 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
 
 - (void)didSelectCountry:(CountryItem*)selectedCountry {
-  [_baseNavigationController popViewControllerAnimated:YES];
+  [_viewController.navigationController popViewControllerAnimated:YES];
   [_mediator didSelectCountry:selectedCountry forItem:_countryItemBeingEdited];
   _countryItemBeingEdited = nil;
 }
 
 - (void)dismissCountryViewController {
-  [_baseNavigationController popViewControllerAnimated:YES];
+  [_viewController.navigationController popViewControllerAnimated:YES];
   _countryItemBeingEdited = nil;
 }
 
