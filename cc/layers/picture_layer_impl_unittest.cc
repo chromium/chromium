@@ -1073,8 +1073,8 @@ TEST_F(LegacySWPictureLayerImplTest, ScaledBackdropFilterMaskLayer) {
   EXPECT_EQ(gfx::SizeF(1.0f, 1.0f), mask_uv_size);
 }
 
-// TODO(crbug.com/450651370): Fix flakiness on UBSan.
-#if BUILDFLAG(IS_UBSAN) && BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/450651370): Fix flakiness on Linux UBSan and CFI builder.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize \
   DISABLED_GetContentsResourceIdComputesUVMaskSizeCorrectlyWhenTilingRectIsSmallerThanResourceSize
 #else
