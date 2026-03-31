@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
@@ -17,8 +18,12 @@
 #include "ui/views/border.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_class_properties.h"
 
 namespace autofill::payments {
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(BnplLinkedIssuerPill,
+                                      kBnplLinkedPillElementId);
 
 BnplLinkedIssuerPill::BnplLinkedIssuerPill()
     : views::Label(l10n_util::GetStringUTF16(
@@ -26,6 +31,7 @@ BnplLinkedIssuerPill::BnplLinkedIssuerPill()
                    views::style::CONTEXT_DIALOG_BODY_TEXT,
                    views::style::STYLE_PRIMARY) {
   SetEnabledColor(kColorBnplIssuerLinkedPillForeground);
+  SetProperty(views::kElementIdentifierKey, kBnplLinkedPillElementId);
 }
 
 BnplLinkedIssuerPill::~BnplLinkedIssuerPill() = default;
@@ -43,6 +49,10 @@ void BnplLinkedIssuerPill::AddedToWidget() {
       kColorBnplIssuerLinkedPillBackground));
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(size.height() / 2));
+
+  if (!GetEnabled()) {
+    layer()->SetOpacity(0.38f);
+  }
 }
 
 std::u16string BnplLinkedIssuerPill::GetAccessibilityDescription() {

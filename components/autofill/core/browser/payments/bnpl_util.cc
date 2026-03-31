@@ -441,4 +441,13 @@ bool ShouldStartPayLaterWithLoadingSpinner(
       .IsAutofillAmountExtractionAiTermsSeenPrefEnabled();
 }
 
+bool ShouldShowBnplLinkedPill(const Suggestion& suggestion) {
+  const auto* bnpl_payload =
+      std::get_if<Suggestion::BnplIssuer>(&suggestion.payload);
+  return suggestion.type == SuggestionType::kBnplEntry && bnpl_payload &&
+         bnpl_payload->value().payment_instrument().has_value() &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnablePayNowPayLaterTabs);
+}
+
 }  // namespace autofill::payments

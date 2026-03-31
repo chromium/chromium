@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_BNPL_ISSUER_LINKED_PILL_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_BNPL_ISSUER_LINKED_PILL_H_
 
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory.h"
@@ -12,6 +13,9 @@
 namespace autofill::payments {
 
 class BnplLinkedIssuerPill : public views::Label {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBnplLinkedPillElementId);
+
   METADATA_HEADER(BnplLinkedIssuerPill, views::Label)
 
  public:

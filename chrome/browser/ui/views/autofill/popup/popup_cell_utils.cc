@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
@@ -225,19 +226,24 @@ std::unique_ptr<views::ImageView> ConvertModelToImageView(
 
 // Creates the table in which all the Autofill suggestion content apart from
 // leading and trailing icons is contained.
+// If `stretch_first_column` is true, the first column will expand to take up
+// all available horizontal space.
 std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
     std::unique_ptr<views::Label> main_text_label,
     std::vector<std::unique_ptr<views::View>> minor_text_labels,
     std::unique_ptr<views::Label> description_label,
     std::vector<std::unique_ptr<views::View>> subtext_views,
-    bool align_description_label_to_right) {
+    bool align_description_label_to_right,
+    bool stretch_first_column) {
   const bool has_two_columns = !!description_label;
   auto table =
       views::Builder<views::TableLayoutView>()
-          .AddColumn(views::LayoutAlignment::kStart,
-                     views::LayoutAlignment::kStretch,
-                     views::TableLayout::kFixedSize,
-                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .AddColumn(
+              stretch_first_column ? views::LayoutAlignment::kStretch
+                                   : views::LayoutAlignment::kStart,
+              views::LayoutAlignment::kStretch,
+              stretch_first_column ? 1.0f : views::TableLayout::kFixedSize,
+              views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
           .Build();
   if (has_two_columns) {
     const views::LayoutAlignment kHorizontalAlignment =
@@ -560,6 +566,11 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
     add_if_not_empty(sublabel);
   }
 
+  if (payments::ShouldShowBnplLinkedPill(suggestion)) {
+    text.push_back(l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL));
+  }
+
   bool badge_added_to_labels = false;
   for (const std::vector<Suggestion::Text>& row : suggestion.labels) {
     std::vector<std::u16string> row_values;
@@ -724,7 +735,9 @@ void AddSuggestionContentToView(
       content_view.AddChildView(CreateSuggestionContentTable(
           std::move(main_text_label), std::move(minor_text_labels),
           std::move(description_label), std::move(subtext_views),
-          suggestion.additional_label_alignment_right)),
+          suggestion.additional_label_alignment_right,
+          /*stretch_first_column=*/
+          payments::ShouldShowBnplLinkedPill(suggestion))),
       1);
 
   // The trailing icon.

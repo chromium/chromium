@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/payments/bnpl_issuer_linked_pill.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
@@ -28,6 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -171,6 +173,63 @@ TEST_F(PasswordPopupRowViewTest, NonLoadingSuggestionDoesNotShowThrobber) {
 
   EXPECT_FALSE(views::IsViewClass<views::Throbber>(
       row_view().GetContentView().children().at(0)));
+}
+
+class BnplPopupRowViewTest : public PopupRowFactoryUtilsTest {
+ public:
+  BnplPopupRowViewTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnablePayNowPayLaterTabs);
+  }
+  ~BnplPopupRowViewTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(BnplPopupRowViewTest, LinkedPill) {
+  Suggestion suggestion(u"Bnpl", SuggestionType::kBnplEntry);
+  BnplIssuer linked_issuer(/*instrument_id=*/1234,
+                           BnplIssuer::IssuerId::kBnplZip, {});
+  suggestion.payload = Suggestion::BnplIssuer(linked_issuer);
+
+  ShowSuggestion(suggestion);
+
+  views::View* pill = row_view().GetContentView().GetViewByElementId(
+      payments::BnplLinkedIssuerPill::kBnplLinkedPillElementId);
+  ASSERT_THAT(pill, NotNull());
+  EXPECT_TRUE(pill->GetEnabled());
+  EXPECT_FLOAT_EQ(1.0f, pill->layer()->opacity());
+}
+
+TEST_F(BnplPopupRowViewTest, LinkedPill_Deactivated) {
+  Suggestion suggestion(u"Bnpl", SuggestionType::kBnplEntry);
+  BnplIssuer linked_issuer(/*instrument_id=*/1234,
+                           BnplIssuer::IssuerId::kBnplZip, {});
+  suggestion.payload = Suggestion::BnplIssuer(linked_issuer);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+
+  ShowSuggestion(suggestion);
+
+  views::View* pill = row_view().GetContentView().GetViewByElementId(
+      payments::BnplLinkedIssuerPill::kBnplLinkedPillElementId);
+  ASSERT_THAT(pill, NotNull());
+  EXPECT_FALSE(pill->GetEnabled());
+  EXPECT_FLOAT_EQ(0.38f, pill->layer()->opacity());
+}
+
+TEST_F(BnplPopupRowViewTest, UnlinkedIssuer_NoLinkedPill) {
+  Suggestion suggestion(u"Bnpl", SuggestionType::kBnplEntry);
+  BnplIssuer unlinked_issuer(/*instrument_id=*/std::nullopt,
+                             BnplIssuer::IssuerId::kBnplZip, {});
+  suggestion.payload = Suggestion::BnplIssuer(unlinked_issuer);
+
+  ShowSuggestion(suggestion);
+
+  views::View* pill = row_view().GetContentView().GetViewByElementId(
+      payments::BnplLinkedIssuerPill::kBnplLinkedPillElementId);
+  EXPECT_THAT(pill, IsNull());
 }
 
 }  // namespace autofill

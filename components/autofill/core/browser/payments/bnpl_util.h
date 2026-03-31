@@ -136,6 +136,9 @@ bool IsEligibleForBnpl(const AutofillClient& client);
 bool ShouldStartPayLaterWithLoadingSpinner(
     const PaymentsDataManager& payments_data_manager);
 
+// Returns true if the suggestion should display a linked BNPL issuer pill.
+bool ShouldShowBnplLinkedPill(const Suggestion& suggestion);
+
 }  // namespace payments
 
 }  // namespace autofill
