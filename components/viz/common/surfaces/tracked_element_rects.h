@@ -33,12 +33,25 @@ enum class TrackedElementFeature : int32_t {
 
 // New struct to hold the tracked element clipped/visible bounds and other data.
 struct VIZ_COMMON_EXPORT TrackedElementRect {
+  TrackedElementRect() = default;
+  TrackedElementRect(TrackedElementId id,
+                     gfx::Rect visible_bounds,
+                     bool should_add_to_compositor_frame_metadata = false)
+      : id(id),
+        visible_bounds(visible_bounds),
+        should_add_to_compositor_frame_metadata(
+            should_add_to_compositor_frame_metadata) {}
+
   // The id of the element being tracked.
   TrackedElementId id;
 
   // Visible screen space bounds, clipped against layer visible surface and root
   // surface
   gfx::Rect visible_bounds;
+
+  // Whether the element should be added to the compositor frame metadata. If
+  // false, the element will be added to the render frame metadata.
+  bool should_add_to_compositor_frame_metadata = false;
 
   friend bool operator==(const TrackedElementRect&,
                          const TrackedElementRect&) = default;

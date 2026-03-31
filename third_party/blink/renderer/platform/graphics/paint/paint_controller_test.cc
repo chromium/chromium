@@ -2177,7 +2177,8 @@ TEST_P(PaintControllerTest, RecordTrackedElementData) {
   const auto kFeature0 = static_cast<viz::TrackedElementFeature>(0);
   const auto kFeature1 = static_cast<viz::TrackedElementFeature>(1);
   const auto kFeature0ElementSubRect = TrackedElementSubRect(kId);
-  const auto kFeature1ElementSubRect = TrackedElementSubRect(kId);
+  const auto kFeature1ElementSubRect = TrackedElementSubRect(
+      kId, /*should_add_to_compositor_frame_metadata=*/true);
   TrackedElementSubRects tracked_element_sub_rects;
   tracked_element_sub_rects.insert_or_assign(
       kFeature0, std::move(kFeature0ElementSubRect));
@@ -2205,6 +2206,7 @@ TEST_P(PaintControllerTest, RecordTrackedElementData) {
   ASSERT_EQ(1u, feature0_rects.size());
   EXPECT_EQ(kId, feature0_rects[0].id);
   EXPECT_EQ(kBounds, feature0_rects[0].bounds);
+  EXPECT_FALSE(feature0_rects[0].should_add_to_compositor_frame_metadata);
 
   // Check the data for feature 1.
   ASSERT_TRUE(chunk.tracked_element_rects->map.contains(kFeature1));
@@ -2212,6 +2214,7 @@ TEST_P(PaintControllerTest, RecordTrackedElementData) {
   ASSERT_EQ(1u, feature1_rects.size());
   EXPECT_EQ(kId, feature1_rects[0].id);
   EXPECT_EQ(kBounds, feature1_rects[0].bounds);
+  EXPECT_TRUE(feature1_rects[0].should_add_to_compositor_frame_metadata);
 }
 
 // Death tests don't work properly on Android.

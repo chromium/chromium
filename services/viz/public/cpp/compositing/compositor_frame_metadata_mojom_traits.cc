@@ -81,7 +81,8 @@ bool StructTraits<viz::mojom::CompositorFrameMetadataDataView,
         data.ReadOffsetTagDefinitions(&out->offset_tag_definitions) &&
         data.ReadOffsetTagValues(&out->offset_tag_values) &&
         data.ReadFrameIntervalInputs(&out->frame_interval_inputs) &&
-        data.ReadTreesInVizTiming(&out->trees_in_viz_timing_details))) {
+        data.ReadTreesInVizTiming(&out->trees_in_viz_timing_details) &&
+        data.ReadTrackedElementRects(&out->tracked_element_rects))) {
     return false;
   }
 

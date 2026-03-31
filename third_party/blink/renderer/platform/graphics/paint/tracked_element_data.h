@@ -42,18 +42,29 @@ struct PLATFORM_EXPORT TrackedElementSubRect {
   };
 
   TrackedElementSubRect() = default;
-  explicit TrackedElementSubRect(TrackedElementId id,
-                                 std::optional<SubRect> sub_rect = std::nullopt)
-      : id(id), sub_rect(sub_rect) {}
+  explicit TrackedElementSubRect(
+      TrackedElementId id,
+      bool should_add_to_compositor_frame_metadata = false,
+      std::optional<SubRect> sub_rect = std::nullopt)
+      : id(id),
+        should_add_to_compositor_frame_metadata(
+            should_add_to_compositor_frame_metadata),
+        sub_rect(sub_rect) {}
 
   TrackedElementId id;
+  // Whether the element should be added to the compositor frame metadata. If
+  // false, the element will be added to the render frame metadata.
+  bool should_add_to_compositor_frame_metadata;
   // The sub-rectangle of the element to track, or nullopt if the entire
   // element is being tracked.
   std::optional<SubRect> sub_rect;
 
   // Comparison operators for use with WTF::HashSet and other containers.
   bool operator==(const TrackedElementSubRect& other) const {
-    return id == other.id && sub_rect == other.sub_rect;
+    return id == other.id &&
+           should_add_to_compositor_frame_metadata ==
+               other.should_add_to_compositor_frame_metadata &&
+           sub_rect == other.sub_rect;
   }
   bool operator!=(const TrackedElementSubRect& other) const {
     return !(*this == other);
@@ -73,13 +84,21 @@ using TrackedElementSubRects =
 // optional metadata that may be set by the tracking feature.
 struct PLATFORM_EXPORT TrackedElementRect {
   TrackedElementRect() = default;
-  TrackedElementRect(TrackedElementId id, gfx::Rect bounds)
-      : id(id), bounds(bounds) {}
+  TrackedElementRect(TrackedElementId id,
+                     gfx::Rect bounds,
+                     bool should_add_to_compositor_frame_metadata = false)
+      : id(id),
+        bounds(bounds),
+        should_add_to_compositor_frame_metadata(
+            should_add_to_compositor_frame_metadata) {}
 
   // The id of the element being tracked.
   TrackedElementId id;
   // The bounds of the element in screen space.
   gfx::Rect bounds;
+  // Whether the element should be added to the compositor frame metadata. If
+  // false, the element will be added to the render frame metadata.
+  bool should_add_to_compositor_frame_metadata;
 
   // Comparison operators for use with WTF::HashSet and other containers.
   bool operator==(const TrackedElementRect& other) const = default;

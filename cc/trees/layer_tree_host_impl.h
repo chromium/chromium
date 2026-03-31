@@ -751,7 +751,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void ScheduleMicroBenchmark(std::unique_ptr<MicroBenchmarkImpl> benchmark);
 
   viz::RegionCaptureBounds CollectRegionCaptureBounds();
-  viz::TrackedElementRects CollectTrackedElementRects();
+  viz::TrackedElementRects CollectTrackedElementRects(
+      bool is_for_compositor_frame_metadata);
 
   viz::CompositorFrameMetadata MakeCompositorFrameMetadata();
   RenderFrameMetadata MakeRenderFrameMetadata(FrameData* frame);

@@ -117,6 +117,9 @@ void CompositorFrameMetadata::AsValueInto(
 
   value->BeginDictionary("frame_interval_inputs");
   frame_interval_inputs.AsValueInto(value);
+
+  value->SetString("tracked_element_rects",
+                   TrackedElementRectsToString(tracked_element_rects));
   value->EndDictionary();
 
   // Ignore trees_in_viz_timing_details because it's for metrics only.
@@ -151,7 +154,8 @@ CompositorFrameMetadata::CompositorFrameMetadata(
       is_software(other.is_software),
       offset_tag_definitions(other.offset_tag_definitions),
       offset_tag_values(other.offset_tag_values),
-      frame_interval_inputs(other.frame_interval_inputs) {
+      frame_interval_inputs(other.frame_interval_inputs),
+      tracked_element_rects(other.tracked_element_rects) {
   if (other.delegated_ink_metadata) {
     delegated_ink_metadata = std::make_unique<gfx::DelegatedInkMetadata>(
         *other.delegated_ink_metadata.get());

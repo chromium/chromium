@@ -355,6 +355,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRect) {
   auto element_id = base::Token(1, 2);
   auto element = TrackedElementSubRect(
       TrackedElementId(element_id),
+      /*should_add_to_compositor_frame_metadata=*/false,
       TrackedElementSubRect::SubRect{
           gfx::Rect(10, 10, 20, 20),
           TrackedElementSubRect::SubRect::Type::kIntersectWithElementRect});
@@ -390,6 +391,7 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
   // offset.
   auto element = TrackedElementSubRect(
       TrackedElementId(element_id),
+      /*should_add_to_compositor_frame_metadata=*/true,
       TrackedElementSubRect::SubRect{
           gfx::Rect(-10, -10, 100, 100),
           TrackedElementSubRect::SubRect::Type::kNoIntersection});
@@ -403,7 +405,8 @@ TEST_P(BoxFragmentPainterTest, TrackElementWithSubRectNoIntersection) {
   // 8, 8 (margin) - 10, 10 (offset) = -2, -2. Size remains 100, 100.
   tracked_element_data->map.insert_or_assign(
       feature, std::vector<TrackedElementRect>{TrackedElementRect(
-                   TrackedElementId(element_id), gfx::Rect(-2, -2, 100, 100))});
+                   TrackedElementId(element_id), gfx::Rect(-2, -2, 100, 100),
+                   /*should_add_to_compositor_frame_metadata=*/true)});
 
   EXPECT_THAT(ContentPaintChunks(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,

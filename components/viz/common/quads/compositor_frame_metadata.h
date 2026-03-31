@@ -23,6 +23,7 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -242,6 +243,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   // Timestamps for TreesInViz metric reporting.
   TreesInVizTiming trees_in_viz_timing_details;
+
+  // Tracked element rects for the frame.
+  TrackedElementRects tracked_element_rects;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

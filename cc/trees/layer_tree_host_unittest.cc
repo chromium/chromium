@@ -12015,7 +12015,9 @@ class LayerTreeHostTestTrackedElementRects
 
   const base::Token kId1 = base::Token(1, 2);
   const base::Token kId2 = base::Token(2, 3);
-  const viz::TrackedElementFeature kFeature =
+  const viz::TrackedElementFeature kFeature0 =
+      static_cast<viz::TrackedElementFeature>(0);
+  const viz::TrackedElementFeature kFeature1 =
       static_cast<viz::TrackedElementFeature>(1);
 
   LayerTreeHostTestTrackedElementRects() { SetUseLayerLists(); }
@@ -12034,9 +12036,11 @@ class LayerTreeHostTestTrackedElementRects
     CopyProperties(root_, child_a_.get());
     CreateEffectNode(child_a_.get());
     std::vector<viz::TrackedElementRect> rect_data_list1 = {
-        viz::TrackedElementRect(kId1, gfx::Rect(0, 0, 50, 50))};
+        viz::TrackedElementRect(
+            kId1, gfx::Rect(0, 0, 50, 50),
+            /*should_add_to_compositor_frame_metadata=*/false)};
     viz::TrackedElementRects trackedElementRects1 = {
-        {kFeature, std::move(rect_data_list1)}};
+        {kFeature0, std::move(rect_data_list1)}};
     child_a_->SetTrackedElementRects(trackedElementRects1);
     root_->AddChild(child_a_);
 
@@ -12046,9 +12050,11 @@ class LayerTreeHostTestTrackedElementRects
     CopyProperties(root_, child_b_.get());
     CreateEffectNode(child_b_.get());
     std::vector<viz::TrackedElementRect> rect_data_list2 = {
-        viz::TrackedElementRect(kId2, gfx::Rect(0, 0, 10, 20))};
+        viz::TrackedElementRect(
+            kId2, gfx::Rect(0, 0, 10, 20),
+            /*should_add_to_compositor_frame_metadata=*/true)};
     viz::TrackedElementRects trackedElementRects2 = {
-        {kFeature, std::move(rect_data_list2)}};
+        {kFeature1, std::move(rect_data_list2)}};
     child_b_->SetTrackedElementRects(trackedElementRects2);
     root_->AddChild(child_b_);
   }
@@ -12061,17 +12067,25 @@ class LayerTreeHostTestTrackedElementRects
     PostSetNeedsCommitToMainThread();
   }
 
-  void ExpectRectsOnThread(const viz::TrackedElementRects& actual_rects) {
-    EXPECT_EQ(actual_rects.size(), 1u);
-    ASSERT_TRUE(actual_rects.contains(kFeature));
-    const auto& element_list = actual_rects.at(kFeature);
-    base::flat_map<viz::TrackedElementId, viz::TrackedElementRect> element_map;
-    for (const auto& tracked_element_rect : element_list) {
-      element_map.insert({tracked_element_rect.id, tracked_element_rect});
-    }
-    EXPECT_EQ(element_map.size(), 2u);
-    EXPECT_EQ(element_map.at(kId1).visible_bounds, gfx::Rect(0, 0, 30, 20));
-    EXPECT_EQ(element_map.at(kId2).visible_bounds, gfx::Rect(0, 0, 10, 5));
+  void ExpectRectsOnThread(
+      const viz::TrackedElementRects& render_frame_rects,
+      const viz::TrackedElementRects& compositor_frame_rects) {
+    // Check the rects in the render frame.
+    EXPECT_EQ(render_frame_rects.size(), 1u);
+    ASSERT_TRUE(render_frame_rects.contains(kFeature0));
+    const auto& element_list1 = render_frame_rects.at(kFeature0);
+    EXPECT_EQ(element_list1.size(), 1u);
+    EXPECT_EQ(element_list1[0].id, kId1);
+    EXPECT_EQ(element_list1[0].visible_bounds, gfx::Rect(0, 0, 30, 20));
+
+    // Check the rects in the compositor frame.
+    EXPECT_EQ(compositor_frame_rects.size(), 1u);
+    ASSERT_TRUE(compositor_frame_rects.contains(kFeature1));
+    const auto& element_list2 = compositor_frame_rects.at(kFeature1);
+    EXPECT_EQ(element_list2.size(), 1u);
+    EXPECT_EQ(element_list2[0].id, kId2);
+    EXPECT_EQ(element_list2[0].visible_bounds, gfx::Rect(0, 0, 10, 5));
+
     EndTest();
   }
 
@@ -12081,7 +12095,8 @@ class LayerTreeHostTestTrackedElementRects
       const RenderFrameMetadata& render_frame_metadata,
       viz::CompositorFrameMetadata* compositor_frame_metadata,
       bool force_send) override {
-    ExpectRectsOnThread(render_frame_metadata.tracked_element_rects);
+    ExpectRectsOnThread(render_frame_metadata.tracked_element_rects,
+                        compositor_frame_metadata->tracked_element_rects);
   }
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void DidEndScroll() override {}
