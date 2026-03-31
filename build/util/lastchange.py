@@ -10,6 +10,7 @@ lastchange.py -- Chromium last change fetching utility.
 import argparse
 import collections
 import datetime
+import hashlib
 import json
 import logging
 import os
@@ -27,6 +28,11 @@ import gclient_utils
 VersionInfo = collections.namedtuple(
     "VersionInfo", ("revision_id", "revision", "commit_position", "timestamp"))
 _EMPTY_VERSION_INFO = VersionInfo('0' * 40, '0' * 40, '', 0)
+
+
+def GetFingerprint(revision_id):
+  return hashlib.sha256(revision_id.encode('utf-8')).hexdigest()
+
 
 class GitError(Exception):
   pass
@@ -348,6 +354,9 @@ def GetFlexibleCppHeaderContents(path, version_info, description, keys):
     header_contents += f'#define LAST_COMMIT_YEAR {datetime.datetime.fromtimestamp(version_info.timestamp, datetime.timezone.utc).year}\n'
   if "revision" in keys:
     header_contents += f'#define LAST_COMMIT_REVISION "{version_info.revision}"\n'
+  if "fingerprint" in keys:
+    value = GetFingerprint(version_info.revision_id)
+    header_contents += f'#define LAST_COMMIT_FINGERPRINT "{value}"\n'
 
   # Add the closing guard.
   header_contents += f"""
@@ -381,6 +390,8 @@ def _PrintJsonOutput(version_info, source_dir):
       version_info.revision_id,
       "revision":
       version_info.revision,
+      "fingerprint":
+      GetFingerprint(version_info.revision_id),
       "time":
       commit_time,
       "year":
@@ -419,7 +430,8 @@ def main(argv=None):
       metavar=("FILE", "KEYS"),
       help=("Write a C++ header with a custom set of the last commit info. "
             "Provide a filename and a comma-separated list of keys. "
-            "Possible keys: hash, time, description, year, revision."))
+            "Possible keys: hash, time, description, year, revision, "
+            "fingerprint."))
   parser.add_argument("--commit-position-header",
                       metavar="FILE",
                       help=("Write the last commit position to FILE as a C/C++ "
@@ -439,6 +451,10 @@ def main(argv=None):
                     help=("Output the revision as a VCS revision ID only (in "
                           "Git, a 40-character commit hash, excluding the "
                           "Cr-Commit-Position)."))
+  parser.add_argument("--fingerprint",
+                      action='store_true',
+                      help=("Output the revision as a fingerprint of the last "
+                            "change."))
   parser.add_argument(
       "--print-only",
       action="store_true",
@@ -520,6 +536,8 @@ def main(argv=None):
   revision_string = version_info.revision
   if args.revision_id_only:
     revision_string = version_info.revision_id
+  elif args.fingerprint:
+    revision_string = GetFingerprint(version_info.revision_id)
 
   if args.print_only:
     print(revision_string)
