@@ -31,13 +31,15 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
+
+namespace ash {
 
 namespace {
 
@@ -53,17 +55,15 @@ constexpr char kTrayBackgroundViewHistogramName[] =
 constexpr base::TimeDelta kGetMediaAppsDelayTime = base::Milliseconds(100);
 
 void SetSessionState(session_manager::SessionState state) {
-  ash::SessionInfo info;
+  SessionInfo info;
   info.state = state;
-  ash::Shell::Get()->session_controller()->SetSessionInfo(info);
+  Shell::Get()->session_controller()->SetSessionInfo(info);
 }
-
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
 // A customized controller that will mock a delay for `GetMediaApps()`. We might
 // have this delay when getting lacros media apps.
 class DelayVideoConferenceTrayController
-    : public ash::FakeVideoConferenceTrayController {
+    : public FakeVideoConferenceTrayController {
  public:
   DelayVideoConferenceTrayController() = default;
   DelayVideoConferenceTrayController(
@@ -75,16 +75,12 @@ class DelayVideoConferenceTrayController
   // ash::FakeVideoConferenceTrayController:
   void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override {
     getting_media_apps_called_++;
-    MediaApps apps;
-    for (auto& app : media_apps()) {
-      apps.push_back(app->Clone());
-    }
     timer_.Start(
         FROM_HERE, kGetMediaAppsDelayTime,
         base::BindOnce(
             [](base::OnceCallback<void(MediaApps)> ui_callback,
                MediaApps apps) { std::move(ui_callback).Run(std::move(apps)); },
-            std::move(ui_callback), std::move(apps)));
+            std::move(ui_callback), media_apps()));
   }
 
   int getting_media_apps_called() { return getting_media_apps_called_; }
@@ -96,8 +92,6 @@ class DelayVideoConferenceTrayController
 };
 
 }  // namespace
-
-namespace ash {
 
 class VideoConferenceTrayTest : public AshTestBase {
  public:
@@ -136,9 +130,8 @@ class VideoConferenceTrayTest : public AshTestBase {
 
   // Convenience function to create `num_apps` media apps.
   void CreateMediaApps(int num_apps,
-                       bool clear_existing_apps = true,
-                       crosapi::mojom::VideoConferenceAppType app_type =
-                           crosapi::mojom::VideoConferenceAppType::kChromeApp) {
+                       bool clear_existing_apps,
+                       VideoConferenceAppType app_type) {
     if (clear_existing_apps) {
       controller()->ClearMediaApps();
     }
@@ -146,14 +139,16 @@ class VideoConferenceTrayTest : public AshTestBase {
     auto* title = u"Meet";
     const std::string kMeetTestUrl = "https://meet.google.com/abc-xyz/ab-123";
     for (int i = 0; i < num_apps; i++) {
-      controller()->AddMediaApp(
-          crosapi::mojom::VideoConferenceMediaAppInfo::New(
-              /*id=*/base::UnguessableToken::Create(),
-              /*last_activity_time=*/base::Time::Now(),
-              /*is_capturing_camera=*/true,
-              /*is_capturing_microphone=*/true, /*is_capturing_screen=*/true,
-              title,
-              /*url=*/GURL(kMeetTestUrl), /*app_type=*/app_type));
+      VideoConferenceMediaAppInfo app;
+      app.id = base::UnguessableToken::Create();
+      app.last_activity_time = base::Time::Now();
+      app.is_capturing_camera = true;
+      app.is_capturing_microphone = true;
+      app.is_capturing_screen = true;
+      app.title = title;
+      app.url = GURL(kMeetTestUrl);
+      app.app_type = app_type;
+      controller()->AddMediaApp(std::move(app));
     }
   }
 
@@ -208,13 +203,15 @@ class VideoConferenceTrayTest : public AshTestBase {
   void ModifyAppsCapturing(bool add) {
     if (add) {
       CreateMediaApps(/*num_apps=*/++num_media_apps_simulated_,
-                      /*clear_existing_apps=*/false);
+                      /*clear_existing_apps=*/false,
+                      /*app_type=*/VideoConferenceAppType::kChromeApp);
       // `VideoConferenceTrayController::HandleClientUpdate()` is triggered via
       // mojo, this directly calls `OnAppAdded()`.
       controller_->OnAppAdded();
     } else {
       CreateMediaApps(--num_media_apps_simulated_,
-                      /*clear_existing_apps=*/false);
+                      /*clear_existing_apps=*/false,
+                      /*app_type=*/VideoConferenceAppType::kChromeApp);
     }
   }
 
@@ -1025,7 +1022,8 @@ TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
   SetTrayAndButtonsVisible();
 
   // Create 1 non-linux app. We should show `kMainBubbleView`.
-  CreateMediaApps(1, /*clear_existing_apps=*/true);
+  CreateMediaApps(1, /*clear_existing_apps=*/true,
+                  /*app_type=*/VideoConferenceAppType::kChromeApp);
   LeftClickOn(toggle_bubble_button());
   auto* bubble_view = video_conference_tray()->GetBubbleView();
   ASSERT_TRUE(bubble_view);
@@ -1038,7 +1036,7 @@ TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
 
   // Create 1 linux app. We should show `kLinuxAppBubbleView`.
   CreateMediaApps(1, /*clear_existing_apps=*/true,
-                  crosapi::mojom::VideoConferenceAppType::kBorealis);
+                  VideoConferenceAppType::kBorealis);
   LeftClickOn(toggle_bubble_button());
   bubble_view = video_conference_tray()->GetBubbleView();
   ASSERT_TRUE(bubble_view);
@@ -1052,8 +1050,9 @@ TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
   // Create 1 linux app and 1 non-linux app. We should still show
   // `kMainBubbleView`.
   CreateMediaApps(1, /*clear_existing_apps=*/true,
-                  crosapi::mojom::VideoConferenceAppType::kBorealis);
-  CreateMediaApps(1, /*clear_existing_apps=*/false);
+                  VideoConferenceAppType::kBorealis);
+  CreateMediaApps(1, /*clear_existing_apps=*/false,
+                  /*app_type=*/VideoConferenceAppType::kChromeApp);
   LeftClickOn(toggle_bubble_button());
   bubble_view = video_conference_tray()->GetBubbleView();
   ASSERT_TRUE(bubble_view);

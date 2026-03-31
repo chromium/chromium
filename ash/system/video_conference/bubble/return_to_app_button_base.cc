@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -82,13 +81,12 @@ std::unique_ptr<views::View> CreateReturnToAppIconsContainer(
 
 }  // namespace
 
-ReturnToAppButtonBase::ReturnToAppButtonBase(
-    const base::UnguessableToken& id,
-    bool is_capturing_camera,
-    bool is_capturing_microphone,
-    bool is_capturing_screen,
-    const std::u16string& display_text,
-    crosapi::mojom::VideoConferenceAppType app_type)
+ReturnToAppButtonBase::ReturnToAppButtonBase(const base::UnguessableToken& id,
+                                             bool is_capturing_camera,
+                                             bool is_capturing_microphone,
+                                             bool is_capturing_screen,
+                                             const std::u16string& display_text,
+                                             VideoConferenceAppType app_type)
     : is_capturing_camera_(is_capturing_camera),
       is_capturing_microphone_(is_capturing_microphone),
       is_capturing_screen_(is_capturing_screen) {
@@ -116,9 +114,8 @@ ReturnToAppButtonBase::ReturnToAppButtonBase(
 
 ReturnToAppButtonBase::~ReturnToAppButtonBase() = default;
 
-void ReturnToAppButtonBase::OnButtonClicked(
-    const base::UnguessableToken& id,
-    crosapi::mojom::VideoConferenceAppType app_type) {
+void ReturnToAppButtonBase::OnButtonClicked(const base::UnguessableToken& id,
+                                            VideoConferenceAppType app_type) {
   ash::VideoConferenceTrayController::Get()->ReturnToApp(id);
   base::UmaHistogramEnumeration("Ash.VideoConference.ReturnToApp.Click",
                                 app_type);

@@ -8,7 +8,6 @@
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/bubble/return_to_app_button_base.h"
 #include "ash/system/video_conference/video_conference_utils.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout.h"
@@ -30,15 +29,14 @@ class LinuxReturnToAppButton : public ReturnToAppButtonBase {
   METADATA_HEADER(LinuxReturnToAppButton, ReturnToAppButtonBase)
 
  public:
-  explicit LinuxReturnToAppButton(
-      const crosapi::mojom::VideoConferenceMediaAppInfoPtr& app)
+  explicit LinuxReturnToAppButton(const VideoConferenceMediaAppInfo& app)
       : ReturnToAppButtonBase(
-            app->id,
-            app->is_capturing_camera,
-            app->is_capturing_microphone,
-            app->is_capturing_screen,
+            app.id,
+            app.is_capturing_camera,
+            app.is_capturing_microphone,
+            app.is_capturing_screen,
             video_conference_utils::GetMediaAppDisplayText(app),
-            app->app_type) {
+            app.app_type) {
     SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetMainAxisAlignment(views::LayoutAlignment::kCenter)

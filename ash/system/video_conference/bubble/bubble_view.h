@@ -7,9 +7,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_bubble_view.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -22,7 +22,7 @@ class VideoConferenceTrayController;
 
 namespace video_conference {
 
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+using MediaApps = VideoConferenceManagerBase::MediaApps;
 
 // The bubble that contains controls for camera and microphone effects,
 // and for easy navigation to apps performing video/audio capture.

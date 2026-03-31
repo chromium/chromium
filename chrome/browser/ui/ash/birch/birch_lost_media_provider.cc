@@ -20,7 +20,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/branding_buildflags.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/media_session.mojom-shared.h"
 #include "ui/base/models/image_model.h"
@@ -140,13 +139,13 @@ void BirchLostMediaProvider::OnVideoConferencingDataAvailable(
   // the birch model.
   if (!apps.empty()) {
     items.emplace_back(
-        /*source_url=*/apps[0]->url.value_or(GURL()),
-        /*media_title=*/apps[0]->title,
+        /*source_url=*/apps[0].url.value_or(GURL()),
+        /*media_title=*/apps[0].title,
         /*backup_icon=*/std::nullopt,
         /*secondary_icon_type=*/SecondaryIconType::kLostMediaVideoConference,
         /*activation_callback=*/
         base::BindRepeating(&BirchLostMediaProvider::OnItemPressed,
-                            weak_factory_.GetWeakPtr(), apps[0]->id));
+                            weak_factory_.GetWeakPtr(), apps[0].id));
     Shell::Get()->birch_model()->SetLostMediaItems(std::move(items));
     return;
   }

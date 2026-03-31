@@ -9,7 +9,6 @@
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace ash::video_conference_utils {
@@ -50,10 +49,9 @@ std::string GetEffectHistogramNameForInitialState(VcEffectId effect_id) {
 }
 
 std::u16string GetMediaAppDisplayText(
-    const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
-        media_app) {
-  auto url = media_app->url;
-  auto title = media_app->title;
+    const VideoConferenceMediaAppInfo& media_app) {
+  auto url = media_app.url;
+  auto title = media_app.title;
 
   // Displays the title if it is not empty. Otherwise, display app url.
   if (!title.empty()) {

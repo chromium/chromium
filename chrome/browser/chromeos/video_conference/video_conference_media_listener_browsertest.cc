@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
@@ -361,9 +360,9 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
 
   vc_manager->GetMediaApps(base::BindLambdaForTesting([](ash::MediaApps apps) {
     EXPECT_EQ(apps.size(), 1u);
-    EXPECT_TRUE(apps[0]->is_capturing_camera);
-    EXPECT_FALSE(apps[0]->is_capturing_microphone);
-    EXPECT_FALSE(apps[0]->is_capturing_screen);
+    EXPECT_TRUE(apps[0].is_capturing_camera);
+    EXPECT_FALSE(apps[0].is_capturing_microphone);
+    EXPECT_FALSE(apps[0].is_capturing_screen);
   }));
 
   std::move(stop_capture_callback).Run();

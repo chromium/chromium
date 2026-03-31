@@ -30,7 +30,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/session_manager/session_manager_types.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,9 +71,9 @@ constexpr char kMicrophoneMuteHistogramName[] =
 // Check if there's a non-linux app(s) from the given `apps`.
 bool HasNonLinuxMediaApps(const MediaApps& apps) {
   for (auto& app : apps) {
-    if (app->app_type != crosapi::mojom::VideoConferenceAppType::kCrostiniVm &&
-        app->app_type != crosapi::mojom::VideoConferenceAppType::kPluginVm &&
-        app->app_type != crosapi::mojom::VideoConferenceAppType::kBorealis) {
+    if (app.app_type != VideoConferenceAppType::kCrostiniVm &&
+        app.app_type != VideoConferenceAppType::kPluginVm &&
+        app.app_type != VideoConferenceAppType::kBorealis) {
       return true;
     }
   }

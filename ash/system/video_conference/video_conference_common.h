@@ -13,7 +13,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -105,9 +104,7 @@ struct ASH_EXPORT VideoConferenceMediaUsageStatus {
   bool operator==(const VideoConferenceMediaUsageStatus& other) const;
 };
 
-// Native counterpart to crosapi::mojom::VideoConferenceAppType used by the
-// in-process VideoConferenceManagerClient interface. Keep this in sync with the
-// mojom enum until the tray-facing API stops using Mojo types.
+// Native app type used by the in-process Ash/Chrome video conference pipeline.
 enum class VideoConferenceAppType {
   kBrowserUnknown,
   kChromeTab,
@@ -121,10 +118,11 @@ enum class VideoConferenceAppType {
   kBorealis,
   kAshClientUnknown,
   kAshCaptureMode,
+  kMaxValue = kAshCaptureMode,
 };
 
-// Native counterpart to crosapi::mojom::VideoConferenceMediaAppInfo used by
-// the in-process VideoConferenceManagerClient interface.
+// Native media-app info used by the in-process Ash/Chrome video conference
+// pipeline.
 struct ASH_EXPORT VideoConferenceMediaAppInfo {
   VideoConferenceMediaAppInfo();
   VideoConferenceMediaAppInfo(const VideoConferenceMediaAppInfo&);
@@ -174,17 +172,17 @@ class ASH_EXPORT VideoConferenceManagerClient {
                                           bool enabled) = 0;
 };
 
-// This class defines the public interfaces of VideoConferenceManagerAsh exposed
-// to VideoConferenceTrayController. Although these public functions serve
-// similar purposes to VideoConferenceManagerClient, we should not use
-// VideoConferenceManagerClient here because they represent different concepts.
-// The signal will be passed from VideoConferenceTrayController to
-// VideoConferenceManagerAsh to VideoConferenceManagerClient.
+// This class defines the public interfaces of `VideoConferenceManagerAsh`
+// exposed to `VideoConferenceTrayController`. Although these public functions
+// serve similar purposes to `VideoConferenceManagerClient`, we should not use
+// `VideoConferenceManagerClient` here because they represent different
+// concepts. The signal will be passed from `VideoConferenceTrayController` to
+// `VideoConferenceManagerAsh` to `VideoConferenceManagerClient`.
 class VideoConferenceManagerBase {
  public:
-  using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
-  // Gets all media apps from VideoConferenceManagerAsh and runs the callback on
-  // that.
+  using MediaApps = std::vector<VideoConferenceMediaAppInfo>;
+  // Gets all media apps from `VideoConferenceManagerAsh` and runs the callback
+  // on that.
   virtual void GetMediaApps(base::OnceCallback<void(MediaApps)>) = 0;
 
   // Calls VideoConferenceManagerAsh to return to App identified by `id`.

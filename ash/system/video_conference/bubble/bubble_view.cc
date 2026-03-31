@@ -25,7 +25,6 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -60,9 +59,9 @@ CameraEffectsController* GetCameraEffectsController() {
 // Check if there's a linux app in the given `apps`.
 bool HasLinuxApps(const MediaApps& apps) {
   for (auto& app : apps) {
-    if (app->app_type == crosapi::mojom::VideoConferenceAppType::kCrostiniVm ||
-        app->app_type == crosapi::mojom::VideoConferenceAppType::kPluginVm ||
-        app->app_type == crosapi::mojom::VideoConferenceAppType::kBorealis) {
+    if (app.app_type == VideoConferenceAppType::kCrostiniVm ||
+        app.app_type == VideoConferenceAppType::kPluginVm ||
+        app.app_type == VideoConferenceAppType::kBorealis) {
       return true;
     }
   }

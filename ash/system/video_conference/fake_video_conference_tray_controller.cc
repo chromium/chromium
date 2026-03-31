@@ -12,28 +12,52 @@
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace ash {
 
+namespace {
+
+VideoConferenceMediaAppInfo CreateMediaApp(const base::UnguessableToken& id,
+                                           base::Time last_activity_time,
+                                           bool is_capturing_camera,
+                                           bool is_capturing_microphone,
+                                           bool is_capturing_screen,
+                                           const std::u16string& title,
+                                           std::optional<GURL> url,
+                                           VideoConferenceAppType app_type) {
+  VideoConferenceMediaAppInfo app;
+  app.id = id;
+  app.last_activity_time = last_activity_time;
+  app.is_capturing_camera = is_capturing_camera;
+  app.is_capturing_microphone = is_capturing_microphone;
+  app.is_capturing_screen = is_capturing_screen;
+  app.title = title;
+  app.url = std::move(url);
+  app.app_type = app_type;
+  return app;
+}
+
+}  // namespace
+
 FakeVideoConferenceTrayController::FakeVideoConferenceTrayController()
     : effect_repository_(
           std::make_unique<fake_video_conference::EffectRepository>(
               /*controller=*/this)) {
-  AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+  AddMediaApp(CreateMediaApp(
       /*id=*/base::UnguessableToken::Create(),
       /*last_activity_time=*/base::Time::Now(),
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Google Meet",
-      /*url=*/GURL("https://meet.google.com/abc-xyz/ab-123")));
-  AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfo::New(
+      /*url=*/GURL("https://meet.google.com/abc-xyz/ab-123"),
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
+  AddMediaApp(CreateMediaApp(
       /*id=*/base::UnguessableToken::Create(),
       /*last_activity_time=*/base::Time::Now(),
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/std::nullopt));
+      /*url=*/std::nullopt, /*app_type=*/VideoConferenceAppType::kChromeTab));
 }
 
 FakeVideoConferenceTrayController::~FakeVideoConferenceTrayController() {
@@ -80,11 +104,7 @@ void FakeVideoConferenceTrayController::GetMediaApps(
   }
 
   // If not initialized, use fake `media_apps_`.
-  MediaApps apps;
-  for (auto& app : media_apps_) {
-    apps.push_back(app->Clone());
-  }
-  std::move(ui_callback).Run(std::move(apps));
+  std::move(ui_callback).Run(media_apps_);
 }
 
 void FakeVideoConferenceTrayController::ReturnToApp(
@@ -111,7 +131,7 @@ void FakeVideoConferenceTrayController::HandleClientUpdate(
 }
 
 void FakeVideoConferenceTrayController::AddMediaApp(
-    crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app) {
+    VideoConferenceMediaAppInfo media_app) {
   media_apps_.push_back(std::move(media_app));
 }
 

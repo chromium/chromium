@@ -9,9 +9,9 @@
 #include <string_view>
 
 #include "ash/ash_export.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 
@@ -25,8 +25,6 @@ class View;
 }  // namespace views
 
 namespace ash::video_conference {
-
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
 
 // The base class for the "return to app" button, showing information of a
 // particular running media app. Clicking on this button will take users to the
@@ -55,11 +53,11 @@ class ASH_EXPORT ReturnToAppButtonBase : public views::Button {
                         bool is_capturing_microphone,
                         bool is_capturing_screen,
                         const std::u16string& display_text,
-                        crosapi::mojom::VideoConferenceAppType app_type);
+                        VideoConferenceAppType app_type);
 
   // Callback for the button.
   virtual void OnButtonClicked(const base::UnguessableToken& id,
-                               crosapi::mojom::VideoConferenceAppType app_type);
+                               VideoConferenceAppType app_type);
 
   // Get the text regarding the peripherals part of the return to app button
   // accessible name.

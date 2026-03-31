@@ -24,7 +24,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -34,32 +33,38 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "url/gurl.h"
+
+namespace ash::video_conference {
 
 namespace {
 
-crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
+VideoConferenceMediaAppInfo CreateFakeMediaApp(
     bool is_capturing_camera,
     bool is_capturing_microphone,
     bool is_capturing_screen,
     const std::u16string& title,
     std::string url,
-    const crosapi::mojom::VideoConferenceAppType app_type =
-        crosapi::mojom::VideoConferenceAppType::kChromeTab,
+    const VideoConferenceAppType app_type,
     const base::UnguessableToken& id = base::UnguessableToken::Create()) {
-  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
-      id,
-      /*last_activity_time=*/base::Time::Now(), is_capturing_camera,
-      is_capturing_microphone, is_capturing_screen, title,
-      /*url=*/GURL(url), app_type);
+  VideoConferenceMediaAppInfo app;
+  app.id = id;
+  app.last_activity_time = base::Time::Now();
+  app.is_capturing_camera = is_capturing_camera;
+  app.is_capturing_microphone = is_capturing_microphone;
+  app.is_capturing_screen = is_capturing_screen;
+  app.title = title;
+  app.url = GURL(url);
+  app.app_type = app_type;
+  return app;
 }
 
 // Verifies the information of `ReturnToAppButton`.
-void VerifyReturnToAppButtonInfo(
-    ash::video_conference::ReturnToAppButton* button,
-    bool is_capturing_camera,
-    bool is_capturing_microphone,
-    bool is_capturing_screen,
-    const std::u16string& display_text) {
+void VerifyReturnToAppButtonInfo(ReturnToAppButton* button,
+                                 bool is_capturing_camera,
+                                 bool is_capturing_microphone,
+                                 bool is_capturing_screen,
+                                 const std::u16string& display_text) {
   EXPECT_EQ(is_capturing_camera, button->is_capturing_camera());
   EXPECT_EQ(is_capturing_microphone, button->is_capturing_microphone());
   EXPECT_EQ(is_capturing_screen, button->is_capturing_screen());
@@ -72,8 +77,6 @@ const std::u16string kExpectedMeetDisplayedUrl =
     u"meet.google.com/abc-xyz/ab-123";
 
 }  // namespace
-
-namespace ash::video_conference {
 
 class ReturnToAppPanelTest : public AshTestBase {
  public:
@@ -170,7 +173,8 @@ TEST_F(ReturnToAppPanelTest, OneApp) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, title,
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   // There should be one child representing the only one running media app.
   auto panel = std::make_unique<ReturnToAppPanel>(apps);
@@ -193,11 +197,13 @@ TEST_F(ReturnToAppPanelTest, MultipleApps) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, title,
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   // There should be three children, one representing the summary row and two
   // for two running media apps.
@@ -238,11 +244,12 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   auto panel = std::make_unique<ReturnToAppPanel>(apps);
   auto* return_to_app_container = GetReturnToAppContainer(panel.get());
@@ -269,7 +276,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   // Clicking the summary row should expand the panel.
   summary_row->OnButtonClicked(
       /*id=*/base::UnguessableToken::Null(),
-      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
+      /*app_type=*/VideoConferenceAppType::kBrowserUnknown);
   EXPECT_TRUE(summary_row->expanded());
 
   // Verify the views in expanded state:
@@ -283,7 +290,7 @@ TEST_F(ReturnToAppPanelTest, ExpandCollapse) {
   // Click again. Should be in collapsed state.
   summary_row->OnButtonClicked(
       /*id=*/base::UnguessableToken::Null(),
-      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue);
+      /*app_type=*/VideoConferenceAppType::kBrowserUnknown);
   EXPECT_FALSE(summary_row->expanded());
 }
 
@@ -294,11 +301,12 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
   auto return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(1, return_to_app_panel->max_capturing_count());
 
@@ -306,11 +314,12 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
   return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(2, return_to_app_panel->max_capturing_count());
 
@@ -318,11 +327,12 @@ TEST_F(ReturnToAppPanelTest, MaxCapturingCount) {
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   apps.emplace_back(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
   return_to_app_panel = std::make_unique<ReturnToAppPanel>(apps);
   EXPECT_EQ(3, return_to_app_panel->max_capturing_count());
 }
@@ -341,13 +351,12 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
       /*url=*/kMeetTestUrl,
-      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp,
+      /*app_type=*/VideoConferenceAppType::kChromeApp,
       /*id=*/app_id1));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/false,
-      /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/"", /*app_type=*/crosapi::mojom::VideoConferenceAppType::kArcApp,
-      /*id=*/app_id2));
+      /*is_capturing_screen=*/true, /*title=*/u"Zoom", /*url=*/"",
+      /*app_type=*/VideoConferenceAppType::kArcApp, /*id=*/app_id2));
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();
@@ -371,18 +380,15 @@ TEST_F(ReturnToAppPanelTest, ReturnToApp) {
   LeftClickOn(first_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id1]);
   EXPECT_FALSE(controller()->app_to_launch_state_[app_id2]);
-  histogram_tester.ExpectBucketCount(
-      "Ash.VideoConference.ReturnToApp.Click",
-      crosapi::mojom::VideoConferenceAppType::kChromeApp, 1);
-  histogram_tester.ExpectBucketCount(
-      "Ash.VideoConference.ReturnToApp.Click",
-      crosapi::mojom::VideoConferenceAppType::kArcApp, 0);
+  histogram_tester.ExpectBucketCount("Ash.VideoConference.ReturnToApp.Click",
+                                     VideoConferenceAppType::kChromeApp, 1);
+  histogram_tester.ExpectBucketCount("Ash.VideoConference.ReturnToApp.Click",
+                                     VideoConferenceAppType::kArcApp, 0);
 
   LeftClickOn(second_app_row);
   EXPECT_TRUE(controller()->app_to_launch_state_[app_id2]);
-  histogram_tester.ExpectBucketCount(
-      "Ash.VideoConference.ReturnToApp.Click",
-      crosapi::mojom::VideoConferenceAppType::kArcApp, 1);
+  histogram_tester.ExpectBucketCount("Ash.VideoConference.ReturnToApp.Click",
+                                     VideoConferenceAppType::kArcApp, 1);
 }
 
 TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
@@ -393,11 +399,12 @@ TEST_F(ReturnToAppPanelTest, ExpandAnimation) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
 
@@ -446,11 +453,12 @@ TEST_F(ReturnToAppPanelTest, CollapseAnimation) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
 
@@ -517,11 +525,12 @@ TEST_F(ReturnToAppPanelTest, LayerAnimations) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
 
@@ -580,7 +589,7 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonTextElide) {
       /*title=*/
       u"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
       u"eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
 
@@ -606,11 +615,12 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonAccessibleName) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();
@@ -645,11 +655,12 @@ TEST_F(ReturnToAppPanelTest, ReturnToAppButtonSummaryRowAccessibleName) {
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
       /*is_capturing_screen=*/false, /*title=*/u"Meet",
-      /*url=*/kMeetTestUrl));
+      /*url=*/kMeetTestUrl,
+      /*app_type=*/VideoConferenceAppType::kChromeTab));
   controller()->AddMediaApp(CreateFakeMediaApp(
       /*is_capturing_camera=*/false, /*is_capturing_microphone=*/true,
       /*is_capturing_screen=*/true, /*title=*/u"Zoom",
-      /*url=*/""));
+      /*url=*/"", /*app_type=*/VideoConferenceAppType::kChromeTab));
 
   LeftClickOn(toggle_bubble_button());
   auto* return_to_app_panel = GetReturnToAppPanel();

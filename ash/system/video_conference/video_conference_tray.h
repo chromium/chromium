@@ -47,7 +47,7 @@ class Shelf;
 class TrayBubbleView;
 class TrayBubbleWrapper;
 
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+using MediaApps = VideoConferenceManagerBase::MediaApps;
 
 // A toggle icon button in the VC tray, which is used for toggling camera,
 // microphone, and screen sharing.

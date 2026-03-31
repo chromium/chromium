@@ -24,7 +24,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -211,15 +210,14 @@ END_METADATA
 // -----------------------------------------------------------------------------
 // ReturnToAppButton:
 
-ReturnToAppButton::ReturnToAppButton(
-    ReturnToAppPanel* panel,
-    bool is_top_row,
-    const base::UnguessableToken& id,
-    bool is_capturing_camera,
-    bool is_capturing_microphone,
-    bool is_capturing_screen,
-    const std::u16string& display_text,
-    crosapi::mojom::VideoConferenceAppType app_type)
+ReturnToAppButton::ReturnToAppButton(ReturnToAppPanel* panel,
+                                     bool is_top_row,
+                                     const base::UnguessableToken& id,
+                                     bool is_capturing_camera,
+                                     bool is_capturing_microphone,
+                                     bool is_capturing_screen,
+                                     const std::u16string& display_text,
+                                     VideoConferenceAppType app_type)
     : ReturnToAppButtonBase(id,
                             is_capturing_camera,
                             is_capturing_microphone,
@@ -263,9 +261,8 @@ ReturnToAppButton::ReturnToAppButton(
 
 ReturnToAppButton::~ReturnToAppButton() = default;
 
-void ReturnToAppButton::OnButtonClicked(
-    const base::UnguessableToken& id,
-    crosapi::mojom::VideoConferenceAppType app_type) {
+void ReturnToAppButton::OnButtonClicked(const base::UnguessableToken& id,
+                                        VideoConferenceAppType app_type) {
   // For rows that are not the summary row (which has non-empty `id`), perform
   // return to app.
   if (!id.is_empty()) {
@@ -454,10 +451,9 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
   if (apps.size() == 1) {
     auto& app = apps.front();
     auto app_button = std::make_unique<ReturnToAppButton>(
-        /*panel=*/this,
-        /*is_top_row=*/true, app->id, app->is_capturing_camera,
-        app->is_capturing_microphone, app->is_capturing_screen,
-        video_conference_utils::GetMediaAppDisplayText(app), app->app_type);
+        /*panel=*/this, /*is_top_row=*/true, app.id, app.is_capturing_camera,
+        app.is_capturing_microphone, app.is_capturing_screen,
+        video_conference_utils::GetMediaAppDisplayText(app), app.app_type);
     app_button->HideExpandIndicator();
     container_view_->AddChildView(std::move(app_button));
     return;
@@ -469,13 +465,13 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
 
   for (auto& app : apps) {
     max_capturing_count_ =
-        std::max(max_capturing_count_, app->is_capturing_camera +
-                                           app->is_capturing_microphone +
-                                           app->is_capturing_screen);
+        std::max(max_capturing_count_, app.is_capturing_camera +
+                                           app.is_capturing_microphone +
+                                           app.is_capturing_screen);
 
-    any_apps_capturing_camera |= app->is_capturing_camera;
-    any_apps_capturing_microphone |= app->is_capturing_microphone;
-    any_apps_capturing_screen |= app->is_capturing_screen;
+    any_apps_capturing_camera |= app.is_capturing_camera;
+    any_apps_capturing_microphone |= app.is_capturing_microphone;
+    any_apps_capturing_screen |= app.is_capturing_screen;
   }
 
   auto summary_text = l10n_util::GetStringFUTF16Int(
@@ -489,14 +485,13 @@ ReturnToAppPanel::ReturnToAppPanel(const MediaApps& apps) {
           /*is_top_row=*/true, /*app_id=*/base::UnguessableToken::Null(),
           any_apps_capturing_camera, any_apps_capturing_microphone,
           any_apps_capturing_screen, summary_text,
-          /*app_type=*/crosapi::mojom::VideoConferenceAppType::kDefaultValue));
+          /*app_type=*/VideoConferenceAppType::kBrowserUnknown));
 
   for (auto& app : apps) {
     container_view_->AddChildView(std::make_unique<ReturnToAppButton>(
-        /*panel=*/this,
-        /*is_top_row=*/false, app->id, app->is_capturing_camera,
-        app->is_capturing_microphone, app->is_capturing_screen,
-        video_conference_utils::GetMediaAppDisplayText(app), app->app_type));
+        /*panel=*/this, /*is_top_row=*/false, app.id, app.is_capturing_camera,
+        app.is_capturing_microphone, app.is_capturing_screen,
+        video_conference_utils::GetMediaAppDisplayText(app), app.app_type));
   }
 }
 

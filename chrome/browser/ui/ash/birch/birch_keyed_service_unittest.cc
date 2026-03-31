@@ -45,7 +45,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
@@ -536,13 +535,13 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   void AddMediaApp() {
-    vc_controller_->AddMediaApp(
-        crosapi::mojom::VideoConferenceMediaAppInfo::New(
-            /*id=*/base::UnguessableToken::Create(),
-            /*last_activity_time=*/base::Time::Now(),
-            /*is_capturing_camera=*/true, /*is_capturing_microphone=*/false,
-            /*is_capturing_screen=*/false, /*title=*/kMediaAppTitle,
-            /*url=*/GURL(kMediaAppUrl)));
+    ash::VideoConferenceMediaAppInfo app;
+    app.id = base::UnguessableToken::Create();
+    app.last_activity_time = base::Time::Now();
+    app.is_capturing_camera = true;
+    app.title = kMediaAppTitle;
+    app.url = GURL(kMediaAppUrl);
+    vc_controller_->AddMediaApp(std::move(app));
   }
 
   void ClearMediaApps() { vc_controller_->ClearMediaApps(); }

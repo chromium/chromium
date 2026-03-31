@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 
@@ -28,7 +27,7 @@ namespace ash {
 struct AnchoredNudgeData;
 class VideoConferenceTray;
 
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+using MediaApps = VideoConferenceManagerBase::MediaApps;
 
 // Controller that will act as a "bridge" between VC apps management and the VC
 // UI layers. The singleton instance is constructed immediately before and

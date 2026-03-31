@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/gtest_prod_util.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 
 namespace ash {
 
@@ -50,7 +49,7 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   void HandleClientUpdate(VideoConferenceClientUpdate update) override;
 
   // Adds or clears media app(s) in `media_apps_`.
-  void AddMediaApp(crosapi::mojom::VideoConferenceMediaAppInfoPtr media_app);
+  void AddMediaApp(VideoConferenceMediaAppInfo media_app);
   void ClearMediaApps();
 
   const std::vector<std::pair<VideoConferenceMediaDevice, std::u16string>>&

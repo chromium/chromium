@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -95,9 +94,9 @@ class VideoConferenceManagerAshTest : public testing::Test {
     bool is_capturing_screen = false;
 
     for (auto& app : apps) {
-      is_capturing_camera |= app->is_capturing_camera;
-      is_capturing_microphone |= app->is_capturing_microphone;
-      is_capturing_screen |= app->is_capturing_screen;
+      is_capturing_camera |= app.is_capturing_camera;
+      is_capturing_microphone |= app.is_capturing_microphone;
+      is_capturing_screen |= app.is_capturing_screen;
     }
 
     return {is_capturing_camera, is_capturing_microphone, is_capturing_screen};
@@ -131,7 +130,7 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
       [&](VideoConferenceManagerAsh::MediaApps apps) {
         EXPECT_EQ(apps.size(), 1u);
-        EXPECT_EQ(apps[0]->title, u"Test App0");
+        EXPECT_EQ(apps[0].title, u"Test App0");
 
         auto status = GetAggregatedCaptureStatus(std::move(apps));
 
@@ -152,8 +151,8 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
   vc_manager().GetMediaApps(base::BindLambdaForTesting(
       [&](VideoConferenceManagerAsh::MediaApps apps) {
         EXPECT_EQ(apps.size(), 2UL);
-        EXPECT_EQ(apps[0]->title, u"Test App1");
-        EXPECT_EQ(apps[1]->title, u"Test App0");
+        EXPECT_EQ(apps[0].title, u"Test App1");
+        EXPECT_EQ(apps[1].title, u"Test App0");
 
         auto status = GetAggregatedCaptureStatus(std::move(apps));
 
@@ -180,9 +179,9 @@ TEST_F(VideoConferenceManagerAshTest, VcManagerGetMediaApps) {
     vc_manager().GetMediaApps(base::BindLambdaForTesting(
         [&](VideoConferenceManagerAsh::MediaApps apps) {
           EXPECT_EQ(apps.size(), 3UL);
-          EXPECT_EQ(apps[0]->title, u"Test App1");
-          EXPECT_EQ(apps[1]->title, u"Test App2");
-          EXPECT_EQ(apps[2]->title, u"Test App0");
+          EXPECT_EQ(apps[0].title, u"Test App1");
+          EXPECT_EQ(apps[1].title, u"Test App2");
+          EXPECT_EQ(apps[2].title, u"Test App0");
 
           auto status = GetAggregatedCaptureStatus(std::move(apps));
 

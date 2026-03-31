@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "cc/paint/skottie_color_map.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/color/color_provider.h"
 
 namespace ash {
@@ -28,8 +28,7 @@ std::string GetEffectHistogramNameForInitialState(VcEffectId effect_id);
 // Gets the display text representing a media app shown in the return to app
 // button.
 std::u16string GetMediaAppDisplayText(
-    const mojo::StructPtr<crosapi::mojom::VideoConferenceMediaAppInfo>&
-        media_app);
+    const VideoConferenceMediaAppInfo& media_app);
 
 // Lottie animation doesn't support dark mode color, in order to make the
 // animation look good in both dark and light modes, we manually override the

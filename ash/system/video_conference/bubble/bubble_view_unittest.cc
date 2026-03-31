@@ -31,7 +31,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom.h"
+#include "url/gurl.h"
 
 namespace ash::video_conference {
 
@@ -109,14 +109,17 @@ class SnackNationForever : public VcEffectsDelegate {
                                 std::optional<int> state) override {}
 };
 
-crosapi::mojom::VideoConferenceMediaAppInfoPtr CreateFakeMediaApp(
-    const crosapi::mojom::VideoConferenceAppType app_type) {
-  return crosapi::mojom::VideoConferenceMediaAppInfo::New(
-      base::UnguessableToken::Create(),
-      /*last_activity_time=*/base::Time::Now(), /*is_capturing_camera=*/true,
-      /*is_capturing_microphone=*/true, /*is_capturing_screen=*/false,
-      u"Test App Name",
-      /*url=*/GURL(), app_type);
+VideoConferenceMediaAppInfo CreateFakeMediaApp(
+    const VideoConferenceAppType app_type) {
+  VideoConferenceMediaAppInfo app;
+  app.id = base::UnguessableToken::Create();
+  app.last_activity_time = base::Time::Now();
+  app.is_capturing_camera = true;
+  app.is_capturing_microphone = true;
+  app.title = u"Test App Name";
+  app.url = GURL();
+  app.app_type = app_type;
+  return app;
 }
 
 }  // namespace
@@ -433,7 +436,7 @@ TEST_F(BubbleViewTest, InvalidEffectState) {
 TEST_F(BubbleViewTest, LinuxAppWarningView) {
   controller()->ClearMediaApps();
   controller()->AddMediaApp(CreateFakeMediaApp(
-      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kChromeApp));
+      /*app_type=*/VideoConferenceAppType::kChromeApp));
 
   // Click to open the bubble, the linux app warning view is NOT present.
   LeftClickOn(toggle_bubble_button());
@@ -443,7 +446,7 @@ TEST_F(BubbleViewTest, LinuxAppWarningView) {
   LeftClickOn(toggle_bubble_button());
 
   controller()->AddMediaApp(CreateFakeMediaApp(
-      /*app_type=*/crosapi::mojom::VideoConferenceAppType::kCrostiniVm));
+      /*app_type=*/VideoConferenceAppType::kCrostiniVm));
 
   // When there's a linux app alongside a non-linux app, the linux app warning
   // view is present only when there's effect(s) available.

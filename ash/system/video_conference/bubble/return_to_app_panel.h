@@ -13,7 +13,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/gfx/geometry/size.h"
@@ -41,7 +40,7 @@ namespace ash::video_conference {
 class ReturnToAppExpandButton;
 class ReturnToAppPanel;
 
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+using MediaApps = VideoConferenceManagerBase::MediaApps;
 
 // The "return to app" button that resides within the "return to app" panel.
 class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
@@ -58,7 +57,7 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
                     bool is_capturing_microphone,
                     bool is_capturing_screen,
                     const std::u16string& display_text,
-                    crosapi::mojom::VideoConferenceAppType app_type);
+                    VideoConferenceAppType app_type);
 
   ReturnToAppButton(const ReturnToAppButton&) = delete;
   ReturnToAppButton& operator=(const ReturnToAppButton&) = delete;
@@ -66,9 +65,8 @@ class ASH_EXPORT ReturnToAppButton : public ReturnToAppButtonBase {
   ~ReturnToAppButton() override;
 
   // ReturnToAppButtonBase:
-  void OnButtonClicked(
-      const base::UnguessableToken& id,
-      crosapi::mojom::VideoConferenceAppType app_type) override;
+  void OnButtonClicked(const base::UnguessableToken& id,
+                       VideoConferenceAppType app_type) override;
 
   bool expanded() const { return expanded_; }
   void HideExpandIndicator();

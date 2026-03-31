@@ -6,12 +6,12 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_LINUX_APPS_BUBBLE_VIEW_H_
 
 #include "ash/system/tray/tray_bubble_view.h"
-#include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
+#include "ash/system/video_conference/video_conference_common.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash::video_conference {
 
-using MediaApps = std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr>;
+using MediaApps = VideoConferenceManagerBase::MediaApps;
 
 // The bubble view that shows for VC panel when all running media apps are Linux
 // apps. In this case we just display a smaller bubble that contains no effects.
