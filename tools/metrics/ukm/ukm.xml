@@ -996,10 +996,24 @@ be describing additional metrics about the same event.
     Recorded when the page is being destroyed/navigated away or when the app
     enters the background on mobile. This is separate from the `AdPageLoad`
     event to allow it to be recorded on all pages (i.e. not only pages that have
-    loaded non-zero ad byte), and to allow a potentially different sampling.
-    Both iframe and img ads are covered. Ads obscured by non-ad content are
-    excluded.
+    loaded non-zero ad byte), and to allow a potentially different sampling. For
+    all metrics in this event: 1) all detected ad types (e.g., iframes, imgs)
+    are included, and 2) ads obscured by non-ad content are excluded.
   </summary>
+  <metric name="AverageViewportAdCount">
+    <summary>
+      The estimated average viewport ad count accumulated over the page load
+      time, rounded to the nearest exponential bucket integer with bucket
+      spacing 1.15.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="AverageViewportAdDensity">
     <summary>
       The estimated average viewport ad density. Each density value is

@@ -1837,6 +1837,44 @@ TEST_P(AdsPageLoadMetricsObserverTest, AdDensityDistributionMoments) {
       SuffixedHistogram("AverageViewportAdDensity"), 20, 1);
 }
 
+TEST_P(AdsPageLoadMetricsObserverTest, AdCountDistributionMoments) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  OverrideWithMockClock();
+
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  page_load_metrics::mojom::FrameMetadata metadata;
+  metadata.main_frame_intersection_rect = gfx::Rect(0, 0, 1, 100);
+  metadata.main_frame_viewport_rect = gfx::Rect(0, 0, 1, 100);
+  tester_->SimulateMetadataUpdate(metadata, main_frame);
+
+  const int id1 = 1;
+  const int id2 = 2;
+
+  // Simulate 2 ads being in the viewport.
+  page_load_metrics::mojom::FrameMetadata metadata2;
+  metadata2.main_frame_ad_rects = {{id1, gfx::Rect(0, 0, 1, 10)},
+                                   {id2, gfx::Rect(0, 20, 1, 10)}};
+
+  tester_->SimulateMetadataUpdate(metadata2, main_frame);
+  AdvancePageDuration(base::Seconds(4));
+
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling4::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  // Verify that an average ad count of 2 was correctly recorded.
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::AdPageLoadCustomSampling4::kAverageViewportAdCountName, 2);
+
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("AverageViewportAdCount"), 2, 1);
+}
+
 TEST_P(AdsPageLoadMetricsObserverTest,
        AdDensityDistributionMoments_ZeroDensity) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
