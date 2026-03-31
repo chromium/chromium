@@ -98,10 +98,6 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
 
   start_data->is_cross_origin_isolated = params->cross_origin_isolated;
 
-  for (const auto& feature : params->forced_enabled_runtime_features) {
-    blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
-  }
-
   // `cache_storage` may be null if COEP is not enabled, we cannot bind
   // eagerly in that case.
   mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage =

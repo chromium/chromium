@@ -499,11 +499,6 @@ bool ContentBrowserClient::ShouldTryToUpdateServiceWorkerRegistration(
   return true;
 }
 
-void ContentBrowserClient::UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-    BrowserContext* context,
-    const GURL& script_url,
-    std::vector<std::string>& out_forced_enabled_runtime_features) {}
-
 bool ContentBrowserClient::AllowSharedWorker(
     const GURL& worker_url,
     const net::SiteForCookies& site_for_cookies,

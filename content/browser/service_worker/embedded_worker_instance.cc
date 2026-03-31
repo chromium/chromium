@@ -394,22 +394,6 @@ void EmbeddedWorkerInstance::Start(
         params->devtools_worker_token.ToString());
   }
 
-  // To enable runtime features, the render process must be locked to the site.
-  // These features are highly privileged, so the renderer process with such
-  // features enabled shouldn't be used for other sites.
-  //
-  // WebUI schemes are process isolated already. To isolate other sites, the
-  // embedder can override ContentBrowserClient::ShouldLockProcessToSite().
-  if (rph->GetProcessLock().IsLockedToSite()) {
-    GetContentClient()
-        ->browser()
-        ->UpdateEnabledBlinkRuntimeFeaturesInIsolatedWorker(
-            context_->wrapper()->browser_context(), params->script_url,
-            params->forced_enabled_runtime_features);
-  }
-  CHECK(params->forced_enabled_runtime_features.empty() ||
-        rph->GetProcessLock().IsLockedToSite());
-
   // TODO(crbug.com/40584626): Support changes to blink::RendererPreferences
   // while the worker is running.
   DCHECK(context_->wrapper()->browser_context() ||
