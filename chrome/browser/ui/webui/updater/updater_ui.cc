@@ -34,6 +34,11 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "base/version_info/channel.h"
+#include "chrome/common/channel_info.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -207,7 +212,20 @@ UpdaterUI::UpdaterUI(content::WebUI* web_ui)
               {"{44FC7FE2-65CE-487C-93F4-EDEE46EEAAAB}"});
   AddKnownApp(*source, num_known_apps++, "Chrome Enterprise Companion App",
               {"{85EEDF37-756C-4972-9399-5A12A4BEE148}"});
-  source->AddLocalizedString("defaultAppFilters", IDS_PRODUCT_NAME);
+
+  source->AddLocalizedString("defaultAppFilters", [] {
+    switch (chrome::GetChannel()) {
+      case version_info::Channel::BETA:
+        return IDS_SHORTCUT_NAME_BETA;
+      case version_info::Channel::DEV:
+        return IDS_SHORTCUT_NAME_DEV;
+      case version_info::Channel::CANARY:
+        return IDS_SXS_SHORTCUT_NAME;
+      case version_info::Channel::STABLE:
+      case version_info::Channel::UNKNOWN:
+        return IDS_PRODUCT_NAME;
+    }
+  }());
 #else
   source->AddString("defaultAppFilters", "");
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
