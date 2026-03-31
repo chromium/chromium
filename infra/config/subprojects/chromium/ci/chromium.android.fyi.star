@@ -429,11 +429,6 @@ ci.builder(
             "android_fyi_isolated_scripts",
         ],
         mixins = [
-            targets.mixin(
-                args = [
-                    "--emulator-debug-tags=all",
-                ],
-            ),
             "17-beta-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
@@ -441,6 +436,11 @@ ci.builder(
             "x86-64",
         ],
         per_test_modifications = {
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--emulator-debug-tags=all",
+                ],
+            ),
         },
     ),
     targets_settings = targets.settings(

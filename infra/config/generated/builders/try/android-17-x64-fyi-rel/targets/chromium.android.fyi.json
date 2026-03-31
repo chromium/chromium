@@ -3,7 +3,6 @@
     "gtest_tests": [
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -52,7 +51,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -103,7 +101,6 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -155,7 +152,6 @@
       {
         "args": [
           "--test-launcher-batch-limit=1",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -204,7 +200,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -254,7 +249,6 @@
       {
         "args": [
           "-v",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -296,7 +290,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -345,7 +338,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -394,7 +386,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -443,7 +434,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -493,7 +483,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -547,7 +536,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -597,7 +585,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -646,7 +633,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -696,7 +682,6 @@
       {
         "args": [
           "--gtest_filter=-*UsingRealWebcam*",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -745,7 +730,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -794,7 +778,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -843,7 +826,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -894,7 +876,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -944,8 +925,8 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
+          "--emulator-debug-tags=all",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -1000,7 +981,6 @@
       {
         "args": [
           "--git-revision=${got_revision}",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1055,7 +1035,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1104,7 +1083,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1154,7 +1132,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1204,7 +1181,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1254,7 +1230,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1304,7 +1279,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1353,7 +1327,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1402,7 +1375,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1451,7 +1423,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1500,7 +1471,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1550,7 +1520,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1599,7 +1568,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1648,7 +1616,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1697,7 +1664,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1746,7 +1712,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1796,7 +1761,6 @@
       {
         "args": [
           "--use-cmd-decoder=validating",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1845,7 +1809,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1894,7 +1857,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1943,7 +1905,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -1992,7 +1953,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2041,7 +2001,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2090,7 +2049,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2139,7 +2097,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2188,7 +2145,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2238,7 +2194,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2287,7 +2242,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2336,7 +2290,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2385,7 +2338,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2434,7 +2386,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2483,7 +2434,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2532,7 +2482,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2581,7 +2530,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2631,7 +2579,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2680,7 +2627,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2729,7 +2675,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2778,7 +2723,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2827,7 +2771,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2876,7 +2819,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2925,7 +2867,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -2974,7 +2915,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3023,7 +2963,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3072,7 +3011,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3121,7 +3059,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3170,7 +3107,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3219,7 +3155,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3269,7 +3204,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3318,7 +3252,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3367,7 +3300,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3417,7 +3349,6 @@
       {
         "args": [
           "--webview-process-mode=multiple",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3467,7 +3398,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3517,7 +3447,6 @@
       {
         "args": [
           "--disable-field-trial-config",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3566,7 +3495,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3615,7 +3543,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
@@ -3673,7 +3600,6 @@
           "reftest",
           "crashtest",
           "print-reftest",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -3723,7 +3649,6 @@
           "always",
           "--test-type",
           "wdspec",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "ci_only": true,
@@ -3773,7 +3698,6 @@
         "args": [
           "--skipped",
           "always",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "ci_only": true,
@@ -3822,7 +3746,6 @@
       {
         "args": [
           "--gtest-benchmark-name=components_perftests",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -3867,7 +3790,6 @@
       {
         "args": [
           "--platform=android",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -3909,7 +3831,6 @@
       },
       {
         "args": [
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -3955,7 +3876,6 @@
           "-v",
           "--passthrough",
           "--retry-limit=2",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
@@ -3997,7 +3917,6 @@
       {
         "args": [
           "--extra-browser-args=--enable-crashpad",
-          "--emulator-debug-tags=all",
           "--avd-config=../../tools/android/avd/proto/android_cinnamonbun_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_cinnamonbun_google_apis_ps16k_x64",
