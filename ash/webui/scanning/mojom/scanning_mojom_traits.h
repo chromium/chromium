@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_
-#define ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_
+#ifndef ASH_WEBUI_SCANNING_MOJOM_SCANNING_MOJOM_TRAITS_H_
+#define ASH_WEBUI_SCANNING_MOJOM_SCANNING_MOJOM_TRAITS_H_
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
@@ -59,4 +59,4 @@ struct StructTraits<lorgnette::ScanSettings,
 
 }  // namespace mojo
 
-#endif  // ASH_WEBUI_SCANNING_MOJOM_SCANNING_TYPE_CONVERTERS_H_
+#endif  // ASH_WEBUI_SCANNING_MOJOM_SCANNING_MOJOM_TRAITS_H_

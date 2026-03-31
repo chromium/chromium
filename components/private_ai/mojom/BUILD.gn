@@ -19,8 +19,8 @@ mojom("mojom") {
           move_only = true
         },
       ]
-      traits_headers = [ "oak_session_traits.h" ]
-      traits_sources = [ "oak_session_traits.cc" ]
+      traits_headers = [ "oak_session_mojom_traits.h" ]
+      traits_sources = [ "oak_session_mojom_traits.cc" ]
       traits_public_deps = [ "//components/private_ai/crypto" ]
     },
   ]

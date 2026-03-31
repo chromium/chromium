@@ -35,8 +35,8 @@ mojom("mojom") {
           move_only = true
         },
       ]
-      traits_headers = [ "bookmark_html_parser_traits.h" ]
-      traits_sources = [ "bookmark_html_parser_traits.cc" ]
+      traits_headers = [ "bookmark_html_parser_mojom_traits.h" ]
+      traits_sources = [ "bookmark_html_parser_mojom_traits.cc" ]
       traits_public_deps = [
         "//components/favicon_base",
         "//components/user_data_importer/utility:safari_data_importer",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_TRAITS_H_
-#define SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_TRAITS_H_
+#ifndef SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_MOJOM_TRAITS_H_
+#define SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/webnn/public/cpp/range.h"
@@ -32,4 +32,4 @@ struct StructTraits<webnn::mojom::RangeDataView, webnn::Range> {
 
 }  // namespace mojo
 
-#endif  // SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_TRAITS_H_
+#endif  // SERVICES_WEBNN_PUBLIC_MOJOM_RANGE_MOJOM_TRAITS_H_

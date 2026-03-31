@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
-#define CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
+#ifndef CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_IME_MOJOM_TRAITS_H_
+#define CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_IME_MOJOM_TRAITS_H_
 
 #include <string_view>
 
@@ -161,4 +161,4 @@ struct EnumTraits<ash::ime::mojom::AutocorrectSuggestionProvider,
 
 }  // namespace mojo
 
-#endif  // CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_MOJOM_TRAITS_H_
+#endif  // CHROMEOS_ASH_SERVICES_IME_PUBLIC_MOJOM_IME_MOJOM_TRAITS_H_

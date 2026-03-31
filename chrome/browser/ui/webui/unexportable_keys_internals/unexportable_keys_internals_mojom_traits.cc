@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_traits.h"
+#include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_mojom_traits.h"
 
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals.mojom.h"

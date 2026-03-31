@@ -22,10 +22,10 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [
-        "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_traits.h",
+        "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_mojom_traits.h",
         "//components/unexportable_keys/unexportable_key_id.h",
       ]
-      traits_sources = [ "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_traits.cc" ]
+      traits_sources = [ "//chrome/browser/ui/webui/unexportable_keys_internals/unexportable_keys_internals_mojom_traits.cc" ]
       traits_deps = [
         "//base",
         "//components/unexportable_keys",

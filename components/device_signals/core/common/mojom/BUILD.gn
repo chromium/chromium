@@ -32,8 +32,8 @@ mojom("mojom") {
           cpp = "::device_signals::GetFileSystemInfoOptions"
         },
       ]
-      traits_headers = [ "system_signals_mojom_traits_common.h" ]
-      traits_sources = [ "system_signals_mojom_traits_common.cc" ]
+      traits_headers = [ "system_signals_mojom_traits.h" ]
+      traits_sources = [ "system_signals_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
         "//components/device_signals/core/common",
@@ -59,8 +59,8 @@ mojom("mojom") {
             cpp = "::device_signals::InstalledHotfix"
           },
         ]
-        traits_headers = [ "system_signals_mojom_traits_win.h" ]
-        traits_sources = [ "system_signals_mojom_traits_win.cc" ]
+        traits_headers = [ "system_signals_win_mojom_traits.h" ]
+        traits_sources = [ "system_signals_win_mojom_traits.cc" ]
         traits_public_deps = [
           "//base",
           "//components/device_signals/core/common/win",

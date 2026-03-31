@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/scanning/mojom/scanning_type_converters.h"
-#include "ash/webui/scanning/mojom/scanning.mojom.h"
+#include "ash/webui/scanning/mojom/scanning_mojom_traits.h"
 
 #include <utility>
 
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -88,18 +88,24 @@ std::vector<mojo_ipc::PageSize> GetSupportedPageSizes(
   std::vector<mojo_ipc::PageSize> page_sizes;
   page_sizes.reserve(7);
   page_sizes.push_back(mojo_ipc::PageSize::kMax);
-  if (AreaSupportsPageSize(area, kIsoA3PageSize))
+  if (AreaSupportsPageSize(area, kIsoA3PageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kIsoA3);
-  if (AreaSupportsPageSize(area, kIsoA4PageSize))
+  }
+  if (AreaSupportsPageSize(area, kIsoA4PageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kIsoA4);
-  if (AreaSupportsPageSize(area, kIsoB4PageSize))
+  }
+  if (AreaSupportsPageSize(area, kIsoB4PageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kIsoB4);
-  if (AreaSupportsPageSize(area, kLegalPageSize))
+  }
+  if (AreaSupportsPageSize(area, kLegalPageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kLegal);
-  if (AreaSupportsPageSize(area, kNaLetterPageSize))
+  }
+  if (AreaSupportsPageSize(area, kNaLetterPageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kNaLetter);
-  if (AreaSupportsPageSize(area, kTabloidPageSize))
+  }
+  if (AreaSupportsPageSize(area, kTabloidPageSize)) {
     page_sizes.push_back(mojo_ipc::PageSize::kTabloid);
+  }
 
   return page_sizes;
 }
@@ -315,8 +321,9 @@ StructTraits<ash::scanning::mojom::ScannerCapabilitiesPtr,
     }
 
     mojo_source->resolutions.reserve(source.resolutions().size());
-    for (const auto& res : source.resolutions())
+    for (const auto& res : source.resolutions()) {
       mojo_source->resolutions.push_back(res);
+    }
 
     mojo_caps.sources.push_back(std::move(mojo_source));
   }

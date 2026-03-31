@@ -190,8 +190,8 @@ mojom("mojom") {
           move_only = true
         },
       ]
-      traits_headers = [ "encoded_audio_buffer_traits.h" ]
-      traits_sources = [ "encoded_audio_buffer_traits.cc" ]
+      traits_headers = [ "encoded_audio_buffer_mojom_traits.h" ]
+      traits_sources = [ "encoded_audio_buffer_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
         "//media",

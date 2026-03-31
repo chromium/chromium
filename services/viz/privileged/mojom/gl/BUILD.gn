@@ -58,7 +58,7 @@ mojom("gl") {
         },
       ]
       traits_headers =
-          [ "//services/viz/privileged/cpp/context_lost_reason_traits.h" ]
+          [ "//services/viz/privileged/cpp/context_lost_reason_mojom_traits.h" ]
       traits_public_deps = [ "//gpu/command_buffer/common" ]
     },
   ]

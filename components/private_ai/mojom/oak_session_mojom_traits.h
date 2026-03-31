@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_TRAITS_H_
-#define COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_TRAITS_H_
+#ifndef COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_MOJOM_TRAITS_H_
+#define COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_MOJOM_TRAITS_H_
 
 #include <array>
 
@@ -33,4 +33,4 @@ struct StructTraits<private_ai::mojom::HandshakeMessageDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_TRAITS_H_
+#endif  // COMPONENTS_PRIVATE_AI_MOJOM_OAK_SESSION_MOJOM_TRAITS_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
-#define SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
+#ifndef SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_MOJOM_TRAITS_H_
+#define SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_MOJOM_TRAITS_H_
 
 #include "base/notreached.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -59,4 +59,4 @@ struct EnumTraits<viz::mojom::ContextLostReason,
 
 }  // namespace mojo
 
-#endif  // SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
+#endif  // SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_MOJOM_TRAITS_H_

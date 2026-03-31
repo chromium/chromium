@@ -31,8 +31,8 @@ mojom("projector_mojo_bindings") {
         },
       ]
 
-      traits_headers = [ "projector_types_mojo_traits.h" ]
-      traits_sources = [ "projector_types_mojo_traits.cc" ]
+      traits_headers = [ "projector_types_mojom_traits.h" ]
+      traits_sources = [ "projector_types_mojom_traits.cc" ]
       traits_public_deps = [ "//ash/public/cpp" ]
     },
   ]

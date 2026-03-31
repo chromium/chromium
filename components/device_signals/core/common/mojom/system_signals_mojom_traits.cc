@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/device_signals/core/common/mojom/system_signals_mojom_traits_common.h"
+#include "components/device_signals/core/common/mojom/system_signals_mojom_traits.h"
 
 #include "base/notreached.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"

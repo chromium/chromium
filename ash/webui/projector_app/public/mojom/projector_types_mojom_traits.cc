@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/projector_app/public/mojom/projector_types_mojo_traits.h"
+#include "ash/webui/projector_app/public/mojom/projector_types_mojom_traits.h"
 
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/notreached.h"

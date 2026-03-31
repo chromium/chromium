@@ -115,7 +115,7 @@ mojom_component("mojom") {
         "number_mojom_traits.h",
         "operand_descriptor_mojom_traits.h",
         "operand_id_mojom_traits.h",
-        "range_traits.h",
+        "range_mojom_traits.h",
         "supported_data_types_mojom_traits.h",
         "supported_tensors_mojom_traits.h",
         "tensor_usage_mojom_traits.h",

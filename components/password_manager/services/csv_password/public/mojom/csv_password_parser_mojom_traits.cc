@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/services/csv_password/public/mojom/csv_password_parser_traits.h"
+#include "components/password_manager/services/csv_password/public/mojom/csv_password_parser_mojom_traits.h"
 
 #include "base/notreached.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
@@ -51,23 +51,29 @@ bool StructTraits<password_manager::mojom::CSVPasswordDataView,
   std::string password;
   std::string note;
 
-  if (!data.ReadStatus(&status))
+  if (!data.ReadStatus(&status)) {
     return false;
-  if (!data.ReadUrl(&url))
+  }
+  if (!data.ReadUrl(&url)) {
     return false;
-  if (!data.ReadUsername(&username))
+  }
+  if (!data.ReadUsername(&username)) {
     return false;
-  if (!data.ReadPassword(&password))
+  }
+  if (!data.ReadPassword(&password)) {
     return false;
-  if (!data.ReadNote(&note))
+  }
+  if (!data.ReadNote(&note)) {
     return false;
+  }
   if (url.is_valid()) {
     *out = password_manager::CSVPassword(url, username, password, note, status);
     return true;
   }
   std::optional<std::string> invalid_url;
-  if (!data.ReadInvalidUrl(&invalid_url))
+  if (!data.ReadInvalidUrl(&invalid_url)) {
     return false;
+  }
   DCHECK(invalid_url.has_value());
   *out = password_manager::CSVPassword(invalid_url.value(), username, password,
                                        note, status);

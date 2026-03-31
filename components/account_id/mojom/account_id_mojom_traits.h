@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_TRAITS_H_
-#define COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_TRAITS_H_
+#ifndef COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_MOJOM_TRAITS_H_
+#define COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_MOJOM_TRAITS_H_
 
 #include <string>
 
@@ -73,8 +73,9 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
         // UNKNOWN type is used for users that have only email (e.g. in tests
         // or legacy users that have not run through migration code).
         // Bail if there is no user email.
-        if (user_email.empty())
+        if (user_email.empty()) {
           return false;
+        }
 
         *out = AccountId::FromUserEmail(user_email);
         break;
@@ -90,4 +91,4 @@ struct StructTraits<signin::mojom::AccountIdDataView, AccountId> {
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_TRAITS_H_
+#endif  // COMPONENTS_ACCOUNT_ID_MOJOM_ACCOUNT_ID_MOJOM_TRAITS_H_

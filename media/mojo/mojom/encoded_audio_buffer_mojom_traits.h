@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_TRAITS_H_
-#define MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_TRAITS_H_
+#ifndef MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_MOJOM_TRAITS_H_
+#define MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_MOJOM_TRAITS_H_
 
 #include "media/base/audio_encoder.h"
 #include "media/base/ipc/media_param_traits.h"
@@ -45,4 +45,4 @@ struct StructTraits<media::mojom::EncodedAudioBufferDataView,
 
 }  // namespace mojo
 
-#endif  // MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_TRAITS_H_
+#endif  // MEDIA_MOJO_MOJOM_ENCODED_AUDIO_BUFFER_MOJOM_TRAITS_H_

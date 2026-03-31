@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJO_TRAITS_H_
-#define ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJO_TRAITS_H_
+#ifndef ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJOM_TRAITS_H_
+#define ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJOM_TRAITS_H_
 
 #include <string>
 #include <vector>
@@ -55,4 +55,4 @@ class StructTraits<MojomNewScreencastPreconditioDataView,
 
 }  // namespace mojo
 
-#endif  // ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJO_TRAITS_H_
+#endif  // ASH_WEBUI_PROJECTOR_APP_PUBLIC_MOJOM_PROJECTOR_TYPES_MOJOM_TRAITS_H_

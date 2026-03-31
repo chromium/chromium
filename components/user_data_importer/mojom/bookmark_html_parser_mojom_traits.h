@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_TRAITS_H_
-#define COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_TRAITS_H_
+#ifndef COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_MOJOM_TRAITS_H_
+#define COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_MOJOM_TRAITS_H_
 
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_usage_data.h"
@@ -119,4 +119,4 @@ struct StructTraits<user_data_importer::mojom::ParsedBookmarksDataView,
 
 }  // namespace mojo
 
-#endif  // COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_TRAITS_H_
+#endif  // COMPONENTS_USER_DATA_IMPORTER_MOJOM_BOOKMARK_HTML_PARSER_MOJOM_TRAITS_H_

@@ -21,8 +21,8 @@ mojom("mojom") {
           cpp = "::password_manager::CSVPassword"
         },
       ]
-      traits_headers = [ "csv_password_parser_traits.h" ]
-      traits_sources = [ "csv_password_parser_traits.cc" ]
+      traits_headers = [ "csv_password_parser_mojom_traits.h" ]
+      traits_sources = [ "csv_password_parser_mojom_traits.cc" ]
       traits_public_deps =
           [ "//components/password_manager/core/browser/import:csv" ]
     },
@@ -32,7 +32,7 @@ mojom("mojom") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "csv_password_parser_traits_unittest.cc" ]
+  sources = [ "csv_password_parser_mojom_traits_unittest.cc" ]
 
   deps = [
     ":mojom",

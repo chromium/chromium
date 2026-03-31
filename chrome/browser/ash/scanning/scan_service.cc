@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/webui/scanning/mojom/scanning_type_converters.h"
+#include "ash/webui/scanning/mojom/scanning_mojom_traits.h"
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/check.h"
 #include "base/check_op.h"

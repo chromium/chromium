@@ -63,10 +63,10 @@ mojom("interfaces") {
         "//components/user_data_importer/common/importer_url_row.h",
       ]
       traits_private_headers = [
-        "profile_import_process_param_traits.h",
+        "profile_import_process_param_mojom_traits.h",
         "profile_import_process_param_traits_macros.h",
       ]
-      traits_sources = [ "profile_import_process_param_traits.cc" ]
+      traits_sources = [ "profile_import_process_param_mojom_traits.cc" ]
       traits_public_deps = [
         "//chrome/common",
         "//components/autofill/core/common",

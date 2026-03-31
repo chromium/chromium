@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/importer/profile_import_process_param_traits.h"
+#include "chrome/common/importer/profile_import_process_param_mojom_traits.h"
 
 // Get basic type definitions.
 #include "chrome/common/importer/profile_import_process_param_traits_macros.h"

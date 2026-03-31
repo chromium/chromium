@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_data_importer/mojom/bookmark_html_parser_traits.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser_mojom_traits.h"
 
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"

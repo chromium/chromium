@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/scanning/mojom/scanning_type_converters.h"
+#include "ash/webui/scanning/mojom/scanning_mojom_traits.h"
+
 #include <map>
-#include "base/containers/fixed_flat_map.h"
 
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
+#include "base/containers/fixed_flat_map.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
