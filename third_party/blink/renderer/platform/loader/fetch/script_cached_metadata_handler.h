@@ -5,10 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_CACHED_METADATA_HANDLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_SCRIPT_CACHED_METADATA_HANDLER_H_
 
+#include <stdint.h>
+
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -17,7 +21,6 @@
 namespace blink {
 
 class CachedMetadata;
-class CachedMetadataSender;
 
 // ScriptCachedMetadataHandler should be created when a response is received,
 // and can be used independently from its Resource.
@@ -156,6 +159,38 @@ enum class StateOnGet : int {
 
   // Must be equal to the greatest among enumeraiton values.
   kMaxValue = kWasDiscarded
+};
+
+// `SourceKeyedCachedMetadataHandler` is created by taking `source_text`, being
+// independent from any `Resource`.
+class PLATFORM_EXPORT SourceKeyedCachedMetadataHandler
+    : public CachedMetadataHandler {
+ public:
+  SourceKeyedCachedMetadataHandler(const TextEncoding& encoding,
+                                   const ParkableString& source_text);
+  ~SourceKeyedCachedMetadataHandler() override;
+
+  // CachedMetadataHandler:
+  void Trace(Visitor*) const override;
+  void SetCachedMetadata(CodeCacheHost* code_cache_host,
+                         uint32_t data_type_id,
+                         base::span<const uint8_t> data) override;
+  void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
+  void ClearCachedMetadata(CodeCacheHost* code_cache_host,
+                           ClearCacheType cache_type) override;
+  scoped_refptr<CachedMetadata> GetCachedMetadata(
+      uint32_t data_type_id,
+      GetCachedMetadataBehavior behavior) const override;
+  String Encoding() const override;
+  ServingSource GetServingSource() const override;
+  void OnMemoryDump(WebProcessMemoryDump* pmd,
+                    const String& dump_prefix) const override;
+  size_t GetCodeCacheSize() const override;
+
+ private:
+  const TextEncoding encoding_;
+  SecureStringDigest source_hash_;
+  scoped_refptr<CachedMetadata> cached_metadata_;
 };
 
 }  // namespace blink

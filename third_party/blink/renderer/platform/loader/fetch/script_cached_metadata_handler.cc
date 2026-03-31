@@ -4,10 +4,15 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 
+#include <stdint.h>
+
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/crypto.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
@@ -219,6 +224,79 @@ ScriptCachedMetadataHandlerWithHashing::GetSerializedCachedMetadata() const {
 void ScriptCachedMetadataHandlerWithHashing::ResetForTesting() {
   if (hash_state_ == kChecked)
     hash_state_ = kDeserialized;
+}
+
+SourceKeyedCachedMetadataHandler::SourceKeyedCachedMetadataHandler(
+    const TextEncoding& encoding,
+    const ParkableString& source_text)
+    : encoding_(encoding), source_hash_(source_text.Digest().Get()) {}
+
+SourceKeyedCachedMetadataHandler::~SourceKeyedCachedMetadataHandler() = default;
+
+void SourceKeyedCachedMetadataHandler::Trace(Visitor* visitor) const {
+  CachedMetadataHandler::Trace(visitor);
+}
+
+void SourceKeyedCachedMetadataHandler::SetCachedMetadata(
+    CodeCacheHost* code_cache_host,
+    uint32_t data_type_id,
+    base::span<const uint8_t> data) {
+  CHECK(code_cache_host);
+  CHECK(!cached_metadata_);
+  cached_metadata_ = CachedMetadata::Create(data_type_id, data);
+  code_cache_host->get()->DidGenerateSourceKeyedCacheableMetadata(
+      blink::Vector<uint8_t>(source_hash_), cached_metadata_->SerializedData());
+}
+
+void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
+    mojo_base::BigBuffer data) {
+  // We only expect to receive cached metadata from the platform once. If this
+  // triggers, it indicates an efficiency problem which is most likely
+  // unexpected in code designed to improve performance.
+  DCHECK(!cached_metadata_);
+  cached_metadata_ = CachedMetadata::CreateFromSerializedData(data);
+}
+
+void SourceKeyedCachedMetadataHandler::ClearCachedMetadata(
+    CodeCacheHost* code_cache_host,
+    ClearCacheType cache_type) {
+  cached_metadata_ = nullptr;
+}
+
+scoped_refptr<CachedMetadata>
+SourceKeyedCachedMetadataHandler::GetCachedMetadata(
+    uint32_t data_type_id,
+    GetCachedMetadataBehavior behavior) const {
+  if (!cached_metadata_ || cached_metadata_->DataTypeID() != data_type_id) {
+    return nullptr;
+  }
+  return cached_metadata_;
+}
+
+String SourceKeyedCachedMetadataHandler::Encoding() const {
+  return encoding_.GetName();
+}
+
+CachedMetadataHandler::ServingSource
+SourceKeyedCachedMetadataHandler::GetServingSource() const {
+  return ServingSource::kOther;
+}
+
+void SourceKeyedCachedMetadataHandler::OnMemoryDump(
+    WebProcessMemoryDump* pmd,
+    const String& dump_prefix) const {
+  if (!cached_metadata_) {
+    return;
+  }
+  const String dump_name = StrCat({dump_prefix, "/inline_script"});
+  auto* dump = pmd->CreateMemoryAllocatorDump(dump_name);
+  dump->AddScalar("size", "bytes", GetCodeCacheSize());
+  pmd->AddSuballocation(dump->Guid(),
+                        String(Partitions::kAllocatedObjectPoolName));
+}
+
+size_t SourceKeyedCachedMetadataHandler::GetCodeCacheSize() const {
+  return cached_metadata_ ? cached_metadata_->SerializedData().size() : 0;
 }
 
 }  // namespace blink

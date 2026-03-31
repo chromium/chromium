@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/lcp_critical_path_predictor_util.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
@@ -27,16 +30,21 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/document_write_intervention.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
+#include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
+#include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/detachable_use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
@@ -528,6 +536,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
   TRACE_EVENT0("blink", "ClassicPendingScript::GetSource");
   if (!is_external_) {
     InlineScriptStreamer* streamer = nullptr;
+    CachedMetadataHandler* cached_metadata_handler = nullptr;
     // We only create an inline cache handler for html-embedded scripts, not
     // for scripts produced by document.write, or not parser-inserted. This is
     // because we expect those to be too dynamic to benefit from caching.
@@ -541,6 +550,28 @@ ClassicScript* ClassicPendingScript::GetSource() const {
         element_document && element_document->IsActive()) {
       streamer = GetInlineScriptStreamer(source_text_for_inline_script_,
                                          *element_document);
+
+      std::optional<mojo_base::BigBuffer> code_cache;
+      if (DocumentLoader* loader = element_document->Loader();
+          features::IsInlineScriptCacheEnabled() && loader) {
+        if (CodeCacheHost* cache_host = loader->GetCodeCacheHost()) {
+          CHECK(!source_text_for_inline_script_.IsNull());
+          // Stores an empty `mojo_base::BigBuffer` on cache miss.
+          code_cache = cache_host->FetchInlineScriptCacheSync(
+              base::span<const uint8_t, kSha256Bytes>(
+                  ParkableString(source_text_for_inline_script_.Impl())
+                      .Digest()
+                      .Get()));
+        }
+        cached_metadata_handler =
+            MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
+                element_document->Encoding(),
+                ParkableString(source_text_for_inline_script_.Impl()));
+        if (code_cache.has_value() && code_cache->size() != 0) {
+          cached_metadata_handler->SetSerializedCachedMetadata(
+              std::move(*code_cache));
+        }
+      }
     }
 
     DCHECK(!GetResource());
@@ -552,7 +583,8 @@ ClassicScript* ClassicPendingScript::GetSource() const {
         source_text_for_inline_script_,
         ClassicScript::StripFragmentIdentifier(source_url_for_inline_script_),
         base_url_for_inline_script_, options_, source_location_type_,
-        SanitizeScriptErrors::kDoNotSanitize, nullptr, StartingPosition(),
+        SanitizeScriptErrors::kDoNotSanitize, cached_metadata_handler,
+        StartingPosition(),
         streamer ? ScriptStreamer::NotStreamingReason::kInvalid
                  : ScriptStreamer::NotStreamingReason::kInlineScript,
         streamer);
