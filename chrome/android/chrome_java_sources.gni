@@ -218,6 +218,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/backup/DictPrefBackupSerializer.java",
   "java/src/org/chromium/chrome/browser/backup/IntPrefBackupSerializer.java",
   "java/src/org/chromium/chrome/browser/backup/PrefBackupSerializer.java",
+  "java/src/org/chromium/chrome/browser/bookmarks/BookmarkAllTabsHandler.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerImpl.java",
   "java/src/org/chromium/chrome/browser/bookmarks/BookmarkOpenerImpl.java",
   "java/src/org/chromium/chrome/browser/bookmarkswidget/BookmarkWidgetProvider.java",

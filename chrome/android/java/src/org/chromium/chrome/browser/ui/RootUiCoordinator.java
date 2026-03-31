@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -402,6 +403,7 @@ public class RootUiCoordinator
     private @Nullable ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private @Nullable AppMenuObserver mAppMenuObserver;
     private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
+    private @Nullable BookmarkAllTabsHandler mBookmarkAllTabsHandler;
 
     private final OneshotSupplierImpl<ToolbarManager> mToolbarManagerOneshotSupplier =
             new OneshotSupplierImpl<>();
@@ -600,6 +602,12 @@ public class RootUiCoordinator
                 savedIncognitoReauthPending || persistedIncognitoReauthPending;
 
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
+
+        mBookmarkAllTabsHandler =
+                new BookmarkAllTabsHandler(
+                        mTabModelSelectorSupplier, mSnackbarManagerSupplier, mWindowAndroid);
+        mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
+                mBookmarkAllTabsHandler);
 
         // This little bit of arithmetic is necessary because of Java doesn't like accepting
         // Supplier<BaseImpl> where Supplier<Base> is expected. We should remove the need for
@@ -811,6 +819,11 @@ public class RootUiCoordinator
         //  other than the mActivity. If the nulling calls are not necessary, we can remove them.
         mCallbackController.destroy();
         mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(this);
+        if (mBookmarkAllTabsHandler != null) {
+            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                    mBookmarkAllTabsHandler);
+            mBookmarkAllTabsHandler = null;
+        }
 
         SnackbarManager bottomSheetSnackbarManager = mBottomSheetSnackbarManagerSupplier.get();
         if (bottomSheetSnackbarManager != null) {

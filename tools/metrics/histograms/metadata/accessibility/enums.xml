@@ -1756,7 +1756,7 @@ Unknown properties are collapsed to zero. -->
   <int value="31" label="Focus on inactive dialogs (not implemented)"/>
   <int value="32" label="Open bookmarks"/>
   <int value="33" label="Bookmark page"/>
-  <int value="34" label="Bookmark all tabs (not implemented)"/>
+  <int value="34" label="Bookmark all tabs"/>
   <int value="35" label="Show or hide the bookmarks bar"/>
   <int value="36" label="Toggle immersive mode (not implemented)"/>
   <int value="37" label="Exit immersive mode (not implemented)"/>

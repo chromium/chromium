@@ -102,7 +102,7 @@ public class KeyboardShortcuts {
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS,
         KeyboardShortcutsSemanticMeaning.OPEN_BOOKMARKS,
         KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE,
-        KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS,
+        KeyboardShortcutsSemanticMeaning.BOOKMARK_ALL_TABS,
         KeyboardShortcutsSemanticMeaning.TOGGLE_BOOKMARK_BAR,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_TOGGLE_IMMERSIVE,
         KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_EXIT_IMMERSIVE,
@@ -187,7 +187,7 @@ public class KeyboardShortcuts {
         // Bookmarks.
         int OPEN_BOOKMARKS = 32;
         int BOOKMARK_PAGE = 33;
-        int NOT_IMPLEMENTED_BOOKMARK_ALL_TABS = 34;
+        int BOOKMARK_ALL_TABS = 34;
         int TOGGLE_BOOKMARK_BAR = 35;
 
         // Fullscreen.
@@ -766,7 +766,7 @@ public class KeyboardShortcuts {
                 KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_FOCUS_ON_INACTIVE_DIALOGS,
                 new KeyCombo(KeyEvent.KEYCODE_A, KeyEvent.META_ALT_ON | KeyEvent.META_SHIFT_ON));
         new KeyboardShortcutDefinition(
-                KeyboardShortcutsSemanticMeaning.NOT_IMPLEMENTED_BOOKMARK_ALL_TABS,
+                KeyboardShortcutsSemanticMeaning.BOOKMARK_ALL_TABS,
                 new KeyCombo(KeyEvent.KEYCODE_D, KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON));
         // TODO(crbug.com/402775002): Allow long press on Esc.
         new KeyboardShortcutDefinition(
@@ -1023,8 +1023,8 @@ public class KeyboardShortcuts {
 
         RecordHistogram.recordEnumeratedHistogram(
                 AccessibilityState.isKnownScreenReaderEnabled()
-                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning5"
-                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader5",
+                        ? "Accessibility.Android.KeyboardShortcut.ScreenReaderRunning6"
+                        : "Accessibility.Android.KeyboardShortcut.NoScreenReader6",
                 semanticMeaning,
                 KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE);
 
@@ -1177,6 +1177,10 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.BOOKMARK_PAGE:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(
                             R.id.bookmark_this_page_id, false);
+                    return true;
+                case KeyboardShortcutsSemanticMeaning.BOOKMARK_ALL_TABS:
+                    menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.bookmark_all_tabs, false);
                     return true;
                 case KeyboardShortcutsSemanticMeaning.OPEN_HISTORY:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(

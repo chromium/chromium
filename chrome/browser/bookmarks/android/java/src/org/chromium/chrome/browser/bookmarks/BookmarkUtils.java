@@ -17,7 +17,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApkInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -361,8 +360,9 @@ public class BookmarkUtils {
      * @param bookmarkModel The bookmark model.
      * @param tabList The list of all currently selected tabs from the TabListEditor menu.
      * @param snackbarManager The SnackbarManager used to show the snackbar.
+     * @return The number of bookmarks successfully created.
      */
-    public static void addBookmarksOnMultiSelect(
+    public static int addTabsToBookmarks(
             Activity activity,
             BookmarkModel bookmarkModel,
             List<Tab> tabList,
@@ -374,15 +374,16 @@ public class BookmarkUtils {
 
         // For a single selected bookmark, default to the single tab-to-bookmark approach.
         if (tabList.size() == 1) {
-            addBookmarkAndShowSnackbar(
-                    bookmarkModel,
-                    tabList.get(0),
-                    snackbarManager,
-                    activity,
-                    false,
-                    BookmarkType.NORMAL,
-                    bookmarkManagerOpener);
-            return;
+            BookmarkId id =
+                    addBookmarkAndShowSnackbar(
+                            bookmarkModel,
+                            tabList.get(0),
+                            snackbarManager,
+                            activity,
+                            false,
+                            BookmarkType.NORMAL,
+                            bookmarkManagerOpener);
+            return id != null ? 1 : 0;
         }
 
         // Current date time format with an example would be: Nov 17, 2022 4:34:20 PM PST
@@ -422,8 +423,6 @@ public class BookmarkUtils {
                 tabsBookmarkedCount++;
             }
         }
-        RecordHistogram.recordCount100Histogram(
-                "Android.TabMultiSelectV2.BookmarkTabsCount", tabsBookmarkedCount);
 
         SnackbarController snackbarController =
                 createSnackbarControllerForBookmarkFolderEditButton(
@@ -437,6 +436,8 @@ public class BookmarkUtils {
         snackbar.setDefaultLines(false)
                 .setAction(activity.getString(R.string.bookmark_item_edit), null);
         snackbarManager.showSnackbar(snackbar);
+
+        return tabsBookmarkedCount;
     }
 
     /**

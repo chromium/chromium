@@ -3877,6 +3877,14 @@ should be able to be added at any place in this file.
   <description>User navigated to the Android in-app history page.</description>
 </action>
 
+<action name="Android.BookmarkAllTabs">
+  <owner>mklw@google.com</owner>
+  <description>
+    User tapped 'Bookmark all tabs' on the tab strip context menu or via
+    keyboard shortcut to bookmark all tabs.
+  </description>
+</action>
+
 <action name="Android.BookmarkPage.CopyLink">
   <owner>wylieb@google.com</owner>
   <owner>hocheung@chromium.org</owner>
@@ -4916,6 +4924,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Android.TabStripMenu.BookmarkAllTabs">
+  <obsolete>Generalized/renamed to Android.BookmarkAllTabs in 3/26.</obsolete>
   <owner>mklw@google.com</owner>
   <description>
     User tapped 'Bookmark all tabs' on the tab strip context menu to bookmark

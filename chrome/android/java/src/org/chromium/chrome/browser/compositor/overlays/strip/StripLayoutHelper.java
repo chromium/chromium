@@ -21,7 +21,6 @@ import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -64,9 +63,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
-import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkAllTabsHandler;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -151,8 +148,6 @@ import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.MotionEventUtils;
 import org.chromium.ui.widget.RectProvider;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -698,25 +693,6 @@ public class StripLayoutHelper
         int BUTTON = 0;
         int EMPTY_SPACE_CONTEXT_MENU = 1;
     }
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    // LINT.IfChange(BookmarkAllTabsResult)
-    @IntDef({
-        BookmarkAllTabsResult.SUCCESS,
-        BookmarkAllTabsResult.MODEL_NULL,
-        BookmarkAllTabsResult.TAB_LIST_EMPTY,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface BookmarkAllTabsResult {
-        int SUCCESS = 0;
-        int MODEL_NULL = 1;
-        int TAB_LIST_EMPTY = 2;
-
-        int NUM_ENTRIES = 3;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:AndroidTabStripBookmarkAllTabsResult)
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -3268,43 +3244,8 @@ public class StripLayoutHelper
 
                                 @Override
                                 public void onBookmarkAllTabs() {
-                                    RecordUserAction.record("Android.TabStripMenu.BookmarkAllTabs");
-                                    if (mModel == null) {
-                                        RecordHistogram.recordEnumeratedHistogram(
-                                                "Android.TabStripMenu.BookmarkAllTabs.Result",
-                                                BookmarkAllTabsResult.MODEL_NULL,
-                                                BookmarkAllTabsResult.NUM_ENTRIES);
-                                        return;
-                                    }
-                                    List<Tab> tabs =
-                                            TabModelUtils.convertTabListToListOfTabs(mModel);
-                                    if (tabs.isEmpty()) {
-                                        RecordHistogram.recordEnumeratedHistogram(
-                                                "Android.TabStripMenu.BookmarkAllTabs.Result",
-                                                BookmarkAllTabsResult.TAB_LIST_EMPTY,
-                                                BookmarkAllTabsResult.NUM_ENTRIES);
-                                        return;
-                                    }
-
-                                    RecordHistogram.recordEnumeratedHistogram(
-                                            "Android.TabStripMenu.BookmarkAllTabs.Result",
-                                            BookmarkAllTabsResult.SUCCESS,
-                                            BookmarkAllTabsResult.NUM_ENTRIES);
-                                    Profile profile = tabs.get(0).getProfile();
-                                    BookmarkModel bookmarkModel =
-                                            BookmarkModel.getForProfile(profile);
-                                    bookmarkModel.finishLoadingBookmarkModel(
-                                            () -> {
-                                                Activity activity =
-                                                        mWindowAndroid.getActivity().get();
-                                                if (activity == null) return;
-                                                BookmarkUtils.addBookmarksOnMultiSelect(
-                                                        activity,
-                                                        bookmarkModel,
-                                                        tabs,
-                                                        mSnackbarManager,
-                                                        new BookmarkManagerOpenerImpl());
-                                            });
+                                    BookmarkAllTabsHandler.bookmarkAllTabs(
+                                            mModel, mWindowAndroid, mSnackbarManager);
                                 }
 
                                 @Override

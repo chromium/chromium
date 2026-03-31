@@ -1164,6 +1164,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BookmarkAllTabs.Result"
+    enum="AndroidBookmarkAllTabsResult" expires_after="2027-01-26">
+  <owner>mklw@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the result of the 'Bookmark all tabs' action from either the tab
+    strip context menu or keyboard shortcut. Recorded when the user activates
+    the action. We track this to monitor the failure rate of this action and the
+    reason of failure (null tab model, empty tab list).
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
     units="layers" expires_after="2026-01-27">
   <owner>pnoland@chromium.org</owner>
@@ -6096,18 +6108,6 @@ chromium-metrics-reviews@google.com.
     <variant name="OpenId4Vci" summary="openid-credential-offer://"/>
     <variant name="OpenId4Vp" summary="openid4vp://"/>
   </token>
-</histogram>
-
-<histogram name="Android.TabStrip.BookmarkAllTabs.Result"
-    enum="AndroidTabStripBookmarkAllTabsResult" expires_after="2027-01-26">
-  <owner>mklw@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records the result of the 'Bookmark all tabs' action from the empty space
-    tab strip context menu. Recorded when the user selects the menu item. We
-    track this to monitor the failure rate of this action and the reason of
-    failure (null tab model, empty tab list).
-  </summary>
 </histogram>
 
 <histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"

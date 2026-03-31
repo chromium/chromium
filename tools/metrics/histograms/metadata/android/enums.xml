@@ -95,6 +95,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Site settings exception list"/>
 </enum>
 
+<!-- LINT.IfChange(AndroidBookmarkAllTabsResult) -->
+
+<enum name="AndroidBookmarkAllTabsResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failure: Tab model was null"/>
+  <int value="2" label="Failure: Tab list was empty"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkAllTabsHandler.java:BookmarkAllTabsResult) -->
+
 <enum name="AndroidChildProcessConnectionEvents">
   <int value="0" label="SCHEDULE_TIMEOUT_SANDBOXED"/>
   <int value="1" label="SCHEDULE_TIMEOUT_UNSANDBOXED"/>
@@ -286,16 +296,6 @@ chromium-metrics-reviews@google.com.
     Failed to determine storage type by falling through all checks.
   </int>
 </enum>
-
-<!-- LINT.IfChange(AndroidTabStripBookmarkAllTabsResult) -->
-
-<enum name="AndroidTabStripBookmarkAllTabsResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failure: Tab model was null"/>
-  <int value="2" label="Failure: Tab list was empty"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper.java:BookmarkAllTabsResult) -->
 
 <enum name="AndroidThemeSettingsEntry">
   <summary>See Android.DarkTheme.ThemeSettingsEntry.</summary>
