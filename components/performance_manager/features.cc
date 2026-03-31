@@ -309,4 +309,7 @@ BASE_FEATURE(kBrowserProcessAboveNormalPriority,
 // memory usage and user experience compared to other memory saving features.
 BASE_FEATURE(kDisableTabDiscarding, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace performance_manager::features

@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "components/performance_manager/decorators/decorators_utils.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
@@ -634,17 +635,34 @@ void PageLiveStateDecorator::OnBeforePageNodeRemoved(
 }
 
 void PageLiveStateDecorator::OnTitleUpdated(const PageNode* page_node) {
-  if (!page_node->IsVisible()) {
-    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
-        ->set_updated_title_or_favicon_in_background(true);
+  if (page_node->IsVisible()) {
+    return;
   }
+  // Title changes are common during load (e.g. "Loading…" -> final title). Only
+  // treat background title updates as activity once the page is fully loaded
+  // and quiescent.
+  if (base::FeatureList::IsEnabled(
+          features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate) &&
+      page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle) {
+    return;
+  }
+  PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
+      ->set_updated_title_or_favicon_in_background(true);
 }
 
 void PageLiveStateDecorator::OnFaviconUpdated(const PageNode* page_node) {
-  if (!page_node->IsVisible()) {
-    PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
-        ->set_updated_title_or_favicon_in_background(true);
+  if (page_node->IsVisible()) {
+    return;
   }
+  // Favicon updates are common during load. Only treat background favicon
+  // updates as activity once the page is fully loaded and quiescent.
+  if (base::FeatureList::IsEnabled(
+          features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate) &&
+      page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle) {
+    return;
+  }
+  PageLiveStateDataImpl::GetOrCreate(PageNodeImpl::FromNode(page_node))
+      ->set_updated_title_or_favicon_in_background(true);
 }
 
 void PageLiveStateDecorator::OnAboutToBeDiscarded(

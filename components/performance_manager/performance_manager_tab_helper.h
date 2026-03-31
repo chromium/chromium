@@ -169,10 +169,13 @@ class PerformanceManagerTabHelper
   // The UKM source ID for this page.
   ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
-  // Favicon and title are set when a page is loaded, we only want to send
-  // signals to the page node about title and favicon update from the previous
-  // title and favicon, thus we want to ignore the very first update since it is
-  // always supposed to happen.
+  // When the feature
+  // `kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate` is disabled,
+  // PerformanceManagerTabHelper ignores the first title/favicon update after a
+  // navigation to avoid treating initial-load churn as background activity.
+  //
+  // TODO(crbug.com/497577319): Remove these fields when
+  // `kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate` is removed.
   bool first_time_favicon_set_ = false;
   bool first_time_title_set_ = false;
 

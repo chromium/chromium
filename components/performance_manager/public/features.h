@@ -248,6 +248,13 @@ BASE_DECLARE_FEATURE(kBrowserProcessAboveNormalPriority);
 
 BASE_DECLARE_FEATURE(kDisableTabDiscarding);
 
+// When enabled, PageLiveStateDecorator uses the page loading state to avoid
+// treating initial load title/favicon churn as a background update
+// signal (crbug.com/497577319).
+//
+// When disabled, falls back to legacy behavior.
+BASE_DECLARE_FEATURE(kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate);
+
 }  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

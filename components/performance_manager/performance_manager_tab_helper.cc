@@ -558,12 +558,15 @@ void PerformanceManagerTabHelper::FrameReceivedUserActivation(
 void PerformanceManagerTabHelper::TitleWasSet(content::NavigationEntry* entry) {
   DCHECK(page_node_);
 
-  // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
-  // than here. If a page has no <title> element on first load, the first change
-  // of title will be ignored no matter much later it happens.
-  if (!first_time_title_set_) {
-    first_time_title_set_ = true;
-    return;
+  if (!base::FeatureList::IsEnabled(
+          features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate)) {
+    // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
+    // than here. If a page has no <title> element on first load, the first
+    // change of title will be ignored no matter much later it happens.
+    if (!first_time_title_set_) {
+      first_time_title_set_ = true;
+      return;
+    }
   }
   page_node_->OnTitleUpdated();
 }
@@ -598,12 +601,15 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
   if (!render_frame_host->IsActive())
     return;
 
-  // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
-  // than here. If a page has no favicon on first load, the first change of
-  // favicon will be ignored no matter much later it happens.
-  if (!first_time_favicon_set_) {
-    first_time_favicon_set_ = true;
-    return;
+  if (!base::FeatureList::IsEnabled(
+          features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate)) {
+    // TODO(crbug.com/40894717): This logic belongs in the policy layer rather
+    // than here. If a page has no favicon on first load, the first change of
+    // favicon will be ignored no matter much later it happens.
+    if (!first_time_favicon_set_) {
+      first_time_favicon_set_ = true;
+      return;
+    }
   }
   page_node_->OnFaviconUpdated();
 }
@@ -661,8 +667,11 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id) {
       ukm::ConvertToSourceId(navigation_id, ukm::SourceIdType::NAVIGATION_ID);
   page_node_->SetUkmSourceId(ukm_source_id_);
 
-  first_time_title_set_ = false;
-  first_time_favicon_set_ = false;
+  if (!base::FeatureList::IsEnabled(
+          features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate)) {
+    first_time_title_set_ = false;
+    first_time_favicon_set_ = false;
+  }
 }
 
 FrameNodeImpl* PerformanceManagerTabHelper::GetExistingFrameNode(

@@ -13,10 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/test_support/decorators_utils.h"
 #include "components/performance_manager/test_support/performance_manager_test_harness.h"
@@ -444,6 +446,10 @@ TEST_F(PageLiveStateDecoratorTest, OnUpdatedTitleOrFaviconInBackgroundChanged) {
 }
 
 TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate);
+
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   ASSERT_TRUE(node);
@@ -460,7 +466,14 @@ TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
   EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
       web_contents()));
 
+  // Updating the title while backgrounded does nothing until the page is fully
+  // loaded and quiescent.
   node_impl->SetIsVisible(false);
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadingNotStarted);
+  node_impl->OnTitleUpdated();
+  EXPECT_FALSE(data->UpdatedTitleOrFaviconInBackground());
+
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
   node_impl->OnTitleUpdated();
   EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
   EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
@@ -468,6 +481,10 @@ TEST_F(PageLiveStateDecoratorTest, UpdateTitleInBackground) {
 }
 
 TEST_F(PageLiveStateDecoratorTest, UpdateFaviconInBackground) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate);
+
   base::WeakPtr<PageNode> node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
   ASSERT_TRUE(node);
@@ -484,8 +501,21 @@ TEST_F(PageLiveStateDecoratorTest, UpdateFaviconInBackground) {
   EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
       web_contents()));
 
+  // Updating the favicon while backgrounded does nothing until the page is
+  // fully loaded and quiescent.
   node_impl->SetIsVisible(false);
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadingNotStarted);
   node_impl->OnFaviconUpdated();
+  EXPECT_FALSE(data->UpdatedTitleOrFaviconInBackground());
+
+  node_impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  node_impl->OnFaviconUpdated();
+  EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
+  EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
+      web_contents()));
+
+  // The flag is not cleared when the page becomes visible again.
+  node_impl->SetIsVisible(true);
   EXPECT_TRUE(data->UpdatedTitleOrFaviconInBackground());
   EXPECT_TRUE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(
       web_contents()));
