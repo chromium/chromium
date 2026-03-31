@@ -544,7 +544,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   ~BookmarkBarViewDragTestBase() override = default;
 
   // views::WidgetObserver:
-  void OnWidgetDragWillStart(views::Widget* widget) override {
+  void OnWidgetDragDropWillStart(views::Widget* widget) override {
     const gfx::Point target = GetDragTargetInScreen();
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
@@ -552,7 +552,7 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
                        target.x(), target.y(), gfx::NativeWindow()));
   }
 
-  void OnWidgetDragComplete(views::Widget* widget) override {
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {
     absl::Cleanup done = [&] { Done(); };
 
     // All drag tests drag node f1a, so at the end of the test, if the node was
@@ -604,7 +604,8 @@ class BookmarkBarViewDragTestBase : public BookmarkBarViewEventTestBase,
   }
 
   virtual void OnDragEntered() {
-    // Drop the element, which should result in calling OnWidgetDragComplete().
+    // Drop the element, which should result in calling
+    // OnWidgetDragDropCompleted().
     GetDragTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(base::IgnoreResult(&ui_controls::SendMouseEvents),
@@ -889,8 +890,8 @@ VIEW_TEST(BookmarkBarViewTest4, MAYBE_ContextMenus)
 // Tests drag and drop within the same menu.
 class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
  public:
-  void OnWidgetDragComplete(views::Widget* widget) override {
-    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragDropCompleted(widget);
     // TODO(crbug.com/393126961): Check that the menu is still showing.
   }
 
@@ -994,12 +995,12 @@ class BookmarkBarViewTest7 : public BookmarkBarViewDragTestBase {
                        target.x(), target.y(), gfx::NativeWindow()));
   }
 
-  void OnWidgetDragComplete(views::Widget* widget) override {
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {
     // The button should be in normal state now.
     EXPECT_EQ(views::Button::STATE_NORMAL,
               bb_view_->all_bookmarks_button()->GetState());
 
-    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+    BookmarkBarViewDragTestBase::OnWidgetDragDropCompleted(widget);
     EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
@@ -1056,8 +1057,8 @@ class BookmarkBarViewTest8 : public BookmarkBarViewDragTestBase {
                        target.x(), target.y(), gfx::NativeWindow()));
   }
 
-  void OnWidgetDragComplete(views::Widget* widget) override {
-    BookmarkBarViewDragTestBase::OnWidgetDragComplete(widget);
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {
+    BookmarkBarViewDragTestBase::OnWidgetDragDropCompleted(widget);
     EXPECT_FALSE(MenuIsShowing(bb_view_->GetMenu()));
   }
 
@@ -1998,7 +1999,7 @@ VIEW_TEST(BookmarkBarViewTest21, MAYBE_ContextMenusForEmptyFolder)
 class BookmarkBarViewTest22 : public BookmarkBarViewDragTestBase {
  public:
   // BookmarkBarViewDragTestBase:
-  void OnWidgetDragComplete(views::Widget* widget) override {}
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {}
 
   void OnWidgetDestroyed(views::Widget* widget) override {
     BookmarkBarViewDragTestBase::OnWidgetDestroyed(widget);

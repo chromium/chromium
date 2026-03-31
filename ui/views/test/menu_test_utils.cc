@@ -70,7 +70,7 @@ bool TestMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
   return should_execute_command_without_closing_menu_;
 }
 
-bool TestMenuDelegate::ShouldCloseOnDragComplete() {
+bool TestMenuDelegate::ShouldCloseOnDragDropCompleted() {
   return should_close_on_drag_complete_;
 }
 

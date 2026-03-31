@@ -60,7 +60,7 @@ class DragWaiter : public views::WidgetObserver {
     widget_ = nullptr;
   }
 
-  void OnWidgetDragComplete(views::Widget* widget) override {
+  void OnWidgetDragDropCompleted(views::Widget* widget) override {
     drag_complete_ = true;
     if (drag_loop_ && drag_loop_->running()) {
       drag_loop_->Quit();

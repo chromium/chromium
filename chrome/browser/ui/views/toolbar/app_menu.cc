@@ -1401,7 +1401,7 @@ void AppMenu::WillHideMenu(MenuItemView* menu) {
   }
 }
 
-bool AppMenu::ShouldCloseOnDragComplete() {
+bool AppMenu::ShouldCloseOnDragDropCompleted() {
   return false;
 }
 

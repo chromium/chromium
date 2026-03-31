@@ -101,7 +101,7 @@ class AppMenu final : public views::MenuDelegate,
                       ui::Accelerator* accelerator) const override;
   void WillShowMenu(views::MenuItemView* menu) override;
   void WillHideMenu(views::MenuItemView* menu) override;
-  bool ShouldCloseOnDragComplete() override;
+  bool ShouldCloseOnDragDropCompleted() override;
   void OnMenuClosed(views::MenuItemView* menu) override;
   bool ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                               const ui::Event& event) override;

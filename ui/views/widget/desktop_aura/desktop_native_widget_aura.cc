@@ -1139,7 +1139,7 @@ void DesktopNativeWidgetAura::FlashFrame(bool flash_frame) {
   }
 }
 
-void DesktopNativeWidgetAura::RunShellDrag(
+void DesktopNativeWidgetAura::RunDragDropLoop(
     std::unique_ptr<ui::OSExchangeData> data,
     const gfx::Point& location,
     int operation,
@@ -1148,16 +1148,16 @@ void DesktopNativeWidgetAura::RunShellDrag(
     return;
   }
 
-  views::RunShellDrag(content_window_, std::move(data), location, operation,
-                      source);
+  views::RunDragDropLoop(content_window_, std::move(data), location, operation,
+                         source);
 }
 
-void DesktopNativeWidgetAura::CancelShellDrag(View* view) {
+void DesktopNativeWidgetAura::CancelDragDropLoop(View* view) {
   if (!content_window_) {
     return;
   }
 
-  views::CancelShellDrag(content_window_);
+  views::CancelDragDropLoop(content_window_);
 }
 
 void DesktopNativeWidgetAura::SchedulePaintInRect(const gfx::Rect& rect) {

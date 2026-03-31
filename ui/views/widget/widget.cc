@@ -1349,11 +1349,11 @@ SublevelManager* Widget::GetSublevelManager() {
   return sublevel_manager_.get();
 }
 
-void Widget::RunShellDrag(View* view,
-                          std::unique_ptr<ui::OSExchangeData> data,
-                          const gfx::Point& location,
-                          int operation,
-                          ui::mojom::DragEventSource source) {
+void Widget::RunDragDropLoop(View* view,
+                             std::unique_ptr<ui::OSExchangeData> data,
+                             const gfx::Point& location,
+                             int operation,
+                             ui::mojom::DragEventSource source) {
   if (view) {
     CHECK_EQ(view->GetWidget(), this);
   }
@@ -1362,9 +1362,9 @@ void Widget::RunShellDrag(View* view,
     return;
   }
   dragged_view_ = view;
-  OnDragWillStart();
+  OnDragDropWillStart();
 
-  observers_.Notify(&WidgetObserver::OnWidgetDragWillStart, this);
+  observers_.Notify(&WidgetObserver::OnWidgetDragDropWillStart, this);
 
   if (view && view->drag_controller()) {
     view->drag_controller()->OnWillStartDragForView(view);
@@ -1377,7 +1377,8 @@ void Widget::RunShellDrag(View* view,
     // tasks need to run. Only views:: and ui::EventDispatcher stacks are
     // present, which expect this re-entrancy.
     base::CurrentThread::ScopedAllowApplicationTasksInNativeNestedLoop allow;
-    native_widget_->RunShellDrag(std::move(data), location, operation, source);
+    native_widget_->RunDragDropLoop(std::move(data), location, operation,
+                                    source);
   }
 
   // The widget may be destroyed during the drag operation.
@@ -1397,17 +1398,17 @@ void Widget::RunShellDrag(View* view,
     dragged_view_ = nullptr;
     view->OnDragDone();
   }
-  OnDragComplete();
+  OnDragDropCompleted();
 
-  observers_.Notify(&WidgetObserver::OnWidgetDragComplete, this);
+  observers_.Notify(&WidgetObserver::OnWidgetDragDropCompleted, this);
 }
 
-void Widget::CancelShellDrag(View* view) {
+void Widget::CancelDragDropLoop(View* view) {
   if (!native_widget_) {
     return;
   }
 
-  native_widget_->CancelShellDrag(view);
+  native_widget_->CancelDragDropLoop(view);
 }
 
 void Widget::SchedulePaintInRect(const gfx::Rect& rect) {
@@ -2602,9 +2603,9 @@ void Widget::DestroyRootView() {
   root_view_.reset();
 }
 
-void Widget::OnDragWillStart() {}
+void Widget::OnDragDropWillStart() {}
 
-void Widget::OnDragComplete() {}
+void Widget::OnDragDropCompleted() {}
 
 const ui::NativeTheme* Widget::GetNativeTheme() const {
   if (native_theme_) {

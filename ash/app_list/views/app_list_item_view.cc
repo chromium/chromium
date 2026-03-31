@@ -1584,8 +1584,8 @@ bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
 
   gfx::Point widget_location(location);
   views::View::ConvertPointToWidget(this, &widget_location);
-  widget->RunShellDrag(this, std::move(data), widget_location, drag_operations,
-                       ui::mojom::DragEventSource::kTouch);
+  widget->RunDragDropLoop(this, std::move(data), widget_location,
+                          drag_operations, ui::mojom::DragEventSource::kTouch);
   return true;
 }
 

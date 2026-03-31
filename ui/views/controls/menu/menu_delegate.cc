@@ -134,7 +134,7 @@ int MenuDelegate::GetDragOperations(MenuItemView* sender) {
   NOTREACHED() << "If you override CanDrag, you must override this too.";
 }
 
-bool MenuDelegate::ShouldCloseOnDragComplete() {
+bool MenuDelegate::ShouldCloseOnDragDropCompleted() {
   return true;
 }
 

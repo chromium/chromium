@@ -11,11 +11,11 @@
 
 namespace views {
 
-void RunShellDrag(gfx::NativeView view,
-                  std::unique_ptr<ui::OSExchangeData> data,
-                  const gfx::Point& location,
-                  int operation,
-                  ui::mojom::DragEventSource source) {
+void RunDragDropLoop(gfx::NativeView view,
+                     std::unique_ptr<ui::OSExchangeData> data,
+                     const gfx::Point& location,
+                     int operation,
+                     ui::mojom::DragEventSource source) {
   gfx::Point screen_location(location);
   wm::ConvertPointToScreen(view, &screen_location);
   aura::Window* root_window = view->GetRootWindow();
@@ -26,7 +26,7 @@ void RunShellDrag(gfx::NativeView view,
   }
 }
 
-void CancelShellDrag(gfx::NativeView view, bool allow_widget_mismatch) {
+void CancelDragDropLoop(gfx::NativeView view, bool allow_widget_mismatch) {
   aura::Window* root_window = view->GetRootWindow();
   aura::client::DragDropClient* client =
       aura::client::GetDragDropClient(root_window);

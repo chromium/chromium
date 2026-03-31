@@ -1153,7 +1153,8 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
         drag_image_, {drag_image_.width() / 2, drag_image_.height() / 2});
   }
 
-  // Pull into a local to avoid use-after-free if RunShellDrag deletes `this`.
+  // Pull into a local to avoid use-after-free if RunDragDropLoop deletes
+  // `this`.
   base::OnceClosure drag_loop_done_callback =
       std::move(drag_loop_done_callback_);
 
@@ -1170,16 +1171,16 @@ TabDragController::Liveness TabDragController::StartSystemDnDSessionIfNecessary(
 #endif  // defined(USE_AURA)
 
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
-  context->GetWidget()->RunShellDrag(
+  context->GetWidget()->RunDragDropLoop(
       context, std::make_unique<ui::OSExchangeData>(std::move(data_provider)),
       point_in_screen, static_cast<int>(ui::mojom::DragOperation::kMove),
       ui::mojom::DragEventSource::kMouse);
 
-  VLOG(1) << __func__ << " RunShellDrag returned";
+  VLOG(1) << __func__ << " RunDragDropLoop returned";
 
-  // `RunShellDrag()` may return if we drag all of a window's tabs into another
-  // window's tab strip, because that destroys the window. The DnD session is
-  // still running and functional, though.
+  // `RunDragDropLoop()` may return if we drag all of a window's tabs into
+  // another window's tab strip, because that destroys the window. The DnD
+  // session is still running and functional, though.
 
   // If we're still alive and haven't updated our state yet, this means the drag
   // session ended while we were dragging all of the only window's tabs. We need
@@ -1782,7 +1783,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
         RevertDrag();
       } else {
         if (previous_state == DragState::kDraggingUsingSystemDnD) {
-// `views::CancelShellDrag()` is only available on Aura, and on all non-Aura
+// `views::CancelDragDropLoop()` is only available on Aura, and on all non-Aura
 // platforms `IsMoveLoopSupported()` returns true anyways.
 #if defined(USE_AURA)
           // Make sure the drag session ends.
@@ -1793,7 +1794,7 @@ void TabDragController::EndDragImpl(EndDragType type) {
             // `source_context_`) might have been destroyed during the drag (for
             // example when dragging all tabs of a window into another window).
             gfx::NativeView view = GetAttachedBrowserWidget()->GetNativeView();
-            views::CancelShellDrag(view, /*allow_widget_mismatch=*/true);
+            views::CancelDragDropLoop(view, /*allow_widget_mismatch=*/true);
           }
 #endif  // defined(USE_AURA)
 

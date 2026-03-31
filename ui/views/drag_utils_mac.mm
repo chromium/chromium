@@ -8,11 +8,11 @@
 
 namespace views {
 
-void RunShellDrag(gfx::NativeView view,
-                  std::unique_ptr<ui::OSExchangeData> data,
-                  const gfx::Point& location,
-                  int operation,
-                  ui::mojom::DragEventSource source) {
+void RunDragDropLoop(gfx::NativeView view,
+                     std::unique_ptr<ui::OSExchangeData> data,
+                     const gfx::Point& location,
+                     int operation,
+                     ui::mojom::DragEventSource source) {
   NOTIMPLEMENTED();
 }
 

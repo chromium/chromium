@@ -289,8 +289,8 @@ void HoldingSpaceItemView::StartDrag(const ui::LocatedEvent& event,
 
   gfx::Point widget_location(event.location());
   views::View::ConvertPointToWidget(this, &widget_location);
-  widget->RunShellDrag(this, std::move(data), widget_location, drag_operations,
-                       source);
+  widget->RunDragDropLoop(this, std::move(data), widget_location,
+                          drag_operations, source);
 }
 
 void HoldingSpaceItemView::SetSelected(bool selected) {

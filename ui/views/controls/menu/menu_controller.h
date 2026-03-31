@@ -236,14 +236,14 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   void OnDragEnteredScrollButton(SubmenuView* source, bool is_up);
   void OnDragExitedScrollButton(SubmenuView* source);
 
-  // Called by the MenuHost when a drag is about to start on a child view.
-  // This could be initiated by one of our MenuItemViews, or could be through
-  // another child View.
-  void OnDragWillStart();
+  // Called by the MenuHost when a drag-and-drop session is about to start on a
+  // child view. This could be initiated by one of our MenuItemViews, or could
+  // be through another child View.
+  void OnDragDropWillStart();
 
-  // Called by the MenuHost when the drag has completed. |should_close|
-  // corresponds to whether or not the menu should close.
-  void OnDragComplete(bool should_close);
+  // Called by the MenuHost when a drag-and-drop session has completed.
+  // |should_close| corresponds to whether or not the menu should close.
+  void OnDragDropCompleted(bool should_close);
 
   // Called while dispatching messages to intercept key events.
   // Returns ui::POST_DISPATCH_NONE if the event was swallowed by the menu.

@@ -178,7 +178,7 @@ class DraggableMenuRunnerFactory : public MenuRunnerFactory,
   bool GetDropFormats(views::MenuItemView* menu,
                       int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
-  bool ShouldCloseOnDragComplete() override;
+  bool ShouldCloseOnDragDropCompleted() override;
   bool IsCommandEnabled(int id) const override;
   bool IsItemChecked(int id) const override;
   void ExecuteCommand(int id) override;
@@ -459,7 +459,7 @@ bool DraggableMenuRunnerFactory::GetDropFormats(
   return true;
 }
 
-bool DraggableMenuRunnerFactory::ShouldCloseOnDragComplete() {
+bool DraggableMenuRunnerFactory::ShouldCloseOnDragDropCompleted() {
   return false;
 }
 

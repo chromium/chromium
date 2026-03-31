@@ -653,7 +653,7 @@ void HoldingSpaceTray::ExecuteCommand(int command_id, int event_flags) {
   }
 }
 
-void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {
+void HoldingSpaceTray::OnWidgetDragDropWillStart(views::Widget* widget) {
   // The holding space bubble should be closed while dragging holding space
   // items so as not to obstruct drop targets. Post the task to close the bubble
   // so that we don't attempt to destroy the bubble widget before the associated

@@ -424,9 +424,9 @@ class MenuControllerTest : public ViewsTestBase,
 
   MenuHostRootView* CreateMenuHostRootView(MenuHost* host);
 
-  void MenuHostOnDragWillStart(MenuHost* host);
+  void MenuHostOnDragDropWillStart(MenuHost* host);
 
-  void MenuHostOnDragComplete(MenuHost* host);
+  void MenuHostOnDragDropCompleted(MenuHost* host);
 
   void SelectByChar(char16_t character);
 
@@ -881,12 +881,12 @@ MenuHostRootView* MenuControllerTest::CreateMenuHostRootView(MenuHost* host) {
   return static_cast<MenuHostRootView*>(host->CreateRootView());
 }
 
-void MenuControllerTest::MenuHostOnDragWillStart(MenuHost* host) {
-  host->OnDragWillStart();
+void MenuControllerTest::MenuHostOnDragDropWillStart(MenuHost* host) {
+  host->OnDragDropWillStart();
 }
 
-void MenuControllerTest::MenuHostOnDragComplete(MenuHost* host) {
-  host->OnDragComplete();
+void MenuControllerTest::MenuHostOnDragDropCompleted(MenuHost* host) {
+  host->OnDragDropCompleted();
 }
 
 void MenuControllerTest::SelectByChar(char16_t character) {
@@ -1766,8 +1766,8 @@ TEST_F(MenuControllerTest, AsynchronousPerformDrop) {
 TEST_F(MenuControllerTest, AsynchronousDragComplete) {
   TestDragCompleteThenDestroyOnMenuClosed();
 
-  menu_controller()->OnDragWillStart();
-  menu_controller()->OnDragComplete(true);
+  menu_controller()->OnDragDropWillStart();
+  menu_controller()->OnDragDropCompleted(true);
 
   EXPECT_EQ(1, menu_controller_delegate()->on_menu_closed_called());
   EXPECT_EQ(nullptr, menu_controller_delegate()->on_menu_closed_menu());
@@ -1780,8 +1780,8 @@ TEST_F(MenuControllerTest, AsynchronousDragComplete) {
 TEST_F(MenuControllerTest, AsynchronousDragCompleteWithoutClose) {
   TestDragCompleteThenDestroyOnMenuClosed();
 
-  menu_controller()->OnDragWillStart();
-  menu_controller()->OnDragComplete(false);
+  menu_controller()->OnDragDropWillStart();
+  menu_controller()->OnDragDropCompleted(false);
 
   // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
   // because the native widget's state is not properly updated.
@@ -1794,9 +1794,9 @@ TEST_F(MenuControllerTest, AsynchronousDragCompleteWithoutClose) {
 TEST_F(MenuControllerTest, AsynchronousCancelDuringDrag) {
   TestDragCompleteThenDestroyOnMenuClosed();
 
-  menu_controller()->OnDragWillStart();
+  menu_controller()->OnDragDropWillStart();
   menu_controller()->Cancel(MenuController::ExitType::kAll);
-  menu_controller()->OnDragComplete(true);
+  menu_controller()->OnDragDropCompleted(true);
 
   EXPECT_EQ(1, menu_controller_delegate()->on_menu_closed_called());
   EXPECT_EQ(nullptr, menu_controller_delegate()->on_menu_closed_menu());
@@ -1810,10 +1810,10 @@ TEST_F(MenuControllerTest, AsynchronousDragHostDeleted) {
   ShowSubmenu();
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   MenuHost* const host = menu_host_for_submenu(submenu);
-  MenuHostOnDragWillStart(host);
+  MenuHostOnDragDropWillStart(host);
   submenu->Close();
   DestroyMenuItem();
-  MenuHostOnDragComplete(host);
+  MenuHostOnDragDropCompleted(host);
 }
 
 // Tests that getting the drop callback does not hide the menu.

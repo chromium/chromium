@@ -87,7 +87,7 @@ std::unique_ptr<ui::OSExchangeData> CreateDragData(bool with_image) {
   return data;
 }
 
-// A simple view that makes sure RunShellDrag is invoked on mouse drag.
+// A simple view that makes sure RunDragDropLoop is invoked on mouse drag.
 class DragTestView : public views::View {
  public:
   DragTestView() : views::View() { Reset(); }

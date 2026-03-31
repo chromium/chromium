@@ -348,11 +348,11 @@ void DoDragImpl(std::unique_ptr<ui::OSExchangeData> drag_data,
 
   views::Widget* widget = views::Widget::GetWidgetForNativeView(native_view);
   if (widget) {
-    widget->RunShellDrag(nullptr, std::move(drag_data), gfx::Point(), operation,
-                         source);
+    widget->RunDragDropLoop(nullptr, std::move(drag_data), gfx::Point(),
+                            operation, source);
   } else {
-    views::RunShellDrag(native_view, std::move(drag_data), point, operation,
-                        source);
+    views::RunDragDropLoop(native_view, std::move(drag_data), point, operation,
+                           source);
   }
 }
 

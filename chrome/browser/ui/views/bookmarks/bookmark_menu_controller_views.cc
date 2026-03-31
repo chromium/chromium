@@ -163,7 +163,7 @@ int BookmarkMenuController::GetDragOperations(MenuItemView* sender) {
   return menu_delegate_->GetDragOperations(sender);
 }
 
-bool BookmarkMenuController::ShouldCloseOnDragComplete() {
+bool BookmarkMenuController::ShouldCloseOnDragDropCompleted() {
   return false;
 }
 

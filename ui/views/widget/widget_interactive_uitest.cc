@@ -2681,26 +2681,28 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
 
  private:
   // WidgetObserver:
-  void OnWidgetDragComplete(Widget* widget) override { drag_wait_loop_.Quit(); }
+  void OnWidgetDragDropCompleted(Widget* widget) override {
+    drag_wait_loop_.Quit();
+  }
 
   base::RunLoop drag_wait_loop_;
 };
 
-// Cancels a DnD session started by `RunShellDrag()`.
+// Cancels a DnD session started by `RunDragDropLoop()`.
 //
 // TODO(crbug.com/332944429): Re-enable on Windows AMR64.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_CancelShellDrag DISABLED_CancelShellDrag
+#define MAYBE_CancelDragDropLoop DISABLED_CancelDragDropLoop
 #else
-#define MAYBE_CancelShellDrag CancelShellDrag
+#define MAYBE_CancelDragDropLoop CancelDragDropLoop
 #endif
-TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
+TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelDragDropLoop) {
   auto widget = std::make_unique<Widget>();
 
   auto cancel = [&]() {
     drag_entered_ = true;
 
-    widget->CancelShellDrag(widget->client_view());
+    widget->CancelDragDropLoop(widget->client_view());
 
 #if BUILDFLAG(IS_WIN)
     // On Windows we can't just cancel the drag when we want, only the next time
@@ -2736,14 +2738,14 @@ TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
 // TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
 // not updated when the mouse button is released to end a drag.
 #if BUILDFLAG(SUPPORTS_OZONE_X11)
-#define MAYBE_RunShellDragUpdatesMouseButtonState \
-  DISABLED_RunShellDragUpdatesMouseButtonState
+#define MAYBE_RunDragDropLoopUpdatesMouseButtonState \
+  DISABLED_RunDragDropLoopUpdatesMouseButtonState
 #else
-#define MAYBE_RunShellDragUpdatesMouseButtonState \
-  RunShellDragUpdatesMouseButtonState
+#define MAYBE_RunDragDropLoopUpdatesMouseButtonState \
+  RunDragDropLoopUpdatesMouseButtonState
 #endif
 TEST_F(DesktopWidgetDragTestInteractive,
-       MAYBE_RunShellDragUpdatesMouseButtonState) {
+       MAYBE_RunDragDropLoopUpdatesMouseButtonState) {
 #if BUILDFLAG(IS_WIN)
   // The test base (views::ViewsTestBase) removes input state lookup.
   // Windows depends on it for getting the correct mouse button state during
