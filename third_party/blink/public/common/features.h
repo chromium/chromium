@@ -733,6 +733,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIndexedDBCompressValuesWithSnappy);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kIndexedDBCompressValuesWithSnappyCompressionThreshold;
 
+// Always use `IsInlineScriptCacheEnabled()` rather than checking this feature
+// directly.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInlineScriptCache);
+
+// Defines the minimum byte length to be cached for inline script cache.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kInlineScriptCacheMinScriptLength);
+
 // This flag is used to set field parameters to choose predictor we use when
 // kResamplingInputEvents is disabled. It's used for gathering accuracy metrics
 // on finch and also for choosing predictor type for predictedEvents API without
@@ -1992,6 +2001,8 @@ BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
 
 BLINK_COMMON_EXPORT bool IsMemoryPurgeOnBackgroundingEnabled();
+
+BLINK_COMMON_EXPORT bool IsInlineScriptCacheEnabled();
 
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
 

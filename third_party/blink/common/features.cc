@@ -1042,6 +1042,14 @@ constexpr base::FeatureParam<int>
         /*name=*/"compression-threshold",
         /*default_value=*/-1};
 
+BASE_FEATURE(kInlineScriptCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(size_t,
+                   kInlineScriptCacheMinScriptLength,
+                   &kInlineScriptCache,
+                   "min_script_length",
+                   1024);
+
 BASE_FEATURE(kInputPredictorTypeChoice, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, wake ups from throttleable TaskQueues are limited to 1 per
@@ -2730,6 +2738,12 @@ bool IsMemoryPurgeOnBackgroundingEnabled() {
       true
 #endif
       ;
+}
+
+bool IsInlineScriptCacheEnabled() {
+  // Inline script cache is built on top of PersistentCodeCache.
+  return base::FeatureList::IsEnabled(kInlineScriptCache) &&
+         IsPersistentCacheForCodeCacheEnabled();
 }
 
 bool IsParkableStringsToDiskEnabled() {

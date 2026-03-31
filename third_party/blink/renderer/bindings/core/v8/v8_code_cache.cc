@@ -8,6 +8,7 @@
 
 #include "base/containers/span_reader.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/code_cache_util.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "v8/include/v8-script.h"
 
 namespace blink {
 
@@ -355,7 +357,10 @@ V8CodeCache::GetCompileOptionsInternal(
     const KURL& url,
     bool might_generate_crowdsourced_compile_hints,
     bool can_use_crowdsourced_compile_hints) {
-  static const int kMinimalCodeLength = 1024;
+  static const int kMinimalCodeLengthForNonInlineScript = 1024;
+  // The possible cache miss reason. This value may be set even if the
+  // compilation results in a cache hit, but shall not be recorded in case of
+  // cache hit.
   v8::ScriptCompiler::NoCacheReason no_cache_reason;
 
   auto no_code_cache_compile_options = v8::ScriptCompiler::kNoCompileOptions;
@@ -426,7 +431,19 @@ V8CodeCache::GetCompileOptionsInternal(
                            v8::ScriptCompiler::kNoCacheBecauseStaticCodeCache);
   }
 
-  if (source_text_length < kMinimalCodeLength) {
+  if (source_location_type == ScriptSourceLocationType::kInline &&
+      source_text_length < features::kInlineScriptCacheMinScriptLength.Get()) {
+    // This line is unreachable if Inline script cache is disabled because
+    // `cache_handler` is nullptr in that case.
+    CHECK(features::IsInlineScriptCacheEnabled());
+    no_cache_reason = v8::ScriptCompiler::kNoCacheBecauseScriptTooSmall;
+    return std::make_tuple(no_code_cache_compile_options,
+                           ProduceCacheOptions::kNoProduceCache,
+                           no_cache_reason);
+  }
+
+  if (source_location_type != ScriptSourceLocationType::kInline &&
+      source_text_length < kMinimalCodeLengthForNonInlineScript) {
     no_cache_reason = v8::ScriptCompiler::kNoCacheBecauseScriptTooSmall;
     return std::make_tuple(no_code_cache_compile_options,
                            ProduceCacheOptions::kNoProduceCache,
@@ -461,6 +478,11 @@ V8CodeCache::GetCompileOptionsInternal(
     case mojom::blink::V8CacheOptions::kDefault:
     case mojom::blink::V8CacheOptions::kCode: {
       if (!HasHotTimestamp(cache_handler)) {
+        no_cache_reason =
+            source_location_type == ScriptSourceLocationType::kInline &&
+                    features::IsInlineScriptCacheEnabled()
+                ? v8::ScriptCompiler::kNoCacheBecauseInlineScriptCacheTooCold
+                : v8::ScriptCompiler::kNoCacheBecauseCacheTooCold;
         if (local_compile_hints_enabled) {
           // If the resource is not yet hot for caching, set the timestamp and
           // produce compile hints. Setting the time stamp first is important,
@@ -475,14 +497,13 @@ V8CodeCache::GetCompileOptionsInternal(
           // (currently not possible in the API) and combine both compile hints.
           // 2) Ignore existing compile hints (we're anyway not creating the
           // code cache yet) and produce new ones.
-          return std::make_tuple(
-              v8::ScriptCompiler::kProduceCompileHints,
-              ProduceCacheOptions::kSetTimeStamp,
-              v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
+          return std::make_tuple(v8::ScriptCompiler::kProduceCompileHints,
+                                 ProduceCacheOptions::kSetTimeStamp,
+                                 no_cache_reason);
         }
         return std::make_tuple(no_code_cache_compile_options,
                                ProduceCacheOptions::kSetTimeStamp,
-                               v8::ScriptCompiler::kNoCacheBecauseCacheTooCold);
+                               no_cache_reason);
       }
       if (local_compile_hints_enabled && HasCompileHints(cache_handler)) {
         // In this branch, the timestamp in the compile hints is hot.
