@@ -1078,4 +1078,27 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
   ASSERT_TRUE(RunExtensionTest("debugger_check_inner_url")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(SitePerProcessDebuggerExtensionApiTest,
+                       OopifAutoAttachWebAccessibleResourcesBypass) {
+  TestExtensionDir victim_dir;
+  victim_dir.WriteManifest(R"({
+    "name": "Victim",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  victim_dir.WriteFile(FILE_PATH_LITERAL("restricted.html"),
+                       "<html>Restricted</html>");
+  const Extension* victim = LoadExtension(victim_dir.UnpackedPath());
+  ASSERT_TRUE(victim);
+
+  GURL url(embedded_test_server()->GetURL(
+      "a.com",
+      "/extensions/api_test/debugger_oopif_auto_attach_war_bypass/page.html"));
+
+  std::string custom_arg = url.spec() + ";" + victim->id();
+  ASSERT_TRUE(RunExtensionTest("debugger_oopif_auto_attach_war_bypass",
+                               {.custom_arg = custom_arg.c_str()}))
+      << message_;
+}
+
 }  // namespace extensions

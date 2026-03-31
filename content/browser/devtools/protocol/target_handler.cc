@@ -498,6 +498,9 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
   }
 
   std::string GetTypeForMetrics() override { return "DevTools"; }
+  std::optional<url::Origin> GetNavigationInitiatorOrigin() override {
+    return GetRootClient()->GetNavigationInitiatorOrigin();
+  }
 
   void Detach(bool host_closed) {
     handler_->frontend_->DetachedFromTarget(id_, agent_host_->GetId());
