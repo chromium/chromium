@@ -1,6 +1,7 @@
 include_rules = [
   "+components/history/core",
   "+components/keyed_service/core",
+  "+components/signin/public/identity_manager",
   "+components/sync/base",
   "+components/sync/model",
   "+components/sync/protocol",

@@ -26,6 +26,7 @@ source_set("core") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager",
     "//url",
   ]
 }
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core/data_models:unit_tests",
     "//components/accessibility_annotator/core/storage:test_support",
     "//components/accessibility_annotator/core/storage:unit_tests",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//testing/gmock",
     "//testing/gtest",

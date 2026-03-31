@@ -38,10 +38,47 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 
   return true;
 }
+
+// Checks whether all requirements for `IdentityManager` state are met.
+[[nodiscard]] bool SatisfiesAccountRequirements(
+    const signin::IdentityManager* identity_manager,
+    std::string* debug_message = nullptr) {
+  // The user is signed out.
+  if (!identity_manager ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    MaybeOutputReason(debug_message, "User not signed into Chrome.");
+    return false;
+  }
+
+  if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+          identity_manager->GetPrimaryAccountId(
+              signin::ConsentLevel::kSignin))) {
+    MaybeOutputReason(debug_message,
+                      "User's sign-in is in a persistent error state.");
+    return false;
+  }
+
+  // TODO(crbug.com/494149753): This `can_use_model_execution_features()`
+  // check is a very hacky way to check whether the user is underaged.
+  // Consider defining a separate capability or syncing a separate setting
+  // through ACCOUNT_SETTING instead.
+  if (identity_manager
+          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities.can_use_model_execution_features() !=
+      signin::Tribool::kTrue) {
+    MaybeOutputReason(debug_message, "User is underaged.");
+    return false;
+  }
+
+  return true;
+}
 }  // namespace
 
 AccessibilityAnnotatorEnablementServiceImpl::
-    AccessibilityAnnotatorEnablementServiceImpl() = default;
+    AccessibilityAnnotatorEnablementServiceImpl(
+        signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {}
 
 AccessibilityAnnotatorEnablementServiceImpl::
     ~AccessibilityAnnotatorEnablementServiceImpl() = default;
@@ -59,12 +96,15 @@ void AccessibilityAnnotatorEnablementServiceImpl::RemoveObserver(
 RemoteAnnotatorEnablementState
 AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
   using enum RemoteAnnotatorEnablementState;
-
   if (!SatisfiesFeatureRequirements()) {
     return kDisabledNotEligible;
   }
-  // TODO(b/497763332): Implement the real enablement state logic.
-  return kDisabledPendingInfo;
+
+  if (!SatisfiesAccountRequirements(identity_manager_.get())) {
+    return kDisabledNotEligible;
+  }
+
+  return kEnabled;
 }
 
 }  // namespace accessibility_annotator
