@@ -666,8 +666,18 @@ AHardwareBufferImageBacking::ProduceSkiaGanesh(
     auto vulkan_image = CreateVkImageFromAhbHandle(
         GetAhbHandle(), context_state.get(), size(), format(), queue_family);
 
-    if (!vulkan_image)
+    if (!vulkan_image) {
       return nullptr;
+    }
+
+    // TODO(496392525, vasilyt): Move the following check to
+    // `AHardwareBufferImageBackingFactory::CreateSharedImage`
+    // (i.e calling AHardwareBuffer_Desc and reject if size of AHB doesn't match
+    // size of SI).
+    if (vulkan_image->size().width() < size().width() ||
+        vulkan_image->size().height() < size().height()) {
+      return nullptr;
+    }
 
     return std::make_unique<SkiaVkAHBImageRepresentation>(
         manager, this, std::move(context_state), std::move(vulkan_image),
