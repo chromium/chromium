@@ -89,8 +89,9 @@ base::Value DecodeStringProto(const em::StringPolicyProto& proto) {
 // is of Type::STRING.
 base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
   base::ListValue list_value;
-  for (const auto& entry : proto.value().entries())
+  for (const auto& entry : proto.value().entries()) {
     list_value.Append(entry);
+  }
   return base::Value(std::move(list_value));
 }
 
@@ -130,8 +131,9 @@ bool PerProfileMatches(bool policy_per_profile,
 
 bool UseExternalDataFetcher(const char* policy_name,
                             StringPolicyType policy_type) {
-  if (policy_type == StringPolicyType::EXTERNAL)
+  if (policy_type == StringPolicyType::EXTERNAL) {
     return true;
+  }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (UNSAFE_TODO(strcmp(policy_name, key::kWebAppInstallForceList)) == 0) {
@@ -240,8 +242,7 @@ void DecodeProtoFields(
     extension_id_to_policy_value[policy.extension_id()].GetDict().Set(
         policy.extension_version(), std::move(policy_value));
   }
-  for (auto& [extension_id, policy_value] :
-       extension_id_to_policy_value) {
+  for (auto& [extension_id, policy_value] : extension_id_to_policy_value) {
     map->Set(extension_id, POLICY_LEVEL_MANDATORY, scope, source,
              std::move(policy_value), /*external_data_fetcher=*/nullptr);
   }
@@ -258,12 +259,14 @@ void DecodeProtoFields(
 
   for (const BooleanPolicyAccess& access : kBooleanPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
-        !access.has_proto(policy))
+        !access.has_proto(policy)) {
       continue;
+    }
 
     const em::BooleanPolicyProto& proto = access.get_proto(policy);
-    if (!GetPolicyLevel(proto, &level))
+    if (!GetPolicyLevel(proto, &level)) {
       continue;
+    }
 
     map->Set(access.policy_key, level, scope, source, DecodeBooleanProto(proto),
              nullptr);
@@ -271,30 +274,35 @@ void DecodeProtoFields(
 
   for (const IntegerPolicyAccess& access : kIntegerPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
-        !access.has_proto(policy))
+        !access.has_proto(policy)) {
       continue;
+    }
 
     const em::IntegerPolicyProto& proto = access.get_proto(policy);
-    if (!GetPolicyLevel(proto, &level))
+    if (!GetPolicyLevel(proto, &level)) {
       continue;
+    }
 
     std::string error;
     map->Set(access.policy_key, level, scope, source,
              DecodeIntegerProto(proto, &error), nullptr);
-    if (!error.empty())
+    if (!error.empty()) {
       map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
+    }
   }
 
   for (const StringPolicyAccess& access : kStringPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
-        !access.has_proto(policy))
+        !access.has_proto(policy)) {
       continue;
+    }
 
     const em::StringPolicyProto& proto = access.get_proto(policy);
-    if (!GetPolicyLevel(proto, &level))
+    if (!GetPolicyLevel(proto, &level)) {
       continue;
+    }
 
     std::string error;
     base::Value value = (access.type == StringPolicyType::STRING)
@@ -316,20 +324,23 @@ void DecodeProtoFields(
 
     map->Set(access.policy_key, level, scope, source, std::move(value),
              std::move(external_data_fetcher));
-    if (!error.empty())
+    if (!error.empty()) {
       map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
+    }
   }
 
   for (const StringListPolicyAccess& access : kStringListPolicyAccess) {
     if (!PerProfileMatches(access.per_profile, per_profile) ||
-        !access.has_proto(policy))
+        !access.has_proto(policy)) {
       continue;
+    }
 
     const em::StringListPolicyProto& proto = access.get_proto(policy);
-    if (!GetPolicyLevel(proto, &level))
+    if (!GetPolicyLevel(proto, &level)) {
       continue;
+    }
 
     map->Set(access.policy_key, level, scope, source,
              DecodeStringListProto(proto), nullptr);
@@ -363,8 +374,9 @@ bool ParseComponentPolicy(base::DictValue json_dict,
 
     PolicyLevel level = POLICY_LEVEL_MANDATORY;
     const std::string* level_string = description_dict.FindString(kLevel);
-    if (level_string && *level_string == kRecommended)
+    if (level_string && *level_string == kRecommended) {
       level = POLICY_LEVEL_RECOMMENDED;
+    }
 
     policy->Set(policy_name, level, scope, source, std::move(value.value()),
                 nullptr);
