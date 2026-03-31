@@ -265,7 +265,9 @@ void ColorChooserPopupUIController::EyeDropperResponseHandler(bool success,
   AddProperty("success", success, data);
   // TODO(https://crbug.com/1351544): The EyeDropper should use Color or
   // SkColor4f.
-  AddProperty("color", Color::FromRGBA32(color).SerializeAsCSSColor(), data);
+  AddProperty("color",
+              Color::FromRGBA32(color).MakeOpaque().SerializeAsCSSColor(),
+              data);
   PagePopupClient::AddLiteral("}\n", data);
   Vector<char> flatten_data = std::move(data).CopyAs<Vector<char>>();
   popup_->PostMessageToPopup(
