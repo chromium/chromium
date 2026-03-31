@@ -1,0 +1,177 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/autofill/android/entity_data_manager_android.h"
+
+#include <memory>
+#include <optional>
+
+#include "base/android/jni_android.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "chrome/browser/autofill/android/entity_data_manager_android_test_api.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
+#include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace autofill {
+
+namespace {
+
+using ::base::test::RunOnceCallback;
+using ::testing::_;
+using ::testing::NiceMock;
+
+class EntityDataManagerAndroidTest : public testing::Test {
+ public:
+  EntityDataManagerAndroidTest() {
+    autofill::prefs::RegisterProfilePrefs(prefs_.registry());
+    entity_data_manager_ = std::make_unique<EntityDataManager>(
+        &prefs_, /*identity_manager=*/nullptr, &sync_service_,
+        webdata_helper_.autofill_webdata_service(),
+        /*history_service=*/nullptr, /*strike_database=*/nullptr,
+        /*accessibility_annotator_service=*/nullptr,
+        autofill::GeoIpCountryCode("US"));
+
+    entity_data_manager_android_ = new EntityDataManagerAndroid(
+        base::android::AttachCurrentThread(),
+        /*obj=*/nullptr,
+        /*google_groups_manager=*/nullptr, &prefs_,
+        /*identity_manager=*/nullptr, &sync_service_,
+        /*account_setting_service=*/nullptr,
+        /*is_off_the_record=*/false, &mock_wallet_pass_access_manager_,
+        entity_data_manager_.get());
+  }
+
+  EntityDataManager& entity_data_manager() { return *entity_data_manager_; }
+  MockWalletPassAccessManager& mock_wallet_pass_access_manager() {
+    return mock_wallet_pass_access_manager_;
+  }
+
+  JNIEnv* env() { return env_.get(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+  syncer::TestSyncService sync_service_;
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
+  std::unique_ptr<EntityDataManager> entity_data_manager_;
+  NiceMock<MockWalletPassAccessManager> mock_wallet_pass_access_manager_;
+  raw_ptr<EntityDataManagerAndroid> entity_data_manager_android_;
+  raw_ptr<JNIEnv> env_ = base::android::AttachCurrentThread();
+};
+
+// Test that when masked storage is not supported, Google Wallet servers are not
+// called. Note that this does not mean the entity record type is `kLocal`.
+// Public passes can have a record type of `kServerWallet` but upon saving the
+// Wallet servers are not called. This is because these entities are later
+// shared with Wallet via sync.
+TEST_F(EntityDataManagerAndroidTest,
+       AddOrUpdate_MaskedStorageNotSupported_DoNotCallWalletServers) {
+  EntityInstance entity = test::GetVehicleEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  // Ensure it's NOT masked storage supported.
+  ASSERT_FALSE(IsMaskedStorageSupported(entity.type(), entity.record_type()));
+  // Wallet servers are not called when storing public passes.
+  EXPECT_CALL(mock_wallet_pass_access_manager(), SaveWalletEntityInstance)
+      .Times(0);
+
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  EXPECT_THAT(entity_data_manager().GetEntityInstances(),
+              testing::ElementsAre(entity));
+}
+
+// Test that when save to wallet fails, it falls back to local save.
+TEST_F(EntityDataManagerAndroidTest,
+       AddOrUpdate_WalletSaveFails_FallbackToLocal) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              SaveWalletEntityInstance(entity, _, _))
+      .WillOnce(RunOnceCallback<2>(std::nullopt));
+
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  EXPECT_THAT(entity_data_manager().GetEntityInstances(),
+              testing::ElementsAre(entity.CopyWithNewRecordType(
+                  EntityInstance::RecordType::kLocal)));
+}
+
+// Test that when save to wallet succeeds, it is saved as a wallet
+// entity.
+TEST_F(EntityDataManagerAndroidTest,
+       AddOrUpdate_WalletSaveSucceeds_SavedAsWallet) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
+  // Simulate the server returning a masked version of the entity.
+  EntityInstance saved_entity = test::MaskEntityInstance(entity);
+
+  EXPECT_CALL(mock_wallet_pass_access_manager(),
+              SaveWalletEntityInstance(entity, _, _))
+      .WillOnce(RunOnceCallback<2>(saved_entity));
+
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity, entity.record_type());
+  webdata_helper_.WaitUntilIdle();
+
+  base::span<const EntityInstance> instances =
+      entity_data_manager().GetEntityInstances();
+  ASSERT_EQ(instances.size(), 1u);
+  EXPECT_EQ(instances[0].guid(), entity.guid());
+}
+
+// Test that when targeted record type is wallet but the entity is local
+// (e.g. due to ineligibility after user turning of sync), it is saved locally.
+TEST_F(EntityDataManagerAndroidTest,
+       AddOrUpdate_UserTargetedWalletButBecameIneligible_SavedLocally) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+
+  EntityInstance entity = test::GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kLocal});
+
+  EXPECT_CALL(mock_wallet_pass_access_manager(), SaveWalletEntityInstance)
+      .Times(0);
+
+  // Targeted record type was wallet, but entity is local.
+  test_api(*entity_data_manager_android_)
+      .AddOrUpdateEntityInstance(entity,
+                                 EntityInstance::RecordType::kServerWallet);
+  webdata_helper_.WaitUntilIdle();
+
+  base::span<const EntityInstance> instances =
+      entity_data_manager().GetEntityInstances();
+  ASSERT_EQ(instances.size(), 1u);
+  EXPECT_EQ(instances[0].record_type(), EntityInstance::RecordType::kLocal);
+}
+
+}  // namespace
+}  // namespace autofill
