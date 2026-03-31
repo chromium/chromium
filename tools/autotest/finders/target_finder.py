@@ -154,7 +154,7 @@ def FindTestTargets(target_cache: TargetCache,
     if run_all:
       print(f'Warning, found {len(test_targets)} test targets.',
             file=sys.stderr)
-      if len(test_targets) > 10:
+      if len(test_targets) > 10 and not run_changed:
         if len(test_targets) < 50:
           print('Targets found:', '\n'.join(test_targets), file=sys.stderr)
         command.ExitWithMessage(
