@@ -292,10 +292,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
         session_handle->CheckSearchContentSharingSettings(profile->GetPrefs());
   }
 
-  SearchboxHandler::SetupWebUIDataSource(source, profile,
-                                         /*enable_voice_search=*/true,
-                                         /*enable_lens_search=*/false,
-                                         session_allows_drag_and_drop);
+  source->AddLocalizedStrings(SearchboxHandler::GetWebUIDataSourceDict(
+      profile, /*enable_voice_search=*/true,
+      /*enable_lens_search=*/false, session_allows_drag_and_drop));
 #endif
   // Add strings.js
   source->UseStringsJs();

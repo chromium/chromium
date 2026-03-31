@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
@@ -33,7 +34,6 @@ class OmniboxEditModel;
 
 namespace content {
 class WebContents;
-class WebUIDataSource;
 }  // namespace content
 
 namespace searchbox_internal {
@@ -54,11 +54,11 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   SearchboxHandler(const SearchboxHandler&) = delete;
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
 
-  static void SetupWebUIDataSource(content::WebUIDataSource* source,
-                                   Profile* profile,
-                                   bool enable_voice_search = false,
-                                   bool enable_lens_search = false,
-                                   bool session_allows_drag_and_drop = false);
+  static base::DictValue GetWebUIDataSourceDict(
+      Profile* profile,
+      bool enable_voice_search = false,
+      bool enable_lens_search = false,
+      bool session_allows_drag_and_drop = false);
 
   // Maps all icons returned from either `AutocompleteMatch::GetVectorIcon()` or
   // `OmniboxAction::GetIconImage()` to svg resource strings.

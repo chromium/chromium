@@ -320,25 +320,27 @@ BASE_FEATURE(SearchboxHandler::kVoiceSearchPermissions,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
-void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
-                                            Profile* profile,
-                                            bool enable_voice_search,
-                                            bool enable_lens_search,
-                                            bool session_allows_drag_and_drop) {
+base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
+    Profile* profile,
+    bool enable_voice_search,
+    bool enable_lens_search,
+    bool session_allows_drag_and_drop) {
+  base::DictValue dict;
+
   // The WebUI Omnibox code will override this to `true` to adjust various
   // color and layout options.
-  source->AddBoolean("isTopChromeSearchbox", false);
+  dict.Set("isTopChromeSearchbox", false);
   // The lens searchboxes overrides this to true to adjust various color and
   // layout options.
-  source->AddBoolean("isLensSearchbox", false);
+  dict.Set("isLensSearchbox", false);
 
-  source->AddBoolean("reportMetrics", false);
-  source->AddString("charTypedToPaintMetricName", "");
-  source->AddString("resultChangedToPaintMetricName", "");
+  dict.Set("reportMetrics", false);
+  dict.Set("charTypedToPaintMetricName", "");
+  dict.Set("resultChangedToPaintMetricName", "");
 
-  source->AddBoolean("forceHideEllipsis", false);
-  source->AddBoolean("enableThumbnailSizingTweaks", false);
-  source->AddBoolean("enableCsbMotionTweaks", false);
+  dict.Set("forceHideEllipsis", false);
+  dict.Set("enableThumbnailSizingTweaks", false);
+  dict.Set("enableCsbMotionTweaks", false);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
@@ -422,29 +424,29 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       {"composeboxHintTextAskAboutThisDoc",
        IDS_COMPOSE_HINT_TEXT_ASK_ABOUT_THIS_DOC},
   };
-  source->AddLocalizedStrings(kStrings);
-  source->AddString("searchboxComposePlaceholder",
-                    ntp_composebox::FeatureConfig::Get()
-                        .config.composebox()
-                        .input_placeholder_text());
-  source->AddString(
+  for (const auto& entry : kStrings) {
+    dict.Set(entry.name, l10n_util::GetStringUTF16(entry.id));
+  }
+
+  dict.Set("searchboxComposePlaceholder", ntp_composebox::FeatureConfig::Get()
+                                              .config.composebox()
+                                              .input_placeholder_text());
+  dict.Set(
       "suggestionActivityLink",
       l10n_util::GetStringFUTF16(IDS_NTP_COMPOSE_SUGGESTIONS_INFO,
                                  u"https://myactivity.google.com/"
                                  u"activitycontrols?settings=search&utm_source="
                                  u"aim&utm_campaign=aim_str"));
-
   DefineChromeRefreshRealboxIcons();
-  source->AddString("searchboxDefaultIcon", kSearchIconResourceName);
+  dict.Set("searchboxDefaultIcon", kSearchIconResourceName);
 
-  source->AddBoolean("searchboxVoiceSearch", enable_voice_search);
-  source->AddBoolean("searchboxLensSearch", enable_lens_search);
-  source->AddString("searchboxLensVariations", GetBase64UrlVariations(profile));
-  source->AddBoolean(
-      "searchboxCr23Theming",
-      base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
-  source->AddBoolean("searchboxCr23SteadyStateShadow",
-                     ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
+  dict.Set("searchboxVoiceSearch", enable_voice_search);
+  dict.Set("searchboxLensSearch", enable_lens_search);
+  dict.Set("searchboxLensVariations", GetBase64UrlVariations(profile));
+  dict.Set("searchboxCr23Theming",
+           base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming));
+  dict.Set("searchboxCr23SteadyStateShadow",
+           ntp_features::kNtpRealboxCr23SteadyStateShadow.Get());
 
   int max_files = 10;
   int max_images = max_files;
@@ -463,38 +465,39 @@ void SearchboxHandler::SetupWebUIDataSource(content::WebUIDataSource* source,
       }
     }
   }
-  source->AddInteger("composeboxFileMaxCount", max_files);
-  source->AddString("composeboxDragAndDropHint",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT, max_files));
-  source->AddString("maxFilesReachedError",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR, max_files));
-  source->AddString("maxImagesReachedError",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR, max_images));
-  source->AddString("maxPdfsReachedError",
-                    l10n_util::GetPluralStringFUTF16(
-                        IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, max_pdfs));
+  dict.Set("composeboxFileMaxCount", max_files);
+  dict.Set("composeboxDragAndDropHint",
+           l10n_util::GetPluralStringFUTF16(IDS_NTP_COMPOSE_DRAG_AND_DROP_HINT,
+                                            max_files));
+  dict.Set("maxFilesReachedError",
+           l10n_util::GetPluralStringFUTF16(
+               IDS_NTP_COMPOSE_MAX_FILES_REACHED_ERROR, max_files));
+  dict.Set("maxImagesReachedError",
+           l10n_util::GetPluralStringFUTF16(
+               IDS_NTP_COMPOSE_MAX_IMAGES_REACHED_ERROR, max_images));
+  dict.Set("maxPdfsReachedError",
+           l10n_util::GetPluralStringFUTF16(
+               IDS_NTP_COMPOSE_MAX_PDFS_REACHED_ERROR, max_pdfs));
 
-  source->AddBoolean("composeboxContextDragAndDropEnabled",
-                     session_allows_drag_and_drop);
-  source->AddBoolean("composeboxShowVoiceSearch", enable_voice_search);
+  dict.Set("composeboxContextDragAndDropEnabled", session_allows_drag_and_drop);
+  dict.Set("composeboxShowVoiceSearch", enable_voice_search);
+  dict.Set("composeboxContextDragAndDropEnabled", session_allows_drag_and_drop);
+  dict.Set("composeboxShowVoiceSearch", enable_voice_search);
 
   // TODO(b/481663895): Remove "ConfigParam" from Next studies.
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
-  source->AddBoolean(
-      "searchboxShowComposeAnimation",
-      profile->GetPrefs()->GetInteger(
-          prefs::kNtpComposeButtonShownCountPrefName) <
-          composebox_config.entry_point().num_page_load_animations());
-  source->AddBoolean("contextualMenuUsePecApi",
-                     base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
-  source->AddBoolean("ShowContextMenuHeaders",
-                     ntp_composebox::kShowContextMenuHeaders.Get());
-  source->AddBoolean(
-      "thinkingModelIconUpdate",
-      base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate));
+  dict.Set("searchboxShowComposeAnimation",
+           profile->GetPrefs()->GetInteger(
+               prefs::kNtpComposeButtonShownCountPrefName) <
+               composebox_config.entry_point().num_page_load_animations());
+  dict.Set("contextualMenuUsePecApi",
+           base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
+  dict.Set("ShowContextMenuHeaders",
+           ntp_composebox::kShowContextMenuHeaders.Get());
+  dict.Set("thinkingModelIconUpdate",
+           base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate));
+
+  return dict;
 }
 
 std::string SearchboxHandler::AutocompleteIconToResourceName(

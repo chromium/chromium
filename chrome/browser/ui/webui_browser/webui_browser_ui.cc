@@ -120,7 +120,8 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
 
-  SearchboxHandler::SetupWebUIDataSource(source, profile);
+  source->AddLocalizedStrings(
+      SearchboxHandler::GetWebUIDataSourceDict(profile));
 
 #if BUILDFLAG(ENABLE_SURFACE_EMBED)
   source->AddBoolean(
