@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Ash.Growth.CampaignsComponent.DownloadDurationInOobe"
-    units="ms" expires_after="2026-07-26">
+    units="ms" expires_after="2026-09-27">
   <owner>llin@google.com</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.Ui.ButtonPressed.Button{ButtonId}.Campaigns500"
-    units="int" expires_after="2026-07-26">
+    units="int" expires_after="2026-09-27">
   <owner>wutao@chromium.org</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Growth.Ui.Impression.Campaigns500" units="int"
-    expires_after="2026-07-26">
+    expires_after="2026-09-27">
   <owner>wutao@chromium.org</owner>
   <owner>cros-growth@google.com</owner>
   <summary>
