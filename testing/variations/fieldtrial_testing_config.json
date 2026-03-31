@@ -18761,6 +18761,21 @@
             ]
         }
     ],
+    "PumpPeekMessageWithObserver": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PumpPeekMessageWithObserver"
+                    ]
+                }
+            ]
+        }
+    ],
     "PushMessagingDisallowSenderIDs": [
         {
             "platforms": [
