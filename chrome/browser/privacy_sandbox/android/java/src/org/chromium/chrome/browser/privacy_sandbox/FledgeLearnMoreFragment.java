@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,16 +15,22 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 /** Settings fragment for privacy sandbox settings. */
 @NullMarked
 public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment {
+    private static final String FLEDGE_LEARN_MORE_BULLET_1_PREFERENCE =
+            "fledge_learn_more_bullet_1";
+    private static final String FLEDGE_LEARN_MORE_BULLET_2_PREFERENCE =
+            "fledge_learn_more_bullet_2";
     private static final String FLEDGE_LEARN_MORE_BULLET_3_PREFERENCE =
             "fledge_learn_more_bullet_3";
 
@@ -74,5 +81,15 @@ public class FledgeLearnMoreFragment extends PrivacySandboxSettingsBaseFragment 
 
     public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
             new ChromeBaseSearchIndexProvider(
-                    FledgeLearnMoreFragment.class.getName(), R.xml.fledge_learn_more_preference);
+                    FledgeLearnMoreFragment.class.getName(), R.xml.fledge_learn_more_preference) {
+                @Override
+                public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+                        indexData.removeEntry(getUniqueId(FLEDGE_LEARN_MORE_BULLET_1_PREFERENCE));
+                        indexData.removeEntry(getUniqueId(FLEDGE_LEARN_MORE_BULLET_2_PREFERENCE));
+                        indexData.removeEntry(getUniqueId(FLEDGE_LEARN_MORE_BULLET_3_PREFERENCE));
+                    }
+                }
+            };
 }

@@ -318,9 +318,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     }
 
     private static boolean shouldHideSandboxPref(PrivacySandboxBridge bridge) {
-        // Hide the Privacy Sandbox if it is restricted and ad-measurement is not available to
-        // restricted users.
-        return bridge.isPrivacySandboxRestricted() && !bridge.isRestrictedNoticeEnabled();
+        // Hide the Privacy Sandbox if the Ad Privacy UX Deprecation feature is enabled.
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+            return true;
+        }
+        // Hide the Privacy Sandbox if it is restricted and the restricted notice is NOT enabled.
+        if (bridge.isPrivacySandboxRestricted()) {
+            return !bridge.isRestrictedNoticeEnabled();
+        }
+        return false;
     }
 
     private static boolean isAdvancedProtectionEnabled() {

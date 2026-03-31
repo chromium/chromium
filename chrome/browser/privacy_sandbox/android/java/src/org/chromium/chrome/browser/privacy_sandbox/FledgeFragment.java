@@ -18,6 +18,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -300,6 +301,11 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                     FledgeFragment.class.getName(), R.xml.fledge_preference) {
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+                        indexData.removeEntry(getUniqueId(FLEDGE_TOGGLE_PREFERENCE));
+                    }
+
                     // We do not remove FLEDGE_TOGGLE_PREFERENCE. This is the "Site-suggested ads"
                     // toggle.
                     indexData.removeEntry(getUniqueId(FLEDGE_DESCRIPTION_PREFERENCE));

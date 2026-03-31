@@ -14,6 +14,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -120,7 +121,13 @@ public class PrivacySandboxSettingsFragment extends PrivacySandboxSettingsBaseFr
                         Context context, SettingsIndexData indexData, Profile profile) {
                     PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
                     String prefFragment = PrivacySandboxSettingsFragment.class.getName();
-
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+                        indexData.removeEntry(getUniqueId(TOPICS_PREF));
+                        indexData.removeEntry(getUniqueId(FLEDGE_PREF));
+                        indexData.removeEntry(getUniqueId(AD_MEASUREMENT_PREF));
+                        return;
+                    }
                     if (bridge.isPrivacySandboxRestricted()) {
                         indexData.removeEntry(getUniqueId(TOPICS_PREF));
                         indexData.removeEntry(getUniqueId(FLEDGE_PREF));

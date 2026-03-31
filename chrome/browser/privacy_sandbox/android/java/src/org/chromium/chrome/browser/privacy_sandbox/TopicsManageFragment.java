@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
@@ -180,6 +181,11 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+                        return;
+                    }
+
                     PrivacySandboxBridge bridge = new PrivacySandboxBridge(profile);
 
                     List<Topic> topics = bridge.getFirstLevelTopics();

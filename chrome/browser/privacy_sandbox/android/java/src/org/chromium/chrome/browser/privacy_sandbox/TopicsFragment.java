@@ -302,6 +302,13 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
+                    boolean isDeprecationEnabled =
+                            ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION);
+                    if (isDeprecationEnabled) {
+                        indexData.removeEntry(getUniqueId(TOPICS_TOGGLE_PREFERENCE));
+                    }
+
                     indexData.removeEntry(getUniqueId(DISABLED_TOPICS_PREFERENCE));
                     indexData.removeEntry(getUniqueId(EMPTY_TOPICS_PREFERENCE));
                     indexData.removeEntry(getUniqueId(CURRENT_TOPICS_PREFERENCE));
@@ -309,8 +316,8 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                     indexData.removeEntry(getUniqueId(TOPICS_PAGE_FOOTER_PREFERENCE));
                     indexData.removeEntry(getUniqueId(TOPICS_DISCLAIMER));
 
-                    updateIndexedPreferencesVisibility(
-                            isTopicsPrefEnabled(profile), /* refreshResult= */ false);
+                    boolean topicsEnabled = !isDeprecationEnabled && isTopicsPrefEnabled(profile);
+                    updateIndexedPreferencesVisibility(topicsEnabled, /* refreshResult= */ false);
                 }
             };
 

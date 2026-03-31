@@ -1696,6 +1696,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
     public void testBlockAllThirdPartyCookiesSnackbarDisplayedWhenTopicsEnabled() {
         var userActionTester = new UserActionTester();
         // Enable Topics API.

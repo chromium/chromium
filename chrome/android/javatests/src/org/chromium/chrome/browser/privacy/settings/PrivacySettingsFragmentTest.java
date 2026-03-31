@@ -198,7 +198,10 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
+    })
     public void testRenderTopView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -213,7 +216,10 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
+    })
     public void testRenderBottomView() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
@@ -234,7 +240,10 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
+    })
     public void testRenderWhenPrivacyGuideViewed() throws IOException {
         setPrivacyGuideViewed(true);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -250,7 +259,10 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableFeatures({
+        ChromeFeatureList.SETTINGS_MULTI_COLUMN,
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION
+    })
     public void testRenderWhenPrivacyGuideNotViewed() throws IOException {
         setPrivacyGuideViewed(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -265,6 +277,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
     public void testPrivacySandboxV4View() throws IOException {
         mSettingsActivityTestRule.startSettingsActivity();
         // Scroll down and open Privacy Sandbox page.
@@ -276,6 +289,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
     public void testPrivacySandboxV4RestrictedWithRestrictedNoticeEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
@@ -293,6 +307,7 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
+    @DisableFeatures({ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION})
     public void testPrivacySandboxV4NotRestrictedWithRestrictedNoticeEnabled() throws IOException {
         mFakePrivacySandboxBridge.setRestrictedNoticeEnabled(true);
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(false);
@@ -311,6 +326,22 @@ public class PrivacySettingsFragmentTest {
     @LargeTest
     public void testPrivacySandboxV4ViewRestricted() throws IOException {
         mFakePrivacySandboxBridge.setPrivacySandboxRestricted(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and verify that the Privacy Sandbox is not there.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+                    recyclerView.scrollToPosition(PRIVACY_SANDBOX_V4_POS_IDX);
+                });
+        onView(withText(R.string.ad_privacy_link_row_label)).check(doesNotExist());
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)
+    public void testPrivacySandboxV4ViewHiddenWhenDeprecationFeatureEnabled() throws IOException {
+        mFakePrivacySandboxBridge.setPrivacySandboxRestricted(false);
         mSettingsActivityTestRule.startSettingsActivity();
         PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
         // Scroll down and verify that the Privacy Sandbox is not there.

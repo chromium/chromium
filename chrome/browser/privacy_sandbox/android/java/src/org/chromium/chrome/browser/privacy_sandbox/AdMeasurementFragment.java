@@ -17,6 +17,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -51,6 +52,9 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
             "ad_measurement_consider_bullet_two";
     public static final String AD_MEASUREMENT_CONSIDER_BULLET_THREE_PREF =
             "ad_measurement_consider_bullet_three";
+    public static final String AD_MEASUREMENT_WHEN_ON = "ad_measurement_when_on";
+    public static final String AD_MEASUREMENT_THINGS_TO_CONSIDER =
+            "ad_measurement_things_to_consider";
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -154,6 +158,13 @@ public class AdMeasurementFragment extends PrivacySandboxSettingsBaseFragment
                     AdMeasurementFragment.class.getName(), R.xml.ad_measurement_preference) {
                 @Override
                 public void updateDynamicPreferences(Context context, SettingsIndexData indexData) {
+                    if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.PRIVACY_SANDBOX_AD_PRIVACY_UX_DEPRECATION)) {
+                        indexData.removeEntry(getUniqueId(TOGGLE_PREFERENCE));
+                        indexData.removeEntry(getUniqueId(AD_MEASUREMENT_WHEN_ON));
+                        indexData.removeEntry(getUniqueId(AD_MEASUREMENT_THINGS_TO_CONSIDER));
+                    }
+
                     indexData.removeEntry(getUniqueId(AD_MEASUREMENT_ENABLED_BULLET_ONE_PREF));
                     indexData.removeEntry(getUniqueId(AD_MEASUREMENT_ENABLED_BULLET_TWO_PREF));
                     indexData.removeEntry(getUniqueId(AD_MEASUREMENT_ENABLED_BULLET_THREE_PREF));
