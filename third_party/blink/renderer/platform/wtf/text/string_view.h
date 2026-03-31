@@ -8,6 +8,7 @@
 #include <cstring>
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
@@ -112,6 +113,7 @@ class WTF_EXPORT StringView {
   StringView() { Clear(); }
 
   // From a StringView:
+  StringView(const StringView&) = default;
   StringView(const StringView& view, size_type offset);
   StringView(const StringView&, size_type offset, size_type length);
 
@@ -176,6 +178,8 @@ class WTF_EXPORT StringView {
   StringView(const LChar*, size_type) = delete;
   StringView(const char*, size_type) = delete;
   StringView(const UChar*, size_type) = delete;
+
+  StringView& operator=(const StringView&) = default;
 
 #if DCHECK_IS_ON()
   ~StringView();
@@ -251,10 +255,7 @@ class WTF_EXPORT StringView {
 
   // [string.view.ops] ----------------------------------------------
 
-  bool Is8Bit() const {
-    DCHECK(impl_);
-    return impl_->Is8Bit();
-  }
+  bool Is8Bit() const { return impl_->Is8Bit(); }
 
   String ToString() const;
   AtomicString ToAtomicString() const;
@@ -285,9 +286,8 @@ class WTF_EXPORT StringView {
 
   base::span<const uint8_t> RawByteSpan() const {
     if (Is8Bit()) {
-      return base::as_byte_span(Span8());
+      return Span8();
     }
-
     return base::as_byte_span(Span16());
   }
 
@@ -439,27 +439,32 @@ class WTF_EXPORT StringView {
 };
 
 inline StringView::StringView(const StringView& view, size_type offset)
-    : impl_(view.impl_) {
-  if (Is8Bit()) {
-    auto span = view.Span8().subspan(offset);
-    length_ = span.size();
-    bytes_ = span.data();
-  } else {
-    auto span = view.Span16().subspan(offset);
-    length_ = span.size();
-    bytes_ = span.data();
-  }
+    : impl_(view.impl_), length_(view.length() - offset) {
+  CHECK(offset <= view.length());
+  // SAFETY: Hard CHECK() in previous line.
+  UNSAFE_BUFFERS({
+    if (Is8Bit()) {
+      bytes_ = static_cast<const LChar*>(view.bytes_) + offset;
+    } else {
+      bytes_ = static_cast<const UChar*>(view.bytes_) + offset;
+    }
+  });
 }
 
 inline StringView::StringView(const StringView& view,
                               size_type offset,
                               size_type length)
     : impl_(view.impl_), length_(length) {
-  if (Is8Bit()) {
-    bytes_ = view.Span8().subspan(offset, length).data();
-  } else {
-    bytes_ = view.Span16().subspan(offset, length).data();
-  }
+  // Deliberately combine tests to minimize code size.
+  CHECK(offset <= view.length() && length <= view.length() - offset);
+  // SAFETY: Hard CHECK()s in previous two lines.
+  UNSAFE_BUFFERS({
+    if (Is8Bit()) {
+      bytes_ = static_cast<const LChar*>(view.bytes_) + offset;
+    } else {
+      bytes_ = static_cast<const UChar*>(view.bytes_) + offset;
+    }
+  });
 }
 
 inline StringView::StringView(const StringImpl* impl) {
@@ -500,30 +505,33 @@ inline void StringView::Clear() {
 
 inline void StringView::Set(const StringImpl& impl, size_type offset) {
   impl_ = const_cast<StringImpl*>(&impl);
-  if (impl.Is8Bit()) {
-    auto span = impl.Span8().subspan(offset);
-    length_ = span.size();
-    bytes_ = span.data();
-  } else {
-    auto span = impl.Span16().subspan(offset);
-    length_ = span.size();
-    bytes_ = span.data();
-  }
+  length_ = impl.length() - offset;
+  CHECK(offset <= impl.length());
+  // SAFETY: Hard CHECK() in previous line.
+  UNSAFE_BUFFERS({
+    if (impl.Is8Bit()) {
+      bytes_ = impl.Span8().data() + offset;
+    } else {
+      bytes_ = impl.Span16().data() + offset;
+    }
+  });
 }
 
 inline void StringView::Set(const StringImpl& impl,
                             size_type offset,
                             size_type length) {
   impl_ = const_cast<StringImpl*>(&impl);
-  if (impl.Is8Bit()) {
-    auto span = impl.Span8().subspan(offset, length);
-    length_ = span.size();
-    bytes_ = span.data();
-  } else {
-    auto span = impl.Span16().subspan(offset, length);
-    length_ = span.size();
-    bytes_ = span.data();
-  }
+  length_ = length;
+  // Deliberately combine tests to minimize code size.
+  CHECK(offset <= impl.length() && length <= impl.length() - offset);
+  // SAFETY: Hard CHECK()s in previous line.
+  UNSAFE_BUFFERS({
+    if (impl.Is8Bit()) {
+      bytes_ = impl.Span8().data() + offset;
+    } else {
+      bytes_ = impl.Span16().data() + offset;
+    }
+  });
 }
 
 // Unicode aware case insensitive string matching. Non-ASCII characters might
