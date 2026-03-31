@@ -4,6 +4,8 @@
       {
         "args": [
           "--release",
+          "--readline-timeout",
+          "600",
           "--platform",
           "iPhone 14",
           "--version",
@@ -60,6 +62,8 @@
       {
         "args": [
           "--release",
+          "--readline-timeout",
+          "600",
           "--platform",
           "iPhone 14",
           "--version",

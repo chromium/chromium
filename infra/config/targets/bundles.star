@@ -3340,6 +3340,8 @@ targets.bundle(
         "angle_end2end_tests": targets.mixin(
             args = [
                 "--release",
+                "--readline-timeout",
+                "600",
             ],
             use_isolated_scripts_api = True,
         ),
@@ -3373,6 +3375,8 @@ targets.bundle(
         "angle_white_box_tests": targets.mixin(
             args = [
                 "--release",
+                "--readline-timeout",
+                "600",
             ],
             use_isolated_scripts_api = True,
         ),
