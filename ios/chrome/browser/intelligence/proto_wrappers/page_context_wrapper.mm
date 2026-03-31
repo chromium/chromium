@@ -1432,18 +1432,24 @@ result.links = linksArray;
 
 // Stop the highlighting of text.
 - (void)stopTextHighlighting {
-  if (!_webState) {
+  web::WebState* webState = _webState.get();
+  if (!webState) {
     return;
   }
 
   web::FindInPageJavaScriptFeature* find_in_page_feature =
       web::FindInPageJavaScriptFeature::GetInstance();
+  if (!find_in_page_feature) {
+    return;
+  }
 
-  web::WebFrame* mainFrame =
-      _webState
-          ->GetWebFramesManager(
-              find_in_page_feature->GetSupportedContentWorld())
-          ->GetMainWebFrame();
+  web::WebFramesManager* framesManager = webState->GetWebFramesManager(
+      find_in_page_feature->GetSupportedContentWorld());
+  if (!framesManager) {
+    return;
+  }
+
+  web::WebFrame* mainFrame = framesManager->GetMainWebFrame();
 
   if (!mainFrame) {
     return;

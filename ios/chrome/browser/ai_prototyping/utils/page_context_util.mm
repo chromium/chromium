@@ -131,9 +131,14 @@ PageContextWrapper* CreatePageContextWrapper(
     bool rich_extraction,
     base::OnceCallback<void(PageContextWrapperCallbackResponse)>
         completion_callback) {
-  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
-                                        .SetUseRichExtraction(rich_extraction)
-                                        .Build();
+  PageContextWrapperConfigBuilder builder;
+  if (rich_extraction) {
+    builder.SetUseRichExtraction(true)
+        .SetUseRefactoredExtractor(true)
+        .SetGraftCrossOriginFrameContent(true)
+        .SetExtractPaidContent(true);
+  }
+  PageContextWrapperConfig config = builder.Build();
   PageContextWrapper* page_context_wrapper = [[PageContextWrapper alloc]
         initWithWebState:web_state
                   config:config
