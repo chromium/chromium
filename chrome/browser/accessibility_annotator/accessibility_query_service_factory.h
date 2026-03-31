@@ -9,12 +9,13 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace accessibility_annotator {
-
 class AccessibilityQueryService;
+}  // namespace accessibility_annotator
 
 class AccessibilityQueryServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static AccessibilityQueryService* GetForProfile(Profile* profile);
+  static accessibility_annotator::AccessibilityQueryService* GetForProfile(
+      Profile* profile);
   static AccessibilityQueryServiceFactory* GetInstance();
 
   AccessibilityQueryServiceFactory(const AccessibilityQueryServiceFactory&) =
@@ -33,7 +34,5 @@ class AccessibilityQueryServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
-
-}  // namespace accessibility_annotator
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_ACCESSIBILITY_QUERY_SERVICE_FACTORY_H_

@@ -402,8 +402,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
     if (accessibility_annotator::
             ContentAnnotatorService* content_annotator_service =
-                accessibility_annotator::ContentAnnotatorServiceFactory::
-                    GetForProfile(profile)) {
+                ContentAnnotatorServiceFactory::GetForProfile(profile)) {
       content_annotator_tab_helper_ =
           std::make_unique<accessibility_annotator::ContentAnnotatorTabHelper>(
               tab, *content_annotator_service,

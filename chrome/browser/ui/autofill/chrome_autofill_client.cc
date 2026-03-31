@@ -558,8 +558,7 @@ accessibility_annotator::AccessibilityQueryService*
 ChromeAutofillClient::GetAccessibilityQueryService() {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return accessibility_annotator::AccessibilityQueryServiceFactory::
-      GetForProfile(profile);
+  return AccessibilityQueryServiceFactory::GetForProfile(profile);
 }
 
 PasswordManagerDelegate* ChromeAutofillClient::GetPasswordManagerDelegate(

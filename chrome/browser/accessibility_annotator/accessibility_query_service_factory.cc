@@ -19,8 +19,6 @@
 #include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
 
-namespace accessibility_annotator {
-
 // static
 AccessibilityQueryServiceFactory*
 AccessibilityQueryServiceFactory::GetInstance() {
@@ -29,9 +27,9 @@ AccessibilityQueryServiceFactory::GetInstance() {
 }
 
 // static
-AccessibilityQueryService* AccessibilityQueryServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<AccessibilityQueryService*>(
+accessibility_annotator::AccessibilityQueryService*
+AccessibilityQueryServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<accessibility_annotator::AccessibilityQueryService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -54,7 +52,8 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   Profile* profile = Profile::FromBrowserContext(context);
-  std::vector<std::unique_ptr<MemoryDataProvider>> data_providers;
+  std::vector<std::unique_ptr<accessibility_annotator::MemoryDataProvider>>
+      data_providers;
 
   data_providers.push_back(std::make_unique<autofill::AutofillDataProviderImpl>(
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
@@ -66,10 +65,11 @@ AccessibilityQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   if (auto* backend =
           AccessibilityAnnotatorBackendFactory::GetForProfile(profile)) {
     data_providers.push_back(
-        std::make_unique<SyncBridgeDataProvider>(*backend));
+        std::make_unique<accessibility_annotator::SyncBridgeDataProvider>(
+            *backend));
   }
 
-  return std::make_unique<AccessibilityQueryService>(
+  return std::make_unique<accessibility_annotator::AccessibilityQueryService>(
       std::move(data_providers), optimization_guide_service);
 }
 
@@ -77,5 +77,3 @@ bool AccessibilityQueryServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return false;
 }
-
-}  // namespace accessibility_annotator

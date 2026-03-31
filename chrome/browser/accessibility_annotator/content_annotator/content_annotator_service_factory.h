@@ -11,12 +11,13 @@
 class Profile;
 
 namespace accessibility_annotator {
-
 class ContentAnnotatorService;
+}  // namespace accessibility_annotator
 
 class ContentAnnotatorServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  static ContentAnnotatorService* GetForProfile(Profile* profile);
+  static accessibility_annotator::ContentAnnotatorService* GetForProfile(
+      Profile* profile);
   static ContentAnnotatorServiceFactory* GetInstance();
 
   ContentAnnotatorServiceFactory(const ContentAnnotatorServiceFactory&) =
@@ -35,7 +36,5 @@ class ContentAnnotatorServiceFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };
-
-}  // namespace accessibility_annotator
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_CONTENT_ANNOTATOR_CONTENT_ANNOTATOR_SERVICE_FACTORY_H_

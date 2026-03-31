@@ -673,8 +673,7 @@ void ChromeBrowserMainExtraPartsProfiles::
       GetInstance();
   AccessibilityLabelsServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  accessibility_annotator::AccessibilityQueryServiceFactory::GetInstance();
-  accessibility_annotator::ContentAnnotatorServiceFactory::GetInstance();
+  AccessibilityQueryServiceFactory::GetInstance();
 #endif
   AccountBookmarkSyncServiceFactory::GetInstance();
   AccountConsistencyModeManagerFactory::GetInstance();
@@ -850,6 +849,10 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   commerce::ShoppingServiceFactory::GetInstance();
   ConsentAuditorFactory::GetInstance();
+
+#if !BUILDFLAG(IS_ANDROID)
+  ContentAnnotatorServiceFactory::GetInstance();
+#endif
 
   contextual_tasks::ContextualTasksContextServiceFactory::GetInstance();
   contextual_tasks::ContextualTasksServiceFactory::GetInstance();
