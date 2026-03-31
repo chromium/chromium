@@ -75,10 +75,6 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/atl.h"
-#endif
-
 namespace {
 
 bool PrefersHighContrast(const views::View* view) {

@@ -25,7 +25,6 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
-#include "base/win/atl.h"
 #include "base/win/ntsecapi_shim.h"
 #include "base/win/win_util.h"
 #include "base/win/wincred_shim.h"

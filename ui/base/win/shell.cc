@@ -23,7 +23,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
-#include "base/win/atl.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/win_util.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -68,7 +68,7 @@ bool InvokeShellExecute(const std::wstring& path,
       (working_directory.empty() ? nullptr : working_directory.c_str());
   sei.lpParameters = (args.empty() ? nullptr : args.c_str());
 
-  CComHeapPtr<ITEMIDLIST_ABSOLUTE> path_id_list;
+  base::win::ScopedCoMem<ITEMIDLIST_ABSOLUTE> path_id_list;
   if (base::FeatureList::IsEnabled(kManuallyParsePathForShellExecute)) {
     // ShellExecute will perform legacy resolution of a path if it can't detect
     // an extension from a given path, appending .pif, .com, .exe, .bat, .lnk,
@@ -81,7 +81,7 @@ bool InvokeShellExecute(const std::wstring& path,
       return false;
     }
     sei.fMask |= SEE_MASK_IDLIST;
-    sei.lpIDList = path_id_list.m_pData;
+    sei.lpIDList = path_id_list.get();
   } else {
     sei.lpFile = path.c_str();
   }

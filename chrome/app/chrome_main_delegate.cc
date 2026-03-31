@@ -115,7 +115,7 @@
 #include "base/base_switches.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/process/process_handle.h"
-#include "base/win/atl.h"
+#include "base/win/current_module.h"
 #include "base/win/dark_mode_support.h"
 #include "base/win/resource_exhaustion.h"
 #include "chrome/browser/chrome_browser_main_win.h"
@@ -1366,7 +1366,7 @@ void ChromeMainDelegate::PreSandboxStartup() {
   // this can be killed once those are merged into resources.pak. See
   // BrowserFrameViewWin::InitThrobberIcons(), https://crbug.com/41104393 and
   // https://crbug.com/1178117.
-  ui::SetResourcesDataDLL(_AtlBaseModule.GetResourceInstance());
+  ui::SetResourcesDataDLL(CURRENT_MODULE());
 #endif
 
   if (SubprocessNeedsResourceBundle(process_type)) {
