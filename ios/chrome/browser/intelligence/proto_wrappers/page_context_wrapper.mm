@@ -521,6 +521,85 @@ result.links = linksArray;
   }
 }
 
+// Helper to extract page context for a given frame.
+// TODO(crbug.com/495446456): Clean up once the JSON experiment is done.
+- (void)extractPageContextForFrame:(web::WebFrame*)frame
+                       isMainFrame:(BOOL)isMainFrame
+                             nonce:(const std::string&)nonce
+       annotatedPageContentBarrier:
+           (base::RepeatingClosure)annotatedPageContentBarrier {
+  PageContextExtractorJavaScriptFeature* extractorFeature =
+      PageContextExtractorJavaScriptFeature::GetInstance();
+
+  __weak PageContextWrapper* weakSelf = self;
+
+  // Use a timeout for the JS call larger than the wrapper's timer timeout
+  // since this is the preferred way of timing out the dispatched jobs
+  // (which will return a PageContextWrapperError::kTimeout error instead of
+  // empty results).
+  base::TimeDelta jsTimeout = _timeoutTimer.GetCurrentDelay() * 2;
+
+  if (IsPageContextIPCOptimizationEnabled()) {
+    // Callback to aggregate values from the JS execution via JSON string
+    // parsing.
+    auto callbackJson = [](PageContextWrapper* weakWrapper,
+                           base::RepeatingClosure barrier, BOOL isMainFrame,
+                           const url::Origin& securityOrigin,
+                           std::optional<autofill::LocalFrameToken> frameId,
+                           std::optional<base::Value> value) {
+      // TODO(crbug.com/454261374): Remove `withError` from args once we
+      // cleanup the old code. Can't provide an error object since the
+      // javascript feature doesn't support that.
+      [weakWrapper aggregateJavaScriptValue:value ? &value.value() : nullptr
+                                  withError:nil
+                                isMainFrame:isMainFrame
+                             securityOrigin:securityOrigin
+                            localFrameToken:frameId];
+      barrier.Run();
+    };
+
+    extractorFeature->ExtractPageContextJSON(
+        frame, _config->graft_cross_origin_frame_content(),
+        _config->use_rich_extraction(),
+        _config->use_rich_extraction_with_actionable(),
+        _config->extract_paid_content(),
+        _config->attempt_paid_content_json_fixing(), nonce, jsTimeout,
+        base::BindOnce(
+            callbackJson, weakSelf, annotatedPageContentBarrier, isMainFrame,
+            frame->GetSecurityOrigin(),
+            DeserializeFrameIdAsLocalFrameToken(frame->GetFrameId())));
+  } else {
+    // Callback to aggregate values from the JS execution via the base value
+    // received directly from WebKit.
+    auto callback = [](PageContextWrapper* weakWrapper,
+                       base::RepeatingClosure barrier, BOOL isMainFrame,
+                       const url::Origin& securityOrigin,
+                       std::optional<autofill::LocalFrameToken> frameId,
+                       const base::Value* value) {
+      // TODO(crbug.com/454261374): Remove `withError` from args once we
+      // cleanup the old code. Can't provide an error object since the
+      // javascript feature doesn't support that.
+      [weakWrapper aggregateJavaScriptValue:value
+                                  withError:nil
+                                isMainFrame:isMainFrame
+                             securityOrigin:securityOrigin
+                            localFrameToken:frameId];
+      barrier.Run();
+    };
+
+    extractorFeature->ExtractPageContext(
+        frame, _config->graft_cross_origin_frame_content(),
+        _config->use_rich_extraction(),
+        _config->use_rich_extraction_with_actionable(),
+        _config->extract_paid_content(),
+        _config->attempt_paid_content_json_fixing(), nonce, jsTimeout,
+        base::BindOnce(
+            callback, weakSelf, annotatedPageContentBarrier, isMainFrame,
+            frame->GetSecurityOrigin(),
+            DeserializeFrameIdAsLocalFrameToken(frame->GetFrameId())));
+  }
+}
+
 // Get the WebState's AnnotatedPageContent filled with innerTexts. The
 // barrier's callback will be executed for all codepaths in this method.
 - (void)processAnnotatedPageContentWithBarrier:(base::RepeatingClosure)barrier {
@@ -595,46 +674,14 @@ result.links = linksArray;
       PopulateAutofillInformation(_webState.get(), autofillInformation);
     }
 
-    // Callback to aggregate values from the JS execution.
-    auto callback = [](PageContextWrapper* weakWrapper,
-                       base::RepeatingClosure barrier, BOOL isMainFrame,
-                       const url::Origin& securityOrigin,
-                       std::optional<autofill::LocalFrameToken> frameId,
-                       const base::Value* value) {
-      // TODO(crbug.com/454261374): Remove `withError` from args once we
-      // cleanup the old code. Can't provide an error object since the
-      // javascript feature doesn't support that.
-      [weakWrapper aggregateJavaScriptValue:value
-                                  withError:nil
-                                isMainFrame:isMainFrame
-                             securityOrigin:securityOrigin
-                            localFrameToken:frameId];
-      barrier.Run();
-    };
-
-    PageContextExtractorJavaScriptFeature* extractor_feature =
-        PageContextExtractorJavaScriptFeature::GetInstance();
-
-    // Use a timeout for the JS call larger than the wrapper's timer timeout
-    // since this is the preferred way of timing out the dispatched jobs
-    // (which will return a PageContextWrapperError::kTimeout error instead of
-    // empty results).
-    base::TimeDelta js_timeout = _timeoutTimer.GetCurrentDelay() * 2;
-
     if (ios::provider::IsProtectedUrl(mainFrame->GetUrl().spec())) {
       _forceDetachPageContext = YES;
       annotatedPageContentBarrier.Run();
     } else {
-      extractor_feature->ExtractPageContext(
-          mainFrame, _config->graft_cross_origin_frame_content(),
-          _config->use_rich_extraction(),
-          _config->use_rich_extraction_with_actionable(),
-          _config->extract_paid_content(),
-          _config->attempt_paid_content_json_fixing(), nonce, js_timeout,
-          base::BindOnce(
-              callback, weakSelf, annotatedPageContentBarrier,
-              /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin(),
-              DeserializeFrameIdAsLocalFrameToken(mainFrame->GetFrameId())));
+      [self extractPageContextForFrame:mainFrame
+                           isMainFrame:YES
+                                 nonce:nonce
+           annotatedPageContentBarrier:annotatedPageContentBarrier];
     }
 
     // Execute the JavaScript on each other WebFrame and pass in the callback
@@ -651,16 +698,10 @@ result.links = linksArray;
         continue;
       }
 
-      extractor_feature->ExtractPageContext(
-          webFrame, _config->graft_cross_origin_frame_content(),
-          _config->use_rich_extraction(),
-          _config->use_rich_extraction_with_actionable(),
-          _config->extract_paid_content(),
-          _config->attempt_paid_content_json_fixing(), nonce, js_timeout,
-          base::BindOnce(
-              callback, weakSelf, annotatedPageContentBarrier,
-              /*isMainFrame=*/NO, webFrame->GetSecurityOrigin(),
-              DeserializeFrameIdAsLocalFrameToken(webFrame->GetFrameId())));
+      [self extractPageContextForFrame:webFrame
+                           isMainFrame:NO
+                                 nonce:nonce
+           annotatedPageContentBarrier:annotatedPageContentBarrier];
     }
   } else {
     // Use the legacy way for extracting context.

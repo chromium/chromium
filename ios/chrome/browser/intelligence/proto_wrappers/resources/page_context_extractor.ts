@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { extractAnnotatedPageContent } from '//ios/chrome/browser/intelligence/proto_wrappers/resources/annotated_page_content_extraction.js';
-import { getRemoteFrameRemoteToken, MAX_APC_NODE_DEPTH, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR } from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
-import type { PageContent } from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import { CrWebApi, gCrWeb } from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {extractAnnotatedPageContent} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/annotated_page_content_extraction.js';
+import {getRemoteFrameRemoteToken, MAX_APC_NODE_DEPTH, MAX_APC_RESPONSE_DEPTH, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
+import type {PageContent} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+
+// Cache JSON.stringify to protect against website overrides.
+const JSONStringify = JSON.stringify;
 
 // Model that contains the link data for anchor tags that are extracted.
 interface LinkData {
@@ -41,7 +44,7 @@ interface DetachData {
 
 // The result of the extraction can be one of the following types. `null` is
 // used if extraction failed for some reason.
-type ExtractionResult = SameOriginFrameData | DetachData | PageContent | null;
+type ExtractionResult = SameOriginFrameData|DetachData|PageContent|string|null;
 
 // Returns true if the page context should be detached, false otherwise. The
 // logic is defined in the placeholder replacement.
@@ -49,8 +52,15 @@ function shouldDetachPageContext(): boolean {
   // This statement is replaced by a function block during placeholder
   // replacement. See
   // ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.mm.
-  // Falls back to true by default if no value can be provided from the call.
+  // Falls back to false by default if no value can be provided from the call.
   return (window as any).gCrWebPlaceholderPageContextShouldDetach() ?? false;
+}
+
+/**
+ * Returns true if page context IPC optimization is enabled.
+ */
+function isPageContextIPCOptimizationEnabled() {
+  return (window as any).gCrWebPlaceholderPageContextIPCOptimization ?? false;
 }
 
 // Recursively constructs the innerText tree for the passed node and its
@@ -162,15 +172,18 @@ function extractPageContext(
     // The `PageContent` object itself adds one level of nesting to the
     // structure parsed by `ValueResultFromWKResult` on the native side.
     const maxDepth = MAX_APC_RESPONSE_DEPTH - MAX_APC_NODE_DEPTH;
-    return extractAnnotatedPageContent(
+    const apc = extractAnnotatedPageContent(
         document, nonce, 0, maxDepth, actionableMode, extractPaidContent,
         attemptPaidContentJsonFixing);
+    return isPageContextIPCOptimizationEnabled() ? JSONStringify(apc) : apc;
   }
 
   // Recursively constructs the tree from the root node.
-  return constructInnerTextTree(
-    document.body, window.location.href, document.title, nonce,
-    keepCrossOriginFrameData);
+  const innerTextTree = constructInnerTextTree(
+      document.body, window.location.href, document.title, nonce,
+      keepCrossOriginFrameData);
+  return isPageContextIPCOptimizationEnabled() ? JSONStringify(innerTextTree) :
+                                                 innerTextTree;
 }
 
 const pageExtractorApi = new CrWebApi('pageContextExtractor');

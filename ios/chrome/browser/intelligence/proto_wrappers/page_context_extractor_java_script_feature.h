@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_EXTRACTOR_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_EXTRACTOR_JAVA_SCRIPT_FEATURE_H_
 
+#import <optional>
 #import <string>
 
 #import "base/no_destructor.h"
@@ -41,6 +42,8 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
   // depending on the extraction outcome: FrameData if the context could be
   // extracted or DetachData if it was detached, see
   // resources/page_context_extractor.ts for more details.
+  // TODO(crbug.com/495446456): Remove this method once the JSON experiment is
+  // done.
   void ExtractPageContext(
       web::WebFrame* frame,
       bool include_cross_origin_frame_content,
@@ -51,6 +54,20 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
       const std::string& nonce,
       base::TimeDelta timeout,
       base::OnceCallback<void(const base::Value*)> callback);
+
+  // Same as ExtractPageContext but expects the javascript to return a
+  // serialized json of the page context instead of a native dict from
+  // WebKit serialization, and parses it into an optional base::Value.
+  void ExtractPageContextJSON(
+      web::WebFrame* frame,
+      bool include_cross_origin_frame_content,
+      bool use_rich_extraction,
+      bool use_rich_extraction_with_actionable,
+      bool extract_paid_content,
+      bool attempt_paid_content_json_fixing,
+      const std::string& nonce,
+      base::TimeDelta timeout,
+      base::OnceCallback<void(std::optional<base::Value>)> callback);
 
  private:
   friend class base::NoDestructor<PageContextExtractorJavaScriptFeature>;
