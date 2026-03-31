@@ -38,12 +38,14 @@ export function getHtml(this: WebuiBrowserAppElement) {
       </if>
     </div>
     <div id="searchBar">
-      <cr-icon-button iron-icon="cr:arrow-back"
+      <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
         ?disabled="${this.backButtonDisabled_}"
-        @click="${this.onBackClick_}"></cr-icon-button>
-      <cr-icon-button iron-icon="cr:arrow-forward"
+        @click="${this.onBackClick_}"
+        @contextmenu="${this.onBackContextmenu_}"></cr-icon-button>
+      <cr-icon-button id="forwardButton" iron-icon="cr:arrow-forward"
         ?disabled="${this.forwardButtonDisabled_}"
-        @click="${this.onForwardClick_}"></cr-icon-button>
+        @click="${this.onForwardClick_}"
+        @contextmenu="${this.onForwardContextmenu_}"></cr-icon-button>
       <cr-icon-button class="${this.reloadOrStopIcon_}"
         title="${this.reloadOrStopTooltip_()}'"
         @click="${this.onReloadOrStopClick_}"></cr-icon-button>

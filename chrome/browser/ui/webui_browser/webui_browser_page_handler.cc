@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
@@ -34,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
@@ -214,13 +217,9 @@ void WebUIBrowserPageHandler::ShowTabSearchBubble(
 void WebUIBrowserPageHandler::OpenAppMenu() {
   menu_.reset();
 
-  // TODO(webium): use BrowserElements::From(browser)->GetElement(). This
-  // requires adding a BrowserElementsWebUI.
   ui::TrackedElement* app_menu_button =
-      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
-          kToolbarAppMenuButtonElementId,
-          views::ElementTrackerViews::GetContextForWidget(
-              GetBrowserWindow()->widget()));
+      BrowserElements::From(GetBrowser())
+          ->GetElement(kToolbarAppMenuButtonElementId);
   CHECK(app_menu_button) << "App menu button not found";
   menu_model_ =
       std::make_unique<AppMenuModel>(GetBrowserWindow(), GetBrowser());
@@ -262,6 +261,38 @@ void WebUIBrowserPageHandler::Restore() {
 
 void WebUIBrowserPageHandler::Close() {
   GetBrowserWindow()->Close();
+}
+
+void WebUIBrowserPageHandler::ShowBackForwardMenu(bool is_back) {
+  back_forward_menu_runner_.reset();
+  back_forward_menu_model_adapter_.reset();
+  back_forward_menu_model_.reset();
+
+  content::WebContents* web_contents =
+      GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  if (!web_contents) {
+    return;
+  }
+
+  ui::ElementIdentifier button_id =
+      is_back ? kToolbarBackButtonElementId : kToolbarForwardButtonElementId;
+  ui::TrackedElement* button_element =
+      BrowserElements::From(GetBrowser())->GetElement(button_id);
+  if (!button_element) {
+    return;
+  }
+
+  back_forward_menu_model_ = std::make_unique<BackForwardMenuModel>(
+      GetBrowser(), is_back ? BackForwardMenuModel::ModelType::kBackward
+                            : BackForwardMenuModel::ModelType::kForward);
+  back_forward_menu_model_adapter_ =
+      std::make_unique<views::MenuModelAdapter>(back_forward_menu_model_.get());
+  back_forward_menu_runner_ = std::make_unique<views::MenuRunner>(
+      back_forward_menu_model_adapter_->CreateMenu(),
+      views::MenuRunner::HAS_MNEMONICS);
+  back_forward_menu_runner_->RunMenuAt(
+      GetBrowserWindow()->widget(), nullptr, button_element->GetScreenBounds(),
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
 }
 
 WebUIBrowserPageHandler::WebUIBrowserPageHandler(

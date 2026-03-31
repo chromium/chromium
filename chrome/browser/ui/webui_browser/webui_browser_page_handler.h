@@ -17,7 +17,13 @@
 
 class AppMenu;
 class AppMenuModel;
+class BackForwardMenuModel;
 class Browser;
+
+namespace views {
+class MenuModelAdapter;
+class MenuRunner;
+}  // namespace views
 
 class WebUIBrowserUI;
 
@@ -48,6 +54,7 @@ class WebUIBrowserPageHandler
   void Maximize() override;
   void Restore() override;
   void Close() override;
+  void ShowBackForwardMenu(bool is_back) override;
 
  private:
   WebUIBrowserPageHandler(
@@ -60,6 +67,10 @@ class WebUIBrowserPageHandler
 
   std::unique_ptr<AppMenuModel> menu_model_;
   std::unique_ptr<AppMenu> menu_;
+
+  std::unique_ptr<BackForwardMenuModel> back_forward_menu_model_;
+  std::unique_ptr<views::MenuModelAdapter> back_forward_menu_model_adapter_;
+  std::unique_ptr<views::MenuRunner> back_forward_menu_runner_;
 
   std::unique_ptr<content::WebContents> tab_search_contents_;
   std::unique_ptr<TabSearchBubbleHost> tab_search_bubble_host_;

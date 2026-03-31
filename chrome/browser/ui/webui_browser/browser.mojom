@@ -86,6 +86,10 @@ interface PageHandler {
   Restore();
   // Closes the browser window.
   Close();
+
+  // Shows the back or forward navigation history context menu.
+  // `is_back` is true for the back button menu, false for forward.
+  ShowBackForwardMenu(bool is_back);
 };
 
 // These are all the different icons that can be displayed in the chip next to

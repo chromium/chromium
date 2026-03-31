@@ -37,6 +37,8 @@ export interface WebuiBrowserAppElement {
     address: SearchboxElement,
     appMenuButton: HTMLElement,
     avatarButton: HTMLElement,
+    backButton: HTMLElement,
+    forwardButton: HTMLElement,
     locationIconButton: HTMLElement,
     contentRegion: ContentRegionElement,
     sidePanel: SidePanelElement,
@@ -72,6 +74,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   private trackedElementManager_: TrackedElementManager;
+  private longPressTimer_: number = 0;
   protected accessor backButtonDisabled_: boolean = true;
   protected accessor forwardButtonDisabled_: boolean = true;
   protected accessor fullscreenMode_: string = '';
@@ -105,9 +108,15 @@ export class WebuiBrowserAppElement extends CrLitElement {
     this.trackedElementManager_.startTracking(
         this.$.avatarButton, 'kToolbarAvatarButtonElementId');
     this.trackedElementManager_.startTracking(
+        this.$.backButton, 'kToolbarBackButtonElementId');
+    this.trackedElementManager_.startTracking(
+        this.$.forwardButton, 'kToolbarForwardButtonElementId');
+    this.trackedElementManager_.startTracking(
         this.$.locationIconButton, 'kLocationIconElementId');
     this.trackedElementManager_.startTracking(
         this.$.contentRegion, 'kContentsContainerViewElementId');
+    this.setUpLongPress_(this.$.backButton, /*isBack=*/ true);
+    this.setUpLongPress_(this.$.forwardButton, /*isBack=*/ false);
     const {width} = await PageHandlerFactory.getRemote().getTabStripInset();
     this.tabStripInset_ = width;
   }
@@ -158,18 +167,47 @@ export class WebuiBrowserAppElement extends CrLitElement {
     BrowserProxy.getPageHandler().close();
   }
 
-  // TODO(webium): context menus on right-click/long-press for
-  // back/forward buttons to show navigation history list.
   protected onBackClick_(_: Event) {
     if (this.$.contentRegion.activeWebview) {
       this.$.contentRegion.activeWebview.goBack();
     }
   }
 
+  protected onBackContextmenu_(e: Event) {
+    e.preventDefault();
+    BrowserProxy.getPageHandler().showBackForwardMenu(/*isBack=*/ true);
+  }
+
   protected onForwardClick_(_: Event) {
     if (this.$.contentRegion.activeWebview) {
       this.$.contentRegion.activeWebview.goForward();
     }
+  }
+
+  protected onForwardContextmenu_(e: Event) {
+    e.preventDefault();
+    BrowserProxy.getPageHandler().showBackForwardMenu(/*isBack=*/ false);
+  }
+
+  // Long-press on back/forward buttons shows the navigation history menu,
+  // matching the 500ms delay used by ToolbarButton in Views.
+  private setUpLongPress_(button: HTMLElement, isBack: boolean) {
+    const clearTimer = () => {
+      window.clearTimeout(this.longPressTimer_);
+      this.longPressTimer_ = 0;
+    };
+    button.addEventListener('pointerdown', (e: PointerEvent) => {
+      // Ignore non-left mouse button down.
+      if (e.button !== 0) {
+        return;
+      }
+      this.longPressTimer_ = window.setTimeout(() => {
+        clearTimer();
+        BrowserProxy.getPageHandler().showBackForwardMenu(isBack);
+      }, 500);
+    });
+    button.addEventListener('pointerup', clearTimer);
+    button.addEventListener('pointerleave', clearTimer);
   }
 
   protected onReloadOrStopClick_(_: Event) {
