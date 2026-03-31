@@ -226,5 +226,23 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair(IwaVersionParseError::kCannotConvertToNumber,
                        "could not be converted into a number")));
 
+TEST(IwaVersion, ComparisonsHandleTrailingZeros) {
+  IwaVersion version_1_2 = IwaVersion::Create("1.2").value();
+  IwaVersion version_1_2_0 = IwaVersion::Create("1.2.0").value();
+  IwaVersion version_1_3 = IwaVersion::Create("1.3").value();
+
+  EXPECT_EQ(version_1_2, version_1_2_0);
+  EXPECT_TRUE(version_1_2 == version_1_2_0);
+
+  EXPECT_TRUE((version_1_2 <=> version_1_2_0) == std::strong_ordering::equal);
+  EXPECT_FALSE(version_1_2 < version_1_2_0);
+  EXPECT_FALSE(version_1_2 > version_1_2_0);
+
+  EXPECT_NE(version_1_2, version_1_3);
+  EXPECT_LT(version_1_2, version_1_3);
+  EXPECT_TRUE((version_1_2 <=> version_1_3) == std::strong_ordering::less);
+  EXPECT_TRUE((version_1_3 <=> version_1_2) == std::strong_ordering::greater);
+}
+
 }  // namespace
 }  // namespace web_app

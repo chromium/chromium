@@ -48,7 +48,7 @@ class IwaVersion {
   friend bool operator==(const IwaVersion& lhs,
                          const IwaVersion& rhs) = default;
   friend auto operator<=>(const IwaVersion& lhs, const IwaVersion& rhs) {
-    return lhs.version_.components() <=> rhs.version_.components();
+    return lhs.version_.CompareTo(rhs.version_) <=> 0;
   }
 
  private:
