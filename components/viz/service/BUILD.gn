@@ -841,7 +841,36 @@ if (is_android) {
   }
 }
 
+import("//mojo/public/tools/fuzzers/mojolpm.gni")
+
+mojolpm_fuzzer_test("layer_context_impl_mojolpm_fuzzer") {
+  sources = [
+    "layers/layer_context_impl_base_unittest.cc",
+    "layers/layer_context_impl_base_unittest.h",
+    "layers/layer_context_impl_mojolpm_fuzzer.cc",
+  ]
+
+  proto_source = "layers/layer_context_impl_mojolpm_fuzzer.proto"
+
+  deps = [
+    ":service",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//mojo/core/embedder",
+    "//mojo/public/tools/fuzzers:mojolpm",
+    "//services/viz/public/mojom:mojom_mojolpm",
+    "//testing/gtest",
+  ]
+
+  proto_deps = [ "//services/viz/public/mojom:mojom_mojolpm" ]
+}
+
 group("viz_service_fuzzers") {
   testonly = true
   deps = [ ":hit_test_manager_fuzzer" ]
+
+  if (enable_mojom_fuzzer) {
+    deps += [ ":layer_context_impl_mojolpm_fuzzer" ]
+  }
 }

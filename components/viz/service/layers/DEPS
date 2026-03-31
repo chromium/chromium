@@ -4,3 +4,10 @@ include_rules = [
     "+mojo/public",
     "+components/viz/client/client_resource_provider.h",
 ]
+
+specific_include_rules = {
+  "layer_context_impl_mojolpm_fuzzer\.cc": [
+    "+mojo/core/embedder/embedder.h",
+    "+third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h",
+  ],
+}

@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package viz.fuzzing.layer_context.proto;
+
+import "services/viz/public/mojom/compositing/layer_context.mojom.mojolpm.proto";
+import "services/viz/public/mojom/compositing/tiling.mojom.mojolpm.proto";
+
+// Run the specific sequence for (an indeterminate) period.
+message RunThreadAction {
+  enum ThreadId {
+    IO = 0;
+    UI = 1;
+  }
+
+  required ThreadId id = 1;
+}
+
+message Action {
+  oneof action {
+    RunThreadAction run_thread = 1;
+    mojolpm.viz.mojom.LayerTreeUpdate update_display_tree = 2;
+    mojolpm.viz.mojom.Tiling update_display_tiling = 3;
+  }
+}
+
+// Sequence provides a level of indirection which allows Testcase to compactly
+// express repeated sequences of actions.
+message Sequence {
+  repeated uint32 action_indexes = 1 [packed = true];
+}
+
+// Testcase is the top-level message type interpreted by the fuzzer.
+message Testcase {
+  repeated Action actions = 1;
+  repeated Sequence sequences = 2;
+  repeated uint32 sequence_indexes = 3 [packed = true];
+}
