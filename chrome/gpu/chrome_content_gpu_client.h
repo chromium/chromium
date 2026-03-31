@@ -42,6 +42,8 @@ class ChromeContentGpuClient : public content::ContentGpuClient {
       base::SingleThreadTaskRunner* io_task_runner) override;
   void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) override;
+  void PostDisplayCompositorGpuThreadCreated(
+      base::SingleThreadTaskRunner* task_runner) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   scoped_refptr<arc::ProtectedBufferManager> GetProtectedBufferManager();

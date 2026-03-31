@@ -52,6 +52,8 @@ Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
       return THREAD_POOL_THREAD;
     case sampling_profiler::ProfilerThreadType::kNetwork:
       return NETWORK_THREAD;
+    case sampling_profiler::ProfilerThreadType::kDisplayCompositorGpu:
+      return DISPLAY_COMPOSITOR_GPU_THREAD;
   }
   NOTREACHED();
 }

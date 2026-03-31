@@ -55,6 +55,8 @@ class CONTENT_EXPORT ContentGpuClient {
       base::SingleThreadTaskRunner* io_task_runner) {}
   virtual void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) {}
+  virtual void PostDisplayCompositorGpuThreadCreated(
+      base::SingleThreadTaskRunner* task_runner) {}
 
 #if BUILDFLAG(IS_ANDROID)
   // Allows client to supply these object instances instead of having content

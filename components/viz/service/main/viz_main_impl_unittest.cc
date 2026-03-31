@@ -30,6 +30,8 @@ class MockDelegate : public VizMainImpl::Delegate {
  public:
   MOCK_METHOD1(PostCompositorThreadCreated,
                void(base::SingleThreadTaskRunner*));
+  MOCK_METHOD1(PostDisplayCompositorGpuThreadCreated,
+               void(base::SingleThreadTaskRunner*));
   MOCK_METHOD0(OnInitializationFailed, void());
   MOCK_METHOD1(OnGpuServiceConnection, void(GpuServiceImpl*));
   MOCK_METHOD0(QuitMainMessageLoop, void());
@@ -39,7 +41,7 @@ class MockDelegate : public VizMainImpl::Delegate {
 // that the dependency-injected UKM recorder actually gets used.
 class MockUkmRecorder : public ukm::MojoUkmRecorder {
  public:
-  MockUkmRecorder(ukm::mojom::UkmRecorderFactory& factory)
+  explicit MockUkmRecorder(ukm::mojom::UkmRecorderFactory& factory)
       : MojoUkmRecorder(factory) {}
 
   MOCK_METHOD1(AddEntry, void(ukm::mojom::UkmEntryPtr));

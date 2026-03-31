@@ -68,6 +68,8 @@ class GpuChildThread : public ChildThreadImpl,
   void OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) override;
   void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) override;
+  void PostDisplayCompositorGpuThreadCreated(
+      base::SingleThreadTaskRunner* task_runner) override;
   void QuitMainMessageLoop() override;
 
   // Returns a closure which calls into the VizMainImpl to perform shutdown

@@ -136,6 +136,15 @@ void ChromeContentGpuClient::PostCompositorThreadCreated(
                                     &CreateCoreUnwindersFactory)));
 }
 
+void ChromeContentGpuClient::PostDisplayCompositorGpuThreadCreated(
+    base::SingleThreadTaskRunner* task_runner) {
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &sampling_profiler::ThreadProfiler::StartOnChildThread,
+          sampling_profiler::ProfilerThreadType::kDisplayCompositorGpu));
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<arc::ProtectedBufferManager>
 ChromeContentGpuClient::GetProtectedBufferManager() {
