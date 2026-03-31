@@ -1,4 +1,5 @@
 # Mojom Interface Definition Language (IDL)
+
 This document is a subset of the [Mojo documentation](/mojo/README.md).
 
 [TOC]
@@ -22,8 +23,8 @@ interface Frobinator {
 };
 ```
 
-This defines a single [interface](#Interfaces) named `Frobinator` in a
-[module](#Modules) named `widget.mojom` (and thus fully qualified in Mojom as
+This defines a single [interface](#interfaces) named `Frobinator` in a
+[module](#modules) named `widget.mojom` (and thus fully qualified in Mojom as
 `widget.mojom.Frobinator`.) Note that many interfaces and/or other types of
 definitions (structs, enums, *etc.*) may be included in a single Mojom file.
 
@@ -69,7 +70,7 @@ output directory.
 
 For more details regarding the generated
 outputs please see
-[documentation for individual target languages](#Generated-Code-For-Target-Languages).
+[documentation for individual target languages](#generated-code-for-target-languages).
 
 ## Mojom Syntax
 
@@ -82,6 +83,7 @@ Mojom files may **import** other Mojom files in order to reference their
 definitions.
 
 ### Primitive Types
+
 Mojom supports a few basic data types which may be composed into structs or used
 for message parameters.
 
@@ -105,8 +107,8 @@ for message parameters.
 | `handle<platform>`            | A native platform/OS handle.
 | *`pending_remote<InterfaceType>`*             | Any user-defined Mojom interface type. This is sugar for a strongly-typed message pipe handle which should eventually be used to make outgoing calls on the interface.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
-| *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
-| *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#Associated-Interfaces)
+| *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#associated-interfaces)
+| *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#associated-interfaces)
 | *T*?                          | An optional (nullable) value.
 
 ### Modules
@@ -167,7 +169,7 @@ struct StringPair {
 ```
 
 Struct fields may be comprised of any of the types listed above in the
-[Primitive Types](#Primitive-Types) section.
+[Primitive Types](#primitive-types) section.
 
 Default values may be specified as long as they are constant:
 
@@ -270,7 +272,7 @@ struct AllTheThings {
 
 For details on how all of these different types translate to usable generated
 code, see
-[documentation for individual target languages](#Generated-Code-For-Target-Languages).
+[documentation for individual target languages](#generated-code-for-target-languages).
 
 ### Unions
 
@@ -279,8 +281,8 @@ collection of fields which may take the value of any single one of those fields
 at a time. Thus they provide a way to represent a variant value type while
 minimizing storage requirements.
 
-Union fields may be of any type supported by [struct](#Structs) fields. For
-example:
+Union fields may be of any type supported by [struct](#structs) fields, except
+for nullable primitives. For example:
 
 ```cpp
 union ExampleUnion {
@@ -293,7 +295,7 @@ union ExampleUnion {
 ```
 
 For details on how unions like this translate to generated bindings code, see
-[documentation for individual target languages](#Generated-Code-For-Target-Languages).
+[documentation for individual target languages](#generated-code-for-target-languages).
 
 ### Enumeration Types
 
@@ -327,7 +329,7 @@ enum definition. By default, values are based at zero and increment by
 1 sequentially.
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
+target language. See [documentation for individual target languages](#generated-code-for-target-languages).
 
 ### Constants
 
@@ -353,7 +355,7 @@ struct Employee {
 ```
 
 The effect of nested definitions on generated bindings varies depending on the
-target language. See [documentation for individual target languages](#Generated-Code-For-Target-Languages).
+target language. See [documentation for individual target languages](#generated-code-for-target-languages).
 
 ### Features
 
@@ -408,7 +410,7 @@ interface Foo {
 };
 ```
 
-Anything which is a valid struct field type (see [Structs](#Structs)) is also a
+Anything which is a valid struct field type (see [Structs](#structs)) is also a
 valid request or response argument type. The type notation is the same for both.
 
 #### Result response
@@ -493,7 +495,7 @@ interesting attributes supported today.
 * **`[MinVersion=N]`**:
   The `MinVersion` attribute is used to specify the version at which a given
   field, enum value, interface method, or method parameter was introduced.
-  See [Versioning](#Versioning) for more details. `MinVersion` does not apply
+  See [Versioning](#versioning) for more details. `MinVersion` does not apply
   to interfaces, structs or enums, but to the fields of those types.
   `MinVersion` is not a module-global value, but it is ok to pretend it is by
   skipping versions when adding fields or parameters.
@@ -506,7 +508,7 @@ interesting attributes supported today.
   types or other stable definitions, and changes to such definitions MUST
   preserve backward-compatibility through appropriate use of versioning.
   Backward-compatibility of changes is enforced in the Chromium tree using a
-  strict presubmit check. See [Versioning](#Versioning) for more details on
+  strict presubmit check. See [Versioning](#versioning) for more details on
   backward-compatibility constraints.
 
 * **`[Uuid=<UUID>]`**:
@@ -524,7 +526,7 @@ interesting attributes supported today.
   so will result in the receiver or remote being reset() to an unbound state.
   Note that this is a different concept to the build-time `EnableIf` directive.
   `RuntimeFeature` is currently only supported for C++ bindings and has no
-  effect for, say, Java or TypeScript bindings (see https://crbug.com/1278253).
+  effect for, say, Java or TypeScript bindings (see <https://crbug.com/1278253>).
 
 * **`[EnableIf=value]`**:
   The `EnableIf` attribute is used to conditionally enable definitions when the
@@ -618,7 +620,7 @@ interesting attributes supported today.
   Note: SendValidation can be binary size expensive, so use sparingly.
 
   `SendValidation` is currently only supported for C++ bindings and has no
-  effect for, say, Java or TypeScript bindings (see https://crbug.com/1278253).
+  effect for, say, Java or TypeScript bindings (see <https://crbug.com/1278253>).
 
 * **`[DispatchDebugAlias]`**:
   The `DispatchDebugAlias` attribute can be used on an interface to opt into
@@ -667,7 +669,7 @@ types.
 
 Mojom fields or parameter values (*e.g.*, structs, interfaces, arrays, *etc.*)
 may be marked nullable in Mojom definitions (see
-[Primitive Types](#Primitive-Types).) If a field or parameter is **not** marked
+[Primitive Types](#primitive-types).) If a field or parameter is **not** marked
 nullable but a message is received with a null value in its place, that message
 will fail validation.
 
@@ -690,9 +692,9 @@ fail validation.
 
 *** note
 NOTE: It's possible to avoid this type of validation error by explicitly marking
-an enum as [Extensible](#Attributes) if you anticipate your enum being exchanged
+an enum as [Extensible](#attributes) if you anticipate your enum being exchanged
 between two different versions of the binding interface. See
-[Versioning](#Versioning).
+[Versioning](#versioning).
 ***
 
 ### Other failures
@@ -713,7 +715,7 @@ validation failure behavior as the built-in type validation routines.
 
 ## Associated Interfaces
 
-As mentioned in the [Primitive Types](#Primitive-Types) section above, pending_remote
+As mentioned in the [Primitive Types](#primitive-types) section above, pending_remote
 and pending_receiver fields and parameters may be marked as `associated`. This
 essentially means that they are piggy-backed on some other interface's message
 pipe.
@@ -755,7 +757,7 @@ impossible anyway.
 
 ### Versioned Structs
 
-You can use the `MinVersion` [attribute](#Attributes) to indicate from which
+You can use the `MinVersion` [attribute](#attributes) to indicate from which
 version a struct field is introduced. Assume you have the following struct:
 
 ``` cpp
@@ -783,10 +785,10 @@ optional (nullable). On the other hand, primitive numeric types (including
 enums) added with a `MinVersion` are allowed to be either nullable or
 non-nullable.
 
-See [Primitive Types](#Primitive-Types) for details on nullable values.
+See [Primitive Types](#primitive-types) for details on nullable values.
 
 See
-[Ensuring Backward Compatible Behavior](#Ensuring-Backward-Compatible-Behavior)
+[Ensuring Backward Compatible Behavior](#ensuring-backward-compatible-behavior)
 for more details on choosing between nullable and non-nullable primitive numeric
 types.
 ***
@@ -874,7 +876,7 @@ interface HumanResourceDatabase {
 
 When you pass the parameter list of a request or response method to a
 destination using a different version of an interface, the conversion rules of
-[versioned structs](#Versioned-Structs) also apply. Unrecognized fields from
+[versioned structs](#versioned-structs) also apply. Unrecognized fields from
 a newer version are silently discarded; missing fields from an older version are
 populated automatically with `null`/`0`/`false`.
 
@@ -927,7 +929,7 @@ value is seen for a non-extensible enum field or parameter, a validation error
 is raised.
 
 If you want an enum to be extensible in the future, you can apply the
-`[Extensible]` [attribute](#Attributes):
+`[Extensible]` [attribute](#attributes):
 
 ``` cpp
 [Extensible]
@@ -959,6 +961,7 @@ values and will need to deal with them gracefully. See
 for details.
 
 ### Renaming versioned structs
+
 It's possible to rename versioned structs by using the `[RenamedFrom]` attribute.
 RenamedFrom
 
