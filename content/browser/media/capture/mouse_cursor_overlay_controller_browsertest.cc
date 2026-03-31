@@ -448,7 +448,6 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
   // p1 dispatched less than kMinWaitInterval ago, so p2 is buffered.
   test_clock.Advance(kMinWaitInterval / 2);
   SimulateMouseCoordinatesUpdated(p2);
-  base::RunLoop().RunUntilIdle();
 
   // p1 dispatched less than kMinWaitInterval ago, so p3 is buffered too,
   // overriding p2.
@@ -460,8 +459,7 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
         callback3_called = true;
         std::move(quit_closure_3).Run();
       });
-  SimulateMouseCoordinatesUpdated(p3);
-  base::RunLoop().RunUntilIdle();
+  SendMouseCoordinatesUpdated(p3);
   EXPECT_FALSE(callback3_called);
 
   // No events dispatched less than kMinWaitInterval ago, so p3 is dispatched.
@@ -481,7 +479,6 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
   // p4 dispatched less than kMinWaitInterval ago, so p5 is buffered.
   test_clock.Advance(kMinWaitInterval / 2);
   SimulateMouseCoordinatesUpdated(p5);
-  base::RunLoop().RunUntilIdle();
 
   // p4 dispatched less than kMinWaitInterval ago, so p6 is buffered too,
   // overriding p5.
@@ -493,8 +490,7 @@ IN_PROC_BROWSER_TEST_F(MouseCursorOverlayControllerBrowserTest,
         callback6_called = true;
         std::move(quit_closure_6).Run();
       });
-  SimulateMouseCoordinatesUpdated(p6);
-  base::RunLoop().RunUntilIdle();
+  SendMouseCoordinatesUpdated(p6);
   EXPECT_FALSE(callback6_called);
 
   // No events dispatched less than kMinWaitInterval ago, so p6 is dispatched.
