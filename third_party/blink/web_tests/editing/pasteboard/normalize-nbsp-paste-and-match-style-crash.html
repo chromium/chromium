@@ -1,0 +1,26 @@
+<!doctype html>
+<title>NormalizeNbspInInsertedContent: no crash when pasting into block-in-inline DOM</title>
+<link rel="help" href="https://issues.chromium.org/issues/497333639">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+  <script>
+  test(() => {
+    document.designMode = 'on';
+
+    document.execCommand('selectAll');
+    document.execCommand('insertHTML', false,
+        '<div>foo</div>' +
+        '<iframe style="border:1px solid black; width:100; height:50;"></iframe>');
+    document.execCommand('selectAll');
+    document.execCommand('cut');
+    document.execCommand('insertHTML', false,
+        '<span style="text-decoration: underline;"><div>World!</div></span>');
+    document.execCommand('pasteAndMatchStyle');
+
+    assert_true(true, 'No crash in NormalizeNbspInInsertedContent');
+
+    document.designMode = 'off';
+  }, 'NormalizeNbspInInsertedContent: no crash when start_of_inserted_range_ > end_of_inserted_range_');
+  </script>
+</body>
