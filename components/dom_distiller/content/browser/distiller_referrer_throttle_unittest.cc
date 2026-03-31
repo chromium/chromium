@@ -99,23 +99,20 @@ TEST_F(DistillerReferrerThrottleTest,
 }
 
 TEST_F(DistillerReferrerThrottleTest,
-       SetsReferrerWhenInitiatorIsNullButWebContentsIsDistiller) {
+       DoesNotAddThrottleWhenInitiatorIsNullAndWebContentsIsDistiller) {
   GURL original_url("https://test.com");
   GURL distiller_url = url_utils::GetDistillerViewUrlFromUrl(
       kDomDistillerScheme, original_url, "Title");
 
   content::MockNavigationHandle handle(GURL("https://google.com"), main_rfh());
 
-  // WebContents is at distiller URL.
   NavigateAndCommit(distiller_url);
 
-  content::MockNavigationThrottleRegistry registry(&handle);
-  auto throttle = std::make_unique<DistillerReferrerThrottle>(registry);
-
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            throttle->WillStartRequest().action());
-
-  EXPECT_EQ(original_url, handle.GetReferrer().url);
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+  DistillerReferrerThrottle::MaybeCreateAndAdd(registry);
+  EXPECT_FALSE(registry.ContainsHeldThrottle("DistillerReferrerThrottle"));
 }
 
 // Ensure stale distiller state is not used when WebContents URL does not match

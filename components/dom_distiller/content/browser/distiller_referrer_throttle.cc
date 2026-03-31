@@ -24,15 +24,10 @@ void DistillerReferrerThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   const auto& initiator = handle.GetInitiatorOrigin();
-  content::WebContents* web_contents = handle.GetWebContents();
 
   // Add throttle only for navigations originating from a distiller page.
   bool is_distiller_scheme =
       (initiator && initiator->scheme() == kDomDistillerScheme);
-  if (!is_distiller_scheme && web_contents) {
-    is_distiller_scheme =
-        web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme);
-  }
 
   if (is_distiller_scheme) {
     registry.AddThrottle(std::make_unique<DistillerReferrerThrottle>(registry));
