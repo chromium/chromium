@@ -1120,6 +1120,8 @@ static_library("ui") {
       "browser_window_deleter.h",
       "browser_window_state.cc",
       "browser_window_state.h",
+      "browser_window_theme_observer.cc",
+      "browser_window_theme_observer.h",
       "chrome_pages.cc",
       "chrome_pages.h",
       "collected_cookies_infobar_delegate.cc",

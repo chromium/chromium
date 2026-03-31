@@ -213,7 +213,7 @@ class TestBrowserWindow : public BrowserWindow,
       int download_count,
       Browser::DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) override {}
-  void UserChangedTheme(BrowserThemeChangeType theme_change_type) override {}
+
   std::unique_ptr<FindBar> CreateFindBar() override;
   web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
       override;

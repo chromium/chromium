@@ -87,6 +87,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window_state.h"
+#include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -1065,6 +1066,12 @@ BrowserView::BrowserView(Browser* browser)
   WebUIContentsPreloadManager::GetInstance()->WarmupForBrowser(browser_.get());
 
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
+
+  if (auto* theme_observer = BrowserWindowThemeObserver::From(browser_.get())) {
+    theme_changed_subscription_ =
+        theme_observer->RegisterThemeChangedCallback(base::BindRepeating(
+            &BrowserView::UserChangedTheme, base::Unretained(this)));
+  }
 
   if (vertical_tab_strip_state_controller) {
     vertical_tab_subscription_ =

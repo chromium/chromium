@@ -89,8 +89,6 @@
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/tab_contents/tab_util.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
@@ -619,8 +617,6 @@ Browser::Browser(const CreateParams& params)
 
   tab_strip_model_->AddObserver(this);
 
-  ThemeServiceFactory::GetForProfile(profile_)->AddObserver(this);
-
   profile_pref_registrar_.Init(profile_->GetPrefs());
   profile_pref_registrar_.Add(
       prefs::kDevToolsAvailability,
@@ -695,7 +691,6 @@ Browser::~Browser() {
   // Stop observing notifications and destroy the tab monitor before continuing
   // with destruction. Profile destruction will unload extensions and reentrant
   // calls to Browser:: should be avoided while it is being torn down.
-  ThemeServiceFactory::GetForProfile(profile_)->RemoveObserver(this);
 
   BrowserList::RemoveBrowser(this);
   window_.reset();
@@ -2950,13 +2945,6 @@ void Browser::OnZoomChanged(
     // Change the zoom commands state based on the zoom state
     GetCommandController()->ZoomStateChanged();
   }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Browser, ThemeServiceObserver implementation:
-
-void Browser::OnThemeChanged() {
-  window()->UserChangedTheme(BrowserThemeChangeType::kBrowserTheme);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

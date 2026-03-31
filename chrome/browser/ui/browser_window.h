@@ -489,10 +489,6 @@ class BrowserWindow : public ui::BaseWindow {
       Browser::DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) = 0;
 
-  // ThemeService calls this when a user has changed their theme, indicating
-  // that it's time to redraw everything.
-  virtual void UserChangedTheme(BrowserThemeChangeType theme_change_type) = 0;
-
   // Shows the app menu (for accessibility).
   virtual void ShowAppMenu() = 0;
 

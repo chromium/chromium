@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window_theme_observer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
@@ -151,6 +152,12 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
   paint_as_active_subscription_ =
       widget_->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
           &WebUIBrowserWindow::PaintAsActiveChanged, base::Unretained(this)));
+
+  if (auto* theme_observer = BrowserWindowThemeObserver::From(browser_.get())) {
+    theme_changed_subscription_ =
+        theme_observer->RegisterThemeChangedCallback(base::BindRepeating(
+            &WebUIBrowserWindow::UserChangedTheme, base::Unretained(this)));
+  }
 
   LoadAccelerators();
 }

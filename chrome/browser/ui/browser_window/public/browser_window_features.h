@@ -42,6 +42,7 @@ class BrowserSyncedWindowDelegate;
 class BrowserUserEducationInterface;
 class BrowserView;
 class BrowserWindowInterface;
+class BrowserWindowThemeObserver;
 class CallToActionLock;
 class ChromeLabsCoordinator;
 class ColorProviderBrowserHelper;
@@ -803,6 +804,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<contextual_cueing::ContextualCueingController>
       contextual_cueing_controller_;
+
+  std::unique_ptr<BrowserWindowThemeObserver> browser_window_theme_observer_;
 
   // Keep this member last to ensure embedder features are torn down first, in
   // reverse order of initialization.

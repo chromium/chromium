@@ -168,7 +168,6 @@ class WebUIBrowserWindow : public BrowserWindow,
       int download_count,
       Browser::DownloadCloseType dialog_type,
       base::OnceCallback<void(bool)> callback) override;
-  void UserChangedTheme(BrowserThemeChangeType theme_change_type) override;
   void ShowAppMenu() override;
   void PreHandleDragUpdate(const content::DropData& drop_data,
                            const gfx::PointF& point) override;
@@ -269,6 +268,9 @@ class WebUIBrowserWindow : public BrowserWindow,
   class WidgetDelegate;
   friend class WebUIBrowserExclusiveAccessContext;
 
+  // Called by BrowserWindowThemeObserver when the theme changes.
+  void UserChangedTheme(BrowserThemeChangeType theme_change_type);
+
   // Called by ExclusiveAccessContext to enter or exit fullscreen.
   void ProcessFullscreen(bool fullscreen);
 
@@ -324,6 +326,8 @@ class WebUIBrowserWindow : public BrowserWindow,
   // DidBecomeActive/DidBecomeInactive at the right time, accounting for child
   // widget focus (e.g., modal dialogs keeping the parent "active").
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  base::CallbackListSubscription theme_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_
