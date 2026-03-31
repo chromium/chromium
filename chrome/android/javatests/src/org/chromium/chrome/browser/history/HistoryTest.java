@@ -46,6 +46,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
@@ -392,7 +393,7 @@ public class HistoryTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // Flaky on desktop crbug.com/498132516
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // Flaky on desktop crbug.com/498132516
     public void testHistoryClustering_RemoveCluster() throws Exception {
         mActivityTestRule.startOnBlankPage();
         String urlOne =
