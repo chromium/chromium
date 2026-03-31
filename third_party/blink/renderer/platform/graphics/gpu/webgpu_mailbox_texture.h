@@ -23,7 +23,6 @@ class VideoFrame;
 
 namespace blink {
 
-class CanvasResource;
 class DawnControlClientHolder;
 class StaticBitmapImage;
 class WebGPUTextureAlphaClearer;
@@ -43,7 +42,8 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
       wgpu::TextureUsage usage,
-      scoped_refptr<CanvasResource> canvas_resource,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      const gpu::SyncToken& sync_token,
       std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource);
 
   static scoped_refptr<WebGPUMailboxTexture> FromExistingSharedImage(
