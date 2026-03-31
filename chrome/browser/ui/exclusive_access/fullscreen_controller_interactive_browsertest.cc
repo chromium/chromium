@@ -80,13 +80,13 @@ const base::FilePath::CharType* kSimpleFile = FILE_PATH_LITERAL("simple.html");
 }  // namespace
 
 class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
+ protected:
   void SetUpOnMainThread() override {
     ExclusiveAccessTest::SetUpOnMainThread();
 
     SetDisableFullscreenWithinTab(true);
   }
 
- protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExclusiveAccessTest::SetUpCommandLine(command_line);
     // Slow bots are flaky due to slower loading interacting with
@@ -981,6 +981,7 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   }
 
   void SetUpOnMainThread() override {
+    FullscreenControllerInteractiveTest::SetUpOnMainThread();
     auto allow_automatic_fullscreen = [&](const GURL& url) {
       HostContentSettingsMapFactory::GetForProfile(browser()->profile())
           ->SetContentSettingDefaultScope(
@@ -1014,7 +1015,10 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     ASSERT_TRUE(WaitForRenderFrameReady(web_contents_->GetPrimaryMainFrame()));
   }
 
-  void TearDownOnMainThread() override { web_contents_ = nullptr; }
+  void TearDownOnMainThread() override {
+    web_contents_ = nullptr;
+    FullscreenControllerInteractiveTest::TearDownOnMainThread();
+  }
 
   bool RequestFullscreen(bool gesture = false,
                          content::RenderFrameHost* rfh = nullptr) {
@@ -1327,6 +1331,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
     : public FullscreenControllerInteractiveTest {
  public:
   void SetUpOnMainThread() override {
+    FullscreenControllerInteractiveTest::SetUpOnMainThread();
     if (!SetUpVirtualDisplays()) {
       GTEST_SKIP() << "Skipping test; unavailable multi-screen support.";
     }
@@ -1350,6 +1355,7 @@ class MAYBE_MultiScreenFullscreenControllerInteractiveTest
 #if BUILDFLAG(IS_MAC)
     ui::NSWindowFakedForTesting::SetEnabled(ns_window_faked_for_testing_);
 #endif
+    FullscreenControllerInteractiveTest::TearDownOnMainThread();
   }
 
   // Create virtual displays as needed, ensuring 2 displays are available for
@@ -1775,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   // Explicitly check for, and destroy, the exclusive access bubble.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  Wait(ExclusiveAccessBubble::kShowTime);
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
   FinishExclusiveAccessBubbleAnimation();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
 

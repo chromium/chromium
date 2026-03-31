@@ -37,7 +37,13 @@ class ExclusiveAccessBubble {
   virtual void Show() = 0;
 
   // Shows the bubble and sets up timers to auto-hide and snooze.
-  void ShowAndStartTimers();
+  virtual void ShowAndStartTimers();
+
+  // Starts the timer to hide the bubble after a short time.
+  void StartHideTimer();
+
+  // Reset the timeout for user input before we auto-show again.
+  void Snooze();
 
   // Cached content and traits for this bubble.
   ExclusiveAccessBubbleParams params_;

@@ -24,10 +24,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/fullscreen_control/fullscreen_features.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -39,6 +41,8 @@
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/l10n/l10n_util_win.h"
 #endif
+
+bool ExclusiveAccessBubbleViews::skip_presentation_delay_for_testing_ = false;
 
 namespace {
 
@@ -310,6 +314,16 @@ void ExclusiveAccessBubbleViews::AnimationProgressed(
   if (opacity == 0) {
     popup_->Hide();
   } else {
+    if (presentation_cb_) {
+      ui::Compositor* compositor = popup_->GetCompositor();
+      if (!compositor || skip_presentation_delay_for_testing_) {
+        // Start the hide timer immediately, since we won't get any feedback.
+        std::move(presentation_cb_).Run({});
+      } else {
+        compositor->RequestSuccessfulPresentationTimeForNextFrame(
+            std::move(presentation_cb_));
+      }
+    }
     popup_->Show();
     popup_->SetOpacity(opacity);
   }
@@ -360,6 +374,7 @@ void ExclusiveAccessBubbleViews::Hide() {
   // `ExclusiveAccessBubble::kShowTime`.
   DCHECK(!hide_timeout_.IsRunning());
   RunHideCallbackIfNeeded(ExclusiveAccessBubbleHideReason::kTimeout);
+  presentation_cb_.Reset();
 
   animation_->SetSlideDuration(base::Milliseconds(700));
   animation_->Hide();
@@ -371,6 +386,14 @@ void ExclusiveAccessBubbleViews::Show() {
   }
   animation_->SetSlideDuration(base::Milliseconds(350));
   animation_->Show();
+}
+
+void ExclusiveAccessBubbleViews::ShowAndStartTimers() {
+  presentation_cb_ =
+      base::BindOnce(&ExclusiveAccessBubbleViews::OnFirstPresentation,
+                     weak_ptr_factory_.GetWeakPtr());
+  Show();
+  Snooze();
 }
 
 void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
@@ -388,6 +411,11 @@ void ExclusiveAccessBubbleViews::OnWidgetDestroyed(views::Widget* widget) {
   // Note: |this| is destroyed on the line above. Check that the destructor was
   // invoked. This is safe to do since |popup_| is deleted via a posted task.
   DCHECK(!popup_on_stack->HasObserver(this));
+}
+
+void ExclusiveAccessBubbleViews::OnFirstPresentation(
+    const viz::FrameTimingDetails& details) {
+  StartHideTimer();
 }
 
 void ExclusiveAccessBubbleViews::RunHideCallbackIfNeeded(

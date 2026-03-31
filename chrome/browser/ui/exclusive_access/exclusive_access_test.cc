@@ -74,6 +74,8 @@ ExclusiveAccessTest::ExclusiveAccessTest() {
 ExclusiveAccessTest::~ExclusiveAccessTest() = default;
 
 void ExclusiveAccessTest::SetUpOnMainThread() {
+  ExclusiveAccessBubbleViews::set_skip_presentation_delay_for_testing(true);
+
   permission_controller_ =
       std::make_unique<content::MockPermissionController>();
   ON_CALL(*permission_controller_, RequestPermissionsFromCurrentDocument)
@@ -110,6 +112,8 @@ void ExclusiveAccessTest::SetUpOnMainThread() {
 }
 
 void ExclusiveAccessTest::TearDownOnMainThread() {
+  ExclusiveAccessBubbleViews::set_skip_presentation_delay_for_testing(false);
+
   GetExclusiveAccessManager()
       ->pointer_lock_controller()
       ->bubble_hide_callback_for_test_ =

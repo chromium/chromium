@@ -13,12 +13,13 @@ class MockExclusiveAccessBubble : public ExclusiveAccessBubble {
   explicit MockExclusiveAccessBubble(ExclusiveAccessBubbleParams params)
       : ExclusiveAccessBubble(params) {}
   ~MockExclusiveAccessBubble() override = default;
-  MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Hide, (), (override));
 
   using ExclusiveAccessBubble::hide_timeout_;
   using ExclusiveAccessBubble::ShowAndStartTimers;
   using ExclusiveAccessBubble::snooze_until_;
+  using ExclusiveAccessBubble::StartHideTimer;
 };
 
 class ExclusiveAccessBubbleTest : public testing::Test {
@@ -62,4 +63,21 @@ TEST_F(ExclusiveAccessBubbleTest, DoesReshowOnUserInputAfterSnooze) {
   bubble_.ShowAndStartTimers();
   task_environment_.FastForwardBy(base::Minutes(16));
   bubble_.OnUserInput();
+}
+
+TEST_F(ExclusiveAccessBubbleTest, StartHideTimerRestartsTimer) {
+  EXPECT_CALL(bubble_, Show()).Times(1);
+  bubble_.ShowAndStartTimers();
+  EXPECT_TRUE(bubble_.hide_timeout_.IsRunning());
+
+  task_environment_.FastForwardBy(base::Seconds(1));
+  auto remaining =
+      bubble_.hide_timeout_.desired_run_time() - base::TimeTicks::Now();
+  EXPECT_LT(remaining, ExclusiveAccessBubble::kShowTime);
+
+  // Verify that the time increases.
+  bubble_.StartHideTimer();
+  auto new_remaining =
+      bubble_.hide_timeout_.desired_run_time() - base::TimeTicks::Now();
+  EXPECT_LT(remaining, new_remaining);
 }
