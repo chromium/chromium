@@ -19,6 +19,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.layouts.toolbar.ToolbarWidthConsumer;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -29,7 +31,11 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,6 +67,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     private final PoppedOutActionWidthConsumer mPoppedOutActionWidthConsumer =
             new PoppedOutActionWidthConsumer();
 
+    private boolean mCanShowMenuIcon = true;
+    private boolean mShowExtensionsMenuPending;
+    private final MenuButtonPinningDelegate mMenuButtonPinningDelegate =
+            new MenuButtonPinningDelegate();
+    private Profile mProfile;
+    private PrefService mPrefService;
+    private PrefChangeRegistrar mPrefChangeRegistrar;
+
     @Override
     public void initializeWithNative(
             Context context,
@@ -75,11 +89,14 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate) {
         mBridge = new ExtensionActionsBridge(task, profile);
+        mProfile = profile;
 
         extensionToolbarStub.setLayoutResource(R.layout.extension_toolbar_container);
         mContainer = (LinearLayout) extensionToolbarStub.inflate();
 
         mExtensionsToolbarBridge = new ExtensionsToolbarBridge(task, profile);
+
+        mPrefService = UserPrefs.get(profile);
 
         mExtensionActionListCoordinator =
                 new ExtensionActionListCoordinator(
@@ -115,7 +132,9 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         currentTabSupplier,
                         tabCreator,
                         mExtensionsToolbarBridge,
-                        mModel);
+                        mModel,
+                        mMenuButtonPinningDelegate);
+
         mExtensionAccessControlButtonCoordinator =
                 new ExtensionAccessControlButtonCoordinator(
                         mModel,
@@ -123,11 +142,20 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                         mExtensionsToolbarBridge,
                         (TextView) mContainer.findViewById(R.id.extensions_request_access_button),
                         (v) -> {});
+        mPrefChangeRegistrar = PrefServiceUtil.createFor(profile);
+        mPrefChangeRegistrar.addObserver(
+                Pref.PIN_EXTENSIONS_MENU_BUTTON, this::updateMenuButtonPinState);
     }
 
     @Override
     public void destroy() {
         mMenuButtonChangeProcessor.destroy();
+
+        if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.removeObserver(Pref.PIN_EXTENSIONS_MENU_BUTTON);
+            mPrefChangeRegistrar.destroy();
+        }
+
         mExtensionAccessControlButtonCoordinator.destroy();
         mExtensionsMenuCoordinator.destroy();
         mExtensionActionListCoordinator.destroy();
@@ -166,10 +194,70 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
 
     @Override
     public void showExtensionsMenu() {
+        mShowExtensionsMenuPending = true;
+        updateMenuIconVisibility();
+
         ListMenuButton extensionsMenuButton = mContainer.findViewById(R.id.extensions_menu_button);
         assert extensionsMenuButton != null;
 
-        extensionsMenuButton.performClick();
+        // Post to click after the layout pass.
+        extensionsMenuButton.post(
+                () -> {
+                    mShowExtensionsMenuPending = false;
+                    extensionsMenuButton.performClick();
+                });
+    }
+
+    private void saveMenuButtonPinState(boolean pinned) {
+        mPrefService.setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, pinned);
+        updateMenuButtonPinState();
+    }
+
+    private void updateMenuButtonPinState() {
+        if (mExtensionsMenuCoordinator.isExtensionsMenuOpen()) {
+            mModel.set(ExtensionsMenuProperties.MENU_BUTTON_PINNED, isMenuButtonPinned());
+        }
+
+        // Trigger layout and wait for the toolbar to provide us with width allocation.
+        ViewUtils.requestLayout(
+                mContainer, "ExtensionToolbarCoordinatorImpl.updateMenuButtonPinState()");
+    }
+
+    private boolean isMenuButtonPinned() {
+        if (mProfile.shutdownStarted()) {
+            // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
+            // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
+            // ChromeAndroidTask}'s destruction, and it is currently being worked on.
+            return true;
+        }
+        return mPrefService.getBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON);
+    }
+
+    private void updateMenuIconVisibility() {
+        int visibility = shouldShowMenuIcon() ? View.VISIBLE : View.GONE;
+        mContainer.findViewById(R.id.extensions_menu_button).setVisibility(visibility);
+    }
+
+    private boolean shouldShowMenuIcon() {
+        return mExtensionsMenuCoordinator.isExtensionsMenuOpen()
+                || mShowExtensionsMenuPending
+                || (mCanShowMenuIcon && isMenuButtonPinned());
+    }
+
+    public class MenuButtonPinningDelegate {
+        void setMenuButtonPinned(boolean pinned) {
+            ExtensionToolbarCoordinatorImpl.this.saveMenuButtonPinState(pinned);
+        }
+
+        boolean isMenuButtonPinned() {
+            return ExtensionToolbarCoordinatorImpl.this.isMenuButtonPinned();
+        }
+
+        void requestLayoutWithViewUtils() {
+            // Trigger layout and wait for the toolbar to provide us with width allocation.
+            ViewUtils.requestLayout(
+                    mContainer, "ExtensionToolbarCoordinatorImpl.requestLayoutWithViewUtils()");
+        }
     }
 
     @Override
@@ -261,13 +349,10 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
     private class MenuButtonWidthConsumer implements ToolbarWidthConsumer {
         @Override
         public boolean isVisible() {
-            ListMenuButton menuButton = mContainer.findViewById(R.id.extensions_menu_button);
-            return menuButton.getVisibility() == View.VISIBLE;
-        }
-
-        private void setHasSpaceToShow(boolean hasSpaceToShow) {
-            int visibility = hasSpaceToShow ? View.VISIBLE : View.GONE;
-            mContainer.findViewById(R.id.extensions_menu_button).setVisibility(visibility);
+            // This return value is used to determine whether to show the icon row in the app menu.
+            // Since the extensions menu should not affect that behavior, we always return true
+            // here.
+            return true;
         }
 
         @Override
@@ -285,9 +370,11 @@ public class ExtensionToolbarCoordinatorImpl implements ExtensionToolbarCoordina
                                     org.chromium.chrome.browser.toolbar.R.dimen
                                             .toolbar_divider_width);
             int totalWidth = puzzleButtonWidth + toolbarDividerWidth;
+            mCanShowMenuIcon = totalWidth <= availableWidth;
 
-            setHasSpaceToShow(totalWidth <= availableWidth);
-            return Math.min(availableWidth, totalWidth);
+            updateMenuIconVisibility();
+
+            return shouldShowMenuIcon() ? totalWidth : 0;
         }
 
         @Override

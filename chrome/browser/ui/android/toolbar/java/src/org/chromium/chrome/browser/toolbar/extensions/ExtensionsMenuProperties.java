@@ -49,6 +49,13 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<View.OnClickListener>
             MANAGE_EXTENSIONS_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
+    /** Properties for the pinning extensions menu button in the toolbar (puzzle piece). */
+    public static final WritableBooleanPropertyKey MENU_BUTTON_PINNED =
+            new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<View.OnClickListener>
+            MENU_BUTTON_PINNING_CLICK_LISTENER = new WritableObjectPropertyKey<>();
+
     public static final org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey
             OPTIONAL_SECTION_TYPE =
                     new org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey();
@@ -85,6 +92,8 @@ class ExtensionsMenuProperties {
                 HOST_ACCESS_REQUESTS,
                 IS_ZERO_STATE,
                 MANAGE_EXTENSIONS_CLICK_LISTENER,
+                MENU_BUTTON_PINNED,
+                MENU_BUTTON_PINNING_CLICK_LISTENER,
                 OPTIONAL_SECTION_TYPE,
                 RELOAD_CLICK_LISTENER,
                 SITE_SETTINGS_LABEL,

@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.core.view.ViewCompat;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
@@ -121,6 +123,19 @@ public class ExtensionsMenuViewBinder {
             MaterialSwitchWithText toggle =
                     view.findViewById(R.id.extensions_menu_site_settings_toggle);
             toggle.setText(model.get(ExtensionsMenuProperties.SITE_SETTINGS_LABEL));
+        } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER) {
+            View.OnClickListener listener =
+                    model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER);
+            // We can set the same click listener because the toggle consumes the event.
+            // TODO(crbug.com/481457578): Explore the best way to have a toggle inside a clickable
+            // row.
+            view.findViewById(R.id.extensions_menu_pin_menu_icon_button)
+                    .setOnClickListener(listener);
+            view.findViewById(R.id.extensions_menu_button_pinning_toggle)
+                    .setOnClickListener(listener);
+        } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNED) {
+            MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_button_pinning_toggle);
+            toggle.setChecked(model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNED));
         }
     }
 

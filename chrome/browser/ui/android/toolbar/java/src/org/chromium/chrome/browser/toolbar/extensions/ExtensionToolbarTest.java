@@ -40,6 +40,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestMessageListener;
@@ -49,6 +50,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.extensions.common.ExtensionFeatures;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -93,6 +95,10 @@ public class ExtensionToolbarTest {
         mPage =
                 mPage.loadWebPageProgrammatically(
                         mTestServer.getURL("/chrome/test/data/android/google.html"));
+
+        // Set the menu button pinning pref to 'pinned'.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
 
         // Wait until the extensions toolbar is loaded.
         ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
@@ -465,5 +471,76 @@ public class ExtensionToolbarTest {
                                         R.string
                                                 .acc_name_extensions_button_all_extensions_blocked)))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    public void testMenuButtonVisibilityOnPinningPrefChange() throws IOException {
+        loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Update the prefs to pinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
+
+        // Ensure the menu button is visible.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+
+        // Update the prefs to unpinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, false));
+
+        // Ensure the menu button is not visible anymore.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withId(R.id.extensions_menu_button), VIEW_GONE | VIEW_NULL));
+    }
+
+    @Test
+    @LargeTest
+    public void testMenuButtonToggle() throws IOException {
+        loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Update the prefs to pinned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> UserPrefs.get(mProfile).setBoolean(Pref.PIN_EXTENSIONS_MENU_BUTTON, true));
+
+        // Ensure the menu button is visible.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
+
+        // Open the extensions menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).perform(click());
+
+        // Unpin the menu icon using the toggle.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button_pinning_toggle))
+                .perform(click());
+
+        // TODO(crbug.com/481457578): Check that the menu button is visible even when unpinned if
+        // the menu is open.
+
+        // Close the menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_close_button)).perform(click());
+
+        // Verify that the extensions menu button is no longer visible on the toolbar.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withId(R.id.extensions_menu_button), VIEW_GONE | VIEW_NULL));
+
+        // Open the extensions menu via the app menu.
+        ViewUtils.onViewWaiting(withId(org.chromium.chrome.R.id.menu_button_wrapper))
+                .perform(click());
+        ViewUtils.onViewWaiting(withId(org.chromium.chrome.R.id.extensions_menu_menu_id))
+                .perform(click());
+
+        // Pin the menu icon using the toggle.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button_pinning_toggle))
+                .perform(click());
+
+        // Close the menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_close_button)).perform(click());
+
+        // Verify the icon is still visible after the menu is closed.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button)).check(matches(isDisplayed()));
     }
 }

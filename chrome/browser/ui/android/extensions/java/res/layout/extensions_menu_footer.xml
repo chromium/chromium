@@ -17,7 +17,7 @@ found in the LICENSE file.
         style="@style/ExtensionsMenuFooterRow" >
 
         <ImageView
-            android:id="@+id/extensions_menu_icon_pinning_icon"
+            android:id="@+id/extensions_menu_button_pinning_icon"
             style="@style/ExtensionsMenuFooterIcon"
             android:src="@drawable/ic_keep_24dp"
             android:importantForAccessibility="no" />
@@ -27,7 +27,7 @@ found in the LICENSE file.
             android:text="@string/extensions_pin_to_toolbar_setting" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
-            android:id="@+id/extensions_menu_icon_pinning_toggle"
+            android:id="@+id/extensions_menu_button_pinning_toggle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minHeight="0dp" />

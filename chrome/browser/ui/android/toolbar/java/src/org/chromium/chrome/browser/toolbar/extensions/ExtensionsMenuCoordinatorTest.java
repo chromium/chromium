@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.extensions.ExtensionToolbarCoordinatorImpl.MenuButtonPinningDelegate;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionTestUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
@@ -71,6 +72,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private ThemeColorProvider mThemeColorProvider;
     @Mock private ExtensionsToolbarBridge mExtensionsToolbarBridge;
     @Mock private ExtensionsMenuBridge.Natives mExtensionsMenuBridgeJniMock;
+    @Mock private MenuButtonPinningDelegate mMenuButtonPinningDelegate;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -131,7 +133,8 @@ public class ExtensionsMenuCoordinatorTest {
                         mCurrentTabSupplier,
                         mTabCreator,
                         mExtensionsToolbarBridge,
-                        new PropertyModel(ExtensionsMenuProperties.ALL_KEYS));
+                        new PropertyModel(ExtensionsMenuProperties.ALL_KEYS),
+                        mMenuButtonPinningDelegate);
 
         // Clear invocations from initialization to ensure tests start fresh.
         Mockito.clearInvocations(mExtensionsMenuBridgeJniMock);
