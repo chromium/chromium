@@ -617,14 +617,21 @@ bool RemoteFrame::IsAdFrame() const {
 
 void RemoteFrame::SetReplicatedIsAdFrame(bool is_ad_frame) {
   TRACE_EVENT("navigation", "RemoteFrame::SetReplicatedIsAdFrame");
+
+  // Currently, a frame cannot be untagged.
+  DCHECK_LE(is_ad_frame_, is_ad_frame);
+
   is_ad_frame_ = is_ad_frame;
 
-  FrameOwner* owner = Owner();
-  HTMLFrameOwnerElement* owner_element =
-      DynamicTo<HTMLFrameOwnerElement>(owner);
-
-  if (owner_element) {
-    owner_element->DidSetAdStatus();
+  if (auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(Owner())) {
+    if (is_ad_frame) {
+      // If an ad script created this frame, the provenance was likely already
+      // set via LocalFrame::SetAdEvidence() on the initial empty LocalFrame
+      // prior to swapping, making this call a no-op. The provenance data is
+      // currently unavailable if the frame was tagged due to a filter list
+      // match or an ad context without provenance (crbug.com/421202278).
+      owner_element->SetIsAdRelated(NoProvenance{});
+    }
   }
 }
 

@@ -32,7 +32,7 @@ class CORE_EXPORT DisplayAdElementMonitor final
 
   // Stop receiving LifecycleNotificationObserver notifications, and
   // notify `PageTimingMetricsSender` of the removal.
-  void OnElementRemovedOrUntagged();
+  void OnElementRemoved();
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(

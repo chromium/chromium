@@ -1768,28 +1768,25 @@ class CORE_EXPORT Element : public ContainerNode {
   virtual void SetActive(bool active);
   virtual void SetHovered(bool hovered);
 
-  // Manages the element's ad-related status.
-  //
-  // NOTE: `HTMLFrameOwnerElement` manages its ad status separately by
-  // deriving it from its frame. It overrides these virtual methods, and
-  // `SetIsAdRelated()` should not be called on it directly.
-
-  // Marks this element as being ad-related.
+  // Marks this element as ad-related and stores the `ad_provenance`. If the
+  // element is already marked as an ad, this is a no-op (the existing
+  // `ad_provenance` is not overwritten).
   void SetIsAdRelated(AdProvenance ad_provenance);
 
   // Returns true if the element is considered ad-related.
-  virtual bool IsAdRelated() const;
+  bool IsAdRelated() const;
 
-  // Returns the AdProvenance if the element is ad-related.
-  virtual std::optional<AdProvenance> GetAdProvenance() const;
+  // Returns the `AdProvenance` if the element is ad-related, or `std::nullopt`
+  // otherwise.
+  std::optional<AdProvenance> GetAdProvenance() const;
 
   // Returns true if a paint-time ad highlight should be drawn.
   // This is the authoritative check for painters, encapsulating:
   // 1. The element's ad status (i.e., `IsAdRelated()`).
   // 2. The "Highlight ads" DevTools setting.
   // 3. Logic to exclude nested ads (e.g., in an ad iframe) to avoid redundant,
-  // overlapping highlights.
-  virtual bool ShouldHighlightAd() const;
+  //    overlapping highlights.
+  bool ShouldHighlightAd() const;
 
   void NotifyInlineStyleMutation();
 

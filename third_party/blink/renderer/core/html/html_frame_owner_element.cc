@@ -211,10 +211,6 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
   InsertionNotificationRequest result =
       HTMLElement::InsertedInto(insertion_point);
 
-  if (display_ad_element_monitor_) {
-    display_ad_element_monitor_->EnsureStarted();
-  }
-
   // If a state-preserving atomic move is in progress, then we have to manually
   // perform some bookkeeping that ordinarily would only be done deeper in the
   // frame setup logic that gets triggered in the *NON* state-preserving atomic
@@ -266,10 +262,6 @@ void HTMLFrameOwnerElement::DidChangeIsCanvasOrInCanvasSubtree() {
 }
 
 void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
-  if (display_ad_element_monitor_) {
-    display_ad_element_monitor_->OnElementRemovedOrUntagged();
-  }
-
   // See documentation in `InsertedInto()` above. In the state-preserving atomic
   // move case, we don't invoke `ClearContentFrame()`, which would normally do
   // at least two things:
@@ -884,56 +876,6 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
-void HTMLFrameOwnerElement::DidSetAdStatus() {
-  if (display_ad_element_monitor_) {
-    if (!IsAdRelated()) {
-      display_ad_element_monitor_->OnElementRemovedOrUntagged();
-      display_ad_element_monitor_.Clear();
-    }
-    return;
-  }
-
-  if (IsAdRelated()) {
-    AdProvenance ad_provenance = NoProvenance{};
-
-    // Try to extract ad provenance from the LocalFrame's CreationAdScript,
-    // keeping the default `NoProvenance` if unavailable (crbug.com/421202278).
-    if (auto* content_local_frame =
-            DynamicTo<LocalFrame>(content_frame_.Get())) {
-      if (std::optional<AdScriptIdentifier> creation_ad_script =
-              content_local_frame->CreationAdScript()) {
-        ad_provenance = creation_ad_script->id;
-      }
-    }
-
-    display_ad_element_monitor_ = MakeGarbageCollected<DisplayAdElementMonitor>(
-        this, std::move(ad_provenance));
-  }
-}
-
-bool HTMLFrameOwnerElement::IsAdRelated() const {
-  if (!content_frame_)
-    return false;
-
-  return content_frame_->IsAdFrame();
-}
-
-std::optional<AdProvenance> HTMLFrameOwnerElement::GetAdProvenance() const {
-  // Only query the monitor if the element is known to be ad-related.
-  // TODO(yaoxia): Clean this up once `AdProvenance` is accurate for OOPIF cases
-  // and is consolidated with `FrameAdEvidence`.
-  if (!IsAdRelated() || !display_ad_element_monitor_) {
-    return std::nullopt;
-  }
-
-  return display_ad_element_monitor_->GetAdProvenance();
-}
-
-bool HTMLFrameOwnerElement::ShouldHighlightAd() const {
-  return display_ad_element_monitor_ &&
-         display_ad_element_monitor_->ShouldHighlight();
-}
-
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
   if (const auto* style = GetComputedStyle())
     return style->UsedColorScheme();
@@ -975,7 +917,6 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_frame_);
   visitor->Trace(embedded_content_view_);
   visitor->Trace(lazy_load_frame_observer_);
-  visitor->Trace(display_ad_element_monitor_);
   HTMLElement::Trace(visitor);
   FrameOwner::Trace(visitor);
 }

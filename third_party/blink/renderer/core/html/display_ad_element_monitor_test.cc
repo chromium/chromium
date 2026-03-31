@@ -384,39 +384,4 @@ TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_InsertUpdateHide) {
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
 
-TEST_F(DisplayAdElementMonitorTest, ReportingForAdIframe_UntagAsAd) {
-  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
-    <iframe id="ad" style="position:absolute; left:100px; top:50px; width:300px; height:250px; border:none;"></iframe>
-  )",
-                                     WebURL(KURL("https://example.com")));
-  MarkFirstContentfulPaint();
-  UpdateLifecycle();
-
-  auto* ad_element =
-      To<HTMLIFrameElement>(GetDocument().getElementById(AtomicString("ad")));
-  ASSERT_NE(ad_element->ContentFrame(), nullptr);
-
-  WebRemoteFrameImpl* remote_frame = frame_test_helpers::CreateRemote();
-  frame_test_helpers::SwapRemoteFrame(helper_.LocalMainFrame()->FirstChild(),
-                                      remote_frame);
-
-  // Expect the initial position report when the iframe is marked as an ad.
-  EXPECT_CALL(MockClient(),
-              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
-                                            gfx::Rect(100, 50, 300, 250)));
-  DynamicTo<RemoteFrame>(ad_element->ContentFrame())
-      ->SetReplicatedIsAdFrame(true);
-  UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
-
-  // Untag the element as ad, and expect an empty rect report.
-  const int dom_node_id = ad_element->GetDomNodeId();
-  EXPECT_CALL(MockClient(),
-              OnMainFrameAdRectangleChanged(dom_node_id, gfx::Rect()));
-  DynamicTo<RemoteFrame>(ad_element->ContentFrame())
-      ->SetReplicatedIsAdFrame(false);
-  UpdateLifecycle();
-  testing::Mock::VerifyAndClearExpectations(&MockClient());
-}
-
 }  // namespace blink

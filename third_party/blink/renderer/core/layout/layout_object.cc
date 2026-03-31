@@ -4642,14 +4642,7 @@ void LayoutObject::ImageNotifyFinished(ImageResourceContent* image) {
     if (const std::optional<AdProvenance>& ad_provenance =
             image->GetAdProvenance()) {
       if (auto* element = DynamicTo<Element>(GetNode())) {
-        // Skip setting the ad status for `HTMLFrameOwnerElement`, as frame
-        // owners manage their ad status separately (i.e., requires content
-        // frame notifications and allows untagging).
-        //
-        // TODO(yaoxia): Determine if this can be replaced with a DCHECK.
-        if (!IsA<HTMLFrameOwnerElement>(element)) {
-          element->SetIsAdRelated(*ad_provenance);
-        }
+        element->SetIsAdRelated(*ad_provenance);
       }
     }
   }

@@ -68,7 +68,7 @@ void DisplayAdElementMonitor::EnsureStarted() {
   element_->GetDocument().View()->RegisterForLifecycleNotifications(this);
 }
 
-void DisplayAdElementMonitor::OnElementRemovedOrUntagged() {
+void DisplayAdElementMonitor::OnElementRemoved() {
   if (!started_) {
     return;
   }

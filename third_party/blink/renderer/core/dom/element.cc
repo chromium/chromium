@@ -4461,7 +4461,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
 
     if (DisplayAdElementMonitor* ad_monitor =
             data->GetDisplayAdElementMonitor()) {
-      ad_monitor->OnElementRemovedOrUntagged();
+      ad_monitor->OnElementRemoved();
     }
   }
 
@@ -8898,8 +8898,6 @@ bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
 }
 
 void Element::SetIsAdRelated(AdProvenance ad_provenance) {
-  DCHECK(!IsA<HTMLFrameOwnerElement>(this));
-
   UnpackAndRefresh(EnsureRareData().EnsureDisplayAdElementMonitor(
       this, std::move(ad_provenance)));
 }

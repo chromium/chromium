@@ -2750,7 +2750,18 @@ void LocalFrame::SetAdEvidence(const FrameAdEvidence& ad_evidence) {
 
   // TODO(yaoxia): Determine whether we can DCHECK(owner).
   if (HTMLFrameOwnerElement* owner = DeprecatedLocalOwner()) {
-    owner->DidSetAdStatus();
+    if (is_ad_frame) {
+      AdProvenance ad_provenance = NoProvenance{};
+
+      // Try to extract ad provenance from CreationAdScript, keeping the default
+      // `NoProvenance` if unavailable (crbug.com/421202278).
+      if (std::optional<AdScriptIdentifier> creation_ad_script =
+              CreationAdScript()) {
+        ad_provenance = creation_ad_script->id;
+      }
+
+      owner->SetIsAdRelated(std::move(ad_provenance));
+    }
   }
 
   if (is_ad_frame) {
