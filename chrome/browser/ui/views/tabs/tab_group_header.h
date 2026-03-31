@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
+#include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -43,7 +44,8 @@ class TabGroupHeader : public TabSlotView,
                        public views::ContextMenuController,
                        public views::ViewTargeterDelegate,
                        public TabGroupAttentionIndicator::Observer,
-                       public gfx::AnimationDelegate {
+                       public gfx::AnimationDelegate,
+                       public HoverCardAnchorTarget {
   METADATA_HEADER(TabGroupHeader, TabSlotView)
 
  public:
@@ -70,10 +72,16 @@ class TabGroupHeader : public TabSlotView,
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnFocus() override;
+  void OnBlur() override;
   void OnThemeChanged() override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
+
+  // HoverCardAnchorTarget:
+  bool NeedsToShowThumbnail() const override;
+  bool IsValidHoverCardTarget() const override;
+  views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   void OnGroupContentsChanged();
 

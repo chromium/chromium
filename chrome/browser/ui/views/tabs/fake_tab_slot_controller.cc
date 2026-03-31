@@ -40,7 +40,7 @@ bool FakeTabSlotController::IsTabSelected(const TabSlotView* tab) const {
   return false;
 }
 
-bool FakeTabSlotController::IsFocusInTabs() const {
+bool FakeTabSlotController::IsFocusInTabStrip() const {
   return false;
 }
 
@@ -70,7 +70,8 @@ std::vector<Tab*> FakeTabSlotController::GetTabsInSplit(const Tab* tab) {
   return {};
 }
 
-bool FakeTabSlotController::HoverCardIsShowingForTab(Tab* tab) {
+bool FakeTabSlotController::HoverCardIsShowing(
+    HoverCardAnchorTarget* anchor_target) {
   return false;
 }
 

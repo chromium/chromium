@@ -58,7 +58,7 @@ class FakeTabSlotController : public TabSlotController {
   int GetTabCount() const override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
-  bool IsFocusInTabs() const override;
+  bool IsFocusInTabStrip() const override;
   bool ShouldCompactLeadingEdge() const override;
   void MaybeStartDrag(TabSlotView* source,
                       const ui::LocatedEvent& event,
@@ -72,8 +72,9 @@ class FakeTabSlotController : public TabSlotController {
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override {}
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override {}
-  void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override {}
-  bool HoverCardIsShowingForTab(Tab* tab) override;
+  void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                       HoverCardUpdateType update_type) override {}
+  bool HoverCardIsShowing(HoverCardAnchorTarget* anchor_target) override;
   void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override {}
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override {}
   int GetStrokeThickness() const override;

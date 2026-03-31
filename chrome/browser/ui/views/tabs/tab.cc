@@ -217,7 +217,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
 
   void OnViewBlurred(views::View* observed_view) override {
     // Only hide hover card if not keyboard navigating.
-    if (!controller_->IsFocusInTabs()) {
+    if (!controller_->IsFocusInTabStrip()) {
       controller_->UpdateHoverCard(
           nullptr, TabSlotController::HoverCardUpdateType::kFocus);
     }
@@ -353,7 +353,7 @@ Tab::Tab(tabs::TabHandle handle, TabSlotController* controller)
 Tab::~Tab() {
   // Observer must be unregistered before child views are destroyed.
   tab_close_button_observer_.reset();
-  if (controller_->HoverCardIsShowingForTab(this)) {
+  if (controller_->HoverCardIsShowing(this)) {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
   }
@@ -844,7 +844,7 @@ void Tab::OnBlur() {
 
   controller_->TabKeyboardFocusChangedTo(nullptr);
 
-  if (!controller_->IsFocusInTabs()) {
+  if (!controller_->IsFocusInTabStrip()) {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);
   }
@@ -961,7 +961,7 @@ bool Tab::IsApparentlyActive() const {
 }
 
 void Tab::AlertStateChanged() {
-  if (controller_->HoverCardIsShowingForTab(this)) {
+  if (controller_->HoverCardIsShowing(this)) {
     controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
   }
@@ -1359,7 +1359,7 @@ void Tab::OnTabDataChanged(TabChangeType tab_change_type,
     TooltipTextChanged();
   }
   SetHoverCardDataFrom(data_);
-  if (controller_->HoverCardIsShowingForTab(this)) {
+  if (controller_->HoverCardIsShowing(this)) {
     controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kTabDataChanged);
   }

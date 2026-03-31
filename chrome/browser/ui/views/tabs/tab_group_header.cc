@@ -119,7 +119,8 @@ class TabGroupHighlightPathGenerator : public views::HighlightPathGenerator {
 TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
                                const tab_groups::TabGroupId& group,
                                const TabGroupStyle& style)
-    : tab_slot_controller_(tab_slot_controller),
+    : HoverCardAnchorTarget(this),
+      tab_slot_controller_(tab_slot_controller),
       title_chip_(AddChildView(std::make_unique<views::View>())),
       title_(title_chip_->AddChildView(std::make_unique<views::Label>())),
       sync_icon_(
@@ -155,7 +156,12 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   }
 }
 
-TabGroupHeader::~TabGroupHeader() = default;
+TabGroupHeader::~TabGroupHeader() {
+  if (tab_slot_controller_->HoverCardIsShowing(this)) {
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+  }
+}
 
 void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   SetGroup(group);
@@ -273,6 +279,9 @@ bool TabGroupHeader::OnMousePressed(const ui::MouseEvent& event) {
     return false;
   }
 
+  tab_slot_controller_->UpdateHoverCard(
+      nullptr, TabSlotController::HoverCardUpdateType::kEvent);
+
   // Allow a right click from touch to drag, which corresponds to a long click.
   if (event.IsOnlyLeftMouseButton() ||
       (event.IsOnlyRightMouseButton() && event.flags() & ui::EF_FROM_TOUCH)) {
@@ -314,10 +323,15 @@ void TabGroupHeader::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
-  // Hide the hover card, since there currently isn't anything to display
-  // for a group.
-  tab_slot_controller_->UpdateHoverCard(
-      nullptr, TabSlotController::HoverCardUpdateType::kHover);
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+    SetHoverCardDataFrom(*tab_group);
+    tab_slot_controller_->UpdateHoverCard(
+        this, TabSlotController::HoverCardUpdateType::kHover);
+  } else {
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kHover);
+  }
 }
 
 void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
@@ -350,8 +364,24 @@ void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
 
 void TabGroupHeader::OnFocus() {
   View::OnFocus();
-  tab_slot_controller_->UpdateHoverCard(
-      nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+
+  if (features::IsTabGroupHoverCardsEnabled()) {
+    TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+    SetHoverCardDataFrom(*tab_group);
+    tab_slot_controller_->UpdateHoverCard(
+        this, TabSlotController::HoverCardUpdateType::kFocus);
+  } else {
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+  }
+}
+
+void TabGroupHeader::OnBlur() {
+  if (features::IsTabGroupHoverCardsEnabled() &&
+      !tab_slot_controller_->IsFocusInTabStrip()) {
+    tab_slot_controller_->UpdateHoverCard(
+        nullptr, TabSlotController::HoverCardUpdateType::kFocus);
+  }
 }
 
 void TabGroupHeader::OnThemeChanged() {
@@ -383,6 +413,20 @@ gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
   // between tabs and headers. As of writing this, hover cards to not cut into
   // the tab outline but without this change TabGroupEditorBubbleView does.
   return View::GetAnchorBoundsInScreen();
+}
+
+bool TabGroupHeader::NeedsToShowThumbnail() const {
+  return false;
+}
+
+bool TabGroupHeader::IsValidHoverCardTarget() const {
+  DCHECK(features::IsTabGroupHoverCardsEnabled());
+  return group().has_value() &&
+         tab_slot_controller_->GetTabGroup(group().value()) != nullptr;
+}
+
+views::BubbleBorder::Arrow TabGroupHeader::GetAnchorPosition() const {
+  return views::BubbleBorder::TOP_LEFT;
 }
 
 void TabGroupHeader::OnGroupContentsChanged() {
@@ -763,7 +807,7 @@ void TabGroupHeader::CreateHeaderWithTitle() {
 }
 
 void TabGroupHeader::UpdateTooltipText() {
-  if (!group().has_value()) {
+  if (!group().has_value() || features::IsTabGroupHoverCardsEnabled()) {
     return;
   }
 

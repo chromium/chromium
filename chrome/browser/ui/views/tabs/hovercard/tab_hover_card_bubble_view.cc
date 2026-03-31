@@ -389,6 +389,7 @@ class TabHoverCardBubbleView::TabCardView : public views::View {
   explicit TabCardView(TabHoverCardBubbleView* bubble_view)
       : bubble_view_(bubble_view) {
     CHECK(bubble_view_);
+    SetProperty(views::kElementIdentifierKey, kTabCardElementId);
 
     title_label_ = AddChildView(std::make_unique<FadeLabelView>(
         kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
@@ -561,6 +562,8 @@ class TabHoverCardBubbleView::GroupCardView : public views::View {
  public:
   explicit GroupCardView(TabHoverCardBubbleView* bubble_view)
       : tab_titles_(GroupCardData::kMaxTabs, nullptr) {
+    SetProperty(views::kElementIdentifierKey, kGroupCardElementId);
+
     title_ = AddChildView(std::make_unique<FadeLabelView>(
         kHoverCardTitleMaxLines, CONTEXT_TAB_HOVER_CARD_TITLE,
         views::style::STYLE_BODY_3_EMPHASIS));
@@ -643,6 +646,10 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
                                       kHoverCardBubbleElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
                                       kHoverCardDomainLabelElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
+                                      kTabCardElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabHoverCardBubbleView,
+                                      kGroupCardElementId);
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(
     HoverCardAnchorTarget* anchor_target,
@@ -756,6 +763,10 @@ void TabHoverCardBubbleView::SetCrashedImage() {
 
 views::View* TabHoverCardBubbleView::GetTabCardViewForTesting() {
   return tab_card_view_.get();
+}
+
+views::View* TabHoverCardBubbleView::GetGroupCardViewForTesting() {
+  return group_card_view_.get();
 }
 
 FadeLabelView* TabHoverCardBubbleView::GetTitleViewForTesting() const {

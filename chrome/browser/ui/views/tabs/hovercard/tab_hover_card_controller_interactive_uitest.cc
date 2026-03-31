@@ -69,6 +69,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/test/widget_activation_waiter.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -120,7 +121,8 @@ class TabHoverCardInteractiveUiTest
   TabHoverCardInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kTabHoverCardImages,
-         data_sharing::features::kDataSharingFeature},
+         data_sharing::features::kDataSharingFeature,
+         features::kTabGroupHoverCards},
         {});
   }
 
@@ -152,7 +154,7 @@ class TabHoverCardInteractiveUiTest
     MemorySaverInteractiveTestMixin::TearDownOnMainThread();
   }
 
-  auto UnhoverTab() { return Steps(MoveMouseTo(kNewTabButtonElementId)); }
+  auto UnhoverTarget() { return Steps(MoveMouseTo(kNewTabButtonElementId)); }
 
   StepBuilder CheckHovercardIsOpen() {
     return WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId);
@@ -200,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GURL(chrome::kChromeUINewTabURL)),
-      HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTab(),
+      HoverTabAt(0), CheckHovercardIsOpen(), UnhoverTarget(),
       CheckHovercardIsClosed());
 }
 
@@ -212,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       HoverTabAt(0),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
       WaitForHide(TabHoverCardBubbleView::kHoverCardDomainLabelElementId),
-      UnhoverTab(), CheckHovercardIsClosed());
+      UnhoverTarget(), CheckHovercardIsClosed());
 }
 
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
@@ -292,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   // Cycle focus until it reaches a tab.
-  while (!tab_strip->IsFocusInTabs()) {
+  while (!tab_strip->IsFocusInTabStrip()) {
     browser()->command_controller()->ExecuteCommand(IDC_FOCUS_NEXT_PANE);
   }
 
@@ -693,21 +695,22 @@ IN_PROC_BROWSER_TEST_P(TabHoverCardFadeFooterWithDiscardInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents, GetURL("a.com")),
-      AddInstrumentedTab(kSecondTabContents, GetURL("b.com")), UnhoverTab(),
+      AddInstrumentedTab(kSecondTabContents, GetURL("b.com")), UnhoverTarget(),
       ForceTabDataRefreshMemoryMetrics(), HoverTabAt(0), CheckHovercardIsOpen(),
-      CheckAlertRowLabel(u"Inactive tab", false), UnhoverTab(),
+      CheckAlertRowLabel(u"Inactive tab", false), UnhoverTarget(),
       CheckHovercardIsClosed(),
       // Check that the discarded tab should update its contents to show discard
       // status
       TryDiscardTab(0), HoverTabAt(0),
       WaitForShow(FooterView::kHoverCardFooterElementId),
-      CheckAlertRowLabel(u"Inactive tab", true), UnhoverTab(),
+      CheckAlertRowLabel(u"Inactive tab", true), UnhoverTarget(),
       CheckHovercardIsClosed(),
       // Ensure that hover card shows footer only for the discarded tab
       HoverTabAt(1), CheckHovercardIsOpen(),
       CheckAlertRowLabel(u"Inactive tab", false),
       // Select discarded tab
-      UnhoverTab(), CheckHovercardIsClosed(), SelectTab(kTabStripElementId, 0),
+      UnhoverTarget(), CheckHovercardIsClosed(),
+      SelectTab(kTabStripElementId, 0),
       WaitForWebContentsReady(kFirstTabContents), HoverTabAt(0),
       CheckHovercardIsOpen(), CheckAlertRowLabel(u"Inactive tab", false));
 }
@@ -720,9 +723,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardFadeFooterInteractiveUiTest,
   GetResourceUsageAt(0)->SetMemoryUsage(memory_usage);
 
   RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0), UnhoverTab(), HoverTabAt(0),
+      InstrumentTab(kFirstTabContents, 0), UnhoverTarget(), HoverTabAt(0),
       CheckHovercardIsOpen(),
-      WaitForShow(FooterView::kHoverCardFooterElementId), UnhoverTab(),
+      WaitForShow(FooterView::kHoverCardFooterElementId), UnhoverTarget(),
       CheckHovercardIsClosed(),
       NavigateWebContents(kFirstTabContents, GetURL("a.com")), HoverTabAt(0),
       CheckHovercardIsOpen(),
@@ -900,6 +903,84 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
       WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
 #endif
+
+// TODO(crbug.com/497970633): Fix flakiness and enable tab group header
+// hover card tests on other platforms. So far they only work on linux.
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HoverCardShowsOnGroupHeader HoverCardShowsOnGroupHeader
+#else
+#define MAYBE_HoverCardShowsOnGroupHeader DISABLED_HoverCardShowsOnGroupHeader
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       MAYBE_HoverCardShowsOnGroupHeader) {
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      MoveMouseTo(kTabGroupHeaderElementId),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
+      WaitForShow(TabHoverCardBubbleView::kGroupCardElementId),
+      EnsureNotPresent(TabHoverCardBubbleView::kTabCardElementId));
+}
+
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_GroupHoverCardHidesOnMouseExit GroupHoverCardHidesOnMouseExit
+#else
+#define MAYBE_GroupHoverCardHidesOnMouseExit \
+  DISABLED_GroupHoverCardHidesOnMouseExit
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       MAYBE_GroupHoverCardHidesOnMouseExit) {
+  browser()->tab_strip_model()->AddToNewGroup({0});
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      MoveMouseTo(kTabGroupHeaderElementId),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
+      WaitForShow(TabHoverCardBubbleView::kGroupCardElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      WaitForHide(TabHoverCardBubbleView::kHoverCardBubbleElementId));
+}
+
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_HoverCardShownOnGroupHeaderFocus HoverCardShownOnGroupHeaderFocus
+#else
+#define MAYBE_HoverCardShownOnGroupHeaderFocus \
+  DISABLED_HoverCardShownOnGroupHeaderFocus
+#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       MAYBE_HoverCardShownOnGroupHeaderFocus) {
+  browser()->tab_strip_model()->AddToNewGroup({0});
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId), FinishTabstripAnimations(),
+      FocusElement(kTabGroupHeaderElementId),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
+}
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_HoverCardTransitionFromGroupToTab \
+  HoverCardTransitionFromGroupToTab
+#else
+#define MAYBE_HoverCardTransitionFromGroupToTab \
+  DISABLED_HoverCardTransitionFromGroupToTab
+#endif  // BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
+                       MAYBE_HoverCardTransitionFromGroupToTab) {
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+
+  browser()->tab_strip_model()->AddToNewGroup({0});
+
+  RunTestSequence(
+      WaitForShow(kTabGroupHeaderElementId),
+      MoveMouseTo(kNewTabButtonElementId),
+      MoveMouseTo(kTabGroupHeaderElementId),
+      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId),
+      WaitForShow(TabHoverCardBubbleView::kGroupCardElementId),
+      EnsureNotPresent(TabHoverCardBubbleView::kTabCardElementId),
+      HoverTabAt(1), WaitForShow(TabHoverCardBubbleView::kTabCardElementId),
+      EnsureNotPresent(TabHoverCardBubbleView::kGroupCardElementId));
+}
 
 INSTANTIATE_TEST_SUITE_P(
     ,

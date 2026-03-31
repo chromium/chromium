@@ -49,6 +49,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardBubbleElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHoverCardDomainLabelElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabCardElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGroupCardElementId);
 
   struct InitParams {
     // Becomes false with certain accessibility options and in tests
@@ -88,6 +90,7 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   // Accessors used by tests.
   views::View* GetTabCardViewForTesting();
+  views::View* GetGroupCardViewForTesting();
   FadeLabelView* GetTitleViewForTesting() const;
   FadeLabelView* GetDomainViewForTesting() const;
 

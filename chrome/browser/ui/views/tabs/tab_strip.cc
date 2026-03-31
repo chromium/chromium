@@ -1883,7 +1883,7 @@ bool TabStrip::IsTabSelected(const TabSlotView* tab) const {
          controller_->IsTabSelected(model_index.value());
 }
 
-bool TabStrip::IsFocusInTabs() const {
+bool TabStrip::IsFocusInTabStrip() const {
   return GetFocusManager() && Contains(GetFocusManager()->GetFocusedView());
 }
 
@@ -2002,15 +2002,16 @@ void TabStrip::OnGroupContentsChanged(const tab_groups::TabGroupId& group) {
   tab_container_->OnGroupContentsChanged(group);
 }
 
-void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
+void TabStrip::UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                               HoverCardUpdateType update_type) {
   if (tab_container_) {
-    tab_container_->UpdateHoverCard(tab, update_type);
+    tab_container_->UpdateHoverCard(anchor_target, update_type);
   }
 }
 
-bool TabStrip::HoverCardIsShowingForTab(Tab* tab) {
+bool TabStrip::HoverCardIsShowing(HoverCardAnchorTarget* anchor_target) {
   return hover_card_controller_ &&
-         hover_card_controller_->IsHoverCardShowingForTab(tab);
+         hover_card_controller_->IsHoverCardShowingForTab(anchor_target);
 }
 
 void TabStrip::ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) {

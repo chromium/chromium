@@ -244,10 +244,10 @@ class TabStrip : public views::View,
   void UpdateAnimationTarget(
       TabSlotView* tab_slot_view,
       gfx::Rect target_bounds_in_tab_container_coords) override;
+  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
 
   // TabContainerController AND TabSlotController:
   bool IsGroupCollapsed(const tab_groups::TabGroupId& group) const override;
-  std::optional<tab_groups::TabGroupId> GetFocusedGroup() const override;
 
   // TabSlotController:
   ui::ListSelectionModel GetSelectionModel() const override;
@@ -275,7 +275,7 @@ class TabStrip : public views::View,
   int GetTabCount() const override;
   bool IsActiveTab(const TabSlotView* tab) const override;
   bool IsTabSelected(const TabSlotView* tab) const override;
-  bool IsFocusInTabs() const override;
+  bool IsFocusInTabStrip() const override;
   bool ShouldCompactLeadingEdge() const override;
 
   void MaybeStartDrag(TabSlotView* source,
@@ -290,8 +290,9 @@ class TabStrip : public views::View,
   void OnMouseEventInTab(views::View* source,
                          const ui::MouseEvent& event) override;
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
-  void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) override;
-  bool HoverCardIsShowingForTab(Tab* tab) override;
+  void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                       HoverCardUpdateType update_type) override;
+  bool HoverCardIsShowing(HoverCardAnchorTarget* anchor_target) override;
   void ShowHover(Tab* tab, TabStyle::ShowHoverStyle style) override;
   void HideHover(Tab* tab, TabStyle::HideHoverStyle style) override;
   int GetStrokeThickness() const override;

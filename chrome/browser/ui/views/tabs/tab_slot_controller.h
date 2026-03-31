@@ -45,6 +45,8 @@ namespace views {
 class View;
 }
 
+class HoverCardAnchorTarget;
+
 // Controller for tabs and group headers.
 class TabSlotController {
  public:
@@ -130,8 +132,8 @@ class TabSlotController {
   // Returns whether `tab` is selected.
   virtual bool IsTabSelected(const TabSlotView* tab) const = 0;
 
-  // Returns true if any tab or one of its children has focus.
-  virtual bool IsFocusInTabs() const = 0;
+  // Returns true if any tab or group header has focus.
+  virtual bool IsFocusInTabStrip() const = 0;
 
   // Returns true if The tab should have a compacted leading edge.
   virtual bool ShouldCompactLeadingEdge() const = 0;
@@ -172,13 +174,14 @@ class TabSlotController {
   virtual void OnGroupContentsChanged(const tab_groups::TabGroupId& group) = 0;
 
   // Updates hover-card content, anchoring and visibility based on what tab is
-  // hovered and whether the card should be shown. Providing a nullptr for `tab`
-  // will cause the tab hover card to be hidden. `update_type` is used to decide
-  // how the show, hide, or update will be processed.
-  virtual void UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) = 0;
+  // hovered and whether the card should be shown. Providing a nullptr for
+  // `anchor_target` will cause the tab hover card to be hidden. `update_type`
+  // is used to decide how the show, hide, or update will be processed.
+  virtual void UpdateHoverCard(HoverCardAnchorTarget* anchor_target,
+                               HoverCardUpdateType update_type) = 0;
 
-  // Returns true if the hover card is showing for the given tab.
-  virtual bool HoverCardIsShowingForTab(Tab* tab) = 0;
+  // Returns true if the hover card is showing for the given target.
+  virtual bool HoverCardIsShowing(HoverCardAnchorTarget* anchor_target) = 0;
 
   // Updates the hover effect for all affected tabs when a hover happens on
   // `tab`.
