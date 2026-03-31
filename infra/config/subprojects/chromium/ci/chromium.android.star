@@ -857,6 +857,9 @@ ci.builder(
                      # https://crbug.com/1468262
                      "All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1"),
                 ],
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
             ),
             "base_unittests": targets.mixin(
                 args = [
