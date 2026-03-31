@@ -40,6 +40,8 @@ class RemoveWebAppJob : public UninstallJob {
 
  private:
   void SynchronizeAndUninstallOsHooks();
+  void OnOsResourcesCleanedMaybeCompleteUninstall(
+      bool os_integration_directory_removed);
   void OnIconDataDeleted(bool success);
   void OnTranslationDataDeleted(bool success);
   void OnWebAppProfileDeleted(Profile* profile);

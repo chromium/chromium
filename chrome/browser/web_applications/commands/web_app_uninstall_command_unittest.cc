@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/mock_file_utils_wrapper.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -56,11 +57,13 @@ class WebAppUninstallCommandTest : public WebAppTest {
     WebAppTest::SetUp();
 
     file_utils_wrapper_ = base::MakeRefCounted<TestFileUtils>();
+    fake_provider().UseRealOsIntegrationManager();
     fake_provider().SetFileUtils(file_utils_wrapper_);
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
   void TearDown() override {
+    test::UninstallAllWebApps(profile());
     file_utils_wrapper_ = nullptr;
     WebAppTest::TearDown();
   }
@@ -298,6 +301,40 @@ TEST_F(WebAppUninstallCommandTest, Shutdown) {
   EXPECT_EQ(future2.Get(), webapps::UninstallResultCode::kShutdown);
 }
 
+TEST_F(WebAppUninstallCommandTest, PolicyAppUninstallRemovesOsIntegration) {
+  base::HistogramTester tester;
+  auto web_app_info = WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://www.example.com"));
+  web_app_info->title = u"Example Policy App";
+  webapps::AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_info),
+                          /*overwrite_existing_manifest_fields=*/false,
+                          webapps::WebappInstallSource::EXTERNAL_POLICY);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(fake_os_integration().HasOsIntegrationResourcesDirectory(
+      profile(), app_id));
+#endif  // BUILDFLAG(IS_WIN)
+  base::FilePath deletion_path = GetManifestResourcesDirectoryForApp(
+      GetWebAppsRootDirectory(profile()), app_id);
+
+  GURL start_url("https://www.example.com");
+  base::test::TestFuture<webapps::UninstallResultCode> result_future;
+  provider()->scheduler().RemoveInstallManagementMaybeUninstall(
+      app_id, web_app::WebAppManagement::kPolicy,
+      webapps::WebappUninstallSource::kExternalPolicy,
+      result_future.GetCallback());
+  ASSERT_TRUE(result_future.Wait());
+  EXPECT_EQ(webapps::UninstallResultCode::kAppRemoved, result_future.Get());
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppById(app_id), nullptr);
+
+  EXPECT_THAT(
+      tester.GetAllSamples("Webapp.Install.UninstallEvent"),
+      base::BucketsAre(base::Bucket(
+          webapps::WebappUninstallSource::kExternalPolicy, /*count=*/1)));
+  EXPECT_FALSE(fake_os_integration().HasOsIntegrationResourcesDirectory(
+      profile(), app_id));
+}
+
 struct UninstallSources {
   webapps::WebappUninstallSource source;
 };
@@ -334,6 +371,8 @@ TEST_P(WebAppUninstallCommandSourceTest, RunTestForUninstallSource) {
   EXPECT_FALSE(base::PathExists(deletion_path));
   EXPECT_THAT(tester.GetAllSamples("Webapp.Install.UninstallEvent"),
               base::BucketsAre(base::Bucket(GetParam().source, /*count=*/1)));
+  EXPECT_FALSE(fake_os_integration().HasOsIntegrationResourcesDirectory(
+      profile(), app_id));
 }
 
 INSTANTIATE_TEST_SUITE_P(

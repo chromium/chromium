@@ -6,10 +6,13 @@
 
 #include <memory>
 
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -139,7 +142,6 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
   lock_->translation_manager().DeleteTranslations(
       app_id_, base::BindOnce(&RemoveWebAppJob::OnTranslationDataDeleted,
                               weak_ptr_factory_.GetWeakPtr()));
-
 }
 
 webapps::WebappUninstallSource RemoveWebAppJob::uninstall_source() const {
@@ -148,13 +150,34 @@ webapps::WebappUninstallSource RemoveWebAppJob::uninstall_source() const {
 
 void RemoveWebAppJob::SynchronizeAndUninstallOsHooks() {
   CHECK(!primary_removal_result_.has_value());
-  CHECK(!hooks_uninstalled_);
-  hooks_uninstalled_ = true;
   bool os_integration_removal_success = IsOsIntegrationRemovedForApp(
       lock_->registrar().GetAppCurrentOsIntegrationState(app_id_));
   debug_value_->Set("os_integration_removal_success",
                     os_integration_removal_success);
   errors_ = errors_ || !os_integration_removal_success;
+  GURL start_url = lock_->registrar().GetAppStartUrl(app_id_);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(
+          [](Profile& profile, const webapps::AppId& app_id,
+             const GURL& start_url) {
+            return base::DeletePathRecursively(
+                GetOsIntegrationResourcesDirectoryForApp(profile.GetPath(),
+                                                         app_id, start_url));
+          },
+          std::ref(profile_.get()), app_id_, std::move(start_url)),
+      base::BindOnce(
+          &RemoveWebAppJob::OnOsResourcesCleanedMaybeCompleteUninstall,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void RemoveWebAppJob::OnOsResourcesCleanedMaybeCompleteUninstall(
+    bool os_integration_directory_removed) {
+  CHECK(!hooks_uninstalled_);
+  hooks_uninstalled_ = true;
+  debug_value_->Set("os_integration_directory_removed",
+                    os_integration_directory_removed);
+  errors_ = errors_ || !os_integration_directory_removed;
   MaybeFinishPrimaryRemoval();
 }
 

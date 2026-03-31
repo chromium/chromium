@@ -35,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/fake_environment.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
@@ -577,6 +578,13 @@ bool OsIntegrationTestOverrideImpl::IsShortcutCreated(
 #endif
 }
 
+bool OsIntegrationTestOverrideImpl::HasOsIntegrationResourcesDirectory(
+    Profile* profile,
+    const webapps::AppId& app_id) {
+  return base::PathExists(GetOsIntegrationResourcesDirectoryForApp(
+      profile->GetPath(), app_id, GURL()));
+}
+
 bool OsIntegrationTestOverrideImpl::AreShortcutsMenuRegistered() {
   return !shortcut_menu_apps_registered_.empty();
 }
@@ -905,7 +913,6 @@ OsIntegrationTestOverrideImpl::~OsIntegrationTestOverrideImpl() {
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::NullCallback());
 #endif
 }
-
 
 #if BUILDFLAG(IS_WIN)
 SkColor OsIntegrationTestOverrideImpl::ReadColorFromShortcutMenuIcoFile(

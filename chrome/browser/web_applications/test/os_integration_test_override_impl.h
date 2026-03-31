@@ -20,6 +20,7 @@
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/fake_environment.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -203,6 +204,11 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   bool IsShortcutCreated(Profile* profile,
                          const webapps::AppId& app_id,
                          const std::string& app_name);
+
+  // Verifies that the OS integration resources directory, ending with
+  // `crx_<app_id>` exists on the disk.
+  bool HasOsIntegrationResourcesDirectory(Profile* profile,
+                                          const webapps::AppId& app_id);
 
   // ---------------------------------
   // === Shortcut menu / jump list ===
