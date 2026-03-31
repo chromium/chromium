@@ -178,7 +178,7 @@
             ChromeOS Kiosk App Logs
         </message>
         <message name="IDS_SUPPORT_TOOL_CHROME_UPDATER" desc="Diagnostic information regarding Chrome's updater.">
-            Chrome Updater
+            Updater
         </message>
         <!-- PII type strings -->
         <message name="IDS_SUPPORT_TOOL_ANDROID_APP_INFO" desc="Android App informations on the device. Includes information like app storage paths etc.">
