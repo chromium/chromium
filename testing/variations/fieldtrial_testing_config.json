@@ -11938,6 +11938,21 @@
             ]
         }
     ],
+    "HeliosMapsRichUI": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "GeminiMapsRichUI"
+                    ]
+                }
+            ]
+        }
+    ],
     "HeliosRichAPCExtraction": [
         {
             "platforms": [
