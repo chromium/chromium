@@ -15282,6 +15282,7 @@ from previous Chrome versions.
   <int value="412989824" label="SRIMessageSignatureEnforcement:disabled"/>
   <int value="413062443" label="MessagesForAndroidInfrastructure:disabled"/>
   <int value="413081240" label="enable-new-md-input-view"/>
+  <int value="413095991" label="ImportExportFlags:disabled"/>
   <int value="413528228" label="AutofillFixFillableFieldTypes:disabled"/>
   <int value="413695227" label="NTPSuggestionsStandaloneUI:enabled"/>
   <int value="413701020" label="CollaborationMessaging:enabled"/>
@@ -17391,6 +17392,7 @@ from previous Chrome versions.
   <int value="1133207726" label="MediaInspectorLogging:enabled"/>
   <int value="1133581555" label="AllowPolyDevicePairing:enabled"/>
   <int value="1133635187" label="force-gpu-rasterization"/>
+  <int value="1134928664" label="ImportExportFlags:enabled"/>
   <int value="1134969852" label="NtpPhotosModuleCustomizedOptInTitle:enabled"/>
   <int value="1135562460"
       label="ClearInstanceInfoWhenClosedIntentionally:enabled"/>

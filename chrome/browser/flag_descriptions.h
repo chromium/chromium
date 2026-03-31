@@ -2647,6 +2647,10 @@ inline constexpr char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
 
+inline constexpr char kImportExportFlagsName[] = "Import and export flags";
+inline constexpr char kImportExportFlagsDescription[] =
+    "Enables importing and exporting flags from chrome://flags.";
+
 inline constexpr char kInfobarPrioritizationName[] = "Infobar Prioritization";
 inline constexpr char kInfobarPrioritizationDescription[] =
     "Shows the infobars by priority starting by critical ones by respecting a "

@@ -5558,6 +5558,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "import-export-flags",
+    "owners": [ "//ui/webui/PLATFORM_OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "in-flow-trusted-vault-key-retrieval-android",
     "owners": [ "izuzic@google.com", "anki-team@google.com" ],
     "expiry_milestone": 149

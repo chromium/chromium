@@ -68,6 +68,7 @@
 #include "chrome/browser/ui/tabs/tab_group_home/constants.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/flags/flags_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/unexpire_flags.h"
 #include "chrome/browser/unexpire_flags_gen.h"
@@ -13009,6 +13010,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxItemDecorationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxItemDecoration)},
 #endif
+    {"import-export-flags", flag_descriptions::kImportExportFlagsName,
+     flag_descriptions::kImportExportFlagsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kImportExportFlags)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
