@@ -567,7 +567,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       if (base::FeatureList::IsEnabled(kActorLoginUseChromeSyncScope)) {
         return OAuthConsumer(
             /*name=*/kActorLoginPermissionServiceName,
-            /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope});
+            /*scopes=*/{GaiaConstants::kChromeSyncOAuth2Scope,
+                        GaiaConstants::kAgenticPermissionOAuth2Scope});
       } else {
         return OAuthConsumer(
             /*name=*/kActorLoginPermissionServiceName,
