@@ -427,11 +427,17 @@ bool IsWebUILocationBarEnabled() {
          base::FeatureList::IsEnabled(features::kWebUILocationBar);
 }
 
+bool IsWebUIContentSettingsIconsEnabled() {
+  return base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+         base::FeatureList::IsEnabled(features::kWebUIContentSettingsIcons);
+}
+
 bool IsWebUIToolbarEnabled() {
   return IsWebUIReloadButtonEnabled() || IsWebUISplitTabsButtonEnabled() ||
          IsWebUIHomeButtonEnabled() || IsWebUILocationBarEnabled() ||
          IsWebUIBackForwardButtonEnabled() ||
-         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled();
+         IsWebUIPinnedToolbarActionsEnabled() || IsWebUIAvatarButtonEnabled() ||
+         IsWebUIContentSettingsIconsEnabled();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
