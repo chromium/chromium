@@ -890,6 +890,7 @@ source_set("unit_tests") {
     "//components/history_embeddings/core",
     "//components/ntp_tiles",
     "//components/omnibox/common",
+    "//components/omnibox/composebox:unit_tests",
     "//components/open_from_clipboard:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",

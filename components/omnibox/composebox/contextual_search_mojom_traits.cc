@@ -30,6 +30,13 @@ using UsedContextUploadErrorType =
 // static
 UsedToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::ToMojom(
     omnibox::ToolMode input) {
+  // Guard against new, unknown values from the server cleanly.
+  // This handles extensible enums securely while allowing us to omit a
+  // 'default' case, preserving the compiler's -Wswitch exhaustiveness check
+  // for known values.
+  if (!omnibox::ToolMode_IsValid(static_cast<int>(input))) {
+    return UsedToolMode::kUnspecified;
+  }
   switch (input) {
     case omnibox::ToolMode::TOOL_MODE_UNSPECIFIED:
       return UsedToolMode::kUnspecified;
@@ -60,7 +67,8 @@ UsedToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::ToMojom(
     case omnibox::ToolMode::ToolMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED();
+  return UsedToolMode::kUnspecified;
 }
 
 // static
@@ -96,6 +104,13 @@ omnibox::ToolMode EnumTraits<UsedToolMode, omnibox::ToolMode>::FromMojom(
 // static
 UsedModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::ToMojom(
     omnibox::ModelMode input) {
+  // Guard against new, unknown values from the server cleanly.
+  // This handles extensible enums securely while allowing us to omit a
+  // 'default' case, preserving the compiler's -Wswitch exhaustiveness check
+  // for known values.
+  if (!omnibox::ModelMode_IsValid(static_cast<int>(input))) {
+    return UsedModelMode::kUnspecified;
+  }
   switch (input) {
     case omnibox::ModelMode::MODEL_MODE_UNSPECIFIED:
       return UsedModelMode::kUnspecified;
@@ -114,7 +129,8 @@ UsedModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::ToMojom(
     case omnibox::ModelMode::ModelMode_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED();
+  return UsedModelMode::kUnspecified;
 }
 
 // static
@@ -138,6 +154,13 @@ omnibox::ModelMode EnumTraits<UsedModelMode, omnibox::ModelMode>::FromMojom(
 // static
 UsedInputType EnumTraits<UsedInputType, omnibox::InputType>::ToMojom(
     omnibox::InputType input) {
+  // Guard against new, unknown values from the server cleanly.
+  // This handles extensible enums securely while allowing us to omit a
+  // 'default' case, preserving the compiler's -Wswitch exhaustiveness check
+  // for known values.
+  if (!omnibox::InputType_IsValid(static_cast<int>(input))) {
+    return UsedInputType::kUnspecified;
+  }
   switch (input) {
     case omnibox::InputType::INPUT_TYPE_UNSPECIFIED:
       return UsedInputType::kUnspecified;
@@ -154,7 +177,8 @@ UsedInputType EnumTraits<UsedInputType, omnibox::InputType>::ToMojom(
     case omnibox::InputType::InputType_INT_MAX_SENTINEL_DO_NOT_USE_:
       break;
   }
-  NOTREACHED();
+  DUMP_WILL_BE_NOTREACHED();
+  return UsedInputType::kUnspecified;
 }
 
 // static
@@ -197,7 +221,7 @@ EnumTraits<UsedContextUploadStatus, contextual_search::ContextUploadStatus>::
     case contextual_search::ContextUploadStatus::kUploadReplaced:
       return UsedContextUploadStatus::kUploadReplaced;
   }
-  NOTREACHED();
+  return UsedContextUploadStatus::kNotUploaded;
 }
 
 // static
@@ -249,7 +273,7 @@ EnumTraits<UsedContextUploadErrorType,
     case contextual_search::ContextUploadErrorType::kImageProcessingError:
       return UsedContextUploadErrorType::kImageProcessingError;
   }
-  NOTREACHED();
+  return UsedContextUploadErrorType::kUnknown;
 }
 
 // static

@@ -23,3 +23,9 @@ include_rules = [
   "+third_party/skia",
   "+ui/gfx",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+mojo/public/cpp/test_support",
+  ],
+}

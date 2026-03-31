@@ -60,3 +60,16 @@ mojom("mojo_bindings") {
     },
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "contextual_search_mojom_traits_unittest.cc" ]
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//components/omnibox/common",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//third_party/omnibox_proto",
+  ]
+}
