@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/hid/hid_connection_event.h"
@@ -57,9 +58,9 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
   if (context->IsWindow()) {
     security_origin =
         window->GetFrame()->Top()->GetSecurityContext()->GetSecurityOrigin();
-  } else if (context->IsDedicatedWorkerGlobalScope()) {
-    security_origin = static_cast<WorkerGlobalScope*>(context)
-                          ->top_level_frame_security_origin();
+  } else if (DedicatedWorkerGlobalScope* dedicated_worker =
+                 DynamicTo<DedicatedWorkerGlobalScope>(context)) {
+    security_origin = dedicated_worker->top_level_frame_security_origin();
   } else if (context->IsServiceWorkerGlobalScope()) {
     security_origin = context->GetSecurityOrigin();
   } else {

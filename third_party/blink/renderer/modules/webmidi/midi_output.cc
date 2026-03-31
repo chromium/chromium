@@ -74,9 +74,8 @@ base::TimeTicks GetTimeOrigin(ExecutionContext* context) {
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
     performance = DOMWindowPerformance::performance(*window);
   } else {
-    DCHECK(context->IsWorkerGlobalScope());
     performance = WorkerGlobalScopePerformance::performance(
-        *static_cast<WorkerGlobalScope*>(context));
+        *To<WorkerGlobalScope>(context));
   }
 
   DCHECK(performance);
