@@ -27,6 +27,12 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
+
+namespace payments {
+class AmountExtractionManager;
+class BnplManager;
+}  // namespace payments
+
 // Generates suggestions for all available credit cards based on the
 // `trigger_field_type`, `trigger_field` and `four_digit_combinations_in_dom`.
 // `summary` contains metadata about the returned suggestions.
@@ -42,7 +48,8 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::AmountExtractionManager* amount_extraction_manager,
+    payments::BnplManager* bnpl_manager,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool exclude_virtual_cards);
@@ -64,7 +71,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
  public:
   explicit CreditCardSuggestionGenerator(
       const std::vector<std::string>& four_digit_combinations_in_dom,
-      const payments::AmountExtractionStatus& amount_extraction_status,
+      payments::AmountExtractionManager* amount_extraction_manager,
+      payments::BnplManager* bnpl_manager,
       autofill_metrics::CreditCardFormEventLogger*
           credit_card_form_event_logger,
       const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
@@ -120,7 +128,8 @@ class CreditCardSuggestionGenerator : public SuggestionGenerator {
  private:
   raw_ref<const std::vector<std::string>> four_digit_combinations_in_dom_;
   CreditCardSuggestionSummary summary_;
-  raw_ref<const payments::AmountExtractionStatus> amount_extraction_status_;
+  raw_ptr<payments::AmountExtractionManager> amount_extraction_manager_;
+  raw_ptr<payments::BnplManager> bnpl_manager_;
   raw_ptr<autofill_metrics::CreditCardFormEventLogger>
       credit_card_form_event_logger_;
   AutofillMetrics::PaymentsSigninState signin_state_for_metrics_;

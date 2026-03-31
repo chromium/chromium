@@ -750,6 +750,12 @@ class BrowserAutofillManager : public AutofillManager {
   std::vector<std::string> four_digit_combinations_in_dom_;
 
   std::u16string last_unlocked_credit_card_cvc_;
+
+  // Contains a list of suggestion generators. This must be declared near the
+  // bottom of the class (after members like `bnpl_manager_` and
+  // `amount_extraction_manager_`) to ensure it is destroyed first, as some
+  // generators take class members from BrowserAutofillManager into their
+  // constructors to set as class members.
   std::vector<std::unique_ptr<SuggestionGenerator>> suggestion_generators_;
 
   // Handles general Address on typing feature management, mainly the logic

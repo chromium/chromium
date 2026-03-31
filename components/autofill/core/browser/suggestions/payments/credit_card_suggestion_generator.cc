@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -323,13 +324,14 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillField& autofill_trigger_field,
     AutofillClient& client,
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::AmountExtractionManager* amount_extraction_manager,
+    payments::BnplManager* bnpl_manager,
     autofill_metrics::CreditCardFormEventLogger& credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool exclude_virtual_cards) {
   std::vector<Suggestion> suggestions;
   CreditCardSuggestionGenerator credit_card_suggestion_generator(
-      four_digit_combinations_in_dom, amount_extraction_status,
+      four_digit_combinations_in_dom, amount_extraction_manager, bnpl_manager,
       &credit_card_form_event_logger, signin_state_for_metrics,
       exclude_virtual_cards);
 
@@ -408,13 +410,15 @@ Suggestion GetLoadingSuggestionForPayLaterTab(
 
 CreditCardSuggestionGenerator::CreditCardSuggestionGenerator(
     const std::vector<std::string>& four_digit_combinations_in_dom,
-    const payments::AmountExtractionStatus& amount_extraction_status,
+    payments::AmountExtractionManager* amount_extraction_manager,
+    payments::BnplManager* bnpl_manager,
     autofill_metrics::CreditCardFormEventLogger* credit_card_form_event_logger,
     const AutofillMetrics::PaymentsSigninState signin_state_for_metrics,
     bool exclude_virtual_cards)
     : four_digit_combinations_in_dom_(four_digit_combinations_in_dom),
       summary_(CreditCardSuggestionSummary()),
-      amount_extraction_status_(amount_extraction_status),
+      amount_extraction_manager_(amount_extraction_manager),
+      bnpl_manager_(bnpl_manager),
       credit_card_form_event_logger_(credit_card_form_event_logger),
       signin_state_for_metrics_(signin_state_for_metrics),
       exclude_virtual_cards_(exclude_virtual_cards) {}
@@ -562,6 +566,15 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         all_suggestion_data,
     base::FunctionRef<void(ReturnedSuggestions)> callback) {
   std::vector<Suggestion> suggestions;
+  payments::AmountExtractionStatus amount_extraction_status;
+  if (amount_extraction_manager_) {
+    amount_extraction_status.has_timed_out_for_page_load =
+        amount_extraction_manager_->HasTimedOutForPageLoad();
+    amount_extraction_status.seen_unsupported_currency_for_page_load =
+        amount_extraction_manager_->SeenUnsupportedCurrencyForPageLoad();
+  }
+  // TODO(crbug.com/477689220): Use `bnpl_manager_` to check if there is already
+  // an ongoing flow for BNPL.
   const std::vector<SuggestionData>* entries = base::FindOrNull(
       all_suggestion_data, SuggestionDataSource::kSaveAndFillPromo);
   if (entries) {
@@ -579,7 +592,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
                      // `AutofillField::field_modifiers_` after launching
                      // `kAutofillFixIsAutofilled`.
                      trigger_field.is_autofilled_according_to_renderer(),
-                     display_gpay_logo, amount_extraction_status_.get()));
+                     display_gpay_logo, amount_extraction_status));
   } else if (all_suggestion_data.contains(
                  SuggestionDataSource::kVirtualStandaloneCvc)) {
     // Only trigger GetVirtualCreditCardsForStandaloneCvcField if it's
@@ -596,7 +609,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
 
     suggestions = GenerateVirtualCardStandaloneCvcFieldSuggestionsSync(
         client, trigger_field, virtual_card_guid_to_last_four_map,
-        all_suggestion_data, amount_extraction_status_.get());
+        all_suggestion_data, amount_extraction_status);
   } else {
     std::u16string card_number_field_value = u"";
     // Preprocess the form to extract info about card number field.
@@ -617,7 +630,7 @@ void CreditCardSuggestionGenerator::GenerateSuggestions(
         ShouldShowScanCreditCard(*form_structure, *trigger_autofill_field,
                                  client),
         summary_, is_card_number_field_empty, all_suggestion_data,
-        amount_extraction_status_.get());
+        amount_extraction_status);
   }
 
   bool is_virtual_card_standalone_cvc_field =

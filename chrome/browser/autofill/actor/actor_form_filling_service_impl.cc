@@ -374,7 +374,8 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
   const FormData& form = form_structure->ToFormData();
 
   CreditCardSuggestionGenerator generator(
-      /*four_digit_combinations_in_dom=*/{}, payments::AmountExtractionStatus(),
+      /*four_digit_combinations_in_dom=*/{},
+      /*amount_extraction_manager=*/nullptr, /*bnpl_manager=*/nullptr,
       /*credit_card_form_event_logger=*/nullptr,
       AutofillMetrics::PaymentsSigninState::kUnknown,
       /*exclude_virtual_cards=*/true);

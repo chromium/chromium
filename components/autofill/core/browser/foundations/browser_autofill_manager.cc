@@ -3537,14 +3537,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
               ->IsAutofillPaymentMethodsEnabled()) {
         suggestions = GetSuggestionsForCreditCards(
             form, *form_structure, field, *autofill_field, client(),
-            four_digit_combinations_in_dom_,
-            payments::AmountExtractionStatus{
-                .has_timed_out_for_page_load =
-                    GetAmountExtractionManager().HasTimedOutForPageLoad(),
-                .seen_unsupported_currency_for_page_load =
-                    GetAmountExtractionManager()
-                        .SeenUnsupportedCurrencyForPageLoad()},
-            metrics_->credit_card_form_event_logger,
+            four_digit_combinations_in_dom_, &GetAmountExtractionManager(),
+            GetPaymentsBnplManager(), metrics_->credit_card_form_event_logger,
             metrics_->signin_state_for_metrics,
             /*exclude_virtual_cards=*/false);
       }
@@ -3858,14 +3852,8 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   if (relevant_filling_products.contains(FillingProduct::kCreditCard)) {
     suggestion_generators_.push_back(
         std::make_unique<CreditCardSuggestionGenerator>(
-            four_digit_combinations_in_dom_,
-            payments::AmountExtractionStatus{
-                .has_timed_out_for_page_load =
-                    GetAmountExtractionManager().HasTimedOutForPageLoad(),
-                .seen_unsupported_currency_for_page_load =
-                    GetAmountExtractionManager()
-                        .SeenUnsupportedCurrencyForPageLoad()},
-            &metrics_->credit_card_form_event_logger,
+            four_digit_combinations_in_dom_, &GetAmountExtractionManager(),
+            GetPaymentsBnplManager(), &metrics_->credit_card_form_event_logger,
             metrics_->signin_state_for_metrics,
             /*exclude_virtual_cards=*/false));
   }
