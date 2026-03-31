@@ -810,13 +810,13 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidWindowPopupCustomTabUi =
-            newCachedFlag(ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI, false, true);
+            newCachedFlag(ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI, true);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
-            newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
+            newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, true);
     public static final CachedFlag sAndroidWindowPopupPredictFinalBounds =
-            newCachedFlag(ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS, false, true);
+            newCachedFlag(ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS, true);
     public static final CachedFlag sAndroidWindowPopupResizeAfterSpawn =
-            newCachedFlag(ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN, false, true);
+            newCachedFlag(ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN, true);
     public static final CachedFlag sAndroidXrImmersivePlayer =
             newCachedFlag(ANDROID_XR_IMMERSIVE_PLAYER, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
