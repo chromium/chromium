@@ -31,28 +31,20 @@
 
 namespace blink {
 
-enum PageTransitionEventPersistence {
-  kPageTransitionEventNotPersisted = 0,
-  kPageTransitionEventPersisted = 1
-};
-
 class PageTransitionEventInit;
 
-class PageTransitionEvent : public Event {
+class PageTransitionEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static PageTransitionEvent* Create() {
     return MakeGarbageCollected<PageTransitionEvent>();
   }
-  static PageTransitionEvent* Create(
-      const AtomicString& type,
-      PageTransitionEventPersistence persistence) {
+  static PageTransitionEvent* Create(const AtomicString& type, bool persisted) {
     // Persisted pageshow events must be created through CreatePersistedPageshow
     // (because it needs |navigation_start|).
-    DCHECK(!(persistence == kPageTransitionEventPersisted &&
-             type == event_type_names::kPageshow));
-    return MakeGarbageCollected<PageTransitionEvent>(type, persistence);
+    DCHECK(!(persisted && type == event_type_names::kPageshow));
+    return MakeGarbageCollected<PageTransitionEvent>(type, persisted);
   }
   static PageTransitionEvent* CreatePersistedPageshow(
       base::TimeTicks navigation_start) {
@@ -66,22 +58,20 @@ class PageTransitionEvent : public Event {
   }
 
   PageTransitionEvent();
-  PageTransitionEvent(const AtomicString& type,
-                      PageTransitionEventPersistence persistence);
+  PageTransitionEvent(const AtomicString& type, bool persisted);
   PageTransitionEvent(const AtomicString&, const PageTransitionEventInit*);
   explicit PageTransitionEvent(base::TimeTicks navigation_start);
   ~PageTransitionEvent() override;
 
   const AtomicString& InterfaceName() const override;
 
-  bool persisted() const {
-    return persistence_ == kPageTransitionEventPersisted;
-  }
+  bool persisted() const { return persisted_; }
 
   void Trace(Visitor*) const override;
 
  private:
-  PageTransitionEventPersistence persistence_;
+  // TODO(rakina): change to PageTransitionEventPersistence.
+  bool persisted_;
 };
 
 }  // namespace blink

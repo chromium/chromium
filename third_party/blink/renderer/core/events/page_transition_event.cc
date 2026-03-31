@@ -30,28 +30,25 @@
 
 namespace blink {
 
-PageTransitionEvent::PageTransitionEvent()
-    : persistence_(kPageTransitionEventNotPersisted) {}
+PageTransitionEvent::PageTransitionEvent() : persisted_(false) {}
 
-PageTransitionEvent::PageTransitionEvent(
-    const AtomicString& type,
-    PageTransitionEventPersistence persistence)
-    : Event(type, Bubbles::kYes, Cancelable::kYes), persistence_(persistence) {}
+PageTransitionEvent::PageTransitionEvent(const AtomicString& type,
+                                         bool persisted)
+    : Event(type, Bubbles::kYes, Cancelable::kYes), persisted_(persisted) {}
 
 PageTransitionEvent::PageTransitionEvent(base::TimeTicks navigation_start)
     : Event(event_type_names::kPageshow,
             Bubbles::kYes,
             Cancelable::kYes,
             navigation_start),
-      persistence_(kPageTransitionEventPersisted) {}
+      persisted_(true) {}
 
 PageTransitionEvent::PageTransitionEvent(
     const AtomicString& type,
     const PageTransitionEventInit* initializer)
-    : Event(type, initializer), persistence_(kPageTransitionEventNotPersisted) {
-  if (initializer->hasPersisted() && initializer->persisted()) {
-    persistence_ = kPageTransitionEventPersisted;
-  }
+    : Event(type, initializer), persisted_(false) {
+  if (initializer->hasPersisted())
+    persisted_ = initializer->persisted();
 }
 
 PageTransitionEvent::~PageTransitionEvent() = default;

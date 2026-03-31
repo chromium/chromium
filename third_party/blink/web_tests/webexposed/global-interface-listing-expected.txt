@@ -7408,10 +7408,6 @@ interface OverscrollEvent : Event
     getter overscrollTarget
     getter overscrolling
     method constructor
-interface PageHideEvent : PageTransitionEvent
-    attribute @@toStringTag
-    getter speculations
-    method constructor
 interface PageRevealEvent : Event
     attribute @@toStringTag
     getter viewTransition
@@ -7861,13 +7857,6 @@ interface PreferenceObject : EventTarget
     method constructor
     method requestOverride
     setter onchange
-interface Preload
-    attribute @@toStringTag
-    getter as
-    getter crossorigin
-    getter url
-    getter used
-    method constructor
 interface Presentation
     attribute @@toStringTag
     getter defaultRequest
@@ -10130,10 +10119,6 @@ interface SourceBufferList : EventTarget
     method constructor
     setter onaddsourcebuffer
     setter onremovesourcebuffer
-interface SpeculationData
-    attribute @@toStringTag
-    getter preloads
-    method constructor
 interface SpeechGrammar
     attribute @@toStringTag
     getter src

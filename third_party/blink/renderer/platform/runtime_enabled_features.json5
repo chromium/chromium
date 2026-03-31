@@ -4147,12 +4147,6 @@
       status: "experimental",
     },
     {
-      // Exposes unused speculation data (preloads, prefetches, prerenders)
-      // on the pagehide event.
-      name: "PageHideSpeculations",
-      status: "experimental",
-    },
-    {
       name: "PagePopup",
       // Android does not have support for PagePopup
       status: {"Android": "", "iOS": "", "default": "stable"},
