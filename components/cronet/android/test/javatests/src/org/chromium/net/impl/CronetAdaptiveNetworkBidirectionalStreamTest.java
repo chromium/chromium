@@ -551,8 +551,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
                 mock(ConnectivityManagerWrapper.class);
         Network defaultNetwork = mock(Network.class);
         when(mockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(defaultNetwork);
-        when(mockConnectivityManagerWrapper.getAllNetworks(defaultNetwork))
-                .thenReturn(new Network[] {});
+        when(mockConnectivityManagerWrapper.getAllNetworks(null))
+                .thenReturn(new Network[] {defaultNetwork});
 
         CronetAdaptiveRequestContext adaptiveRequestContext =
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());
@@ -574,8 +574,8 @@ public class CronetAdaptiveNetworkBidirectionalStreamTest {
         when(alternativeNetwork.getNetworkHandle()).thenReturn(alternativeHandle);
 
         when(mockConnectivityManagerWrapper.getDefaultNetwork()).thenReturn(defaultNetwork);
-        when(mockConnectivityManagerWrapper.getAllNetworks(defaultNetwork))
-                .thenReturn(new Network[] {alternativeNetwork});
+        when(mockConnectivityManagerWrapper.getAllNetworks(null))
+                .thenReturn(new Network[] {defaultNetwork, alternativeNetwork});
 
         CronetAdaptiveRequestContext adaptiveRequestContext =
                 new CronetAdaptiveRequestContext(ApplicationProvider.getApplicationContext());

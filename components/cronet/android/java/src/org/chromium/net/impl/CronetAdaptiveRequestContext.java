@@ -188,11 +188,17 @@ class CronetAdaptiveRequestContext {
 
     /** Returns an alternative network handle, or {@code null} if none is available. */
     public Long computeAlternativeNetworkHandle() {
-        Network[] networks =
-                mConnectivityManagerWrapper.getAllNetworks(
-                        mConnectivityManagerWrapper.getDefaultNetwork());
-        if (networks.length > 0) {
-            return networks[0].getNetworkHandle();
+        Network defaultNetwork = mConnectivityManagerWrapper.getDefaultNetwork();
+        // ConnectivityManagerWrapper#getAllNetworks contains logic not to bypass a VPN if one is
+        // set (it will always return only the VPN network in that case). This logic is bypassed
+        // if the VPN is being ignored via the ignoreNetwork parameter. With that in mind, do not
+        // ignore the default network within ConnectivityManagerWrapper#getAllNetworks, but do it
+        // in a post-processing step, in the scenario that the default network is a VPN.
+        Network[] networks = mConnectivityManagerWrapper.getAllNetworks(/* ignoreNetwork= */ null);
+        for (Network network : networks) {
+            if (!network.equals(defaultNetwork)) {
+                return network.getNetworkHandle();
+            }
         }
         return null;
     }
