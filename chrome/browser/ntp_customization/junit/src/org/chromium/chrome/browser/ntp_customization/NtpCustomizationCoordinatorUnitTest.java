@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.HOME_MODULE_PREF_REFACTOR;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
@@ -36,16 +37,24 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
-
-import java.util.function.Supplier;
 
 /** Unit tests for {@link NtpCustomizationCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -57,12 +66,18 @@ public class NtpCustomizationCoordinatorUnitTest {
     @Mock private NtpCustomizationMediator mMediator;
     @Mock private ViewFlipper mViewFlipper;
     @Mock private NtpThemeCoordinator mNtpThemeCoordinator;
+    @Mock private Profile mMockProfile;
+    @Mock private TemplateUrlService mMockTemplateUrlService;
+    @Mock private PrefService mMockPrefService;
+    @Mock private FeedServiceBridge.Natives mMockFeedServiceBridgeJni;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ModuleRegistry mModuleRegistry;
 
     private Context mContext;
     private NtpCustomizationCoordinator mNtpCustomizationCoordinator;
     private View mContentView;
+    private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
+            ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {
@@ -77,11 +92,20 @@ public class NtpCustomizationCoordinatorUnitTest {
                                 /* root= */ null);
         NtpCustomizationUtils.setNtpCustomizationBottomSheetShownToSharedPreferences(
                 /* hasShown= */ false);
+
+        mProfileSupplier.set(mMockProfile);
+        when(mMockProfile.getOriginalProfile()).thenReturn(mMockProfile);
+        TemplateUrlServiceFactory.setInstanceForTesting(mMockTemplateUrlService);
+        UserPrefs.setPrefServiceForTesting(mMockPrefService);
+        FeedFeatures.setFakePrefsForTest(mMockPrefService);
+        FeedServiceBridgeJni.setInstanceForTesting(mMockFeedServiceBridgeJni);
+        when(mMockFeedServiceBridgeJni.isEnabled()).thenReturn(true);
+
         mNtpCustomizationCoordinator =
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         MAIN,
                         mWindowAndroid,
                         mModuleRegistry);
@@ -123,7 +147,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         NTP_CARDS,
                         mWindowAndroid,
                         mModuleRegistry);
@@ -136,7 +160,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         FEED,
                         mWindowAndroid,
                         mModuleRegistry);
@@ -152,7 +176,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         MAIN,
                         mWindowAndroid,
                         mModuleRegistry);
@@ -168,7 +192,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         NTP_CARDS,
                         mWindowAndroid,
                         mModuleRegistry);
@@ -182,7 +206,7 @@ public class NtpCustomizationCoordinatorUnitTest {
                 new NtpCustomizationCoordinator(
                         mContext,
                         mBottomSheetController,
-                        mock(Supplier.class),
+                        mProfileSupplier,
                         FEED,
                         mWindowAndroid,
                         mModuleRegistry);

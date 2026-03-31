@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -259,6 +260,16 @@ public class NewTabPageCoordinatorUnitTest {
         mCoordinator.showHomeSurfaceUiOnNtp(mMostRecentTab);
         verifyIsHomeSurface(/* isHomeSurface= */ true);
         assertNotNull(mCoordinator.getHomeModulesCoordinatorForTesting());
+    }
+
+    @Test
+    public void testInitializeHomeModules_NtpSimplificationEnabledOnDesktop() {
+        mCoordinator.destroy();
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        createCoordinator();
+
+        assertNull(mCoordinator.getHomeModulesCoordinatorForTesting());
     }
 
     @Test

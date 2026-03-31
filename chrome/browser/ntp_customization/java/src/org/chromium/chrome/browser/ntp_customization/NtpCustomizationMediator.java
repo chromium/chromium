@@ -310,10 +310,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     @VisibleForTesting
     List<Integer> buildListContent(Context context) {
         Profile profile = mProfileSupplier.get();
-        if (profile == null) {
-            return List.of(NTP_CARDS);
-        }
-
+        assumeNonNull(profile);
         mProfile = profile.getOriginalProfile();
         maybeRegisterTemplateUrlServiceObserver(mProfile);
 
@@ -321,7 +318,9 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
         if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
             content.add(MVT);
         }
-        content.add(NTP_CARDS);
+        if (!NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop()) {
+            content.add(NTP_CARDS);
+        }
         if (FeedFeatures.isFeedEnabled(mProfile)) {
             content.add(FEED);
         }

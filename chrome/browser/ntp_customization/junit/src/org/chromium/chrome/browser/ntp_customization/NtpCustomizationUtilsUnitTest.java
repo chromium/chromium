@@ -71,6 +71,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -1484,5 +1485,24 @@ public class NtpCustomizationUtilsUnitTest {
                 4,
                 NtpCustomizationUtils.calculateInSampleSize(
                         options, /* reqWidth= */ 500, /* reqHeight= */ 500));
+    }
+
+    @Test
+    public void testIsNtpSimplificationEnabledOnDesktop_enabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertTrue(NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop());
+
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.NTP_SIMPLIFICATION)
+    public void testIsNtpSimplificationEnabledOnDesktop_disabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        assertFalse(NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop());
+
+        DeviceInfo.setIsDesktopForTesting(false);
+        assertFalse(NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop());
     }
 }

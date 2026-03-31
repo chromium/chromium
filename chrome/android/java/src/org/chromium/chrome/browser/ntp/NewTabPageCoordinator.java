@@ -1126,10 +1126,13 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             SetupListManager.getInstance().maybePrimeCompletionStatus(profile.getOriginalProfile());
         }
 
-        if (mHomeModulesCoordinator == null) {
+        if (!NtpCustomizationUtils.isNtpSimplificationEnabledOnDesktop()
+                && mHomeModulesCoordinator == null) {
             initializeHomeModulesImpl();
         }
-        mHomeModulesCoordinator.show(this::onHomeModulesShown);
+        if (mHomeModulesCoordinator != null) {
+            mHomeModulesCoordinator.show(this::onHomeModulesShown);
+        }
     }
 
     /**

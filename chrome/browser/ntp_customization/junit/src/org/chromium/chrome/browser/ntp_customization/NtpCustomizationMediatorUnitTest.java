@@ -529,6 +529,14 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
+    public void testBuildListContent_ExcludesNtpCardsOnAndroidDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+
+        List<Integer> listContent = mMediator.buildListContent(mContext);
+        assertFalse(listContent.contains(NTP_CARDS));
+    }
+
+    @Test
     @Features.DisableFeatures({ChromeFeatureList.NTP_SIMPLIFICATION})
     public void testBuildListContent_IncludesFeedOnAndroidDesktopWhenNtpSimplificationDisabled() {
         DeviceInfo.setIsDesktopForTesting(true);
