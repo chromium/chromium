@@ -628,7 +628,10 @@ void RootView::OnMouseReleased(const ui::MouseEvent& event) {
                                   mouse_pressed_handler_.get());
     // We allow the view to delete us from the event dispatch callback. As such,
     // configure state such that we're done first, then call View.
-    View* mouse_pressed_handler = mouse_pressed_handler_;
+    // TODO(crbug.com/497948894): according to the suggestion, use `ViewTracker`
+    // instead.
+    raw_ptr<View, DisableDanglingPtrDetection> mouse_pressed_handler =
+        mouse_pressed_handler_.get();
 
     // During mouse event handling, `SetMouseAndGestureHandler()` may be called
     // to set the gesture handler. Therefore we should reset the gesture handler
