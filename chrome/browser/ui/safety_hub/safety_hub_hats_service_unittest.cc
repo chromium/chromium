@@ -284,7 +284,13 @@ TEST_F(SafetyHubHatsServiceTest, GetOverallState_UnusedSitePermissions) {
             safety_hub::SafetyHubCardState::kWarning);
 }
 
-TEST_F(SafetyHubHatsServiceTest, GetOverallState_Extension) {
+// TODO(crbug.com/498029099): Flaky on Linux TSan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_GetOverallState_Extension DISABLED_GetOverallState_Extension
+#else
+#define MAYBE_GetOverallState_Extension GetOverallState_Extension
+#endif
+TEST_F(SafetyHubHatsServiceTest, MAYBE_GetOverallState_Extension) {
   // Create mock notifications that will require a review.
   extensions::CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
       profile(),
