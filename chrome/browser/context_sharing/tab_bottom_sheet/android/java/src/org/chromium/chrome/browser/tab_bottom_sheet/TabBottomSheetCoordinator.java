@@ -41,6 +41,7 @@ public class TabBottomSheetCoordinator {
     private final CoBrowseViews mCoBrowseViews;
     private final TabBottomSheetMediator mMediator;
 
+    private @Nullable Runnable mOnClose;
     private @Nullable TabBottomSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
     private @Nullable PropertyModelChangeProcessor mViewBinder;
@@ -56,14 +57,17 @@ public class TabBottomSheetCoordinator {
      *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
      *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
      *     subsequent showings.
+     * @param onClose The callback to be invoked when the bottom sheet is closed.
      */
     TabBottomSheetCoordinator(
             Context context,
             BottomSheetController bottomSheetController,
-            CoBrowseViews coBrowseViews) {
+            CoBrowseViews coBrowseViews,
+            @Nullable Runnable onClose) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
         mCoBrowseViews = coBrowseViews;
+        mOnClose = onClose;
 
         mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
 
@@ -138,8 +142,13 @@ public class TabBottomSheetCoordinator {
     void destroy() {
         if (mIsSheetCurrentlyManagedByController && mSheetContent != null) {
             mBottomSheetController.hideContent(mSheetContent, false, StateChangeReason.NONE);
+        } else {
+            // Inside else block since this will be called when the bottom sheet is hidden.
+            cleanupSheetResources();
         }
-        cleanupSheetResources();
+        if (mOnClose != null) {
+            mOnClose = null;
+        }
     }
 
     private void cleanupSheetResources() {
@@ -166,9 +175,13 @@ public class TabBottomSheetCoordinator {
         return new EmptyBottomSheetObserver() {
             @Override
             public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
+                if (mSheetContent == null) return;
                 mMediator.onSheetStateChanged(state);
                 if (state == SheetState.HIDDEN) {
                     cleanupSheetResources();
+                    if (mOnClose != null) {
+                        mOnClose.run();
+                    }
                 }
             }
 

@@ -11,6 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -39,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -68,7 +70,8 @@ public class TabBottomSheetCoordinatorTest {
         when(mCoBrowseViews.getView()).thenReturn(mView);
 
         mCoordinator =
-                new TabBottomSheetCoordinator(mContext, mMockBottomSheetController, mCoBrowseViews);
+                new TabBottomSheetCoordinator(
+                        mContext, mMockBottomSheetController, mCoBrowseViews, null);
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
 
@@ -94,6 +97,14 @@ public class TabBottomSheetCoordinatorTest {
         assertNotNull(
                 "Coordinator's observer should be set after successful show.", coordinatorObserver);
         verify(mMockBottomSheetController).addObserver(eq(coordinatorObserver));
+        doAnswer(
+                        invocation -> {
+                            coordinatorObserver.onSheetStateChanged(
+                                    SheetState.HIDDEN, StateChangeReason.NONE);
+                            return null;
+                        })
+                .when(mMockBottomSheetController)
+                .hideContent(any(), anyBoolean(), anyInt());
         return coordinatorObserver;
     }
 
