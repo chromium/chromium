@@ -805,3 +805,64 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   ASSERT_TRUE(label);
   EXPECT_EQ(*label, "Direct Label");
 }
+
+// Test the extraction of label elements and their associated control IDs.
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtraction_LabelForDomNodeId) {
+  const std::string html = "<html><body><label for=\"myInput\"><span>My "
+                           "<strong>Label</strong></span></label><input "
+                           "id=\"myInput\" type=\"text\"></body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::test::TestFuture<base::Value> future;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,  // Required to trigger
+                                                     // label control resolution
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::Value)> callback,
+             const base::Value* value) {
+            std::move(callback).Run(value ? value->Clone() : base::Value());
+          },
+          future.GetCallback()));
+
+  base::Value result_value = future.Take();
+  ASSERT_TRUE(result_value.is_dict());
+
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_EQ(children->size(), 2u);
+
+  const base::DictValue* label_node = &(*children)[0].GetDict();
+  const base::DictValue* input_node = &(*children)[1].GetDict();
+
+  std::optional<double> label_attribute_type =
+      label_node->FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_EQ(label_attribute_type,
+            static_cast<double>(
+                optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER));
+
+  std::optional<double> input_attribute_type =
+      input_node->FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_EQ(input_attribute_type,
+            static_cast<double>(
+                optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL));
+
+  std::optional<double> input_dom_node_id =
+      input_node->FindDoubleByDottedPath("contentAttributes.domNodeId");
+  ASSERT_TRUE(input_dom_node_id.has_value());
+
+  std::optional<double> label_for_dom_node_id =
+      label_node->FindDoubleByDottedPath("contentAttributes.labelForDomNodeId");
+  ASSERT_TRUE(label_for_dom_node_id.has_value());
+  EXPECT_EQ(*label_for_dom_node_id, *input_dom_node_id);
+}

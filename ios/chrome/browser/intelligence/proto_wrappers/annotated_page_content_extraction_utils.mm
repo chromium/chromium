@@ -55,6 +55,7 @@ constexpr char kTitleKey[] = "title";
 constexpr char kContainsPaidContentKey[] = "containsPaidContent";
 constexpr char kChildrenNodesKey[] = "childrenNodes";
 constexpr char kDomNodeIdKey[] = "domNodeId";
+constexpr char kLabelForDomNodeIdKey[] = "labelForDomNodeId";
 constexpr char kFrameInteractionInfoKey[] = "frameInteractionInfo";
 constexpr char kSelectionKey[] = "selection";
 constexpr char kStartDomNodeIdKey[] = "startDomNodeId";
@@ -580,6 +581,12 @@ void PopulateAPCNodeFromContentTree(
           ReadJsNumber(*content_attributes, kDomNodeIdKey)) {
     destination_node->mutable_content_attributes()
         ->set_common_ancestor_dom_node_id(*dom_node_id);
+  }
+
+  if (std::optional<int> label_for_id =
+          ReadJsNumber(*content_attributes, kLabelForDomNodeIdKey)) {
+    destination_node->mutable_content_attributes()->set_label_for_dom_node_id(
+        *label_for_id);
   }
 
   // Populate the attribute type.

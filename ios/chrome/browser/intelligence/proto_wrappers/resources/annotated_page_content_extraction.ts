@@ -66,6 +66,7 @@ const TAG_LI = 'LI';
 const TAG_DT = 'DT';
 const TAG_DD = 'DD';
 const TAG_FIGURE = 'FIGURE';
+const TAG_LABEL = 'LABEL';
 
 // Tags with annotated role.
 const TAG_HEADER = 'HEADER';
@@ -520,7 +521,14 @@ function getFormData(form: HTMLFormElement): PageContentFormData {
  */
 function isGenericContainer(
     element: HTMLElement, interactiveNodeIds: InteractiveNodeIds,
-    interactionInfo: PageContentNodeInteractionInfo|undefined): boolean {
+    interactionInfo: PageContentNodeInteractionInfo|undefined,
+    labelForDOMNodeID?: number): boolean {
+  // If the element is a label with a valid associated node ID, it is
+  // considered a generic container.
+  if (labelForDOMNodeID !== undefined) {
+    return true;
+  }
+
   // Check if the element is an interactive node.
   const nodeId = getNodeId(element);
   const tagName = getStandardTagName(element);
@@ -557,14 +565,9 @@ function isGenericContainer(
     return true;
   }
 
-  // TODO(crbug.com/480945289): Add searches for Labels (when enabled).
-
   if (isRenderedInTopLayer(element)) {
     return true;
   }
-
-  // TODO(crbug.com/480945289): Add searches for InteractionInfo (when enabled),
-  // and Labels (when enabled).
 
   // Scrollable elements act as containers because they create a new
   // visual context for their content, handling overflow.
@@ -1879,6 +1882,13 @@ function getContentForElementNode(
     interactionInfo: PageContentNodeInteractionInfo|undefined,
     actionableMode: boolean, interactiveNodeIds: InteractiveNodeIds,
     paidContentContext: PaidContentExtractionContext): PageContentNode|null {
+
+  let labelForDOMNodeID: number | undefined = undefined;
+  if (actionableMode && getStandardTagName(domNode) === TAG_LABEL) {
+    labelForDOMNodeID = getAssociatedControlDOMNodeID(
+        domNode as HTMLLabelElement, interactiveNodeIds);
+  }
+
   let contentNode: PageContentNode|null = null;
 
   // 1. Try to get basic content for non-generic elements.
@@ -1887,7 +1897,8 @@ function getContentForElementNode(
 
   // 2. Fallback: Generic Container.
   if (!contentNode &&
-      isGenericContainer(domNode, interactiveNodeIds, interactionInfo)) {
+      isGenericContainer(
+          domNode, interactiveNodeIds, interactionInfo, labelForDOMNodeID)) {
     contentNode = {
       childrenNodes: [],
       contentAttributes: {
@@ -1907,6 +1918,10 @@ function getContentForElementNode(
     }
     if (interactionInfo) {
       contentNode.contentAttributes.nodeInteractionInfo = interactionInfo;
+    }
+
+    if (labelForDOMNodeID !== undefined) {
+      contentNode.contentAttributes.labelForDomNodeId = labelForDOMNodeID;
     }
 
     const ariaLabel = getAriaLabel(domNode);
@@ -2181,6 +2196,32 @@ function getInteractiveNodeIds(document: Document): InteractiveNodeIds {
  */
 function getStandardTagName(element: Element): string {
   return element.tagName.toUpperCase();
+}
+
+/**
+ * Returns the DOM node ID of the control element associated with a
+ * given <label>.
+ * Note: The returned node ID is the ID of the node that the
+ * label is 'for', not the ID of the label element itself.
+ *
+ * @param labelElement The <label> element to inspect.
+ * @param interactiveNodeIds The set of interactive node IDs to update.
+ * @return The DOM node ID of the associated control, or undefined if
+ *         none exists.
+ */
+function getAssociatedControlDOMNodeID(
+    labelElement: HTMLLabelElement,
+    interactiveNodeIds: InteractiveNodeIds,
+): number | undefined {
+  const associatedControl = labelElement.control;
+  if (associatedControl) {
+    const controlId = getOrCreateNodeId(associatedControl);
+    if (controlId !== null) {
+      interactiveNodeIds.add(controlId);
+      return controlId;
+    }
+  }
+  return undefined;
 }
 
 // TODO(crbug.com/485796293): Wrap this in a class.
