@@ -7,11 +7,7 @@ import("//build/config/chrome_build.gni")
 # This is header-only because the sources have too many deependencies in
 # chrome/browser.
 source_set("password_factory_headers") {
-  sources = [
-    "//chrome/browser/password_manager/account_password_store_factory.h",
-    "//chrome/browser/password_manager/password_manager_settings_service_factory.h",
-    "//chrome/browser/password_manager/profile_password_store_factory.h",
-  ]
+  sources = [ "//chrome/browser/password_manager/password_manager_settings_service_factory.h" ]
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
@@ -24,6 +20,8 @@ source_set("password_factory_headers") {
 
 source_set("factories") {
   sources = [
+    "account_password_store_factory.cc",
+    "account_password_store_factory.h",
     "credentials_cleaner_runner_factory.cc",
     "credentials_cleaner_runner_factory.h",
     "field_info_manager_factory.cc",
@@ -32,6 +30,10 @@ source_set("factories") {
     "password_reuse_manager_factory.h",
     "password_sender_service_factory.cc",
     "password_sender_service_factory.h",
+    "password_store_utils.cc",
+    "password_store_utils.h",
+    "profile_password_store_factory.cc",
+    "profile_password_store_factory.h",
   ]
   if (!is_android) {
     sources += [
@@ -45,6 +47,7 @@ source_set("factories") {
   public_deps = [ ":password_factory_headers" ]
 
   deps = [
+    ":backend_factory",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/affiliations",
@@ -59,6 +62,9 @@ source_set("factories") {
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+    "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/sharing",
@@ -78,7 +84,7 @@ source_set("factories") {
 }
 
 source_set("backend_factory") {
-  visibility = [ "//chrome/browser/password_manager" ]
+  visibility = [ "//chrome/browser/password_manager/factories" ]
   sources = [
     "password_store_backend_factory.cc",
     "password_store_backend_factory.h",

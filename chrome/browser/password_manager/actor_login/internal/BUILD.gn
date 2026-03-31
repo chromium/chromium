@@ -34,7 +34,7 @@ source_set("internal") {
     "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
-    "//chrome/browser/password_manager/factories:password_factory_headers",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/webid",

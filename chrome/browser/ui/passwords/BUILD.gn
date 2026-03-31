@@ -186,7 +186,7 @@ source_set("test_support") {
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",
       "//chrome/browser/optimization_guide",
-      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
       "//chrome/browser/sync",

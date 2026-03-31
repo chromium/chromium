@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/account_password_store_factory.h"
+#include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 
 #include <memory>
 #include <utility>
@@ -17,27 +17,25 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/factories/credentials_cleaner_runner_factory.h"
 #include "chrome/browser/password_manager/factories/password_store_backend_factory.h"
-#include "chrome/browser/password_manager/password_store_utils.h"
+#include "chrome/browser/password_manager/factories/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/refcounted_profile_keyed_service_factory.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync/base/data_type_histogram.h"
-#include "components/sync/base/pref_names.h"
 #include "content/public/browser/storage_partition.h"
-
-namespace {
 
 using password_manager::AffiliatedMatchHelper;
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
+
+namespace {
 
 network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
   return g_browser_process->profile_manager()->IsValidProfile(profile)
@@ -45,50 +43,20 @@ network::mojom::NetworkContext* GetNetworkContext(Profile* profile) {
              : nullptr;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-void MaybeClearStatsTableForSyncToSigninMigration(
-    scoped_refptr<PasswordStoreInterface> store,
-    PrefService* prefs) {
-  if (!prefs->GetBoolean(
-          syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore)) {
-    return;
-  }
-  syncer::RecordSyncToSigninMigrationStatsTableCleanupStep(
-      syncer::SyncToSigninMigrationStatsTableCleanupStep::kCleanupStarted);
-  base::OnceClosure callback = base::BindOnce(
-      [](PrefService* prefs) {
-        prefs->ClearPref(
-            syncer::prefs::kCleanUpStatsTableFromAccountPasswordStore);
-        syncer::RecordSyncToSigninMigrationStatsTableCleanupStep(
-            syncer::SyncToSigninMigrationStatsTableCleanupStep::
-                kCleanupFinishedAndPrefCleared);
-      },
-      prefs);
-  if (auto* stats_store = store->GetSmartBubbleStatsStore()) {
-    stats_store->RemoveStatisticsByOriginAndTime(
-        base::NullCallback(), base::Time::Min(), base::Time::Max(),
-        std::move(callback));
-  } else {
-    // Mark the cleanup as finished if there's no stats store.
-    std::move(callback).Run();
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   DCHECK(!profile->IsOffTheRecord());
   scoped_refptr<PasswordStore> ps =
       new password_manager::PasswordStore(CreatePasswordStoreBackend(
-          password_manager::kAccountStore, profile->GetPath(),
+          password_manager::kProfileStore, profile->GetPath(),
           profile->GetPrefs(), g_browser_process->os_crypt_async()));
   affiliations::AffiliationService* affiliation_service =
       AffiliationServiceFactory::GetForProfile(profile);
   ps->Init(std::make_unique<AffiliatedMatchHelper>(affiliation_service));
   password_manager::SanitizeAndMigrateCredentials(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), ps,
-      password_manager::kAccountStore, profile->GetPrefs(), base::Seconds(60),
+      password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
       base::BindRepeating(&GetNetworkContext, profile));
 #if !BUILDFLAG(IS_ANDROID)
   // Android gets logins with affiliations directly from the backend.
@@ -96,9 +64,8 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
       std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(ps.get());
   affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
-  // Clear the stats table from the account store, if marked.
-  MaybeClearStatsTableForSyncToSigninMigration(ps, profile->GetPrefs());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
+  DelayReportingPasswordStoreMetrics(profile);
   return ps;
 }
 
@@ -106,7 +73,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
 
 // static
 scoped_refptr<PasswordStoreInterface>
-AccountPasswordStoreFactory::GetForProfile(Profile* profile,
+ProfilePasswordStoreFactory::GetForProfile(Profile* profile,
                                            ServiceAccessType access_type) {
   // |profile| gets always redirected to a non-Incognito profile below, so
   // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
@@ -115,26 +82,25 @@ AccountPasswordStoreFactory::GetForProfile(Profile* profile,
       profile->IsOffTheRecord()) {
     return nullptr;
   }
-  return base::WrapRefCounted(
-      static_cast<password_manager::PasswordStoreInterface*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true).get()));
+  return base::WrapRefCounted(static_cast<PasswordStoreInterface*>(
+      GetInstance()->GetServiceForBrowserContext(profile, true).get()));
 }
 
 // static
-bool AccountPasswordStoreFactory::HasStore(Profile* profile) {
+bool ProfilePasswordStoreFactory::HasStore(Profile* profile) {
   return GetInstance()->GetServiceForBrowserContext(
              profile, /*create=*/false) != nullptr;
 }
 
 // static
-AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<AccountPasswordStoreFactory> instance;
+ProfilePasswordStoreFactory* ProfilePasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<ProfilePasswordStoreFactory> instance;
   return instance.get();
 }
 
-AccountPasswordStoreFactory::AccountPasswordStoreFactory()
+ProfilePasswordStoreFactory::ProfilePasswordStoreFactory()
     : RefcountedProfileKeyedServiceFactory(
-          "AccountPasswordStore",
+          "ProfilePasswordStore",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kRedirectedToOriginal)
               .WithAshInternals(ProfileSelection::kNone)
@@ -143,19 +109,19 @@ AccountPasswordStoreFactory::AccountPasswordStoreFactory()
   DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
 }
 
-AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
+ProfilePasswordStoreFactory::~ProfilePasswordStoreFactory() = default;
 
-AccountPasswordStoreFactory::TestingFactory
-AccountPasswordStoreFactory::GetDefaultFactoryForTesting() {
+ProfilePasswordStoreFactory::TestingFactory
+ProfilePasswordStoreFactory::GetDefaultFactoryForTesting() {
   return base::BindRepeating(&BuildPasswordStore);
 }
 
 scoped_refptr<RefcountedKeyedService>
-AccountPasswordStoreFactory::BuildServiceInstanceFor(
+ProfilePasswordStoreFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return BuildPasswordStore(context);
 }
 
-bool AccountPasswordStoreFactory::ServiceIsNULLWhileTesting() const {
+bool ProfilePasswordStoreFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

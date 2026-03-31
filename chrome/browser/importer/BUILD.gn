@@ -52,7 +52,7 @@ source_set("impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/favicon",
     "//chrome/browser/history",
-    "//chrome/browser/password_manager/factories:password_factory_headers",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chrome/browser/webdata_services",

@@ -4,8 +4,8 @@
 
 // This file contains utilities related to password store.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_FACTORIES_PASSWORD_STORE_UTILS_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_FACTORIES_PASSWORD_STORE_UTILS_H_
 
 #include "base/memory/scoped_refptr.h"
 
@@ -16,4 +16,4 @@ class Profile;
 // of Chrome startup.
 void DelayReportingPasswordStoreMetrics(Profile* profile);
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_STORE_UTILS_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_FACTORIES_PASSWORD_STORE_UTILS_H_

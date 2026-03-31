@@ -2010,7 +2010,7 @@ if (is_android) {
       "//chrome/browser/optimization_guide",
       "//chrome/browser/page_content_annotations:extraction_service",
       "//chrome/browser/password_manager/android:test_support",
-      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/payments:browser_tests",
       "//chrome/browser/policy:browser_tests",
       "//chrome/browser/policy:test_support",

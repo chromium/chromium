@@ -5,10 +5,7 @@
 import("//build/config/chrome_build.gni")
 
 group("password_manager") {
-  public_deps = [
-    "//chrome/browser/password_manager/factories",
-    "//chrome/browser/password_manager/factories:backend_factory",
-  ]
+  public_deps = [ "//chrome/browser/password_manager/factories" ]
 }
 
 if (!is_android) {

@@ -19,7 +19,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
