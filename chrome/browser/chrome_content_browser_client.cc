@@ -637,6 +637,7 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
+#include "extensions/common/user_script.h"
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
@@ -661,7 +662,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "extensions/browser/api/web_request/web_request_proxying_webtransport.h"
-#include "extensions/common/user_script.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -6346,7 +6346,8 @@ void AddChromeSchemeFactories(
     content::WebContents* web_contents,
     const extensions::Extension* extension,
     ChromeContentBrowserClient::NonNetworkURLLoaderFactoryMap* factories) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Android does not support instant.
+#if !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   InstantService* instant_service =
@@ -6364,7 +6365,7 @@ void AddChromeSchemeFactories(
                            frame_host, chrome::kChromeSearchScheme,
                            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   extensions::ExtensionWebContentsObserver* web_observer =
       extensions::ExtensionWebContentsObserver::GetForWebContents(web_contents);
@@ -6816,7 +6817,7 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
     content::BrowserContext* browser_context,
     const GURL& url,
     const std::string& mime_type) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Special-case user scripts to get downloaded instead of viewed.
   if (extensions::UserScript::IsURLUserScript(url, mime_type)) {
     return true;
@@ -6840,7 +6841,7 @@ bool ChromeContentBrowserClient::ShouldForceDownloadResource(
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   return false;
 }
 
