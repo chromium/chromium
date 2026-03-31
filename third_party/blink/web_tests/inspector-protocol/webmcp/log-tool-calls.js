@@ -4,11 +4,32 @@
       <form id="my_form" toolname="declarative_tool" tooldescription="A declarative WebMCP tool" toolautosubmit>
         <input type="text" name="text">
       </form>
+      <form id="array_form" toolname="declarative_array_tool" tooldescription="Returns an array" toolautosubmit>
+        <input type="text" name="text">
+      </form>
+      <form id="string_form" toolname="declarative_string_tool" tooldescription="Returns a string" toolautosubmit>
+        <input type="text" name="text">
+      </form>
+      <form id="number_form" toolname="declarative_number_tool" tooldescription="Returns a number" toolautosubmit>
+        <input type="text" name="text">
+      </form>
 
       <script>
         my_form.onsubmit = event => {
           event.preventDefault();
           event.respondWith({declarative: "success"});
+        };
+        array_form.onsubmit = event => {
+          event.preventDefault();
+          event.respondWith(["array", "result"]);
+        };
+        string_form.onsubmit = event => {
+          event.preventDefault();
+          event.respondWith("string result");
+        };
+        number_form.onsubmit = event => {
+          event.preventDefault();
+          event.respondWith(42);
         };
         const inputSchema = {
           type: "object",
@@ -54,6 +75,21 @@
           await navigator.modelContextTesting.executeTool("declarative_tool", JSON.stringify({text: "hello"}));
         };
 
+        window.executeDeclarativeArray = async function() {
+          const result = await navigator.modelContextTesting.executeTool("declarative_array_tool", JSON.stringify({text: "hello"}));
+          return JSON.stringify(result);
+        };
+
+        window.executeDeclarativeString = async function() {
+          const result = await navigator.modelContextTesting.executeTool("declarative_string_tool", JSON.stringify({text: "hello"}));
+          return JSON.stringify(result);
+        };
+
+        window.executeDeclarativeNumber = async function() {
+          const result = await navigator.modelContextTesting.executeTool("declarative_number_tool", JSON.stringify({text: "hello"}));
+          return JSON.stringify(result);
+        };
+
         window.executeFailingJS = async function() {
           try {
             await navigator.modelContextTesting.executeTool("failing_js_tool", JSON.stringify({text: "hello"}));
@@ -93,6 +129,27 @@
   let responded2 = dp.WebMCP.onceToolResponded();
   await dp.Runtime.evaluate({expression: 'window.executeDeclarative()', awaitPromise: true});
   await responded2;
+
+  testRunner.log('Executing declarative array tool...');
+  let respondedArray = dp.WebMCP.onceToolResponded();
+  let arrayResult = await dp.Runtime.evaluate({expression: 'window.executeDeclarativeArray()', awaitPromise: true});
+  testRunner.log('Array Result from executeTool:');
+  testRunner.log(arrayResult);
+  await respondedArray;
+
+  testRunner.log('Executing declarative string tool...');
+  let respondedString = dp.WebMCP.onceToolResponded();
+  let stringResult = await dp.Runtime.evaluate({expression: 'window.executeDeclarativeString()', awaitPromise: true});
+  testRunner.log('String Result from executeTool:');
+  testRunner.log(stringResult);
+  await respondedString;
+
+  testRunner.log('Executing declarative number tool...');
+  let respondedNumber = dp.WebMCP.onceToolResponded();
+  let numberResult = await dp.Runtime.evaluate({expression: 'window.executeDeclarativeNumber()', awaitPromise: true});
+  testRunner.log('Number Result from executeTool:');
+  testRunner.log(numberResult);
+  await respondedNumber;
 
   testRunner.log('Executing failing JS tool...');
   let responded3 = dp.WebMCP.onceToolResponded();

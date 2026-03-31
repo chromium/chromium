@@ -28,47 +28,119 @@ Responded {
     }
     status : Success
 }
-Executing failing JS tool...
+Executing declarative array tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
     invocationId : <string 2>
+    toolName : declarative_array_tool
+}
+Responded {
+    invocationId : <string 2>
+    output : [
+        [0] : array
+        [1] : result
+    ]
+    status : Success
+}
+Array Result from executeTool:
+{
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : "[\"array\",\"result\"]"
+        }
+    }
+    sessionId : <string>
+}
+Executing declarative string tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 3>
+    toolName : declarative_string_tool
+}
+Responded {
+    invocationId : <string 3>
+    output : string result
+    status : Success
+}
+String Result from executeTool:
+{
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : "string result"
+        }
+    }
+    sessionId : <string>
+}
+Executing declarative number tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 4>
+    toolName : declarative_number_tool
+}
+Responded {
+    invocationId : <string 4>
+    output : 42
+    status : Success
+}
+Number Result from executeTool:
+{
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : "42"
+        }
+    }
+    sessionId : <string>
+}
+Executing failing JS tool...
+Invoked {
+    frameId : <string>
+    input : {"text":"hello"}
+    invocationId : <string 5>
     toolName : failing_js_tool
 }
 Responded {
     errorText :
     exception : {
         className : Error
-        description : Error: JS Error     at failing_js (<anonymous>:21:48)     at window.executeFailingJS (<anonymous>:52:49)     at <anonymous>:1:8
+        description : Error: JS Error     at failing_js (<anonymous>:33:48)     at window.executeFailingJS (<anonymous>:79:49)     at <anonymous>:1:8
         objectId : <string>
         subtype : error
         type : object
     }
-    invocationId : <string 2>
+    invocationId : <string 5>
     status : Error
 }
 Executing failing ModelContext tool (invalid JSON)...
 Invoked {
     frameId : <string>
     input : invalid json
-    invocationId : <string 3>
+    invocationId : <string 6>
     toolName : imperative_tool
 }
 Responded {
     errorText : Failed to parse input arguments
-    invocationId : <string 3>
+    invocationId : <string 6>
     status : Error
 }
 Executing cancelled tool...
 Invoked {
     frameId : <string>
     input : {"text":"hello"}
-    invocationId : <string 4>
+    invocationId : <string 7>
     toolName : abortable_tool
 }
 Responded {
     errorText :
-    invocationId : <string 4>
+    invocationId : <string 7>
     status : Canceled
 }
 

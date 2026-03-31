@@ -80,7 +80,7 @@ experimental domain WebMCP
       # Status of the invocation.
       InvocationStatus status
       # Output or error delivered as delivered to the agent. Missing if `status` is anything other than Success.
-      optional object output
+      optional any output
       # Error text for protocol users.
       optional string errorText
       # The exception object, if the javascript tool threw an error>

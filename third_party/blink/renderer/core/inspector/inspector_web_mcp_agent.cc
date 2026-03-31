@@ -50,7 +50,7 @@ ModelContext* InspectorWebMCPAgent::GetModelContext(LocalFrame* frame) {
 }
 
 namespace {
-std::unique_ptr<protocol::DictionaryValue> ParseJSON(const String& value) {
+std::unique_ptr<protocol::Value> ParseJSON(const String& value) {
   if (!value) {
     return protocol::DictionaryValue::create();
   }
@@ -62,12 +62,11 @@ std::unique_ptr<protocol::DictionaryValue> ParseJSON(const String& value) {
     crdtp::json::ConvertJSONToCBOR(crdtp::span<uint16_t>(value.SpanUint16()),
                                    &cbor);
   }
-  auto parsed_schema = protocol::DictionaryValue::cast(
-      protocol::DictionaryValue::parseBinary(cbor.data(), cbor.size()));
-  if (parsed_schema) {
-    return parsed_schema;
+  auto parsed_value = protocol::Value::parseBinary(cbor.data(), cbor.size());
+  if (parsed_value) {
+    return parsed_value;
   }
-  return protocol::DictionaryValue::create();
+  return protocol::StringValue::create(value);
 }
 }  // namespace
 
@@ -82,7 +81,10 @@ std::unique_ptr<protocol::WebMCP::Tool> InspectorWebMCPAgent::BuildProtocolTool(
                   .setFrameId(IdentifiersFactory::FrameId(frame))
                   .build();
   if (auto input_schema = tool_data.ScriptTool().input_schema) {
-    tool->setInputSchema(ParseJSON(input_schema));
+    if (auto parsed =
+            protocol::DictionaryValue::cast(ParseJSON(input_schema))) {
+      tool->setInputSchema(std::move(parsed));
+    }
   }
   if (auto* node = tool_data.BackingFormElement()) {
     tool->setBackendNodeId(IdentifiersFactory::IntIdForNode(node));
