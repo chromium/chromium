@@ -94,8 +94,6 @@ class SCTAuditingCache;
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
     : public mojom::NetworkService {
  public:
-  static const base::TimeDelta kInitialDohProbeTimeout;
-
   explicit NetworkService(
       std::unique_ptr<service_manager::BinderRegistry> registry,
       mojo::PendingReceiver<mojom::NetworkService> receiver =

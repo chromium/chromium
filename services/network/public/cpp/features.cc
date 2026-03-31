@@ -638,4 +638,12 @@ bool ShouldBindNetworkContextDirectReceiver() {
          base::FeatureList::IsEnabled(features::kNetworkContextDirectReceiver);
 }
 
+BASE_FEATURE(kDelayInitialDohProbeTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDelayInitialDohProbeTimeoutParam,
+                   &kDelayInitialDohProbeTimeout,
+                   "initial_doh_probe_timeout",
+                   base::Seconds(5));
+
 }  // namespace network::features

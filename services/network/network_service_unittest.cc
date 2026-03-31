@@ -911,7 +911,79 @@ TEST_F(NetworkServiceTest, DohProbe) {
 
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
+  EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
+}
+
+TEST_F(NetworkServiceTest, DohProbe_DisabledDelay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kDelayInitialDohProbeTimeout);
+
+  // Re-create NetworkService so it picks up the disabled feature flag.
+  DestroyService();
+  auto test_service = NetworkService::CreateForTesting();
+
+  net::DnsConfig config;
+  config.nameservers.emplace_back();
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
+  auto dns_client = std::make_unique<net::MockDnsClient>(
+      std::move(config), net::MockDnsClientRuleList());
+  dns_client->set_ignore_system_config_changes(true);
+  net::MockDnsClient* dns_client_ptr = dns_client.get();
+  test_service->host_resolver_manager()->SetDnsClientForTesting(
+      std::move(dns_client));
+
+  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
+  mojo::Remote<mojom::NetworkContext> network_context;
+  test_service->CreateNetworkContext(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  // Ensure any asynchronous Mojo tasks related to CreateNetworkContext finish.
+  network_context.FlushForTesting();
+
+  // Since the delay is disabled, probes should be running immediately.
+  EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
+}
+
+TEST_F(NetworkServiceTest, DohProbe_CustomDelay) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kDelayInitialDohProbeTimeout,
+      {{"initial_doh_probe_timeout", "10s"}});
+
+  // Re-create NetworkService so it picks up the custom feature param.
+  DestroyService();
+  auto test_service = NetworkService::CreateForTesting();
+
+  net::DnsConfig config;
+  config.nameservers.emplace_back();
+  config.doh_config =
+      *net::DnsOverHttpsConfig::FromString("https://example.com/");
+  auto dns_client = std::make_unique<net::MockDnsClient>(
+      std::move(config), net::MockDnsClientRuleList());
+  dns_client->set_ignore_system_config_changes(true);
+  net::MockDnsClient* dns_client_ptr = dns_client.get();
+  test_service->host_resolver_manager()->SetDnsClientForTesting(
+      std::move(dns_client));
+
+  mojom::NetworkContextParamsPtr context_params = CreateContextParams();
+  mojo::Remote<mojom::NetworkContext> network_context;
+  test_service->CreateNetworkContext(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
+
+  // Wait for half of the custom timeout. Should still not be running.
+  base::TimeDelta custom_timeout =
+      features::kDelayInitialDohProbeTimeoutParam.Get();
+  task_environment()->FastForwardBy(custom_timeout / 2);
+  EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
+
+  // Wait for the remaining half of the custom timeout.
+  task_environment()->FastForwardBy(custom_timeout / 2);
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 }
 
@@ -932,7 +1004,8 @@ TEST_F(NetworkServiceTest, DohProbe_MultipleContexts) {
   service()->host_resolver_manager()->SetDnsClientForTesting(
       std::move(dns_client));
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
   ASSERT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 
   mojom::NetworkContextParamsPtr context_params2 = CreateContextParams();
@@ -971,7 +1044,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextAddedBeforeTimeout) {
 
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 }
 
@@ -989,7 +1063,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextAddedAfterTimeout) {
 
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
   mojom::NetworkContextParamsPtr context_params = CreateContextParams();
@@ -1023,7 +1098,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedBeforeTimeout) {
   task_environment()->RunUntilIdle();
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 }
 
@@ -1046,7 +1122,8 @@ TEST_F(NetworkServiceTest, DohProbe_ContextRemovedAfterTimeout) {
 
   EXPECT_FALSE(dns_client_ptr->factory()->doh_probes_running());
 
-  task_environment()->FastForwardBy(NetworkService::kInitialDohProbeTimeout);
+  task_environment()->FastForwardBy(
+      features::kDelayInitialDohProbeTimeoutParam.Get());
   EXPECT_TRUE(dns_client_ptr->factory()->doh_probes_running());
 
   network_context.reset();

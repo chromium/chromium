@@ -427,6 +427,14 @@ BASE_DECLARE_FEATURE(kNetworkContextDirectReceiver);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 bool ShouldBindNetworkContextDirectReceiver();
 
+// Delays the initial DoH probe. When enabled, the delay is determined by
+// kDelayInitialDohProbeTimeoutParam. When disabled, the probe is activated
+// immediately.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kDelayInitialDohProbeTimeout);
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kDelayInitialDohProbeTimeoutParam);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_
