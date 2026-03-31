@@ -77,22 +77,23 @@ void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
 
 // ------------------------------------------------------------------------
 // [2] `Sec-Purpose`:
-// Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
+// Returns "Sec-Purpose" header value for a prefetch request to
+// `request_url_origin`.
 void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
-                         const GURL& request_url,
+                         const url::Origin& request_url_origin,
                          const PrefetchRequest& prefetch_request) {
   const char* header_value = [&]() {
     switch (prefetch_request.preload_pipeline_info()
                 .planned_max_preloading_type()) {
       case PreloadingType::kPrefetch:
-        if (prefetch_request.IsProxyRequiredForURL(request_url)) {
+        if (prefetch_request.IsProxyRequiredForURL(request_url_origin)) {
           return blink::kSecPurposePrefetchAnonymousClientIpHeaderValue;
         } else {
           return blink::kSecPurposePrefetchHeaderValue;
         }
       case PreloadingType::kPrerenderUntilScript:
       case PreloadingType::kPrerender:
-        if (prefetch_request.IsProxyRequiredForURL(request_url)) {
+        if (prefetch_request.IsProxyRequiredForURL(request_url_origin)) {
           // Note that this path would be reachable if a prefetch ahead of
           // prerender were triggered with a speculation candidate with
           // `requires_anonymous_client_ip_when_cross_origin`. But such
@@ -117,17 +118,17 @@ void AddSecPurposeHeader(net::HttpRequestHeaders& request_headers,
 
 // ------------------------------------------------------------------------
 // [2] `Sec-Speculation-Tags`:
-// Adds Speculation Rules Tags headers for a prefetch request to `request_url`
-// to `request_headers`.
+// Adds Speculation Rules Tags headers for a prefetch request to
+// `request_url_origin` to `request_headers`.
 void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
-                              const GURL& request_url,
+                              const url::Origin& request_url_origin,
                               const PrefetchRequest& prefetch_request) {
   // Sec-Speculation-Tags is set only when the prefetch is triggered
   // by speculation rules and it is not cross-site prefetch.
   // To see more details:
   // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md#the-cross-site-case
   if (prefetch_request.speculation_rules_tags().has_value() &&
-      !prefetch_request.IsCrossSiteRequest(url::Origin::Create(request_url))) {
+      !prefetch_request.IsCrossSiteRequest(request_url_origin)) {
     std::optional<std::string> serialized_list =
         prefetch_request.speculation_rules_tags()
             ->ConvertStringToHeaderString();
@@ -141,6 +142,7 @@ void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
 // [2] `X-Client-Data`:
 // Adds "X-Client-Data" header for a prefetch request to `request_url`.
 // `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
+// Actually only the origin of `request_url` is used for decision.
 void AddVariationsHeaderForPrefetch(
     net::HttpRequestHeaders& cors_exempt_headers,
     const GURL& request_url,
@@ -350,6 +352,8 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
     bool is_first_party_context_for_variations_header) {
   PrefetchUpdateHeadersParams params;
 
+  url::Origin request_url_origin = url::Origin::Create(request_url);
+
   // ------------------------------------------------------------------------
   // [1] Additional headers:
   AddAdditionalHeaders(params.modified_headers, prefetch_request);
@@ -372,11 +376,12 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
-  AddSecPurposeHeader(params.modified_headers, request_url, prefetch_request);
+  AddSecPurposeHeader(params.modified_headers, request_url_origin,
+                      prefetch_request);
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Speculation-Tags`:
-  AddSpeculationTagsHeader(params.modified_headers, request_url,
+  AddSpeculationTagsHeader(params.modified_headers, request_url_origin,
                            prefetch_request);
 
   // ------------------------------------------------------------------------
@@ -393,6 +398,7 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
     std::vector<std::string> removed_headers;
     net::HttpRequestHeaders modified_headers;
     net::HttpRequestHeaders modified_cors_exempt_headers;
+    // The current callee only uses the origin of `request_url`.
     GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
         request_url, removed_headers, modified_headers,
         modified_cors_exempt_headers);
@@ -413,8 +419,8 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetch(
   // [4] DevTools overrides (Client Hints):
   // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
   // override of non-UA Client Hints.
-  AddClientHintsHeaders(params.modified_headers,
-                        url::Origin::Create(request_url), prefetch_request);
+  AddClientHintsHeaders(params.modified_headers, request_url_origin,
+                        prefetch_request);
 
   // ------------------------------------------------------------------------
   // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
@@ -439,14 +445,16 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
   PrefetchUpdateHeadersParams updates_for_resource_request;
   PrefetchUpdateHeadersParams updates_for_follow_redirect;
 
+  url::Origin request_url_origin = url::Origin::Create(request_url);
+
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
   AddSecPurposeHeader(updates_for_resource_request.modified_headers,
-                      request_url, prefetch_request);
+                      request_url_origin, prefetch_request);
   if (base::FeatureList::IsEnabled(
           features::kPrefetchFixHeaderUpdatesOnRedirect)) {
     AddSecPurposeHeader(updates_for_follow_redirect.modified_headers,
-                        request_url, prefetch_request);
+                        request_url_origin, prefetch_request);
   }
 
   // ------------------------------------------------------------------------
@@ -454,13 +462,13 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
   updates_for_resource_request.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
   AddSpeculationTagsHeader(updates_for_resource_request.modified_headers,
-                           request_url, prefetch_request);
+                           request_url_origin, prefetch_request);
   if (base::FeatureList::IsEnabled(
           features::kPrefetchFixHeaderUpdatesOnRedirect)) {
     updates_for_follow_redirect.removed_headers.push_back(
         blink::kSecSpeculationTagsHeaderName);
     AddSpeculationTagsHeader(updates_for_follow_redirect.modified_headers,
-                             request_url, prefetch_request);
+                             request_url_origin, prefetch_request);
   }
 
   // ------------------------------------------------------------------------
@@ -506,7 +514,7 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
       updates_for_resource_request.removed_headers.push_back(header);
     }
     AddClientHintsHeaders(updates_for_resource_request.modified_headers,
-                          url::Origin::Create(request_url), prefetch_request);
+                          request_url_origin, prefetch_request);
 
     if (base::FeatureList::IsEnabled(
             features::kPrefetchFixHeaderUpdatesOnRedirect)) {
@@ -517,7 +525,7 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
         updates_for_follow_redirect.removed_headers.push_back(header);
       }
       AddClientHintsHeaders(updates_for_follow_redirect.modified_headers,
-                            url::Origin::Create(request_url), prefetch_request);
+                            request_url_origin, prefetch_request);
     }
   }
 

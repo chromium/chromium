@@ -235,8 +235,9 @@ const PrefetchBrowserInitiatorInfo* PrefetchRequest::GetBrowserInitiatorInfo()
   return std::get_if<PrefetchBrowserInitiatorInfo>(&initiator_info_);
 }
 
-bool PrefetchRequest::IsProxyRequiredForURL(const GURL& url) const {
-  return IsCrossOriginRequest(url::Origin::Create(url)) &&
+bool PrefetchRequest::IsProxyRequiredForURL(
+    const url::Origin& request_url_origin) const {
+  return IsCrossOriginRequest(request_url_origin) &&
          prefetch_type().IsProxyRequiredWhenCrossOrigin();
 }
 

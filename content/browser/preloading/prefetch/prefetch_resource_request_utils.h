@@ -22,12 +22,20 @@ extern const net::NetworkTrafficAnnotationTag
 
 // ------------------------------------------------------------------------
 // Utilities for constructing request headers.
+//
 // Header modifications should be applied in the following order, and the
 // latter (if any) should override the former.
 // [1] `request().additional_headers()`
 // [2] Chromium's default headers
 // [3] WebContents overrides
 // [4] DevTools overrides
+//
+// `request_url` is the next URL to prefetch (the initial prefetch URL or the
+// URL after redirect).
+//
+// While the full URL is passed here, only the origin of the URL is used, except
+// for `WebContentsDelegate::ShouldOverrideUserAgentForPreloading()` used for
+// the WebContents `User-Agent` override.
 
 // Returns a `PrefetchUpdateHeadersParams` that contains the headers to be added
 // to the initial prefetch `ResourceRequest`.
@@ -48,9 +56,6 @@ PrepareRedirectHeadersForPrefetch(const GURL& request_url,
 
 // Adds "X-Client-Data" header for a prefetch request to `request_url`.
 // `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
-// Note that `request_url` and `prefetch_request.url` / `resource_request`
-// (that `request_headers` belongs)'s `url` can be different when called from
-// `PrefetchContainer::PrepareUpdateHeaders()`.
 void AddVariationsHeaderForPrefetch(
     net::HttpRequestHeaders& cors_exempt_headers,
     const GURL& request_url,

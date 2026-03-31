@@ -574,7 +574,7 @@ struct PrefetchService::CheckEligibilityParams final {
 
   // Returns if proxy is required for the next request.
   bool IsProxyRequired() const {
-    return request().IsProxyRequiredForURL(url) &&
+    return request().IsProxyRequiredForURL(url::Origin::Create(url)) &&
            !ShouldPrefetchBypassProxyForTestHost(url.GetHost());
   }
 

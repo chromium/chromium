@@ -252,9 +252,9 @@ class CONTENT_EXPORT PrefetchRequest final {
   const PrefetchRendererInitiatorInfo* GetRendererInitiatorInfo() const;
   const PrefetchBrowserInitiatorInfo* GetBrowserInitiatorInfo() const;
 
-  // Whether or not the prefetch proxy would be required to fetch the given url
-  // based on `prefetch_type_`.
-  bool IsProxyRequiredForURL(const GURL& url) const;
+  // Whether or not the prefetch proxy would be required to prefetch a URL in
+  // the given `request_url_origin` based on `prefetch_type_`.
+  bool IsProxyRequiredForURL(const url::Origin& request_url_origin) const;
 
   // Whether or not the given origin would become a cross-site/cross-origin
   // request.
