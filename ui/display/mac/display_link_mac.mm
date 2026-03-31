@@ -65,7 +65,7 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
 }
 
 void DisplayLinkMac::RecordDisplayLinkCreation(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Viz.ExternalBeginFrameSourceMac.DisplayLink.Create",
+  UMA_HISTOGRAM_BOOLEAN("Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2",
                         success);
 }
 

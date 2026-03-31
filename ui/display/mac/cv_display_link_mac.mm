@@ -7,8 +7,6 @@
 #import <QuartzCore/CVDisplayLink.h>
 #include <stdint.h>
 
-#include <set>
-
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -18,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/screen_utils_mac.h"
 
 namespace base::apple {
@@ -48,6 +47,10 @@ struct DisplayLinkGlobals {
   // system callback.
   // https://crbug.com/1427235#c2
   base::Lock lock;
+
+  // Indicate whether the display creation has been logged within the
+  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create' histogram.
+  absl::flat_hash_set<CGDirectDisplayID> recorded_displays;
 
   static DisplayLinkGlobals& Get() {
     static base::NoDestructor<DisplayLinkGlobals> instance;
@@ -142,6 +145,19 @@ void CVDisplayLinkMac::CVDisplayLinkCallbackOnCallbackThread(
 }
 
 // static
+void CVDisplayLinkMac::TryRecordDisplayLinkCreation(
+    CGDirectDisplayID display_id,
+    bool success) {
+  auto& globals = DisplayLinkGlobals::Get();
+  base::AutoLock lock(globals.lock);
+
+  auto [it, inserted] = globals.recorded_displays.insert(display_id);
+  if (inserted) {
+    RecordDisplayLinkCreation(success);
+  }
+}
+
+// static
 scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id) {
   const auto thread_id = base::PlatformThread::CurrentId();
@@ -163,8 +179,8 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
   ret = CVDisplayLinkCreateWithCGDisplay(display_id,
                                          display_link.InitializeInto());
 
-  RecordDisplayLinkCreation(ret == kCVReturnSuccess);
   if (ret != kCVReturnSuccess) {
+    TryRecordDisplayLinkCreation(display_id, false);
     LOG(ERROR) << "CVDisplayLinkCreateWithCGDisplay failed. CVReturn: " << ret;
     return nullptr;
   }
@@ -182,6 +198,7 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
   // normal conditions the current display is never zero.
   if ((ret == kCVReturnSuccess) &&
       (CVDisplayLinkGetCurrentCGDisplay(display_link.get()) == 0)) {
+    TryRecordDisplayLinkCreation(display_id, false);
     LOG(ERROR)
         << "CVDisplayLinkCreateWithCGDisplay failed (no current display)";
     return nullptr;
@@ -194,10 +211,12 @@ scoped_refptr<CVDisplayLinkMac> CVDisplayLinkMac::GetForDisplay(
                                        &CVDisplayLinkMac::CVDisplayLinkCallback,
                                        result.get());
   if (ret != kCVReturnSuccess) {
+    TryRecordDisplayLinkCreation(display_id, false);
     LOG(ERROR) << "CVDisplayLinkSetOutputCallback failed. CVReturn: " << ret;
     return nullptr;
   }
 
+  TryRecordDisplayLinkCreation(display_id, true);
   return result;
 }
 
