@@ -7,9 +7,11 @@ assert(is_chromeos,
 
 source_set("public") {
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//components/account_id",
+    "//components/prefs",
   ]
   sources = [
     "auth_attempt_consumer.h",
@@ -35,7 +37,9 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":public",
+    "//ash/constants",
     "//base",
+    "//components/prefs:test_support",
     "//testing/gtest",
   ]
   sources = [ "auth_policy_utils_unittest.cc" ]

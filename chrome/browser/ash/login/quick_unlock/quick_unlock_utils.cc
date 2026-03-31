@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
@@ -112,7 +113,10 @@ bool IsPinDisabledByPolicySinglePurpose(const PrefService* pref_service,
   DCHECK(purpose != Purpose::kAny);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
-      HasPolicyValue(pref_service, purpose, kFactorsOptionPin);
+      HasPolicyValue(pref_service, purpose, kFactorsOptionPin) ||
+      (features::IsManagedLocalPinAndPasswordEnabled() &&
+       purpose == Purpose::kUnlock &&
+       IsPinEnabledAsMainFactorByPolicy(pref_service));
   return !enabled;
 }
 

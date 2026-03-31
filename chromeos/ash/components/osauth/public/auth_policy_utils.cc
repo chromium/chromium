@@ -6,8 +6,10 @@
 
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/fixed_flat_map.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/prefs/pref_service.h"
 
 namespace ash {
 
@@ -35,6 +37,16 @@ std::optional<AuthFactorsSet> GetAuthFactorsSetFromPolicyList(
     }
   }
   return result;
+}
+
+bool IsPinEnabledAsMainFactorByPolicy(const PrefService* pref_service) {
+  const base::ListValue* factors =
+      &pref_service->GetList(prefs::kAllowedLocalAuthFactors);
+  std::optional<AuthFactorsSet> policy_list =
+      GetAuthFactorsSetFromPolicyList(factors);
+
+  return policy_list.has_value() &&
+         policy_list->Has(ash::AshAuthFactor::kCryptohomePin);
 }
 
 }  // namespace ash

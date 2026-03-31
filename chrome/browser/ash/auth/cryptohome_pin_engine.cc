@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -39,7 +41,6 @@ bool HasPolicyValue(const PrefService& pref_service,
   }
   return factors->contains(value);
 }
-
 // Check if pin is disabled for a specific purpose (so not including
 // kAny) by reading the policy value.
 bool IsPinDisabledByPolicySinglePurpose(const PrefService& pref_service,
@@ -47,7 +48,10 @@ bool IsPinDisabledByPolicySinglePurpose(const PrefService& pref_service,
   DCHECK_NE(purpose, CryptohomePinEngine::Purpose::kAny);
   const bool enabled =
       HasPolicyValue(pref_service, purpose, kFactorsOptionAll) ||
-      HasPolicyValue(pref_service, purpose, kFactorsOptionPin);
+      HasPolicyValue(pref_service, purpose, kFactorsOptionPin) ||
+      (features::IsManagedLocalPinAndPasswordEnabled() &&
+       purpose == CryptohomePinEngine::Purpose::kUnlock &&
+       IsPinEnabledAsMainFactorByPolicy(&pref_service));
   return !enabled;
 }
 
