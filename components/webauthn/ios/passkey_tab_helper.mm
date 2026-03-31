@@ -162,7 +162,7 @@ void PasskeyTabHelper::LogEvent(
 
 void PasskeyTabHelper::HandleCancelRequestEvent(
     webauthn::IOSPasskeyClient::RequestInfo request_info) {
-  // TODO(crbug.com/491303127): Implement UI teardown and state cleanup.
+  client_->CancelPasskeyRequest(std::move(request_info));
 }
 
 void PasskeyTabHelper::HandleGetRequestedEvent(AssertionRequestParams params) {

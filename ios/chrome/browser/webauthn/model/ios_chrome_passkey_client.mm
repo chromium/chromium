@@ -175,3 +175,7 @@ void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {
   }
 #endif  // BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 }
+
+void IOSChromePasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {
+  // TODO(crbug.com/491303127): Dismiss the bottom sheet.
+}

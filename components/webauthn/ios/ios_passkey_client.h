@@ -66,6 +66,9 @@ class IOSPasskeyClient {
   // disabled after passkey creation is completed.
   virtual void AllowPasskeyCreationInfobar(bool allowed) = 0;
 
+  // Cancels the passkey request matching the given `request_info`.
+  virtual void CancelPasskeyRequest(RequestInfo request_info) = 0;
+
  protected:
   IOSPasskeyClient() = default;
 };

@@ -62,4 +62,6 @@ void FakeIOSPasskeyClient::SetInterstitialProceeds(bool proceeds) {
   interstitial_proceeds_ = proceeds;
 }
 
+void FakeIOSPasskeyClient::CancelPasskeyRequest(RequestInfo request_info) {}
+
 }  // namespace webauthn

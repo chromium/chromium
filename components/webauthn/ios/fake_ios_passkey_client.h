@@ -23,6 +23,7 @@ class FakeIOSPasskeyClient : public IOSPasskeyClient {
   void ShowSuggestionBottomSheet(RequestInfo request_info) override;
   void ShowCreationBottomSheet(RequestInfo request_info) override;
   void ShowInterstitial(InterstitialCallback callback) override;
+  void CancelPasskeyRequest(RequestInfo request_info) override;
 
   void AllowPasskeyCreationInfobar(bool allowed) override;
 
