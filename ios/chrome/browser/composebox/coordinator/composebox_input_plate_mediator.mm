@@ -365,6 +365,16 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
       _composeboxObserverBridge =
           std::make_unique<ComposeboxContextUploadObserverBridge>(
               self, _contextualSearchSession->GetController());
+      [[NSNotificationCenter defaultCenter]
+          addObserver:self
+             selector:@selector(appDidEnterBackground:)
+                 name:UIApplicationDidEnterBackgroundNotification
+               object:nil];
+      [[NSNotificationCenter defaultCenter]
+          addObserver:self
+             selector:@selector(appWillEnterForeground:)
+                 name:UIApplicationWillEnterForegroundNotification
+               object:nil];
     }
     _webStateList = webStateList;
     _faviconLoader = faviconLoader;
@@ -411,6 +421,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   _URLLoader = nil;
   _consumer = nil;
   _prefService = nullptr;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)setConsumer:(id<ComposeboxInputPlateConsumer>)consumer {
@@ -1170,6 +1181,20 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   }
 
   [self.consumer updateState:item.state forItemWithIdentifier:item.identifier];
+}
+
+#pragma mark - NSNotification
+
+- (void)appDidEnterBackground:(NSNotification*)notification {
+  if (_contextualSearchSession) {
+    _contextualSearchSession->SetIsBackgrounded(true);
+  }
+}
+
+- (void)appWillEnterForeground:(NSNotification*)notification {
+  if (_contextualSearchSession) {
+    _contextualSearchSession->SetIsBackgrounded(false);
+  }
 }
 
 #pragma mark - Private
