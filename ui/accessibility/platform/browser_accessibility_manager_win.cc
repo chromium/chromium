@@ -132,9 +132,9 @@ HWND BrowserAccessibilityManagerWin::GetParentHWND() const {
     return nullptr;
   }
 
-  // For non-web-content sources (e.g., Views), the delegate directly provides
-  // the HWND. For web content, we must walk up to the root frame manager to
-  // find the HWND, because child frames (iframes) share the top-level HWND.
+  // For views-sourced managers (e.g. WidgetAXManager), each widget can
+  // resolve its own HWND directly — there is no root-frame hierarchy.
+  // For web content, walk up to the root frame manager's delegate.
   if (!delegate()->AccessibilityIsWebContentSource()) {
     return delegate()->AccessibilityGetAcceleratedWidget();
   }
