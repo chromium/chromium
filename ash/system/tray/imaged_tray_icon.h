@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_TRAY_IMAGED_TRAY_ICON_H_
 #define ASH_SYSTEM_TRAY_IMAGED_TRAY_ICON_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -29,6 +30,9 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
   METADATA_HEADER(ImagedTrayIcon, TrayBackgroundView)
 
  public:
+  using IconVisibilityCallback =
+      base::RepeatingCallback<bool(session_manager::SessionState state)>;
+
   ImagedTrayIcon(Shelf* shelf,
                  const ui::ImageModel& image_model,
                  const std::u16string& tooltip,
@@ -38,6 +42,10 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
   ImagedTrayIcon& operator=(const ImagedTrayIcon&) = delete;
 
   ~ImagedTrayIcon() override;
+
+  // Sets a callback that is run when the session state changes. The callback
+  // should return true if the icon should be visible in the given state.
+  void set_icon_visibility_callback(IconVisibilityCallback callback);
 
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
@@ -49,7 +57,11 @@ class ASH_EXPORT ImagedTrayIcon : public TrayBackgroundView {
   views::ImageView* image_view() { return image_view_; }
 
  private:
+  class IconVisibilityHandler;
+
   raw_ptr<views::ImageView> image_view_;
+
+  std::unique_ptr<IconVisibilityHandler> session_visibility_handler_;
 };
 
 }  // namespace ash
