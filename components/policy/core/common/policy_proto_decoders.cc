@@ -233,7 +233,7 @@ void DecodeProtoFields(
     base::Value policy_value(base::Value::Type::DICT);
     policy_value.GetDict().Set("action", std::move(action));
     policy_value.GetDict().Set("reasons", std::move(reasons));
-    policy_value.GetDict().Set("risk_levels", std::move(risk_levels));
+    policy_value.GetDict().Set("evaluated_risk_levels", std::move(risk_levels));
 
     if (!extension_id_to_policy_value.contains(policy.extension_id())) {
       extension_id_to_policy_value.emplace(

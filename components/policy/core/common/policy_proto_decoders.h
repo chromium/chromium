@@ -42,17 +42,22 @@ POLICY_EXPORT ExtensionInstallDecision ConvertToExtensionInstallDecision(
 //   "extension_id": {
 //     "version_1": {
 //       "action": 1,
-//       "reasons": [1, 2]
+//       "reasons": [1, 2],
+//       "evaluated_risk_levels": {
+//         "provider_name": 1
+//       }
 //     },
 //     "version_2": {
 //       "action": 2,
-//       "reasons": [1]
+//       "reasons": [1],
+//       "evaluated_risk_levels": {}
 //     }
 //   },
 //   "extension_id_2": {
 //     "version_1": {
 //       "action": 1,
-//       "reasons": [1]
+//       "reasons": [1],
+//       "evaluated_risk_levels": {}
 //     }
 //   }
 // }

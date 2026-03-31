@@ -172,8 +172,10 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
               .Set("action", ActionToString(action))
               .Set("reasons",
                    ReasonsToListValue(value.GetDict().FindList("reasons")));
-      if (auto* risk_levels = value.GetDict().FindDict("risk_levels")) {
-        policy_value_dict.Set("risk_levels", RiskLevelsToValue(risk_levels));
+      if (auto* risk_levels =
+              value.GetDict().FindDict("evaluated_risk_levels")) {
+        policy_value_dict.Set("evaluated_risk_levels",
+                              RiskLevelsToValue(risk_levels));
       }
       // TODO(nicolaso): Show actual extension names instead of IDs.
       base::DictValue policy_dict =
