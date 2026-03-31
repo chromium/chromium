@@ -9,9 +9,7 @@
 
 namespace content {
 
-// expected-error@*:* {{The traits bag contains multiple traits of the same type.}}
-// expected-error@*:* {{static assertion failed due to requirement 'value != __ambiguous'}}
-// expected-error@*:* {{constexpr variable 'traits' must be initialized by a constant expression}}
+// expected-error@base/traits_bag.h:* {{static assertion failed: The traits bag contains multiple traits of the same type.}}
 constexpr BrowserTaskTraits traits = {BrowserTaskType::kNavigationNetworkResponse, BrowserTaskType::kUserInput};
 
 }  // namespace content

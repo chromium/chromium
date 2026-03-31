@@ -36,16 +36,17 @@ struct TestTraits {
   const bool boolean_trait;
 };
 
-constexpr TestTraits traits = {};  // expected-error {{constexpr variable 'traits' must be initialized by a constant expression}}
-                                   // expected-error@base/traits_bag.h:* {{The traits bag is missing a required trait.}}
-                                   // expected-error@*:* 1+ {{no matching constructor for initialization}}
+// expected-error@base/traits_bag.h:* {{static assertion failed: The traits bag is missing a required trait.}}
+constexpr TestTraits traits = {};
 
-constexpr TestTraits traits2 = {RequiredTrait::A, NotAValidTrait{}};  // expected-error@*:* {{type occurs more than once in type list}}
+// expected-error@+2 {{no matching constructor for initialization of 'const TestTraits'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TestTraits::ValidTrait'}}
+constexpr TestTraits traits2 = {RequiredTrait::A, NotAValidTrait{}};
 
-constexpr TestTraits traits3 = {RequiredTrait::A, RequiredTrait::B};  // expected-error {{constexpr variable 'traits3' must be initialized by a constant expression}}
-                                                                      // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@base/traits_bag.h:* {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+constexpr TestTraits traits3 = {RequiredTrait::A, RequiredTrait::B};
 
-constexpr TestTraits traits4 = {RequiredTrait::A, BooleanTrait(),  // expected-error {{constexpr variable 'traits4' must be initialized by a constant expression}}
-                                BooleanTrait()};                   // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+constexpr TestTraits traits4 = {RequiredTrait::A, BooleanTrait(), BooleanTrait()};
 
 }  // namespace base

@@ -133,25 +133,40 @@ constexpr TraitFilterType GetTraitFromArgListImpl(CallFirstTag,
 template <class TraitFilterType, class... ArgTypes>
 constexpr TraitFilterType GetTraitFromArgListImpl(CallSecondTag,
                                                   ArgTypes... args) {
-  static_assert(std::is_constructible_v<TraitFilterType>,
+  static_assert(std::constructible_from<TraitFilterType>,
                 "The traits bag is missing a required trait.");
   return TraitFilterType();
 }
+
+template <typename Trait, typename... Args>
+concept IsUniqueTrait =
+    (count({std::constructible_from<Trait, Args>...}, true) <= 1);
 
 // Constructs an object of type |TraitFilterType| from a compatible argument in
 // |args...|, or using the default constructor, and returns its associated trait
 // value using conversion to |TraitFilterType::ValueType|. If there are more
 // than one compatible argument in |args|, generates a compile-time error.
 template <class TraitFilterType, class... ArgTypes>
+  requires IsUniqueTrait<TraitFilterType, ArgTypes...>
 constexpr typename TraitFilterType::ValueType GetTraitFromArgList(
     ArgTypes... args) {
-  static_assert(
-      count({std::is_constructible_v<TraitFilterType, ArgTypes>...}, true) <= 1,
-      "The traits bag contains multiple traits of the same type.");
   return GetTraitFromArgListImpl<TraitFilterType>(CallFirstTag(), args...);
 }
 
-// Helper class to implemnent a |TraitFilterType|.
+// Generates nicer errors for `GetTraitFromArgList`.
+template <class TraitFilterType, class... ArgTypes>
+constexpr typename TraitFilterType::ValueType GetTraitFromArgList(
+    ArgTypes... args) {
+  static_assert(IsUniqueTrait<TraitFilterType, ArgTypes...>,
+                "The traits bag contains multiple traits of the same type.");
+
+  // Must return a value to keep the constexpr definition structurally valid.
+  // This prevents Clang from emitting a redundant "must be initialized by a
+  // constant expression" error at the call site after the static_assert fails.
+  return {};
+}
+
+// Helper class to implement a |TraitFilterType|.
 template <typename T, typename _ValueType = T>
 struct BasicTraitFilter {
   using ValueType = _ValueType;
@@ -210,10 +225,27 @@ concept IsValidTrait =
 template <class ValidTraits, class... ArgTypes>
 concept AreValidTraits = (IsValidTrait<ValidTraits, ArgTypes> && ...);
 
+template <typename Enum, typename... Args>
+concept HasRequiredEnumTrait =
+    (std::constructible_from<RequiredEnumTraitFilter<Enum>, Args> || ...);
+
 // Helper to make getting an enum from a trait more readable.
 template <typename Enum, typename... Args>
+  requires HasRequiredEnumTrait<Enum, Args...>
 static constexpr Enum GetEnum(Args... args) {
   return GetTraitFromArgList<RequiredEnumTraitFilter<Enum>>(args...);
+}
+
+// Generates nicer errors for `GetEnum` for required enums.
+template <typename Enum, typename... Args>
+static constexpr Enum GetEnum(Args... args) {
+  static_assert(HasRequiredEnumTrait<Enum, Args...>,
+                "The traits bag is missing a required trait.");
+
+  // Must return a value to keep the constexpr definition structurally valid.
+  // This prevents Clang from emitting a redundant "must be initialized by a
+  // constant expression" error at the call site after the static_assert fails.
+  return {};
 }
 
 // Helper to make getting an enum from a trait with a default more readable.
@@ -231,10 +263,18 @@ static constexpr std::optional<Enum> GetOptionalEnum(Args... args) {
 
 // Helper to make checking for the presence of a trait more readable.
 template <typename Trait, typename... Args>
-struct HasTrait : ParameterPack<Args...>::template HasType<Trait> {
-  static_assert(count({std::is_constructible_v<Trait, Args>...}, true) <= 1,
+  requires IsUniqueTrait<Trait, Args...>
+constexpr bool HasTrait() {
+  return ParameterPack<Args...>::template HasType<Trait>::value;
+}
+
+// Generates nicer errors for `HasTrait`.
+template <typename Trait, typename... Args>
+constexpr bool HasTrait() {
+  static_assert(IsUniqueTrait<Trait, Args...>,
                 "The traits bag contains multiple traits of the same type.");
-};
+  return false;
+}
 
 // If you need a template vararg constructor to delegate to a private
 // constructor, you may need to add this to the private constructor to ensure

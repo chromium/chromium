@@ -9,38 +9,43 @@
 
 namespace base {
 
-constexpr TaskTraits traits = {MayBlock(), MayBlock()};  // expected-error {{constexpr variable 'traits' must be initialized by a constant expression}}
-                                                         // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
-                                                         // expected-error@*:* {{no matching constructor for initialization}}
+// expected-error@base/traits_bag.h:* {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+// expected-note@+1 {{in instantiation of function template specialization}}
+constexpr TaskTraits traits = {MayBlock(), MayBlock()};
 
-constexpr TaskTraits traits2 = {WithBaseSyncPrimitives(),   // expected-error {{constexpr variable 'traits2' must be initialized by a constant expression}}
-                                WithBaseSyncPrimitives()};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@base/traits_bag.h:* {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+// expected-note@+1 {{in instantiation of function template specialization}}
+constexpr TaskTraits traits2 = {WithBaseSyncPrimitives(),
+                                WithBaseSyncPrimitives()};
 
-constexpr TaskTraits traits3 = {TaskPriority::BEST_EFFORT,     // expected-error@*:* {{no matching constructor for initialization}}
-                                TaskPriority::USER_BLOCKING};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
-                                                               // expected-error@*:* {{type occurs more than once in type list}}
-                                                               // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@base/traits_bag.h:* 2 {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+// expected-note@+1 2 {{in instantiation of function template specialization}}
+constexpr TaskTraits traits3 = {TaskPriority::BEST_EFFORT,
+                                TaskPriority::USER_BLOCKING};
 
-// Note: the three repetitions of "The traits bag contains multiple traits of
-// the same type." is *not* an error. Writing this really does cause three
-// occurrences of the same error message!
-constexpr TaskTraits traits4 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,   // expected-error {{constexpr variable 'traits4' must be initialized by a constant expression}}
-                                TaskShutdownBehavior::BLOCK_SHUTDOWN};  // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
-                                                                        // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
-                                                                        // expected-error@*:* {{type occurs more than once in type list}}
-                                                                        // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
+// expected-error@base/traits_bag.h:* 2 {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+// expected-note@+1 2 {{in instantiation of function template specialization}}
+constexpr TaskTraits traits4 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                                TaskShutdownBehavior::BLOCK_SHUTDOWN};
 
-constexpr TaskTraits traits5 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,         // expected-error {{constexpr variable 'traits5' must be initialized by a constant expression}}
-                                MayBlock(),                                   // expected-error@base/traits_bag.h:* {{The traits bag contains multiple traits of the same type.}}
-                                TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};  // expected-error@*:* {{type occurs more than once in type list}}
+// expected-error@base/traits_bag.h:* 2 {{static assertion failed: The traits bag contains multiple traits of the same type.}}
+// expected-note@+1 2 {{in instantiation of function template specialization}}
+constexpr TaskTraits traits5 = {TaskShutdownBehavior::BLOCK_SHUTDOWN,
+                                MayBlock(),
+                                TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
-constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};  // expected-error@*:* {{no matching constructor for initialization}}
+// expected-error@+3 {{no matching constructor for initialization of 'const TaskTraits'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTraitInheritThreadType'}}
+constexpr TaskTraits traits6 = {TaskShutdownBehavior::BLOCK_SHUTDOWN, true};
 
-constexpr TaskTraits traits7 = {MaxThreadType(ThreadType::kDefault)};  // expected-error@*:* {{no matching constructor for initialization}}
-                                                                       // expected-error@*:* {{no matching constructor for initialization}}
+// expected-error@+2 {{no matching constructor for initialization of 'const TaskTraits'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
+constexpr TaskTraits traits7 = {MaxThreadType(ThreadType::kDefault)};
 
-constexpr TaskTraits traits8 = {InheritThreadType(), TaskPriority::USER_BLOCKING};  // expected-error@*:* {{no matching constructor for initialization}}
-                                                                                    // expected-error@*:* {{no matching constructor for initialization}}
-                                                                                    // expected-error@*:* {{no matching constructor for initialization}}
+// expected-error@+3 {{no matching constructor for initialization of 'const TaskTraits'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTrait'}}
+// expected-error@*:* {{no matching constructor for initialization of 'base::TaskTraits::ValidTraitInheritThreadType'}}
+constexpr TaskTraits traits8 = {InheritThreadType(), TaskPriority::USER_BLOCKING};
 
 }  // namespace base

@@ -298,7 +298,7 @@ class BASE_EXPORT TaskTraits {
   template <class... ArgTypes>
     requires(trait_helpers::AreValidTraits<ValidTraitInheritThreadType,
                                            ArgTypes...> &&
-             trait_helpers::HasTrait<InheritThreadType, ArgTypes...>::value)
+             trait_helpers::HasTrait<InheritThreadType, ArgTypes...>())
   // TaskTraits are intended to be implicitly-constructable (eg {}).
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr TaskTraits(ArgTypes... args)
