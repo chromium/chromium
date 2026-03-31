@@ -363,6 +363,7 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
       ::switches::kUninstall,
       ::switches::kUninstallAppId,
       // Logging.
+      ::switches::kEnableLogging,
       ::switches::kLoggingLevel,
       ::switches::kLogFile,
   };
