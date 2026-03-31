@@ -2803,6 +2803,76 @@ IN_PROC_BROWSER_TEST_P(PageContentProtoProviderMainFrameTimeoutBrowserTest,
   EXPECT_TRUE(loading_run_loop.AnyQuitCalled());
 }
 
+// Regression test for crbug.com/497815610.
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentDisplayLockedIframe) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = '<iframe style=\"content-visibility: hidden\" "
+      "srcdoc=\"<div>hidden iframe text</div>\"></iframe>';"));
+
+  // Ensure visuals are updated.
+  {
+    base::test::TestFuture<bool> future;
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->InsertVisualStateCallback(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& root_node = ActionableContentRootNode();
+  ASSERT_EQ(root_node.children_nodes().size(), 1u);
+
+  const auto& iframe = root_node.children_nodes()[0];
+  EXPECT_EQ(iframe.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME);
+
+  const auto& iframe_data = iframe.content_attributes().iframe_data();
+  EXPECT_TRUE(iframe_data.has_frame_data());
+
+  // Children should be empty due to display lock blocking traversal.
+  EXPECT_EQ(iframe.children_nodes().size(), 0);
+}
+
+// Tests that iframes inside a display-locked ancestor are omitted.
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       AIPageContentDisplayLockedAncestorOfIframe) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = '<div style=\"content-visibility: hidden\">"
+      "<iframe srcdoc=\"<div>hidden iframe text</div>\"></iframe></div>';"));
+
+  // Ensure visuals are updated.
+  {
+    base::test::TestFuture<bool> future;
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->InsertVisualStateCallback(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
+  }
+
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto& root_node = ActionableContentRootNode();
+  // The div itself is included because visibility is visible.
+  ASSERT_EQ(root_node.children_nodes().size(), 1u);
+
+  const auto& div = root_node.children_nodes()[0];
+  EXPECT_EQ(div.content_attributes().attribute_type(),
+            optimization_guide::proto::CONTENT_ATTRIBUTE_CONTAINER);
+  // The div should have no children because it is display-locked and returns
+  // early in WalkChildren.
+  EXPECT_EQ(div.children_nodes().size(), 0);
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

@@ -2001,6 +2001,14 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
 
   if (AreChildrenBlockedByDisplayLock(object)) {
     // Avoid forcing layout or hit-testing in display-locked iframe subtrees.
+    if (local_frame->GetDocument()) {
+      auto frame_data = mojom::blink::AIPageContentFrameData::New();
+      frame_data->frame_interaction_info =
+          mojom::blink::AIPageContentFrameInteractionInfo::New();
+      content_node.content_attributes->iframe_data->content =
+          mojom::blink::AIPageContentIframeContent::NewLocalFrameData(
+              std::move(frame_data));
+    }
     return;
   }
 

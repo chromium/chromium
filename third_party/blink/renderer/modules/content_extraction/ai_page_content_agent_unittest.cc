@@ -2304,6 +2304,9 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenIframeActionable) {
   // when display locks block layout/prepaint on children.
   EXPECT_TRUE(iframe_node.children_nodes.empty());
   ASSERT_TRUE(iframe_node.content_attributes->geometry);
+  ASSERT_TRUE(iframe_node.content_attributes->iframe_data->content);
+  EXPECT_TRUE(iframe_node.content_attributes->iframe_data->content
+                  ->is_local_frame_data());
 
   const auto& visible_text_node = *root.children_nodes[1];
   CheckTextNode(visible_text_node, "  visible text");
