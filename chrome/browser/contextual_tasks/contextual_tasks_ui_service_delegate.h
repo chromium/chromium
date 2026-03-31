@@ -9,7 +9,6 @@
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
-class Profile;
 
 namespace contextual_tasks {
 
@@ -17,24 +16,11 @@ namespace contextual_tasks {
 // ContextualTasksUiService.
 class ContextualTasksUiServiceDelegate {
  public:
-  explicit ContextualTasksUiServiceDelegate(Profile* profile)
-      : profile_(profile) {}
   virtual ~ContextualTasksUiServiceDelegate() = default;
 
-  ContextualTasksUiServiceDelegate(const ContextualTasksUiServiceDelegate&) =
-      delete;
-  ContextualTasksUiServiceDelegate& operator=(
-      const ContextualTasksUiServiceDelegate&) = delete;
-
-  // Helper in OpenHelpUi().
-  virtual void OpenHelpUi(BrowserWindowInterface* browser,
-                          const GURL& page_url) = 0;
-
- protected:
-  Profile* profile() const { return profile_; }
-
- private:
-  raw_ptr<Profile> profile_;
+  // Called to open the feedback page UI.
+  virtual void OpenFeedbackUi(BrowserWindowInterface* browser,
+                              const GURL& page_url) = 0;
 };
 
 }  // namespace contextual_tasks

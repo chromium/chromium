@@ -15,12 +15,12 @@ namespace contextual_tasks {
 
 ContextualTasksUiServiceDelegateDesktop::
     ContextualTasksUiServiceDelegateDesktop(Profile* profile)
-    : ContextualTasksUiServiceDelegate(profile) {}
+    : ContextualTasksUiServiceDelegate() {}
 
 ContextualTasksUiServiceDelegateDesktop::
     ~ContextualTasksUiServiceDelegateDesktop() = default;
 
-void ContextualTasksUiServiceDelegateDesktop::OpenHelpUi(
+void ContextualTasksUiServiceDelegateDesktop::OpenFeedbackUi(
     BrowserWindowInterface* browser,
     const GURL& page_url) {
   chrome::ShowFeedbackPage(page_url, profile(), feedback::kFeedbackSourceAI,

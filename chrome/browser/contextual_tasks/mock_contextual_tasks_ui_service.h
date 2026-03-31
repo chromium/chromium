@@ -53,7 +53,7 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
   MOCK_METHOD(bool, IsAiUrl, (const GURL&), (override));
   MOCK_METHOD(bool, IsPendingErrorPage, (const base::Uuid&), (override));
   MOCK_METHOD(void,
-              OpenHelpUi,
+              OpenFeedbackUi,
               (BrowserWindowInterface*, const GURL&),
               (override));
 };

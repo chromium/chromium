@@ -1051,9 +1051,9 @@ ContextualTasksUiService::GetInitialEntryPointForTask(
   }
   return omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
 }
-void ContextualTasksUiService::OpenHelpUi(BrowserWindowInterface* browser,
-                                          const GURL& page_url) {
-  delegate_->OpenHelpUi(browser, page_url);
+void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
+                                              const GURL& page_url) {
+  delegate_->OpenFeedbackUi(browser, page_url);
 }
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
     const base::Uuid& task_id) {

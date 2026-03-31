@@ -291,7 +291,7 @@ void ContextualTasksPageHandler::OpenHelpUi() {
     }
   }
 
-  ui_service_->OpenHelpUi(browser, page_url);
+  ui_service_->OpenFeedbackUi(browser, page_url);
 }
 
 void ContextualTasksPageHandler::OpenOnboardingHelpUi() {

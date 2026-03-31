@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UI_SERVICE_DELEGATE_ANDROID_H_
 
+#include "base/android/scoped_java_ref.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "url/gurl.h"
 
@@ -24,8 +25,15 @@ class ContextualTasksUiServiceDelegateAndroid
       const ContextualTasksUiServiceDelegateAndroid&) = delete;
 
   // ContextualTasksUiServiceDelegate overrides:
-  void OpenHelpUi(BrowserWindowInterface* browser,
-                  const GURL& page_url) override;
+  void OpenFeedbackUi(BrowserWindowInterface* browser,
+                      const GURL& page_url) override;
+
+ protected:
+  Profile* profile() const { return profile_; }
+
+ private:
+  raw_ptr<Profile> profile_;
+  base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
 };
 
 }  // namespace contextual_tasks

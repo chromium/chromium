@@ -135,7 +135,10 @@ source_set("impl") {
   ]
 
   if (is_android) {
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//ui/android",
+    ]
   }
 }
 
@@ -506,20 +509,29 @@ if (is_android) {
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
 
-    sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
+    ]
 
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/feedback/android:factory_java",
+      "//chrome/browser/feedback/android:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//ui/android:ui_java",
     ]
   }
 
   generate_jni("jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksBridge.java",
+      "android/java/src/org/chromium/chrome/browser/contextual_tasks/ContextualTasksUiServiceDelegate.java",
+    ]
   }
 }
 

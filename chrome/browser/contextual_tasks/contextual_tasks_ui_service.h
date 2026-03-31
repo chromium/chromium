@@ -257,11 +257,9 @@ class ContextualTasksUiService : public KeyedService {
   omnibox::ChromeAimEntryPoint GetInitialEntryPointForTask(
       const base::Uuid& task_id);
 
-  // Opens the help UI.
-  // TODO(crbug.com/493911541): Ensure that the mojom (contextual_tasks.mojom)
-  // is also using the same method.
-  virtual void OpenHelpUi(BrowserWindowInterface* browser,
-                          const GURL& page_url);
+  // Show the feedback form.
+  virtual void OpenFeedbackUi(BrowserWindowInterface* browser,
+                              const GURL& page_url);
 
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

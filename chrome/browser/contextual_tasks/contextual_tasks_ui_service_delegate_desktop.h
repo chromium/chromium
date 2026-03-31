@@ -24,8 +24,14 @@ class ContextualTasksUiServiceDelegateDesktop
       const ContextualTasksUiServiceDelegateDesktop&) = delete;
 
   // ContextualTasksUiServiceDelegate overrides:
-  void OpenHelpUi(BrowserWindowInterface* browser,
-                  const GURL& page_url) override;
+  void OpenFeedbackUi(BrowserWindowInterface* browser,
+                      const GURL& page_url) override;
+
+ protected:
+  Profile* profile() const { return profile_; }
+
+ private:
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace contextual_tasks
