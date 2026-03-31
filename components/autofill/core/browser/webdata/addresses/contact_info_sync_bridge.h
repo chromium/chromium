@@ -29,6 +29,10 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/entity_data.h"
 
+namespace syncer {
+class SyncMetadataStoreChangeList;
+}  // namespace syncer
+
 namespace autofill {
 
 class AutofillWebDataService;
@@ -87,8 +91,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // `InMemoryMetadataChangeList`. This function transfers the changes from the
   // `metadata_change_list` to `GetSyncMetadataStore()`. It assumes that
   // `metadata_change_list` was created using the bridge's
-  // `CreateMetadataChangeList()`.
-  std::optional<syncer::ModelError> ApplyMetadataChanges(
+  // `CreateMetadataChangeList()`. Returns a store change list that can be used
+  // to commit further metadata changes to the store.
+  std::unique_ptr<syncer::SyncMetadataStoreChangeList> ApplyMetadataChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list);
 
   bool SyncMetadataCacheContainsSupportedFields(

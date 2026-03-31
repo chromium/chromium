@@ -122,6 +122,13 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
 
+  std::unique_ptr<syncer::SyncMetadataStoreChangeList>
+      sync_metadata_store_change_list =
+          ApplyMetadataChanges(std::move(metadata_change_list));
+  if (change_processor()->GetError().has_value()) {
+    return change_processor()->GetError();
+  }
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
@@ -141,7 +148,7 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
           // In case H/W was updated and doesn't meet the completeness
           // requirements anymore, remove it.
           // This change doesn't need to be synced back, since H/W is read-only.
-          metadata_change_list->ClearMetadata(remote.guid());
+          sync_metadata_store_change_list->ClearMetadata(remote.guid());
           if (!GetAutofillTable()->RemoveAutofillProfile(remote.guid())) {
             return syncer::ModelError(
                 FROM_HERE, syncer::ModelError::Type::
@@ -171,10 +178,6 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
     }
   }
 
-  if (auto error = ApplyMetadataChanges(std::move(metadata_change_list))) {
-    return error;
-  }
-
   // Commits changes through CommitChanges(...) or through the scoped
   // sql::Transaction `transaction` depending on the
   // 'SqlScopedTransactionWebDatabase' Finch experiment.
@@ -186,8 +189,9 @@ ContactInfoSyncBridge::ApplyIncrementalSyncChanges(
   // False positives can occur here if an update doesn't change the profile.
   // Since such false positives are fine, and since AutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
-  if (!entity_changes.empty())
+  if (!entity_changes.empty()) {
     web_data_backend_->NotifyOnAutofillChangedBySync(syncer::CONTACT_INFO);
+  }
 
   return std::nullopt;
 }
@@ -283,11 +287,11 @@ void ContactInfoSyncBridge::AutofillProfileChanged(
       break;
     case AutofillProfileChange::HIDE_IN_AUTOFILL:
       auto entity_data = CreateContactInfoEntityDataFromAutofillProfile(
-              change.data_model(),
-              GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
-                  change.key()));
+          change.data_model(),
+          GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
+              change.key()));
       entity_data->specifics.mutable_contact_info()->set_invisible_in_autofill(
-        true);
+          true);
       change_processor()->Put(change.key(), std::move(entity_data),
                               &metadata_change_list);
       break;
@@ -345,14 +349,18 @@ ContactInfoSyncBridge::GetPossiblyTrimmedContactInfoSpecificsDataFromProcessor(
       .contact_info();
 }
 
-std::optional<syncer::ModelError> ContactInfoSyncBridge::ApplyMetadataChanges(
+std::unique_ptr<syncer::SyncMetadataStoreChangeList>
+ContactInfoSyncBridge::ApplyMetadataChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list) {
-  syncer::SyncMetadataStoreChangeList sync_metadata_store_change_list(
-      GetSyncMetadataStore(), syncer::CONTACT_INFO,
-      base::BindRepeating(&syncer::DataTypeLocalChangeProcessor::ReportError,
-                          change_processor()->GetWeakPtr()));
-  metadata_change_list->TransferChangesTo(&sync_metadata_store_change_list);
-  return change_processor()->GetError();
+  auto sync_metadata_store_change_list =
+      std::make_unique<syncer::SyncMetadataStoreChangeList>(
+          GetSyncMetadataStore(), syncer::CONTACT_INFO,
+          base::BindRepeating(
+              &syncer::DataTypeLocalChangeProcessor::ReportError,
+              change_processor()->GetWeakPtr()));
+  metadata_change_list->TransferChangesTo(
+      sync_metadata_store_change_list.get());
+  return sync_metadata_store_change_list;
 }
 
 // TODO(crbug.com/40253286): Consider moving this logic to processor.

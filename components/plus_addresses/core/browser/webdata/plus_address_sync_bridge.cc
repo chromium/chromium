@@ -80,6 +80,11 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
                        kPlusAddressTransactionBeginFailedOnIncrementalSync);
   }
 
+  if (std::optional<syncer::ModelError> error =
+          TransferMetadataChanges(std::move(metadata_change_list))) {
+    return error;
+  }
+
   std::vector<PlusAddressDataChange> profile_changes;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     switch (change->type()) {
@@ -119,10 +124,6 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
         break;
       }
     }
-  }
-
-  if (auto error = TransferMetadataChanges(std::move(metadata_change_list))) {
-    return error;
   }
 
   if (!transaction.Commit()) {

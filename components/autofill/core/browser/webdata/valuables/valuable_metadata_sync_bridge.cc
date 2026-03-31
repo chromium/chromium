@@ -434,6 +434,11 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
   std::unique_ptr<sql::Transaction> transaction =
       web_data_backend_->GetDatabase()->AcquireTransaction();
 
+  if (std::optional<syncer::ModelError> error =
+          ApplyMetadataChanges(std::move(metadata_change_list))) {
+    return error;
+  }
+
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_data) {
     switch (change->type()) {
       case syncer::EntityChange::ACTION_ADD:
@@ -492,11 +497,6 @@ ValuableMetadataSyncBridge::MergeRemoteChanges(
         break;
       }
     }
-  }
-
-  if (std::optional<syncer::ModelError> error =
-          ApplyMetadataChanges(std::move(metadata_change_list))) {
-    return error;
   }
 
   // Commits changes through CommitChanges(...) or through the scoped
