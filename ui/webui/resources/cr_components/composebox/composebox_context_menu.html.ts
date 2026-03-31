@@ -30,7 +30,7 @@ export function getHtml(this: ComposeboxElement) {
         .inputState="${this.inputState}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
-        .hasImageFiles="${this.hasImageFiles_()}"
+        .hasImageFiles="${this.hasImageFiles()}"
         .disabledTabIds="${this.addedTabsIds}"
         .fileNum="${this.files.size}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"

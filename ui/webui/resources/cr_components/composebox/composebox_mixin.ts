@@ -13,6 +13,7 @@ import type {ComposeboxFile, ComposeboxState} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
+import {ModelMode, ToolMode} from './composebox_query.mojom-webui.js';
 import type {InputState} from './composebox_query.mojom-webui.js';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -167,9 +168,59 @@ export const ComposeboxEmbedderMixin =
               this.result?.matches[this.selectedMatchIndex] || null;
         }
 
+        /**
+         * @param e Event containing index of the match that received focus.
+         */
+        onMatchFocusin(e: CustomEvent<{index: number}>) {
+          // Select the match that received focus.
+          this.getDropdownElement().selectIndex(e.detail.index);
+        }
+
         // =====================================================================
         // Common helper methods
         // =====================================================================
+
+        setDefaultModel() {
+          if (this.inputState?.activeModel &&
+              (this.inputState.activeModel as ModelMode) !==
+                  ModelMode.kUnspecified) {
+            this.getSearchboxHandler().setActiveModelMode(
+                this.inputState.activeModel);
+          } else if (
+              this.inputState?.allowedModels &&
+              this.inputState.allowedModels.length > 0) {
+            this.getSearchboxHandler().setActiveModelMode(
+                this.inputState.allowedModels[0]!);
+          }
+        }
+
+        resetToolsAndModels() {
+          if (this.inputState) {
+            this.getSearchboxHandler().setActiveToolMode(ToolMode.kUnspecified);
+            this.getSearchboxHandler().setActiveModelMode(
+                ModelMode.kUnspecified);
+          }
+        }
+
+        closeDropdown() {
+          this.clearAutocompleteMatches();
+        }
+
+
+        hasImageFiles(): boolean {
+          return Array.from(this.files.values())
+              .some(file => file.type.includes('image'));
+        }
+
+        hasMatches(): boolean {
+          return !!(this.result && this.result.matches.length > 0);
+        }
+
+        selectFirstMatch() {
+          if (this.result?.matches.length) {
+            this.getDropdownElement().selectFirst();
+          }
+        }
 
         hasFiles(): boolean {
           return this.files.size > 0;
@@ -254,8 +305,15 @@ export interface ComposeboxEmbedderMixinInterface {
   onSpeechReceived(): void;
   onDismissErrorScrim(): void;
   onSelectedMatchIndexChanged(e: CustomEvent<{value: number}>): void;
+  onMatchFocusin(e: CustomEvent<{index: number}>): void;
 
   // Common helper methods
+  setDefaultModel(): void;
+  resetToolsAndModels(): void;
+  closeDropdown(): void;
+  hasImageFiles(): boolean;
+  hasMatches(): boolean;
+  selectFirstMatch(): void;
   hasFiles(): boolean;
   queryAutocomplete(clearMatches: boolean): void;
   clearAutocompleteMatches(): void;

@@ -577,10 +577,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.getInputElement().inputElement.focus();
   }
 
-  protected onQueryAutocomplete_(e: CustomEvent<{clearMatches: boolean}>) {
-    this.queryAutocomplete(e.detail.clearMatches);
-  }
-
   playGlowAnimation() {
     // If |animationState_| were still EXPANDING, this function would have no
     // effect because nothing changes in CSS and therefore animations wouldn't
@@ -607,29 +603,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.showContextMenuDescription_ = this.contextMenuDescriptionEnabled_;
       this.handleToolModeUpdate_(ToolMode.kUnspecified);
     }
-  }
-
-  setDefaultModel() {
-    if (this.inputState?.activeModel &&
-        (this.inputState.activeModel as ModelMode) !== ModelMode.kUnspecified) {
-      this.searchboxHandler_.setActiveModelMode(this.inputState.activeModel);
-    } else if (
-        this.inputState?.allowedModels &&
-        this.inputState.allowedModels.length > 0) {
-      this.searchboxHandler_.setActiveModelMode(
-          this.inputState.allowedModels[0]!);
-    }
-  }
-
-  resetToolsAndModels() {
-    if (this.inputState) {
-      this.searchboxHandler_.setActiveToolMode(ToolMode.kUnspecified);
-      this.searchboxHandler_.setActiveModelMode(ModelMode.kUnspecified);
-    }
-  }
-
-  closeDropdown() {
-    this.clearAutocompleteMatches();
   }
 
   getHasAutomaticActiveTabChipToken() {
@@ -763,7 +736,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     // Do not show dropdown if there's an image and contextual image suggestions
     // are disabled.
-    if (!this.enableImageContextualSuggestions_ && this.hasImageFiles_()) {
+    if (!this.enableImageContextualSuggestions_ && this.hasImageFiles()) {
       return false;
     }
 
@@ -1405,10 +1378,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.shadowRoot.activeElement === this.getInputElement();
   }
 
-  private hasMatches_(): boolean {
-    return !!(this.result && this.result.matches.length > 0);
-  }
-
   private finalizeMatchSelection_(e: KeyboardEvent) {
     this.smartComposeInlineHint = '';
     e.preventDefault();
@@ -1424,7 +1393,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (this.isFocusInInput_() && !this.showDropdown) {
       return;
     }
-    if (!this.hasMatches_() || hasKeyModifiers(e)) {
+    if (!this.hasMatches() || hasKeyModifiers(e)) {
       return;
     }
 
@@ -1450,7 +1419,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return;
     }
 
-    if (this.hasMatches_() && this.dropdownNeeded && !hasKeyModifiers(e)) {
+    if (this.hasMatches() && this.dropdownNeeded && !hasKeyModifiers(e)) {
       // If focus goes past the last match, unselect the last match.
       if (this.selectedMatchIndex === this.result!.matches.length - 1) {
         if (this.selectedMatch!.supportsDeletion) {
@@ -1484,7 +1453,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   private handlePageNavigation_(e: KeyboardEvent) {
-    if (!this.hasMatches_() || !this.dropdownNeeded || hasKeyModifiers(e)) {
+    if (!this.hasMatches() || !this.dropdownNeeded || hasKeyModifiers(e)) {
       return;
     }
 
@@ -1644,14 +1613,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     if (e.ctrlKey || e.metaKey || e.shiftKey) {
       this.closeComposebox_();
     }
-  }
-
-  /**
-   * @param e Event containing index of the match that received focus.
-   */
-  protected onMatchFocusin_(e: CustomEvent<{index: number}>) {
-    // Select the match that received focus.
-    this.$.matches.selectIndex(e.detail.index);
   }
 
   protected onMatchClick_(e: CustomEvent<{
@@ -1852,12 +1813,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.$.matches.unselect();
   }
 
-  private selectFirstMatch() {
-    if (this.result?.matches.length) {
-      this.$.matches.selectFirst();
-    }
-  }
-
   protected shouldDisableFileInputs_() {
     return !this.contextMenuEnabled || !this.showMenuOnClick ||
         this.entrypointName === 'ContextualTasks';
@@ -1867,11 +1822,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return (this.searchboxLayoutMode === 'TallBottomContext' ||
             !this.searchboxLayoutMode) &&
         this.shouldShowVoiceSearch_();
-  }
-
-  protected hasImageFiles_() {
-    return Array.from(this.files.values())
-        .some(file => file.type.includes('image'));
   }
 
   // This function is called when backend starts a file upload flow, whether

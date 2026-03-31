@@ -104,7 +104,7 @@ export function getHtml(this: ComposeboxElement) {
               .maxSuggestions="${this.maxSuggestions}"
               .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
               @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-              @match-focusin="${this.onMatchFocusin_}"
+              @match-focusin="${this.onMatchFocusin}"
               @match-click="${this.onMatchClick_}"
               ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
               .lastQueriedInput="${this.lastQueriedInput}">
