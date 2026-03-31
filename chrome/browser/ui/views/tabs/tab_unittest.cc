@@ -711,27 +711,38 @@ TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   Tab* tab = widget->SetContentsView(
       std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
-  const int min_width = ui::TouchUiController::Get()->touch_ui()
-                            ? Tab::kTouchMinimumContentsWidthForCloseButtons
-                            : Tab::kMinimumContentsWidthForCloseButtons;
-  const int width =
-      tab->tab_style_views()->GetContentsInsets().width() + min_width;
-  tab->SetBounds(0, 0, width, 50);
+
+  // Use a large enough initial width to ensure non-decluttered state.
+  const int initial_available_width = 150;
+  const int initial_width =
+      tab->tab_style_views()->GetContentsInsets().width() +
+      initial_available_width + gfx::kFaviconSize;
+  tab->parent()->SetBounds(0, 0, initial_width, 50);
   const views::View* close = GetCloseButton(tab);
 
   widget->Show();
   widget->Activate();
+  tab->GetFocusManager()->ClearFocus();
 
-  // In non-decluttered state (tab count < min), close button should be visible.
-  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabsForCloseHide -
-                            1);
+  // In non-decluttered state (available width > max), close button should be
+  // visible. We add favicon width because it's subtracted before the declutter
+  // check.
+  const int non_decluttered_available_width = 150;
+  const int non_decluttered_width =
+      tab->tab_style_views()->GetContentsInsets().width() +
+      non_decluttered_available_width + gfx::kFaviconSize;
+  tab->parent()->SetBounds(0, 0, non_decluttered_width, 50);
   tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_TRUE(close->GetVisible());
 
-  // In decluttered state (tab count >= min), close button should be hidden for
-  // an inactive, unhovered tab.
-  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabsForCloseHide);
+  // In decluttered state (available width <= max), close button should be
+  // hidden for an inactive, unhovered tab.
+  const int decluttered_available_width = 80;
+  const int decluttered_width =
+      tab->tab_style_views()->GetContentsInsets().width() +
+      decluttered_available_width + gfx::kFaviconSize;
+  tab->parent()->SetBounds(0, 0, decluttered_width, 50);
   tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_FALSE(close->GetVisible());
@@ -752,19 +763,22 @@ TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
   // If the tab is focused, the close button becomes visible and can then be
   // focused.
   tab->GetFocusManager()->SetFocusedView(tab);
+  tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_TRUE(close->GetVisible());
 
   // If focus moves to the close button, it should remain visible.
   tab->GetFocusManager()->SetFocusedView(const_cast<views::View*>(close));
+  tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_TRUE(close->GetVisible());
 
   tab->GetFocusManager()->ClearFocus();
+  tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_FALSE(close->GetVisible());
 
-  // Active tab should always show close button.
+  // Active tab should always show close button, even at decluttered width.
   controller->set_active_tab(tab);
   tab->InvalidateLayout();
   LayoutTab(tab);
