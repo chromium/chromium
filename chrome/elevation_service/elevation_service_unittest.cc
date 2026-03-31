@@ -147,8 +147,9 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeInChild) {
 
   base::CommandLine cmd(base::PathService::CheckedGet(base::DIR_EXE)
                             .Append(L"elevation_service_test_child.exe"));
-  // Dangerous switch.
+  // Dangerous switch. Try appending in two different ways.
   cmd.AppendSwitch(::switches::kDisableComponentUpdate);
+  cmd.AppendArg(base::StrCat({"/", ::switches::kDisableComponentUpdate}));
   // Safe switch. The directory used here doesn't matter since it's not going to
   // be used, but allow the test to verify that switch values are passed through
   // correctly.
@@ -158,6 +159,12 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeInChild) {
   cmd.AppendArg("-invalid-switch");
   cmd.AppendArg("another_arg");
 
+  // Try adding dangerous switch two different ways, after the `--` separator.
+  const auto command_line = base::StrCat(
+      {cmd.GetCommandLineString(), L" -- /",
+       base::SysUTF8ToWide(::switches::kDisableComponentUpdate), L" --",
+       base::SysUTF8ToWide(::switches::kDisableComponentUpdate)});
+
   base::WaitableEvent event(base::win::ScopedHandle(::CreateEventA(
       /*lpEventAttributes=*/nullptr, /*bManualReset=*/FALSE,
       /*bInitialState=*/FALSE, /*lpName=*/std::data(event_name))));
@@ -166,8 +173,8 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeInChild) {
   ULONG_PTR proc_handle;
   base::win::ScopedBstr log;
   auto res = elevator.value()->RunIsolatedChrome(
-      /*flags=*/0, std::data(cmd.GetCommandLineString()), log.Receive(),
-      &proc_handle, &last_error);
+      /*flags=*/0, std::data(command_line), log.Receive(), &proc_handle,
+      &last_error);
   EXPECT_HRESULT_SUCCEEDED(res);
   EXPECT_EQ(DWORD{ERROR_SUCCESS}, last_error);
   base::Process process(reinterpret_cast<base::ProcessHandle>(proc_handle));

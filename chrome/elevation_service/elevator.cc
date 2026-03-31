@@ -380,12 +380,15 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
 
   trusted_command_line->AppendSwitch(::switches::kIsolated);
 
-  for (const auto& arg : untrusted_command_line.GetArgs()) {
-    // Safety check.
-    if (arg[0] == L'-') {
-      continue;
+  if (!untrusted_command_line.GetArgs().empty()) {
+    // Additional arguments can come after a `--` to distinguish them from
+    // switches. The base::CommandLine argument parser already handles this
+    // internally, so ensure this behavior is matched when constructing the
+    // command line for the isolated process.
+    trusted_command_line->AppendArgNative(L"--");
+    for (const auto& arg : untrusted_command_line.GetArgs()) {
+      trusted_command_line->AppendArgNative(arg);
     }
-    trusted_command_line->AppendArgNative(arg);
   }
 
   std::wstring writeable_command_line(

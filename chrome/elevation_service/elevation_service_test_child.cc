@@ -57,7 +57,8 @@ int RunTest() {
   }
 
   const auto args = cmd_line->GetArgs();
-  if (args.size() != 2) {
+  // event_name another_arg /disable-component-update --disable-component-update
+  if (args.size() != 4) {
     return -6;
   }
 
