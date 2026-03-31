@@ -217,6 +217,13 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
       "Passkeys.IOSMigration", PasskeysMigrationStatus::kPasskeyUpdated, 0);
 
   blockWaitCompleted = false;
+
+  migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
     EXPECT_TRUE(error == nil)
@@ -370,6 +377,13 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Start migration again.
   blockWaitCompleted = false;
+
+  migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
     EXPECT_TRUE(error == nil)
@@ -449,6 +463,13 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Start migration again.
   blockWaitCompleted = false;
+
+  migrator = [[CredentialProviderMigrator alloc]
+      initWithUserDefaults:user_defaults_
+                       key:store_key_
+             passwordStore:mock_store_
+              passkeyStore:&test_passkey_model_];
+
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
     EXPECT_TRUE(error == nil)

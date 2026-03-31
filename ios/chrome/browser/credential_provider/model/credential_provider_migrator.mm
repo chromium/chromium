@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
+#import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 
 using password_manager::PasswordStoreInterface;
@@ -27,9 +28,12 @@ NSErrorDomain const kCredentialProviderMigratorErrorDomain =
 // Name of the passkey migration related histogram.
 static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
-@interface CredentialProviderMigrator () {
+@interface CredentialProviderMigrator () <PasskeyModelObserverDelegate> {
   // Passkey store.
-  raw_ptr<webauthn::PasskeyModel, DanglingUntriaged> _passkeyStore;
+  raw_ptr<webauthn::PasskeyModel> _passkeyStore;
+
+  // Observer to know when the passkey store is destroyed.
+  std::unique_ptr<PasskeyModelObserverBridge> _passkeyModelObserverBridge;
 }
 
 // Key used to retrieve the temporal storage.
@@ -60,6 +64,10 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
     _userDefaults = userDefaults;
     _passwordStore = passwordStore;
     _passkeyStore = passkeyStore;
+    if (_passkeyStore) {
+      _passkeyModelObserverBridge =
+          std::make_unique<PasskeyModelObserverBridge>(self, _passkeyStore);
+    }
   }
   return self;
 }
@@ -169,6 +177,20 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
     weakSelf.temporalStore = nil;
     completion(error == nil, error);
   }];
+}
+
+#pragma mark - PasskeyModelObserverDelegate
+
+- (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel {
+  CHECK_EQ(_passkeyStore, passkeyModel);
+  _passkeyModelObserverBridge.reset();
+  _passkeyStore = nullptr;
+}
+
+- (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel {
+}
+
+- (void)passkeyModelDidChange {
 }
 
 @end
