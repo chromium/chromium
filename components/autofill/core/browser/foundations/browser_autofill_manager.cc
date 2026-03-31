@@ -1394,6 +1394,9 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     if (suggestions.empty()) {
       continue;
     }
+    base::UmaHistogramEnumeration(
+        "Autofill.SuggestionGeneration.GeneratedFillingProduct",
+        filling_product);
     suggestions_map[filling_product] = std::move(suggestions);
   }
 

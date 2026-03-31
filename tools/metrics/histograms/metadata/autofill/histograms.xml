@@ -8286,6 +8286,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.SuggestionGeneration.GeneratedFillingProduct"
+    enum="AutofillFillingProduct" expires_after="2026-06-21">
+  <owner>kuchyn@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the filling product for which suggestions were generated. This is
+    emitted for every filling product that yields a non-empty list of
+    suggestions during the suggestion generation flow.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Suggestions.AcceptedType" enum="SuggestionType"
     expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

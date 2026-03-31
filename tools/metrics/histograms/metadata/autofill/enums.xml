@@ -2603,6 +2603,29 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillFillingProduct) -->
+
+<enum name="AutofillFillingProduct">
+  <int value="0" label="None"/>
+  <int value="1" label="Address"/>
+  <int value="2" label="CreditCard"/>
+  <int value="3" label="MerchantPromoCode"/>
+  <int value="4" label="Iban"/>
+  <int value="5" label="Autocomplete"/>
+  <int value="6" label="Password"/>
+  <int value="7" label="Compose"/>
+  <int value="8" label="PlusAddresses"/>
+  <int value="9" label="AutofillAi"/>
+  <int value="10" label="LoyaltyCard"/>
+  <int value="11" label="IdentityCredential"/>
+  <int value="12" label="DataList"/>
+  <int value="13" label="OneTimePassword"/>
+  <int value="14" label="Passkey"/>
+  <int value="15" label="AtMemory"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/filling/filling_product.h:FillingProduct) -->
+
 <enum name="AutofillFormControlType2">
   <int value="0" label="ContentEditable"/>
   <int value="1" label="InputCheckbox"/>

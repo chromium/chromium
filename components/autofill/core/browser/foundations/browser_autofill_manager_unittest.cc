@@ -9933,5 +9933,34 @@ INSTANTIATE_TEST_SUITE_P(
                              SuggestionType::kFillExistingPlusAddress}},
     }));
 
+// Tests that the `Autofill.SuggestionGeneration.GeneratedFillingProduct` metric
+// is correctly emitted for all products that have suggestions generated.
+TEST_F(BrowserAutofillManagerTest, GeneratedFillingProductMetric) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kAutofillNewSuggestionGeneration);
+
+  base::HistogramTester histogram_tester;
+
+  FormData form = CreateTestAddressFormData();
+  test_api(autofill_manager())
+      .OnIndividualSuggestionsGenerated(
+          form.global_id(), form.fields()[0].global_id(),
+          AutofillSuggestionTriggerSource::kFormControlElementClicked, {},
+          base::TimeTicks::Now(),
+          {{FillingProduct::kAddress,
+            {Suggestion(SuggestionType::kAddressEntry)}},
+           {FillingProduct::kPasskey,
+            {Suggestion(SuggestionType::kWebauthnCredential)}}});
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SuggestionGeneration.GeneratedFillingProduct",
+      FillingProduct::kAddress, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.SuggestionGeneration.GeneratedFillingProduct",
+      FillingProduct::kPasskey, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SuggestionGeneration.GeneratedFillingProduct", 2);
+}
+
 }  // namespace
 }  // namespace autofill

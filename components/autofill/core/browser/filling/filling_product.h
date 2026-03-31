@@ -14,6 +14,7 @@ namespace autofill {
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 
 // Denotes the entity that is responsible for an Autofill behavior.
+// LINT.IfChange(FillingProduct)
 enum class FillingProduct {
   // kNone is used for the suggestions that do not identify any Autofill entity.
   kNone,
@@ -34,6 +35,7 @@ enum class FillingProduct {
   kAtMemory,
   kMaxValue = kAtMemory
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillFillingProduct)
 
 FillingProduct GetFillingProductFromSuggestionType(SuggestionType type);
 
