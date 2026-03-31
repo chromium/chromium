@@ -4,17 +4,41 @@
 
 #include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
 
+#include "android_webview/common/aw_features.h"
+#include "content/public/browser/browser_thread.h"
+
 namespace android_webview {
 
 AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
     const GURL& url,
     std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-    std::unique_ptr<content::PrefetchHandle> handle)
+    std::unique_ptr<content::PrefetchHandle> prefetch_handle)
     : url_(url),
       expected_no_vary_search_(std::move(expected_no_vary_search)),
-      handle_(std::move(handle)) {}
+      prefetch_handle_(std::move(prefetch_handle)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
 
-AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() = default;
+AwPrefetchHandleWrapper::AwPrefetchHandleWrapper(
+    const GURL& url,
+    std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
+    std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle)
+    : url_(url),
+      expected_no_vary_search_(std::move(expected_no_vary_search)),
+      preprefetch_handle_(std::move(preprefetch_handle)) {}
+
+AwPrefetchHandleWrapper::~AwPrefetchHandleWrapper() {
+  if (prefetch_handle_) {
+    // Delete the handle on the UI thread since it may touch
+    // `PrefetchContainer` if it is `PrefetchHandle`.
+    if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchOffTheMainThread));
+      content::GetUIThreadTaskRunner({})->DeleteSoon(
+          FROM_HERE, std::move(prefetch_handle_));
+    }
+  }
+}
 
 const GURL& AwPrefetchHandleWrapper::GetURL() const {
   return url_;

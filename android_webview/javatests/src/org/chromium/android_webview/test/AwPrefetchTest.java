@@ -307,7 +307,22 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount() {
+    @CommandLineFlags.Add({"disable-features=WebViewPrefetchOffTheMainThread"})
+    public void
+            testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_OMTPrefetchDisabled() {
+        testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewPrefetchOffTheMainThread"})
+    public void
+            testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount_OMTPrefetchEnabled() {
+        testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount();
+    }
+
+    private void testPrefetchQueueDrainedWhenUiThreadIsFree_VerifyPrefetchExecutionCount() {
         AtomicInteger executedPrefetchCount = new AtomicInteger(0);
         AwPrefetchManager prefetchManager =
                 mActivityTestRule.getAwBrowserContext().getPrefetchManager();
@@ -374,7 +389,22 @@ public class AwPrefetchTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    public void testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl() {
+    @CommandLineFlags.Add({"disable-features=WebViewPrefetchOffTheMainThread"})
+    public void
+            testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_OMTPrefetchDisabled() {
+        testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({"enable-features=WebViewPrefetchOffTheMainThread"})
+    public void
+            testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl_OMTPrefetchEnabled() {
+        testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl();
+    }
+
+    private void testPrefetchQueueExplicitlyDrainedDuringAwContentsInitAndLoadUrl() {
         // Latch to block `AwContents` creation.
         CountDownLatch awContentsCreationLatch = new CountDownLatch(1);
         AtomicBoolean prefetchQueueDrainedDuringAwContentsConstructor = new AtomicBoolean(false);

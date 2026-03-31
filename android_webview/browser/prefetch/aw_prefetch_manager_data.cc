@@ -4,25 +4,41 @@
 
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 
+#include "android_webview/common/aw_features.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace android_webview {
 
 using content::BrowserThread;
 
-AwPrefetchManagerData::AwPrefetchManagerData() = default;
+AwPrefetchManagerData::AwPrefetchManagerData()
+    : lock_(base::FeatureList::IsEnabled(
+                features::kWebViewPrefetchOffTheMainThread)
+                ? std::make_unique<base::Lock>()
+                : nullptr) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
-AwPrefetchManagerData::~AwPrefetchManagerData() = default;
+AwPrefetchManagerData::~AwPrefetchManagerData() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+}
 
 AwPrefetchKey AwPrefetchManagerData::AddPrefetchHandle(
     std::unique_ptr<AwPrefetchHandleWrapper> prefetch_handle_wrapper) {
+  int32_t new_prefetch_key;
+
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   CHECK(prefetch_handle_wrapper);
   CHECK(max_prefetches_ > 0u);
   CHECK(all_prefetches_map_.size() < max_prefetches_);
 
-  const AwPrefetchKey new_prefetch_key = GetNextPrefetchKey();
+  new_prefetch_key = GetNextPrefetchKeyLocked();
+  // `all_prefetches_map_[new_prefetch_key]` should have no entry because
+  // `GetNextPrefetchKeyLocked()` always returns a new key.
   all_prefetches_map_[new_prefetch_key] = std::move(prefetch_handle_wrapper);
-  UpdateLastPrefetchKey(new_prefetch_key);
+  UpdateLastPrefetchKeyLocked(new_prefetch_key);
+
   return new_prefetch_key;
 }
 
@@ -30,6 +46,8 @@ bool AwPrefetchManagerData::IsPrefetchDuplicate(
     const GURL& url,
     const std::optional<net::HttpNoVarySearchData>& expected_no_vary_search)
     const {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   std::vector<const content::PrefetchDeduplicationEntry*> candidates;
   candidates.reserve(all_prefetches_map_.size());
   for (const auto& [_, prefetch_handle_wrapper] : all_prefetches_map_) {
@@ -39,44 +57,75 @@ bool AwPrefetchManagerData::IsPrefetchDuplicate(
 }
 
 void AwPrefetchManagerData::MayEvictOldestPrefetchHandleForANewRequest() {
-  if (all_prefetches_map_.size() >= max_prefetches_) {
-    int num_prefetches_to_evict =
-        all_prefetches_map_.size() - max_prefetches_ + 1;
-    auto it = all_prefetches_map_.begin();
+  std::vector<std::unique_ptr<AwPrefetchHandleWrapper>>
+      old_prefetch_handle_wrappers;
+  {
+    base::AutoLockMaybe auto_lock(lock_.get());
 
-    while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
-      // Because the keys should be sequential based on when the prefetch
-      // associated with it was added, a standard iteration should always
-      // prioritize removing the oldest entry.
-      it = all_prefetches_map_.erase(it);
-      num_prefetches_to_evict--;
+    if (all_prefetches_map_.size() >= max_prefetches_) {
+      int num_prefetches_to_evict =
+          all_prefetches_map_.size() - max_prefetches_ + 1;
+      auto it = all_prefetches_map_.begin();
+      while (num_prefetches_to_evict > 0 && it != all_prefetches_map_.end()) {
+        // Because the keys should be sequential based on when the prefetch
+        // associated with it was added, a standard iteration should always
+        // prioritize removing the oldest entry.
+        old_prefetch_handle_wrappers.push_back(std::move(it->second));
+        it = all_prefetches_map_.erase(it);
+        num_prefetches_to_evict--;
+      }
     }
   }
+
+  // `old_prefetch_handle_wrappers` is dropped here, outside of the
+  // `lock_` to prevent accidental reentrancy.
 }
 
 void AwPrefetchManagerData::CancelPrefetch(AwPrefetchKey prefetch_key) {
-  all_prefetches_map_.erase(prefetch_key);
+  std::unique_ptr<AwPrefetchHandleWrapper> old_prefetch_handle_wrapper;
+  {
+    base::AutoLockMaybe auto_lock(lock_.get());
+
+    auto it = all_prefetches_map_.find(prefetch_key);
+    if (it != all_prefetches_map_.end()) {
+      old_prefetch_handle_wrapper = std::move(it->second);
+      all_prefetches_map_.erase(it);
+    }
+  }
+
+  // `old_prefetch_handle_wrapper` is dropped here, outside of the
+  // `lock_` to prevent accidental reentrancy.
 }
 
 void AwPrefetchManagerData::SetTtlInSec(int ttl_in_sec) {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   ttl_in_sec_ = ttl_in_sec;
 }
 
 void AwPrefetchManagerData::SetMaxPrefetches(size_t max_prefetches) {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   max_prefetches_ = max_prefetches;
 }
 
 int AwPrefetchManagerData::GetTtlInSec() const {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   return ttl_in_sec_;
 }
 
 size_t AwPrefetchManagerData::GetMaxPrefetchesForTesting() const {  // IN-TEST
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   return max_prefetches_;
 }
 
 std::vector<AwPrefetchKey>
 AwPrefetchManagerData::GetAllPrefetchKeysForTesting()  // IN-TEST
     const {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   std::vector<AwPrefetchKey> prefetch_keys;
   prefetch_keys.reserve(all_prefetches_map_.size());
   for (const auto& [key, prefetch_handle_wrapper] : all_prefetches_map_) {
@@ -87,20 +136,24 @@ AwPrefetchManagerData::GetAllPrefetchKeysForTesting()  // IN-TEST
 
 AwPrefetchKey AwPrefetchManagerData::GetLastPrefetchKeyForTesting()  // IN-TEST
     const {
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   return last_prefetch_key_;
 }
 
 bool AwPrefetchManagerData::GetIsPrefetchInCacheForTesting(  // IN-TEST
     AwPrefetchKey prefetch_key) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::AutoLockMaybe auto_lock(lock_.get());
+
   return all_prefetches_map_.find(prefetch_key) != all_prefetches_map_.end();
 }
 
-AwPrefetchKey AwPrefetchManagerData::GetNextPrefetchKey() const {
+AwPrefetchKey AwPrefetchManagerData::GetNextPrefetchKeyLocked() const {
   return last_prefetch_key_ + 1;
 }
 
-void AwPrefetchManagerData::UpdateLastPrefetchKey(AwPrefetchKey new_key) {
+void AwPrefetchManagerData::UpdateLastPrefetchKeyLocked(AwPrefetchKey new_key) {
   CHECK(new_key > last_prefetch_key_);
   last_prefetch_key_ = new_key;
 }

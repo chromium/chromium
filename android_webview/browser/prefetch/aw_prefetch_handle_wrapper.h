@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/prefetch_deduplication_utils.h"
 #include "content/public/browser/prefetch_handle.h"
 #include "net/http/http_no_vary_search_data.h"
@@ -15,16 +16,17 @@
 
 namespace android_webview {
 
-// A wrapper class for `content::PrefetchHandle` owned by `AwPrefetchManager`.
+// A wrapper class for `content::PrefetchHandle` or `content::PrePrefetchHandle`
+// owned by `AwPrefetchManager`.
 //
 // Thread model:
 //
 // - Can be created on any thread, and then owned by `AwPrefetchManager`.
 // - All non-special member functions (currently getter only) can be called from
-//   any thread. Note that `handle_` is UI thread bound, not thread safe, and
-//   won't be accessed after construction.
-// - Can be destroyed on any thread, but `handle_` should be properly destroyed
-//   on the UI thread.
+//   any thread. Note that `prefetch_handle_` is UI thread bound, not thread
+//   safe, and won't be accessed after construction.
+// - Can be destroyed on any thread, but `prefetch_handle_` should be properly
+//   destroyed on the UI thread.
 //
 // Under `kWebViewPrefetchOffTheMainThread` being enabled, the deduplication is
 // performed solely by `AwPrefetchManager`'s `url_` and
@@ -38,7 +40,11 @@ class AwPrefetchHandleWrapper final
   AwPrefetchHandleWrapper(
       const GURL& url,
       std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
-      std::unique_ptr<content::PrefetchHandle> handle);
+      std::unique_ptr<content::PrefetchHandle> prefetch_handle);
+  AwPrefetchHandleWrapper(
+      const GURL& url,
+      std::optional<net::HttpNoVarySearchData> expected_no_vary_search,
+      std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle);
   ~AwPrefetchHandleWrapper() override;
 
   AwPrefetchHandleWrapper(const AwPrefetchHandleWrapper&) = delete;
@@ -55,7 +61,12 @@ class AwPrefetchHandleWrapper final
  private:
   const GURL url_;
   const std::optional<net::HttpNoVarySearchData> expected_no_vary_search_;
-  const std::unique_ptr<content::PrefetchHandle> handle_;
+
+  // Must be destructed and dereferenced only on the UI thread.
+  std::unique_ptr<content::PrefetchHandle> prefetch_handle_;
+
+  // Can be destructed on any thread.
+  const std::unique_ptr<content::PrePrefetchHandle> preprefetch_handle_;
 };
 
 }  // namespace android_webview
