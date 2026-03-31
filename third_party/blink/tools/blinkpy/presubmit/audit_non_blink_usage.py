@@ -475,6 +475,14 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/common/page/content_to_visible_time_reporter.cc',
+        ],
+        'allowed': [
+            'viz::FrameTimingDetails',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/common/page_state/page_state_serialization.cc',
         ],
         'allowed': [

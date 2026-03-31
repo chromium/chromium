@@ -57,15 +57,8 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
 
  private:
   // Records histograms and trace events for the current tab switch.
-  void RecordHistogramsAndTraceEvents(TabSwitchResult tab_switch_result,
-                                      bool show_reason_tab_switching,
-                                      bool show_reason_bfcache_restore,
-                                      base::TimeTicks presentation_timestamp);
-
-  void RecordHistogramsAndTraceEventsWithFrameTimingDetails(
+  void RecordHistogramsAndTraceEvents(
       TabSwitchResult tab_switch_result,
-      bool show_reason_tab_switching,
-      bool show_reason_bfcache_restore,
       const viz::FrameTimingDetails& frame_timing_details);
 
   // Saves the given `state` and `has_saved_frames`, and invalidates all
