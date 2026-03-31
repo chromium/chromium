@@ -466,8 +466,4 @@ public class OmniboxFeatures {
     public static boolean allowMultilineEditField() {
         return sMultilineEditField.isEnabled();
     }
-
-    public static boolean shouldJumpStartOmnibox() {
-        return isJumpStartOmniboxEnabled();
-    }
 }
