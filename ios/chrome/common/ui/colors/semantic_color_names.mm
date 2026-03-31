@@ -93,6 +93,7 @@ NSString* const kBlue700Color = @"blue_700_color";
 NSString* const kBlue900Color = @"blue_900_color";
 NSString* const kStaticBlueColor = @"static_blue_color";
 NSString* const kStaticBlue400Color = @"static_blue_400_color";
+NSString* const kStaticBlue600Color = @"static_blue_600_color";
 
 NSString* const kGreenColor = @"green_color";
 NSString* const kGreen100Color = @"green_100_color";

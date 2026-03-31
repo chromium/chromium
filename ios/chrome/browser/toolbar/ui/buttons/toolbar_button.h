@@ -20,6 +20,12 @@ using ToolbarButtonImageLoader = UIImage* (^)(void);
 // When true the button is hidden, no matter the visibility mask. Default NO.
 @property(nonatomic, assign) BOOL forceHidden;
 
+// When true, the button has a blue gradient background.
+@property(nonatomic, assign) BOOL iphHighlighted;
+
+// When true, the button has a blue dot in the top right corner.
+@property(nonatomic, assign) BOOL hasBlueDot;
+
 // The `imageLoader` for this button.
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
 

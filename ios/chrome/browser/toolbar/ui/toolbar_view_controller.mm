@@ -160,6 +160,21 @@ constexpr CGFloat kAnimationDuration = 0.2f;
   [self updateLayoutConstraints];
 }
 
+#pragma mark - PopupMenuUIUpdating
+
+- (void)updateUIForOverflowMenuIPHDisplayed {
+  _toolsMenuButton.iphHighlighted = YES;
+}
+
+- (void)updateUIForIPHDismissed {
+  _toolsMenuButton.iphHighlighted = NO;
+  _tabGridButton.iphHighlighted = NO;
+}
+
+- (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
+  _toolsMenuButton.hasBlueDot = hasBlueDot;
+}
+
 #pragma mark - ToolbarConsumer
 
 - (void)setCanGoBack:(BOOL)canGoBack {

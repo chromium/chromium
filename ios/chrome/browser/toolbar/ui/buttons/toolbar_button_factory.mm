@@ -68,8 +68,10 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
   ]];
 
   buttonsContainer.backgroundColor = ToolbarButtonColor();
-  buttonsContainer.layer.cornerRadius = backButton.layer.cornerRadius;
+  ConfigureCornerRadiusForToolbarButtonContainer(
+      buttonsContainer, buttonsContainer.traitCollection);
   buttonsContainer.clipsToBounds = YES;
+  buttonsContainer.layer.masksToBounds = YES;
   ConfigureShadowForToolbarButton(buttonsContainer);
 
   backButton.backgroundColor = [UIColor clearColor];
@@ -80,7 +82,7 @@ constexpr CGFloat kDefaultSymbolPointSize = 22;
           @[ UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class ]
                   withHandler:^(id<UITraitEnvironment>, UITraitCollection*) {
                     ConfigureCornerRadiusForToolbarButtonContainer(
-                        buttonsContainer);
+                        buttonsContainer, buttonsContainer.traitCollection);
                   }];
   return buttonsContainer;
 }

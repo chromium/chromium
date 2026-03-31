@@ -601,7 +601,8 @@
 
 - (void)updateUIForOverflowMenuIPHDisplayed {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483995532): implement this.
+    [_topToolbarViewController updateUIForOverflowMenuIPHDisplayed];
+    [_bottomToolbarViewController updateUIForOverflowMenuIPHDisplayed];
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForOverflowMenuIPHDisplayed];
@@ -610,7 +611,8 @@
 
 - (void)updateUIForIPHDismissed {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483995532): implement this.
+    [_topToolbarViewController updateUIForIPHDismissed];
+    [_bottomToolbarViewController updateUIForIPHDismissed];
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater updateUIForIPHDismissed];
@@ -619,7 +621,8 @@
 
 - (void)setOverflowMenuBlueDot:(BOOL)hasBlueDot {
   if (IsChromeNextIaEnabled()) {
-    // TODO(crbug.com/483995532): implement this.
+    [_topToolbarViewController setOverflowMenuBlueDot:hasBlueDot];
+    [_bottomToolbarViewController setOverflowMenuBlueDot:hasBlueDot];
   }
   for (id<ToolbarCoordinatee> coordinator in self.coordinators) {
     [coordinator.popupMenuUIUpdater setOverflowMenuBlueDot:hasBlueDot];

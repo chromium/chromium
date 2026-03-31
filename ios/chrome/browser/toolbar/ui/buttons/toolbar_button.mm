@@ -4,13 +4,18 @@
 
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button.h"
 
+#import "ios/chrome/browser/toolbar/ui/buttons/highlight_button_util.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_button_constants.h"
 #import "ios/chrome/browser/toolbar/ui/buttons/toolbar_buttons_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
 namespace {
 constexpr CGFloat kDisabledOpacity = 0.4;
+constexpr CGFloat kBlueDotRadius = 3;
+constexpr CGFloat kBlueDotMargin = 1;
+constexpr CGFloat kBlueDotWhiteBorderThickness = 2;
 }  // namespace
 
 @interface ToolbarButton ()
@@ -22,6 +27,9 @@ constexpr CGFloat kDisabledOpacity = 0.4;
 
 @implementation ToolbarButton {
   ToolbarButtonImageLoader _imageLoader;
+  UIView* _backgroundView;
+  UIView* _blueDotView;
+  UIView* _gradientView;
 }
 
 @synthesize image = _image;
@@ -36,9 +44,16 @@ constexpr CGFloat kDisabledOpacity = 0.4;
       [self.heightAnchor constraintEqualToAnchor:self.widthAnchor],
     ]];
 
-    self.backgroundColor = ToolbarButtonColor();
+    _backgroundView = [[UIView alloc] initWithFrame:CGRectZero];
+    _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    _backgroundView.backgroundColor = ToolbarButtonColor();
+    _backgroundView.userInteractionEnabled = NO;
+    _backgroundView.clipsToBounds = YES;
+    [self insertSubview:_backgroundView belowSubview:self.imageView];
+    AddSameConstraints(self, _backgroundView);
 
-    ConfigureCornerRadiusForToolbarButtonContainer(self);
+    ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
+                                                   self.traitCollection);
 
     ConfigureShadowForToolbarButton(self);
 
@@ -50,6 +65,11 @@ constexpr CGFloat kDisabledOpacity = 0.4;
                        withAction:@selector(updateAppearance)];
   }
   return self;
+}
+
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  [self updateMask];
 }
 
 #pragma mark - Properties
@@ -82,12 +102,90 @@ constexpr CGFloat kDisabledOpacity = 0.4;
   [self updateAppearance];
 }
 
+- (void)setIphHighlighted:(BOOL)iphHighlighted {
+  if (_iphHighlighted == iphHighlighted) {
+    return;
+  }
+  _iphHighlighted = iphHighlighted;
+  [self updateHighlight];
+}
+
+- (void)setHasBlueDot:(BOOL)hasBlueDot {
+  if (_hasBlueDot == hasBlueDot) {
+    return;
+  }
+  _hasBlueDot = hasBlueDot;
+  if (hasBlueDot && !_blueDotView) {
+    _blueDotView = [[UIView alloc] initWithFrame:CGRectZero];
+    _blueDotView.translatesAutoresizingMaskIntoConstraints = NO;
+    _blueDotView.backgroundColor = [UIColor colorNamed:kBlueColor];
+    _blueDotView.layer.cornerRadius = kBlueDotRadius;
+    // Do not add the blue dot to the background as the background will be
+    // masked.
+    [self insertSubview:_blueDotView belowSubview:self.imageView];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_blueDotView.widthAnchor constraintEqualToConstant:2 * kBlueDotRadius],
+      [_blueDotView.heightAnchor
+          constraintEqualToAnchor:_blueDotView.widthAnchor],
+      [_blueDotView.topAnchor constraintEqualToAnchor:self.topAnchor
+                                             constant:kBlueDotMargin],
+      [_blueDotView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor
+                                                  constant:-kBlueDotMargin],
+    ]];
+  }
+  _blueDotView.hidden = !hasBlueDot;
+  [self updateMask];
+  [self updateHighlight];
+}
+
 #pragma mark - Private
+
+// Updates the highlight visibility.
+- (void)updateHighlight {
+  if (_iphHighlighted && !_hasBlueDot) {
+    if (!_gradientView) {
+      _gradientView = CreateIPHGradientView();
+      [_backgroundView addSubview:_gradientView];
+      AddSameConstraints(_backgroundView, _gradientView);
+    }
+    _gradientView.hidden = NO;
+    ConfigureIPHImageStyleForImageView(self.imageView);
+  } else {
+    _gradientView.hidden = YES;
+    RemoveIPHImageStyleFromImageView(self.imageView);
+  }
+}
+
+// Updates the mask on the background for the blue dot.
+- (void)updateMask {
+  if (_hasBlueDot) {
+    CAShapeLayer* maskLayer = [CAShapeLayer layer];
+    UIBezierPath* path =
+        [UIBezierPath bezierPathWithRect:_backgroundView.bounds];
+    CGFloat centerX =
+        _backgroundView.bounds.size.width - (kBlueDotMargin + kBlueDotRadius);
+    CGFloat centerY = kBlueDotMargin + kBlueDotRadius;
+    UIBezierPath* holePath = [UIBezierPath
+        bezierPathWithArcCenter:CGPointMake(centerX, centerY)
+                         radius:(kBlueDotWhiteBorderThickness + kBlueDotRadius)
+                     startAngle:0
+                       endAngle:2 * M_PI
+                      clockwise:YES];
+    [path appendPath:holePath];
+    maskLayer.path = path.CGPath;
+    maskLayer.fillRule = kCAFillRuleEvenOdd;
+    _backgroundView.layer.mask = maskLayer;
+  } else {
+    _backgroundView.layer.mask = nil;
+  }
+}
 
 // Updates the image visibility based on the visibility of the button.
 - (void)checkImageVisibility {
   if (!self.hidden && !self.currentImage) {
     [self setImage:self.image forState:UIControlStateNormal];
+    [self updateHighlight];
   }
 }
 
@@ -132,7 +230,9 @@ constexpr CGFloat kDisabledOpacity = 0.4;
 // current size class of the UI. In windows with compact width, the
 // ToolbarButton should be square. Otherwise, they should be circular.
 - (void)updateShape {
-  ConfigureCornerRadiusForToolbarButtonContainer(self);
+  ConfigureCornerRadiusForToolbarButtonContainer(_backgroundView,
+                                                 self.traitCollection);
+  [self updateMask];
 }
 
 @end
