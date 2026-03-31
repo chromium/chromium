@@ -609,7 +609,7 @@ TEST_F(LocalFrameViewRemoteParentSimTest, ThrottledLocalRootAnimationUpdate) {
   Document* document = LocalFrameRoot().GetFrame()->GetDocument();
 
   // Emulate user-land script
-  WebString source = WebString::FromASCII(R"JS(
+  WebString source = WebString::FromAscii(R"JS(
     let div = document.querySelector('div');
     let kf = [ { transform: 'rotate(0)' }, { transform: 'rotate(180deg)' } ];
     let tm = { duration: 1000, iterations: Infinity };

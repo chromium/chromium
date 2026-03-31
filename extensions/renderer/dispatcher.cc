@@ -315,14 +315,14 @@ Dispatcher::Dispatcher(
   WorkerThreadDispatcher::Get()->Init(RenderThread::Get());
 
   // Register WebSecurityPolicy allowlists for the chrome-extension:// scheme.
-  WebString extension_scheme(WebString::FromASCII(kExtensionScheme));
+  WebString extension_scheme(WebString::FromAscii(kExtensionScheme));
 
   // Extension resources are HTTP-like and safe to expose to the fetch API. The
   // rules for the fetch API are consistent with XHR.
   WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(extension_scheme);
 
   // Register WebSecurityPolicy allowlists for the file:// scheme.
-  WebString file_scheme(WebString::FromASCII(url::kFileScheme));
+  WebString file_scheme(WebString::FromAscii(url::kFileScheme));
 
   // Extensions are allowed to make cross-origin requests to file scheme iff the
   // user explicitly grants them access post-installation in the

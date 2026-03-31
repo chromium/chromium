@@ -847,15 +847,14 @@ void RenderThreadImpl::InitializeRenderer(
 
 void RenderThreadImpl::RegisterSchemes() {
   // chrome:
-  WebString chrome_scheme(WebString::FromASCII(kChromeUIScheme));
+  WebString chrome_scheme(WebString::FromAscii(kChromeUIScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       chrome_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsWebUI(chrome_scheme);
 
-
   WebString chrome_untrusted_scheme(
-      WebString::FromASCII(kChromeUIUntrustedScheme));
+      WebString::FromAscii(kChromeUIUntrustedScheme));
 
   // chrome-untrusted:
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
@@ -878,24 +877,24 @@ void RenderThreadImpl::RegisterSchemes() {
   }
 
   // devtools:
-  WebString devtools_scheme(WebString::FromASCII(kChromeDevToolsScheme));
+  WebString devtools_scheme(WebString::FromAscii(kChromeDevToolsScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(devtools_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsSupportingFetchAPI(devtools_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(
       devtools_scheme);
 
   // view-source:
-  WebString view_source_scheme(WebString::FromASCII(kViewSourceScheme));
+  WebString view_source_scheme(WebString::FromAscii(kViewSourceScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(view_source_scheme);
 
   // chrome-error:
-  WebString error_scheme(WebString::FromASCII(kChromeErrorScheme));
+  WebString error_scheme(WebString::FromAscii(kChromeErrorScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(error_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsNotAllowingJavascriptURLs(error_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsError(error_scheme);
 
   // googlechrome:
-  WebString google_chrome_scheme(WebString::FromASCII(kGoogleChromeScheme));
+  WebString google_chrome_scheme(WebString::FromAscii(kGoogleChromeScheme));
   WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(google_chrome_scheme);
 }
 

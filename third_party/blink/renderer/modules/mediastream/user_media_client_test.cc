@@ -1800,7 +1800,7 @@ TEST_F(UserMediaClientTest, IsCapturing) {
 TEST_F(UserMediaClientTest, DesktopCaptureChangeSource) {
   blink::MockConstraintFactory factory;
   factory.basic().media_stream_source.SetExact(
-      blink::WebString::FromASCII(blink::kMediaStreamSourceDesktop));
+      blink::WebString::FromAscii(blink::kMediaStreamSourceDesktop));
   MediaConstraints audio_constraints = factory.CreateMediaConstraints();
   MediaConstraints video_constraints = factory.CreateMediaConstraints();
   UserMediaRequest* request =

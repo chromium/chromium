@@ -268,7 +268,7 @@ bool ShowPredictions(const WebDocument& document,
       });
     }
 
-    WebString kAutocomplete = WebString::FromASCII("autocomplete");
+    WebString kAutocomplete = WebString::FromAscii("autocomplete");
     if (element.HasAttribute(kAutocomplete)) {
       autofill_info +=
           "\nautocomplete: " +
@@ -1389,7 +1389,7 @@ void AutofillAgent::ApplyFieldAction(
               frame->SetEditableSelectionOffsets(selection.StartOffset() - 2,
                                                  selection.StartOffset());
             }
-            frame->ExecuteCommand(WebString::FromASCII("InsertText"),
+            frame->ExecuteCommand(WebString::FromAscii("InsertText"),
                                   WebString::FromUTF16(value));
             break;
         }

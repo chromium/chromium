@@ -565,9 +565,9 @@ DiscreteSet<bool> RescaleSetFromConstraint(
   DCHECK_EQ(resize_mode_constraint.GetName(),
             MediaTrackConstraintSetPlatform().resize_mode.GetName());
   bool contains_none = resize_mode_constraint.Matches(
-      WebString::FromASCII(WebMediaStreamTrack::kResizeModeNone));
+      WebString::FromAscii(WebMediaStreamTrack::kResizeModeNone));
   bool contains_rescale = resize_mode_constraint.Matches(
-      WebString::FromASCII(WebMediaStreamTrack::kResizeModeRescale));
+      WebString::FromAscii(WebMediaStreamTrack::kResizeModeRescale));
   if (resize_mode_constraint.Exact().empty() ||
       (contains_none && contains_rescale)) {
     return DiscreteSet<bool>::UniversalSet();

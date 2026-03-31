@@ -1785,7 +1785,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   constraint_factory_.basic().width.SetIdeal(kIdealWidth);
   constraint_factory_.basic().height.SetIdeal(kIdealHeight);
   constraint_factory_.basic().resize_mode.SetIdeal(
-      WebString::FromASCII("none"));
+      WebString::FromAscii("none"));
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   // A native mode of 640x480 should be selected since it is the closest native
@@ -1812,7 +1812,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   constraint_factory_.basic().width.SetIdeal(kIdealWidth);
   constraint_factory_.basic().height.SetIdeal(kIdealHeight);
   constraint_factory_.basic().resize_mode.SetIdeal(
-      WebString::FromASCII("none"));
+      WebString::FromAscii("none"));
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   // A native mode of 640x480 should be selected since it is the closest native
@@ -1837,7 +1837,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, IdealResizeFarFromNative) {
   constraint_factory_.basic().width.SetIdeal(1);
   constraint_factory_.basic().height.SetIdeal(1);
   constraint_factory_.basic().resize_mode.SetIdeal(
-      WebString::FromASCII("none"));
+      WebString::FromAscii("none"));
   auto result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   // The native mode closest to 1x1 is 40x30 with the low-res device.
@@ -1855,7 +1855,7 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, IdealResizeFarFromNative) {
   constraint_factory_.Reset();
   constraint_factory_.basic().width.SetIdeal(1);
   constraint_factory_.basic().resize_mode.SetIdeal(
-      WebString::FromASCII("none"));
+      WebString::FromAscii("none"));
   result = SelectSettings();
   EXPECT_TRUE(result.HasValue());
   // The native mode closest to 1x1 is 40x30 with the low-res device.

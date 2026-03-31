@@ -521,7 +521,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
-        blink::WebString::FromASCII("Arial"), 12);
+        blink::WebString::FromAscii("Arial"), 12);
 #endif
 
     // TODO(crbug.com/41401202): Remove workaround preventing non-test classes
@@ -4341,13 +4341,13 @@ TEST_F(PasswordAutofillAgentTest, ShowAutofillSignaturesFlag) {
     LoadHTML(dom_with_dom_subtree_modified_listener.c_str());
     WebDocument document = GetMainFrame()->GetDocument();
     WebFormElement form_element =
-        document.GetElementById(WebString::FromASCII("LoginTestForm"))
+        document.GetElementById(WebString::FromAscii("LoginTestForm"))
             .To<WebFormElement>();
     ASSERT_TRUE(form_element);
 
     // Check only form signature attribute. The full test is in
     // "PasswordGenerationAgentTestForHtmlAnnotation.*".
-    WebString form_signature_attribute = WebString::FromASCII("form_signature");
+    WebString form_signature_attribute = WebString::FromAscii("form_signature");
     EXPECT_EQ(form_element.HasAttribute(form_signature_attribute),
               show_signatures);
   }

@@ -495,7 +495,7 @@ void FillNavigationParamsRequest(
   navigation_params->url = !commit_params.original_url.is_empty()
                                ? commit_params.original_url
                                : common_params.url;
-  navigation_params->http_method = WebString::FromASCII(
+  navigation_params->http_method = WebString::FromAscii(
       !commit_params.original_method.empty() ? commit_params.original_method
                                              : common_params.method);
 
@@ -516,7 +516,7 @@ void FillNavigationParamsRequest(
         blink::GetWebHTTPBodyForRequestBody(*common_params.post_data);
     if (!commit_params.post_content_type.empty()) {
       navigation_params->http_content_type =
-          WebString::FromASCII(commit_params.post_content_type);
+          WebString::FromAscii(commit_params.post_content_type);
     }
   }
 
@@ -557,7 +557,7 @@ void FillNavigationParamsRequest(
       common_params.has_possibly_filtered_user_gesture;
 
   navigation_params->force_enabled_origin_trials = base::ToVector(
-      commit_params.force_enabled_origin_trials, &WebString::FromASCII);
+      commit_params.force_enabled_origin_trials, &WebString::FromAscii);
 
   navigation_params->early_hints_preloaded_resources = base::ToVector(
       commit_params.early_hints_preloaded_resources, blink::ToWebURL);
@@ -1031,7 +1031,7 @@ void FillMiscNavigationParams(
   }
 
   navigation_params->reduced_accept_language =
-      WebString::FromASCII(commit_params.reduced_accept_language);
+      WebString::FromAscii(commit_params.reduced_accept_language);
   navigation_params->enabled_client_hints.reserve(
       commit_params.enabled_client_hints.size());
   for (auto enabled_hint : commit_params.enabled_client_hints)
@@ -3078,7 +3078,7 @@ void RenderFrameImpl::CommitFailedNavigation(
   // later replayed to update the method. However, in the case of an error page
   // load, the redirects are neither populated nor replayed. Hence |http_method|
   // needs to be manually set to the final method.
-  navigation_params->http_method = WebString::FromASCII(common_params->method);
+  navigation_params->http_method = WebString::FromAscii(common_params->method);
   navigation_params->error_code = error_code;
 
   // This is already checked in `NavigationRequest::OnRequestFailedInternal` and

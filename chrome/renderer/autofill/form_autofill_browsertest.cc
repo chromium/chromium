@@ -362,7 +362,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     // Autofill uses the system font to render suggestion previews. On Windows
     // an extra step is required to ensure that the system font is configured.
     blink::WebFontRendering::SetMenuFontMetrics(
-        blink::WebString::FromASCII("Arial"), 12);
+        blink::WebString::FromAscii("Arial"), 12);
 #endif
   }
 
@@ -1104,7 +1104,7 @@ class FormAutofillTest : public test::AutofillRendererTest {
     WebInputElement input_element = GetInputElementById("firstname");
 
     // Simulate typing by modifying the field value.
-    input_element.SetValue(WebString::FromASCII("Wy"));
+    input_element.SetValue(WebString::FromAscii("Wy"));
 
     // Find the form that contains the input element.
     FormData form = FindForm(input_element);
@@ -1663,11 +1663,11 @@ class FormAutofillTest : public test::AutofillRendererTest {
     }
 
     // Set the suggested values on two of the elements.
-    firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
-    lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    firstname.SetSuggestedValue(WebString::FromAscii("Wyatt"));
+    lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+    elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
 
     std::vector<bool> is_value_empty(elements.size());
     for (size_t i = 0; i < elements.size(); ++i) {
@@ -1713,11 +1713,11 @@ class FormAutofillTest : public test::AutofillRendererTest {
     }
 
     // Set the suggested values on all of the elements.
-    firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
-    lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    firstname.SetSuggestedValue(WebString::FromAscii("Wyatt"));
+    lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+    elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
 
     // Clear the previewed fields.
     ClearPreviewedElements(elements);
@@ -1763,11 +1763,11 @@ class FormAutofillTest : public test::AutofillRendererTest {
     }
 
     // Set the suggested values on all of the elements.
-    firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
-    lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    firstname.SetSuggestedValue(WebString::FromAscii("Wyatt"));
+    lastname.SetSuggestedValue(WebString::FromAscii("Earp"));
+    elements[2].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromAscii("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromAscii("650-777-9999"));
 
     // Clear the previewed fields.
     ClearPreviewedElements(elements);

@@ -47,9 +47,9 @@ const int kNumDefaultDistanceEntries = 5;
 WebString ToWebString(mojom::blink::FacingMode facing_mode) {
   switch (facing_mode) {
     case mojom::blink::FacingMode::kUser:
-      return WebString::FromASCII("user");
+      return WebString::FromAscii("user");
     case mojom::blink::FacingMode::kEnvironment:
-      return WebString::FromASCII("environment");
+      return WebString::FromAscii("environment");
     default:
       return WebString();
   }

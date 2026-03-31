@@ -109,7 +109,7 @@ void CompleteWebContentDecryptionModuleResult(
   if (!cdm) {
     result->CompleteWithError(
         kWebContentDecryptionModuleExceptionNotSupportedError, 0,
-        WebString::FromASCII(ConvertCreateCdmStatusToString(status)));
+        WebString::FromAscii(ConvertCreateCdmStatusToString(status)));
     return;
   }
 

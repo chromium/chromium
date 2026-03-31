@@ -94,7 +94,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
 
   void ExecuteScript(const std::string& script) {
     WebScriptSource source =
-        WebScriptSource(blink::WebString::FromASCII(script));
+        WebScriptSource(blink::WebString::FromAscii(script));
     GetMainFrame()->ExecuteScript(source);
   }
 
@@ -113,7 +113,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
  private:
   double ExecuteScriptAndGetNumberResult(const std::string& script) {
     WebScriptSource source =
-        WebScriptSource(blink::WebString::FromASCII(script));
+        WebScriptSource(blink::WebString::FromAscii(script));
     v8::HandleScope handle_scope(
         GetMainFrame()->GetAgentGroupScheduler()->Isolate());
     v8::Local<v8::Value> result =
@@ -128,7 +128,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
 
   bool ExecuteScriptAndGetBoolResult(const std::string& script) {
     WebScriptSource source =
-        WebScriptSource(blink::WebString::FromASCII(script));
+        WebScriptSource(blink::WebString::FromAscii(script));
     v8::HandleScope handle_scope(
         GetMainFrame()->GetAgentGroupScheduler()->Isolate());
     v8::Local<v8::Value> result =

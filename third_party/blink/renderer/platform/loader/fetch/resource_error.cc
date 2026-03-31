@@ -285,7 +285,7 @@ String DescriptionForBlockedByClientOrResponse(
     int error,
     const std::optional<blink::ResourceRequestBlockedReason>& reason) {
   if (!reason || *reason == ResourceRequestBlockedReason::kOther)
-    return WebString::FromASCII(net::ErrorToString(error));
+    return WebString::FromAscii(net::ErrorToString(error));
   std::string detail;
   switch (*reason) {
     case ResourceRequestBlockedReason::kOther:
@@ -342,13 +342,13 @@ String DescriptionForBlockedByClientOrResponse(
     case ResourceRequestBlockedReason::kSRIMessageSignatureMismatch:
       detail = "SRIMessageSignatureMismatch";
   }
-  return WebString::FromASCII(net::ErrorToString(error) + "." + detail);
+  return WebString::FromAscii(net::ErrorToString(error) + "." + detail);
 }
 }  // namespace
 
 void ResourceError::InitializeDescription() {
   if (error_code_ == net::ERR_TEMPORARILY_THROTTLED) {
-    localized_description_ = WebString::FromASCII(kThrottledErrorDescription);
+    localized_description_ = WebString::FromAscii(kThrottledErrorDescription);
   } else if (error_code_ == net::ERR_BLOCKED_BY_CLIENT ||
              error_code_ == net::ERR_BLOCKED_BY_RESPONSE) {
     std::optional<ResourceRequestBlockedReason> reason =
@@ -356,7 +356,7 @@ void ResourceError::InitializeDescription() {
     localized_description_ =
         DescriptionForBlockedByClientOrResponse(error_code_, reason);
   } else {
-    localized_description_ = WebString::FromASCII(
+    localized_description_ = WebString::FromAscii(
         net::ExtendedErrorToString(error_code_, extended_error_code_));
   }
 }

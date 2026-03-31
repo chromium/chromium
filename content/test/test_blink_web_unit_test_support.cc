@@ -154,27 +154,27 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
   // Returns placeholder strings to check if they are correctly localized.
   switch (resource_id) {
     case IDS_FORM_FILE_NO_FILE_LABEL:
-      return WebString::FromASCII("<<NoFileChosenLabel>>");
+      return WebString::FromAscii("<<NoFileChosenLabel>>");
     case IDS_FORM_OTHER_DATE_LABEL:
-      return WebString::FromASCII("<<OtherDate>>");
+      return WebString::FromAscii("<<OtherDate>>");
     case IDS_FORM_OTHER_MONTH_LABEL:
-      return WebString::FromASCII("<<OtherMonth>>");
+      return WebString::FromAscii("<<OtherMonth>>");
     case IDS_FORM_OTHER_WEEK_LABEL:
-      return WebString::FromASCII("<<OtherWeek>>");
+      return WebString::FromAscii("<<OtherWeek>>");
     case IDS_FORM_CALENDAR_CLEAR:
-      return WebString::FromASCII("<<Clear>>");
+      return WebString::FromAscii("<<Clear>>");
     case IDS_FORM_CALENDAR_TODAY:
-      return WebString::FromASCII("<<Today>>");
+      return WebString::FromAscii("<<Today>>");
     case IDS_FORM_THIS_MONTH_LABEL:
-      return WebString::FromASCII("<<ThisMonth>>");
+      return WebString::FromAscii("<<ThisMonth>>");
     case IDS_FORM_THIS_WEEK_LABEL:
-      return WebString::FromASCII("<<ThisWeek>>");
+      return WebString::FromAscii("<<ThisWeek>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING:
-      return WebString::FromASCII("<<ValidationValueMissing>>");
+      return WebString::FromAscii("<<ValidationValueMissing>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING_SELECT:
-      return WebString::FromASCII("<<ValidationValueMissingForSelect>>");
+      return WebString::FromAscii("<<ValidationValueMissingForSelect>>");
     case IDS_FORM_INPUT_WEEK_TEMPLATE:
-      return WebString::FromASCII("Week $2, $1");
+      return WebString::FromAscii("Week $2, $1");
     default:
       return blink::WebString();
   }
@@ -185,11 +185,11 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     const blink::WebString& value) {
   switch (resource_id) {
     case IDS_FORM_VALIDATION_RANGE_UNDERFLOW:
-      return blink::WebString::FromASCII("range underflow");
+      return blink::WebString::FromAscii("range underflow");
     case IDS_FORM_VALIDATION_RANGE_OVERFLOW:
-      return blink::WebString::FromASCII("range overflow");
+      return blink::WebString::FromAscii("range overflow");
     case IDS_FORM_SELECT_MENU_LIST_TEXT:
-      return blink::WebString::FromASCII(value.Ascii() + " selected");
+      return blink::WebString::FromAscii(value.Ascii() + " selected");
   }
 
   return BlinkPlatformImpl::QueryLocalizedString(resource_id, value);
@@ -201,16 +201,16 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     const blink::WebString& value2) {
   switch (resource_id) {
     case IDS_FORM_VALIDATION_TOO_LONG:
-      return blink::WebString::FromASCII("too long");
+      return blink::WebString::FromAscii("too long");
     case IDS_FORM_VALIDATION_STEP_MISMATCH:
-      return blink::WebString::FromASCII("step mismatch");
+      return blink::WebString::FromAscii("step mismatch");
   }
 
   return BlinkPlatformImpl::QueryLocalizedString(resource_id, value1, value2);
 }
 
 blink::WebString TestBlinkWebUnitTestSupport::DefaultLocale() {
-  return blink::WebString::FromASCII("en-US");
+  return blink::WebString::FromAscii("en-US");
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

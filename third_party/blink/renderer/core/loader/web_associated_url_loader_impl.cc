@@ -241,7 +241,7 @@ void WebAssociatedURLLoaderImpl::ClientAdapter::DidReceiveResponse(
   // If there are blocked headers, copy the response so we can remove them.
   WebURLResponse validated_response = WrappedResourceResponse(response);
   for (const auto& header : blocked_headers)
-    validated_response.ClearHttpHeaderField(WebString::FromASCII(header));
+    validated_response.ClearHttpHeaderField(WebString::FromAscii(header));
   client_->DidReceiveResponse(validated_response);
 }
 

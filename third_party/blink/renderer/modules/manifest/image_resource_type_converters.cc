@@ -27,7 +27,7 @@ using blink::WebString;
 blink::Vector<gfx::Size> ParseSizes(const blink::String& sizes) {
   std::vector<gfx::Size> parsed_sizes =
       blink::WebIconSizesParser::ParseIconSizes(
-          WebString::FromASCII(sizes.Ascii()));
+          WebString::FromAscii(sizes.Ascii()));
   blink::HashSet<std::pair<int, int>,
                  blink::PairHashTraits<blink::IntWithZeroKeyHashTraits<int>,
                                        blink::IntWithZeroKeyHashTraits<int>>>

@@ -1568,7 +1568,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetMinimumFontSize(prefs.minimum_font_size);
   settings->SetMinimumLogicalFontSize(prefs.minimum_logical_font_size);
   settings->SetDefaultTextEncodingName(
-      WebString::FromASCII(prefs.default_encoding));
+      WebString::FromAscii(prefs.default_encoding));
   settings->SetJavaScriptEnabled(prefs.javascript_enabled);
   settings->SetWebSecurityEnabled(prefs.web_security_enabled);
   settings->SetLoadsImagesAutomatically(prefs.loads_images_automatically);
@@ -1702,24 +1702,24 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
         WebSettings::TextTrackKindUserPreference::kDefault);
   }
   settings->SetTextTrackBackgroundColor(
-      WebString::FromASCII(prefs.text_track_background_color));
+      WebString::FromAscii(prefs.text_track_background_color));
   settings->SetTextTrackTextColor(
-      WebString::FromASCII(prefs.text_track_text_color));
+      WebString::FromAscii(prefs.text_track_text_color));
   settings->SetTextTrackTextSize(
-      WebString::FromASCII(prefs.text_track_text_size));
+      WebString::FromAscii(prefs.text_track_text_size));
   settings->SetTextTrackTextShadow(
-      WebString::FromASCII(prefs.text_track_text_shadow));
+      WebString::FromAscii(prefs.text_track_text_shadow));
   settings->SetTextTrackFontFamily(
-      WebString::FromASCII(prefs.text_track_font_family));
+      WebString::FromAscii(prefs.text_track_font_family));
   settings->SetTextTrackFontStyle(
-      WebString::FromASCII(prefs.text_track_font_style));
+      WebString::FromAscii(prefs.text_track_font_style));
   settings->SetTextTrackFontVariant(
-      WebString::FromASCII(prefs.text_track_font_variant));
+      WebString::FromAscii(prefs.text_track_font_variant));
   settings->SetTextTrackMarginPercentage(prefs.text_track_margin_percentage);
   settings->SetTextTrackWindowColor(
-      WebString::FromASCII(prefs.text_track_window_color));
+      WebString::FromAscii(prefs.text_track_window_color));
   settings->SetTextTrackWindowRadius(
-      WebString::FromASCII(prefs.text_track_window_radius));
+      WebString::FromAscii(prefs.text_track_window_radius));
 
   // Needs to happen before SetDefaultPageScaleLimits below since that'll
   // recalculate the final page scale limits and that depends on this setting.
@@ -1739,7 +1739,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetDontSendKeyEventsToJavascript(
       prefs.dont_send_key_events_to_javascript);
-  settings->SetWebAppScope(WebString::FromASCII(prefs.web_app_scope.spec()));
+  settings->SetWebAppScope(WebString::FromAscii(prefs.web_app_scope.spec()));
 
 #if BUILDFLAG(IS_ANDROID)
   settings->SetAllowCustomScrollbarInMainFrame(false);
@@ -1750,7 +1750,7 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetDeviceScaleAdjustment(prefs.device_scale_adjustment);
   web_view_impl->SetIgnoreViewportTagScaleLimits(prefs.force_enable_zoom);
   settings->SetDefaultVideoPosterURL(
-      WebString::FromASCII(prefs.default_video_poster_url.spec()));
+      WebString::FromAscii(prefs.default_video_poster_url.spec()));
   settings->SetSupportDeprecatedTargetDensityDPI(
       prefs.support_deprecated_target_density_dpi);
   settings->SetWideViewportQuirkEnabled(prefs.wide_viewport_quirk);

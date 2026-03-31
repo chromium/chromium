@@ -92,7 +92,7 @@ void WebServiceWorkerProviderImpl::RegisterServiceWorker(
       script_url.possibly_invalid_spec().size() > url::kMaxURLChars) {
     callbacks->OnError(blink::WebServiceWorkerError(
         blink::mojom::ServiceWorkerErrorType::kSecurity,
-        blink::WebString::FromASCII(
+        blink::WebString::FromAscii(
             error_prefix + "The provided scriptURL or scope is too long.")));
     return;
   }
@@ -119,7 +119,7 @@ void WebServiceWorkerProviderImpl::GetRegistration(
   if (document_url.possibly_invalid_spec().size() > url::kMaxURLChars) {
     callbacks->OnError(blink::WebServiceWorkerError(
         blink::mojom::ServiceWorkerErrorType::kSecurity,
-        blink::WebString::FromASCII(error_prefix +
+        blink::WebString::FromAscii(error_prefix +
                                     "The provided documentURL is too long.")));
     return;
   }
@@ -202,7 +202,7 @@ void WebServiceWorkerProviderImpl::OnRegistered(
     DCHECK(error_msg);
     DCHECK(!registration);
     callbacks->OnError(blink::WebServiceWorkerError(
-        error, blink::WebString::FromASCII(*error_msg)));
+        error, blink::WebString::FromAscii(*error_msg)));
     return;
   }
 
@@ -228,7 +228,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     DCHECK(error_msg);
     DCHECK(!registration);
     callbacks->OnError(blink::WebServiceWorkerError(
-        error, blink::WebString::FromASCII(*error_msg)));
+        error, blink::WebString::FromAscii(*error_msg)));
     return;
   }
 
@@ -258,7 +258,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
     DCHECK(error_msg);
     DCHECK(!infos);
     callbacks->OnError(blink::WebServiceWorkerError(
-        error, blink::WebString::FromASCII(*error_msg)));
+        error, blink::WebString::FromAscii(*error_msg)));
     return;
   }
 

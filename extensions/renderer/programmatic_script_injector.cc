@@ -156,7 +156,7 @@ ProgrammaticScriptInjector::GetCssSources(
   for (const auto& source : css_injection->sources) {
     blink::WebStyleSheetKey style_sheet_key;
     if (source->key)
-      style_sheet_key = blink::WebString::FromASCII(*source->key);
+      style_sheet_key = blink::WebString::FromAscii(*source->key);
     sources.push_back(
         CSSSource{blink::WebString::FromUTF8(source->code), style_sheet_key});
   }

@@ -3409,8 +3409,8 @@ void TestRunner::SetMainWindowAndTestConfiguration(
       command_line->GetSwitchValueASCII(switches::kWebSettingsForTesting);
   for (auto [key, value] :
        TestRunnerUtils::ParseWebSettingsString(web_settings_switch_value)) {
-    view->GetSettings()->SetFromStrings(blink::WebString::FromASCII(key),
-                                        blink::WebString::FromASCII(value));
+    view->GetSettings()->SetFromStrings(blink::WebString::FromAscii(key),
+                                        blink::WebString::FromAscii(value));
   }
 
   if (command_line->HasSwitch(switches::kTargetDeviceScaleForTesting)) {

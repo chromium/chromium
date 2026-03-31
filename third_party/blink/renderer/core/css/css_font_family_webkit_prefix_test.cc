@@ -53,7 +53,7 @@ class CSSFontFamilyWebKitPrefixTest : public SimTest {
     // An extra step is required to ensure that the system font is configured.
     // TODO(crbug.com/969622): Remove this.
     blink::WebFontRendering::SetMenuFontMetrics(
-        blink::WebString::FromASCII("Arial"), 12);
+        blink::WebString::FromAscii("Arial"), 12);
 #endif
   }
 

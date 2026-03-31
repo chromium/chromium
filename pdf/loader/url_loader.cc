@@ -97,7 +97,7 @@ void UrlLoader::Open(const UrlRequest& request, OpenCallback callback) {
   blink::WebURLRequest blink_request;
   blink_request.SetUrl(
       client_->CompleteURL(blink::WebString::FromUTF8(request.url)));
-  blink_request.SetHttpMethod(blink::WebString::FromASCII(request.method));
+  blink_request.SetHttpMethod(blink::WebString::FromAscii(request.method));
 
   blink_request.SetSiteForCookies(client_->SiteForCookies());
   blink_request.SetSkipServiceWorker(true);

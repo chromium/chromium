@@ -413,7 +413,7 @@ bool RendererBlinkPlatformImpl::IsolateStartsInBackground() {
 }
 
 WebString RendererBlinkPlatformImpl::DefaultLocale() {
-  return WebString::FromASCII(RenderThread::Get()->GetLocale());
+  return WebString::FromAscii(RenderThread::Get()->GetLocale());
 }
 
 void RendererBlinkPlatformImpl::SetSuddenTerminationAllowed(bool allowed) {

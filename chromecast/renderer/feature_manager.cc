@@ -162,7 +162,7 @@ void FeatureManager::SetupAdditionalSecureOrigin() {
   LOG(INFO) << "Treat origin " << dev_origin_ << " as secure origin";
 
   blink::WebSecurityPolicy::AddSchemeToSecureContextSafelist(
-      blink::WebString::FromASCII(dev_origin_.scheme()));
+      blink::WebString::FromAscii(dev_origin_.scheme()));
 
   network::SecureOriginAllowlist::GetInstance().SetAuxiliaryAllowlist(
       dev_origin_.spec(), nullptr);

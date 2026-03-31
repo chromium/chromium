@@ -434,8 +434,8 @@ void AnnotateFieldWithParsingResult(
   // AnnotateFieldWithParsingResult is triggered via a call from the the
   // browser. This means that we should not be in a ScriptForbiddenScope.
   element.SetAttribute(
-      WebString::FromASCII(kDebugAttributeForParserAnnotations),
-      WebString::FromASCII(password_managers_annotation));
+      WebString::FromAscii(kDebugAttributeForParserAnnotations),
+      WebString::FromAscii(password_managers_annotation));
 
   if (!base::FeatureList::IsEnabled(
           features::debug::kAutofillShowTypePredictions)) {

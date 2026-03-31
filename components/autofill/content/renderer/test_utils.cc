@@ -28,7 +28,7 @@ using AllowNull = base::StrongAlias<struct AllowNullTag, bool>;
 WebElement GetElementById(const WebDocument& doc,
                           std::string_view id,
                           AllowNull allow_null) {
-  WebElement e = doc.GetElementById(WebString::FromASCII(std::string(id)));
+  WebElement e = doc.GetElementById(WebString::FromAscii(std::string(id)));
   CHECK(allow_null || e);
   return e;
 }
@@ -37,7 +37,7 @@ WebElement GetElementById(const WebNode& node,
                           std::string_view id,
                           AllowNull allow_null) {
   WebElement e =
-      node.QuerySelector(WebString::FromASCII(base::StrCat({"#", id})));
+      node.QuerySelector(WebString::FromAscii(base::StrCat({"#", id})));
   CHECK(allow_null || e);
   return e;
 }

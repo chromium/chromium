@@ -169,7 +169,7 @@ WebURLResponse WebURLResponse::Create(
           : WebString());
 
   response.SetDnsAliases(
-      base::ToVector(head.dns_aliases, &WebString::FromASCII));
+      base::ToVector(head.dns_aliases, &WebString::FromAscii));
   response.SetRemoteIPEndpoint(head.remote_endpoint);
   response.SetAddressSpace(head.response_address_space);
   response.SetClientAddressSpace(head.client_address_space);

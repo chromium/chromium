@@ -90,7 +90,7 @@ class WebServiceWorkerContextProxy {
   template <typename Interface>
   void GetRemoteAssociatedInterface(
       mojo::PendingAssociatedReceiver<Interface> receiver) {
-    GetRemoteAssociatedInterface(WebString::FromASCII(Interface::Name_),
+    GetRemoteAssociatedInterface(WebString::FromAscii(Interface::Name_),
                                  receiver.PassHandle());
   }
 

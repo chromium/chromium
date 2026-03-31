@@ -296,7 +296,7 @@ class WebFormControlElementGetOwningFormForAutofillTest
       const DocumentOrShadowRoot& document_or_shadow_root,
       std::string_view id) {
     return WebFormElement(DynamicTo<HTMLFormElement>(
-        document_or_shadow_root.getElementById(WebString::FromASCII(id))));
+        document_or_shadow_root.getElementById(WebString::FromAscii(id))));
   }  // namespace blink
 
   template <typename DocumentOrShadowRoot>
@@ -304,7 +304,7 @@ class WebFormControlElementGetOwningFormForAutofillTest
       const DocumentOrShadowRoot& document_or_shadow_root,
       std::string_view id) {
     return WebFormControlElement(DynamicTo<HTMLFormControlElement>(
-        document_or_shadow_root.getElementById(WebString::FromASCII(id))));
+        document_or_shadow_root.getElementById(WebString::FromAscii(id))));
   }
 };
 
