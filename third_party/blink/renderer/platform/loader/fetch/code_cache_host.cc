@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/loader/code_cache_util.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -101,6 +102,9 @@ class CodeCacheWithPersistentCacheHostImpl
 
   std::optional<mojo_base::BigBuffer> FetchInlineScriptCacheSync(
       base::span<const uint8_t, kSha256Bytes> source_hash) override {
+    TRACE_EVENT(
+        "loading",
+        "CodeCacheWithPersistentCacheHostImpl::FetchInlineScriptCacheSync");
     CHECK(features::IsInlineScriptCacheEnabled());
     scoped_refptr fetcher = base::MakeRefCounted<InlineScriptCacheFetcher>();
     return fetcher->FetchAsyncAndAwaitForResult(
@@ -233,6 +237,8 @@ class CodeCacheWithPersistentCacheHostImpl
     void FetchCachedCodeForSourceText(
         base::HeapArray<uint8_t> source_hash,
         base::OnceCallback<void(mojo_base::BigBuffer)> callback) {
+      TRACE_EVENT("loading",
+                  "AsyncCodeCacheHost::FetchCachedCodeForSourceText");
       javascript_cache_.FetchCachedCodeForSourceText(source_hash,
                                                      std::move(callback));
     }
@@ -561,6 +567,7 @@ class CodeCacheWithPersistentCacheHostImpl
 
     // Must be called in a worker thread.
     void OnFetchCompleted(mojo_base::BigBuffer data) {
+      TRACE_EVENT("loading", "InlineScriptCacheFetcher::OnFetchCompleted");
       base::AutoLock lock(lock_);
       // `OnFetchCompleted()` is called at most once per instance (cache fetch).
       CHECK(!fetch_completed_);
