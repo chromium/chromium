@@ -189,9 +189,9 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         assumeNonNull(toolbarPosition);
         @DrawableRes
         int icon =
-                toolbarPosition == ControlsPosition.TOP
-                        ? R.drawable.btn_suggestion_refine_up
-                        : R.drawable.btn_suggestion_refine_down;
+                toolbarPosition == ControlsPosition.BOTTOM
+                        ? R.drawable.btn_suggestion_refine_down
+                        : R.drawable.btn_suggestion_refine_up;
 
         Runnable action =
                 () -> {
