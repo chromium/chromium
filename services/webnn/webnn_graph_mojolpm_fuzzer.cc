@@ -299,7 +299,7 @@ class WebnnGraphLPMFuzzer {
   mojo::Remote<webnn::mojom::WebNNContext> webnn_context_;
 };
 
-DEFINE_BINARY_PROTO_FUZZER(
+DEFINE_TEXT_PROTO_FUZZER(
     const services::fuzzing::webnn_graph::proto::Testcase& testcase) {
   WebnnGraphLPMFuzzer webnn_graph_fuzzer_instance(testcase);
   while (!webnn_graph_fuzzer_instance.IsFinished()) {
