@@ -620,6 +620,24 @@ TEST_F(FtlSignalStrategyTest, ReceiveStanza_DropMessageWithMalformedXmpp) {
   ASSERT_EQ(0u, received_messages_.size());
 }
 
+TEST_F(FtlSignalStrategyTest, ReceiveStanza_RejectStanzaWithDtd) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  ftl::ChromotingMessage message;
+  message.mutable_xmpp()->set_stanza(
+      "<!DOCTYPE iq [ <!ENTITY xxe \"evil\"> ]></iq>");
+  ftl::Id remote_user_id;
+  remote_user_id.set_type(ftl::IdType_Type_EMAIL);
+  remote_user_id.set_id(kFakeRemoteUsername);
+  messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
+                               message);
+
+  ASSERT_EQ(received_messages_.size(), 0u);
+}
+
 TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
   ExpectGetOAuthTokenSucceedsWithFakeCreds();
   registration_manager_->ExpectSignInGaiaSucceeds();

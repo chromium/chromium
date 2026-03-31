@@ -25,6 +25,11 @@ namespace remoting {
 // static
 std::optional<SignalStrategy::Message> SignalStrategy::ParseStanzaXml(
     const std::string& xml) {
+  if (xml.find("<!DOCTYPE") != std::string::npos) {
+    LOG(ERROR) << "Rejecting XML with DTD.";
+    return std::nullopt;
+  }
+
   auto stanza = base::WrapUnique<jingle_xmpp::XmlElement>(
       jingle_xmpp::XmlElement::ForStr(xml));
   if (!stanza) {
