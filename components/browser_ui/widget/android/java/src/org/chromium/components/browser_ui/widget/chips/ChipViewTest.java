@@ -242,6 +242,14 @@ public final class ChipViewTest {
 
     @Test
     @SmallTest
+    public void loadingViewNullObserver() {
+        // Calling show/hide with null should not crash.
+        mChipView.showLoadingView(null);
+        mChipView.hideLoadingView(null);
+    }
+
+    @Test
+    @SmallTest
     public void cancelButton() {
         assertNull(mChipView.findViewById(R.id.chip_view_end_icon));
 

@@ -387,9 +387,10 @@ public class ChipView extends LinearLayout {
     /**
      * Shows a {@link LoadingView} at the start of the chip view. This replaces the start icon.
      *
-     * @param loadingViewObserver A {@link LoadingView.Observer} to add to the LoadingView.
+     * @param loadingViewObserver An optional {@link LoadingView.Observer} to add to the
+     *     LoadingView.
      */
-    public void showLoadingView(LoadingView.Observer loadingViewObserver) {
+    public void showLoadingView(LoadingView.@Nullable Observer loadingViewObserver) {
         mLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
@@ -402,17 +403,22 @@ public class ChipView extends LinearLayout {
                         mStartIcon.setVisibility(VISIBLE);
                     }
                 });
-        mLoadingView.addObserver(loadingViewObserver);
+        if (loadingViewObserver != null) {
+            mLoadingView.addObserver(loadingViewObserver);
+        }
         mLoadingView.showLoadingUi();
     }
 
     /**
      * Hides the {@link LoadingView} at the start of the chip view.
      *
-     * @param loadingViewObserver A {@link LoadingView.Observer} to add to the LoadingView.
+     * @param loadingViewObserver An optional {@link LoadingView.Observer} to add to the
+     *     LoadingView.
      */
-    public void hideLoadingView(LoadingView.Observer loadingViewObserver) {
-        mLoadingView.addObserver(loadingViewObserver);
+    public void hideLoadingView(LoadingView.@Nullable Observer loadingViewObserver) {
+        if (loadingViewObserver != null) {
+            mLoadingView.addObserver(loadingViewObserver);
+        }
         mLoadingView.hideLoadingUi();
     }
 

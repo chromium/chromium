@@ -264,8 +264,19 @@ class KeyboardAccessoryViewBinder {
                         });
             }
 
+            boolean isLoading = item.getViewState() == ActionBarItem.ViewState.LOADING;
+            boolean isVisuallyDeactivated =
+                    item.getViewState() == ActionBarItem.ViewState.DEACTIVATED
+                            || item.getSuggestion().applyDeactivatedStyle();
+
+            if (isLoading) {
+                chipView.showLoadingView(null);
+            } else {
+                chipView.hideLoadingView(null);
+            }
+
             float iconAlpha;
-            if (item.getSuggestion().applyDeactivatedStyle()) {
+            if (isVisuallyDeactivated) {
                 // Disabling chipview if deactivated style is set.
                 chipView.setEnabled(false);
                 iconAlpha = GRAYED_OUT_OPACITY_ALPHA;
@@ -275,8 +286,13 @@ class KeyboardAccessoryViewBinder {
                         chipView.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
                         chipView.getContext().getColorStateList(R.color.black_alpha_12));
             } else {
-                chipView.setEnabled(true);
+                // Explicitly re-enable the view in case it was recycled from a deactivated state.
+                // If it is currently loading, it should also be disabled.
+                chipView.setEnabled(!isLoading);
                 iconAlpha = COMPLETE_OPACITY_ALPHA;
+                chipView.setBorder(
+                        chipView.getResources().getDimensionPixelSize(R.dimen.chip_border_width),
+                        chipView.getContext().getColorStateList(R.color.chip_stroke_color));
             }
             Drawable iconDrawable = mSuggestionDrawableFunction.apply(item.getSuggestion());
             if (iconDrawable != null) {
@@ -365,6 +381,12 @@ class KeyboardAccessoryViewBinder {
             KeyboardAccessoryData.Action action = barItem.getAction();
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             textView.setText(barItem.getCaptionId());
+            int state = barItem.getViewState();
+            textView.setEnabled(state == ActionBarItem.ViewState.ENABLED);
+            textView.setAlpha(
+                    state == ActionBarItem.ViewState.DEACTIVATED
+                            ? GRAYED_OUT_OPACITY_ALPHA
+                            : COMPLETE_OPACITY_ALPHA);
             textView.setOnClickListener(view -> action.getCallback().onResult(action));
             // Margins can be either set in XML layouts or programmatically, they can't be part of
             // the KeyboardAccessory* styles.
@@ -423,6 +445,12 @@ class KeyboardAccessoryViewBinder {
         @Override
         protected void bind(ActionBarItem item, ChipView chipView) {
             chipView.getPrimaryTextView().setText(item.getCaptionId());
+            int state = item.getViewState();
+            chipView.setEnabled(state == ActionBarItem.ViewState.ENABLED);
+            chipView.setAlpha(
+                    state == ActionBarItem.ViewState.DEACTIVATED
+                            ? GRAYED_OUT_OPACITY_ALPHA
+                            : COMPLETE_OPACITY_ALPHA);
             @Nullable Action action = item.getAction();
             if (action != null) {
                 chipView.setOnClickListener(view -> action.getCallback().onResult(action));
@@ -453,6 +481,12 @@ class KeyboardAccessoryViewBinder {
         @EnsuresNonNull("mSheetOpenerItem")
         protected void bind(SheetOpenerBarItem sheetOpenerItem, View view) {
             mSheetOpenerItem = sheetOpenerItem;
+            int state = sheetOpenerItem.getViewState();
+            view.setEnabled(state == ActionBarItem.ViewState.ENABLED);
+            view.setAlpha(
+                    state == ActionBarItem.ViewState.DEACTIVATED
+                            ? GRAYED_OUT_OPACITY_ALPHA
+                            : COMPLETE_OPACITY_ALPHA);
             sheetOpenerItem.notifyAboutViewCreation(itemView);
         }
 

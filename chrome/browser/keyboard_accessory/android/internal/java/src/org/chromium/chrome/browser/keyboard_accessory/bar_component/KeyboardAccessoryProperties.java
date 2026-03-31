@@ -186,8 +186,17 @@ class KeyboardAccessoryProperties {
      * hold an {@link Action}s that defines a callback and a recording type.
      */
     static class ActionBarItem extends BarItem {
+        @IntDef({ViewState.ENABLED, ViewState.LOADING, ViewState.DEACTIVATED})
+        @Retention(RetentionPolicy.SOURCE)
+        @interface ViewState {
+            int ENABLED = 0;
+            int LOADING = 1;
+            int DEACTIVATED = 2;
+        }
+
         private final @Nullable Action mAction;
         private final @StringRes int mCaptionId;
+        private @ViewState int mViewState = ViewState.ENABLED;
 
         /**
          * Creates a new item. An action item must have a type and can have an action.
@@ -200,6 +209,17 @@ class KeyboardAccessoryProperties {
             super(type);
             mAction = action;
             mCaptionId = captionId;
+        }
+
+        /** Sets the transient interactive state of the view. */
+        void setViewState(@ViewState int viewState) {
+            mViewState = viewState;
+        }
+
+        /** Returns the transient interactive state of the view. */
+        @ViewState
+        int getViewState() {
+            return mViewState;
         }
 
         @Override
