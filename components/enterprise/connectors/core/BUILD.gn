@@ -129,6 +129,8 @@ source_set("cloud_content_scanning") {
     "cloud_content_scanning/file_analysis_request_base.h",
     "cloud_content_scanning/file_opening_job.cc",
     "cloud_content_scanning/file_opening_job.h",
+    "cloud_content_scanning/files_request_handler_base.cc",
+    "cloud_content_scanning/files_request_handler_base.h",
     "cloud_content_scanning/multipart_uploader.cc",
     "cloud_content_scanning/multipart_uploader.h",
     "cloud_content_scanning/multipart_uploader_base.cc",
