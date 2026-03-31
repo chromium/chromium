@@ -336,6 +336,7 @@ void FilterAppsOnReven(base::DictValue* arc_policy) {
             "com.fortinet.forticlient_vpn",
             "com.fortinet.forticlient_fa",
             "com.forcepoint.sslvpn",
+            "com.cloudflare.cloudflareoneagent",
         });
 
     bool is_allowed = kAllowedPackages.contains(*package_name);
