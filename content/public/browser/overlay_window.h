@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "services/media_session/public/cpp/media_image.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "ui/gfx/native_ui_types.h"
@@ -65,6 +66,7 @@ class VideoOverlayWindow {
   virtual void SetHidePictureInPictureButtonVisibility(bool is_visible) = 0;
   virtual void SetMicrophoneMuted(bool muted) = 0;
   virtual void SetCameraState(bool turned_on) = 0;
+  virtual void SetMediaMuted(bool muted) = 0;
   virtual void SetToggleMicrophoneButtonVisibility(bool is_visible) = 0;
   virtual void SetToggleCameraButtonVisibility(bool is_visible) = 0;
   virtual void SetHangUpButtonVisibility(bool is_visible) = 0;

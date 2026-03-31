@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_mute_button.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/format_duration.h"
@@ -1052,6 +1053,7 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
       GetToggleMicrophoneButtonBounds().Contains(point) ||
       GetToggleCameraButtonBounds().Contains(point) ||
       GetHangUpButtonBounds().Contains(point) ||
+      GetToggleMuteButtonBounds().Contains(point) ||
       GetProgressViewBounds().Contains(point) ||
       GetLiveCaptionButtonBounds().Contains(point) ||
       GetLiveCaptionDialogBounds().Contains(point)) {
@@ -1280,6 +1282,17 @@ void VideoOverlayWindowViews::SetUpViews() {
   hang_up_button->SetSize({kCenterButtonSize, kCenterButtonSize});
   hang_up_button->SetVisible(false);
 
+  std::unique_ptr<ToggleMuteButton> toggle_mute_button;
+  if (base::FeatureList::IsEnabled(media::kPictureInPictureMuteControl)) {
+    toggle_mute_button = std::make_unique<ToggleMuteButton>(base::BindRepeating(
+        [](VideoOverlayWindowViews* overlay) {
+          bool new_mute = !overlay->controller_->GetMuteStatus();
+          overlay->controller_->RequestMute(new_mute);
+        },
+        base::Unretained(this)));
+    toggle_mute_button->SetSize(kActionButtonSize);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
   auto resize_handle_view =
       std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
@@ -1391,6 +1404,11 @@ void VideoOverlayWindowViews::SetUpViews() {
       vc_controls_container_view_->AddChildView(std::move(hang_up_button));
   toggle_microphone_button_ = vc_controls_container_view_->AddChildView(
       std::move(toggle_microphone_button));
+
+  if (toggle_mute_button) {
+    toggle_mute_button_ = playback_controls_container_view_->AddChildView(
+        std::move(toggle_mute_button));
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   resize_handle_view_ =
@@ -1679,6 +1697,12 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
 
   live_caption_button_->SetPosition(live_caption_button_bounds.origin());
 
+  if (toggle_mute_button_) {
+    toggle_mute_button_->SetPosition(
+        {live_caption_button_bounds.x() - kActionButtonSize.width() - 4,
+         live_caption_button_bounds.y()});
+  }
+
   live_caption_dialog_->SetPosition(
       {live_caption_button_bounds.right() - live_caption_dialog_->width(),
        live_caption_button_bounds.y() - live_caption_dialog_->height()});
@@ -1777,6 +1801,11 @@ void VideoOverlayWindowViews::ShowInactive() {
                      base::Unretained(this)));
   // The controls are not visible, but the title should be.
   UpdateControlsVisibility(false);
+
+  // Initialize the mute button state from the controller if the button exists.
+  if (toggle_mute_button_) {
+    toggle_mute_button_->SetMutedState(controller_->GetMuteStatus());
+  }
 
   // If this is not the first time the window is shown, this will be a no-op.
   has_been_shown_ = true;
@@ -1897,6 +1926,12 @@ void VideoOverlayWindowViews::SetMicrophoneMuted(bool muted) {
 
 void VideoOverlayWindowViews::SetCameraState(bool turned_on) {
   toggle_camera_button_->SetCameraState(turned_on);
+}
+
+void VideoOverlayWindowViews::SetMediaMuted(bool muted) {
+  if (toggle_mute_button_) {
+    toggle_mute_button_->SetMutedState(muted);
+  }
 }
 
 void VideoOverlayWindowViews::SetToggleMicrophoneButtonVisibility(
@@ -2105,6 +2140,13 @@ gfx::Rect VideoOverlayWindowViews::GetLiveCaptionDialogBounds() {
   return live_caption_dialog_->GetMirroredBounds();
 }
 
+gfx::Rect VideoOverlayWindowViews::GetToggleMuteButtonBounds() {
+  if (!toggle_mute_button_) {
+    return gfx::Rect();
+  }
+  return toggle_mute_button_->GetMirroredBounds();
+}
+
 bool VideoOverlayWindowViews::HasHighMediaEngagement(
     const url::Origin& origin) const {
   MediaEngagementService* service =
@@ -2221,6 +2263,11 @@ ToggleCameraButton* VideoOverlayWindowViews::toggle_camera_button_for_testing()
 
 HangUpButton* VideoOverlayWindowViews::hang_up_button_for_testing() const {
   return hang_up_button_;
+}
+
+ToggleMuteButton* VideoOverlayWindowViews::toggle_mute_button_for_testing()
+    const {
+  return toggle_mute_button_;
 }
 
 global_media_controls::MediaProgressView*
@@ -2402,6 +2449,11 @@ void VideoOverlayWindowViews::SetLiveCaptionDialogVisibility(
       hang_up_button_.get()};
   for (auto* control : controls_to_be_disabled_when_live_caption_is_open) {
     control->SetEnabled(!wanted_visibility);
+  }
+  // Handled separately since it's disabled by default and may not exist in some
+  // configurations.
+  if (toggle_mute_button_) {
+    toggle_mute_button_->SetEnabled(!wanted_visibility);
   }
 }
 

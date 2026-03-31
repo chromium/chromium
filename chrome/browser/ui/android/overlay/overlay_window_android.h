@@ -79,6 +79,7 @@ class OverlayWindowAndroid : public content::VideoOverlayWindow,
   void SetPreviousTrackButtonVisibility(bool is_visible) override;
   void SetMicrophoneMuted(bool muted) override;
   void SetCameraState(bool turned_on) override;
+  void SetMediaMuted(bool muted) override {}
   void SetHidePictureInPictureButtonVisibility(bool is_visible) override;
   void SetToggleMicrophoneButtonVisibility(bool is_visible) override;
   void SetToggleCameraButtonVisibility(bool is_visible) override;

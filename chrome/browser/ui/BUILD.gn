@@ -4203,6 +4203,8 @@ static_library("ui") {
       "views/overlay/toggle_camera_button.h",
       "views/overlay/toggle_microphone_button.cc",
       "views/overlay/toggle_microphone_button.h",
+      "views/overlay/toggle_mute_button.cc",
+      "views/overlay/toggle_mute_button.h",
       "views/overlay/video_overlay_window_views.cc",
       "views/overlay/video_overlay_window_views.h",
       "views/page_info/about_this_site_side_panel_coordinator.cc",

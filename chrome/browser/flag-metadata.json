@@ -7465,6 +7465,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "picture-in-picture-mute-control",
+    "owners": [ "tibeekeocha@microsoft.com", "bkeen@google.com", "media-dev@chromium.org" ],
+    "expiry_milestone": 151
+  },
+  {
     "name": "picture-in-picture-show-window-animation",
     "owners": [ "bkeen@google.com", "media-dev@chromium.org" ],
     "expiry_milestone": 150

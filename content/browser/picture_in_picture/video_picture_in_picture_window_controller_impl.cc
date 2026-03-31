@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents_delegate.h"  // for PictureInPictureResult
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
+#include "media/base/media_switches.h"
 
 namespace content {
 
@@ -409,6 +410,15 @@ void VideoPictureInPictureWindowControllerImpl::HangUp() {
     MediaSession::Get(web_contents())->HangUp();
 }
 
+void VideoPictureInPictureWindowControllerImpl::RequestMute(bool mute) {
+  DCHECK(active_session_);
+  active_session_->GetMediaPlayerRemote()->RequestMute(mute);
+}
+
+bool VideoPictureInPictureWindowControllerImpl::GetMuteStatus() {
+  return MediaSessionImpl::Get(web_contents())->GetMuteStatus();
+}
+
 void VideoPictureInPictureWindowControllerImpl::SeekTo(base::TimeDelta time) {
   // Default to the Media Session handler if it's available.
   if (media_session_action_seek_to_handled_) {
@@ -575,6 +585,19 @@ void VideoPictureInPictureWindowControllerImpl::MediaStoppedPlaying(
     return;
 
   UpdatePlaybackState();
+}
+
+void VideoPictureInPictureWindowControllerImpl::MediaMutedStatusChanged(
+    const MediaPlayerId& id,
+    bool muted) {
+  if (!base::FeatureList::IsEnabled(media::kPictureInPictureMuteControl)) {
+    return;
+  }
+  if (!active_session_ || active_session_->player_id() != id ||
+      web_contents()->IsBeingDestroyed()) {
+    return;
+  }
+  window_->SetMediaMuted(muted);
 }
 
 void VideoPictureInPictureWindowControllerImpl::WebContentsDestroyed() {

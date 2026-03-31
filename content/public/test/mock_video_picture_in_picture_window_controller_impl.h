@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CONTENT_PUBLIC_TEST_MOCK_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
+#include "build/build_config.h"
 #include "content/browser/picture_in_picture/video_picture_in_picture_window_controller_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -25,6 +26,8 @@ class MockVideoPictureInPictureWindowControllerImpl
 
   MOCK_METHOD1(SetOnWindowCreatedNotifyObserversCallback,
                void(base::OnceClosure));
+  MOCK_METHOD1(RequestMute, void(bool));
+  MOCK_METHOD0(GetMuteStatus, bool());
 };
 
 }  //  namespace content

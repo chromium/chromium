@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
 #include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_mute_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
@@ -139,6 +140,8 @@ class TestVideoPictureInPictureWindowController
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  void RequestMute(bool mute) override {}
+  bool GetMuteStatus() override { return false; }
   MOCK_METHOD(void, SeekTo, (base::TimeDelta time));
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
   void GetMediaImage(
@@ -1738,4 +1741,94 @@ TEST_F(VideoOverlayWindowWithShowAnimationTest,
 
   // Destroying the widget during the animation should not crash.
   DestroyOverlayWindow();
+}
+
+// Test fixture with kPictureInPictureMuteControl enabled.
+class VideoOverlayWindowWithMuteControlTest
+    : public VideoOverlayWindowViewsTest {
+ public:
+  void SetUp() override {
+    AddEnabledFeature(media::kPictureInPictureMuteControl);
+    VideoOverlayWindowViewsTest::SetUp();
+  }
+};
+
+// When the feature is disabled (default), the mute button should not be
+// created and SetMediaMuted should be a no-op.
+TEST_F(VideoOverlayWindowViewsTest, ToggleMuteButton_FeatureFlagDisabled) {
+  EXPECT_EQ(nullptr, overlay_window().toggle_mute_button_for_testing());
+
+  // Calling SetMediaMuted with no button should not crash.
+  overlay_window().SetMediaMuted(true);
+  overlay_window().SetMediaMuted(false);
+}
+
+// When the feature is enabled, the mute button should be created.
+TEST_F(VideoOverlayWindowWithMuteControlTest,
+       ToggleMuteButton_FeatureFlagEnabled) {
+  ToggleMuteButton* toggle_mute_button =
+      overlay_window().toggle_mute_button_for_testing();
+  ASSERT_NE(nullptr, toggle_mute_button);
+}
+
+// The mute button should be visible in playback mode but hidden when video
+// conferencing controls are shown.
+TEST_F(VideoOverlayWindowWithMuteControlTest, ToggleMuteButton_Visibility) {
+  ToggleMuteButton* toggle_mute_button =
+      overlay_window().toggle_mute_button_for_testing();
+  ASSERT_NE(nullptr, toggle_mute_button);
+
+  // Trigger a controls layout update so the mute button gets positioned and
+  // made visible for playback mode.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  overlay_window().ForceControlsVisibleForTesting(true);
+  WaitForLayout();
+
+  // In playback mode, the mute button should be drawn.
+  EXPECT_TRUE(toggle_mute_button->IsDrawn());
+
+  // When VC controls are shown, the mute button should be hidden.
+  overlay_window().SetHangUpButtonVisibility(true);
+  WaitForLayout();
+  EXPECT_FALSE(toggle_mute_button->IsDrawn());
+
+  // When VC controls are hidden again, the mute button should reappear.
+  overlay_window().SetHangUpButtonVisibility(false);
+  WaitForLayout();
+  EXPECT_TRUE(toggle_mute_button->IsDrawn());
+}
+
+// SetMediaMuted should update the button's muted state.
+TEST_F(VideoOverlayWindowWithMuteControlTest, ToggleMuteButton_StateToggle) {
+  ToggleMuteButton* toggle_mute_button =
+      overlay_window().toggle_mute_button_for_testing();
+  ASSERT_NE(nullptr, toggle_mute_button);
+
+  // Initially unmuted.
+  EXPECT_FALSE(toggle_mute_button->is_muted_for_testing());
+
+  overlay_window().SetMediaMuted(true);
+  EXPECT_TRUE(toggle_mute_button->is_muted_for_testing());
+
+  overlay_window().SetMediaMuted(false);
+  EXPECT_FALSE(toggle_mute_button->is_muted_for_testing());
+}
+
+// The mute button should participate in hit testing.
+TEST_F(VideoOverlayWindowWithMuteControlTest, ToggleMuteButton_HitTest) {
+  ToggleMuteButton* toggle_mute_button =
+      overlay_window().toggle_mute_button_for_testing();
+  ASSERT_NE(nullptr, toggle_mute_button);
+
+  // Trigger a controls layout so the mute button is positioned and visible.
+  overlay_window().SetPlayPauseButtonVisibility(true);
+  overlay_window().ForceControlsVisibleForTesting(true);
+  WaitForLayout();
+  ASSERT_TRUE(toggle_mute_button->IsDrawn());
+
+  const gfx::Rect mute_button_bounds =
+      overlay_window().GetToggleMuteButtonBounds();
+  EXPECT_FALSE(mute_button_bounds.IsEmpty());
+  EXPECT_TRUE(overlay_window().ControlsHitTestContainsPoint(
+      mute_button_bounds.CenterPoint()));
 }

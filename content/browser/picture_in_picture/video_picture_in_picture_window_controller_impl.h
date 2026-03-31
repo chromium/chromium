@@ -73,6 +73,8 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void ToggleMicrophone() override;
   void ToggleCamera() override;
   void HangUp() override;
+  void RequestMute(bool mute) override;
+  bool GetMuteStatus() override;
   void PreviousSlide() override;
   void NextSlide() override;
   void SeekTo(base::TimeDelta time) override;
@@ -115,6 +117,7 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   void MediaStoppedPlaying(const MediaPlayerInfo&,
                            const MediaPlayerId&,
                            WebContentsObserver::MediaStoppedReason) override;
+  void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) override;
   void WebContentsDestroyed() override;
 
   // Embeds a surface in the Picture-in-Picture window.

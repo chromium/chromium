@@ -337,6 +337,9 @@ class MediaSessionImpl : public MediaSession,
 
   void OnMediaMutedStatusChanged(bool mute);
 
+  // Returns the current mute status of the media session.
+  bool GetMuteStatus() const { return is_muted_; }
+
   void OnPictureInPictureAvailabilityChanged();
 
   // Called when any of the normal players have switched to a different audio
