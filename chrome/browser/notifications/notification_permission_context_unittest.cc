@@ -37,8 +37,7 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
@@ -48,7 +47,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 namespace {
 
@@ -128,7 +127,7 @@ class NotificationPermissionContextTest
         setting, /*is_one_time=*/false);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Registers the given |extension| with the extension registrar and returns
   // the extension if it could be registered appropriately.
   scoped_refptr<const extensions::Extension> RegisterExtension(
@@ -582,7 +581,7 @@ TEST_F(NotificationPermissionContextTest, GetNotificationsSettings) {
   EXPECT_EQ(CONTENT_SETTING_ASK, settings[4].GetContentSetting());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 TEST_F(NotificationPermissionContextTest, ExtensionPermissionAskByDefault) {
   // Verifies that notification permission is not granted to extensions by
   // default. They need to explicitly declare this in their manifest.

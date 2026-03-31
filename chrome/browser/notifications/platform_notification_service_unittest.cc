@@ -63,14 +63,14 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -632,7 +632,7 @@ TEST_F(PlatformNotificationServiceTest_WebApps, PopulateWebAppId_NotInScope) {
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 TEST_F(PlatformNotificationServiceTest, DisplayNameForContextMessage) {
   std::u16string display_name =
@@ -694,7 +694,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
             base::UTF16ToUTF8(notification.context_message()));
 }
 
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if BUILDFLAG(IS_CHROMEOS)
 using PlatformNotificationServiceTest_WebAppNotificationIconAndTitle =

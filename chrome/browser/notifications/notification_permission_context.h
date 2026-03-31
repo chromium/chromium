@@ -107,7 +107,7 @@ class NotificationPermissionContext
                            WebNotificationsTopLevelOriginOnly);
   friend class NotificationPermissionContextTest;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Returns the notification permission status for |origin| if it describes an
   // extension. CONTENT_SETTING_ASK will be returned when it's not an extension
   // that has the "notifications" permission declared in their manifest.

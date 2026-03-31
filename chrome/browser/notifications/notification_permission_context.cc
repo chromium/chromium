@@ -39,7 +39,7 @@
 #include "chrome/browser/webapps/installable/installed_webapp_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -48,7 +48,7 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 // static
 void NotificationPermissionContext::UpdatePermission(
@@ -88,7 +88,7 @@ ContentSetting NotificationPermissionContext::GetContentSettingStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     const GURL& embedding_origin) const {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions can declare the "notifications" permission in their manifest
   // that also grant permission to use the Web Notification API.
   ContentSetting extension_status =
@@ -110,7 +110,7 @@ ContentSetting NotificationPermissionContext::GetContentSettingStatusInternal(
   return setting;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 ContentSetting NotificationPermissionContext::GetPermissionStatusForExtension(
     const GURL& origin) const {
   constexpr ContentSetting kDefaultSetting = CONTENT_SETTING_ASK;
