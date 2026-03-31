@@ -36,7 +36,7 @@ class WalletPassAccessManager;
     initWithEntityInstance:(autofill::EntityInstance)entityInstance
          entityDataManager:(autofill::EntityDataManager*)entityDataManager
          walletPassManager:(autofill::WalletPassAccessManager*)walletPassManager
-    NS_DESIGNATED_INITIALIZER;
+                 userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

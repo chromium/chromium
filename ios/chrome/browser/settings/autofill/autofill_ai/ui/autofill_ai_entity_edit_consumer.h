@@ -24,6 +24,9 @@
 // Sets whether the entity being viewed is a server wallet item.
 - (void)setIsServerWalletItem:(BOOL)isServerWalletItem;
 
+// Sets the user email.
+- (void)setUserEmail:(NSString*)userEmail;
+
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;
 

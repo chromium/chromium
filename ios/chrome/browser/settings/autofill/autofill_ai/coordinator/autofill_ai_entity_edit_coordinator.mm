@@ -6,9 +6,12 @@
 
 #import "base/check.h"
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
@@ -25,6 +28,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
 namespace {
 
@@ -149,7 +153,8 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
   _mediator = [[AutofillAIEntityEditMediator alloc]
       initWithEntityInstance:std::move(*instance)
            entityDataManager:entityDataManager
-           walletPassManager:walletPassManager];
+           walletPassManager:walletPassManager
+                   userEmail:[self userEmail]];
 
   _viewController = [[AutofillAIEntityEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
@@ -233,6 +238,18 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
 - (void)dismissCountryViewController {
   [_baseNavigationController popViewControllerAnimated:YES];
   _countryItemBeingEdited = nil;
+}
+
+#pragma mark - Private
+
+// Fetches the email associated with the user account.
+- (NSString*)userEmail {
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+  CoreAccountInfo accountInfo =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+
+  return base::SysUTF8ToNSString(accountInfo.email);
 }
 
 @end

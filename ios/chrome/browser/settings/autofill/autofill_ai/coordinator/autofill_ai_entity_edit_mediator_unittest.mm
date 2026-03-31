@@ -57,7 +57,8 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
     mediator_ = [[AutofillAIEntityEditMediator alloc]
         initWithEntityInstance:instance
              entityDataManager:entity_data_manager_
-             walletPassManager:mock_wallet_pass_manager_.get()];
+             walletPassManager:mock_wallet_pass_manager_.get()
+                     userEmail:nil];
     mediator_.consumer = consumer_;
   }
 

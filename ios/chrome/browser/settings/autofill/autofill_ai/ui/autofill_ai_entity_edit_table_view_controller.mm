@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/public/autofill_ai_settings_constants.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/util/chrome_button.h"
@@ -21,6 +23,10 @@
 namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierAttributes = kSectionIdentifierEnumZero,
+};
+
+typedef NS_ENUM(NSInteger, ItemType) {
+  ItemTypeFooter = kItemTypeEnumZero,
 };
 }  // namespace
 
@@ -33,6 +39,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
   // Denotes the entity is saved in wallet.
   BOOL _isServerWalletItem;
+
+  // The user's email address to display in the footer.
+  NSString* _userEmail;
 
   // The bottom save button displayed when creating a new entity.
   ChromeButton* _saveButton;
@@ -94,6 +103,20 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       dateItem.delegate = self;
     }
   }
+
+  TableViewLinkHeaderFooterItem* footer =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
+
+  if (_isServerWalletItem && _userEmail.length > 0) {
+    footer.text =
+        l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_AI_SAVED_TO_WALLET_FOOTER,
+                                base::SysNSStringToUTF16(_userEmail));
+  } else {
+    footer.text =
+        l10n_util::GetNSString(IDS_IOS_AUTOFILL_AI_SAVED_LOCALLY_FOOTER);
+  }
+
+  [model setFooter:footer forSectionWithIdentifier:SectionIdentifierAttributes];
 }
 
 #pragma mark - Setup
@@ -161,6 +184,10 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)setIsServerWalletItem:(BOOL)isServerWalletItem {
   _isServerWalletItem = isServerWalletItem;
+}
+
+- (void)setUserEmail:(NSString*)userEmail {
+  _userEmail = [userEmail copy];
 }
 
 - (void)updateItem:(TableViewItem*)item {

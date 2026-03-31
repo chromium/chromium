@@ -26,6 +26,9 @@
 
 @property(nonatomic, assign) BOOL isServerWalletItem;
 
+// User email with the account.
+@property(nonatomic, strong) NSString* userEmail;
+
 // YES if `showLoadingState` was called on the consumer.
 @property(nonatomic, assign) BOOL showLoadingStateCalled;
 

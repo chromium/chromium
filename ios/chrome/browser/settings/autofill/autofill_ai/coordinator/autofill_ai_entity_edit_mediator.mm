@@ -70,12 +70,16 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 
   // The item factory.
   AutofillAIEntityEditItemFactory* _itemFactory;
+
+  // The user's primary account email.
+  NSString* _userEmail;
 }
 
 - (instancetype)initWithEntityInstance:(EntityInstance)entityInstance
                      entityDataManager:(EntityDataManager*)entityDataManager
                      walletPassManager:
-                         (autofill::WalletPassAccessManager*)walletPassManager {
+                         (autofill::WalletPassAccessManager*)walletPassManager
+                             userEmail:(NSString*)userEmail {
   self = [super init];
   if (self) {
     _entityInstance = std::move(entityInstance);
@@ -86,6 +90,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
     _itemFactory =
         [[AutofillAIEntityEditItemFactory alloc] initWithLocale:_locale
                                                   dateFormatter:_dateFormatter];
+    _userEmail = [userEmail copy];
   }
   return self;
 }
@@ -103,6 +108,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   [consumer setIsServerWalletItem:
                 (_entityInstance->record_type() ==
                  autofill::EntityInstance::RecordType::kServerWallet)];
+  [consumer setUserEmail:_userEmail];
 
   _editItems = [[NSMutableArray alloc] init];
   for (AttributeInstance attribute : _entityInstance->attributes()) {
