@@ -12,8 +12,6 @@ static_library("eol") {
     "eol_notification.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
-
   deps = [
     "//ash",
     "//ash/constants",
@@ -23,13 +21,13 @@ static_library("eol") {
     "//chrome/browser/ash/extended_updates",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/install_attributes",
     "//components/prefs",
     "//components/user_manager",
+    "//content/public/browser",
     "//ui/base",
     "//ui/chromeos",
     "//ui/message_center",

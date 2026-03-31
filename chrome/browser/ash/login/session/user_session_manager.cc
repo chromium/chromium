@@ -2384,13 +2384,14 @@ UserSessionManager::GetDefaultIMEState(Profile* profile) {
 void UserSessionManager::CheckEolInfo(Profile* profile) {
   if (!EolNotification::ShouldShowEolNotification())
     return;
+  user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
 
   std::map<Profile*, std::unique_ptr<EolNotification>, ProfileCompare>::iterator
       iter = eol_notification_handler_.find(profile);
   if (iter == eol_notification_handler_.end()) {
     auto eol_notification =
         eol_notification_handler_test_factory_.is_null()
-            ? std::make_unique<EolNotification>(profile)
+            ? std::make_unique<EolNotification>(user)
             : eol_notification_handler_test_factory_.Run(profile);
 
     iter = eol_notification_handler_

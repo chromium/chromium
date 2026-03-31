@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -126,7 +127,9 @@ class EolStatusMixin : public InProcessBrowserTestMixin {
  private:
   std::unique_ptr<EolNotification> CreateEolNotificationHandler(
       Profile* profile) {
-    auto eol_notification = std::make_unique<EolNotification>(profile);
+    user_manager::User* user =
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
+    auto eol_notification = std::make_unique<EolNotification>(user);
     eol_notification->OverrideClockForTesting(&clock_);
     if (!profile_creation_time_.is_null()) {
       profile->SetCreationTimeForTesting(profile_creation_time_);
