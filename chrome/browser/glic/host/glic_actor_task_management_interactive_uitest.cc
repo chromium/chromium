@@ -370,7 +370,14 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, CreateTaskNoTitle) {
                       "", "Task has no title"));
 }
 
-IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest, ForegroundActorTaskTab) {
+// Flaky timeout on ASAN.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_ForegroundActorTaskTab DISABLED_ForegroundActorTaskTab
+#else
+#define MAYBE_ForegroundActorTaskTab ForegroundActorTaskTab
+#endif
+IN_PROC_BROWSER_TEST_F(GlicActorTaskManagementUiTest,
+                       MAYBE_ForegroundActorTaskTab) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
 

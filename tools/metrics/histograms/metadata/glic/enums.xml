@@ -414,6 +414,7 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="RecordSkillsWebClientEvent"/>
   <int value="92" label="DeleteCapturedRegion"/>
   <int value="93" label="OnActionSubmitted"/>
+  <int value="94" label="SubscribeToTabFavicon"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

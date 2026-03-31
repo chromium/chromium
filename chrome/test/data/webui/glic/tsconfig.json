@@ -11,6 +11,10 @@
     "paths": {
       "/glic/*": [
         "../../../../../chrome/browser/resources/glic/*"
+      ],
+      // For unit tests.
+      "chrome://glic/*": [
+        "../../../../../chrome/browser/resources/glic/*"
       ]
     },
     "noEmit": true

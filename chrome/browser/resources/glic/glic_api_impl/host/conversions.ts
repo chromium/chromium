@@ -21,7 +21,7 @@ import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metad
 import type {AdditionalContext as AdditionalContextMojo, AdditionalContextPart as AdditionalContextPartMojo, AnnotatedPageData as AnnotatedPageDataMojo, CaptureRegionResult as CaptureRegionResultMojo, ContextData as ContextDataMojo, ConversationInfo as ConversationInfoMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, HostCapability as HostCapabilityMojo, InvokeOptions as InvokeOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PdfDocumentData as PdfDocumentDataMojo, PinTabsOptions as PinTabsOptionsMojo, Screenshot as ScreenshotMojo, ScreenshotCollectionOptions as ScreenshotCollectionOptionsMojo, TabContext as TabContextMojo, TabData as TabDataMojo, UnpinTabsOptions as UnpinTabsOptionsMojo, WebPageData as WebPageDataMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import {MicrophoneStatus as MicrophoneStatusMojo, PinTrigger as PinTriggerMojo, ScreenshotCompressionQuality as ScreenshotCompressionQualityMojo, ScreenshotImageFormat as ScreenshotImageFormatMojo, UnpinTrigger as UnpinTriggerMojo, WebClientMode as WebClientModeMojo} from '../../glic.mojom-webui.js';
 import type {CaptureRegionResult, ConversationInfo, GetPinCandidatesOptions, HostCapability, PageMetadata, PanelOpeningData, PanelState, PinTabsOptions, PinTrigger, Screenshot, ScreenshotCollectionOptions, TabContextOptions, TaskOptions, UnpinTabsOptions, UnpinTrigger, WebPageData, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
-import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, WebClientMode} from '../../glic_api/glic_api.js';
+import {DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, MicrophoneStatus, Platform, WebClientMode} from '../../glic_api/glic_api.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 
 import type {ConfirmationRequestErrorReason as ConfirmationRequestErrorReasonMojo, NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogErrorReason as SelectAutofillSuggestionsDialogErrorReasonMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogErrorReason as SelectCredentialDialogErrorReasonMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, TaskOptions as TaskOptionsMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo, UserGrantedPermissionDuration as UserGrantedPermissionDurationMojo} from './../../actor_webui.mojom-webui.js';
@@ -29,6 +29,10 @@ import {replaceProperties} from './../conversions.js';
 import type {ResponseExtras} from './../post_message_transport.js';
 import type {AdditionalContextPartPrivate, AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './../request_types.js';
 import {ImageAlphaType, ImageColorType} from './../request_types.js';
+
+export const conversionSettings = {
+  platform: undefined as Platform | undefined,
+};
 
 export function idToClient(windowId: number): string;
 export function idToClient(windowId: number|null): string|undefined;
@@ -266,10 +270,11 @@ export function bitmapN32ToRGBAImage(bitmap: BitmapN32): RgbaImage|undefined {
   if (!bytes) {
     return undefined;
   }
-  // We don't transmit ColorType over mojo, because it's determined by the
-  // endianness of the platform. Chromium only supports little endian, which
-  // maps to BGRA. See third_party/skia/include/core/SkColorType.h.
-  const colorType = ImageColorType.BGRA;
+  // Color type on Android is different from other platforms. Because color type
+  // isn't transmitted over mojo, we need use platform to detect it here.
+  const colorType = conversionSettings.platform === Platform.ANDROID ?
+      ImageColorType.RGBA :
+      ImageColorType.BGRA;
 
   return {
     width: bitmap.imageInfo.width,

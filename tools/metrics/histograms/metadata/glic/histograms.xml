@@ -263,6 +263,7 @@ chromium-metrics-reviews@google.com.
     <variant name="SubscribeToPageMetadata"/>
     <variant name="SubscribeToPinCandidates"/>
     <variant name="SubscribeToTabData"/>
+    <variant name="SubscribeToTabFavicon"/>
     <variant name="SwitchConversation"/>
     <variant name="UninterruptActorTask"/>
     <variant name="UnpinAllTabs"/>

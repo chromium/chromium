@@ -558,6 +558,8 @@ struct WebClientInitialState {
   bool onboarding_completed;
   // Whether the skills feature is enabled.
   bool enable_skills;
+  // Whether glic API getTabFaviconById is enabled.
+  bool enable_get_tab_favicon_by_id;
 };
 
 // @generate glic_api
@@ -1400,12 +1402,23 @@ interface WebClientHandler {
   // Request updates from a tab. The receiver is closed when the tab is closed,
   // or if the tab is not found.
   SubscribeToTabData(int32 tab_id, pending_remote<TabDataHandler> receiver);
+
+  // Request favicon updates from a tab. The receiver is closed when the tab is
+  // closed, or if the tab is not found.
+  SubscribeToTabFavicon(
+      int32 tab_id, pending_remote<TabFaviconHandler> receiver);
 };
 
 // Receives updates for a specific tab.
 interface TabDataHandler {
   // Tab data has changed for this tab.
   OnTabDataChanged(TabData tab_data);
+};
+
+// Receives favicon updates for a specific tab.
+interface TabFaviconHandler {
+  // Tab favicon has changed for this tab.
+  OnTabFaviconChanged(skia.mojom.BitmapN32? favicon);
 };
 
 // Information about a conversation.

@@ -613,6 +613,14 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSubscribeToTabFavicon: {
+    request: {
+      tabId: string,
+      observationId: number,
+      cancel: boolean,
+    },
+    backgroundAllowed: true,
+  },
   glicBrowserAutofillSuggestionDialogOnFormPresented: {
     request: {
       taskId: number,
@@ -888,6 +896,15 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientTabFaviconChanged: {
+    request: {
+      observationId: number,
+      // If true, the tab was removed and no more updates will be received.
+      tabRemoved?: boolean,
+      favicon?: RgbaImage,
+    },
+    backgroundAllowed: true,
+  },
   glicWebClientInvoke: {
     request: {
       options: InvokeOptionsPrivate,
@@ -1002,6 +1019,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         RecordSkillsWebClientEvent: 91,
         DeleteCapturedRegion: 92,
         OnActionSubmitted: 93,
+        SubscribeToTabFavicon: 94,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();
@@ -1127,6 +1145,7 @@ export enum ImageAlphaType {
 // Chromium currently only uses a single color type for BitmapN32.
 export enum ImageColorType {
   BGRA = 0,
+  RGBA = 1,
 }
 
 // FocusedTabData data for postMessage transport.

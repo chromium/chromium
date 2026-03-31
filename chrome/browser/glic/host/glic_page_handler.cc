@@ -46,6 +46,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
+#include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_annotation_manager.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -979,6 +980,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         GlicEnabling::HasConsentedForProfile(profile_);
     state->enable_skills =
         base::FeatureList::IsEnabled(features::kSkillsEnabled);
+    state->enable_get_tab_favicon_by_id =
+        base::FeatureList::IsEnabled(features::kGlicGetTabFaviconById);
 
     std::move(callback).Run(std::move(state));
   }
@@ -2009,6 +2012,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       ::mojo::PendingRemote<mojom::TabDataHandler> receiver) override {
     glic_service_->tab_data_observer().SubscribeToTabData(tab_id,
                                                           std::move(receiver));
+  }
+
+  void SubscribeToTabFavicon(
+      int32_t tab_id,
+      ::mojo::PendingRemote<mojom::TabFaviconHandler> receiver) override {
+    glic_service_->tab_favicon_observer().SubscribeToTabFavicon(
+        tab_id, std::move(receiver));
   }
 
   void NotifyContextualSkillPreviewsChanged(

@@ -271,8 +271,10 @@ class GlicBrowserTestMixin : public T {
 
   // Returns a simple URL for testing that is guaranteed to load properly via
   // the embedded test server.
-  GURL GetSimpleTestUrl() {
-    return T::embedded_test_server()->GetURL("/test_data/page.html");
+  GURL GetSimpleTestUrl() { return GetTestUrl("page.html"); }
+
+  GURL GetTestUrl(const std::string& file_name) {
+    return T::embedded_test_server()->GetURL("/test_data/" + file_name);
   }
 
   void SetGlicPagePath(const std::string& glic_page_path) {

@@ -6,6 +6,7 @@
 import type {AdditionalContext, AnnotatedPageData, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ConversationInfo, CreateActorTabOptions, CreateSkillRequest, CreateTabOptions, DraggableArea, FocusedTabData, FormFactor, FormFillingResponse, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, InvokeOptions, Journal, MicrophoneStatus, NavigationConfirmationRequest, Observable, ObservableValue, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResizeWindowOptions, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapability} from '../../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
+import {OneShotTimer} from '../../timer.js';
 
 import {replaceProperties} from './../conversions.js';
 import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
@@ -504,10 +505,35 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
           requestWithCallback);
     });
   }
+
   glicWebClientTabDataChanged(payload: {
     tabData?: TabDataPrivate, observationId: number,
   }): void {
-    this.host.getTabByIdSubscriberSet.handleTabDataChanged(payload);
+    if (payload.tabData === undefined) {
+      this.host.getTabByIdObservableSet.completeObservable(
+          payload.observationId);
+    } else {
+      this.host.getTabByIdObservableSet.assignAndSignal(
+          payload.observationId, convertTabDataFromPrivate(payload.tabData));
+    }
+  }
+
+  glicWebClientTabFaviconChanged(payload: {
+    favicon?: RgbaImage, observationId: number,
+    tabRemoved?: boolean,
+  }): void {
+    if (payload.tabRemoved) {
+      this.host.getTabFaviconByIdObservableSet.completeObservable(
+          payload.observationId);
+      return;
+    }
+    if (payload.favicon === undefined) {
+      this.host.getTabFaviconByIdObservableSet.assignAndSignal(
+          payload.observationId, undefined);
+    } else {
+      this.host.getTabFaviconByIdObservableSet.assignAndSignal(
+          payload.observationId, rgbaImageToBlob(payload.favicon));
+    }
   }
 
   cacheSkillPrompt(skill: Skill) {
@@ -585,7 +611,8 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   readonly selectAutofillSuggestionsDialogRequestSubject =
       new Subject<SelectAutofillSuggestionsDialogRequest>();
-  getTabByIdSubscriberSet: GetTabByIdSubscriberSet;
+  getTabByIdObservableSet: ObservableSetByTabId<TabData>;
+  getTabFaviconByIdObservableSet: ObservableSetByTabId<Blob|undefined>;
 
   constructor(public webClient: GlicWebClient, windowProxy: WindowProxy) {
     // TODO(harringtond): Ideally, we could ensure we only process requests from
@@ -603,8 +630,12 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     );
     this.router = router;
     this.sender = sender;
-    this.getTabByIdSubscriberSet =
-        new GetTabByIdSubscriberSet(this.sender, this.idGenerator);
+    this.getTabByIdObservableSet = new ObservableSetByTabId<TabData>(
+        new GetTabByIdObservableSetImpl(), this.sender, this.idGenerator);
+    this.getTabFaviconByIdObservableSet =
+        new ObservableSetByTabId<Blob|undefined>(
+            new GetTabFaviconByIdObservableSetImpl(), this.sender,
+            this.idGenerator);
     this.webClientMessageHandler =
         new WebClientMessageHandler(this.webClient, this);
     this.journalHost = new GlicBrowserHostJournalImpl(this.sender);
@@ -760,6 +791,10 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       // TODO(crbug.com/458761731): Mark this as MOJO_RUNTIME_FEATURE_GATED once
       // `loadAndExtractContent` is defined in the handler interface.
       this.loadAndExtractContent = undefined;
+    }
+
+    if (!state.enableGetTabFaviconById) {
+      this.getTabFaviconById = undefined;
     }
   }
 
@@ -997,7 +1032,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
   }
 
   getTabById?(tabId: string): ObservableValueImpl<TabData> {
-    return this.getTabByIdSubscriberSet.getObservable(tabId);
+    return this.getTabByIdObservableSet.getObservableByTabId(tabId);
+  }
+
+  getTabFaviconById?(tabId: string): ObservableValueImpl<Blob|undefined> {
+    return this.getTabFaviconByIdObservableSet.getObservableByTabId(tabId);
   }
 
   activateTab?(tabId: string): void {
@@ -1557,7 +1596,7 @@ class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   }
 }
 
-class IdGenerator {
+export class IdGenerator {
   private nextId = 1;
 
   next(): number {
@@ -1661,42 +1700,62 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
   }
 }
 
-class GetTabByIdSubscriberSet {
-  observablesById = new Map<number, GetTabByIdObservable>();
+export interface ObservableSetByTabIdDelegate {
+  subscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void;
+  unsubscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void;
+  readonly unsubscribeDelay: number;
+}
+
+// Manages a set of observables which each observe a tab.
+// When a tab is closed, the corresponding observable is completed, and
+// removed from the set. Otherwise, observables are kept in the set,
+// so they can be re-subscribed to later.
+export class ObservableSetByTabId<ObservedType> {
+  observablesById =
+      new Map<number, ObservableSetByTabIdObservable<ObservedType>>();
   observableIdsByTabId = new Map<string, number>();
 
   constructor(
+      private delegate: ObservableSetByTabIdDelegate,
       private sender: PostMessageRequestSender,
       private idGenerator: IdGenerator) {}
 
-  handleTabDataChanged(payload: {
-    tabData?: TabDataPrivate, observationId: number,
-  }) {
-    const obs = this.observablesById.get(payload.observationId);
+  completeObservable(observationId: number) {
+    const obs = this.observablesById.get(observationId);
     if (!obs) {
       return;
     }
-    if (payload.tabData) {
-      obs.assignAndSignal(convertTabDataFromPrivate(payload.tabData));
-    } else {
-      obs.complete();
-      // Prune a bit later, so that requests for a recently deleted tab
-      // don't create another subscription. Note that this is just an
-      // optimization, a new subscription would resolve appropriately.
-      window.setTimeout(() => {
-        this.prune(payload.observationId);
-      }, 1000);
-    }
+    obs.complete();
+    // Prune a bit later, so that requests for a recently deleted tab
+    // don't create another subscription. Note that this is just an
+    // optimization, a new subscription would resolve appropriately.
+    window.setTimeout(() => {
+      this.prune(observationId);
+    }, this.delegate.unsubscribeDelay);
   }
 
-  getObservable(tabId: string): GetTabByIdObservable {
+  assignAndSignal(observationId: number, value: ObservedType) {
+    const obs = this.observablesById.get(observationId);
+    if (!obs) {
+      return;
+    }
+    obs.assignAndSignal(value);
+  }
+
+  getObservableByTabId(tabId: string):
+      ObservableSetByTabIdObservable<ObservedType> {
     let obsId = this.observableIdsByTabId.get(tabId);
     if (obsId !== undefined) {
       return this.observablesById.get(obsId)!;
     }
     obsId = this.idGenerator.next();
     this.observableIdsByTabId.set(tabId, obsId);
-    const obs = new GetTabByIdObservable(tabId, this.sender, obsId);
+    const obs = new ObservableSetByTabIdObservable<ObservedType>(
+        tabId, this.sender, obsId, this.delegate);
     this.observablesById.set(obsId, obs);
     return obs;
   }
@@ -1711,22 +1770,74 @@ class GetTabByIdSubscriberSet {
   }
 }
 
-class GetTabByIdObservable extends ObservableValueImpl<TabData> {
+export class ObservableSetByTabIdObservable<ObservedType> extends
+    ObservableValueImpl<ObservedType> {
+  private delegateSubscribed = false;
+  private unsubscribeTimer: OneShotTimer;
   constructor(
       public tabId: string, private sender: PostMessageRequestSender,
-      private observationId: number) {
+      private observationId: number,
+      private delegate: ObservableSetByTabIdDelegate) {
     super(/*isSet=*/ false);
-    this.sender.requestNoResponse(
-        'glicBrowserSubscribeToTabData', {tabId, observationId, cancel: false});
+    this.unsubscribeTimer = new OneShotTimer(delegate.unsubscribeDelay);
   }
 
-  destroy() {
-    this.sender.requestNoResponse(
-        'glicBrowserSubscribeToTabData',
-        {tabId: this.tabId, observationId: this.observationId, cancel: true});
+  override activeSubscriptionChanged(hasActiveSubscription: boolean): void {
+    super.activeSubscriptionChanged(hasActiveSubscription);
+    if (!hasActiveSubscription) {
+      this.unsubscribeTimer.start(() => {
+        if (this.hasActiveSubscription()) {
+          return;
+        }
+        this.delegateSubscribed = false;
+        this.delegate.unsubscribe(this.sender, this.observationId, this.tabId);
+      });
+      return;
+    }
+    this.unsubscribeTimer.reset();
+    if (!this.delegateSubscribed) {
+      this.delegateSubscribed = true;
+      this.delegate.subscribe(this.sender, this.observationId, this.tabId);
+    }
   }
 }
 
+class GetTabByIdObservableSetImpl implements ObservableSetByTabIdDelegate {
+  readonly unsubscribeDelay = 1000;
+  subscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void {
+    sender.requestNoResponse(
+        'glicBrowserSubscribeToTabData', {tabId, observationId, cancel: false});
+  }
+
+  unsubscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void {
+    sender.requestNoResponse(
+        'glicBrowserSubscribeToTabData', {tabId, observationId, cancel: true});
+  }
+}
+
+class GetTabFaviconByIdObservableSetImpl implements
+    ObservableSetByTabIdDelegate {
+  readonly unsubscribeDelay = 1000;
+  subscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void {
+    sender.requestNoResponse(
+        'glicBrowserSubscribeToTabFavicon',
+        {tabId, observationId, cancel: false});
+  }
+
+  unsubscribe(
+      sender: PostMessageRequestSender, observationId: number,
+      tabId: string): void {
+    sender.requestNoResponse(
+        'glicBrowserSubscribeToTabFavicon',
+        {tabId, observationId, cancel: true});
+  }
+}
 
 // Converts an RgbaImage into a Blob through the canvas API. Output is a PNG or
 // BMP.

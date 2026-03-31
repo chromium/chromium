@@ -40,6 +40,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
+#include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
@@ -202,6 +203,7 @@ GlicKeyedService::GlicKeyedService(
               : nullptr),
 #endif
       tab_data_observer_(std::make_unique<GlicTabDataObserver>()),
+      tab_favicon_observer_(std::make_unique<GlicTabFaviconObserver>()),
       web_contents_warming_pool_(
           std::make_unique<GlicWebContentsWarmingPool>(profile)),
       contextual_cueing_service_(contextual_cueing_service) {

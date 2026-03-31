@@ -26,11 +26,14 @@ export function getTestName(): string|null {
   return testName;
 }
 
-export function mapObservable<S, T>(src: Observable<S>, mapping: (s: S) => T) {
+export function mapObservable<S, T>(
+    src: Observable<S>, mapping: (s: S) => T | Promise<T>) {
   const result = new Subject<T>();
   src.subscribe(
       (v) => {
-        result.next(mapping(v));
+        (async () => {
+          result.next(await mapping(v));
+        })();
       },
   );
   return result;
@@ -80,10 +83,24 @@ export class SequencedSubscriber<T> {
     return waitFor(this.completed, undefined, 'waitForComplete timed out');
   }
 
-  async waitFor(condition: (v: T) => boolean): Promise<T> {
+  // Waits for `condition` to return true.
+  // If `condition` throws, `waitFor()` will allow that error to be thrown,
+  // failing the test.
+  // If `condition` returns an error, or returns false, `waitFor()` will keep
+  // trying.
+  // On timeout, the last error returned from `condition` is printed to help
+  // diagnose test failures.
+  async waitFor(condition: (v: T) => boolean | Error | Promise<boolean|Error>):
+      Promise<T> {
     let lastValueSaw: {some: T}|undefined = undefined;
+    let lastError: Error|undefined;
+    let evalCount = 0;
     if (this.current !== undefined) {
-      if (condition(this.current.some)) {
+      const conditionResult = await condition(this.current.some);
+      evalCount++;
+      if (conditionResult instanceof Error) {
+        lastError = conditionResult;
+      } else if (conditionResult) {
         return this.current.some;
       }
       lastValueSaw = {some: this.current.some};
@@ -95,14 +112,24 @@ export class SequencedSubscriber<T> {
         val = await this.next();
       } catch (e) {
         if (lastValueSaw !== undefined) {
-          console.warn(`waitFor() failed, last value saw was ${
-              JSON.stringify(lastValueSaw)}`);
+          let errorSuffix = '';
+          if (lastError) {
+            errorSuffix = `, last evaluation produced an error: ${lastError}`;
+          }
+          console.warn(`waitFor() failed, last value saw ${
+              evalCount} values, last value was ${
+              JSON.stringify(lastValueSaw)}${errorSuffix}`);
         } else {
           console.warn(`waitFor() failed, saw no values emitted`);
         }
         throw e;
       }
-      if (condition(val)) {
+      const conditionResult = await condition(val);
+      evalCount++;
+      lastError = undefined;
+      if (conditionResult instanceof Error) {
+        lastError = conditionResult;
+      } else if (conditionResult) {
         return val;
       }
       lastValueSaw = {some: val};

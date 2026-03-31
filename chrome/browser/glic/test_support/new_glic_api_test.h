@@ -216,7 +216,7 @@ class GlicApiBrowserTestMixin : public GlicBrowserTestMixin<T> {
  private:
   void OnEmbeddedTestServerHttpRequest(
       const net::test_server::HttpRequest& request) {
-    LOG(ERROR) << "EmbeddedTestServerHttpRequest: " << request.relative_url;
+    VLOG(1) << "EmbeddedTestServerHttpRequest: " << request.relative_url;
   }
   void ProcessTestResult(content::GlobalRenderFrameHostId frame_id,
                          const ExecuteTestOptions& options,

@@ -67,6 +67,7 @@ class GlicProfileManager;
 class GlicRegionCaptureController;
 class GlicShareImageHandler;
 class GlicTabDataObserver;
+class GlicTabFaviconObserver;
 class GlicWindowController;
 class HostManager;
 class GlicWebContentsWarmingPool;
@@ -374,6 +375,9 @@ class GlicKeyedService : public KeyedService,
                              mojom::AdditionalContextPtr context);
 
   GlicTabDataObserver& tab_data_observer() { return *tab_data_observer_; }
+  GlicTabFaviconObserver& tab_favicon_observer() {
+    return *tab_favicon_observer_;
+  }
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
   // ActorTaskDelegate:
@@ -476,6 +480,7 @@ class GlicKeyedService : public KeyedService,
   std::unique_ptr<GlicActorTaskManager> actor_task_manager_;
 #endif
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
+  std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
   std::unique_ptr<GlicWebContentsWarmingPool> web_contents_warming_pool_;
 
   // Unowned

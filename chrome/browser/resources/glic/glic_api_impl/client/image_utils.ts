@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ImageColorType} from '../request_types.js';
 import type {RgbaImage} from '../request_types.js';
 
 class BitmapHeaderGenerator {
@@ -33,9 +34,9 @@ class BitmapHeaderGenerator {
     // 'bV5YPelsPerMeter': 28, // 4 bytes
     // 'bV5ClrUsed': 32, // 4 bytes
     // 'bV5ClrImportant': 36, // 4 bytes
-    // 'bV5RedMask': 40, // 4 bytes
-    // 'bV5GreenMask': 44, // 4 bytes
-    // 'bV5BlueMask': 48, // 4 bytes
+    'bV5RedMask': 40,    // 4 bytes
+    'bV5GreenMask': 44,  // 4 bytes
+    'bV5BlueMask': 48,   // 4 bytes
     'bV5AlphaMask': 52,  // 4 bytes
     'bV5CSType': 56,     // 4 bytes
     // 'bV5Endpoints': 60, // 36 bytes
@@ -50,7 +51,7 @@ class BitmapHeaderGenerator {
 
   readonly totalHeaderSize = 138;  // 14 + 124
 
-  constructor() {
+  constructor(public colorType: ImageColorType) {
     this.template = this.createTemplate();
   }
 
@@ -68,6 +69,12 @@ class BitmapHeaderGenerator {
       const OFFSET = this.fileHeaderSize;
       dataView.setInt32(OFFSET + F.bV5Width, width, true);
       dataView.setInt32(OFFSET + F.bV5Height, height, true);
+
+      if (this.colorType === ImageColorType.RGBA) {
+        dataView.setUint32(OFFSET + F.bV5RedMask, 0x000000ff, true);
+        dataView.setUint32(OFFSET + F.bV5GreenMask, 0x0000ff00, true);
+        dataView.setUint32(OFFSET + F.bV5BlueMask, 0x00ff0000, true);
+      }
     }
 
     return buffer;
@@ -97,7 +104,11 @@ class BitmapHeaderGenerator {
       dataView.setUint32(OFFSET + F.bV5Size, 124, true);
       dataView.setUint16(OFFSET + F.bV5Planes, 1, true);
       dataView.setUint16(OFFSET + F.bV5BitCount, 32, true);
-      dataView.setUint32(OFFSET + F.bV5Compression, 0 /*BI_RGB*/, true);
+      dataView.setUint32(
+          OFFSET + F.bV5Compression,
+          this.colorType === ImageColorType.RGBA ? 3 /*BI_BITFIELDS*/ :
+                                                   0 /*BI_RGB*/,
+          true);
       dataView.setUint32(OFFSET + F.bV5AlphaMask, 0xff000000, true);
       dataView.setUint32(
           OFFSET + F.bV5CSType, 0x57696E20 /*LCS_WINDOWS_COLOR_SPACE*/, true);
@@ -107,15 +118,23 @@ class BitmapHeaderGenerator {
   }
 }
 
-const bitmapHeaderGenerator = new BitmapHeaderGenerator();
+const bitmapHeaderGenerators: Array < BitmapHeaderGenerator|
+    undefined >= [undefined, undefined];
 
 // Converts an RgbaImage into a Blob. Output is a BMP.
 export function rgbaImageToBmpBlob(image: RgbaImage): Blob {
+  // It would be abnormal to see more than one color type, but we handle it
+  // for safety.
+  let headerGenerator = bitmapHeaderGenerators[image.colorType];
+  if (!headerGenerator) {
+    headerGenerator = new BitmapHeaderGenerator(image.colorType);
+    bitmapHeaderGenerators[image.colorType] = headerGenerator;
+  }
   return new Blob(
       [
         // Note: A negative height indicates the pixel data's first row is at
         // the top of the image instead of the bottom.
-        bitmapHeaderGenerator.createBmpHeader(image.width, -image.height),
+        headerGenerator.createBmpHeader(image.width, -image.height),
         image.dataRGBA,
       ],
       {
