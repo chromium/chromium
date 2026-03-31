@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 
@@ -32,6 +33,9 @@ static T RoundUpToMultipleOf4(T size) {
 // an attrib is a client side buffer we pass the info back the user expects.
 
 class GLES2_IMPL_EXPORT VertexArrayObject {
+  // TODO(https://crbug.com/496284494): Remove this macro if the issue is fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Info about Vertex Attributes. This is used to track what the user currently
   // has bound on each Vertex Attribute so we can simulate client side buffers
