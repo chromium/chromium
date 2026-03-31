@@ -483,6 +483,18 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // initial value to false.
   void ShouldShowDialog(bool& should_show);
 
+  // PageActionObserver
+  void RecordPageActionImpression(
+      const page_actions::PageActionState& page_action,
+      AmbientImpression signin,
+      AmbientImpression signup);
+  void OnPageActionIconShown(
+      const page_actions::PageActionState& page_action) override;
+  void OnPageActionChipShown(
+      const page_actions::PageActionState& page_action) override;
+  void OnPageActionAnchoredMessageShown(
+      const page_actions::PageActionState& page_action) override;
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;

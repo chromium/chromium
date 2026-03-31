@@ -1437,6 +1437,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.Ambient.ClickSource" enum="FedCmAmbientClick"
+    expires_after="2026-09-30">
+  <owner>goto@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the click source of the FedCM ambient UI. Recorded when the user
+    clicks on the omnibox icon, chip or the anchored message's button or close
+    button (but not when the user clicks on the avatar or strings). Multiple
+    clicks can happen per API call.
+  </summary>
+</histogram>
+
+<histogram name="Blink.FedCm.Ambient.Impression" enum="FedCmAmbientImpression"
+    expires_after="2026-09-30">
+  <owner>goto@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records when the FedCM ambient UI is shown. Recorded when the omnibox icon,
+    chip and anchored message is displayed to the user (can happen more than
+    once per API call).
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.Android.ActivityDestroyedWhileCctShown"
     enum="BooleanHit" expires_after="2026-08-23">
   <owner>cbiesinger@chromium.org</owner>

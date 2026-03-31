@@ -6699,6 +6699,32 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//content/browser/webid/idp_network_request_manager.h:AccountsResponseInvalidReason) -->
 
+<!-- LINT.IfChange(FedCmAmbientClick) -->
+
+<enum name="FedCmAmbientClick">
+  <int value="0" label="SignIn Chip"/>
+  <int value="1" label="SignUp Chip"/>
+  <int value="2" label="SignIn Anchored message"/>
+  <int value="3" label="SignUp Anchored message"/>
+  <int value="4" label="SignIn Icon"/>
+  <int value="5" label="SignUp Icon"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:AmbientClick) -->
+
+<!-- LINT.IfChange(FedCmAmbientImpression) -->
+
+<enum name="FedCmAmbientImpression">
+  <int value="0" label="SignIn Chip"/>
+  <int value="1" label="SignUp Chip"/>
+  <int value="2" label="SignIn Anchored message"/>
+  <int value="3" label="SignUp Anchored message"/>
+  <int value="4" label="SignIn Icon"/>
+  <int value="5" label="SignUp Icon"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webid/identity_ui_utils.h:AmbientImpression) -->
+
 <!-- LINT.IfChange(FedCmCancelReason) -->
 
 <enum name="FedCmCancelReason">

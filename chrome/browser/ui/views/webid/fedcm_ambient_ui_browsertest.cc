@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/tabs/public/tab_interface.h"
@@ -187,8 +188,15 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
 
   // Verify chip is showing by checking that we didn't show the dialog widget
   // yet.
@@ -197,6 +205,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignUpToActiveTransition) {
 
   // Simulate click on the omnibox chip.
   view()->OnPageActionClicked();
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignUpChip, 1);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
 
@@ -224,12 +234,16 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 content::IdentityRequestAccount::LoginState::kSignIn);
 
   // Initially, for sign-in, the suggestion chip should be showing.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
 
   // Verify chip is showing by checking that we didn't show the dialog widget
   // yet.
@@ -253,6 +267,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInTransition) {
   // We show a "Signing in ..." message after the user selects the account.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignInChip, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
@@ -264,6 +281,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 content::IdentityRequestAccount::LoginState::kSignIn);
 
@@ -271,22 +289,31 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
+
   // We simulate it being collapsed.
   controller->HideSuggestionChip(kActionFederation);
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInIcon, 1);
 
   bool account_selected = false;
   EXPECT_CALL(*delegate_, OnAccountSelected).WillOnce(InvokeWithoutArgs([&]() {
     account_selected = true;
   }));
 
-  // We simulate it expanding into a page action.
+  // We simulate it expanding into an anchored message.
   view()->OnPageActionClicked();
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return observer.GetCurrentPageActionState().anchored_message_showing;
   }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInAnchoredMessage, 1);
 
   // It should NOT have selected the account yet.
   EXPECT_FALSE(account_selected);
@@ -300,12 +327,16 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, SignInCollapsedTransition) {
     return !observer.GetCurrentPageActionState().anchored_message_showing;
   }));
 
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientImpression::kSignInAnchoredMessage, 1);
+
   // And we show a "Signing in ..." message after the user selects the account.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
+  base::HistogramTester histograms;
   // Show passive UI with 2 accounts.
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 /*idp_login_state=*/std::nullopt,
@@ -314,17 +345,20 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiAccountFallback) {
   // Currently, passive UI only supports single-account scenarios.
   // Verify that with multiple accounts, it falls through to standard UI
   // (widget shown immediately).
+  histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 0);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
   EXPECT_TRUE(view()->GetDialogWidget());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiIdpFallback) {
+  base::HistogramTester histograms;
   ShowMultiIdpAmbientUi();
 
   // Currently, passive UI only supports single-account/IDP scenarios.
   // Verify that with multiple IDPs, it falls through to standard UI (widget
   // shown immediately).
+  histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 0);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
   EXPECT_TRUE(view()->GetDialogWidget());
@@ -332,19 +366,37 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, MultiIdpFallback) {
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiDisabledBrowserTest,
                        FeatureDisabledFallback) {
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignUp);
 
   // When features::kFedCmAmbientUI is disabled, it should fall through to
-  // standard UI (widget shown immediately).
+  // standard UI (widget shown immediately), and AmbientUI metrics should not be
+  // recorded.
+  histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 0);
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return !!view()->GetDialogWidget(); }));
   EXPECT_TRUE(view()->GetDialogWidget());
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, ReloadPage) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
 
   bool dismissed = false;
   EXPECT_CALL(
@@ -356,17 +408,32 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, ReloadPage) {
   // Reload the page.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  content::TestNavigationObserver observer(web_contents);
+  content::TestNavigationObserver navigation(web_contents);
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-  observer.Wait();
+  navigation.Wait();
 
   // The FedCM request should be dismissed on navigation/reload.
   ASSERT_TRUE(base::test::RunUntil([&]() { return dismissed; }));
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, TabSwitching) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
 
   // Add a new tab and switch to it.
   ASSERT_TRUE(AddTabAtIndex(1, GURL("about:blank"), ui::PAGE_TRANSITION_TYPED));
@@ -385,32 +452,64 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, TabSwitching) {
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
                        IdpMissingApprovedClientsUsesBrowserSignIn) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
   // Browser thinks it is a sign-in, and IdP is silent.
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 /*idp_login_state=*/std::nullopt);
 
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
+
   // Click on the chip.
   view()->OnPageActionClicked();
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignInChip, 1);
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInAnchoredMessage, 0);
 
   // Anchored message should be shown (no widget yet) because we fallback to
   // the browser's sign-in state.
   EXPECT_FALSE(view()->GetDialogWidget());
 
-  auto* features = browser()->GetActiveTabInterface()->GetTabFeatures();
-  auto* controller = features->page_action_controller();
-  page_actions::PageActionObserver observer(kActionFederation);
-  observer.RegisterAsPageActionObserver(*controller);
-  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+  EXPECT_FALSE(observer.GetCurrentPageActionState().anchored_message_showing);
 }
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
                        IdpClaimedSignUpOverridesBrowserSignIn) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
   // Browser thinks it is a sign-in, but IdP explicitly says sign-up.
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
                 content::IdentityRequestAccount::LoginState::kSignUp);
 
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
+
   // Click on the chip.
   view()->OnPageActionClicked();
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignUpChip, 1);
 
   // The full UI (modal/bubble) should be shown because it's treated as a
   // sign-up.
@@ -421,31 +520,79 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
                        IdpClaimedSignInOverridesBrowserSignUp) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
   // Browser thinks it is a sign-up, but IdP says sign-in.
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignIn);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
 
   // Click on the chip.
   view()->OnPageActionClicked();
 
-  // Anchored message should be shown (no widget yet).
-  EXPECT_FALSE(view()->GetDialogWidget());
-
-  auto* features = browser()->GetActiveTabInterface()->GetTabFeatures();
-  auto* controller = features->page_action_controller();
-  page_actions::PageActionObserver observer(kActionFederation);
-  observer.RegisterAsPageActionObserver(*controller);
-  EXPECT_TRUE(observer.GetCurrentPageActionState().anchored_message_showing);
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignInChip, 1);
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInAnchoredMessage, 0);
 }
 
 // This test verifies the UMA metrics logged during the Ambient UI flow for a
 // returning (sign-in) user.
 //
-// Relevant UMAs for the end-to-end flow:
-// 1. PageActionController.ChipTypeShown: Logged with value 'kFederation'.
-// 2. Blink.FedCm.AccountsDialogShown: Should be 0 for this flow, as no modal
+// The following UMAs were introduced to capture the sign-in user journey:
+//
+// 1. Blink.FedCm.Ambient.Impression: Logged with value 'kSignInChip' when the
+//    omnibox chip appears.
+// 2. Blink.FedCm.Ambient.ClickSource:
+//    - 'kSignInChip': Logged when the user clicks the sign-in chip.
+//    - 'kSignInAnchoredMessage': Logged when the user clicks the anchored
+//    message.
+//
+// The CTR for sign-in can be calculated the following way:
+//
+// - Percentage of users that see the URL chip and Sign-in:
+//              Blink.FedCm.Ambient.ClickSource.kSignInAnchoredMessage /
+//              Blink.FedCm.Ambient.Impression.kSignInChip
+//
+// - Percentage of users that see the URL chip but don't click on it:
+//             Blink.FedCm.Ambient.ClickSource.kSignInChip /
+//             Blink.FedCm.Ambient.Impression.kSignInChip
+//
+// There are a few additional signals that are collected as part of the
+// page action framework and the existing FedCM UMAs:
+//
+// 1. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
+// 2. PageActionController.Federation.Chip.CTR2:
+//    - 'kShown': Logged when the omnibox chip appears.
+//    - 'kClicked': Logged when the user clicks the chip (opens anchored
+//      message) OR the anchored message chip (completes login).
+//    - Measuring CTR: The generic CTR for the Page Action can be
+//      calculated as (Number of 'kClicked' events) / (Number of 'kShown'
+//      events). Note that for FedCM sign-in, a single successful flow
+//      records two 'kClicked' events (one for the chip and one for the
+//      anchored message). More precise CTRs can be calculated as:
+//      - Sign-in Chip CTR: 'Blink.FedCm.Ambient.ClickSource:kSignInChip' /
+//        'Blink.FedCm.Ambient.Impression:kSignInChip'
+//      - SignIn Anchored Message CTR:
+//      'Blink.FedCm.Ambient.ClickSource:kSignInAnchoredMessage' /
+//        'Blink.FedCm.Ambient.ClickSource:kSignInChip'
+//      - Overall Flow CTR: 'Blink.FedCm.Status.RequestIdToken' /
+//        'Blink.FedCm.Ambient.Impression:kSignInChip'
+// 3. PageActionController.ChipTypeShown: Logged with value 'kFederation'.
+// 4. Blink.FedCm.AccountsDialogShown: Should be 0 for this flow, as no modal
 //    dialog widget is shown (only the Page Action anchored message).
-// 3. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   base::HistogramTester histograms;
 
@@ -463,9 +610,12 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
 
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
+
   // Check Page Action shown metrics.
-  histograms.ExpectUniqueSample("PageActionController.ChipTypeShown",
-                                PageActionIconType::kFederation, 1);
+  histograms.ExpectBucketCount("PageActionController.ChipTypeShown",
+                               PageActionIconType::kFederation, 1);
 
   // Simulate click on the omnibox chip.
   // Note: We use the real PageActionView and simulate mouse events to ensure
@@ -487,7 +637,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
       ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   page_action_view->OnEvent(&release_event);
-
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignInChip, 1);
   // Re-assert shown metrics after the chip was clicked.
   // We expect these to be correctly recorded only once, even after the
   // anchored message appears.
@@ -499,6 +650,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
   // message bubble is shown, which is part of the Page Action framework).
   histograms.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 0);
 
+  // For sign-in, clicking the anchored message chip completes the flow.
   // For sign-in, clicking the chip completes the flow.
   // In a fully integrated browser test (without MockDelegate), we would
   // expect the success status (Blink.FedCm.Status.RequestIdToken) to be
@@ -508,13 +660,25 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignInMetrics) {
 // This test verifies the UMA metrics logged during the Ambient UI flow for a
 // new (sign-up) user.
 //
-// Relevant UMAs for the end-to-end flow:
-// 1. Blink.FedCm.AccountsDialogShown: Logged when the modal dialog is shown
-//    (after the chip is clicked).
-// 2. Blink.FedCm.Status.RequestIdToken: Logged when the flow completes.
+// The following UMAs were introduced to capture the sign-up user journey:
+//
+// 1. Blink.FedCm.Ambient.Impression: Logged with value 'kSignUpChip' when the
+//    omnibox chip appears.
+// 2. Blink.FedCm.Ambient.ClickSource:
+//    - 'kSignUpChip': Logged when the user clicks the sign-in chip. Note that
+//    there is no anchored message for sign-up because we use the modal dialog
+//    instead.
+//
+// The CTR for sign-up can be calculated the following way:
+//
+// - Percentage of users that see the URL chip and Sign-up:
+//              Blink.FedCm.Ambient.ClickSource.kSignInAnchoredMessage /
+//              Blink.FedCm.Ambient.Impression.kSignUpChip
+//
+// - Percentage of users that see the URL chip but don't click on it:
+//             Blink.FedCm.Ambient.ClickSource.kSignUpAnchoredMessage /
+//             Blink.FedCm.Ambient.Impression.kSignUpChip
 IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignUpMetrics) {
-  base::HistogramTester histograms;
-
   auto* controller = browser()
                          ->GetActiveTabInterface()
                          ->GetTabFeatures()
@@ -523,8 +687,15 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignUpMetrics) {
   page_actions::PageActionObserver observer(kActionFederation);
   observer.RegisterAsPageActionObserver(*controller);
 
+  base::HistogramTester histograms;
   ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignUp,
                 content::IdentityRequestAccount::LoginState::kSignUp);
+
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignUpChip, 1);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
@@ -553,6 +724,9 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest, CollectsSignUpMetrics) {
       ui::EventType::kMouseReleased, gfx::Point(), gfx::Point(),
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   page_action_view->OnEvent(&release_event);
+
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.ClickSource",
+                               AmbientClick::kSignUpChip, 1);
 
   // For sign-up, the click shows the dialog widget immediately.
   ASSERT_TRUE(
