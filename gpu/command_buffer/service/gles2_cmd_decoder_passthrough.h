@@ -449,6 +449,19 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
 
   error::Error ProcessReadPixels(bool did_finish);
 
+  // Validates the use of shm_offset as either an offset in a shmem, or in the
+  // unpack buffer. When using unpack buffers, data will be a zero-length span
+  // with the address corresponding to the offset in the unpack buffer. (so its
+  // .data() and .size() are the arguments to pass to the TexImage family of
+  // functions, without additional changes needed).
+  // image_size is the corresponding argument passed to CompressedTex[Sub]Image
+  // functions so it can be validated against the shmem size when there is no
+  // unpack buffer.
+  error::Error ValidateAndGetTexImageData(base::span<const uint8_t>* data,
+                                          uint32_t shm_id,
+                                          uint32_t shm_offset,
+                                          uint32_t image_size = 0);
+
   // Checks to see if the inserted fence has completed.
   void ProcessDescheduleUntilFinished();
 
