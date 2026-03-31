@@ -372,9 +372,8 @@ ImageBitmap::ImageBitmap(HTMLCanvasElement* canvas,
       canvas->GetSourceImageForCanvas(&status, gfx::SizeF());
   if (status != kNormalSourceImageStatus)
     return;
-  DCHECK(IsA<StaticBitmapImage>(image_input.get()));
   scoped_refptr<StaticBitmapImage> input =
-      static_cast<StaticBitmapImage*>(image_input.get());
+      To<StaticBitmapImage>(image_input.get());
 
   const ParsedOptions parsed_options = ParseOptions(options, crop_rect, input);
   if (DstBufferSizeHasOverflow(parsed_options))
@@ -394,9 +393,8 @@ ImageBitmap::ImageBitmap(OffscreenCanvas* offscreen_canvas,
   SourceImageStatus status;
   scoped_refptr<Image> raw_input = offscreen_canvas->GetSourceImageForCanvas(
       &status, gfx::SizeF(offscreen_canvas->Size()));
-  DCHECK(IsA<StaticBitmapImage>(raw_input.get()));
   scoped_refptr<StaticBitmapImage> input =
-      static_cast<StaticBitmapImage*>(raw_input.get());
+      To<StaticBitmapImage>(raw_input.get());
   raw_input = nullptr;
 
   if (status != kNormalSourceImageStatus)

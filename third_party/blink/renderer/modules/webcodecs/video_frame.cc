@@ -819,7 +819,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (exception_state.HadException())
       return nullptr;
 
-    auto* sbi = static_cast<StaticBitmapImage*>(image.get());
+    auto* sbi = To<StaticBitmapImage>(image.get());
 
     // We don't know which thread the video frame might end up on, so Transfer()
     // the image so that it doesn't hold on to any thread-affine state.
@@ -830,8 +830,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     auto release_cb = base::BindPostTaskToCurrentDefault(
         ConvertToBaseOnceCallback(CrossThreadBindOnce(
             [](scoped_refptr<Image> image, const gpu::SyncToken& sync_token) {
-              static_cast<StaticBitmapImage*>(image.get())
-                  ->UpdateSyncToken(sync_token);
+              To<StaticBitmapImage>(image.get())->UpdateSyncToken(sync_token);
             },
             std::move(image))));
 
