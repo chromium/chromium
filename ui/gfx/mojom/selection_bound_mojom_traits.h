@@ -31,24 +31,19 @@ struct EnumTraits<gfx::mojom::SelectionBoundType, gfx::SelectionBound::Type> {
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::SelectionBoundType input,
-                        gfx::SelectionBound::Type* out) {
+  static gfx::SelectionBound::Type FromMojom(
+      gfx::mojom::SelectionBoundType input) {
     switch (input) {
       case gfx::mojom::SelectionBoundType::LEFT:
-        *out = gfx::SelectionBound::LEFT;
-        return true;
+        return gfx::SelectionBound::LEFT;
       case gfx::mojom::SelectionBoundType::RIGHT:
-        *out = gfx::SelectionBound::RIGHT;
-        return true;
+        return gfx::SelectionBound::RIGHT;
       case gfx::mojom::SelectionBoundType::CENTER:
-        *out = gfx::SelectionBound::CENTER;
-        return true;
+        return gfx::SelectionBound::CENTER;
       case gfx::mojom::SelectionBoundType::HIDDEN:
-        *out = gfx::SelectionBound::HIDDEN;
-        return true;
+        return gfx::SelectionBound::HIDDEN;
       case gfx::mojom::SelectionBoundType::EMPTY:
-        *out = gfx::SelectionBound::EMPTY;
-        return true;
+        return gfx::SelectionBound::EMPTY;
     }
     NOTREACHED();
   }

@@ -56,60 +56,43 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::ColorSpacePrimaryID input,
-                        gfx::ColorSpace::PrimaryID* out) {
+  static gfx::ColorSpace::PrimaryID FromMojom(
+      gfx::mojom::ColorSpacePrimaryID input) {
     switch (input) {
       case gfx::mojom::ColorSpacePrimaryID::INVALID:
-        *out = gfx::ColorSpace::PrimaryID::INVALID;
-        return true;
+        return gfx::ColorSpace::PrimaryID::INVALID;
       case gfx::mojom::ColorSpacePrimaryID::BT709:
-        *out = gfx::ColorSpace::PrimaryID::BT709;
-        return true;
+        return gfx::ColorSpace::PrimaryID::BT709;
       case gfx::mojom::ColorSpacePrimaryID::BT470M:
-        *out = gfx::ColorSpace::PrimaryID::BT470M;
-        return true;
+        return gfx::ColorSpace::PrimaryID::BT470M;
       case gfx::mojom::ColorSpacePrimaryID::BT470BG:
-        *out = gfx::ColorSpace::PrimaryID::BT470BG;
-        return true;
+        return gfx::ColorSpace::PrimaryID::BT470BG;
       case gfx::mojom::ColorSpacePrimaryID::SMPTE170M:
-        *out = gfx::ColorSpace::PrimaryID::SMPTE170M;
-        return true;
+        return gfx::ColorSpace::PrimaryID::SMPTE170M;
       case gfx::mojom::ColorSpacePrimaryID::SMPTE240M:
-        *out = gfx::ColorSpace::PrimaryID::SMPTE240M;
-        return true;
+        return gfx::ColorSpace::PrimaryID::SMPTE240M;
       case gfx::mojom::ColorSpacePrimaryID::FILM:
-        *out = gfx::ColorSpace::PrimaryID::FILM;
-        return true;
+        return gfx::ColorSpace::PrimaryID::FILM;
       case gfx::mojom::ColorSpacePrimaryID::BT2020:
-        *out = gfx::ColorSpace::PrimaryID::BT2020;
-        return true;
+        return gfx::ColorSpace::PrimaryID::BT2020;
       case gfx::mojom::ColorSpacePrimaryID::SMPTEST428_1:
-        *out = gfx::ColorSpace::PrimaryID::SMPTEST428_1;
-        return true;
+        return gfx::ColorSpace::PrimaryID::SMPTEST428_1;
       case gfx::mojom::ColorSpacePrimaryID::SMPTEST431_2:
-        *out = gfx::ColorSpace::PrimaryID::SMPTEST431_2;
-        return true;
+        return gfx::ColorSpace::PrimaryID::SMPTEST431_2;
       case gfx::mojom::ColorSpacePrimaryID::P3:
-        *out = gfx::ColorSpace::PrimaryID::P3;
-        return true;
+        return gfx::ColorSpace::PrimaryID::P3;
       case gfx::mojom::ColorSpacePrimaryID::XYZ_D50:
-        *out = gfx::ColorSpace::PrimaryID::XYZ_D50;
-        return true;
+        return gfx::ColorSpace::PrimaryID::XYZ_D50;
       case gfx::mojom::ColorSpacePrimaryID::ADOBE_RGB:
-        *out = gfx::ColorSpace::PrimaryID::ADOBE_RGB;
-        return true;
+        return gfx::ColorSpace::PrimaryID::ADOBE_RGB;
       case gfx::mojom::ColorSpacePrimaryID::APPLE_GENERIC_RGB:
-        *out = gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB;
-        return true;
+        return gfx::ColorSpace::PrimaryID::APPLE_GENERIC_RGB;
       case gfx::mojom::ColorSpacePrimaryID::WIDE_GAMUT_COLOR_SPIN:
-        *out = gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN;
-        return true;
+        return gfx::ColorSpace::PrimaryID::WIDE_GAMUT_COLOR_SPIN;
       case gfx::mojom::ColorSpacePrimaryID::CUSTOM:
-        *out = gfx::ColorSpace::PrimaryID::CUSTOM;
-        return true;
+        return gfx::ColorSpace::PrimaryID::CUSTOM;
       case gfx::mojom::ColorSpacePrimaryID::EBU_3213_E:
-        *out = gfx::ColorSpace::PrimaryID::EBU_3213_E;
-        return true;
+        return gfx::ColorSpace::PrimaryID::EBU_3213_E;
     }
     NOTREACHED();
   }
@@ -175,84 +158,59 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::ColorSpaceTransferID input,
-                        gfx::ColorSpace::TransferID* out) {
+  static gfx::ColorSpace::TransferID FromMojom(
+      gfx::mojom::ColorSpaceTransferID input) {
     switch (input) {
       case gfx::mojom::ColorSpaceTransferID::INVALID:
-        *out = gfx::ColorSpace::TransferID::INVALID;
-        return true;
+        return gfx::ColorSpace::TransferID::INVALID;
       case gfx::mojom::ColorSpaceTransferID::BT709:
-        *out = gfx::ColorSpace::TransferID::BT709;
-        return true;
+        return gfx::ColorSpace::TransferID::BT709;
       case gfx::mojom::ColorSpaceTransferID::BT709_APPLE:
-        *out = gfx::ColorSpace::TransferID::BT709_APPLE;
-        return true;
+        return gfx::ColorSpace::TransferID::BT709_APPLE;
       case gfx::mojom::ColorSpaceTransferID::GAMMA18:
-        *out = gfx::ColorSpace::TransferID::GAMMA18;
-        return true;
+        return gfx::ColorSpace::TransferID::GAMMA18;
       case gfx::mojom::ColorSpaceTransferID::GAMMA22:
-        *out = gfx::ColorSpace::TransferID::GAMMA22;
-        return true;
+        return gfx::ColorSpace::TransferID::GAMMA22;
       case gfx::mojom::ColorSpaceTransferID::GAMMA24:
-        *out = gfx::ColorSpace::TransferID::GAMMA24;
-        return true;
+        return gfx::ColorSpace::TransferID::GAMMA24;
       case gfx::mojom::ColorSpaceTransferID::GAMMA28:
-        *out = gfx::ColorSpace::TransferID::GAMMA28;
-        return true;
+        return gfx::ColorSpace::TransferID::GAMMA28;
       case gfx::mojom::ColorSpaceTransferID::SMPTE170M:
-        *out = gfx::ColorSpace::TransferID::SMPTE170M;
-        return true;
+        return gfx::ColorSpace::TransferID::SMPTE170M;
       case gfx::mojom::ColorSpaceTransferID::SMPTE240M:
-        *out = gfx::ColorSpace::TransferID::SMPTE240M;
-        return true;
+        return gfx::ColorSpace::TransferID::SMPTE240M;
       case gfx::mojom::ColorSpaceTransferID::LINEAR:
-        *out = gfx::ColorSpace::TransferID::LINEAR;
-        return true;
+        return gfx::ColorSpace::TransferID::LINEAR;
       case gfx::mojom::ColorSpaceTransferID::LOG:
-        *out = gfx::ColorSpace::TransferID::LOG;
-        return true;
+        return gfx::ColorSpace::TransferID::LOG;
       case gfx::mojom::ColorSpaceTransferID::LOG_SQRT:
-        *out = gfx::ColorSpace::TransferID::LOG_SQRT;
-        return true;
+        return gfx::ColorSpace::TransferID::LOG_SQRT;
       case gfx::mojom::ColorSpaceTransferID::IEC61966_2_4:
-        *out = gfx::ColorSpace::TransferID::IEC61966_2_4;
-        return true;
+        return gfx::ColorSpace::TransferID::IEC61966_2_4;
       case gfx::mojom::ColorSpaceTransferID::BT1361_ECG:
-        *out = gfx::ColorSpace::TransferID::BT1361_ECG;
-        return true;
+        return gfx::ColorSpace::TransferID::BT1361_ECG;
       case gfx::mojom::ColorSpaceTransferID::SRGB:
-        *out = gfx::ColorSpace::TransferID::SRGB;
-        return true;
+        return gfx::ColorSpace::TransferID::SRGB;
       case gfx::mojom::ColorSpaceTransferID::BT2020_10:
-        *out = gfx::ColorSpace::TransferID::BT2020_10;
-        return true;
+        return gfx::ColorSpace::TransferID::BT2020_10;
       case gfx::mojom::ColorSpaceTransferID::BT2020_12:
-        *out = gfx::ColorSpace::TransferID::BT2020_12;
-        return true;
+        return gfx::ColorSpace::TransferID::BT2020_12;
       case gfx::mojom::ColorSpaceTransferID::PQ:
-        *out = gfx::ColorSpace::TransferID::PQ;
-        return true;
+        return gfx::ColorSpace::TransferID::PQ;
       case gfx::mojom::ColorSpaceTransferID::SMPTEST428_1:
-        *out = gfx::ColorSpace::TransferID::SMPTEST428_1;
-        return true;
+        return gfx::ColorSpace::TransferID::SMPTEST428_1;
       case gfx::mojom::ColorSpaceTransferID::HLG:
-        *out = gfx::ColorSpace::TransferID::HLG;
-        return true;
+        return gfx::ColorSpace::TransferID::HLG;
       case gfx::mojom::ColorSpaceTransferID::SRGB_HDR:
-        *out = gfx::ColorSpace::TransferID::SRGB_HDR;
-        return true;
+        return gfx::ColorSpace::TransferID::SRGB_HDR;
       case gfx::mojom::ColorSpaceTransferID::LINEAR_HDR:
-        *out = gfx::ColorSpace::TransferID::LINEAR_HDR;
-        return true;
+        return gfx::ColorSpace::TransferID::LINEAR_HDR;
       case gfx::mojom::ColorSpaceTransferID::CUSTOM:
-        *out = gfx::ColorSpace::TransferID::CUSTOM;
-        return true;
+        return gfx::ColorSpace::TransferID::CUSTOM;
       case gfx::mojom::ColorSpaceTransferID::CUSTOM_HDR:
-        *out = gfx::ColorSpace::TransferID::CUSTOM_HDR;
-        return true;
+        return gfx::ColorSpace::TransferID::CUSTOM_HDR;
       case gfx::mojom::ColorSpaceTransferID::SCRGB_LINEAR_80_NITS:
-        *out = gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS;
-        return true;
+        return gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS;
     }
     NOTREACHED();
   }
@@ -289,42 +247,31 @@ struct EnumTraits<gfx::mojom::ColorSpaceMatrixID, gfx::ColorSpace::MatrixID> {
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::ColorSpaceMatrixID input,
-                        gfx::ColorSpace::MatrixID* out) {
+  static gfx::ColorSpace::MatrixID FromMojom(
+      gfx::mojom::ColorSpaceMatrixID input) {
     switch (input) {
       case gfx::mojom::ColorSpaceMatrixID::INVALID:
-        *out = gfx::ColorSpace::MatrixID::INVALID;
-        return true;
+        return gfx::ColorSpace::MatrixID::INVALID;
       case gfx::mojom::ColorSpaceMatrixID::RGB:
-        *out = gfx::ColorSpace::MatrixID::RGB;
-        return true;
+        return gfx::ColorSpace::MatrixID::RGB;
       case gfx::mojom::ColorSpaceMatrixID::BT709:
-        *out = gfx::ColorSpace::MatrixID::BT709;
-        return true;
+        return gfx::ColorSpace::MatrixID::BT709;
       case gfx::mojom::ColorSpaceMatrixID::FCC:
-        *out = gfx::ColorSpace::MatrixID::FCC;
-        return true;
+        return gfx::ColorSpace::MatrixID::FCC;
       case gfx::mojom::ColorSpaceMatrixID::BT470BG:
-        *out = gfx::ColorSpace::MatrixID::BT470BG;
-        return true;
+        return gfx::ColorSpace::MatrixID::BT470BG;
       case gfx::mojom::ColorSpaceMatrixID::SMPTE170M:
-        *out = gfx::ColorSpace::MatrixID::SMPTE170M;
-        return true;
+        return gfx::ColorSpace::MatrixID::SMPTE170M;
       case gfx::mojom::ColorSpaceMatrixID::SMPTE240M:
-        *out = gfx::ColorSpace::MatrixID::SMPTE240M;
-        return true;
+        return gfx::ColorSpace::MatrixID::SMPTE240M;
       case gfx::mojom::ColorSpaceMatrixID::YCOCG:
-        *out = gfx::ColorSpace::MatrixID::YCOCG;
-        return true;
+        return gfx::ColorSpace::MatrixID::YCOCG;
       case gfx::mojom::ColorSpaceMatrixID::BT2020_NCL:
-        *out = gfx::ColorSpace::MatrixID::BT2020_NCL;
-        return true;
+        return gfx::ColorSpace::MatrixID::BT2020_NCL;
       case gfx::mojom::ColorSpaceMatrixID::YDZDX:
-        *out = gfx::ColorSpace::MatrixID::YDZDX;
-        return true;
+        return gfx::ColorSpace::MatrixID::YDZDX;
       case gfx::mojom::ColorSpaceMatrixID::GBR:
-        *out = gfx::ColorSpace::MatrixID::GBR;
-        return true;
+        return gfx::ColorSpace::MatrixID::GBR;
     }
     NOTREACHED();
   }
@@ -346,21 +293,17 @@ struct EnumTraits<gfx::mojom::ColorSpaceRangeID, gfx::ColorSpace::RangeID> {
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::ColorSpaceRangeID input,
-                        gfx::ColorSpace::RangeID* out) {
+  static gfx::ColorSpace::RangeID FromMojom(
+      gfx::mojom::ColorSpaceRangeID input) {
     switch (input) {
       case gfx::mojom::ColorSpaceRangeID::INVALID:
-        *out = gfx::ColorSpace::RangeID::INVALID;
-        return true;
+        return gfx::ColorSpace::RangeID::INVALID;
       case gfx::mojom::ColorSpaceRangeID::LIMITED:
-        *out = gfx::ColorSpace::RangeID::LIMITED;
-        return true;
+        return gfx::ColorSpace::RangeID::LIMITED;
       case gfx::mojom::ColorSpaceRangeID::FULL:
-        *out = gfx::ColorSpace::RangeID::FULL;
-        return true;
+        return gfx::ColorSpace::RangeID::FULL;
       case gfx::mojom::ColorSpaceRangeID::DERIVED:
-        *out = gfx::ColorSpace::RangeID::DERIVED;
-        return true;
+        return gfx::ColorSpace::RangeID::DERIVED;
     }
     NOTREACHED();
   }

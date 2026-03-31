@@ -30,24 +30,18 @@ struct EnumTraits<extensions::mojom::Channel, version_info::Channel> {
     NOTREACHED();
   }
 
-  static bool FromMojom(extensions::mojom::Channel input,
-                        version_info::Channel* out) {
+  static version_info::Channel FromMojom(extensions::mojom::Channel input) {
     switch (input) {
       case extensions::mojom::Channel::kUnknown:
-        *out = version_info::Channel::UNKNOWN;
-        return true;
+        return version_info::Channel::UNKNOWN;
       case extensions::mojom::Channel::kCanary:
-        *out = version_info::Channel::CANARY;
-        return true;
+        return version_info::Channel::CANARY;
       case extensions::mojom::Channel::kDev:
-        *out = version_info::Channel::DEV;
-        return true;
+        return version_info::Channel::DEV;
       case extensions::mojom::Channel::kBeta:
-        *out = version_info::Channel::BETA;
-        return true;
+        return version_info::Channel::BETA;
       case extensions::mojom::Channel::kStable:
-        *out = version_info::Channel::STABLE;
-        return true;
+        return version_info::Channel::STABLE;
     }
     NOTREACHED();
   }

@@ -70,86 +70,61 @@ struct EnumTraits<cc::mojom::RenderSurfaceReason, cc::RenderSurfaceReason> {
     NOTREACHED();
   }
 
-  static bool FromMojom(cc::mojom::RenderSurfaceReason input,
-                        cc::RenderSurfaceReason* out) {
+  static cc::RenderSurfaceReason FromMojom(
+      cc::mojom::RenderSurfaceReason input) {
     switch (input) {
       case cc::mojom::RenderSurfaceReason::kNone:
-        *out = cc::RenderSurfaceReason::kNone;
-        return true;
+        return cc::RenderSurfaceReason::kNone;
       case cc::mojom::RenderSurfaceReason::kRoot:
-        *out = cc::RenderSurfaceReason::kRoot;
-        return true;
+        return cc::RenderSurfaceReason::kRoot;
       case cc::mojom::RenderSurfaceReason::k3dTransformFlattening:
-        *out = cc::RenderSurfaceReason::k3dTransformFlattening;
-        return true;
+        return cc::RenderSurfaceReason::k3dTransformFlattening;
       case cc::mojom::RenderSurfaceReason::kBackdropScope:
-        *out = cc::RenderSurfaceReason::kBackdropScope;
-        return true;
+        return cc::RenderSurfaceReason::kBackdropScope;
       case cc::mojom::RenderSurfaceReason::kBlendMode:
-        *out = cc::RenderSurfaceReason::kBlendMode;
-        return true;
+        return cc::RenderSurfaceReason::kBlendMode;
       case cc::mojom::RenderSurfaceReason::kBlendModeDstIn:
-        *out = cc::RenderSurfaceReason::kBlendModeDstIn;
-        return true;
+        return cc::RenderSurfaceReason::kBlendModeDstIn;
       case cc::mojom::RenderSurfaceReason::kOpacity:
-        *out = cc::RenderSurfaceReason::kOpacity;
-        return true;
+        return cc::RenderSurfaceReason::kOpacity;
       case cc::mojom::RenderSurfaceReason::kOpacityAnimation:
-        *out = cc::RenderSurfaceReason::kOpacityAnimation;
-        return true;
+        return cc::RenderSurfaceReason::kOpacityAnimation;
       case cc::mojom::RenderSurfaceReason::kFilter:
-        *out = cc::RenderSurfaceReason::kFilter;
-        return true;
+        return cc::RenderSurfaceReason::kFilter;
       case cc::mojom::RenderSurfaceReason::kFilterAnimation:
-        *out = cc::RenderSurfaceReason::kFilterAnimation;
-        return true;
+        return cc::RenderSurfaceReason::kFilterAnimation;
       case cc::mojom::RenderSurfaceReason::kBackdropFilter:
-        *out = cc::RenderSurfaceReason::kBackdropFilter;
-        return true;
+        return cc::RenderSurfaceReason::kBackdropFilter;
       case cc::mojom::RenderSurfaceReason::kBackdropFilterAnimation:
-        *out = cc::RenderSurfaceReason::kBackdropFilterAnimation;
-        return true;
+        return cc::RenderSurfaceReason::kBackdropFilterAnimation;
       case cc::mojom::RenderSurfaceReason::kRoundedCorner:
-        *out = cc::RenderSurfaceReason::kRoundedCorner;
-        return true;
+        return cc::RenderSurfaceReason::kRoundedCorner;
       case cc::mojom::RenderSurfaceReason::kClipPath:
-        *out = cc::RenderSurfaceReason::kClipPath;
-        return true;
+        return cc::RenderSurfaceReason::kClipPath;
       case cc::mojom::RenderSurfaceReason::kClipAxisAlignment:
-        *out = cc::RenderSurfaceReason::kClipAxisAlignment;
-        return true;
+        return cc::RenderSurfaceReason::kClipAxisAlignment;
       case cc::mojom::RenderSurfaceReason::kMask:
-        *out = cc::RenderSurfaceReason::kMask;
-        return true;
+        return cc::RenderSurfaceReason::kMask;
       case cc::mojom::RenderSurfaceReason::kTrilinearFiltering:
-        *out = cc::RenderSurfaceReason::kTrilinearFiltering;
-        return true;
+        return cc::RenderSurfaceReason::kTrilinearFiltering;
       case cc::mojom::RenderSurfaceReason::kCache:
-        *out = cc::RenderSurfaceReason::kCache;
-        return true;
+        return cc::RenderSurfaceReason::kCache;
       case cc::mojom::RenderSurfaceReason::kCopyRequest:
-        *out = cc::RenderSurfaceReason::kCopyRequest;
-        return true;
+        return cc::RenderSurfaceReason::kCopyRequest;
       case cc::mojom::RenderSurfaceReason::kMirrored:
-        *out = cc::RenderSurfaceReason::kMirrored;
-        return true;
+        return cc::RenderSurfaceReason::kMirrored;
       case cc::mojom::RenderSurfaceReason::kSubtreeIsBeingCaptured:
-        *out = cc::RenderSurfaceReason::kSubtreeIsBeingCaptured;
-        return true;
+        return cc::RenderSurfaceReason::kSubtreeIsBeingCaptured;
       case cc::mojom::RenderSurfaceReason::kViewTransitionParticipant:
-        *out = cc::RenderSurfaceReason::kViewTransitionParticipant;
-        return true;
+        return cc::RenderSurfaceReason::kViewTransitionParticipant;
       case cc::mojom::RenderSurfaceReason::kGradientMask:
-        *out = cc::RenderSurfaceReason::kGradientMask;
-        return true;
+        return cc::RenderSurfaceReason::kGradientMask;
       case cc::mojom::RenderSurfaceReason::
           k2DScaleTransformWithCompositedDescendants:
-        *out =
-            cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants;
-        return true;
+        return cc::RenderSurfaceReason::
+            k2DScaleTransformWithCompositedDescendants;
       case cc::mojom::RenderSurfaceReason::kTest:
-        *out = cc::RenderSurfaceReason::kTest;
-        return true;
+        return cc::RenderSurfaceReason::kTest;
     }
     NOTREACHED();
   }

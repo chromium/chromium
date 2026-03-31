@@ -28,23 +28,18 @@ struct EnumTraits<gfx::mojom::OverlayType, gfx::OverlayType> {
     return gfx::mojom::OverlayType::kSimple;
   }
 
-  static bool FromMojom(gfx::mojom::OverlayType input, gfx::OverlayType* out) {
+  static gfx::OverlayType FromMojom(gfx::mojom::OverlayType input) {
     switch (input) {
       case gfx::mojom::OverlayType::kSimple:
-        *out = gfx::OverlayType::kSimple;
-        return true;
+        return gfx::OverlayType::kSimple;
       case gfx::mojom::OverlayType::kUnderlay:
-        *out = gfx::OverlayType::kUnderlay;
-        return true;
+        return gfx::OverlayType::kUnderlay;
       case gfx::mojom::OverlayType::kSingleOnTop:
-        *out = gfx::OverlayType::kSingleOnTop;
-        return true;
+        return gfx::OverlayType::kSingleOnTop;
       case gfx::mojom::OverlayType::kFullScreen:
-        *out = gfx::OverlayType::kFullScreen;
-        return true;
+        return gfx::OverlayType::kFullScreen;
     }
     NOTREACHED();
-    return false;
   }
 };
 

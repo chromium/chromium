@@ -30,24 +30,19 @@ struct EnumTraits<gfx::mojom::OverlayPriorityHint, gfx::OverlayPriorityHint> {
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::OverlayPriorityHint input,
-                        gfx::OverlayPriorityHint* out) {
+  static gfx::OverlayPriorityHint FromMojom(
+      gfx::mojom::OverlayPriorityHint input) {
     switch (input) {
       case gfx::mojom::OverlayPriorityHint::kNone:
-        *out = gfx::OverlayPriorityHint::kNone;
-        return true;
+        return gfx::OverlayPriorityHint::kNone;
       case gfx::mojom::OverlayPriorityHint::kRegular:
-        *out = gfx::OverlayPriorityHint::kRegular;
-        return true;
+        return gfx::OverlayPriorityHint::kRegular;
       case gfx::mojom::OverlayPriorityHint::kLowLatencyCanvas:
-        *out = gfx::OverlayPriorityHint::kLowLatencyCanvas;
-        return true;
+        return gfx::OverlayPriorityHint::kLowLatencyCanvas;
       case gfx::mojom::OverlayPriorityHint::kHardwareProtection:
-        *out = gfx::OverlayPriorityHint::kHardwareProtection;
-        return true;
+        return gfx::OverlayPriorityHint::kHardwareProtection;
       case gfx::mojom::OverlayPriorityHint::kVideo:
-        *out = gfx::OverlayPriorityHint::kVideo;
-        return true;
+        return gfx::OverlayPriorityHint::kVideo;
     }
     NOTREACHED();
   }

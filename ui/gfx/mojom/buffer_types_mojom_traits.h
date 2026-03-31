@@ -51,44 +51,32 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
     NOTREACHED();
   }
 
-  static bool FromMojom(gfx::mojom::BufferUsage input, gfx::BufferUsage* out) {
+  static gfx::BufferUsage FromMojom(gfx::mojom::BufferUsage input) {
     switch (input) {
       case gfx::mojom::BufferUsage::GPU_READ:
-        *out = gfx::BufferUsage::GPU_READ;
-        return true;
+        return gfx::BufferUsage::GPU_READ;
       case gfx::mojom::BufferUsage::SCANOUT:
-        *out = gfx::BufferUsage::SCANOUT;
-        return true;
+        return gfx::BufferUsage::SCANOUT;
       case gfx::mojom::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
-        *out = gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE;
-        return true;
+        return gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE;
       case gfx::mojom::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
-        *out = gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE;
-        return true;
+        return gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE;
       case gfx::mojom::BufferUsage::SCANOUT_CPU_READ_WRITE:
-        *out = gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
-        return true;
+        return gfx::BufferUsage::SCANOUT_CPU_READ_WRITE;
       case gfx::mojom::BufferUsage::SCANOUT_VDA_WRITE:
-        *out = gfx::BufferUsage::SCANOUT_VDA_WRITE;
-        return true;
+        return gfx::BufferUsage::SCANOUT_VDA_WRITE;
       case gfx::mojom::BufferUsage::PROTECTED_SCANOUT:
-        *out = gfx::BufferUsage::PROTECTED_SCANOUT;
-        return true;
+        return gfx::BufferUsage::PROTECTED_SCANOUT;
       case gfx::mojom::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE:
-        *out = gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
-        return true;
+        return gfx::BufferUsage::PROTECTED_SCANOUT_VDA_WRITE;
       case gfx::mojom::BufferUsage::GPU_READ_CPU_READ_WRITE:
-        *out = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
-        return true;
+        return gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
       case gfx::mojom::BufferUsage::SCANOUT_VEA_CPU_READ:
-        *out = gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
-        return true;
+        return gfx::BufferUsage::SCANOUT_VEA_CPU_READ;
       case gfx::mojom::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
-        *out = gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-        return true;
+        return gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
       case gfx::mojom::BufferUsage::SCANOUT_FRONT_RENDERING:
-        *out = gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
-        return true;
+        return gfx::BufferUsage::SCANOUT_FRONT_RENDERING;
     }
     NOTREACHED();
   }

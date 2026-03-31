@@ -27,22 +27,18 @@ struct EnumTraits<skia::mojom::TileMode, SkTileMode> {
     NOTREACHED();
   }
 
-  static bool FromMojom(skia::mojom::TileMode input, SkTileMode* out) {
+  static SkTileMode FromMojom(skia::mojom::TileMode input) {
     switch (input) {
       case skia::mojom::TileMode::CLAMP:
-        *out = SkTileMode::kClamp;
-        return true;
+        return SkTileMode::kClamp;
       case skia::mojom::TileMode::REPEAT:
-        *out = SkTileMode::kRepeat;
-        return true;
+        return SkTileMode::kRepeat;
       case skia::mojom::TileMode::MIRROR:
-        *out = SkTileMode::kMirror;
-        return true;
+        return SkTileMode::kMirror;
       case skia::mojom::TileMode::DECAL:
-        *out = SkTileMode::kDecal;
-        return true;
+        return SkTileMode::kDecal;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

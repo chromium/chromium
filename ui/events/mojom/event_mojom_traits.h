@@ -73,27 +73,20 @@ struct EnumTraits<ui::mojom::EventMomentumPhase, ui::EventMomentumPhase> {
     NOTREACHED();
   }
 
-  static bool FromMojom(ui::mojom::EventMomentumPhase input,
-                        ui::EventMomentumPhase* out) {
+  static ui::EventMomentumPhase FromMojom(ui::mojom::EventMomentumPhase input) {
     switch (input) {
       case ui::mojom::EventMomentumPhase::NONE:
-        *out = ui::EventMomentumPhase::NONE;
-        return true;
+        return ui::EventMomentumPhase::NONE;
       case ui::mojom::EventMomentumPhase::BEGAN:
-        *out = ui::EventMomentumPhase::BEGAN;
-        return true;
+        return ui::EventMomentumPhase::BEGAN;
       case ui::mojom::EventMomentumPhase::MAY_BEGIN:
-        *out = ui::EventMomentumPhase::MAY_BEGIN;
-        return true;
+        return ui::EventMomentumPhase::MAY_BEGIN;
       case ui::mojom::EventMomentumPhase::INERTIAL_UPDATE:
-        *out = ui::EventMomentumPhase::INERTIAL_UPDATE;
-        return true;
+        return ui::EventMomentumPhase::INERTIAL_UPDATE;
       case ui::mojom::EventMomentumPhase::END:
-        *out = ui::EventMomentumPhase::END;
-        return true;
+        return ui::EventMomentumPhase::END;
       case ui::mojom::EventMomentumPhase::BLOCKED:
-        *out = ui::EventMomentumPhase::BLOCKED;
-        return true;
+        return ui::EventMomentumPhase::BLOCKED;
     }
     NOTREACHED();
   }
@@ -137,21 +130,16 @@ struct EnumTraits<ui::mojom::ScrollEventPhase, ui::ScrollEventPhase> {
     NOTREACHED();
   }
 
-  static bool FromMojom(ui::mojom::ScrollEventPhase input,
-                        ui::ScrollEventPhase* out) {
+  static ui::ScrollEventPhase FromMojom(ui::mojom::ScrollEventPhase input) {
     switch (input) {
       case ui::mojom::ScrollEventPhase::kNone:
-        *out = ui::ScrollEventPhase::kNone;
-        return true;
+        return ui::ScrollEventPhase::kNone;
       case ui::mojom::ScrollEventPhase::kBegan:
-        *out = ui::ScrollEventPhase::kBegan;
-        return true;
+        return ui::ScrollEventPhase::kBegan;
       case ui::mojom::ScrollEventPhase::kUpdate:
-        *out = ui::ScrollEventPhase::kUpdate;
-        return true;
+        return ui::ScrollEventPhase::kUpdate;
       case ui::mojom::ScrollEventPhase::kEnd:
-        *out = ui::ScrollEventPhase::kEnd;
-        return true;
+        return ui::ScrollEventPhase::kEnd;
     }
     NOTREACHED();
   }
@@ -171,18 +159,14 @@ struct EnumTraits<ui::mojom::GestureDeviceType, ui::GestureDeviceType> {
     NOTREACHED();
   }
 
-  static bool FromMojom(ui::mojom::GestureDeviceType input,
-                        ui::GestureDeviceType* out) {
+  static ui::GestureDeviceType FromMojom(ui::mojom::GestureDeviceType input) {
     switch (input) {
       case ui::mojom::GestureDeviceType::DEVICE_UNKNOWN:
-        *out = ui::GestureDeviceType::DEVICE_UNKNOWN;
-        return true;
+        return ui::GestureDeviceType::DEVICE_UNKNOWN;
       case ui::mojom::GestureDeviceType::DEVICE_TOUCHPAD:
-        *out = ui::GestureDeviceType::DEVICE_TOUCHPAD;
-        return true;
+        return ui::GestureDeviceType::DEVICE_TOUCHPAD;
       case ui::mojom::GestureDeviceType::DEVICE_TOUCHSCREEN:
-        *out = ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
-        return true;
+        return ui::GestureDeviceType::DEVICE_TOUCHSCREEN;
     }
     NOTREACHED();
   }

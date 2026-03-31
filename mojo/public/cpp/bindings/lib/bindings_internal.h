@@ -364,14 +364,6 @@ T ConvertEnumValue(MojomType in) {
   return *out;
 }
 
-template <typename MojomType, typename T>
-T ConvertEnumValue(MojomType in) {
-  T out;
-  bool result = EnumTraits<MojomType, T>::FromMojom(in, &out);
-  DCHECK(result);
-  return out;
-}
-
 template <typename MojomType>
   requires(requires(MojomType in) {
     { ToKnownEnumValue(in) } -> std::same_as<MojomType>;

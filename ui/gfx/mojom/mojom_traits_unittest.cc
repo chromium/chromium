@@ -344,7 +344,7 @@ TEST_F(StructTraitsTest, BufferUsage) {
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   for (int i = 0; i <= static_cast<int>(BufferUsage::LAST); ++i) {
     BufferUsage input = static_cast<BufferUsage>(i);
-    BufferUsageTraits::FromMojom(BufferUsageTraits::ToMojom(input), &output);
+    output = BufferUsageTraits::FromMojom(BufferUsageTraits::ToMojom(input));
     EXPECT_EQ(output, input);
   }
 }

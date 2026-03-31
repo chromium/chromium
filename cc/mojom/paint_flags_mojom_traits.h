@@ -28,21 +28,17 @@ struct EnumTraits<cc::mojom::FilterQuality, cc::PaintFlags::FilterQuality> {
     NOTREACHED();
   }
 
-  static bool FromMojom(cc::mojom::FilterQuality input,
-                        cc::PaintFlags::FilterQuality* out) {
+  static cc::PaintFlags::FilterQuality FromMojom(
+      cc::mojom::FilterQuality input) {
     switch (input) {
       case cc::mojom::FilterQuality::kNone:
-        *out = cc::PaintFlags::FilterQuality::kNone;
-        return true;
+        return cc::PaintFlags::FilterQuality::kNone;
       case cc::mojom::FilterQuality::kLow:
-        *out = cc::PaintFlags::FilterQuality::kLow;
-        return true;
+        return cc::PaintFlags::FilterQuality::kLow;
       case cc::mojom::FilterQuality::kMedium:
-        *out = cc::PaintFlags::FilterQuality::kMedium;
-        return true;
+        return cc::PaintFlags::FilterQuality::kMedium;
       case cc::mojom::FilterQuality::kHigh:
-        *out = cc::PaintFlags::FilterQuality::kHigh;
-        return true;
+        return cc::PaintFlags::FilterQuality::kHigh;
     }
     NOTREACHED();
   }

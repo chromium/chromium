@@ -27,18 +27,15 @@ struct EnumTraits<cc::mojom::ScrollbarAnimator,
     NOTREACHED();
   }
 
-  static bool FromMojom(cc::mojom::ScrollbarAnimator input,
-                        cc::LayerTreeSettings::ScrollbarAnimator* out) {
+  static cc::LayerTreeSettings::ScrollbarAnimator FromMojom(
+      cc::mojom::ScrollbarAnimator input) {
     switch (input) {
       case cc::mojom::ScrollbarAnimator::kNoAnimator:
-        *out = cc::LayerTreeSettings::ScrollbarAnimator::NO_ANIMATOR;
-        return true;
+        return cc::LayerTreeSettings::ScrollbarAnimator::NO_ANIMATOR;
       case cc::mojom::ScrollbarAnimator::kAndroidOverlay:
-        *out = cc::LayerTreeSettings::ScrollbarAnimator::ANDROID_OVERLAY;
-        return true;
+        return cc::LayerTreeSettings::ScrollbarAnimator::ANDROID_OVERLAY;
       case cc::mojom::ScrollbarAnimator::kAuraOverlay:
-        *out = cc::LayerTreeSettings::ScrollbarAnimator::AURA_OVERLAY;
-        return true;
+        return cc::LayerTreeSettings::ScrollbarAnimator::AURA_OVERLAY;
     }
     NOTREACHED();
   }

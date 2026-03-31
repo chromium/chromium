@@ -44,42 +44,31 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
     }
   }
 
-  static bool FromMojom(ui::mojom::WindowOpenDisposition disposition,
-                        WindowOpenDisposition* out) {
+  static WindowOpenDisposition FromMojom(
+      ui::mojom::WindowOpenDisposition disposition) {
     switch (disposition) {
       case ui::mojom::WindowOpenDisposition::UNKNOWN:
-        *out = WindowOpenDisposition::UNKNOWN;
-        return true;
+        return WindowOpenDisposition::UNKNOWN;
       case ui::mojom::WindowOpenDisposition::CURRENT_TAB:
-        *out = WindowOpenDisposition::CURRENT_TAB;
-        return true;
+        return WindowOpenDisposition::CURRENT_TAB;
       case ui::mojom::WindowOpenDisposition::SINGLETON_TAB:
-        *out = WindowOpenDisposition::SINGLETON_TAB;
-        return true;
+        return WindowOpenDisposition::SINGLETON_TAB;
       case ui::mojom::WindowOpenDisposition::NEW_FOREGROUND_TAB:
-        *out = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-        return true;
+        return WindowOpenDisposition::NEW_FOREGROUND_TAB;
       case ui::mojom::WindowOpenDisposition::NEW_BACKGROUND_TAB:
-        *out = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-        return true;
+        return WindowOpenDisposition::NEW_BACKGROUND_TAB;
       case ui::mojom::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
-        *out = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
-        return true;
+        return WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
       case ui::mojom::WindowOpenDisposition::NEW_POPUP:
-        *out = WindowOpenDisposition::NEW_POPUP;
-        return true;
+        return WindowOpenDisposition::NEW_POPUP;
       case ui::mojom::WindowOpenDisposition::NEW_WINDOW:
-        *out = WindowOpenDisposition::NEW_WINDOW;
-        return true;
+        return WindowOpenDisposition::NEW_WINDOW;
       case ui::mojom::WindowOpenDisposition::SAVE_TO_DISK:
-        *out = WindowOpenDisposition::SAVE_TO_DISK;
-        return true;
+        return WindowOpenDisposition::SAVE_TO_DISK;
       case ui::mojom::WindowOpenDisposition::OFF_THE_RECORD:
-        *out = WindowOpenDisposition::OFF_THE_RECORD;
-        return true;
+        return WindowOpenDisposition::OFF_THE_RECORD;
       case ui::mojom::WindowOpenDisposition::IGNORE_ACTION:
-        *out = WindowOpenDisposition::IGNORE_ACTION;
-        return true;
+        return WindowOpenDisposition::IGNORE_ACTION;
       default:
         NOTREACHED();
     }

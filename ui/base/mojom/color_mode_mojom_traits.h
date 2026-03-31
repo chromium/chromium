@@ -25,15 +25,13 @@ struct EnumTraits<ui::mojom::ColorMode, ui::ColorProviderKey::ColorMode> {
     NOTREACHED();
   }
 
-  static bool FromMojom(ui::mojom::ColorMode disposition,
-                        ui::ColorProviderKey::ColorMode* out) {
+  static ui::ColorProviderKey::ColorMode FromMojom(
+      ui::mojom::ColorMode disposition) {
     switch (disposition) {
       case ui::mojom::ColorMode::kLight:
-        *out = ui::ColorProviderKey::ColorMode::kLight;
-        return true;
+        return ui::ColorProviderKey::ColorMode::kLight;
       case ui::mojom::ColorMode::kDark:
-        *out = ui::ColorProviderKey::ColorMode::kDark;
-        return true;
+        return ui::ColorProviderKey::ColorMode::kDark;
     }
     NOTREACHED();
   }

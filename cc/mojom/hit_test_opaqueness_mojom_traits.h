@@ -27,18 +27,14 @@ struct EnumTraits<cc::mojom::HitTestOpaqueness, cc::HitTestOpaqueness> {
     }
   }
 
-  static bool FromMojom(cc::mojom::HitTestOpaqueness input,
-                        cc::HitTestOpaqueness* out) {
+  static cc::HitTestOpaqueness FromMojom(cc::mojom::HitTestOpaqueness input) {
     switch (input) {
       case cc::mojom::HitTestOpaqueness::kTransparent:
-        *out = cc::HitTestOpaqueness::kTransparent;
-        return true;
+        return cc::HitTestOpaqueness::kTransparent;
       case cc::mojom::HitTestOpaqueness::kMixed:
-        *out = cc::HitTestOpaqueness::kMixed;
-        return true;
+        return cc::HitTestOpaqueness::kMixed;
       case cc::mojom::HitTestOpaqueness::kOpaque:
-        *out = cc::HitTestOpaqueness::kOpaque;
-        return true;
+        return cc::HitTestOpaqueness::kOpaque;
     }
     NOTREACHED();
   }

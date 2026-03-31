@@ -104,11 +104,6 @@ bool DeserializeEnum(MojoT in, T& out) {
   return result.has_value();
 }
 
-template <typename MojoT, typename T>
-bool DeserializeEnum(MojoT in, T& out) {
-  return mojo::EnumTraits<MojoT, T>::FromMojom(in, &out);
-}
-
 // This overload is used for mojom enums. The C++ enum type is given as an
 // input, and returned as an output.
 template <typename MojoT, typename T>

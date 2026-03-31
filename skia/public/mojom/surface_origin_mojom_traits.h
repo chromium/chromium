@@ -24,15 +24,12 @@ struct EnumTraits<skia::mojom::SurfaceOrigin, GrSurfaceOrigin> {
     NOTREACHED();
   }
 
-  static bool FromMojom(skia::mojom::SurfaceOrigin origin,
-                        GrSurfaceOrigin* out_origin) {
+  static GrSurfaceOrigin FromMojom(skia::mojom::SurfaceOrigin origin) {
     switch (origin) {
       case skia::mojom::SurfaceOrigin::kTopLeft:
-        *out_origin = kTopLeft_GrSurfaceOrigin;
-        return true;
+        return kTopLeft_GrSurfaceOrigin;
       case skia::mojom::SurfaceOrigin::kBottomLeft:
-        *out_origin = kBottomLeft_GrSurfaceOrigin;
-        return true;
+        return kBottomLeft_GrSurfaceOrigin;
     }
 
     // Mojo has already validated that `origin` is a valid value, so it must be

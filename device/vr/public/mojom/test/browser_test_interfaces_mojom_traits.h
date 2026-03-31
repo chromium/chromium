@@ -49,19 +49,16 @@ struct EnumTraits<device_test::mojom::Eye, device::XrEye> {
     return device_test::mojom::Eye::NONE;
   }
 
-  static bool FromMojom(device_test::mojom::Eye input, device::XrEye* out) {
+  static device::XrEye FromMojom(device_test::mojom::Eye input) {
     switch (input) {
       case device_test::mojom::Eye::LEFT:
-        *out = device::XrEye::kLeft;
-        return true;
+        return device::XrEye::kLeft;
       case device_test::mojom::Eye::RIGHT:
-        *out = device::XrEye::kRight;
-        return true;
+        return device::XrEye::kRight;
       case device_test::mojom::Eye::NONE:
-        *out = device::XrEye::kNone;
-        return true;
+        return device::XrEye::kNone;
     }
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -83,23 +80,19 @@ struct EnumTraits<device_test::mojom::ControllerRole, device::ControllerRole> {
     return device_test::mojom::ControllerRole::kControllerRoleInvalid;
   }
 
-  static bool FromMojom(device_test::mojom::ControllerRole input,
-                        device::ControllerRole* out) {
+  static device::ControllerRole FromMojom(
+      device_test::mojom::ControllerRole input) {
     switch (input) {
       case device_test::mojom::ControllerRole::kControllerRoleLeft:
-        *out = device::ControllerRole::kControllerRoleLeft;
-        return true;
+        return device::ControllerRole::kControllerRoleLeft;
       case device_test::mojom::ControllerRole::kControllerRoleRight:
-        *out = device::ControllerRole::kControllerRoleRight;
-        return true;
+        return device::ControllerRole::kControllerRoleRight;
       case device_test::mojom::ControllerRole::kControllerRoleInvalid:
-        *out = device::ControllerRole::kControllerRoleInvalid;
-        return true;
+        return device::ControllerRole::kControllerRoleInvalid;
       case device_test::mojom::ControllerRole::kControllerRoleVoice:
-        *out = device::ControllerRole::kControllerRoleVoice;
-        return true;
+        return device::ControllerRole::kControllerRoleVoice;
     }
-    return false;
+    NOTREACHED();
   }
 };
 

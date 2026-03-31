@@ -15,20 +15,29 @@ struct Serializer<{{mojom_type}}, MaybeConstUserType> {
   static bool Deserialize(int32_t input, UserType* output) {
     auto known_value = ::mojo::internal::ToKnownEnumValueHelper(
         static_cast<{{mojom_type}}>(input));
-     if constexpr (requires { {Traits::FromMojom(known_value) } -> std::same_as<UserType>; }) {
-      static_assert(
-        std::same_as<{{mojom_type}}, UserType> ||
-        HasInfallibleConversion({{mojom_type}}()), "{{mojom_type}} does not have an infallible conversion, use an optional return type.");
+    if constexpr (requires {
+                    {
+                      Traits::FromMojom(known_value)
+                    } -> std::same_as<UserType>;
+                  }) {
+      static_assert(std::same_as<{{mojom_type}}, UserType> ||
+                        HasInfallibleConversion({{mojom_type}}()),
+                    "{{mojom_type}} does not have an infallible conversion, "
+                    "use an optional return type.");
       *output = Traits::FromMojom(known_value);
       return true;
-    } else if constexpr (requires { {Traits::FromMojom(known_value) } -> std::same_as<std::optional<UserType>>; }) {
-      auto from_mojom = Traits::FromMojom(known_value);
-      if (from_mojom) { *output = *from_mojom; }
-      return from_mojom.has_value();
     } else {
-      // TODO(crbug.com/483092898): Remove this branch once all traits use
-      // the single argument version.
-      return Traits::FromMojom(known_value, output);
+      static_assert(
+          requires {
+            {
+              Traits::FromMojom(known_value)
+            } -> std::same_as<std::optional<UserType>>;
+          }, "FromMojom must return by value or optional.");
+      std::optional<UserType> from_mojom = Traits::FromMojom(known_value);
+      if (from_mojom) {
+        *output = *from_mojom;
+      }
+      return from_mojom.has_value();
     }
   }
 };
