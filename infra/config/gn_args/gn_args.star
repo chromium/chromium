@@ -823,7 +823,18 @@ gn_args.config(
 
 gn_args.config(
     name = "ios_developer",
-    configs = ["ios_simulator", "debug"],
+    # Settings from ios/build/tools/setup-gn.py, which is used by 90% of iOS developer builds now.
+    args = {
+        "bundle_pool_depth": 64,
+        "enable_dsyms": False,
+        "enable_remoting": False,
+        "enable_stripping": False,
+        "is_chrome_branded": False,
+        "is_official_build": False,
+        "target_platform": "iphoneos",
+        "use_official_google_api_keys": False,
+    },
+    configs = ["ios_simulator"],
 )
 
 gn_args.config(

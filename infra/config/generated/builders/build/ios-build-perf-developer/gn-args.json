@@ -2,10 +2,17 @@
   "phases": {
     "ninja": {
       "gn_args": {
-        "is_debug": true,
+        "bundle_pool_depth": 64,
+        "enable_dsyms": false,
+        "enable_remoting": false,
+        "enable_stripping": false,
+        "is_chrome_branded": false,
+        "is_official_build": false,
         "target_cpu": "arm64",
         "target_environment": "simulator",
         "target_os": "ios",
+        "target_platform": "iphoneos",
+        "use_official_google_api_keys": false,
         "use_reclient": true,
         "use_remoteexec": true,
         "use_siso": false
@@ -13,10 +20,17 @@
     },
     "siso_native": {
       "gn_args": {
-        "is_debug": true,
+        "bundle_pool_depth": 64,
+        "enable_dsyms": false,
+        "enable_remoting": false,
+        "enable_stripping": false,
+        "is_chrome_branded": false,
+        "is_official_build": false,
         "target_cpu": "arm64",
         "target_environment": "simulator",
         "target_os": "ios",
+        "target_platform": "iphoneos",
+        "use_official_google_api_keys": false,
         "use_reclient": false,
         "use_remoteexec": true,
         "use_siso": true
@@ -24,11 +38,18 @@
     },
     "siso_no_clang_modules": {
       "gn_args": {
-        "is_debug": true,
+        "bundle_pool_depth": 64,
+        "enable_dsyms": false,
+        "enable_remoting": false,
+        "enable_stripping": false,
+        "is_chrome_branded": false,
+        "is_official_build": false,
         "target_cpu": "arm64",
         "target_environment": "simulator",
         "target_os": "ios",
+        "target_platform": "iphoneos",
         "use_clang_modules": false,
+        "use_official_google_api_keys": false,
         "use_reclient": false,
         "use_remoteexec": true,
         "use_siso": true
