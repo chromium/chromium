@@ -2,8 +2,7 @@
 
 High level information: https://web.dev/manifest-updates/
 
-The manifest update process is required whenever a new manifest is served to an existing web_app, which would mean that the database entries corresponding to that web application needs to be updated. With the [predictable app updating flag enabled](https://source.chromium.org/chromium/chromium/src/+/main:content/public/common/content_features.cc?q=%22kWebAppPredictableAppUpdating%22%20f:.*_features.cc&ss=chromium%2Fchromium%2Fsrc), the following information sheds some light on how the
-manifest update system works in Chrome.
+The manifest update process is required whenever a new manifest is served to an existing web_app, which would mean that the database entries corresponding to that web application needs to be updated. The following information sheds some light on how the whole manifest update system works in Chrome.
 
 ## Things to note:
 - Updates to security sensitive fields [1] (like `name`, `icon` and `short_name`) require explicit user approval.

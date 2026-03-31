@@ -112,9 +112,6 @@ void WebAppMenuModel::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
     case IDC_WEB_APP_UPGRADE_DIALOG:
-      CHECK(base::FeatureList::IsEnabled(
-                features::kWebAppPredictableAppUpdating) ||
-            base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
       LogMenuAction(MENU_ACTION_TRIGGER_APP_UPDATE_DIALOG);
       browser()->app_controller()->TriggerAppUpdateOrMigrationDialog(
           base::TimeTicks::Now());
@@ -131,10 +128,6 @@ void WebAppMenuModel::Build() {
       browser()->app_controller()->AsWebAppBrowserController();
   if (app_controller && (app_controller->HasPendingUpdate() ||
                          app_controller->HasPendingMigration())) {
-    if (app_controller->HasPendingUpdate()) {
-      CHECK(base::FeatureList::IsEnabled(
-          features::kWebAppPredictableAppUpdating));
-    }
     if (app_controller->HasPendingMigration()) {
       CHECK(base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi));
     }

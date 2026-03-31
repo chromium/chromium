@@ -842,7 +842,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(WebAppUpdateDataReadResult) -->
 
 <enum name="WebAppUpdateDataReadResult">
-  <int value="0" label="Flag not enabled"/>
+  <int value="0" label="Flag not enabled (deprecated)"/>
   <int value="1" label="App not installed"/>
   <int value="2" label="App does not have pending update"/>
   <int value="3" label="Failed to read existing app icons"/>

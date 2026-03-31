@@ -1577,11 +1577,6 @@ void WebAppIconManager::ReadIconsForPendingUpdate(
     ReadIconMetadataForUpdateCallback callback) {
   TRACE_EVENT0("ui", "WebAppIconManager::ReadIconsForPendingUpdate");
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
-    std::move(callback).Run(IconMetadataForUpdate());
-    return;
-  }
-
   if (!provider_->registrar_unsafe().GetAppById(app_id)) {
     std::move(callback).Run(IconMetadataForUpdate());
     return;

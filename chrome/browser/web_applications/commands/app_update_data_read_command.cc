@@ -46,8 +46,6 @@ IconPurpose ConvertIconSyncPurposeToImageResourcePurpose(
 
 std::string ToString(AppUpdateDataReadResult read_result) {
   switch (read_result) {
-    case AppUpdateDataReadResult::kFlagNotEnabled:
-      return "flag_not_enabled";
     case AppUpdateDataReadResult::kAppNotInstalled:
       return "app_not_installed";
     case AppUpdateDataReadResult::kAppDoesNotHavePendingUpdate:
@@ -88,12 +86,6 @@ AppUpdateDataReadCommand::~AppUpdateDataReadCommand() = default;
 
 void AppUpdateDataReadCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
-
-  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
-    ReportResultAndDestroy(AppUpdateDataReadResult::kFlagNotEnabled);
-    return;
-  }
-
   const WebAppRegistrar& registrar = lock_->registrar();
   if (!registrar.AppMatches(app_id_, WebAppFilter::InstalledInChrome())) {
     ReportResultAndDestroy(AppUpdateDataReadResult::kAppNotInstalled);
@@ -219,7 +211,6 @@ void AppUpdateDataReadCommand::ReportResultAndDestroy(
     case AppUpdateDataReadResult::kSystemShutdown:
       command_result = CommandResult::kFailure;
       break;
-    case AppUpdateDataReadResult::kFlagNotEnabled:
     case AppUpdateDataReadResult::kSuccess:
       command_result = CommandResult::kSuccess;
       break;

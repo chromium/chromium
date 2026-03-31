@@ -2111,12 +2111,6 @@ inline constexpr char
         "Predicts the scroll amount after the vsync time to more closely match "
         "when the frame is visible.";
 
-inline constexpr char kEnableWebAppPredictableAppUpdatingName[] =
-    "Enable predictable app updating for PWAs";
-inline constexpr char kEnableWebAppPredictableAppUpdatingDescription[] =
-    "Enables PWA updates to be more predictable by considering changes in icon "
-    "urls specified in the manifest";
-
 inline constexpr char kExcludePipFromScreenCaptureName[] =
     "Exclude Picture-in-Picture windows from screen capture";
 inline constexpr char kExcludePipFromScreenCaptureDescription[] =

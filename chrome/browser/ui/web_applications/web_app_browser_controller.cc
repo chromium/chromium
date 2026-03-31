@@ -282,9 +282,6 @@ bool WebAppBrowserController::HasReloadButton() const {
 }
 
 bool WebAppBrowserController::HasPendingUpdate() const {
-  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
-    return false;
-  }
   const WebApp* app = registrar().GetAppById(app_id());
   return app && app->pending_update_info().has_value();
 }
@@ -302,9 +299,6 @@ bool WebAppBrowserController::HasPendingMigration() const {
 }
 
 bool WebAppBrowserController::HasPendingUpdateNotIgnoredByUser() const {
-  if (!base::FeatureList::IsEnabled(features::kWebAppPredictableAppUpdating)) {
-    return false;
-  }
   const WebApp* app = registrar().GetAppById(app_id());
   if (!app || !app->pending_update_info().has_value()) {
     return false;

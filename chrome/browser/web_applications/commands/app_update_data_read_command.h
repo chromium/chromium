@@ -28,8 +28,7 @@ class PendingUpdateInfo;
 // LINT.IfChange(AppUpdateDataReadResult)
 
 enum class AppUpdateDataReadResult {
-  // Flag isn't enabled.
-  kFlagNotEnabled = 0,
+  // kFlagNotEnabled = 0, (Deprecated, do not use).
   // App is not installed.
   kAppNotInstalled = 1,
   // App does not have any pending update metadata.

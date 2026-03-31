@@ -11245,11 +11245,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-    {"enable-web-app-predictable-app-updating",
-     flag_descriptions::kEnableWebAppPredictableAppUpdatingName,
-     flag_descriptions::kEnableWebAppPredictableAppUpdatingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kWebAppPredictableAppUpdating)},
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     {"root-scrollbar-follows-browser-theme",
      flag_descriptions::kRootScrollbarFollowsTheme,
