@@ -307,22 +307,6 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
 }
 
 TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
-       LogsConfirmationShownWhenEnrolled) {
-  // Hold a strong reference to the mediator during the duration of the test.
-  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* mediator =
-      MakeMediator(MakeModel());
-
-  model_->SetEnrollmentProgress(
-      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled);
-
-  // Expect 1 sample with `is_shown` (sample) being true.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardEnrolled",
-      /*sample=*/true,
-      /*expected_count=*/1);
-}
-
-TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
        DelayAfterShowingConfirmation) {
   // Hold a strong reference to the mediator during the duration of the test.
   [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
@@ -368,20 +352,4 @@ TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
       autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
 
   EXPECT_OCMOCK_VERIFY((id)mock_browser_coordinator_handler_);
-}
-
-TEST_F(VirtualCardEnrollmentBottomSheetMediatorTest,
-       LogsConfirmationShownWhenEnrollmentFailed) {
-  // Hold a strong reference to the mediator during the duration of the test.
-  [[maybe_unused]] VirtualCardEnrollmentBottomSheetMediator* unused_mediator =
-      MakeMediator(MakeModel());
-
-  model_->SetEnrollmentProgress(
-      autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kFailed);
-
-  // Expect 1 sample with `is_shown` (sample) being true.
-  histogram_tester_.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardNotEnrolled",
-      /*sample=*/true,
-      /*expected_count=*/1);
 }

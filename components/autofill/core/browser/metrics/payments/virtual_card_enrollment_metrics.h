@@ -155,8 +155,6 @@ void LogVirtualCardEnrollmentNotOfferedDueToRequiredDelay(
 
 // Logs whether the loading or confirmation views are shown.
 void LogVirtualCardEnrollmentLoadingViewShown(bool is_shown);
-void LogVirtualCardEnrollmentConfirmationViewShown(bool is_shown,
-                                                   bool is_card_enrolled);
 
 // Logs the loading or confirmation views results when the view is closed.
 void LogVirtualCardEnrollmentLoadingViewResult(

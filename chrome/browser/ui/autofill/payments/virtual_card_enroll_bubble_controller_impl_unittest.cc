@@ -271,10 +271,6 @@ TEST_P(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
   EXPECT_NE(GetBubbleViews(), nullptr);
   EXPECT_TRUE(controller()->IsIconVisible());
 
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.VirtualCardEnrollBubble.ConfirmationShown.CardEnrolled", true,
-      1);
-
   controller()->OnBubbleClosed(PaymentsUiClosedReason::kClosed);
   // Expect the metric for virtual card enroll bubble to not change after
   // showing the confirmation bubble.

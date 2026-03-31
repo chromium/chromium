@@ -147,9 +147,6 @@ class UiModelObserverBridge
   switch (enrollmentProgress) {
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kEnrolled: {
       [self.consumer showConfirmationState];
-      autofill::LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/true,
-          /*is_card_enrolled=*/true);
       __weak __typeof__(self) weakSelf = self;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE, base::BindOnce(^{
@@ -162,9 +159,6 @@ class UiModelObserverBridge
       // Dismiss the virtual card enrollment bottom sheet. Failure messages are
       // expected to be initiated by the IOSChromePaymentsAutofillClient.
       [_browserCoordinatorHandler dismissVirtualCardEnrollmentBottomSheet];
-      autofill::LogVirtualCardEnrollmentConfirmationViewShown(
-          /*is_shown=*/true,
-          /*is_card_enrolled=*/false);
       break;
     case autofill::VirtualCardEnrollUiModel::EnrollmentProgress::kOffered:
       // The enrollment progress is set by IOSChromePaymentsAutofillClient to

@@ -385,9 +385,6 @@ void VirtualCardEnrollBubbleControllerImpl::DoShowBubble() {
         *browser->window()
              ->GetAutofillBubbleHandler()
              ->ShowVirtualCardEnrollConfirmationBubble(web_contents(), this));
-    LogVirtualCardEnrollmentConfirmationViewShown(
-        /*is_shown=*/true, confirmation_ui_params_->is_success);
-
   } else {
     // For reprompts after link clicks, `is_user_gesture` is set to false.
     bool user_gesture_reprompt = reprompt_required_ ? false : is_user_gesture_;

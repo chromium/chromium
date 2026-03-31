@@ -9289,28 +9289,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="LinkType" variants="Autofill.VirtualCardEnrollmentLinkType"/>
 </histogram>
 
-<histogram
-    name="Autofill.VirtualCardEnrollBubble.ConfirmationShown.{IsCardEnrolled}"
-    enum="AutofillVirtualCardEnrollBubbleResult" expires_after="2026-05-10">
-  <owner>darwinyang@google.com</owner>
-  <owner>kavitasoni@google.com</owner>
-  <owner>chrome-payments-eng@google.com</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Records if the virtual card confirmation bubble is shown after credit card
-    enrollment is completed. IsCardEnrolled ({IsCardEnrolled}) indicates whether
-    the confirmation bubble is for a successful VCN enrollment or not. Recorded
-    after the confirmation bubble is shown or after the decision to not show the
-    confirmation bubble.
-  </summary>
-  <token key="IsCardEnrolled">
-    <variant name="CardEnrolled"
-        summary="Credit card was successfully enrolled."/>
-    <variant name="CardNotEnrolled"
-        summary="Credit card failed to be enrolled."/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.VirtualCardEnrollBubble.LatencySinceDownstream"
     units="ms" expires_after="2026-08-02">
   <owner>siyua@chromium.org</owner>

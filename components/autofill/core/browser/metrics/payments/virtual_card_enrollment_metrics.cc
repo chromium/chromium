@@ -174,17 +174,6 @@ void LogVirtualCardEnrollmentLoadingViewShown(bool is_shown) {
                             is_shown);
 }
 
-void LogVirtualCardEnrollmentConfirmationViewShown(bool is_shown,
-                                                   bool is_card_enrolled) {
-  std::string_view base_histogram_name =
-      "Autofill.VirtualCardEnrollBubble.ConfirmationShown";
-  std::string_view is_card_enrolled_name =
-      is_card_enrolled ? ".CardEnrolled" : ".CardNotEnrolled";
-
-  base::UmaHistogramBoolean(
-      base::StrCat({base_histogram_name, is_card_enrolled_name}), is_shown);
-}
-
 void LogVirtualCardEnrollmentLoadingViewResult(
     VirtualCardEnrollmentBubbleResult result) {
   base::UmaHistogramEnumeration(
