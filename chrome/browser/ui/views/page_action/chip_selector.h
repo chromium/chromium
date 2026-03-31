@@ -16,6 +16,7 @@
 namespace page_actions {
 
 struct SuggestionChipConfig;
+struct AnchoredMessageConfig;
 
 // ChipSelector is an interface for the logic handling showing and hiding of
 // suggestion chips and anchored messages.
@@ -26,7 +27,9 @@ class ChipSelector {
   virtual void RequestChipShow(actions::ActionId page_action_id,
                                const SuggestionChipConfig& config) = 0;
   virtual void RequestChipHide(actions::ActionId page_action_id) = 0;
-  virtual void RequestAnchoredMessageShow(actions::ActionId page_action_id) = 0;
+  virtual void RequestAnchoredMessageShow(
+      actions::ActionId page_action_id,
+      const AnchoredMessageConfig& config) = 0;
   virtual void RequestAnchoredMessageHide(actions::ActionId page_action_id) = 0;
 };
 
@@ -37,7 +40,8 @@ std::unique_ptr<ChipSelector> CreateChipSelector(
                                  const SuggestionChipConfig&)>
         show_chip_callback,
     base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback,
-    base::RepeatingCallback<void(actions::ActionId)>
+    base::RepeatingCallback<void(actions::ActionId,
+                                 const AnchoredMessageConfig&)>
         show_anchored_message_callback,
     base::RepeatingCallback<void(actions::ActionId)>
         hide_anchored_message_callback);
@@ -47,7 +51,8 @@ namespace internal {
 // The default implementation of the ChipSelector, which accepts all
 // show and hide requests for suggestion chips and implements a FIFO queue for
 // anchored messages. Also ensures exactly one of suggestion chip and/or
-// anchored message is shown for a given page action.
+// anchored message is shown for a given page action. Ignores the priority level
+// of chips and anchored messages.
 class DefaultChipSelector : public ChipSelector {
  public:
   DefaultChipSelector(
@@ -55,7 +60,8 @@ class DefaultChipSelector : public ChipSelector {
                                    const SuggestionChipConfig&)>
           show_chip_callback,
       base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback,
-      base::RepeatingCallback<void(actions::ActionId)>
+      base::RepeatingCallback<void(actions::ActionId,
+                                   const AnchoredMessageConfig&)>
           show_anchored_message_callback,
       base::RepeatingCallback<void(actions::ActionId)>
           hide_anchored_message_callback);
@@ -63,7 +69,8 @@ class DefaultChipSelector : public ChipSelector {
   void RequestChipShow(actions::ActionId page_action_id,
                        const SuggestionChipConfig& config) override;
   void RequestChipHide(actions::ActionId page_action_id) override;
-  void RequestAnchoredMessageShow(actions::ActionId page_action_id) override;
+  void RequestAnchoredMessageShow(actions::ActionId page_action_id,
+                                  const AnchoredMessageConfig& config) override;
   void RequestAnchoredMessageHide(actions::ActionId page_action_id) override;
 
  private:
@@ -71,7 +78,8 @@ class DefaultChipSelector : public ChipSelector {
                                      const SuggestionChipConfig&)>
       show_chip_callback_;
   const base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback_;
-  const base::RepeatingCallback<void(actions::ActionId)>
+  const base::RepeatingCallback<void(actions::ActionId,
+                                     const AnchoredMessageConfig&)>
       show_anchored_message_callback_;
   const base::RepeatingCallback<void(actions::ActionId)>
       hide_anchored_message_callback_;

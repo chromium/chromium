@@ -194,11 +194,12 @@ void PageActionControllerImpl::DoHideSuggestionChip(
 
 void PageActionControllerImpl::ShowAnchoredMessage(
     actions::ActionId action_id) {
-  chip_selector_->RequestAnchoredMessageShow(action_id);
+  chip_selector_->RequestAnchoredMessageShow(action_id, {});
 }
 
 void PageActionControllerImpl::DoShowAnchoredMessage(
-    actions::ActionId action_id) {
+    actions::ActionId action_id,
+    const AnchoredMessageConfig& config) {
   FindPageActionModel(action_id).SetShouldShowAnchoredMessage(PassKey(),
                                                               /*show=*/true);
   active_anchored_message_ = action_id;

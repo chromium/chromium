@@ -21,7 +21,8 @@ DefaultChipSelector::DefaultChipSelector(
                                  const SuggestionChipConfig&)>
         show_chip_callback,
     base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback,
-    base::RepeatingCallback<void(actions::ActionId)>
+    base::RepeatingCallback<void(actions::ActionId,
+                                 const AnchoredMessageConfig&)>
         show_anchored_message_callback,
     base::RepeatingCallback<void(actions::ActionId)>
         hide_anchored_message_callback)
@@ -48,7 +49,8 @@ void DefaultChipSelector::RequestChipHide(actions::ActionId page_action_id) {
 }
 
 void DefaultChipSelector::RequestAnchoredMessageShow(
-    actions::ActionId page_action_id) {
+    actions::ActionId page_action_id,
+    const AnchoredMessageConfig& config) {
   if (std::ranges::contains(anchored_message_queue_, page_action_id)) {
     // This page action's anchored message is already queued. Nothing to do.
     return;
@@ -59,7 +61,7 @@ void DefaultChipSelector::RequestAnchoredMessageShow(
     // Other messages ahead of it in the queue. Do not show the new one.
     return;
   }
-  show_anchored_message_callback_.Run(page_action_id);
+  show_anchored_message_callback_.Run(page_action_id, config);
   if (active_chips_.contains(page_action_id)) {
     RequestChipHide(page_action_id);
   }
@@ -84,7 +86,7 @@ void DefaultChipSelector::RequestAnchoredMessageHide(
   hide_anchored_message_callback_.Run(page_action_id);
   if (anchored_message_queue_.size() > 0) {
     // Show the next anchored message in queue.
-    show_anchored_message_callback_.Run(anchored_message_queue_[0]);
+    show_anchored_message_callback_.Run(anchored_message_queue_[0], {});
   }
 }
 }  // namespace internal
@@ -94,7 +96,8 @@ std::unique_ptr<ChipSelector> CreateChipSelector(
                                  const SuggestionChipConfig&)>
         show_chip_callback,
     base::RepeatingCallback<void(actions::ActionId)> hide_chip_callback,
-    base::RepeatingCallback<void(actions::ActionId)>
+    base::RepeatingCallback<void(actions::ActionId,
+                                 const AnchoredMessageConfig&)>
         show_anchored_message_callback,
     base::RepeatingCallback<void(actions::ActionId)>
         hide_anchored_message_callback) {

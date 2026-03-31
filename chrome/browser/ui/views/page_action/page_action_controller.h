@@ -59,6 +59,18 @@ enum class PageActionColorSource {
   kCascadingAccent,
 };
 
+// These values are used for deciding priority when deciding which Anchored
+// Message and/or Suggestion Chip should be shown when multiple request to be
+// shown.
+enum class PageActionPriorityCategory {
+  kUnknown = 0,
+  kDiscoveryNudge,
+  kCoreSiteUtility,
+  kContextualCue,
+  kPrivacySecurity,
+  kMaxValue = kPrivacySecurity,
+};
+
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.
@@ -71,8 +83,19 @@ struct SuggestionChipConfig {
   // page actions.
   bool should_announce_chip = false;
 
+  // What priority this suggestion chip is.
+  PageActionPriorityCategory priority = PageActionPriorityCategory::kUnknown;
+
   // Used in tests.
   auto operator<=>(const SuggestionChipConfig& other) const = default;
+};
+
+// Configuration for a page action's anchored message.
+struct AnchoredMessageConfig {
+  // What priority this suggestion chip is.
+  PageActionPriorityCategory priority = PageActionPriorityCategory::kUnknown;
+
+  auto operator<=>(const AnchoredMessageConfig& other) const = default;
 };
 
 // Represents a scope during which a page action is considered active.
@@ -367,7 +390,8 @@ class PageActionControllerImpl : public PageActionController,
   void DoShowSuggestionChip(actions::ActionId action_id,
                             const SuggestionChipConfig& config);
   void DoHideSuggestionChip(actions::ActionId action_id);
-  void DoShowAnchoredMessage(actions::ActionId action_id);
+  void DoShowAnchoredMessage(actions::ActionId action_id,
+                             const AnchoredMessageConfig& config);
   void DoHideAnchoredMessage(actions::ActionId action_id);
 
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;

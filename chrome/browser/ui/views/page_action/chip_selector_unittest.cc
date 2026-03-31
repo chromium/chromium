@@ -52,7 +52,8 @@ class DefaultChipSelectorTest : public testing::Test {
     calls.emplace_back("hide_chip", page_action_id);
   }
 
-  void ShowAnchoredMessageCallback(actions::ActionId page_action_id) {
+  void ShowAnchoredMessageCallback(actions::ActionId page_action_id,
+                                   const AnchoredMessageConfig& config) {
     calls.emplace_back("show_anchored_message", page_action_id);
   }
 
@@ -111,14 +112,14 @@ TEST_F(DefaultChipSelectorTest, HistogramShowHideShow) {
 
 TEST_F(DefaultChipSelectorTest, AnchoredMessageHidesChip) {
   selector->RequestChipShow(0, SuggestionChipConfig{});
-  selector->RequestAnchoredMessageShow(0);
+  selector->RequestAnchoredMessageShow(0, {});
   EXPECT_THAT(
       calls, ElementsAre(Pair("show_chip", 0), Pair("show_anchored_message", 0),
                          Pair("hide_chip", 0)));
 }
 
 TEST_F(DefaultChipSelectorTest, ChipHidesAnchoredMessage) {
-  selector->RequestAnchoredMessageShow(0);
+  selector->RequestAnchoredMessageShow(0, {});
   selector->RequestChipShow(0, SuggestionChipConfig{});
   EXPECT_THAT(
       calls, ElementsAre(Pair("show_anchored_message", 0), Pair("show_chip", 0),
@@ -126,15 +127,15 @@ TEST_F(DefaultChipSelectorTest, ChipHidesAnchoredMessage) {
 }
 
 TEST_F(DefaultChipSelectorTest, OnlyFirstAnchoredMessageShows) {
-  selector->RequestAnchoredMessageShow(0);
-  selector->RequestAnchoredMessageShow(1);
+  selector->RequestAnchoredMessageShow(0, {});
+  selector->RequestAnchoredMessageShow(1, {});
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0)));
 }
 
 TEST_F(DefaultChipSelectorTest, AnchoredMessageQueue) {
-  selector->RequestAnchoredMessageShow(0);
-  selector->RequestAnchoredMessageShow(1);
-  selector->RequestAnchoredMessageShow(2);
+  selector->RequestAnchoredMessageShow(0, {});
+  selector->RequestAnchoredMessageShow(1, {});
+  selector->RequestAnchoredMessageShow(2, {});
   selector->RequestAnchoredMessageHide(1);
   selector->RequestAnchoredMessageHide(0);
   EXPECT_THAT(calls, ElementsAre(Pair("show_anchored_message", 0),
