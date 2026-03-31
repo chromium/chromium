@@ -123,11 +123,13 @@ bool GuardedPageAllocator::PartitionAllocSlotFreeList::Allocate(
     return true;
   }
 
-  if (!free_list_.count(type) || free_list_[type].empty())
+  auto it = free_list_.find(type);
+  if (it == free_list_.end() || it->second.empty()) {
     return false;
+  }
 
-  DCHECK_LE(free_list_[type].size(), max_entries_);
-  *out = RandomEviction(&free_list_[type]);
+  DCHECK_LE(it->second.size(), max_entries_);
+  *out = RandomEviction(&it->second);
   return true;
 }
 
