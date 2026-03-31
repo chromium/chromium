@@ -120,8 +120,6 @@ class TestBubbleDialogDelegateView;
 class TestBubbleDialogDelegate;
 class TrayBubbleView;
 FORWARD_DECLARE_TEST(OverviewSessionTest, DoNotHideBubbleTransient);
-FORWARD_DECLARE_TEST(ResizeShadowAndCursorTest,
-                     DefaultCursorOnBubbleWidgetCorners);
 FORWARD_DECLARE_TEST(SnapGroupOverviewTest, BubbleTransientIsVisibleInOverview);
 FORWARD_DECLARE_TEST(
     SnapGroupDesksTest,
@@ -868,8 +866,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public View,
   friend class ::ash::TrayBubbleView;
   FRIEND_TEST_ALL_PREFIXES(::ash::OverviewSessionTest,
                            DoNotHideBubbleTransient);
-  FRIEND_TEST_ALL_PREFIXES(::ash::ResizeShadowAndCursorTest,
-                           DefaultCursorOnBubbleWidgetCorners);
   FRIEND_TEST_ALL_PREFIXES(::ash::SnapGroupOverviewTest,
                            BubbleTransientIsVisibleInOverview);
   FRIEND_TEST_ALL_PREFIXES(
