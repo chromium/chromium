@@ -763,12 +763,12 @@ def _SyncAndBuild(archive, build, subrepo, no_gclient, extra_rev, use_jj):
       logging.info('Skipping gclient sync since already at desired rev')
   elif subrepo != _SRC_ROOT or no_gclient:
     if use_jj:
-      _JjCmd(['--ignore-immutable', 'edit', archive.rev], subrepo)
+      _JjCmd(['new', archive.rev], subrepo)
     else:
       _GitCmd(['checkout', archive.rev], subrepo)
   else:
     if use_jj:
-      _JjCmd(['--ignore-immutable', 'edit', archive.rev], subrepo)
+      _JjCmd(['new', archive.rev], subrepo)
     else:
       # Move to a detached state since gclient sync doesn't work with local
       # commits on a branch.
@@ -917,8 +917,8 @@ def _GenRestoreFunc(subrepo, use_jj):
     rev = _JjCmd(['log', '-r', '@', '-T', 'commit_id', '--no-graph'], subrepo)
 
     def _RestoreFunc():
-      logging.warning('Restoring original jj checkout')
-      _JjCmd(['--ignore-immutable', 'edit', rev], subrepo)
+      logging.warning('Restoring original jj @')
+      _JjCmd(['edit', rev], subrepo)
 
     return _RestoreFunc
 
