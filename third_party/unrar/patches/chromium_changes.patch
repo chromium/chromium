@@ -1,16 +1,16 @@
-diff --git a/third_party/unrar/src/archive.cpp b/third_party/unrar/src/archive.cpp
+diff --git c/third_party/unrar/src/archive.cpp w/third_party/unrar/src/archive.cpp
 index 4fc2a893478d6..87c639c606e24 100644
---- a/third_party/unrar/src/archive.cpp
-+++ b/third_party/unrar/src/archive.cpp
+--- c/third_party/unrar/src/archive.cpp
++++ w/third_party/unrar/src/archive.cpp
 @@ -359,3 +359,4 @@ uint64 Archive::GetWinSize(uint64 Size,uint &Flags)
    Flags+=(uint)Fraction*FCI_DICT_FRACT0;
    return Pow2+Fraction*(Pow2/32);
  }
 +
-diff --git a/third_party/unrar/src/archive.hpp b/third_party/unrar/src/archive.hpp
+diff --git c/third_party/unrar/src/archive.hpp w/third_party/unrar/src/archive.hpp
 index db1cb533823bf..8dde040e02fa0 100644
---- a/third_party/unrar/src/archive.hpp
-+++ b/third_party/unrar/src/archive.hpp
+--- c/third_party/unrar/src/archive.hpp
++++ w/third_party/unrar/src/archive.hpp
 @@ -23,6 +23,10 @@ enum ADDSUBDATA_FLAGS
  // RAR5 headers must not exceed 2 MB.
  #define MAX_HEADER_SIZE_RAR5 0x200000
@@ -42,10 +42,28 @@ index db1cb533823bf..8dde040e02fa0 100644
  #ifdef USE_QOPEN
      bool Open(const std::wstring &Name,uint Mode=FMF_READ) override;
      int Read(void *Data,size_t Size) override;
-diff --git a/third_party/unrar/src/crc.cpp b/third_party/unrar/src/crc.cpp
+diff --git c/third_party/unrar/src/blake2s.hpp w/third_party/unrar/src/blake2s.hpp
+index 90b7885fde18a..4d30fe8685745 100644
+--- c/third_party/unrar/src/blake2s.hpp
++++ w/third_party/unrar/src/blake2s.hpp
+@@ -2,8 +2,13 @@
+ #ifndef _RAR_BLAKE2_
+ #define _RAR_BLAKE2_
+ 
++#if defined(CHROMIUM_UNRAR)
++inline constexpr unsigned int BLAKE2_DIGEST_SIZE = 32u;
++inline constexpr unsigned int BLAKE2_THREADS_NUMBER = 8u;
++#else
+ #define BLAKE2_DIGEST_SIZE 32
+ #define BLAKE2_THREADS_NUMBER 8
++#endif  // defined(CHROMIUM_UNRAR)
+ 
+ // Use constexpr instead of enums for -std=c++20 compatibility.
+ constexpr size_t BLAKE2S_BLOCKBYTES = 64;
+diff --git c/third_party/unrar/src/crc.cpp w/third_party/unrar/src/crc.cpp
 index 61c616289ae47..f9a9d74f021c8 100644
---- a/third_party/unrar/src/crc.cpp
-+++ b/third_party/unrar/src/crc.cpp
+--- c/third_party/unrar/src/crc.cpp
++++ w/third_party/unrar/src/crc.cpp
 @@ -21,6 +21,7 @@
  #endif
  
@@ -81,10 +99,10 @@ index 61c616289ae47..f9a9d74f021c8 100644
  }
  
  
-diff --git a/third_party/unrar/src/crypt.hpp b/third_party/unrar/src/crypt.hpp
+diff --git c/third_party/unrar/src/crypt.hpp w/third_party/unrar/src/crypt.hpp
 index 286c84807c3d5..6d100cdfe9536 100644
---- a/third_party/unrar/src/crypt.hpp
-+++ b/third_party/unrar/src/crypt.hpp
+--- c/third_party/unrar/src/crypt.hpp
++++ w/third_party/unrar/src/crypt.hpp
 @@ -17,9 +17,16 @@ enum CRYPT_METHOD {
  #define CRYPT_BLOCK_MASK         (CRYPT_BLOCK_SIZE-1) // 0xf
  
@@ -102,10 +120,10 @@ index 286c84807c3d5..6d100cdfe9536 100644
  
  class CryptData
  {
-diff --git a/third_party/unrar/src/errhnd.cpp b/third_party/unrar/src/errhnd.cpp
+diff --git c/third_party/unrar/src/errhnd.cpp w/third_party/unrar/src/errhnd.cpp
 index b347678fe1903..0a363a79c74b8 100644
---- a/third_party/unrar/src/errhnd.cpp
-+++ b/third_party/unrar/src/errhnd.cpp
+--- c/third_party/unrar/src/errhnd.cpp
++++ w/third_party/unrar/src/errhnd.cpp
 @@ -1,10 +1,12 @@
 +// NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
 +// defines certain macros that cause symbol redefinition errors
@@ -136,10 +154,10 @@ index b347678fe1903..0a363a79c74b8 100644
  }
  
  
-diff --git a/third_party/unrar/src/errhnd.hpp b/third_party/unrar/src/errhnd.hpp
+diff --git c/third_party/unrar/src/errhnd.hpp w/third_party/unrar/src/errhnd.hpp
 index 065350f94af55..5c539faf0d82a 100644
---- a/third_party/unrar/src/errhnd.hpp
-+++ b/third_party/unrar/src/errhnd.hpp
+--- c/third_party/unrar/src/errhnd.hpp
++++ w/third_party/unrar/src/errhnd.hpp
 @@ -24,14 +24,13 @@ enum RAR_EXIT // RAR exit code.
  class ErrorHandler
  {
@@ -172,11 +190,11 @@ index 065350f94af55..5c539faf0d82a 100644
  };
  
  
-diff --git a/third_party/unrar/src/extract.cpp b/third_party/unrar/src/extract.cpp
-index 096b608995a2e..79ef6daf60381 100644
---- a/third_party/unrar/src/extract.cpp
-+++ b/third_party/unrar/src/extract.cpp
-@@ -901,6 +901,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+diff --git c/third_party/unrar/src/extract.cpp w/third_party/unrar/src/extract.cpp
+index 892ef0c8712e4..17ad224cc5fc9 100644
+--- c/third_party/unrar/src/extract.cpp
++++ w/third_party/unrar/src/extract.cpp
+@@ -902,6 +902,9 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
              UnstoreFile(DataIO,Arc.FileHead.UnpSize);
            else
            {
@@ -186,7 +204,7 @@ index 096b608995a2e..79ef6daf60381 100644
              try
              {
                Unp->Init(Arc.FileHead.WinSize,Arc.FileHead.Solid);
-@@ -911,6 +914,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
+@@ -912,6 +915,7 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
                  uiMsg(UIERROR_EXTRDICTOUTMEM,Arc.FileName,uint(Arc.FileHead.WinSize/0x40000000+(Arc.FileHead.WinSize%0x40000000!=0 ? 1 : 0)));
                throw;
              }
@@ -194,10 +212,10 @@ index 096b608995a2e..79ef6daf60381 100644
  
              Unp->SetDestSize(Arc.FileHead.UnpSize);
  #ifndef SFX_MODULE
-diff --git a/third_party/unrar/src/extract.hpp b/third_party/unrar/src/extract.hpp
+diff --git c/third_party/unrar/src/extract.hpp w/third_party/unrar/src/extract.hpp
 index 18d8f8c9cb776..570475ec6560c 100644
---- a/third_party/unrar/src/extract.hpp
-+++ b/third_party/unrar/src/extract.hpp
+--- c/third_party/unrar/src/extract.hpp
++++ w/third_party/unrar/src/extract.hpp
 @@ -57,8 +57,8 @@ class CmdExtract
      unsigned long MatchedArgs;
      bool FirstFile;
@@ -221,10 +239,10 @@ index 18d8f8c9cb776..570475ec6560c 100644
  };
  
  #endif
-diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index c6fab17328262..94184eb75f7c5 100644
---- a/third_party/unrar/src/file.cpp
-+++ b/third_party/unrar/src/file.cpp
+diff --git c/third_party/unrar/src/file.cpp w/third_party/unrar/src/file.cpp
+index c6fab17328262..72e8cae42e441 100644
+--- c/third_party/unrar/src/file.cpp
++++ w/third_party/unrar/src/file.cpp
 @@ -19,6 +19,10 @@ File::File()
    ReadErrorMode=FREM_ASK;
    TruncatedAfterReadError=false;
@@ -253,9 +271,9 @@ index c6fab17328262..94184eb75f7c5 100644
      SetFileTime(hNewFile,NULL,&ft,NULL);
    }
 +#endif  // defined(CHROMIUM_UNRAR)
-+
-+#else
  
++#else
++
 +#if defined(CHROMIUM_UNRAR)
 +  // Do not open a file handle since the sandbox doesn't allow it. Use the
 +  // delegate provided by the caller.
@@ -308,6 +326,15 @@ index c6fab17328262..94184eb75f7c5 100644
    bool Success=true;
  
    if (hFile!=FILE_BAD_HANDLE)
+@@ -401,7 +427,7 @@ int File::Read(void *Data,size_t Size)
+           for (size_t I=0;I<Size;I+=512)
+           {
+             Seek(FilePos+I,SEEK_SET);
+-            size_t SizeToRead=Min(Size-I,512);
++            size_t SizeToRead=Min(Size-I,size_t{512u});
+             int ReadCode=DirectRead(Data,SizeToRead);
+             ReadSize+=(ReadCode==-1) ? 512:ReadCode;
+             if (ReadSize!=-1)
 @@ -453,6 +479,13 @@ int File::Read(void *Data,size_t Size)
  // Returns -1 in case of error.
  int File::DirectRead(void *Data,size_t Size)
@@ -344,6 +371,15 @@ index c6fab17328262..94184eb75f7c5 100644
    if (hFile==FILE_BAD_HANDLE)
      return true;
    if (!IsSeekable()) // To extract archives from stdin with -si.
+@@ -535,7 +583,7 @@ bool File::RawSeek(int64 Offset,int Method)
+     byte Buf[4096];
+     if (Method==SEEK_CUR || Method==SEEK_SET && Offset>=CurFilePos)
+     {
+-      uint64 SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
++      size_t SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
+       while (SkipSize>0) // Reading to emulate seek forward.
+       {
+         int ReadSize=Read(Buf,(size_t)Min(SkipSize,ASIZE(Buf)));
 @@ -587,6 +635,9 @@ bool File::RawSeek(int64 Offset,int Method)
  
  int64 File::Tell()
@@ -392,10 +428,10 @@ index c6fab17328262..94184eb75f7c5 100644
 +  reader_delegate_ = delegate;
 +}
 +#endif  // defined(CHROMIUM_UNRAR)
-diff --git a/third_party/unrar/src/file.hpp b/third_party/unrar/src/file.hpp
+diff --git c/third_party/unrar/src/file.hpp w/third_party/unrar/src/file.hpp
 index 67c1754987f63..033bbf51ac6c7 100644
---- a/third_party/unrar/src/file.hpp
-+++ b/third_party/unrar/src/file.hpp
+--- c/third_party/unrar/src/file.hpp
++++ w/third_party/unrar/src/file.hpp
 @@ -51,6 +51,10 @@ enum FILE_READ_ERROR_MODE {
  };
  
@@ -446,10 +482,10 @@ index 67c1754987f63..033bbf51ac6c7 100644
  #ifdef _UNIX
      int GetFD()
      {
-diff --git a/third_party/unrar/src/filefn.cpp b/third_party/unrar/src/filefn.cpp
+diff --git c/third_party/unrar/src/filefn.cpp w/third_party/unrar/src/filefn.cpp
 index 1f34d266fabc5..06560edd9959d 100644
---- a/third_party/unrar/src/filefn.cpp
-+++ b/third_party/unrar/src/filefn.cpp
+--- c/third_party/unrar/src/filefn.cpp
++++ w/third_party/unrar/src/filefn.cpp
 @@ -303,6 +303,9 @@ uint GetFileAttr(const std::wstring &Name)
  
  bool SetFileAttr(const std::wstring &Name,uint Attr)
@@ -468,10 +504,26 @@ index 1f34d266fabc5..06560edd9959d 100644
  }
  
  
-diff --git a/third_party/unrar/src/isnt.cpp b/third_party/unrar/src/isnt.cpp
+diff --git c/third_party/unrar/src/hash.hpp w/third_party/unrar/src/hash.hpp
+index 99488e6a0d3c2..15cb226d90652 100644
+--- c/third_party/unrar/src/hash.hpp
++++ w/third_party/unrar/src/hash.hpp
+@@ -48,9 +48,9 @@ class DataHash
+     uint gfExpCRC(uint N);
+ 
+     // Speed gain seems to vanish above 8 CRC32 threads.
+-    static const uint CRC32_POOL_THREADS=8;
++    static constexpr uint CRC32_POOL_THREADS=8u;
+     // Thread pool must allow at least BLAKE2_THREADS_NUMBER threads.
+-    static const uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
++    static constexpr uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
+ 
+     HASH_TYPE HashType;
+     uint CurCRC32;
+diff --git c/third_party/unrar/src/isnt.cpp w/third_party/unrar/src/isnt.cpp
 index d62e861b51af3..520d773daf392 100644
---- a/third_party/unrar/src/isnt.cpp
-+++ b/third_party/unrar/src/isnt.cpp
+--- c/third_party/unrar/src/isnt.cpp
++++ w/third_party/unrar/src/isnt.cpp
 @@ -1,5 +1,11 @@
  #include "rar.hpp"
  
@@ -499,10 +551,23 @@ index d62e861b51af3..520d773daf392 100644
  }
 +
 +#pragma clang diagnostic pop
-diff --git a/third_party/unrar/src/model.cpp b/third_party/unrar/src/model.cpp
+diff --git c/third_party/unrar/src/list.cpp w/third_party/unrar/src/list.cpp
+index a9af7777e9b4e..627d156ff24db 100644
+--- c/third_party/unrar/src/list.cpp
++++ w/third_party/unrar/src/list.cpp
+@@ -308,7 +308,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
+           }
+           else
+           {
+-            size_t DataSize=(size_t)Min(hd.PackSize,MAXPATHSIZE);
++            size_t DataSize=(size_t)Min(size_t{hd.PackSize},MAXPATHSIZE);
+             std::vector<char> Buf(DataSize+1);
+             Arc.Read(Buf.data(),DataSize);
+             Buf[DataSize] = 0;
+diff --git c/third_party/unrar/src/model.cpp w/third_party/unrar/src/model.cpp
 index 69d9267f7c428..e3ef5b7a8c90d 100644
---- a/third_party/unrar/src/model.cpp
-+++ b/third_party/unrar/src/model.cpp
+--- c/third_party/unrar/src/model.cpp
++++ w/third_party/unrar/src/model.cpp
 @@ -43,13 +43,27 @@ void ModelPPM::RestartModelRare()
    InitRL=-(MaxOrder < 12 ? MaxOrder:12)-1;
    MinContext = MaxContext = (RARPPM_CONTEXT*) SubAlloc.AllocContext();
@@ -531,11 +596,11 @@ index 69d9267f7c428..e3ef5b7a8c90d 100644
    for (RunLength=InitRL, PrevSuccess=i=0;i < 256;i++) 
    {
      MinContext->U.Stats[i].Symbol=i;      
-diff --git a/third_party/unrar/src/os.hpp b/third_party/unrar/src/os.hpp
-index 32218db4ef46a..92ba212b074cf 100644
---- a/third_party/unrar/src/os.hpp
-+++ b/third_party/unrar/src/os.hpp
-@@ -30,6 +30,7 @@
+diff --git c/third_party/unrar/src/os.hpp w/third_party/unrar/src/os.hpp
+index f94b5b3a3bf2a..6c82949f7a53d 100644
+--- c/third_party/unrar/src/os.hpp
++++ w/third_party/unrar/src/os.hpp
+@@ -31,6 +31,7 @@
  #define STRICT 1
  #endif
  
@@ -543,7 +608,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  // 'ifndef' check here is needed for unrar.dll header to avoid macro
  // re-definition warnings in third party projects.
  #ifndef UNICODE
-@@ -39,12 +40,15 @@
+@@ -40,12 +41,15 @@
  
  #define WINVER _WIN32_WINNT_WINXP
  #define _WIN32_WINNT _WIN32_WINNT_WINXP
@@ -560,7 +625,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  
  #include <windows.h>
  #include <prsht.h>
-@@ -53,7 +57,9 @@
+@@ -54,7 +58,9 @@
  #include <PowrProf.h>
  #pragma comment(lib, "PowrProf.lib")
  #include <psapi.h>
@@ -570,7 +635,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  #include <shellapi.h>
  #include <shlobj.h>
  #include <winioctl.h>
-@@ -66,7 +72,7 @@
+@@ -67,7 +73,7 @@
  
  // For WMI requests.
  #include <comdef.h>
@@ -579,7 +644,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  #pragma comment(lib, "wbemuuid.lib")
  
  
-@@ -76,11 +82,13 @@
+@@ -77,11 +83,13 @@
  #include <direct.h>
  #include <intrin.h>
  
@@ -593,7 +658,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  
  #include <stdio.h>
  #include <stdlib.h>
-@@ -150,6 +158,7 @@
+@@ -151,6 +159,7 @@
  #include <utime.h>
  #include <locale.h>
  
@@ -601,7 +666,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  #ifdef __GNUC__
    #if defined(__i386__) || defined(__x86_64__)
      #include <x86intrin.h>
-@@ -158,6 +167,7 @@
+@@ -159,6 +168,7 @@
      #define SSE_ALIGNMENT 16
    #endif
  #endif
@@ -609,7 +674,7 @@ index 32218db4ef46a..92ba212b074cf 100644
  
  #if defined(__aarch64__) && (defined(__ARM_FEATURE_CRYPTO) || defined(__ARM_FEATURE_CRC32))
  #include <arm_neon.h>
-@@ -266,9 +276,16 @@
+@@ -267,9 +277,16 @@
    #endif
  #endif
  
@@ -626,11 +691,75 @@ index 32218db4ef46a..92ba212b074cf 100644
 +#endif
  
  #endif // _RAR_OS_
-diff --git a/third_party/unrar/src/rardefs.hpp b/third_party/unrar/src/rardefs.hpp
-index 378ccc7fbad2c..5c5e4102067e8 100644
---- a/third_party/unrar/src/rardefs.hpp
-+++ b/third_party/unrar/src/rardefs.hpp
-@@ -37,7 +37,12 @@
+diff --git c/third_party/unrar/src/qopen.cpp w/third_party/unrar/src/qopen.cpp
+index e4ae8a9d1e782..73fb36dfd5aea 100644
+--- c/third_party/unrar/src/qopen.cpp
++++ w/third_party/unrar/src/qopen.cpp
+@@ -207,7 +207,7 @@ uint QuickOpen::ReadBuffer()
+ {
+   int64 SavePos=Arc->Tell();
+   Arc->File::Seek(RawDataStart+RawDataPos,SEEK_SET);
+-  size_t SizeToRead=(size_t)Min(RawDataSize-RawDataPos,MaxBufSize-ReadBufSize);
++  size_t SizeToRead=(size_t)Min(size_t{RawDataSize-RawDataPos},MaxBufSize-ReadBufSize);
+   if (Arc->SubHead.Encrypted)
+     SizeToRead &= ~CRYPT_BLOCK_MASK;
+   int ReadSize=0;
+diff --git c/third_party/unrar/src/rardefs.hpp w/third_party/unrar/src/rardefs.hpp
+index 378ccc7fbad2c..7f07c57371723 100644
+--- c/third_party/unrar/src/rardefs.hpp
++++ w/third_party/unrar/src/rardefs.hpp
+@@ -1,12 +1,38 @@
+ #ifndef _RAR_DEFS_
+ #define _RAR_DEFS_
+ 
++// These interfere textually with the numerics headers in
++// `partition_alloc_base`, which are evaluated early through the
++// inclusion of `base/containers/span.h`.
++//
++// When building for Chromium, include the necessary headers for the
++// `std::` spellings of these.
++#if defined(CHROMIUM_UNRAR)
++
++#include <algorithm>
++
++template <typename T>
++constexpr T Max (const T& a, const T& b) {
++  return std::max(a, b);
++}
++
++template <typename T>
++constexpr T Min (const T& a, const T& b) {
++  return std::min(a, b);
++}
++
++// `Abs()` appears unused.
++
++#else
++
+ #define  Min(x,y) (((x)<(y)) ? (x):(y))
+ #define  Max(x,y) (((x)>(y)) ? (x):(y))
+ 
+ // Universal replacement of abs function.
+ #define  Abs(x) (((x)<0) ? -(x):(x))
+ 
++#endif  // defined(CHROMIUM_UNRAR)
++
+ #define  ASIZE(x) (sizeof(x)/sizeof(x[0]))
+ 
+ // MAXPASSWORD and MAXPASSWORD_RAR are expected to be multiple of
+@@ -19,7 +45,11 @@
+ 
+ // Set some arbitrary sensible limit to maximum path length to prevent
+ // the excessive memory allocation for dynamically allocated strings.
++#if defined(CHROMIUM_UNRAR)
++inline constexpr size_t  MAXPATHSIZE = 0x10000u;
++#else
+ #define  MAXPATHSIZE       0x10000
++#endif  // defined(CHROMIUM_UNRAR)
+ 
+ #define  MAXSFXSIZE        0x400000
+ 
+@@ -37,7 +67,12 @@
  #define PACK_MAX_DICT      0x1000000000ULL // 64 GB.
  
  // Maximum dictionary allowed by decompression.
@@ -643,10 +772,10 @@ index 378ccc7fbad2c..5c5e4102067e8 100644
  
  
  #ifndef SFX_MODULE
-diff --git a/third_party/unrar/src/rdwrfn.cpp b/third_party/unrar/src/rdwrfn.cpp
+diff --git c/third_party/unrar/src/rdwrfn.cpp w/third_party/unrar/src/rdwrfn.cpp
 index a49a8bcedfcb8..f19ccef19afe9 100644
---- a/third_party/unrar/src/rdwrfn.cpp
-+++ b/third_party/unrar/src/rdwrfn.cpp
+--- c/third_party/unrar/src/rdwrfn.cpp
++++ w/third_party/unrar/src/rdwrfn.cpp
 @@ -153,6 +153,15 @@ int ComprDataIO::UnpRead(byte *Addr,size_t Count)
  
  void ComprDataIO::UnpWrite(byte *Addr,size_t Count)
@@ -663,10 +792,32 @@ index a49a8bcedfcb8..f19ccef19afe9 100644
  
  #ifdef RARDLL
    CommandData *Cmd=((Archive *)SrcFile)->GetCommandData();
-diff --git a/third_party/unrar/src/secpassword.cpp b/third_party/unrar/src/secpassword.cpp
+diff --git c/third_party/unrar/src/recvol5.cpp w/third_party/unrar/src/recvol5.cpp
+index e094b17119369..eb36229630c19 100644
+--- c/third_party/unrar/src/recvol5.cpp
++++ w/third_party/unrar/src/recvol5.cpp
+@@ -397,7 +397,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
+ 
+       // We can have volumes of different size. Let's use data chunk
+       // for largest volume size.
+-      uint DataToProcess=(uint)Min(RecBufferSize,MaxVolSize-ProcessedSize);
++      uint DataToProcess=(uint)Min(uint{RecBufferSize},uint{MaxVolSize-ProcessedSize});
+       ProcessRS(Cmd,I,B,DataToProcess,false);
+     }
+     if (MaxRead==0)
+@@ -407,7 +407,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
+       if (!ValidFlags[I])
+       {
+         RecVolItem *Item=&RecItems[I];
+-        size_t WriteSize=(size_t)Min(MaxRead,Item->FileSize);
++        size_t WriteSize=(size_t)Min(size_t{MaxRead},size_t{Item->FileSize});
+         Item->f->Write(Buf+(J++)*RecBufferSize,WriteSize);
+         Item->FileSize-=WriteSize;
+       }
+diff --git c/third_party/unrar/src/secpassword.cpp w/third_party/unrar/src/secpassword.cpp
 index 8d8f298609a76..a32ea40e3ac25 100644
---- a/third_party/unrar/src/secpassword.cpp
-+++ b/third_party/unrar/src/secpassword.cpp
+--- c/third_party/unrar/src/secpassword.cpp
++++ w/third_party/unrar/src/secpassword.cpp
 @@ -1,6 +1,6 @@
  #include "rar.hpp"
  
@@ -684,10 +835,10 @@ index 8d8f298609a76..a32ea40e3ac25 100644
    // Try to utilize the secure Crypt[Un]ProtectMemory if possible.
    if (GlobalCryptLoader.pCryptProtectMemory==NULL)
      GlobalCryptLoader.Load();
-diff --git a/third_party/unrar/src/strfn.cpp b/third_party/unrar/src/strfn.cpp
+diff --git c/third_party/unrar/src/strfn.cpp w/third_party/unrar/src/strfn.cpp
 index ed8f91fe2c04c..2f21dfdc5bc10 100644
---- a/third_party/unrar/src/strfn.cpp
-+++ b/third_party/unrar/src/strfn.cpp
+--- c/third_party/unrar/src/strfn.cpp
++++ w/third_party/unrar/src/strfn.cpp
 @@ -61,6 +61,27 @@ void ArcCharToWide(const char *Src,std::wstring &Dest,ACTW_ENCODING Encoding)
      UtfToWide(Src,Dest);
    else
@@ -733,10 +884,28 @@ index ed8f91fe2c04c..2f21dfdc5bc10 100644
      ThSep=*Info;
  #elif defined(_UNIX)
    ThSep=*localeconv()->thousands_sep;
-diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index a9d103dbf3cd8..28eea4ddcd36d 100644
---- a/third_party/unrar/src/unicode.cpp
-+++ b/third_party/unrar/src/unicode.cpp
+diff --git c/third_party/unrar/src/unicode.cpp w/third_party/unrar/src/unicode.cpp
+index a9d103dbf3cd8..52c8720d1a85e 100644
+--- c/third_party/unrar/src/unicode.cpp
++++ w/third_party/unrar/src/unicode.cpp
+@@ -164,7 +164,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
+   memset(Dest,0,DestSize);
+   
+   Success=true;
+-  uint SrcPos=0,DestPos=0;
++  size_t SrcPos=0,DestPos=0;
+   while (Src[SrcPos]!=0 && DestPos<DestSize-MB_CUR_MAX)
+   {
+     if (uint(Src[SrcPos])==MappedStringMark)
+@@ -244,7 +244,7 @@ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
+       DestPos++;
+     }
+   }
+-  Dest[Min(DestPos,DestSize-1)]=0;
++  Dest[Min(size_t{DestPos},DestSize-1)]=0;
+ }
+ #endif
+ 
 @@ -786,9 +786,18 @@ wchar* wcslower(wchar *s)
      return s;
  
@@ -836,10 +1005,10 @@ index a9d103dbf3cd8..28eea4ddcd36d 100644
  
  char* SupportDBCS::charnext(const char *s)
  {
-diff --git a/third_party/unrar/src/unicode.hpp b/third_party/unrar/src/unicode.hpp
+diff --git c/third_party/unrar/src/unicode.hpp w/third_party/unrar/src/unicode.hpp
 index 2d867b3aefef0..81cf99e380896 100644
---- a/third_party/unrar/src/unicode.hpp
-+++ b/third_party/unrar/src/unicode.hpp
+--- c/third_party/unrar/src/unicode.hpp
++++ w/third_party/unrar/src/unicode.hpp
 @@ -46,14 +46,14 @@ class SupportDBCS
      SupportDBCS();
      void Init();
@@ -858,10 +1027,10 @@ index 2d867b3aefef0..81cf99e380896 100644
  
  #else
  #define charnext(s) ((s)+1)
-diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index a5950ea1ac4e2..f7e2e01abb943 100644
---- a/third_party/unrar/src/unpack.cpp
-+++ b/third_party/unrar/src/unpack.cpp
+diff --git c/third_party/unrar/src/unpack.cpp w/third_party/unrar/src/unpack.cpp
+index a5950ea1ac4e2..cdb89239f7a90 100644
+--- c/third_party/unrar/src/unpack.cpp
++++ w/third_party/unrar/src/unpack.cpp
 @@ -1,3 +1,9 @@
 +// NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
 +// defines certain macros that cause symbol redefinition errors
@@ -885,6 +1054,15 @@ index a5950ea1ac4e2..f7e2e01abb943 100644
  Unpack::Unpack(ComprDataIO *DataIO)
  :Inp(true),VMCodeInp(true)
  {
+@@ -66,7 +78,7 @@ void Unpack::SetThreads(uint Threads)
+ {
+   // More than 8 threads are unlikely to provide noticeable gain
+   // for unpacking, but would use the additional memory.
+-  MaxUserThreads=Min(Threads,8);
++  MaxUserThreads=Min(Threads,8u);
+   UnpThreadPool=new ThreadPool(MaxUserThreads);
+ }
+ #endif
 @@ -87,7 +99,7 @@ void Unpack::Init(uint64 WinSize,bool Solid)
      WinSize=MinAllocSize;
  
@@ -933,10 +1111,45 @@ index a5950ea1ac4e2..f7e2e01abb943 100644
      else
      {
        if (WinSize>FragWindow.GetWinSize())
-diff --git a/third_party/unrar/src/unpack50frag.cpp b/third_party/unrar/src/unpack50frag.cpp
-index 9208405e04eb6..b1776e6e8dd62 100644
---- a/third_party/unrar/src/unpack50frag.cpp
-+++ b/third_party/unrar/src/unpack50frag.cpp
+@@ -219,7 +235,7 @@ void Unpack::UnpInitData(bool Solid)
+     UnpPtr=WrPtr=0;
+     PrevPtr=0;
+     FirstWinDone=false;
+-    WriteBorder=Min(MaxWinSize,UNPACK_MAX_WRITE);
++    WriteBorder=Min(MaxWinSize,size_t{UNPACK_MAX_WRITE});
+   }
+   // Filters never share several solid files, so we can safely reset them
+   // even in solid archive.
+diff --git c/third_party/unrar/src/unpack30.cpp w/third_party/unrar/src/unpack30.cpp
+index 1fb0615a6be10..684e6a82b6e62 100644
+--- c/third_party/unrar/src/unpack30.cpp
++++ w/third_party/unrar/src/unpack30.cpp
+@@ -364,7 +364,7 @@ bool Unpack::ReadVMCodePPM()
+ bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
+ {
+   VMCodeInp.InitBitInput();
+-  memcpy(VMCodeInp.InBuf,Code,Min(BitInput::MAX_SIZE,CodeSize));
++  memcpy(VMCodeInp.InBuf,Code,Min(uint{BitInput::MAX_SIZE},CodeSize));
+   VM.Init();
+ 
+   uint FiltPos;
+diff --git c/third_party/unrar/src/unpack50.cpp w/third_party/unrar/src/unpack50.cpp
+index 137ce8fa98800..75ccb40fa62b5 100644
+--- c/third_party/unrar/src/unpack50.cpp
++++ w/third_party/unrar/src/unpack50.cpp
+@@ -409,7 +409,7 @@ void Unpack::UnpWriteBuf()
+   // We prefer to write data in blocks not exceeding UNPACK_MAX_WRITE
+   // instead of potentially huge MaxWinSize blocks. It also allows us
+   // to keep the size of Filters array reasonable.
+-  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,UNPACK_MAX_WRITE));
++  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,size_t{UNPACK_MAX_WRITE}));
+ 
+   // Choose the nearest among WriteBorder and WrPtr actual written border.
+   // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.
+diff --git c/third_party/unrar/src/unpack50frag.cpp w/third_party/unrar/src/unpack50frag.cpp
+index 9208405e04eb6..1e559d158821b 100644
+--- c/third_party/unrar/src/unpack50frag.cpp
++++ w/third_party/unrar/src/unpack50frag.cpp
 @@ -1,3 +1,11 @@
 +#include "base/process/memory.h"
 +
@@ -949,6 +1162,15 @@ index 9208405e04eb6..b1776e6e8dd62 100644
  FragmentedWindow::FragmentedWindow()
  {
    memset(Mem,0,sizeof(Mem));
+@@ -38,7 +46,7 @@ void FragmentedWindow::Init(size_t WinSize)
+     // than current, so we do not need blocks if they are smaller than
+     // "size left / attempts left". Also we do not waste time to blocks
+     // smaller than some arbitrary constant.
+-    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), 0x400000);
++    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), size_t{0x400000});
+ 
+     byte *NewMem=NULL;
+     while (Size>=MinSize)
 @@ -49,7 +57,7 @@ void FragmentedWindow::Init(size_t WinSize)
        Size-=Size/32;
      }
@@ -968,247 +1190,3 @@ index 9208405e04eb6..b1776e6e8dd62 100644
    LastAllocated=WinSize;
  }
  
-
-diff --git a/third_party/unrar/src/blake2s.hpp b/third_party/unrar/src/blake2s.hpp
-index 90b7885fde18a..4d30fe8685745 100644
---- a/third_party/unrar/src/blake2s.hpp
-+++ b/third_party/unrar/src/blake2s.hpp
-@@ -2,8 +2,13 @@
- #ifndef _RAR_BLAKE2_
- #define _RAR_BLAKE2_
- 
-+#if defined(CHROMIUM_UNRAR)
-+inline constexpr unsigned int BLAKE2_DIGEST_SIZE = 32u;
-+inline constexpr unsigned int BLAKE2_THREADS_NUMBER = 8u;
-+#else
- #define BLAKE2_DIGEST_SIZE 32
- #define BLAKE2_THREADS_NUMBER 8
-+#endif  // defined(CHROMIUM_UNRAR)
- 
- // Use constexpr instead of enums for -std=c++20 compatibility.
- constexpr size_t BLAKE2S_BLOCKBYTES = 64;
-diff --git a/third_party/unrar/src/file.cpp b/third_party/unrar/src/file.cpp
-index 94184eb75f7c5..72e8cae42e441 100644
---- a/third_party/unrar/src/file.cpp
-+++ b/third_party/unrar/src/file.cpp
-@@ -427,7 +427,7 @@ int File::Read(void *Data,size_t Size)
-           for (size_t I=0;I<Size;I+=512)
-           {
-             Seek(FilePos+I,SEEK_SET);
--            size_t SizeToRead=Min(Size-I,512);
-+            size_t SizeToRead=Min(Size-I,size_t{512u});
-             int ReadCode=DirectRead(Data,SizeToRead);
-             ReadSize+=(ReadCode==-1) ? 512:ReadCode;
-             if (ReadSize!=-1)
-@@ -583,7 +583,7 @@ bool File::RawSeek(int64 Offset,int Method)
-     byte Buf[4096];
-     if (Method==SEEK_CUR || Method==SEEK_SET && Offset>=CurFilePos)
-     {
--      uint64 SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
-+      size_t SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
-       while (SkipSize>0) // Reading to emulate seek forward.
-       {
-         int ReadSize=Read(Buf,(size_t)Min(SkipSize,ASIZE(Buf)));
-diff --git a/third_party/unrar/src/hash.hpp b/third_party/unrar/src/hash.hpp
-index 99488e6a0d3c2..15cb226d90652 100644
---- a/third_party/unrar/src/hash.hpp
-+++ b/third_party/unrar/src/hash.hpp
-@@ -48,9 +48,9 @@ class DataHash
-     uint gfExpCRC(uint N);
- 
-     // Speed gain seems to vanish above 8 CRC32 threads.
--    static const uint CRC32_POOL_THREADS=8;
-+    static constexpr uint CRC32_POOL_THREADS=8u;
-     // Thread pool must allow at least BLAKE2_THREADS_NUMBER threads.
--    static const uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
-+    static constexpr uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
- 
-     HASH_TYPE HashType;
-     uint CurCRC32;
-diff --git a/third_party/unrar/src/list.cpp b/third_party/unrar/src/list.cpp
-index a9af7777e9b4e..627d156ff24db 100644
---- a/third_party/unrar/src/list.cpp
-+++ b/third_party/unrar/src/list.cpp
-@@ -308,7 +308,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
-           }
-           else
-           {
--            size_t DataSize=(size_t)Min(hd.PackSize,MAXPATHSIZE);
-+            size_t DataSize=(size_t)Min(size_t{hd.PackSize},MAXPATHSIZE);
-             std::vector<char> Buf(DataSize+1);
-             Arc.Read(Buf.data(),DataSize);
-             Buf[DataSize] = 0;
-diff --git a/third_party/unrar/src/qopen.cpp b/third_party/unrar/src/qopen.cpp
-index e4ae8a9d1e782..73fb36dfd5aea 100644
---- a/third_party/unrar/src/qopen.cpp
-+++ b/third_party/unrar/src/qopen.cpp
-@@ -207,7 +207,7 @@ uint QuickOpen::ReadBuffer()
- {
-   int64 SavePos=Arc->Tell();
-   Arc->File::Seek(RawDataStart+RawDataPos,SEEK_SET);
--  size_t SizeToRead=(size_t)Min(RawDataSize-RawDataPos,MaxBufSize-ReadBufSize);
-+  size_t SizeToRead=(size_t)Min(size_t{RawDataSize-RawDataPos},MaxBufSize-ReadBufSize);
-   if (Arc->SubHead.Encrypted)
-     SizeToRead &= ~CRYPT_BLOCK_MASK;
-   int ReadSize=0;
-diff --git a/third_party/unrar/src/rardefs.hpp b/third_party/unrar/src/rardefs.hpp
-index 5c5e4102067e8..7f07c57371723 100644
---- a/third_party/unrar/src/rardefs.hpp
-+++ b/third_party/unrar/src/rardefs.hpp
-@@ -1,12 +1,38 @@
- #ifndef _RAR_DEFS_
- #define _RAR_DEFS_
- 
-+// These interfere textually with the numerics headers in
-+// `partition_alloc_base`, which are evaluated early through the
-+// inclusion of `base/containers/span.h`.
-+//
-+// When building for Chromium, include the necessary headers for the
-+// `std::` spellings of these.
-+#if defined(CHROMIUM_UNRAR)
-+
-+#include <algorithm>
-+
-+template <typename T>
-+constexpr T Max (const T& a, const T& b) {
-+  return std::max(a, b);
-+}
-+
-+template <typename T>
-+constexpr T Min (const T& a, const T& b) {
-+  return std::min(a, b);
-+}
-+
-+// `Abs()` appears unused.
-+
-+#else
-+
- #define  Min(x,y) (((x)<(y)) ? (x):(y))
- #define  Max(x,y) (((x)>(y)) ? (x):(y))
- 
- // Universal replacement of abs function.
- #define  Abs(x) (((x)<0) ? -(x):(x))
- 
-+#endif  // defined(CHROMIUM_UNRAR)
-+
- #define  ASIZE(x) (sizeof(x)/sizeof(x[0]))
- 
- // MAXPASSWORD and MAXPASSWORD_RAR are expected to be multiple of
-@@ -19,7 +45,11 @@
- 
- // Set some arbitrary sensible limit to maximum path length to prevent
- // the excessive memory allocation for dynamically allocated strings.
-+#if defined(CHROMIUM_UNRAR)
-+inline constexpr size_t  MAXPATHSIZE = 0x10000u;
-+#else
- #define  MAXPATHSIZE       0x10000
-+#endif  // defined(CHROMIUM_UNRAR)
- 
- #define  MAXSFXSIZE        0x400000
- 
-diff --git a/third_party/unrar/src/recvol5.cpp b/third_party/unrar/src/recvol5.cpp
-index e094b17119369..eb36229630c19 100644
---- a/third_party/unrar/src/recvol5.cpp
-+++ b/third_party/unrar/src/recvol5.cpp
-@@ -397,7 +397,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
- 
-       // We can have volumes of different size. Let's use data chunk
-       // for largest volume size.
--      uint DataToProcess=(uint)Min(RecBufferSize,MaxVolSize-ProcessedSize);
-+      uint DataToProcess=(uint)Min(uint{RecBufferSize},uint{MaxVolSize-ProcessedSize});
-       ProcessRS(Cmd,I,B,DataToProcess,false);
-     }
-     if (MaxRead==0)
-@@ -407,7 +407,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
-       if (!ValidFlags[I])
-       {
-         RecVolItem *Item=&RecItems[I];
--        size_t WriteSize=(size_t)Min(MaxRead,Item->FileSize);
-+        size_t WriteSize=(size_t)Min(size_t{MaxRead},size_t{Item->FileSize});
-         Item->f->Write(Buf+(J++)*RecBufferSize,WriteSize);
-         Item->FileSize-=WriteSize;
-       }
-diff --git a/third_party/unrar/src/unicode.cpp b/third_party/unrar/src/unicode.cpp
-index 28eea4ddcd36d..52c8720d1a85e 100644
---- a/third_party/unrar/src/unicode.cpp
-+++ b/third_party/unrar/src/unicode.cpp
-@@ -164,7 +164,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
-   memset(Dest,0,DestSize);
-   
-   Success=true;
--  uint SrcPos=0,DestPos=0;
-+  size_t SrcPos=0,DestPos=0;
-   while (Src[SrcPos]!=0 && DestPos<DestSize-MB_CUR_MAX)
-   {
-     if (uint(Src[SrcPos])==MappedStringMark)
-@@ -244,7 +244,7 @@ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
-       DestPos++;
-     }
-   }
--  Dest[Min(DestPos,DestSize-1)]=0;
-+  Dest[Min(size_t{DestPos},DestSize-1)]=0;
- }
- #endif
- 
-diff --git a/third_party/unrar/src/unpack.cpp b/third_party/unrar/src/unpack.cpp
-index f7e2e01abb943..cdb89239f7a90 100644
---- a/third_party/unrar/src/unpack.cpp
-+++ b/third_party/unrar/src/unpack.cpp
-@@ -78,7 +78,7 @@ void Unpack::SetThreads(uint Threads)
- {
-   // More than 8 threads are unlikely to provide noticeable gain
-   // for unpacking, but would use the additional memory.
--  MaxUserThreads=Min(Threads,8);
-+  MaxUserThreads=Min(Threads,8u);
-   UnpThreadPool=new ThreadPool(MaxUserThreads);
- }
- #endif
-@@ -235,7 +235,7 @@ void Unpack::UnpInitData(bool Solid)
-     UnpPtr=WrPtr=0;
-     PrevPtr=0;
-     FirstWinDone=false;
--    WriteBorder=Min(MaxWinSize,UNPACK_MAX_WRITE);
-+    WriteBorder=Min(MaxWinSize,size_t{UNPACK_MAX_WRITE});
-   }
-   // Filters never share several solid files, so we can safely reset them
-   // even in solid archive.
-diff --git a/third_party/unrar/src/unpack30.cpp b/third_party/unrar/src/unpack30.cpp
-index 1fb0615a6be10..684e6a82b6e62 100644
---- a/third_party/unrar/src/unpack30.cpp
-+++ b/third_party/unrar/src/unpack30.cpp
-@@ -364,7 +364,7 @@ bool Unpack::ReadVMCodePPM()
- bool Unpack::AddVMCode(uint FirstByte,byte *Code,uint CodeSize)
- {
-   VMCodeInp.InitBitInput();
--  memcpy(VMCodeInp.InBuf,Code,Min(BitInput::MAX_SIZE,CodeSize));
-+  memcpy(VMCodeInp.InBuf,Code,Min(uint{BitInput::MAX_SIZE},CodeSize));
-   VM.Init();
- 
-   uint FiltPos;
-diff --git a/third_party/unrar/src/unpack50.cpp b/third_party/unrar/src/unpack50.cpp
-index 137ce8fa98800..75ccb40fa62b5 100644
---- a/third_party/unrar/src/unpack50.cpp
-+++ b/third_party/unrar/src/unpack50.cpp
-@@ -409,7 +409,7 @@ void Unpack::UnpWriteBuf()
-   // We prefer to write data in blocks not exceeding UNPACK_MAX_WRITE
-   // instead of potentially huge MaxWinSize blocks. It also allows us
-   // to keep the size of Filters array reasonable.
--  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,UNPACK_MAX_WRITE));
-+  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,size_t{UNPACK_MAX_WRITE}));
- 
-   // Choose the nearest among WriteBorder and WrPtr actual written border.
-   // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.
-diff --git a/third_party/unrar/src/unpack50frag.cpp b/third_party/unrar/src/unpack50frag.cpp
-index b1776e6e8dd62..1e559d158821b 100644
---- a/third_party/unrar/src/unpack50frag.cpp
-+++ b/third_party/unrar/src/unpack50frag.cpp
-@@ -46,7 +46,7 @@ void FragmentedWindow::Init(size_t WinSize)
-     // than current, so we do not need blocks if they are smaller than
-     // "size left / attempts left". Also we do not waste time to blocks
-     // smaller than some arbitrary constant.
--    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), 0x400000);
-+    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), size_t{0x400000});
- 
-     byte *NewMem=NULL;
-     while (Size>=MinSize)
-

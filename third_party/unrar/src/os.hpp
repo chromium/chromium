@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <deque>
+#include <stdexcept> // For std::length_error.
 #include <memory> // For automatic pointers.
 #include <algorithm>
 

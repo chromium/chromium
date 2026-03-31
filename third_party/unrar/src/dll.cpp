@@ -171,6 +171,12 @@ HANDLE PASCAL RAROpenArchiveEx(struct RAROpenArchiveDataEx *r)
     if (Data != NULL)
       delete Data;
   }
+  catch (std::length_error&)
+  {
+    r->OpenResult=ERAR_NO_MEMORY;
+    if (Data != NULL)
+      delete Data;
+  }
   return NULL; // To make compilers happy.
 }
 
@@ -421,6 +427,10 @@ int PASCAL ProcessFile(HANDLE hArcData,int Operation,char *DestPath,char *DestNa
     }
   }
   catch (std::bad_alloc&)
+  {
+    return ERAR_NO_MEMORY;
+  }
+  catch (std::length_error&)
   {
     return ERAR_NO_MEMORY;
   }

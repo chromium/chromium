@@ -1505,7 +1505,7 @@ bool Archive::ReadSubData(std::vector<byte> *UnpData,File *DestFile,bool TestMod
 
   if (DestFile==NULL)
   {
-    if (SubHead.UnpSize>0x1000000)
+    if (SubHead.UnpSize<0 || SubHead.UnpSize>0x1000000)
     {
       // Prevent the excessive allocation. When reading to memory, normally
       // this function operates with reasonably small blocks, such as

@@ -1176,8 +1176,8 @@ void MakeNameCompatible(std::wstring &Name)
         std::wstring OrigName=Name;
         Name.insert(I,1,'_');
 #ifndef SFX_MODULE
-        uiMsg(UIMSG_CORRECTINGNAME,nullptr);
-        uiMsg(UIERROR_RENAMING,nullptr,OrigName,Name);
+        uiMsg(UIMSG_CORRECTINGNAME,L"");
+        uiMsg(UIERROR_RENAMING,L"",OrigName,Name);
 #endif
       }
     }

@@ -869,6 +869,7 @@ void CommandData::ProcessSwitch(const wchar *Switch)
         switch(toupperw(Switch[1]))
         {
           case 0:
+          case '+':
           case '=':
             Solid|=SOLID_NORMAL;
             if (Switch[1]=='=')
@@ -995,7 +996,10 @@ void CommandData::ProcessSwitch(const wchar *Switch)
               SetConsoleRedirectCharset(RedirectCharset);
             }
             break;
-
+          default:
+            // 2026.03.11: User tried non-existent -s+
+            BadSwitch(Switch);
+            break;
         }
       break;
     case 'T':

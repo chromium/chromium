@@ -92,6 +92,11 @@ int main(int argc, char *argv[])
     ErrHandler.MemoryErrorMsg();
     ErrHandler.SetErrorCode(RARX_MEMORY);
   }
+  catch (std::length_error&)
+  {
+    ErrHandler.MemoryErrorMsg();
+    ErrHandler.SetErrorCode(RARX_MEMORY);
+  }
   catch (...)
   {
     ErrHandler.SetErrorCode(RARX_FATAL);

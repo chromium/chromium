@@ -538,7 +538,8 @@ bool CmdExtract::ExtractCurrentFile(Archive &Arc,size_t HeaderSize,bool &Repeat)
       ExtrPrepareName(Arc,ArcFileName,DestFileName);
 
     // DestFileName can be set empty in case of excessive -ap switch.
-    ExtrFile=!SkipSolid && !DestFileName.empty() && !Arc.FileHead.SplitBefore;
+    // Also exclude empty archived names here.
+    ExtrFile=!SkipSolid && !ArcFileName.empty() && !DestFileName.empty() && !Arc.FileHead.SplitBefore;
 
     if ((Cmd->FreshFiles || Cmd->UpdateFiles) && (Command=='E' || Command=='X'))
     {
@@ -1172,6 +1173,15 @@ bool CmdExtract::ExtractFileCopy(File &New,const std::wstring &ArcName,const std
 
 void CmdExtract::ExtrPrepareName(Archive &Arc,const std::wstring &ArcFileName,std::wstring &DestName)
 {
+  if (ArcFileName.empty())
+  {
+    // Return the empty destination for empty source. Extraction code skips
+    // empty archived names without creating the destination path and issuing
+    // "can't create the file" error message.
+    DestName.clear();
+    return;
+  }
+
   if (Cmd->Test)
   {
     // Destination name conversion isn't needed for simple archive test.
@@ -1254,7 +1264,7 @@ void CmdExtract::ExtrPrepareName(Archive &Arc,const std::wstring &ArcFileName,st
     // We do not use a user specified destination path when extracting
     // absolute paths in -ep3 mode.
     wchar DiskLetter=toupperw(CurName[0]);
-    if (CurName[1]=='_' && IsPathDiv(CurName[2]) && DiskLetter>='A' && DiskLetter<='Z')
+    if (DiskLetter>='A' && DiskLetter<='Z' && CurName[1]=='_' && IsPathDiv(CurName[2]))
       DestName=CurName.substr(0,1) + L':' + CurName.substr(2);
     else
       if (CurName[0]=='_' && CurName[1]=='_')
