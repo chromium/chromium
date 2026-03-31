@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Eligibility) -->
 
-<histogram name="RegionalCapabilities.FunnelStage.Eligibility"
+<histogram name="RegionalCapabilities.FunnelStage.Eligibility{Profile}"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
@@ -128,7 +128,10 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the condition state on profile load for whether the profile is
     possibly eligible for a search engine choice screen.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Eligibility) -->
@@ -150,7 +153,7 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Reported) -->
 
-<histogram name="RegionalCapabilities.FunnelStage.Reported"
+<histogram name="RegionalCapabilities.FunnelStage.Reported{Profile}"
     enum="RegionalCapabilitiesFunnelStage" expires_after="2026-09-27">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-regionalcapabilities@google.com</owner>
@@ -160,14 +163,17 @@ chromium-metrics-reviews@google.com.
 
     Can be recorded by profiles on some key events like profile load or attempt
     to trigger a choice screen.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Reported) -->
 
 <!-- LINT.IfChange(RegionalCapabilities.FunnelStage.Triggering) -->
 
-<histogram name="RegionalCapabilities.FunnelStage.Triggering"
+<histogram name="RegionalCapabilities.FunnelStage.Triggering{Profile}"
     enum="SearchEngineChoiceScreenConditions" expires_after="2026-08-19">
   <owner>dgn@chromium.org</owner>
   <owner>ljjlee@chromium.org</owner>
@@ -180,7 +186,10 @@ chromium-metrics-reviews@google.com.
     warm open on iOS. If a profile was deemed ineligible at profile load time
     (as recorded by the RegionalCapabilities.FunnelStage.Eligibility histogram),
     this histogram will not be recorded.
+
+    {Profile}
   </summary>
+  <token key="Profile" variants="ProfileIndex"/>
 </histogram>
 
 <!-- LINT.ThenChange(tools/metrics/histograms/metadata/puma/histograms.xml:PUMA.RegionalCapabilities.FunnelStage.Triggering) -->

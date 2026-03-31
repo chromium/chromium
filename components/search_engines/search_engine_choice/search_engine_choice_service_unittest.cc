@@ -1532,6 +1532,9 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       "RegionalCapabilities.FunnelStage.Eligibility",
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Eligibility.Profile1",
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
       "PUMA.RegionalCapabilities.FunnelStage.Eligibility",
       expected_eligibility_condition, 1);
   if (GetParam().restore_detected_in_current_session &&
@@ -1550,6 +1553,9 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Triggering",
+      expected_eligibility_condition, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "RegionalCapabilities.FunnelStage.Triggering.Profile1",
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
       "PUMA.RegionalCapabilities.FunnelStage.Triggering",
@@ -1806,6 +1812,10 @@ TEST_P(SearchEngineChoiceServiceFunnelTest, RecordsFunnelStage) {
     CheckHistogramExpectation(scoped_histogram_tester,
                               "RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_static);
+    CheckHistogramExpectation(
+        scoped_histogram_tester,
+        "RegionalCapabilities.FunnelStage.Reported.Profile1",
+        GetParam().expected_if_static);
     CheckHistogramExpectation(scoped_histogram_tester,
                               "PUMA.RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_static);
@@ -1818,6 +1828,10 @@ TEST_P(SearchEngineChoiceServiceFunnelTest, RecordsFunnelStage) {
     CheckHistogramExpectation(scoped_histogram_tester,
                               "RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_dynamic);
+    CheckHistogramExpectation(
+        scoped_histogram_tester,
+        "RegionalCapabilities.FunnelStage.Reported.Profile1",
+        GetParam().expected_if_dynamic);
     CheckHistogramExpectation(scoped_histogram_tester,
                               "PUMA.RegionalCapabilities.FunnelStage.Reported",
                               GetParam().expected_if_dynamic);

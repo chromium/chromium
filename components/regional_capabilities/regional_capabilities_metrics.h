@@ -11,6 +11,10 @@
 #include "components/regional_capabilities/enums.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
+namespace metrics {
+class ProfileMetricsService;
+}  // namespace metrics
+
 namespace regional_capabilities {
 
 std::string ToString(SearchEngineChoiceScreenConditions condition);
@@ -98,13 +102,16 @@ enum class FunnelStage {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:RegionalCapabilitiesFunnelStage)
 
-void RecordFunnelStage(FunnelStage stage);
+void RecordFunnelStage(FunnelStage stage,
+                       metrics::ProfileMetricsService& profile_metrics_service);
 
 void RecordEligibilityFunnelStageDetails(
-    SearchEngineChoiceScreenConditions conditions);
+    SearchEngineChoiceScreenConditions conditions,
+    metrics::ProfileMetricsService& profile_metrics_service);
 
 void RecordTriggeringFunnelStageDetails(
-    SearchEngineChoiceScreenConditions conditions);
+    SearchEngineChoiceScreenConditions conditions,
+    metrics::ProfileMetricsService& profile_metrics_service);
 
 // Records the histogram for the active regional program, used for UMA
 // filtering.

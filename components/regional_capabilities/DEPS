@@ -1,6 +1,7 @@
 include_rules = [
   "+components/country_codes",
   "+components/keyed_service/core",
+  "+components/metrics",
   "+components/prefs",
   "+components/pref_registry",
   "+components/strings",

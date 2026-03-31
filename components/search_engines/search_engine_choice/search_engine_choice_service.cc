@@ -692,12 +692,14 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
                                         *profile_metrics_service_, condition);
 #endif  // !BUILDFLAG(IS_IOS)
 
-  regional_capabilities::RecordEligibilityFunnelStageDetails(condition);
+  regional_capabilities::RecordEligibilityFunnelStageDetails(
+      condition, *profile_metrics_service_);
   if (!regional_capabilities::IsEligible(condition)) {
     // Being eligible at profile load is not a conclusive funnel state. We don't
     // record it here, we instead rely on trigger-time eligibility, which is
     // expected to be recorded shortly after, to record a funnel stage.
-    regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
+    regional_capabilities::RecordFunnelStage(ToFunnelStage(condition),
+                                             *profile_metrics_service_);
   }
 
   CHECK(!recorded_profile_load_choice_screen_eligibility_.has_value(),
@@ -742,8 +744,10 @@ void SearchEngineChoiceService::RecordTriggeringEligibility(
       base::PumaType::kRc, kPumaSearchChoiceScreenNavigationConditionsHistogram,
       condition);
 
-  regional_capabilities::RecordTriggeringFunnelStageDetails(condition);
-  regional_capabilities::RecordFunnelStage(ToFunnelStage(condition));
+  regional_capabilities::RecordTriggeringFunnelStageDetails(
+      condition, *profile_metrics_service_);
+  regional_capabilities::RecordFunnelStage(ToFunnelStage(condition),
+                                           *profile_metrics_service_);
 }
 
 void SearchEngineChoiceService::RecordChoiceScreenEvent(
