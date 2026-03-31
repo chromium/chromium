@@ -11,12 +11,11 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.HINT_TEXT_COLOR;
-import static org.chromium.chrome.browser.omnibox.UrlBarProperties.IS_IN_CCT;
-import static org.chromium.chrome.browser.omnibox.UrlBarProperties.SELECT_ALL_ON_FOCUS;
 import static org.chromium.chrome.browser.omnibox.UrlBarProperties.TEXT_COLOR;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.view.View;
 import android.view.View.OnLongClickListener;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,7 +35,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,75 +82,6 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
-    public void testSetSelectAllOnFocus() {
-        testSetSelectAllOnFocus(
-                /* selectAllOnFocus= */ true,
-                /* whileFocused= */ false,
-                /* expectSelection= */ true);
-    }
-
-    @Test
-    @SmallTest
-    public void testSetSelectAllOnFocus_whileFocused() {
-        testSetSelectAllOnFocus(
-                /* selectAllOnFocus= */ true,
-                /* whileFocused= */ true,
-                /* expectSelection= */ false);
-    }
-
-    @Test
-    @SmallTest
-    public void testUnsetSelectAllOnFocus() {
-        testSetSelectAllOnFocus(
-                /* selectAllOnFocus= */ false,
-                /* whileFocused= */ false,
-                /* expectSelection= */ false);
-    }
-
-    @Test
-    @SmallTest
-    public void testUnsetSelectAllOnFocus_whileFocused() {
-        testSetSelectAllOnFocus(
-                /* selectAllOnFocus= */ false,
-                /* whileFocused= */ true,
-                /* expectSelection= */ false);
-    }
-
-    private void testSetSelectAllOnFocus(
-            boolean selectAllOnFocus, boolean whileFocused, boolean expectSelection) {
-        String text = "test";
-        mUrlBar.setText(text);
-        mUrlBar.setFocusable(true);
-        mUrlBar.setFocusableInTouchMode(true);
-        Assert.assertFalse(mUrlBar.isFocused());
-        Assert.assertFalse(mUrlBar.hasSelection());
-
-        // Prevent the {@link mMediator} from clearing {@link text} on focus.
-        mUrlBar.setOnFocusChangeListener(null);
-
-        if (whileFocused) {
-            mUrlBar.requestFocus();
-            Assert.assertTrue(mUrlBar.isFocused());
-        }
-
-        mModel.set(SELECT_ALL_ON_FOCUS, selectAllOnFocus);
-
-        if (!whileFocused) {
-            mUrlBar.requestFocus();
-            Assert.assertTrue(mUrlBar.isFocused());
-        }
-
-        Assert.assertEquals(expectSelection, mUrlBar.hasSelection());
-
-        if (expectSelection) {
-            Assert.assertEquals(0, mUrlBar.getSelectionStart());
-            Assert.assertEquals(text.length(), mUrlBar.getSelectionEnd());
-        }
-    }
-
-    @Test
-    @SmallTest
     public void testSetTextColor() {
         int expectColor = Color.RED;
         mModel.set(TEXT_COLOR, expectColor);
@@ -193,14 +123,6 @@ public class UrlBarViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testSetIsInCct() {
-        Assert.assertFalse(mUrlBar.getIsInCctForTesting());
-        mModel.set(IS_IN_CCT, true);
-        Assert.assertTrue(mUrlBar.getIsInCctForTesting());
-    }
-
-    @Test
-    @SmallTest
     public void testTextSize() {
         mUrlBar.setPaddingRelative(13, 0, 17, 0);
         int normalPadding =
@@ -220,5 +142,20 @@ public class UrlBarViewBinderUnitTest {
         Assert.assertEquals(normalPadding, mUrlBar.getPaddingTop());
         Assert.assertEquals(13, mUrlBar.getPaddingStart());
         Assert.assertEquals(17, mUrlBar.getPaddingEnd());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
+    public void testSetAllowMultilineInput() {
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, true);
+        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        Assert.assertFalse(mUrlBar.isSingleLine());
+        Assert.assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
+        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
+        Assert.assertTrue(mUrlBar.isSingleLine());
+        Assert.assertEquals(1, mUrlBar.getMaxLines());
     }
 }

@@ -76,6 +76,7 @@ public class UrlBarCoordinator
         PropertyModel model =
                 new PropertyModel.Builder(UrlBarProperties.ALL_KEYS)
                         .with(UrlBarProperties.ACTION_MODE_CALLBACK, actionModeCallback)
+                        .with(UrlBarProperties.ALLOW_MULTILINE_INPUT, false)
                         .with(UrlBarProperties.DELEGATE, delegate)
                         .with(UrlBarProperties.INCOGNITO_COLORS_ENABLED, isIncognitoBranded)
                         .with(UrlBarProperties.LONG_CLICK_LISTENER, onLongClickListener)
@@ -189,6 +190,13 @@ public class UrlBarCoordinator
     }
 
     /**
+     * @see UrlBarMediator#setAllowMultilineInput(boolean)
+     */
+    public void setAllowMultilineInput(boolean allowMultilineInput) {
+        mMediator.setAllowMultilineInput(allowMultilineInput);
+    }
+
+    /**
      * @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>)
      */
     public void setUrlDirectionListener(Callback<Integer> listener) {
@@ -199,7 +207,11 @@ public class UrlBarCoordinator
      * @see UrlBarMediator#setIsInCct(boolean)
      */
     public void setIsInCct(boolean isInCct) {
-        mMediator.setIsInCct(isInCct);
+        // TODO(crbug.com/495455140): remove this entirely when the ALLOW_MULTILINE_INPUT is
+        // updated from the Fusebox. This is already redundant as-is, because text wrapping
+        // is only applied when the UrlBar has focus.
+        if (!isInCct) return;
+        setAllowMultilineInput(false);
     }
 
     @Override

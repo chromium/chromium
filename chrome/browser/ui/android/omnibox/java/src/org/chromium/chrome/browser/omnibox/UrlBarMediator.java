@@ -292,14 +292,19 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
         }
     }
 
+    /**
+     * Sets whether the view should *permit* multiline input.
+     *
+     * <p>The perimitted/allowed wrapping doesn't imply the wrapping will be applied. Only eligible
+     * input in focused state can wrap. This setting controls only whether wrapping is permitted.
+     */
+    public void setAllowMultilineInput(boolean allowMultilineInput) {
+        mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, allowMultilineInput);
+    }
+
     /** Set the listener to be notified for URL direction changes. */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mModel.set(UrlBarProperties.URL_DIRECTION_LISTENER, listener);
-    }
-
-    /** Sets the property indicating the URL bar is used by Custom Tab. */
-    public void setIsInCct(boolean isInCct) {
-        mModel.set(UrlBarProperties.IS_IN_CCT, isInCct);
     }
 
     @Override

@@ -115,7 +115,7 @@ public class LocationBarCoordinator
             mDeferredIMEWindowInsetApplicationCallback;
 
     private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
-    private int mPreviousFuseboxState = FuseboxState.DISABLED;
+    private int mCurrentFuseboxState = FuseboxState.DISABLED;
 
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
@@ -126,7 +126,7 @@ public class LocationBarCoordinator
     private LocationBarLayout mLocationBarLayout;
     private @Nullable SubCoordinator mSubCoordinator;
     private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final LocationBarEmbedder mLocationBarEmbedder;
+    private LocationBarEmbedder mLocationBarEmbedder;
     private final @Nullable BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final boolean mIsToolbarPositionCustomizationEnabled;
     private final View mBottomContainerView;
@@ -856,19 +856,35 @@ public class LocationBarCoordinator
         mLocationBarMediator.updateButtonVisibility();
     }
 
-    private void onFuseboxStateChange(@FuseboxState int state) {
+    /**
+     * Decide if the UrlBar should permit text wrapping.
+     *
+     * <p>This method instructs the UrlBar to permit text wrapping feature on or off. Not all input
+     * is wrapped. The state computed here only decides whether wrapping should be permitted, not
+     * whether it will be applied.
+     */
+    private void updateUrlBarForMultilineInput() {
+        boolean allowMultilineInput = OmniboxFeatures.allowMultilineEditField();
+        // Disable multiline input on Tablets if Fusebox state is "off".
+        allowMultilineInput &= !(isTabletLayout() && mCurrentFuseboxState == FuseboxState.DISABLED);
+        mUrlCoordinator.setAllowMultilineInput(allowMultilineInput);
+    }
+
+    /* package */ void onFuseboxStateChange(@FuseboxState int newState) {
         if (mUrlCoordinator == null || !mUrlCoordinator.hasFocus()) return;
         View addButton = mLocationBarLayout.findViewById(R.id.location_bar_attachments_add);
         if (addButton == null) return;
 
         // The Fade and and ChangeBounds anims below are only intended for animating between compact
         // <--> expanded; they don't look good otherwise.
-        if (mPreviousFuseboxState == FuseboxState.DISABLED || state == FuseboxState.DISABLED) {
-            mPreviousFuseboxState = state;
-            return;
-        }
+        boolean transitioningFromOrToDisabledState =
+                mCurrentFuseboxState == FuseboxState.DISABLED || newState == FuseboxState.DISABLED;
 
-        mPreviousFuseboxState = state;
+        mCurrentFuseboxState = newState;
+        updateUrlBarForMultilineInput();
+
+        if (transitioningFromOrToDisabledState) return;
+
         ChangeBounds changeBounds = new ChangeBounds();
         changeBounds
                 .setDuration(COMPACT_MODE_ANIMATION_DURATION_MS)
@@ -876,7 +892,7 @@ public class LocationBarCoordinator
                 .addTarget(mLocationBarLayout)
                 .addTarget(addButton);
         Transition transition;
-        if (state == FuseboxState.COMPACT) {
+        if (newState == FuseboxState.COMPACT) {
             // Only fade when entering expanded mode.
             transition = changeBounds;
             mLocationBarEmbedder.setRequestFixedHeight(true);
@@ -1220,5 +1236,31 @@ public class LocationBarCoordinator
         } else {
             mLocationBarMediator.endInput();
         }
+    }
+
+    /** Set an instance of UrlBarCoordinator for testing. */
+    void setUrlCoordinatorForTesting(UrlBarCoordinator urlCoordinator) {
+        mUrlCoordinator = urlCoordinator;
+    }
+
+    /** Set an instance of LocationBarLayout for testing. */
+    void setLocationBarLayoutForTesting(LocationBarLayout locationBarLayout) {
+        mLocationBarLayout = locationBarLayout;
+    }
+
+    /** Set an instance of LocationBarEmbedder for testing. */
+    void setLocationBarEmbedderForTesting(LocationBarEmbedder locationBarEmbedder) {
+        mLocationBarEmbedder = locationBarEmbedder;
+    }
+
+    /** Set the value of mCurrentFuseboxState for testing. */
+    void setCurrentFuseboxStateForTesting(@FuseboxState int state) {
+        mCurrentFuseboxState = state;
+    }
+
+    /** Returns the value of mCurrentFuseboxState for testing. */
+    @FuseboxState
+    int getCurrentFuseboxStateForTesting() {
+        return mCurrentFuseboxState;
     }
 }

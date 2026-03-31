@@ -464,7 +464,7 @@ public class OmniboxFeatures {
     }
 
     public static boolean allowMultilineEditField() {
-        return (!DeviceFormFactor.isTablet() && sMultilineEditField.isEnabled());
+        return sMultilineEditField.isEnabled();
     }
 
     public static boolean shouldJumpStartOmnibox() {
