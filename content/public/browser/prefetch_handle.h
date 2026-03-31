@@ -20,6 +20,12 @@ namespace content {
 // If the handle is destructed, it will notify PrefetchService that the
 // corresponding PrefetchContainer is no longer needed. PrefetchService will try
 // to release relevant resources by its own decision with best-effort.
+//
+// Threading model:
+// - All methods (except for move ctor/operator) must be called on the UI
+//   thread.
+// - Must be destroyed on the UI thread.
+// - The callbacks of `Set*Callback()` are called on the UI thread.
 class PrefetchHandle {
  public:
   PrefetchHandle() = default;
