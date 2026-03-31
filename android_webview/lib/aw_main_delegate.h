@@ -47,6 +47,7 @@ class AwMainDelegate : public content::ContentMainDelegate {
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
+  std::optional<int> PreBrowserMain() override;
   bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
   bool ShouldInitializeMojo(InvokedIn invoked_in) override;
   variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;

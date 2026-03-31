@@ -5,6 +5,7 @@
 #include "android_webview/lib/aw_main_delegate.h"
 
 #include <memory>
+#include <optional>
 #include <variant>
 
 #include "android_webview/browser/aw_browser_process.h"
@@ -281,6 +282,16 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
+std::optional<int> AwMainDelegate::PreBrowserMain() {
+  // This may optionally wait if tracing init was started on a Java thread pool
+  // during factory init.
+  // We need to wait during PreBrowserMain to ensure the task has completed
+  // before we initialize the native task runners, which will move scheduled
+  // tasks to the native task pool.
+  AwBrowserProcess::WaitForBackgroundTracingInit();
+  return std::nullopt;
+}
+
 bool AwMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
   // In the browser process the FeatureList is created in
   // AwMainDelegate::PostEarlyInitialization().
@@ -396,7 +407,6 @@ bool AwMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
   if (!is_browser_process) {
     return true;
   }
-  AwBrowserProcess::WaitForBackgroundTracingInit();
   return AwBrowserProcess::ShouldInitTracingDuringBrowserMain();
 }
 
