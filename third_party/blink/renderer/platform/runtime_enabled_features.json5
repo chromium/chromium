@@ -1309,7 +1309,7 @@
     },
     {
       name: "ContainerNameOnly",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ContainerTiming",
