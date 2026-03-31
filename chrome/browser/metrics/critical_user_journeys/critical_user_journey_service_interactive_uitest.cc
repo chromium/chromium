@@ -23,6 +23,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_paths.h"
@@ -65,12 +67,15 @@ class TestCriticalUserJourneyService : public CriticalUserJourneyService {
   void RegisterJourneys(CriticalUserJourneyRegistry* registry) override {
     // Simple Journey: Click App Menu button (triggers start), then click New
     // Tab button (triggers end).
+    HatsParams params;
+    params.trigger = "TestHatsTrigger";
     registry->AddJourney(
         CriticalUserJourney::Builder(kAppMenuJourneyName)
             .AddStep(kToolbarAppMenuButtonElementId,
                      ui::InteractionSequence::StepType::kActivated, 1)
             .AddStep(kNewTabButtonElementId,
                      ui::InteractionSequence::StepType::kActivated, 2)
+            .LaunchHatsSurveyOnCompletion(params)
             .Build());
 
     // Branching Journey: Click App Menu button (triggers start), then click
@@ -120,6 +125,8 @@ class CriticalUserJourneyServiceInteractiveTest
   }
 
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    HatsServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildMockHatsService));
     CriticalUserJourneyServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context)
                                          -> std::unique_ptr<KeyedService> {
@@ -143,6 +150,13 @@ IN_PROC_BROWSER_TEST_F(CriticalUserJourneyServiceInteractiveTest,
       {GetMetricJourneyPrefix(kAppMenuJourneyName), ".StepReached"});
   const std::string result =
       base::StrCat({GetMetricJourneyPrefix(kAppMenuJourneyName), ".Result"});
+
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(browser()->profile(), true));
+  EXPECT_CALL(*mock_hats_service,
+              LaunchSurvey("TestHatsTrigger", testing::_, testing::_,
+                           testing::_, testing::_, testing::_, testing::_))
+      .Times(1);
 
   RunTestSequence(
       // Step 1: Click App Menu.

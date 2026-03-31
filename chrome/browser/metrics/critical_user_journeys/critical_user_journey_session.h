@@ -51,9 +51,12 @@ class CriticalUserJourneySession {
   void Start(std::optional<int> first_step_metric_id,
              ui::TrackedElement* element);
 
-  void set_on_done_callback(base::OnceClosure on_done_callback) {
+  void set_on_done_callback(
+      base::OnceCallback<void(JourneyResult)> on_done_callback) {
     on_done_callback_ = std::move(on_done_callback);
   }
+
+  const CriticalUserJourney* journey() { return journey_; }
 
  private:
   // Build the underlying InteractionSequence::Builder from the journey
@@ -72,7 +75,7 @@ class CriticalUserJourneySession {
   void OnCompleted();
 
   const raw_ptr<const CriticalUserJourney> journey_;
-  base::OnceClosure on_done_callback_;
+  base::OnceCallback<void(JourneyResult)> on_done_callback_;
   std::unique_ptr<ui::InteractionSequence> sequence_;
 
   int last_reached_metric_id_ = -1;

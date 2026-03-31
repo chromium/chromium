@@ -23,6 +23,11 @@ Branch::Branch(ui::CustomElementEventType event_type, int metric_id)
 
 Branch::~Branch() = default;
 
+HatsParams::HatsParams() = default;
+HatsParams::HatsParams(const HatsParams&) = default;
+HatsParams& HatsParams::operator=(const HatsParams&) = default;
+HatsParams::~HatsParams() = default;
+
 CriticalUserJourney::Builder::Builder(std::string name)
     : name_(std::move(name)) {}
 CriticalUserJourney::Builder::~Builder() = default;
@@ -72,18 +77,27 @@ CriticalUserJourney::Builder::AddCustomCompletionCallback(
   return *this;
 }
 
+CriticalUserJourney::Builder&
+CriticalUserJourney::Builder::LaunchHatsSurveyOnCompletion(HatsParams params) {
+  hats_params_ = std::move(params);
+  return *this;
+}
+
 std::unique_ptr<CriticalUserJourney> CriticalUserJourney::Builder::Build() {
   return std::make_unique<CriticalUserJourney>(
-      std::move(name_), std::move(steps_), std::move(completion_callback_));
+      std::move(name_), std::move(steps_), std::move(completion_callback_),
+      std::move(hats_params_));
 }
 
 CriticalUserJourney::CriticalUserJourney(
     std::string name,
     std::vector<std::unique_ptr<CriticalUserJourneyStep>> steps,
-    base::RepeatingClosure completion_callback)
+    base::RepeatingClosure completion_callback,
+    std::optional<HatsParams> hats_params)
     : name_(std::move(name)),
       steps_(std::move(steps)),
-      completion_callback_(std::move(completion_callback)) {}
+      completion_callback_(std::move(completion_callback)),
+      hats_params_(std::move(hats_params)) {}
 
 CriticalUserJourney::~CriticalUserJourney() = default;
 

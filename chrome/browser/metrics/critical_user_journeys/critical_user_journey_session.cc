@@ -141,7 +141,8 @@ void CriticalUserJourneySession::OnAborted(
       was_timeout_ ? JourneyResult::kTimeout : JourneyResult::kAborted);
 
   if (on_done_callback_) {
-    std::move(on_done_callback_).Run();
+    std::move(on_done_callback_)
+        .Run(was_timeout_ ? JourneyResult::kTimeout : JourneyResult::kAborted);
   }
 }
 
@@ -155,7 +156,7 @@ void CriticalUserJourneySession::OnCompleted() {
     journey_->completion_callback().Run();
   }
   if (on_done_callback_) {
-    std::move(on_done_callback_).Run();
+    std::move(on_done_callback_).Run(JourneyResult::kCompleted);
   }
 }
 

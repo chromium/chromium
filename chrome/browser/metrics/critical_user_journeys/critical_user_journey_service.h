@@ -11,6 +11,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
+#include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -22,7 +23,6 @@ class TrackedElement;
 namespace metrics {
 
 class CriticalUserJourney;
-class CriticalUserJourneySession;
 
 // Service responsible for tracking and managing active Critical User Journeys.
 // Listens for journey start triggers and manages the lifecycle of journey
@@ -54,7 +54,8 @@ class CriticalUserJourneyService : public KeyedService {
   void OnJourneyStarted(const CriticalUserJourney* journey,
                         std::optional<int> metric_id,
                         ui::TrackedElement* element);
-  void OnJourneyEnded(CriticalUserJourneySession* session);
+  void OnJourneyEnded(CriticalUserJourneySession* session,
+                      CriticalUserJourneySession::JourneyResult result);
 
   const raw_ptr<Profile> profile_;
   CriticalUserJourneyRegistry registry_;

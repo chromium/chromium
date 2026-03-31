@@ -49,8 +49,8 @@ TEST_F(CriticalUserJourneySessionTest, SimpleJourneyCompletion) {
 
   bool done = false;
   auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
-  session->set_on_done_callback(
-      base::BindLambdaForTesting([&]() { done = true; }));
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult) { done = true; }));
 
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
@@ -75,8 +75,8 @@ TEST_F(CriticalUserJourneySessionTest, JourneyAborted) {
 
   bool done = false;
   auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
-  session->set_on_done_callback(
-      base::BindLambdaForTesting([&]() { done = true; }));
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult) { done = true; }));
 
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
@@ -101,8 +101,8 @@ TEST_F(CriticalUserJourneySessionTest, CompletionCallbackTriggered) {
 
   bool session_done = false;
   auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
-  session->set_on_done_callback(
-      base::BindLambdaForTesting([&]() { session_done = true; }));
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult) { session_done = true; }));
 
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();
@@ -128,8 +128,8 @@ TEST_F(CriticalUserJourneySessionTest, BranchingJourneyCompletion) {
 
   bool done = false;
   auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
-  session->set_on_done_callback(
-      base::BindLambdaForTesting([&]() { done = true; }));
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult) { done = true; }));
 
   // Step 1: Show element 1
   ui::test::TestElement el1(kTestElementId1, kTestContext);
@@ -155,8 +155,8 @@ TEST_F(CriticalUserJourneySessionTest, JourneyTimeout) {
 
   bool done = false;
   auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
-  session->set_on_done_callback(
-      base::BindLambdaForTesting([&]() { done = true; }));
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult) { done = true; }));
 
   ui::test::TestElement el1(kTestElementId1, kTestContext);
   el1.Show();

@@ -11,6 +11,7 @@
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 #include "chrome/browser/metrics/critical_user_journeys/features.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace metrics {
@@ -99,7 +100,26 @@ void CriticalUserJourneyService::OnJourneyStarted(
 }
 
 void CriticalUserJourneyService::OnJourneyEnded(
-    CriticalUserJourneySession* session) {
+    CriticalUserJourneySession* session,
+    CriticalUserJourneySession::JourneyResult result) {
+  if (result == CriticalUserJourneySession::JourneyResult::kCompleted &&
+      session->journey()->hats_params().has_value()) {
+    const auto& params = *session->journey()->hats_params();
+    if (auto* hats_service = HatsServiceFactory::GetForProfile(
+            profile_, /*create_if_necessary=*/true)) {
+      base::OnceClosure success_callback =
+          params.success_callback ? params.success_callback : base::DoNothing();
+      base::OnceClosure failure_callback =
+          params.failure_callback ? params.failure_callback : base::DoNothing();
+
+      hats_service->LaunchSurvey(
+          params.trigger, std::move(success_callback),
+          std::move(failure_callback), params.product_specific_bits_data,
+          params.product_specific_string_data, params.supplied_trigger_id,
+          HatsService::SurveyOptions());
+    }
+  }
+
   auto it =
       std::find_if(active_sessions_.begin(), active_sessions_.end(),
                    [session](const auto& s) { return s.get() == session; });
