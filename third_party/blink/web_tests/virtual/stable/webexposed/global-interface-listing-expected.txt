@@ -6946,6 +6946,7 @@ interface PerformanceResourceTiming : PerformanceEntry
     getter connectEnd
     getter connectStart
     getter contentEncoding
+    getter contentType
     getter decodedBodySize
     getter deliveryType
     getter domainLookupEnd

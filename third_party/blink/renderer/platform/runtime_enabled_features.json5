@@ -4707,7 +4707,7 @@
     },
     {
       name: "ResourceTimingContentType",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ResourceTimingInitiator",
