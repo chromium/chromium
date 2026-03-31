@@ -220,9 +220,11 @@ enum class TabGridTransitionType {
     }
     // TODO(crbug.com/496645014): Remove this part.
     [tabGrid addChildViewController:browserLayout];
-    [appContentGuide addSubview:browserLayout.view];
     if (IsFullscreenRefactoringEnabled()) {
+      [tabGrid.view addSubview:browserLayout.view];
       AddSameConstraints(browserLayout.view, appContentGuide);
+    } else {
+      [appContentGuide addSubview:browserLayout.view];
     }
   } else {
     browserLayout.view.frame = tabGrid.view.bounds;
