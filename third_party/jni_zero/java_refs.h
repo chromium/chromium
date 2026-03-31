@@ -50,6 +50,11 @@ struct _JArrayHelper<bool> {
 };
 
 template <>
+struct _JArrayHelper<jboolean> {
+  using type = _jbooleanArray;
+};
+
+template <>
 struct _JArrayHelper<int8_t> {
   using type = _jbyteArray;
 };
