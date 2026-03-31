@@ -11,7 +11,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/ui/test_support/mock_event_dispatcher.h"
-#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
+#include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"

@@ -133,7 +133,7 @@ source_set("impl") {
       "//chrome/app:command_ids",
       "//chrome/browser/actor",
       "//chrome/browser/desktop_to_mobile_promos:utils",
-      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/signin",
       "//chrome/browser/ui:ui_features",
@@ -182,6 +182,7 @@ source_set("test_support") {
 
     deps += [
       ":passwords",
+      "//base",
       "//chrome/app:command_ids",
       "//chrome/browser/actor",
       "//chrome/browser/actor:test_support",

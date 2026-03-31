@@ -4,20 +4,6 @@
 
 import("//build/config/chrome_build.gni")
 
-# This is header-only because the sources have too many deependencies in
-# chrome/browser.
-source_set("password_factory_headers") {
-  sources = [ "//chrome/browser/password_manager/password_manager_settings_service_factory.h" ]
-  deps = [
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/keyed_service/core",
-    "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser/password_store:password_store_interface",
-    "//content/public/browser",
-  ]
-}
-
 source_set("factories") {
   sources = [
     "account_password_store_factory.cc",
@@ -26,6 +12,8 @@ source_set("factories") {
     "credentials_cleaner_runner_factory.h",
     "field_info_manager_factory.cc",
     "field_info_manager_factory.h",
+    "password_manager_settings_service_factory.cc",
+    "password_manager_settings_service_factory.h",
     "password_receiver_service_factory.cc",
     "password_receiver_service_factory.h",
     "password_reuse_manager_factory.cc",
@@ -45,8 +33,6 @@ source_set("factories") {
       "password_counter_factory.h",
     ]
   }
-
-  public_deps = [ ":password_factory_headers" ]
 
   deps = [
     ":backend_factory",
@@ -80,7 +66,9 @@ source_set("factories") {
   ]
   if (is_android) {
     deps += [
+      "//chrome/browser/password_manager/android:backend_public",
       "//chrome/browser/password_manager/android:shared_preferences_delegate",
+      "//chrome/browser/password_manager/android:utils",
     ]
   }
 }

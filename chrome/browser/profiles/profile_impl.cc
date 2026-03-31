@@ -217,7 +217,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/profile_key_startup_accessor.h"
-#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
+#include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #else
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"

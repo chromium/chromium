@@ -44,7 +44,7 @@ source_set("unit_tests") {
     ":settings",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/password_manager/factories:password_factory_headers",
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/ui",
     "//chrome/browser/ui/select_file_policy",
     "//chrome/test:test_support",

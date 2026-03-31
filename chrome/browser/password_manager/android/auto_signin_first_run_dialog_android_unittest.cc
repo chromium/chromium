@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
+#include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"

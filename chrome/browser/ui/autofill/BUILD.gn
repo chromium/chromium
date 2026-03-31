@@ -562,7 +562,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/autofill",
       "//chrome/browser/autofill:test_support",
-      "//chrome/browser/password_manager/factories:password_factory_headers",
+      "//chrome/browser/password_manager/factories",
       "//chrome/browser/plus_addresses",
       "//chrome/browser/signin",
       "//chrome/browser/sync",

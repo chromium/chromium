@@ -736,7 +736,6 @@ static_library("browser") {
     "password_manager/password_change_service_factory.h",
     "password_manager/password_field_classification_model_handler_factory.cc",
     "password_manager/password_field_classification_model_handler_factory.h",
-    "password_manager/password_manager_settings_service_factory.cc",
     "performance_manager/chrome_browser_main_extra_parts_performance_manager.cc",
     "performance_manager/chrome_content_browser_client_performance_manager_part.cc",
     "performance_manager/decorators/helpers/page_live_state_decorator_helper.cc",
