@@ -95,8 +95,8 @@ found in the LICENSE file.
     </style>
 
     <style name="OmniboxChipSizeOverlay" parent="SizeOverlay.Material3Expressive.Button.Xsmall">
-        <item name="containerPaddingStart">@dimen/omnibox_chip_padding</item>
-        <item name="containerPaddingEnd">@dimen/omnibox_chip_padding_end</item>
+        <item name="containerPaddingStart">@dimen/omnibox_chip_padding_horizontal_expanded_start</item>
+        <item name="containerPaddingEnd">@dimen/omnibox_chip_padding_horizontal_expanded_end</item>
         <item name="containerPaddingTop">@dimen/omnibox_chip_padding</item>
         <item name="containerPaddingBottom">@dimen/omnibox_chip_padding</item>
         <item name="containerInsetTop">@dimen/omnibox_chip_padding</item>
