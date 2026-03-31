@@ -51,9 +51,13 @@ be valid.
 Quickly skim the bug, asking yourself: _could_ this be a valid security bug?
 
 * If it doesn't seem like a valid bug at all, WontFix it and you are done
+* If it seems like a duplicate of an existing bug report (the bug tracker will
+  surface examples), mark it as a duplicate. Do **not** CC the reporter on the
+  canonical bug unless the canonical bug is already public. If they ask to be
+  CCed, tell them to email product-security@chromium.org.
 * If it does seem like a valid bug but you can't see _clear_ security
   consequences, change its type to Bug and you are done
-* If it does seem like a valid bug with clear security consequences, if the
+* If it does seem like a valid bug with clear security consequences, is the
   information you need to reproduce it present? If not, WontFix it with a
   message telling the reporter what info was missing and asking them to re-file
   with the needed info, and you are done
