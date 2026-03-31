@@ -317,6 +317,14 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     }
 
     /**
+     * @param type The {@link Type} which needs to check.
+     * @return True if a handler of this type is the enabled handler that consumes the back event.
+     */
+    public boolean isBackPressHandlerConsumingBackEvent(@Type int type) {
+        return getEnabledBackPressHandler() == mHandlers[type];
+    }
+
+    /**
      * @return A {@link OnBackPressedCallback} which should be added to {@link
      *     androidx.activity.OnBackPressedDispatcher}.
      */

@@ -106,6 +106,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.gesturenav.BackActionDelegate;
+import org.chromium.chrome.browser.gesturenav.GestureUserEducationIphController;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
@@ -238,6 +239,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -302,6 +304,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private PrivacySandbox3pcdRollbackMessageController
             mPrivacySandbox3pcdRollbackMessageController;
+    private GestureUserEducationIphController mGestureUserEducationIphController;
     private final InsetObserver mInsetObserver;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private final Callback<Tab> mSendToBackground;
@@ -862,6 +865,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActorControlCoordinator = null;
         }
 
+        if (mGestureUserEducationIphController != null) {
+            mGestureUserEducationIphController.unregisterTabObserver();
+            mGestureUserEducationIphController = null;
+        }
+
         destroySideUi();
 
         super.onDestroy();
@@ -1381,6 +1389,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             getToolbarManager().getMenuButtonView(),
                             mAppMenuCoordinator.getAppMenuHandler(),
                             /* isBrowserApp= */ true);
+            if (ChromeFeatureList.sGestureUserEducationBackSwipe.isEnabled()
+                    && UiUtils.isGestureNavigationMode(mActivity.getWindow())
+                    && TrackerFactory.getTrackerForProfile(profile)
+                            .wouldTriggerHelpUi(FeatureConstants.GESTURE_USER_EDUCATION)) {
+                mGestureUserEducationIphController =
+                        new GestureUserEducationIphController(
+                                mActivity.findViewById(R.id.compositor_view_holder),
+                                mActivityTabProvider,
+                                mBackPressManager,
+                                getScrimManager());
+            }
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);
 
