@@ -11,7 +11,7 @@ export function getHtml(this: LocationBarElement) {
   return html`<!--_html_template_start_-->
 <div id="permissions-dashboard"></div>
 <div id="location-icon"></div>
-<readonly-omnibox .omniboxViewState="${this.omniboxViewState}">
+<readonly-omnibox .omniboxViewState="${this.locationBarState.omniboxViewState}">
 </readonly-omnibox>
 <!--_html_template_end_-->`;
   // clang-format on

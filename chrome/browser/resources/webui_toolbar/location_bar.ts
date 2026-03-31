@@ -6,9 +6,9 @@ import './readonly_omnibox.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {OmniboxViewState} from './browser_proxy.js';
 import {getCss} from './location_bar.css.js';
 import {getHtml} from './location_bar.html.js';
+import type {LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class LocationBarElement extends CrLitElement {
   static get is() {
@@ -25,14 +25,17 @@ export class LocationBarElement extends CrLitElement {
 
   static override get properties() {
     return {
-      omniboxViewState: {type: Object},
+      locationBarState: {type: Object},
     };
   }
 
-  protected accessor omniboxViewState: OmniboxViewState = {
-    textPieces: [],
-    selection: null,
-    textIsUrl: false,
+  protected accessor locationBarState: LocationBarState = {
+    omniboxViewState: {
+      textPieces: [],
+      selection: null,
+      textIsUrl: false,
+    },
+    contentSettingImageStates: [],
   };
 }
 

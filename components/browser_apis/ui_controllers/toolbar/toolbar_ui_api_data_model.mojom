@@ -102,18 +102,10 @@ enum ContentSettingImageType {
   kProtectedMediaIdentifier = 23,
 };
 
-// The set of information about URL bar RHS content setting icons sent from
-// browser to UI.
-struct ContentSettingState {
-  // The set of content setting icon state for each visible icon.
-  array<ContentSettingImageState> image_states;
-};
-
 // These fields correspond to the accessors of ContentSettingImageModel.
 struct ContentSettingImageState {
-  // This should be one of the enum values that has a corresponding LHS
-  // URL bar icon.
-  content_settings.mojom.ContentSettingsType type;
+  // The type of icon to display.
+  ContentSettingImageType type;
 
   // NOTE: this isn't actually announced unless `should_notify_accessibility` is
   // true -- it's merely the accessible name.
@@ -225,13 +217,18 @@ struct PinnedToolbarActionState {
   bool enabled;
 };
 
+struct LocationBarState {
+  OmniboxViewState omnibox_view_state;
+  // The set of content setting icon state for each visible LHS icon.
+  array<ContentSettingImageState> content_setting_image_states;
+};
+
 struct NavigationControlsState {
   ReloadControlState reload_control_state;
   SplitTabsControlState split_tabs_control_state;
   BackForwardControlState back_forward_control_state;
   HomeControlState home_control_state;
-  ContentSettingState content_setting_state;
-  OmniboxViewState omnibox_view_state;
+  LocationBarState location_bar_state;
   // List of pinned toolbar action button states. Order corresponds to order
   // of the drawn buttons and duplicates imply duplicate buttons.
   array<PinnedToolbarActionState> pinned_toolbar_actions_state;

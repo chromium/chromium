@@ -45,8 +45,7 @@ interface ToolbarUIService {
   OnPageInitialized();
 
   // Displays the bubble, anchored to the URL bar, that corresponds to `type`.
-  ShowContentSettingsBubble(
-    content_settings.mojom.ContentSettingsType type);
+  ShowContentSettingsBubble(ContentSettingImageType type);
 
   // Invoke the pinned toolbar action for `action_id`. It's expected that the
   // corresponding pinned toolbar action button is visible and enabled, i.e.

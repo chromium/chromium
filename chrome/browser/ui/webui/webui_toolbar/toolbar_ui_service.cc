@@ -82,7 +82,7 @@ void ToolbarUIService::OnPageInitialized() {
 }
 
 void ToolbarUIService::ShowContentSettingsBubble(
-    ::content_settings::mojom::ContentSettingsType content_settings_type) {
+    ::toolbar_ui_api::mojom::ContentSettingImageType type) {
   NOTIMPLEMENTED();
 }
 

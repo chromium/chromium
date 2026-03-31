@@ -100,15 +100,15 @@ export class ToolbarAppElement extends CrLitElement {
       isPinned: false,
       isContextMenuVisible: false,
     },
-    omniboxViewState: {
-      textPieces: [],
-      selection: null,
-      textIsUrl: false,
+    locationBarState: {
+      omniboxViewState: {
+        textPieces: [],
+        selection: null,
+        textIsUrl: false,
+      },
+      contentSettingImageStates: [],
     },
     layoutConstantsVersion: 0,
-    contentSettingState: {
-      imageStates: [],
-    },
     pinnedToolbarActionsState: [],
   };
 

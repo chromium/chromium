@@ -57,8 +57,8 @@ class ToolbarUIService : public toolbar_ui_api::mojom::ToolbarUIService {
                        const gfx::RectF& bounds_in_css_pixels,
                        ui::mojom::MenuSourceType source) override;
   void OnPageInitialized() override;
-  void ShowContentSettingsBubble(::content_settings::mojom::ContentSettingsType
-                                     content_settings_type) override;
+  void ShowContentSettingsBubble(
+      ::toolbar_ui_api::mojom::ContentSettingImageType type) override;
   void InvokePinnedToolbarAction(
       toolbar_ui_api::mojom::PinnedToolbarAction action_id) override;
 

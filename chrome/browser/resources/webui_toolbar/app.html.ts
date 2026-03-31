@@ -40,7 +40,7 @@ ${this.isBackForwardButtonEnabled_ ? html`
   ` : ''}
   ${this.isLocationBarEnabled_ ? html`
     <location-bar id="location-bar"
-        .omniboxViewState="${this.navigationControlsState_.omniboxViewState}">
+        .locationBarState="${this.navigationControlsState_.locationBarState}">
     </location-bar>
   ` : ''}
   ${this.isPinnedToolbarActionsEnabled_ ? html`
