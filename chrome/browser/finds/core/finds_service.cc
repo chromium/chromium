@@ -120,10 +120,11 @@ bool IsThemeCooldownPassed(const PrefService* pref_service,
 
 const SuggestionTheme* GetHighestScoredThemeIfPossible(
     PrefService* pref_service,
-    const ::google::protobuf::RepeatedPtrField<SuggestionTheme>& suggestions) {
+    const ::google::protobuf::RepeatedPtrField<SuggestionTheme>&
+        suggestion_themes) {
   // Sort the suggestion themes by best score.
   std::vector<const SuggestionTheme*> sorted_themes;
-  for (const auto& theme : suggestions) {
+  for (const auto& theme : suggestion_themes) {
     sorted_themes.push_back(&theme);
   }
   std::sort(sorted_themes.begin(), sorted_themes.end(),
@@ -132,6 +133,9 @@ const SuggestionTheme* GetHighestScoredThemeIfPossible(
             });
 
   for (const auto* theme : sorted_themes) {
+    if (theme->theme_suggested_contents().empty()) {
+      continue;
+    }
     if (IsThemeCooldownPassed(pref_service, theme->theme_type())) {
       return theme;
     }
@@ -397,6 +401,8 @@ void FindsService::OnModelExecutionComplete(
     return;
   }
 
+  // Shouldn't trigger since empty themes are filtered by
+  // GetHighestScoredThemeIfPossible.
   if (best_theme->theme_suggested_contents().empty()) {
     RecordFindsResultAndRunCallback(
         std::move(callback), {Result::Status::kNoSuggestionsForTheme,
