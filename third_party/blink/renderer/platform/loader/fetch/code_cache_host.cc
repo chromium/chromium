@@ -18,6 +18,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
@@ -47,6 +49,18 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(InlineScriptCacheFetchResult)
+enum class InlineScriptCacheFetchResult {
+  kFetchedNonEmpty = 0,
+  kFetchedEmpty = 1,
+  kTimedOut = 2,
+  kMaxValue = kTimedOut,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:InlineScriptCacheFetchResult)
+
 // CodeCacheHostImpl -----------------------------------------------------------
 
 // Implementation that delegates to the remote instance. All operations are
@@ -59,7 +73,7 @@ class CodeCacheHostImpl : public CodeCacheHost {
     DCHECK(remote_.is_bound());
   }
 
-  std::optional<mojo_base::BigBuffer> FetchInlineScriptCacheSync(
+  mojo_base::BigBuffer FetchInlineScriptCacheSync(
       base::span<const uint8_t, kSha256Bytes> source_hash) override {
     // Source-keyed code cache is currently only for inline script cache, which
     // must be handled by `CodeCacheWithPersistentCacheHostImpl`.
@@ -100,15 +114,34 @@ class CodeCacheWithPersistentCacheHostImpl
                         base::TaskTraits{base::MayBlock()}),
                     remote.Unbind()) {}
 
-  std::optional<mojo_base::BigBuffer> FetchInlineScriptCacheSync(
+  mojo_base::BigBuffer FetchInlineScriptCacheSync(
       base::span<const uint8_t, kSha256Bytes> source_hash) override {
     TRACE_EVENT(
         "loading",
         "CodeCacheWithPersistentCacheHostImpl::FetchInlineScriptCacheSync");
     CHECK(features::IsInlineScriptCacheEnabled());
-    scoped_refptr fetcher = base::MakeRefCounted<InlineScriptCacheFetcher>();
-    return fetcher->FetchAsyncAndAwaitForResult(
-        async_host_, base::HeapArray<uint8_t>::CopiedFrom(source_hash));
+
+    std::optional<mojo_base::BigBuffer> result;
+    {
+      base::ScopedUmaHistogramTimer timer(
+          "Blink.Script.InlineScriptCache.FetchTime");
+      scoped_refptr fetcher = base::MakeRefCounted<InlineScriptCacheFetcher>();
+      result = fetcher->FetchAsyncAndAwaitForResult(
+          async_host_, base::HeapArray<uint8_t>::CopiedFrom(source_hash));
+    }
+
+    InlineScriptCacheFetchResult result_metric;
+    if (!result.has_value()) {
+      result_metric = InlineScriptCacheFetchResult::kTimedOut;
+    } else if (result->size() == 0) {
+      result_metric = InlineScriptCacheFetchResult::kFetchedEmpty;
+    } else {
+      result_metric = InlineScriptCacheFetchResult::kFetchedNonEmpty;
+    }
+    base::UmaHistogramEnumeration("Blink.Script.InlineScriptCache.FetchResult",
+                                  result_metric);
+
+    return std::move(result).value_or(mojo_base::BigBuffer{});
   }
 
   // CodeCacheHost:

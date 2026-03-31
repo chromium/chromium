@@ -35,16 +35,14 @@ class BLINK_PLATFORM_EXPORT CodeCacheHost {
   virtual ~CodeCacheHost() = default;
 
   // Fetches an inline script cache entry and returns:
-  // (1) `std::nullopt` when fetch timed out.
-  // (2) an empty `mojo_base::BigBuffer` when cache miss.
-  // (3) a valid `mojo_base::BigBuffer` when cache hit.
+  // (1) an empty `mojo_base::BigBuffer` when cache miss or fetch timed out.
+  // (2) a non-empty `mojo_base::BigBuffer` when cache hit.
   //
   // This function is not a mojo wrapper but an endpoint dedicated for renderer.
   // To align with the HTML specification, this function must be blocking;
   // therefore any implementation of this virtual function shall NOT post any
   // task.
-  [[nodiscard]] virtual std::optional<mojo_base::BigBuffer>
-  FetchInlineScriptCacheSync(
+  [[nodiscard]] virtual mojo_base::BigBuffer FetchInlineScriptCacheSync(
       base::span<const uint8_t, kSha256Bytes> source_hash) = 0;
 
   // Get a weak pointer to this `CodeCacheHost`. Only valid when the remote

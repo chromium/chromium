@@ -551,7 +551,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
       streamer = GetInlineScriptStreamer(source_text_for_inline_script_,
                                          *element_document);
 
-      std::optional<mojo_base::BigBuffer> code_cache;
+      mojo_base::BigBuffer code_cache;
       if (DocumentLoader* loader = element_document->Loader();
           features::IsInlineScriptCacheEnabled() && loader) {
         if (CodeCacheHost* cache_host = loader->GetCodeCacheHost()) {
@@ -567,9 +567,9 @@ ClassicScript* ClassicPendingScript::GetSource() const {
             MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(
                 element_document->Encoding(),
                 ParkableString(source_text_for_inline_script_.Impl()));
-        if (code_cache.has_value() && code_cache->size() != 0) {
+        if (code_cache.size() != 0) {
           cached_metadata_handler->SetSerializedCachedMetadata(
-              std::move(*code_cache));
+              std::move(code_cache));
         }
       }
     }

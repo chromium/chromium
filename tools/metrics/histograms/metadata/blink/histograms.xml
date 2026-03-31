@@ -5163,6 +5163,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Script.InlineScriptCache.FetchResult"
+    enum="InlineScriptCacheFetchResult" expires_after="2027-03-25">
+  <owner>tnak@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <summary>
+    The result of inline script cache fetch attempts. This is recorded for each
+    inline script only if the inline script caching is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Blink.Script.InlineScriptCache.FetchTime" units="ms"
+    expires_after="2027-03-25">
+  <owner>tnak@chromium.org</owner>
+  <owner>chrome-loading@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Time spent fetching an inline script cache from a worker thread. This is
+    recorded for each inline script only if the inline script caching is
+    enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Blink.Script.PostTaskWithLowPriorityUntilTimeout.RaceTaskPriority"
     enum="RaceTaskPriority" expires_after="2027-01-10">
