@@ -316,7 +316,7 @@ void RenderWidgetHostViewIOS::NotifyHostAndDelegateOnWasShown(
   if (has_saved_frame && visible_time_request) {
     browser_compositor_->GetDelegatedFrameHost()
         ->RequestSuccessfulPresentationTimeForNextFrame(
-            std::move(visible_time_request));
+            std::move(*visible_time_request));
   }
 }
 
