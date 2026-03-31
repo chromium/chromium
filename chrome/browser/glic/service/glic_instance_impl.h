@@ -319,10 +319,12 @@ class GlicInstanceImpl : public GlicInstance,
   void SetActiveEmbedderAndNotifyStateChange(
       std::optional<EmbedderKey> new_key);
   void ClearActiveEmbedderAndNotifyStateChange();
-  void MaybeShowHostUi(GlicUiEmbedder* embedder,
-                       mojom::InvocationSource source,
-                       std::optional<std::string> prompt_suggestion,
-                       bool auto_send);
+  void MaybeShowHostUi(
+      GlicUiEmbedder* embedder,
+      mojom::InvocationSource source,
+      std::optional<std::string> prompt_suggestion,
+      bool auto_send,
+      mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
   void OnBoundTabDestroyed(tabs::TabInterface* tab);
   void OnBoundTabActivated(tabs::TabInterface* tab);
   bool ShouldDoAutomaticActivation() const;
