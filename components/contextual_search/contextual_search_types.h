@@ -48,6 +48,9 @@ enum class ContextUploadStatus {
   kMaxValue = kUploadReplaced,
 };
 
+// Returns true if the upload status is considered terminal.
+bool IsTerminalContextStatus(ContextUploadStatus status);
+
 // For upload error notifications and metrics.
 enum class ContextUploadErrorType {
   // Unknown.

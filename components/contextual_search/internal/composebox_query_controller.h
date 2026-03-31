@@ -399,9 +399,6 @@ class ComposeboxQueryController
   // changed callback if it has changed.
   void SetQueryControllerState(QueryControllerState new_state);
 
-  // Returns if context status is considered to be in the terminal state.
-  bool IsTerminalContextStatus(contextual_search::ContextUploadStatus status);
-
   // Marks context upload as in terminal state (success, replaced, failed,
   // expired, validation failed) for given context token, and if
   // there are no more contexts to upload, create search URL.

@@ -8,6 +8,14 @@
 
 namespace contextual_search {
 
+bool IsTerminalContextStatus(ContextUploadStatus status) {
+  return status == ContextUploadStatus::kUploadFailed ||
+         status == ContextUploadStatus::kUploadSuccessful ||
+         status == ContextUploadStatus::kValidationFailed ||
+         status == ContextUploadStatus::kUploadExpired ||
+         status == ContextUploadStatus::kUploadReplaced;
+}
+
 FileInfo::FileInfo() = default;
 FileInfo::FileInfo(const FileInfo& other) {
   *this = other;

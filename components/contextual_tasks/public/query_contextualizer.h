@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/uuid.h"
 #include "components/lens/contextual_input.h"
@@ -22,6 +23,7 @@ namespace contextual_tasks {
 class ContextualTasksService;
 struct ContextualTaskContext;
 struct UrlAttachment;
+class UploadTracker;
 }  // namespace contextual_tasks
 
 namespace contextual_search {
@@ -127,6 +129,7 @@ class QueryContextualizer {
       bool is_recontextualization,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle,
+      scoped_refptr<UploadTracker> upload_tracker,
       std::unique_ptr<lens::ContextualInputData> page_content_data);
 
   std::vector<TabUpdate> GetTabsToUpdate(

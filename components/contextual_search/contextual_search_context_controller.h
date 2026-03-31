@@ -81,6 +81,8 @@ class ContextualSearchContextController {
         ContextUploadStatus context_upload_status,
         const std::optional<ContextUploadErrorType>& error_type) = 0;
 
+    virtual void OnControllerDestroyed() {}
+
    protected:
     ~ContextUploadStatusObserver() override = default;
   };

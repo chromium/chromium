@@ -362,7 +362,11 @@ ComposeboxQueryController::ComposeboxQueryController(
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-ComposeboxQueryController::~ComposeboxQueryController() = default;
+ComposeboxQueryController::~ComposeboxQueryController() {
+  for (auto& observer : observers_) {
+    observer.OnControllerDestroyed();
+  }
+}
 
 // static
 std::optional<std::string>
@@ -1578,15 +1582,6 @@ void ComposeboxQueryController::SetQueryControllerState(
   }
 }
 
-bool ComposeboxQueryController::IsTerminalContextStatus(
-    contextual_search::ContextUploadStatus status) {
-  return status == contextual_search::ContextUploadStatus::kUploadFailed ||
-         status == contextual_search::ContextUploadStatus::kUploadSuccessful ||
-         status == contextual_search::ContextUploadStatus::kValidationFailed ||
-         status == contextual_search::ContextUploadStatus::kUploadExpired ||
-         status == contextual_search::ContextUploadStatus::kUploadReplaced;
-}
-
 // Marks the file upload as in terminal state and creates search URL
 // if request was stashed. File token is passed by value to avoid use-after-free
 // error caused by erasing the file info from the `active_files_` map before
@@ -1624,7 +1619,7 @@ void ComposeboxQueryController::UpdateContextUploadStatus(
   } else {
     file_info->upload_status = status;
   }
-  if (IsTerminalContextStatus(status)) {
+  if (contextual_search::IsTerminalContextStatus(status)) {
     MarkContextUploadAsInTerminalState(file_token);
   }
 }
