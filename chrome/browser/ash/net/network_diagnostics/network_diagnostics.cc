@@ -58,8 +58,8 @@ void NetworkDiagnostics::BindReceiver(
 void NetworkDiagnostics::GetResult(mojom::RoutineType type,
                                    GetResultCallback callback) {
   mojom::RoutineResultPtr result;
-  if (results_.count(type)) {
-    result = results_[type].Clone();
+  if (auto it = results_.find(type); it != results_.end()) {
+    result = it->second.Clone();
   }
   std::move(callback).Run(std::move(result));
 }
