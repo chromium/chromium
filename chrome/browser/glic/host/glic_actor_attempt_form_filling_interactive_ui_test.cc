@@ -115,7 +115,7 @@ void FindFormLabelsRecursively(
 }
 
 // Builds a map from label text to the corresponding input's DomNode. This is
-// needed to specify the the node easily in tests that use step
+// needed to specify the node easily in tests that use step
 // GetDomNodeForLabel().
 base::flat_map<std::string, DomNode> BuildFormLabelsMap(
     const optimization_guide::proto::AnnotatedPageContent& apc) {
