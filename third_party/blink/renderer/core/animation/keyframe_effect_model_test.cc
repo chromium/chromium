@@ -1053,4 +1053,37 @@ TEST_F(AnimationKeyframeEffectModel, BackgroundShorthandStaticProperties) {
   EXPECT_EQ(1U, count(model->DynamicProperties()));
 }
 
+TEST_F(AnimationKeyframeEffectModel, QuantizedLegnthSaturation) {
+  // Lengths that are px based are expressed in layout units, which are 64ths of
+  // a pixel. When comparing px lengths for the purpose of determining if
+  // the values are equal for static optimization, we multiply by 64 and round.
+  // When converting from float, we can easily saturate the maximum value of an
+  // integer. Any value that would saturate the integer return value, instead
+  // returns the max value for an integer. Thus, sufficiently large values,
+  // can be considered equal even though wildly different in value. For
+  // practical purposes, any value sufficiently large is nonsensical. Adding
+  // saturation prevents a crash. We use a similar mechanism with saturation
+  // of animation timing properties.
+  const wtf_size_t kNumberOfPaddingLonghands = 4U;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes pad {
+        from { padding: calc(5e38px); }
+        to { padding: calc(6e38px); }
+      }
+      br {
+        animation: pad 1s;
+      }
+    </style>
+    <div><br></div>
+  )HTML");
+  const auto& animations = GetDocument().getAnimations();
+  EXPECT_EQ(1U, animations.size());
+  auto* effect = animations[0]->effect();
+  auto* model = To<KeyframeEffect>(effect)->Model();
+  EXPECT_EQ(kNumberOfPaddingLonghands,
+            model->Properties().UniqueProperties().size());
+  EXPECT_EQ(0U, count(model->DynamicProperties()));
+}
+
 }  // namespace blink

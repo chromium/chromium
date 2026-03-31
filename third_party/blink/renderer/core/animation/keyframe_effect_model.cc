@@ -71,8 +71,12 @@ std::optional<int> GetQuantizedLength(const CSSValue& value) {
     return result;
   }
 
-  result = static_cast<int>(
-      std::round(LayoutUnit::kFixedPointDenominator * primitive_value.value()));
+  int limit =
+      std::numeric_limits<int>::max() / LayoutUnit::kFixedPointDenominator;
+  result = (primitive_value.value() > limit)
+               ? std::numeric_limits<int>::max()
+               : std::round(LayoutUnit::kFixedPointDenominator *
+                            primitive_value.value());
   return result;
 }
 
