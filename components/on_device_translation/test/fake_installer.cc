@@ -53,6 +53,9 @@ void FakeOnDeviceTranslationInstaller::Init(
 void FakeOnDeviceTranslationInstaller::InitNow(
     base::RepeatingClosure on_ready_callback) {
   is_init_ = true;
+  for (Observer& observer : observers_) {
+    observer.OnInstallationChanged();
+  }
   if (on_ready_callback) {
     on_ready_callback.Run();
   }
@@ -70,6 +73,7 @@ void FakeOnDeviceTranslationInstaller::InstallLanguagePackNow(
   registered_lang_packs_.insert(language_pack);
   installed_lang_packs_.insert(language_pack);
   for (Observer& observer : observers_) {
+    observer.OnLanguagePackInstallationChanged(language_pack);
     observer.OnLanguagePackInstalled(language_pack);
   }
 }
@@ -77,6 +81,9 @@ void FakeOnDeviceTranslationInstaller::UnInstallLanguagePack(
     LanguagePackKey language_pack) {
   registered_lang_packs_.erase(language_pack);
   installed_lang_packs_.erase(language_pack);
+  for (Observer& observer : observers_) {
+    observer.OnLanguagePackInstallationChanged(language_pack);
+  }
 }
 
 void FakeOnDeviceTranslationInstaller::AddObserver(Observer* observer) {

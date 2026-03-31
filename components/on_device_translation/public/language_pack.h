@@ -485,14 +485,8 @@ const LanguagePackComponentConfig& GetLanguagePackComponentConfig(
 // needs to be updated when direct translation between non-English languages is
 // supported by the library.
 std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
-    const std::string& source_lang,
-    const std::string& target_lang);
-
-// Calculates and updates the passed in values for a translation's required
-// packs, required not installed packs, and to be registered packs.
-LanguagePackRequirements CalculateLanguagePackRequirements(
-    const std::string& source_lang,
-    const std::string& target_lang);
+    std::string_view source_lang,
+    std::string_view target_lang);
 
 // Returns the name for the install directory of a language pack.
 // eg: "en_es".

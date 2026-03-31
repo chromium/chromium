@@ -57,8 +57,8 @@ const LanguagePackComponentConfig& GetLanguagePackComponentConfig(
 // needs to be updated when direct translation between non-English languages is
 // supported by the library.
 std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
-    const std::string& source_lang,
-    const std::string& target_lang) {
+    std::string_view source_lang,
+    std::string_view target_lang) {
   auto source_lang_code = ToSupportedLanguage(source_lang);
   auto target_lang_code = ToSupportedLanguage(target_lang);
   if (!source_lang_code.has_value() || !target_lang_code.has_value() ||
