@@ -805,6 +805,38 @@ TEST_F(ControllerPresentationServiceDelegateImplTest, AutoJoinRequest) {
           &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
           base::Unretained(&mock_create_connection_callbacks)));
 }
+
+TEST_F(ControllerPresentationServiceDelegateImplTest,
+       ReconnectPresentationWithInvalidUrl) {
+  content::WebContentsTester::For(GetWebContents())
+      ->NavigateAndCommit(GURL(kFrameUrl));
+
+  MockCreatePresentationConnectionCallbacks mock_create_connection_callbacks;
+  const std::string kPresentationId("auto-join");
+
+  // A URN that should be blocked.
+  const GURL invalid_url("urn:x-org.chromium.media:source:desktop:screen:0:0");
+  content::PresentationRequest invalid_request(
+      {main_frame_process_id_, main_frame_routing_id_}, {invalid_url},
+      frame_origin_);
+
+  // JoinRouteInternal should NOT be called.
+  EXPECT_CALL(*router_, JoinRouteInternal(_, _, _, _, _, _)).Times(0);
+
+  // Error callback should be called.
+  EXPECT_CALL(mock_create_connection_callbacks, OnCreateConnectionError(_))
+      .Times(1);
+
+  delegate_impl_->ReconnectPresentation(
+      invalid_request, kPresentationId,
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionSuccess,
+          base::Unretained(&mock_create_connection_callbacks)),
+      base::BindOnce(
+          &MockCreatePresentationConnectionCallbacks::OnCreateConnectionError,
+          base::Unretained(&mock_create_connection_callbacks)));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

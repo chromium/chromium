@@ -510,6 +510,13 @@ void ControllerPresentationServiceDelegateImpl::ReconnectPresentation(
     return;
   }
 
+  if (!std::ranges::all_of(presentation_urls, IsValidPresentationUrl)) {
+    std::move(error_cb).Run(
+        PresentationError(PresentationErrorType::NO_PRESENTATION_FOUND,
+                          "Invalid presentation URL."));
+    return;
+  }
+
   auto* local_presentation_manager =
       LocalPresentationManagerFactory::GetOrCreateForWebContents(
           &GetWebContents());
