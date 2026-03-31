@@ -166,6 +166,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "third_party/skia/include/private/chromium/SkCodecsICCProfileChromium.h"
+#include "third_party/skia/include/private/chromium/SkExifChromium.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/base/ui_base_switches_util.h"
 #include "ui/display/display_switches.h"
@@ -806,6 +807,14 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
   // Stable.
   SkCodecs::ICCProfileChromium::ForceSkcms(
       base::FeatureList::IsEnabled(blink::features::kForceSkcmsICCParsing));
+
+  // Configure the EXIF parser kill-switch early, before any image decoding
+  // occurs. When the feature is enabled, this forces the C++ SkExif parser to
+  // be used instead of the Rust-based EXIF parser.
+  // TODO(crbug.com/463653726): Remove this once the feature is validated in
+  // Stable.
+  SkExif::ForceSkExif(
+      base::FeatureList::IsEnabled(blink::features::kForceSkExifCppParsing));
 
   // Hook up blink's codecs so skia can call them. Since only the renderer
   // processes should be doing image decoding, this is not done in the common

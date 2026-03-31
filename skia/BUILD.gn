@@ -492,6 +492,7 @@ component("skia") {
   public_deps = [
     ":buildflags",
     ":rust_bmp_ffi",
+    ":rust_exif_ffi",
     ":rust_icc_ffi",
     ":skia_core_and_effects",
     ":skia_core_public_headers",
@@ -762,6 +763,42 @@ source_set("rust_icc_ffi_cpp") {
     ":rust_icc_ffi_cxx_generated_gen",
     ":skcms",
   ]
+  check_includes =
+      false  # Logically part of skia, but split out for build reasons
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    ":skia_library_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+}
+
+rust_static_library("rust_exif_ffi") {
+  visibility = [ ":*" ]
+  allow_unsafe = true  # For FFI
+  crate_root = skia_rust_exif_ffi_crate_root
+  sources = skia_rust_exif_ffi_rs_srcs
+  cxx_bindings = skia_rust_exif_ffi_cxx_bridge_srcs
+  public_deps = [ ":rust_exif_ffi_cpp" ]
+  deps = [ ":rust_common_ffi" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    ":skia_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
+}
+
+source_set("rust_exif_ffi_cpp") {
+  visibility = [ ":*" ]
+  public = skia_rust_exif_ffi_cpp_hdrs
+  sources = skia_rust_exif_ffi_cpp_srcs
+  public_deps = [
+    ":rust_common_ffi_cpp",
+    ":skia_core_public_headers",
+    "//build/rust:cxx_cppdeps",
+  ]
+  deps = [ ":rust_exif_ffi_cxx_generated_gen" ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]
