@@ -936,7 +936,7 @@ bool RequestService::CanShowContinueOnPopup() const {
   if (identity_selection_type_ == kExplicit) {
     return true;
   }
-  DCHECK_EQ(identity_selection_type_, kAutoPassive);
+
   return had_transient_user_activation_;
 }
 
