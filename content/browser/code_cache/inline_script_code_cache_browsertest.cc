@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -345,14 +346,15 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
                        NotProducedForShortScript) {
-  GURL url = embedded_test_server()->GetURL("example.com",
-                                            "/short-inline-script.html");
-
   // Even after multiple page loads, the code cache should not be produced for
   // short scripts.
   const int num_tries = 3;
   base::HistogramTester histogram_tester;
   for (int i = 0; i < num_tries; i++) {
+    // Use different query parameters so that BFCache would not work.
+    GURL url = embedded_test_server()->GetURL(
+        "example.com", base::StrCat({"/short-inline-script.html?i=",
+                                     base::NumberToString(i)}));
     ASSERT_TRUE(NavigateToURL(shell(), url));
     PurgeResourceCacheFromTheMainFrame();
     ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
