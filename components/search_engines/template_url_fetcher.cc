@@ -137,7 +137,8 @@ TemplateURLFetcher::RequestDelegate::RequestDelegate(
   resource_request->resource_type =
       /* blink::mojom::ResourceType::kSubResource */ 6;
   resource_request->destination = network::mojom::RequestDestination::kEmpty;
-  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(osdd_url);
+  resource_request->site_for_cookies =
+      net::SiteForCookies::FromOrigin(initiator);
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);
   simple_url_loader_->SetAllowHttpErrorResults(true);
