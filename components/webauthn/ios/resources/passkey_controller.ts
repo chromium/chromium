@@ -582,17 +582,6 @@ interface AuthenticatorAttestationResponseJSON {
 type AuthenticatorRequestResponseJSON =
     AuthenticatorAssertionResponseJSON|AuthenticatorAttestationResponseJSON;
 
-// JSON formatted authenticator response.
-// eslint-disable-next-line @typescript-eslint/naming-convention
-interface AuthenticationResponseJSON {
-  id: string;
-  rawId: string;
-  response: AuthenticatorRequestResponseJSON;
-  authenticatorAttachment?: AuthenticatorAttachment;
-  clientExtensionResults: AuthenticationExtensionsClientOutputs;
-  type: PublicKeyCredentialType;
-}
-
 // Helper function to convert a list of string transports to
 // AuthenticatorTransport types.
 function toAuthenticatorTransports(transports: string[]):
@@ -657,7 +646,9 @@ function createPublicKeyCredential(
     getClientExtensionResults(): AuthenticationExtensionsClientOutputs {
       return extensionOutputs;
     },
-    toJSON(): AuthenticationResponseJSON {
+    // TODO(crbug.com/487338357): Update returned object to match expected type
+    // and remove casting through `any`.
+    toJSON() {
       return {
         id: this.id,
         rawId: this.id,
@@ -665,7 +656,7 @@ function createPublicKeyCredential(
         authenticatorAttachment: authenticatorAttachment,
         clientExtensionResults: extensionOutputs,
         type: PUBLIC_KEY,
-      };
+      } as unknown as any;
     },
   };
 }
