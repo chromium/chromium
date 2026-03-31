@@ -1274,10 +1274,8 @@ TEST_F(AutofillExternalDelegateTest, OnTabSelected_PayNow) {
       /*disabled_features=*/{});
 
   EXPECT_CALL(*autofill_manager().GetPaymentsBnplManager(),
-              OnUserDecisionToUseBnpl(
-                  /*final_checkout_amount=*/testing::Eq(std::nullopt),
-                  /*on_bnpl_vcn_fetched_callback=*/testing::_))
-      .Times(0);
+              OnUserDecisionToUseSavedCards)
+      .Times(1);
 
   external_delegate().OnTabSelected(TabbedPaneTabType::kPayNow);
 }

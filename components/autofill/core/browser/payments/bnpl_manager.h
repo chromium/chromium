@@ -88,6 +88,13 @@ class BnplManager : public AutofillManager::Observer {
       base::span<const Suggestion> suggestions,
       UpdateSuggestionsCallback update_suggestions_callback);
 
+  // Runs after the user selects the Pay Now tab during the BNPL flow. It will
+  // cancel all pending server requests and reset partial BNPL flow cache,
+  // depending on the current flow status.
+  // If the checkout amount is retrieved, it will update the current suggestion
+  // list with the BNPL suggestions.
+  virtual void OnUserDecisionToUseSavedCards();
+
   // Runs after amount extraction completion and collects the amount extraction
   // result. This must be called after `NotifyOfSuggestionGeneration()`, so
   // that the manager can update suggestions for buy-now-pay-later.

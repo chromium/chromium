@@ -300,6 +300,11 @@ void BnplManager::OnCreditCardSuggestionsShown(
   }
 }
 
+void BnplManager::OnUserDecisionToUseSavedCards() {
+  // TODO(crbug.com/477689220): Cancel all pending BNPL related server call and
+  // reset some cached data based on flow status.
+}
+
 void BnplManager::OnAmountExtractionReturned(
     const std::optional<int64_t>& extracted_amount,
     bool timeout_reached) {

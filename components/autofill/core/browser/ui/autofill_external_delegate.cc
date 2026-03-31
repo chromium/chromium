@@ -1010,22 +1010,26 @@ void AutofillExternalDelegate::DidEndTextFieldEditing() {
 }
 
 void AutofillExternalDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
-  if (tab_type != TabbedPaneTabType::kPayLater) {
-    return;
+  switch (tab_type) {
+    case TabbedPaneTabType::kPayLater:
+      manager_->GetPaymentsBnplManager()->OnUserDecisionToUseBnpl(
+          std::nullopt, base::BindOnce(
+                            [](base::WeakPtr<AutofillExternalDelegate> delegate,
+                               const CreditCard& card) {
+                              if (delegate) {
+                                delegate->manager_->FillOrPreviewForm(
+                                    mojom::ActionPersistence::kFill,
+                                    delegate->query_form_,
+                                    delegate->query_field_.global_id(), &card,
+                                    AutofillTriggerSource::kPopup);
+                              }
+                            },
+                            GetWeakPtr()));
+      break;
+    case TabbedPaneTabType::kPayNow:
+      manager_->GetPaymentsBnplManager()->OnUserDecisionToUseSavedCards();
+      break;
   }
-  manager_->GetPaymentsBnplManager()->OnUserDecisionToUseBnpl(
-      std::nullopt, base::BindOnce(
-                        [](base::WeakPtr<AutofillExternalDelegate> delegate,
-                           const CreditCard& card) {
-                          if (delegate) {
-                            delegate->manager_->FillOrPreviewForm(
-                                mojom::ActionPersistence::kFill,
-                                delegate->query_form_,
-                                delegate->query_field_.global_id(), &card,
-                                AutofillTriggerSource::kPopup);
-                          }
-                        },
-                        GetWeakPtr()));
 }
 
 void AutofillExternalDelegate::ClearPreviewedForm() {
