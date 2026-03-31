@@ -62,7 +62,8 @@ class VerticalUnpinnedTabContainerView
   void UpdateTargetLayoutForDrag(
       const std::vector<const views::View*>& views_to_snap) override;
   const views::ProposedLayout& GetLayoutForDrag() const override;
-  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds) override;
+  const TabCollectionNode* GetCollectionNodeFromView(
+      const views::View& view) const override;
 
   // Returns whether a drag that is currently being handled by the given
   // `group_view` should continue being handled by it.

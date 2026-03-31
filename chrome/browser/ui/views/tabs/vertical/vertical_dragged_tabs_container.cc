@@ -16,10 +16,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_drag_handler.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -343,6 +340,10 @@ void VerticalDraggedTabsContainer::AddViewToSquashedDragLayout(
     bool is_source_dragged_view) {
   if (is_source_dragged_view) {
     dragging_views_bounds_.set_size(view_bounds.size());
+
+    static constexpr int kDraggedViewHorizontalPadding = 4;
+    dragging_views_bounds_.set_width(view_bounds.width() +
+                                     kDraggedViewHorizontalPadding);
   }
   dragging_views_.insert(
       {dragging_view,
@@ -492,38 +493,6 @@ VerticalDraggedTabsContainer::GetVisualDataForDraggedView(
   };
 }
 
-views::View* VerticalDraggedTabsContainer::GetViewForDragBounds(
-    const views::ProposedLayout& layout,
-    const gfx::Rect& dragged_tab_bounds) {
-  gfx::Rect logical_drag_bounds = dragged_tab_bounds;
-  if (base::i18n::IsRTL()) {
-    logical_drag_bounds.set_x(
-        host_view_->GetMirroredXForRect(logical_drag_bounds));
-  }
-
-  for (const auto& child_layout : layout.child_layouts) {
-    if (!child_layout.visible ||
-        GetDragHandler().IsViewDragging(*child_layout.child_view)) {
-      continue;
-    }
-
-    // The percentage overlap between dragged tabs and the view at its
-    // target position to be considered the view over current drag bounds.
-    constexpr float kEntryThreshold = 0.6f;
-
-    if (HasMinimumOverlap(logical_drag_bounds, child_layout.bounds,
-                          IsHorizontalDragSupported()
-                              ? std::make_optional(child_layout.bounds.width() *
-                                                   kEntryThreshold)
-                              : std::nullopt,
-                          child_layout.bounds.height() * kEntryThreshold)) {
-      return child_layout.child_view;
-    }
-  }
-
-  return nullptr;
-}
-
 bool VerticalDraggedTabsContainer::IsHorizontalDragSupported() const {
   return drag_axes_ != DragAxes::kVerticalOnly;
 }
@@ -589,4 +558,119 @@ std::vector<const views::View*> VerticalDraggedTabsContainer::GetDraggingViews()
                  [](const auto& entry) { return entry.first; });
 
   return views;
+}
+
+void VerticalDraggedTabsContainer::HandleTabDragInContainer(
+    const gfx::Rect& dragged_tab_bounds) {
+  VerticalTabDragHandler& drag_handler = GetDragHandler();
+  const views::ProposedLayout& drag_layout = GetLayoutForDrag();
+  const auto* target = GetTargetForTabDrag(drag_layout, dragged_tab_bounds);
+
+  // A null target implies the drag is at the end of the container. We
+  // intentionally invalidate layout here to support resizing the container as
+  // the drag exceeds its bounds.
+  if (drag_handler.HandleDraggedTabsIntoPosition(*collection_node_, target) ||
+      !target) {
+    host_view_->DeprecatedLayoutImmediately();
+  }
+}
+
+const TabCollectionNode* VerticalDraggedTabsContainer::GetTargetForTabDrag(
+    const views::ProposedLayout& layout,
+    const gfx::Rect& dragged_tab_bounds) const {
+  // Whether the loop below saw the dragged view(s). Once the dragged view
+  // was seen, the bounds of the later views must be adjusted to discount the
+  // size of the dragged view.
+  bool is_after_dragged_views = false;
+
+  // Loop through the layout, until we find the first child view that appears
+  // *below* the dragged view(s). If horizontal dragging is supported, then
+  // first find the row that the drag lands on, then find the view within that
+  // row.
+  //
+  // Assumes child layouts are ordered vertically, and represents their ordering
+  // within the tab strip model.
+  for (size_t i = 0; i < layout.child_layouts.size(); ++i) {
+    const auto& child_layout = layout.child_layouts[i];
+    const TabCollectionNode* child_node;
+    if (GetDragHandler().IsViewDragging(*child_layout.child_view)) {
+      is_after_dragged_views = true;
+      continue;
+    }
+    if (!child_layout.visible ||
+        !(child_node = GetCollectionNodeFromView(*child_layout.child_view))) {
+      continue;
+    }
+
+    // If horizontal dragging is supported, then only look for the row that the
+    // drag falls on. Once the row is found, delegate to
+    // `GetTargetForTabDragInRow` to find the exact node within the row.
+    if (IsHorizontalDragSupported()) {
+      if (dragged_tab_bounds.y() > child_layout.bounds.CenterPoint().y()) {
+        continue;
+      }
+
+      const int row_y = child_layout.bounds.y();
+      return GetTargetForTabDragInRow(layout, dragged_tab_bounds, row_y, i,
+                                      is_after_dragged_views);
+    }
+
+    // If the dragged view was already seen, then discount its size from
+    // the candidate's bounds to give an accurate representation of where
+    // the dragged tabs should be inserted into.
+    auto adjusted_bounds = child_layout.bounds;
+    if (is_after_dragged_views) {
+      adjusted_bounds.set_y(child_layout.bounds.y() -
+                            dragged_tab_bounds.height());
+    }
+
+    if (dragged_tab_bounds.y() < adjusted_bounds.CenterPoint().y()) {
+      return child_node;
+    }
+  }
+  return nullptr;
+}
+
+const TabCollectionNode* VerticalDraggedTabsContainer::GetTargetForTabDragInRow(
+    const views::ProposedLayout& layout,
+    const gfx::Rect& dragged_tab_bounds,
+    int row_y,
+    size_t row_start_idx,
+    bool is_after_dragged_views) const {
+  gfx::Rect logical_drag_bounds = dragged_tab_bounds;
+  if (base::i18n::IsRTL()) {
+    logical_drag_bounds.set_x(
+        host_view_->GetMirroredXForRect(logical_drag_bounds));
+  }
+  for (size_t i = row_start_idx; i < layout.child_layouts.size(); ++i) {
+    const auto& row_child_layout = layout.child_layouts[i];
+    const TabCollectionNode* row_child_node;
+    if (GetDragHandler().IsViewDragging(*row_child_layout.child_view)) {
+      is_after_dragged_views = true;
+      continue;
+    }
+    if (!row_child_layout.visible ||
+        !(row_child_node =
+              GetCollectionNodeFromView(*row_child_layout.child_view))) {
+      continue;
+    }
+
+    // If this loop reached a new row, assume the drag is at the end of the
+    // previous row, so it should be placed before the first node of the new
+    // row.
+    if (row_child_layout.bounds.y() != row_y) {
+      return row_child_node;
+    }
+
+    auto adjusted_row_bounds = row_child_layout.bounds;
+    if (is_after_dragged_views) {
+      adjusted_row_bounds.set_x(row_child_layout.bounds.x() -
+                                logical_drag_bounds.width());
+    }
+
+    if (logical_drag_bounds.x() < adjusted_row_bounds.CenterPoint().x()) {
+      return row_child_node;
+    }
+  }
+  return nullptr;
 }

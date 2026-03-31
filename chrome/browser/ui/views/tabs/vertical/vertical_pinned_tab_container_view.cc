@@ -346,25 +346,16 @@ const views::ProposedLayout& VerticalPinnedTabContainerView::GetLayoutForDrag()
   return layout_manager_->target_layout();
 }
 
-void VerticalPinnedTabContainerView::HandleTabDragInContainer(
-    const gfx::Rect& dragged_tab_bounds) {
-  const views::ProposedLayout& target_layout = layout_manager_->target_layout();
-  views::View* view_at_point =
-      GetViewForDragBounds(target_layout, dragged_tab_bounds);
-  const TabCollectionNode* node = nullptr;
-  if (auto* tab_view = views::AsViewClass<VerticalTabView>(view_at_point)) {
-    node = tab_view->collection_node();
+const TabCollectionNode*
+VerticalPinnedTabContainerView::GetCollectionNodeFromView(
+    const views::View& view) const {
+  if (auto* tab_view = views::AsViewClass<VerticalTabView>(&view)) {
+    return tab_view->collection_node();
   } else if (auto* split_tab_view =
-                 views::AsViewClass<VerticalSplitTabView>(view_at_point)) {
-    node = split_tab_view->collection_node();
+                 views::AsViewClass<VerticalSplitTabView>(&view)) {
+    return split_tab_view->collection_node();
   }
-  if (node) {
-    GetDragHandler().HandleDraggedTabsOverNode(*node, std::nullopt);
-    // Synchronously force a layout here to update the target layout. Since all
-    // the calculations are based off on target layout, we need to ensure it is
-    // updated where there are model change.
-    DeprecatedLayoutImmediately();
-  }
+  return nullptr;
 }
 
 BEGIN_METADATA(VerticalPinnedTabContainerView)

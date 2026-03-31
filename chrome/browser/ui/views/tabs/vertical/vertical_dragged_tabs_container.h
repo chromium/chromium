@@ -59,9 +59,9 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // TabDragTarget
   TabDragContext* OnTabDragUpdated(TabDragTarget::DragController& controller,
                                    const gfx::Point& point_in_screen) override;
-  void OnTabDragEntered() override {}
-  void OnTabDragExited(const gfx::Point& point_in_screen) override;
-  void OnTabDragEnded() override;
+  void OnTabDragEntered() final {}
+  void OnTabDragExited(const gfx::Point& point_in_screen) final;
+  void OnTabDragEnded() final;
   bool CanDropTab() final;
   void HandleTabDrop(TabDragTarget::DragController& controller) final {}
   base::CallbackListSubscription RegisterWillDestroyCallback(
@@ -101,11 +101,6 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   std::optional<DraggedViewVisualData> GetVisualDataForDraggedView(
       const views::View& view) const;
 
-  // Helper for getting the target view for the given drag bounds, excluding
-  // dragged views.
-  views::View* GetViewForDragBounds(const views::ProposedLayout& layout,
-                                    const gfx::Rect& dragged_tab_bounds);
-
   // Returns whether the two rects overlap by at least the provided minimums for
   // each axis.
   // E.g, if only `min_x_overlap` is provided, then this will return true
@@ -132,10 +127,13 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   // Get the layout of the host view, skipping animations.
   virtual const views::ProposedLayout& GetLayoutForDrag() const = 0;
 
+  // Gets the collection node from the view.
+  virtual const TabCollectionNode* GetCollectionNodeFromView(
+      const views::View& view) const = 0;
+
   // Handles a dragged tab that is parented within this target.
   // `point_in_container` is a point relative to this target's view.
-  virtual void HandleTabDragInContainer(
-      const gfx::Rect& dragged_tab_bounds) = 0;
+  void HandleTabDragInContainer(const gfx::Rect& dragged_tab_bounds);
 
   // Handles dragged tabs entering this container, applying the necessary
   // updates to reparent them into this.
@@ -194,6 +192,27 @@ class VerticalDraggedTabsContainer : public TabDragTarget,
   void ApplyUpdatesForDragPositionChange();
 
   std::vector<const views::View*> GetDraggingViews() const;
+
+  // Finds the node that the tab drag occurs *before*.
+  // A null value indicates that the drag is not before any node (i.e., at
+  // the end of the this container).
+  const TabCollectionNode* GetTargetForTabDrag(
+      const views::ProposedLayout& layout,
+      const gfx::Rect& dragged_tab_bounds) const;
+
+  // This is a helper method for grid-like layout (i.e. when horizontal
+  // dragging in the vertical tab strip is supported), which finds the node that
+  // the drag occurs *before*, within the row. `row_y` is the y-coordinate of
+  // the row, and `row_start_idx` is the first child layout from `layout` that
+  // belongs to the row. `is_after_dragged_views` indicates whether the dragged
+  // view(s) have been passed, which indicates whether their size should be
+  // discounted while doing bounds comparisons.
+  const TabCollectionNode* GetTargetForTabDragInRow(
+      const views::ProposedLayout& layout,
+      const gfx::Rect& dragged_tab_bounds,
+      int row_y,
+      size_t row_start_idx,
+      bool is_after_dragged_views) const;
 
   const raw_ref<views::View> host_view_;
   raw_ptr<TabCollectionNode> collection_node_;

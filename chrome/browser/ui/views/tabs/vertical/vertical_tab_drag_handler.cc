@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
@@ -98,6 +99,57 @@ const TabGroup& TabGroupDataFromNode(const TabCollectionNode& node) {
   const auto* group_data = collection->GetTabGroup();
   CHECK(group_data);
   return *group_data;
+}
+
+// Determines the target model range from the container.
+gfx::Range GetContainerRange(const TabCollectionNode& container_node,
+                             const TabStripModel& tab_strip_model) {
+  switch (container_node.type()) {
+    case TabCollectionNode::Type::GROUP:
+      return TabGroupDataFromNode(container_node).ListTabs();
+    case TabCollectionNode::Type::PINNED:
+      return gfx::Range(0, tab_strip_model.IndexOfFirstNonPinnedTab());
+    case TabCollectionNode::Type::UNPINNED:
+      return gfx::Range(tab_strip_model.IndexOfFirstNonPinnedTab(),
+                        tab_strip_model.count());
+    default:
+      NOTREACHED();
+  }
+}
+
+// Determines the target group ID from the container.
+std::optional<tab_groups::TabGroupId> GetContainerGroupId(
+    const TabCollectionNode& container_node,
+    const TabStripModel& tab_strip_model) {
+  if (container_node.type() == TabCollectionNode::Type::GROUP) {
+    const auto& group = TabGroupDataFromNode(container_node);
+    return group.id();
+  }
+  return std::nullopt;
+}
+
+// Returns the index for insertion before the given collection node.
+int GetInsertionIndexForNode(const TabCollectionNode& node,
+                             const TabStripModel& tab_strip_model) {
+  if (node.type() == TabCollectionNode::Type::TAB) {
+    const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
+    int index = tab_strip_model.GetIndexOfTab(tab);
+    return index;
+  } else if (node.type() == TabCollectionNode::Type::GROUP) {
+    const auto* group_collection =
+        static_cast<const tabs::TabGroupTabCollection*>(
+            std::get<const tabs::TabCollection*>(node.GetNodeData()));
+    const auto* group_data = group_collection->GetTabGroup();
+    gfx::Range range = group_data->ListTabs();
+    return range.start();
+  } else if (node.type() == TabCollectionNode::Type::SPLIT) {
+    const auto* split_collection = static_cast<const tabs::SplitTabCollection*>(
+        std::get<const tabs::TabCollection*>(node.GetNodeData()));
+    const auto* split_data = split_collection->data();
+    gfx::Range range = split_data->GetIndexRange();
+    return range.start();
+  }
+  NOTREACHED() << "Unsupported Tab Collection Node";
 }
 
 }  // namespace
@@ -289,26 +341,6 @@ void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
   }
 }
 
-void VerticalTabDragHandlerImpl::HandleDraggedTabsOverNode(
-    const TabCollectionNode& node,
-    std::optional<DragPositionHint> position_hint) {
-  CHECK(drag_controller_);
-
-  switch (node.type()) {
-    case TabCollectionNode::Type::TAB:
-      HandleTabDragOverTab(node);
-      break;
-    case TabCollectionNode::Type::SPLIT:
-      HandleTabDragOverSplit(node);
-      break;
-    case TabCollectionNode::Type::GROUP:
-      HandleTabDragOverGroup(node);
-      break;
-    default:
-      NOTREACHED();
-  }
-}
-
 void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
     const TabCollectionNode& node) {
   CHECK(drag_controller_);
@@ -366,124 +398,6 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
   tab_strip_model_->MoveSelectedTabsTo(target_index, target_group_id);
 }
 
-void VerticalTabDragHandlerImpl::HandleDraggedTabsOutOfGroup(
-    const TabCollectionNode& node,
-    DragPositionHint position_hint) {
-  CHECK_EQ(node.type(), TabCollectionNode::Type::GROUP);
-
-  const auto& tab_group = TabGroupDataFromNode(node);
-
-  const auto& selection_model = tab_strip_model_->selection_model();
-  int insertion_idx;
-  switch (position_hint) {
-    case DragPositionHint::kAfter: {
-      int last_tab_in_group =
-          tab_strip_model_->GetIndexOfTab(tab_group.GetLastTab());
-      insertion_idx =
-          last_tab_in_group - selection_model.selected_tabs().size() + 1;
-      break;
-    }
-    case DragPositionHint::kBefore: {
-      int first_tab_in_group =
-          tab_strip_model_->GetIndexOfTab(tab_group.GetFirstTab());
-      insertion_idx = first_tab_in_group;
-      break;
-    }
-    default:
-      NOTREACHED();
-  }
-
-  insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
-  tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
-}
-
-void VerticalTabDragHandlerImpl::HandleDraggedTabsAtEndOfTabStrip() {
-  // If the tabs were dragging into the tab strip in an area where they did not
-  // overlap any nodes then update the model appropriately if the tabs are not
-  // already at the end.
-  if (!IsDraggingAtEndOfTabStrip()) {
-    tab_strip_model_->MoveSelectedTabsTo(tab_strip_model_->count() - 1,
-                                         std::nullopt);
-  }
-}
-
-void VerticalTabDragHandlerImpl::HandleTabDragOverTab(
-    const TabCollectionNode& node) {
-  const auto* tab = std::get<const tabs::TabInterface*>(node.GetNodeData());
-  CHECK(tab);
-  const auto& selection_model = tab_strip_model_->selection_model();
-  int first_selected_idx =
-      *selection_model.GetListSelectionModel().selected_indices().cbegin();
-  int insertion_idx = tab_strip_model_->GetIndexOfTab(tab);
-  if (first_selected_idx <= insertion_idx) {
-    insertion_idx -= selection_model.size();
-    ++insertion_idx;
-  }
-  insertion_idx = std::clamp(insertion_idx, 0, tab_strip_model_->count() - 1);
-  if (auto group = GetDraggingGroupHeaderId(); group.has_value()) {
-    tab_strip_model_->MoveGroupTo(*group, insertion_idx);
-  } else {
-    tab_strip_model_->MoveSelectedTabsTo(insertion_idx, tab->GetGroup());
-  }
-}
-
-void VerticalTabDragHandlerImpl::HandleTabDragOverSplit(
-    const TabCollectionNode& node) {
-  const auto* split_collection = static_cast<const tabs::SplitTabCollection*>(
-      std::get<const tabs::TabCollection*>(node.GetNodeData()));
-  CHECK(split_collection);
-  split_tabs::SplitTabData* split_data = split_collection->data();
-  CHECK(split_data);
-  gfx::Range tab_range = split_data->GetIndexRange();
-  int first_tab_in_split = tab_range.GetMin();
-  int last_tab_in_split = tab_range.GetMax();
-
-  const auto& selection_model = tab_strip_model_->selection_model();
-  int first_selected_index =
-      *selection_model.GetListSelectionModel().selected_indices().cbegin();
-  int insertion_idx =
-      (first_selected_index < first_tab_in_split)
-          ? last_tab_in_split - selection_model.selected_tabs().size()
-          : first_tab_in_split;
-
-  if (auto group = GetDraggingGroupHeaderId(); group.has_value()) {
-    tab_strip_model_->MoveGroupTo(*group, insertion_idx);
-  } else {
-    tab_strip_model_->MoveSelectedTabsTo(
-        insertion_idx, split_data->ListTabs().front()->GetGroup());
-  }
-}
-
-void VerticalTabDragHandlerImpl::HandleTabDragOverGroup(
-    const TabCollectionNode& node) {
-  const auto* tab_group =
-      static_cast<const tabs::TabGroupTabCollection*>(
-          std::get<const tabs::TabCollection*>(node.GetNodeData()))
-          ->GetTabGroup();
-  CHECK(tab_group);
-  const auto& selection_model = tab_strip_model_->selection_model();
-
-  int first_tab_in_group =
-      tab_strip_model_->GetIndexOfTab(tab_group->GetFirstTab());
-  int last_tab_in_group =
-      tab_strip_model_->GetIndexOfTab(tab_group->GetLastTab());
-  int first_selected_index =
-      *selection_model.GetListSelectionModel().selected_indices().cbegin();
-
-  // If dragging over a collapsed group or dragging a group, then
-  // move the dragged tabs/header before or after the dragged-over group.
-  int insertion_idx =
-      (first_selected_index < first_tab_in_group)
-          ? last_tab_in_group - selection_model.selected_tabs().size() + 1
-          : first_tab_in_group;
-
-  if (auto dragged_group = GetDraggingGroupHeaderId()) {
-    tab_strip_model_->MoveGroupTo(*dragged_group, insertion_idx);
-  } else {
-    tab_strip_model_->MoveSelectedTabsTo(insertion_idx, std::nullopt);
-  }
-}
-
 TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
   return this;
 }
@@ -525,19 +439,6 @@ bool VerticalTabDragHandlerImpl::IsDraggingGroups() const {
     return false;
   }
   return !drag_controller_->GetSessionData().dragging_groups.empty();
-}
-
-bool VerticalTabDragHandlerImpl::IsDraggingAtEndOfTabStrip() const {
-  if (!drag_controller_) {
-    return false;
-  }
-  const auto& drag_data = drag_controller_->GetSessionData().tab_drag_data_;
-  const auto* last_web_contents =
-      tab_strip_model_->GetWebContentsAt(tab_strip_model_->count() - 1);
-  return std::any_of(drag_data.cbegin(), drag_data.cend(),
-                     [last_web_contents](const auto& tab_data) {
-                       return tab_data.contents == last_web_contents;
-                     });
 }
 
 std::optional<tab_groups::TabGroupId>
@@ -927,6 +828,71 @@ void VerticalTabDragHandlerImpl::OnNodeWillDestroy(TabCollectionNode& node) {
 
 void VerticalTabDragHandlerImpl::ResetDragState() {
   drag_controller_.reset();
+}
+
+bool VerticalTabDragHandlerImpl::HandleDraggedTabsIntoPosition(
+    const TabCollectionNode& container_node,
+    const TabCollectionNode* target) {
+  CHECK(drag_controller_);
+
+  const auto& drag_session_data = drag_controller_->GetSessionData();
+
+  auto container_range = GetContainerRange(container_node, *tab_strip_model_);
+  int container_start_index = container_range.start();
+  int container_end_index = container_range.end();
+  std::optional<tab_groups::TabGroupId> target_group_id =
+      GetContainerGroupId(container_node, *tab_strip_model_);
+
+  int target_index = container_end_index;
+  if (target) {
+    target_index = GetInsertionIndexForNode(*target, *tab_strip_model_);
+  }
+
+  // Clamp the target index to the container's allowed range in the model.
+  target_index =
+      std::clamp(target_index, container_start_index, container_end_index);
+
+  // Calculate adjustment for dragging tabs and check for No-Op.
+  int num_dragged_tabs_before_target = 0;
+  bool are_dragged_tabs_in_target_group = true;
+  for (const TabDragData& tab_drag_data : drag_session_data.tab_drag_data_) {
+    if (!tab_drag_data.contents) {
+      continue;
+    }
+    int current_idx =
+        tab_strip_model_->GetIndexOfWebContents(tab_drag_data.contents);
+    CHECK(current_idx != TabStripModel::kNoTab);
+
+    if (tabs::TabInterface::GetFromContents(tab_drag_data.contents)
+            ->GetGroup() != target_group_id) {
+      are_dragged_tabs_in_target_group = false;
+    }
+
+    if (current_idx < target_index) {
+      ++num_dragged_tabs_before_target;
+    }
+  }
+  int adjusted_target_index =
+      std::max(0, target_index - num_dragged_tabs_before_target);
+
+  // If all dragged tabs are already in the group, and the first dragged tab
+  // is already at the target index, then consider this a no-op.
+  const auto& selected_indices = tab_strip_model_->selection_model()
+                                     .GetListSelectionModel()
+                                     .selected_indices();
+  CHECK(!selected_indices.empty());
+  if (are_dragged_tabs_in_target_group &&
+      *selected_indices.begin() == static_cast<size_t>(adjusted_target_index)) {
+    return false;
+  }
+
+  if (auto dragged_group = GetDraggingGroupHeaderId()) {
+    tab_strip_model_->MoveGroupTo(*dragged_group, adjusted_target_index);
+  } else {
+    tab_strip_model_->MoveSelectedTabsTo(adjusted_target_index,
+                                         target_group_id);
+  }
+  return true;
 }
 
 BEGIN_METADATA(VerticalTabDragHandlerImpl)
