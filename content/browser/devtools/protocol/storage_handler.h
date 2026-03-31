@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
-#include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/storage.h"
 #include "content/browser/interest_group/devtools_enums.h"
@@ -29,7 +28,6 @@ class QuotaOverrideHandle;
 }
 
 namespace content {
-class AttributionManager;
 class DevToolsAgentHostClient;
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
@@ -41,7 +39,6 @@ class StorageHandler
     : public DevToolsDomainHandler,
       public Storage::Backend,
       public content::InterestGroupManagerImpl::InterestGroupObserver,
-      public AttributionObserver,
       public content::SharedStorageRuntimeManager::
           SharedStorageObserverInterface {
  public:
@@ -162,14 +159,6 @@ class StorageHandler
   DispatchResponse DeleteStorageBucket(
       std::unique_ptr<protocol::Storage::StorageBucket> bucket) override;
 
-  void SetAttributionReportingLocalTestingMode(
-      bool enabled,
-      std::unique_ptr<SetAttributionReportingLocalTestingModeCallback>)
-      override;
-  Response SetAttributionReportingTracking(bool enable) override;
-  void SendPendingAttributionReports(
-      std::unique_ptr<SendPendingAttributionReportsCallback>) override;
-
   void NotifyInterestGroupAuctionEventOccurred(
       base::Time event_time,
       content::InterestGroupAuctionEventType type,
@@ -203,7 +192,6 @@ class StorageHandler
   std::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
-  AttributionManager* GetAttributionManager();
 
   // content::InterestGroupManagerImpl::InterestGroupObserver
   void OnInterestGroupAccessed(
@@ -215,21 +203,6 @@ class StorageHandler
       base::optional_ref<const url::Origin> component_seller_origin,
       std::optional<double> bid,
       base::optional_ref<const std::string> bid_currency) override;
-
-  // AttributionObserver
-  void OnSourceHandled(
-      const StorableSource&,
-      base::Time source_time,
-      std::optional<uint64_t> cleared_debug_key,
-      attribution_reporting::mojom::StoreSourceResult) override;
-  void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
-                        const CreateReportResult&) override;
-  void OnReportSent(const AttributionReport&,
-                    bool is_debug_report,
-                    const SendResult&) override;
-  void OnDebugReportSent(const AttributionDebugReport&,
-                         int status,
-                         base::Time) override;
 
   // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
   GlobalRenderFrameHostId AssociatedFrameHostId() const override;
@@ -271,8 +244,6 @@ class StorageHandler
       const std::optional<std::string>& browser_context_id,
       StoragePartition** storage_partition);
 
-  void ResetAttributionReporting();
-
   Response GetStorageKeyForFrameInternal(const std::string& frame_id,
                                          std::string* serialized_storage_key);
 
@@ -300,8 +271,6 @@ class StorageHandler
   bool interest_group_tracking_enabled_ = false;
   bool interest_group_auction_tracking_enabled_ = false;
 
-  base::ScopedObservation<AttributionManager, AttributionObserver>
-      attribution_observation_{this};
   base::ScopedObservation<
       content::SharedStorageRuntimeManager,
       content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
