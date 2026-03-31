@@ -187,7 +187,9 @@ Window::Window(WindowDelegate* delegate, client::WindowType type)
 
 Window::~Window() {
   // TODO(crbug.com/461127606): Crash on re-entrant destruction.
-  CHECK(!is_destroying_, base::NotFatalUntil::M149);
+  // TODO(crbug.com/497548912): Continue crashing on re-entrant destruction
+  // on Chrome M149 or newer.
+  CHECK(!is_destroying_);
   is_destroying_ = true;
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
