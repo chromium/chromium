@@ -62,6 +62,14 @@ bool UnloadDeprecationAllowedForHost(const std::string& host,
 }
 
 bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
+  // With no allowlist and no by-bucket, all hosts are included.
+  if (!base::FeatureList::IsEnabled(
+          network::features::kDeprecateUnloadByAllowList) &&
+      !base::FeatureList::IsEnabled(
+          network::features::kDeprecateUnloadByBucket)) {
+    return true;
+  }
+
   // For opaque origins we want their behaviour to be consistent with their
   // precursor. If the origin is opaque and has no precursor, we will use "",
   // there's not much else we can do in this case.
@@ -91,8 +99,7 @@ bool UnloadDeprecationAllowedForOrigin(const url::Origin& origin) {
         network::features::kDeprecateUnloadBucket.Get());
   }
 
-  // With no allowlist and no by-bucket, all hosts are included.
-  return true;
+  return false;
 }
 
 }  // namespace network
