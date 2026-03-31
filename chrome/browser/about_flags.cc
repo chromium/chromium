@@ -13090,6 +13090,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGestureUserEducationBackSwipeDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kGestureUserEducationBackSwipe)},
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    {"omnibox-item-decoration", flag_descriptions::kOmniboxItemDecorationName,
+     flag_descriptions::kOmniboxItemDecorationDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxItemDecoration)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -3125,6 +3125,11 @@ inline constexpr char kOmniboxGroupingFrameworkDescription[] =
     "Enables an alternative grouping implementation for omnibox "
     "autocompletion.";
 
+inline constexpr char kOmniboxItemDecorationName[] = "Omnibox ItemDecoration";
+inline constexpr char kOmniboxItemDecorationDescription[] =
+    "Migrates the Omnibox suggestion list header and group separator views to "
+    "use RecyclerView.ItemDecoration instead of individual View items.";
+
 inline constexpr char kOmniboxMultilineEditFieldName[] =
     "Omnibox Multiline edit field";
 inline constexpr char kOmniboxMultilineEditFieldDescription[] =

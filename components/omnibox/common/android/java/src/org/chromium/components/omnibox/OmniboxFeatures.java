@@ -180,6 +180,9 @@ public class OmniboxFeatures {
     public static final CachedFlag sRemoveSearchReadyOmnibox =
             newFlag(OmniboxFeatureList.REMOVE_SEARCH_READY_OMNIBOX, FeatureState.DISABLED);
 
+    public static final CachedFlag sOmniboxItemDecoration =
+            newFlag(OmniboxFeatureList.OMNIBOX_ITEM_DECORATION, FeatureState.DISABLED);
+
     public static final CachedFlag sServeJavaCachedZeroSuggest =
             newFlag(
                     OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST,

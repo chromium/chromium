@@ -248,14 +248,19 @@ class DropdownItemViewInfoListBuilder {
         // TODO(http://crbug/1518967): move this to the calling function and instantiate the
         // HeaderView undonditionally when passing from one suggestion group to another.
         // TODO(http://crbug/1518967): collapse Header and DivierLine to a single component.
+        boolean showGroupSeparatorDecoration = false;
         if (!TextUtils.isEmpty(groupDetails.getHeaderText())) {
             final PropertyModel model = mHeaderProcessor.createModel();
             mHeaderProcessor.populateModel(model, groupDetails.getHeaderText());
             result.add(new DropdownItemViewInfo(mHeaderProcessor, model, groupDetails));
         } else if (previousDetails != null
                 && previousDetails.getRenderType() == GroupConfig.RenderType.DEFAULT_VERTICAL) {
-            final PropertyModel model = mGroupSeparatorProcessor.createModel();
-            result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
+            if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
+                showGroupSeparatorDecoration = true;
+            } else {
+                final PropertyModel model = mGroupSeparatorProcessor.createModel();
+                result.add(new DropdownItemViewInfo(mGroupSeparatorProcessor, model, groupDetails));
+            }
         }
 
         boolean toolbarOnBottom =
@@ -279,6 +284,9 @@ class DropdownItemViewInfoListBuilder {
             model.set(roundingStartEdge, indexInList == 0);
             model.set(roundingEndEdge, indexInList == numGroupMatches - 1);
             model.set(SuggestionCommonProperties.SHOW_DIVIDER, indexInList < numGroupMatches - 1);
+            model.set(
+                    SuggestionCommonProperties.SHOW_GROUP_SEPARATOR,
+                    showGroupSeparatorDecoration && indexInList == 0);
 
             processor.populateModel(input, match, model, indexOnList);
             result.add(new DropdownItemViewInfo(processor, model, groupDetails));

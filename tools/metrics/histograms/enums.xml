@@ -14438,6 +14438,7 @@ from previous Chrome versions.
   <int value="134009318" label="FastPairSavedDevices:enabled"/>
   <int value="134124472" label="NearbySharingWifiDirect:enabled"/>
   <int value="134136822" label="VcDlcUi:enabled"/>
+  <int value="134493403" label="OmniboxItemDecoration:enabled"/>
   <int value="135017596" label="OverlayScrollbarsOSSetting:disabled"/>
   <int value="136557248" label="PartitionAllocMemoryTagging:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
@@ -16654,6 +16655,7 @@ from previous Chrome versions.
   <int value="880201245" label="NewTabPageTilesTitleWrapAround:disabled"/>
   <int value="880510010" label="enable-permissions-bubbles"/>
   <int value="880638328" label="DriveFsShowCSEFiles:enabled"/>
+  <int value="880713705" label="OmniboxItemDecoration:disabled"/>
   <int value="880771977" label="NTPEnterpriseShortcuts:disabled"/>
   <int value="881920916" label="CrosWebAppInstallDialog:disabled"/>
   <int value="882103442" label="FloatWindow:disabled"/>

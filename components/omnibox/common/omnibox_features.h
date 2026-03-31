@@ -103,6 +103,7 @@ BASE_DECLARE_FEATURE(kUseFusedLocationProvider);
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdate);
 BASE_DECLARE_FEATURE(kOmniboxMobileParityUpdateV2);
 BASE_DECLARE_FEATURE(kOmniboxXGeoPermissionGranularity);
+BASE_DECLARE_FEATURE(kOmniboxItemDecoration);
 
 // Omnibox suggestions tuning
 BASE_DECLARE_FEATURE(kNumNtpZpsRecentSearches);

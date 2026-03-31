@@ -44,6 +44,9 @@ public @interface SuggestionCommonProperties {
     /** Whether a divider should be shown at the bottom of the suggestion. */
     WritableBooleanPropertyKey SHOW_DIVIDER = new WritableBooleanPropertyKey();
 
+    /** Whether to show a gap from the previous suggestion group. */
+    WritableBooleanPropertyKey SHOW_GROUP_SEPARATOR = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 COLOR_SCHEME,
@@ -51,6 +54,7 @@ public @interface SuggestionCommonProperties {
                 DEVICE_FORM_FACTOR,
                 BG_TOP_CORNER_ROUNDED,
                 BG_BOTTOM_CORNER_ROUNDED,
-                SHOW_DIVIDER
+                SHOW_DIVIDER,
+                SHOW_GROUP_SEPARATOR
             };
 }
