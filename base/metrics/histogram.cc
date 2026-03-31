@@ -58,8 +58,12 @@ const char* HistogramValidityToString(
       return "RangeTooBig";
     case Histogram::kTooManyBuckets:
       return "TooManyBuckets";
-    case Histogram::kBucketsInvalid:
-      return "BucketsInvalid";
+    case Histogram::kBucketsInvalidMinMaxSame:
+      return "BucketsInvalidMinMaxSame";
+    case Histogram::kBucketsInvalidMinMaxCount:
+      return "BucketsInvalidMinMaxCount";
+    case Histogram::kBucketsInvalidMax:
+      return "BucketsInvalidMax";
   }
 }
 
@@ -526,17 +530,17 @@ Histogram::InspectConstructionArguments(std::string_view name,
 
   // Ensure parameters are sane.
   if (*maximum == *minimum) {
-    error = error.value_or(kBucketsInvalid);
+    error = error.value_or(kBucketsInvalidMinMaxSame);
     *maximum = *minimum + 1;
   }
   if (*bucket_count < 3) {
-    error = error.value_or(kBucketsInvalid);
+    error = error.value_or(kBucketsInvalidMinMaxCount);
     *bucket_count = 3;
   }
   // The swap at the top of the function guarantees this cast is safe.
   const size_t max_buckets = static_cast<size_t>(*maximum - *minimum + 2);
   if (*bucket_count > max_buckets) {
-    error = error.value_or(kBucketsInvalid);
+    error = error.value_or(kBucketsInvalidMax);
     *bucket_count = max_buckets;
   }
 

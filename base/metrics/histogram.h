@@ -218,7 +218,9 @@ class BASE_EXPORT Histogram : public HistogramBase {
     kRangeSwapped,
     kRangeTooBig,
     kTooManyBuckets,
-    kBucketsInvalid,
+    kBucketsInvalidMinMaxSame,
+    kBucketsInvalidMinMaxCount,
+    kBucketsInvalidMax,
   };
 
   // Validates histogram construction arguments, return kOK if they are valid.
