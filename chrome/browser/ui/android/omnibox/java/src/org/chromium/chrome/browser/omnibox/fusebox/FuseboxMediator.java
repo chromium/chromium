@@ -397,7 +397,7 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
         }
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-        FuseboxMetrics.notifyAttachmentsPopupToggled(!mPopup.isShowing(), mModel, tracker);
+        FuseboxMetrics.notifyAttachmentsPopupToggled(mPopup.isShowing(), mModel, tracker);
     }
 
     private void updateModelForCurrentTab() {

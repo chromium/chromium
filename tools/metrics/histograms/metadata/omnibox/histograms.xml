@@ -2471,7 +2471,10 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
     Records which attachment buttons were shown when the attachments popup was
-    opened. Recorded once per popup open.
+    opened. Recorded once per popup open. Originally triggered when the popup
+    was hidden instead of shown, through the plus button. This is very difficult
+    to actaully do, most hidden is not from plus button, but other inputs. Do
+    not trust data before the M-148 (likely merged to M-147) fix.
   </summary>
 </histogram>
 

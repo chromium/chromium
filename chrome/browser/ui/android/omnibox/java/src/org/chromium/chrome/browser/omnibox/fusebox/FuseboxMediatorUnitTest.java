@@ -368,6 +368,25 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void onToggleAttachmentsPopup_recordsMetrics() {
+        when(mPopup.isShowing()).thenReturn(false, true);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupToggled", true);
+        mMediator.onToggleAttachmentsPopup();
+        verify(mPopup).show();
+        histogramWatcher.assertExpected();
+
+        when(mPopup.isShowing()).thenReturn(true, false);
+        var dismissWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.MobileFusebox.AttachmentsPopupToggled", false);
+        mMediator.onToggleAttachmentsPopup();
+        verify(mPopup).dismiss();
+        dismissWatcher.assertExpected();
+    }
+
+    @Test
     public void testEndInput_DismissesPopup() {
         mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
         verify(mPopup).show();
