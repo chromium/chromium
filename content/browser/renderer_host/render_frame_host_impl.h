@@ -115,6 +115,8 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
 #include "services/device/public/mojom/vibration_manager.mojom.h"
@@ -1538,7 +1540,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // of whether any cookie/HTTPOnly cookie had been changed before, which can be
   // used to determine if a document with Cache-control: no-store header set is
   // eligible for BFCache.
-  class CookieChangeListener : public network::mojom::CookieChangeListener {
+  class CONTENT_EXPORT CookieChangeListener
+      : public network::mojom::CookieChangeListener {
    public:
     struct CookieChangeInfo {
       // The number of observed cookie modifications.
@@ -1564,9 +1567,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
         base::PassKey<content::NavigationRequest> navigation_request,
         const net::CanonicalCookie& cookie);
 
+    void AddNavigationCookieToIgnoreForTesting(
+        const net::CanonicalCookie& cookie);
+    void OnCookieChangeForTesting(const net::CookieChangeInfo& change);
+
    private:
     // network::mojom::CookieChangeListener
     void OnCookieChange(const net::CookieChangeInfo& change) override;
+
+    void AddNavigationCookieToIgnoreInternal(
+        const net::CanonicalCookie& cookie);
 
     mojo::Receiver<network::mojom::CookieChangeListener>
         cookie_change_listener_receiver_{this};

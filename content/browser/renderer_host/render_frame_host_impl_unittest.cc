@@ -17,6 +17,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/cors_origin_pattern_setter.h"
 #include "content/public/browser/shared_cors_origin_access_list.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -29,6 +30,10 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_partition.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_change_dispatcher.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/mojom/cors.mojom.h"
@@ -1319,6 +1324,102 @@ TEST_F(RenderFrameHostImplTest, CreateNewWindowInvalidDisposition) {
       ->CreateNewWindow(std::move(params), base::DoNothing());
 
   EXPECT_EQ(1, process()->bad_msg_count());
+}
+
+class RenderFrameHostImplCookieChangeListenerTest
+    : public RenderFrameHostImplTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  RenderFrameHostImplCookieChangeListenerTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(
+          features::kBackForwardCacheCCNSIgnoreUnchangedCookies);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kBackForwardCacheCCNSIgnoreUnchangedCookies);
+    }
+  }
+
+ protected:
+  bool IsBackForwardCacheCCNSIgnoreUnchangedCookiesEnabled() {
+    return GetParam();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplCookieChangeListenerTest,
+                         testing::Bool());
+
+// Tests the behavior or the `RenderFrameHostImpl::CookieChangeListener`.
+TEST_P(RenderFrameHostImplCookieChangeListenerTest, CookieChangeListener) {
+  StoragePartition* partition = main_rfh()->GetStoragePartition();
+  GURL url("https://example.com");
+  std::unique_ptr<RenderFrameHostImpl::CookieChangeListener> listener =
+      std::make_unique<RenderFrameHostImpl::CookieChangeListener>(partition,
+                                                                  url);
+  std::unique_ptr<net::CanonicalCookie> cookie_ignored =
+      net::CanonicalCookie::CreateForTesting(url, "a=1", base::Time::Now(),
+                                             net::CookieSourceType::kHTTP);
+  ASSERT_TRUE(cookie_ignored);
+  std::unique_ptr<net::CanonicalCookie> cookie_overwrite =
+      net::CanonicalCookie::CreateForTesting(url, "a=2", base::Time::Now(),
+                                             net::CookieSourceType::kHTTP);
+  ASSERT_TRUE(cookie_overwrite);
+  std::unique_ptr<net::CanonicalCookie> cookie_overwrite_no_change =
+      net::CanonicalCookie::CreateForTesting(url, "a=2", base::Time::Now(),
+                                             net::CookieSourceType::kHTTP);
+  ASSERT_TRUE(cookie_overwrite_no_change);
+
+  // Initially the count is 0.
+  listener->AddNavigationCookieToIgnoreForTesting(*cookie_ignored);
+  EXPECT_EQ(0, listener->cookie_change_info().cookie_modification_count);
+
+  // The counter doesn't change if the cookie change is ignored.
+  {
+    listener->OnCookieChangeForTesting(
+        net::CookieChangeInfo(*cookie_ignored, net::CookieAccessResult(),
+                              net::CookieChangeCause::INSERTED));
+    EXPECT_EQ(0, listener->cookie_change_info().cookie_modification_count);
+  }
+
+  // The counter increments if the ignored cookie gets changed for another time.
+  {
+    listener->OnCookieChangeForTesting(
+        net::CookieChangeInfo(*cookie_ignored, net::CookieAccessResult(),
+                              net::CookieChangeCause::INSERTED));
+    EXPECT_EQ(1, listener->cookie_change_info().cookie_modification_count);
+  }
+
+  // The counter increments if there is a new cookie value set.
+  {
+    listener->OnCookieChangeForTesting(
+        net::CookieChangeInfo(*cookie_overwrite, net::CookieAccessResult(),
+                              net::CookieChangeCause::INSERTED));
+    EXPECT_EQ(2, listener->cookie_change_info().cookie_modification_count);
+  }
+
+  // The counter increments if there is a cookie modification without value
+  // change and the `kBackForwardCacheCCNSIgnoreUnchangedCookies` is enabled.
+  {
+    net::CookieChangeInfo change_info(
+        *cookie_overwrite_no_change, net::CookieAccessResult(),
+        net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE);
+    listener->OnCookieChangeForTesting(change_info);
+    EXPECT_EQ(IsBackForwardCacheCCNSIgnoreUnchangedCookiesEnabled() ? 2 : 3,
+              listener->cookie_change_info().cookie_modification_count);
+  }
+
+  {
+    net::CookieChangeInfo change_info(
+        *cookie_overwrite_no_change, net::CookieAccessResult(),
+        net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE);
+    listener->OnCookieChangeForTesting(change_info);
+    EXPECT_EQ(IsBackForwardCacheCCNSIgnoreUnchangedCookiesEnabled() ? 2 : 4,
+              listener->cookie_change_info().cookie_modification_count);
+  }
 }
 
 }  // namespace content

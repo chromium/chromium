@@ -186,6 +186,12 @@ BASE_FEATURE(kBackForwardCacheMemoryControls,
 #endif
 );
 
+// WHen this flag is enabled, the cookies modification without cookie value
+// change will not cause eviction of the back/forward cache entries with
+// Cache-control: no-store header.
+BASE_FEATURE(kBackForwardCacheCCNSIgnoreUnchangedCookies,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // Enables getting screenshots as shared images for back forward transitions
 // in cross-document navigations.

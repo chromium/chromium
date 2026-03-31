@@ -249,6 +249,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/cert/cert_status_flags.h"
+#include "net/cookies/cookie_change_dispatcher.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/net_buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -19579,6 +19580,22 @@ void RenderFrameHostImpl::CookieChangeListener::OnCookieChange(
   base::UmaHistogramEnumeration("BackForwardCache.CCNS.CookieChangeCause",
                                 change.cause);
 
+  // Checks if we want to apply the new cookie change heuristics: the cookie
+  // modification will only be tracked when it's modifying the cookie value
+  // (including expiry), so the following causes are excluded:
+  // - OVERWRITE: because it will always comes with an INSERTED_* causes, so
+  // it's redundant to track that.
+  // - INSERTED_NO_CHANGE_OVERWRITE and INSERTED_NO_VALUE_CHANGE_OVERWRITE:
+  // because there is no cookie value change.
+  if (base::FeatureList::IsEnabled(
+          features::kBackForwardCacheCCNSIgnoreUnchangedCookies) &&
+      (change.cause == net::CookieChangeCause::OVERWRITE ||
+       change.cause == net::CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE ||
+       change.cause ==
+           net::CookieChangeCause::INSERTED_NO_VALUE_CHANGE_OVERWRITE)) {
+    return;
+  }
+
   auto key =
       std::make_tuple(change.cookie.UniqueKey(), change.cookie.IsHttpOnly());
 
@@ -19611,9 +19628,8 @@ void RenderFrameHostImpl::CookieChangeListener::OnCookieChange(
   }
 }
 
-void RenderFrameHostImpl::CookieChangeListener::AddNavigationCookieToIgnore(
-    base::PassKey<content::NavigationRequest> navigation_request,
-    const net::CanonicalCookie& cookie) {
+void RenderFrameHostImpl::CookieChangeListener::
+    AddNavigationCookieToIgnoreInternal(const net::CanonicalCookie& cookie) {
   // If we receive a navigation cookie to ignore, check if we have already
   // processed a matching cookie change event that occurred before this
   // registration. If so, reconcile the count by decrementing the modification
@@ -19643,6 +19659,22 @@ void RenderFrameHostImpl::CookieChangeListener::AddNavigationCookieToIgnore(
   }
 
   navigation_cookies_to_ignore_[key]++;
+}
+
+void RenderFrameHostImpl::CookieChangeListener::AddNavigationCookieToIgnore(
+    base::PassKey<content::NavigationRequest> navigation_request,
+    const net::CanonicalCookie& cookie) {
+  AddNavigationCookieToIgnoreInternal(cookie);
+}
+
+void RenderFrameHostImpl::CookieChangeListener::
+    AddNavigationCookieToIgnoreForTesting(const net::CanonicalCookie& cookie) {
+  AddNavigationCookieToIgnoreInternal(cookie);
+}
+
+void RenderFrameHostImpl::CookieChangeListener::OnCookieChangeForTesting(
+    const net::CookieChangeInfo& change) {
+  OnCookieChange(change);
 }
 
 RenderFrameHostImpl::CookieChangeListener::CookieChangeInfo
