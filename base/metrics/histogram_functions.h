@@ -43,8 +43,11 @@ namespace base {
 // Therefore, if you want an accurate measure up to kMax, then |exclusive_max|
 // should be set to kMax + 1.
 //
-// |exclusive_max| should be 101 or less. If you need to capture a larger range,
-// we recommend the use of the COUNT histograms below.
+// |exclusive_max| should be 101 or less, otherwise we recommend the use of the
+// COUNT histograms below. If you need exact count with more than 101 values,
+// please escalate by assigning to chromium-metrics-reviews@google.com.
+// Exceptions beyond 1001 are generally not approved.
+//
 //
 // Sample usage:
 //   base::UmaHistogramExactLinear("Histogram.Linear", sample, kMax + 1);
@@ -70,7 +73,8 @@ BASE_EXPORT void UmaHistogramExactLinear(std::string_view name,
 //   base::UmaHistogramEnumeration("My.Enumeration",
 //                                 NewTabPageAction::kClickTitle);
 //
-// `kMaxValue` should be 1000 or less.
+// `kMaxValue` should be 1000 or less. If it is greater than 100, please
+// escalate by assigning to chromium-metrics-reviews@google.com.
 template <typename StringType, typename T>
 void UmaHistogramEnumeration(const StringType& name, T sample) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
@@ -107,7 +111,8 @@ void UmaHistogramEnumeration(const StringType& name, T sample) {
 //                                 kCount);
 // Note: The value in |sample| must be strictly less than |enum_size|. This is
 // otherwise functionally equivalent to the above.
-// `enum_size` must be less than or equal to 1001.
+// `enum_size` must be less than or equal to 1001. If it is greater than 100,
+// please escalate by assigning to chromium-metrics-reviews@google.com.
 template <typename StringType, typename T>
 void UmaHistogramEnumeration(const StringType& name, T sample, T enum_size) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
@@ -119,8 +124,6 @@ void UmaHistogramEnumeration(const StringType& name, T sample, T enum_size) {
       << "Enumeration's enum_size is out of range of "
          "LinearHistogram::kBucketCount_MAX. Use a sparse histogram instead.";
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
-  // While UmaHistogramExactLinear’s documentation states that the third
-  // argument should be 101 or less, a value up to 1001 is actually accepted.
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
                                  static_cast<int>(enum_size));
 }
