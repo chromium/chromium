@@ -3576,13 +3576,6 @@ kept as long as profile signout is possible -->
   </token>
 </histogram>
 
-<histogram name="Signin.SyncFirstSetupCompleteSource"
-    enum="SyncFirstSetupCompleteSource" expires_after="2024-07-28">
-  <owner>triploblastic@chromium.org</owner>
-  <owner>bsazonov@chromium.org</owner>
-  <summary>Tracks where FirstSetupComplete bit is set from.</summary>
-</histogram>
-
 <histogram name="Signin.SyncOptIn.Completed{Profile}" enum="SigninAccessPoint"
     expires_after="2026-09-27">
   <owner>bsazonov@chromium.org</owner>

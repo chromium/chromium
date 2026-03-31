@@ -1517,16 +1517,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Button clicked"/>
 </enum>
 
-<enum name="SyncFirstSetupCompleteSource">
-  <summary>Possible flows where the FirstSetupComplete bit was set.</summary>
-  <int value="0" label="Basic Flow"/>
-  <int value="1" label="Confirm Clicked In Advanced Flow"/>
-  <int value="2" label="Sync Turned On After Interrupted Advanced Flow"/>
-  <int value="3" label="Sync Left Off After Interrupted Advanced Flow"/>
-  <int value="4" label="Engine Initialized With Auto Start"/>
-  <int value="5" label="Restored backup of a syncing device on Android"/>
-</enum>
-
 <!-- LINT.IfChange(TokenBindingBoundTokenPrevalence) -->
 
 <enum name="TokenBindingBoundTokenPrevalence">
