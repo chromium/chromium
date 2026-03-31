@@ -12,8 +12,8 @@ use crate::api::{
     JxlBitstreamInput, JxlSignatureType, check_signature_internal, inner::process::SmallBuffer,
 };
 
-#[derive(Clone)]
-enum ParseState {
+#[derive(Clone, Debug)]
+pub enum ParseState {
     SignatureNeeded,
     BoxNeeded,
     CodestreamBox(u64),
@@ -22,6 +22,7 @@ enum ParseState {
     BufferingFrameIndex(u64, Vec<u8>),
 }
 
+#[derive(Debug)]
 enum CodestreamBoxType {
     None,
     Jxlc,
@@ -31,12 +32,13 @@ enum CodestreamBoxType {
 
 pub(super) struct BoxParser {
     pub(super) box_buffer: SmallBuffer,
-    state: ParseState,
+    pub(super) state: ParseState,
     box_type: CodestreamBoxType,
     /// Parsed frame index box, if present in the file.
     pub(super) frame_index: Option<FrameIndexBox>,
     /// Total file bytes consumed from the underlying input.
     pub(super) total_file_consumed: u64,
+    skip_jxlp_checks: bool,
 }
 
 impl BoxParser {
@@ -47,6 +49,7 @@ impl BoxParser {
             box_type: CodestreamBoxType::None,
             frame_index: None,
             total_file_consumed: 0,
+            skip_jxlp_checks: false,
         }
     }
 
@@ -170,17 +173,19 @@ impl BoxParser {
                             let index = u32::from_be_bytes(
                                 self.box_buffer[min_len..min_len + 4].try_into().unwrap(),
                             );
-                            let wanted_idx = match self.box_type {
-                                CodestreamBoxType::Jxlc | CodestreamBoxType::LastJxlp => {
-                                    return Err(Error::InvalidBox);
-                                }
-                                CodestreamBoxType::None => 0,
-                                CodestreamBoxType::Jxlp(i) => i + 1,
-                            };
                             let last = index & 0x80000000 != 0;
                             let idx = index & 0x7fffffff;
-                            if idx != wanted_idx {
-                                return Err(Error::InvalidBox);
+                            if !self.skip_jxlp_checks {
+                                let wanted_idx = match self.box_type {
+                                    CodestreamBoxType::Jxlc | CodestreamBoxType::LastJxlp => {
+                                        return Err(Error::InvalidBox);
+                                    }
+                                    CodestreamBoxType::None => 0,
+                                    CodestreamBoxType::Jxlp(i) => i + 1,
+                                };
+                                if idx != wanted_idx {
+                                    return Err(Error::InvalidBox);
+                                }
                             }
                             self.box_type = if last {
                                 CodestreamBoxType::LastJxlp
@@ -230,6 +235,7 @@ impl BoxParser {
     pub(super) fn reset_for_codestream_seek(&mut self, remaining: u64) {
         self.box_buffer = SmallBuffer::new(128);
         self.state = ParseState::CodestreamBox(remaining);
+        self.skip_jxlp_checks = true;
         // Keep frame_index unchanged.
     }
 

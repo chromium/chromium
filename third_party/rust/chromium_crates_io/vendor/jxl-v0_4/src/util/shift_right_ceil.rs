@@ -14,6 +14,7 @@ pub trait ShiftRightCeil: Copy {
 impl<S: Copy + Add<Self, Output = Self> + Sub<Self, Output = Self> + From<u8>> ShiftRightCeil
     for S
 {
+    #[inline(always)]
     fn shrc<T: Copy>(self, rhs: T) -> Self
     where
         Self: Shr<T, Output = Self> + Shl<T, Output = Self>,

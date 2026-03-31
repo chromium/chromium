@@ -47,6 +47,9 @@ pub(super) fn precompute_references(
     y: usize,
     references: &mut Image<i32>,
 ) {
+    if references.size().0 == 0 {
+        return;
+    }
     references.fill(0);
     let mut offset = 0;
     let num_extra_props = references.size().0;
@@ -82,6 +85,7 @@ pub(super) fn precompute_references(
     }
 }
 
+#[inline(always)]
 pub(super) fn make_pixel(dec: i32, mul: u32, guess: i64) -> i32 {
     (guess + (mul as i64) * (dec as i64)) as i32
 }

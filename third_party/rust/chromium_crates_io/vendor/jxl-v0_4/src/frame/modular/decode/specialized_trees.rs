@@ -64,7 +64,7 @@ impl ModularChannelDecoder for NoWpTree {
 
     fn init_row(&mut self, buffers: &mut [&mut ModularChannel], chan: usize, y: usize) {
         precompute_references(buffers, chan, y, &mut self.references);
-        self.property_buffer[2..].fill(0);
+        self.property_buffer[9] = 0;
     }
 
     fn decode_one(

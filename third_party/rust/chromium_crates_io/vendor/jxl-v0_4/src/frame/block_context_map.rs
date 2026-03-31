@@ -124,6 +124,7 @@ impl BlockContextMap {
             }
         }
     }
+    #[inline(always)]
     pub fn block_context(&self, lf_idx: usize, qf: u32, shape_id: usize, c: usize) -> usize {
         let mut qf_idx: usize = 0;
         for t in &self.qf_thresholds {
@@ -137,6 +138,7 @@ impl BlockContextMap {
         idx = idx * self.num_lf_contexts + lf_idx;
         self.context_map[idx] as usize
     }
+    #[inline(always)]
     pub fn nonzero_context(&self, nonzeros: usize, block_context: usize) -> usize {
         let context: usize = if nonzeros < 8 {
             nonzeros
@@ -147,6 +149,7 @@ impl BlockContextMap {
         };
         context * self.num_contexts + block_context
     }
+    #[inline(always)]
     pub fn zero_density_context_offset(&self, block_context: usize) -> usize {
         self.num_contexts * NON_ZERO_BUCKETS + ZERO_DENSITY_CONTEXT_COUNT * block_context
     }

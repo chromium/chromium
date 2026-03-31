@@ -6,6 +6,7 @@
 use std::{collections::BTreeSet, sync::Arc};
 
 use crate::{
+    api::JxlDecoderOptions,
     entropy_coding::decode::Histograms,
     error::Result,
     features::{noise::Noise, patches::PatchesDictionary, spline::Splines},
@@ -134,18 +135,18 @@ impl DecoderState {
     pub const MAX_STORED_FRAMES: usize = 4;
     pub const NUM_LF_FRAMES: usize = 4;
 
-    pub fn new(file_header: FileHeader) -> Self {
+    pub fn new(file_header: FileHeader, options: &JxlDecoderOptions) -> Self {
         Self {
             file_header,
             reference_frames: Arc::new([None, None, None, None]),
             lf_frames: std::array::from_fn(|_| None),
-            render_spotcolors: true,
+            render_spotcolors: options.render_spot_colors,
             #[cfg(test)]
             use_simple_pipeline: false,
             visible_frame_index: 0,
             nonvisible_frame_index: 0,
-            high_precision: false,
-            premultiply_output: false,
+            high_precision: options.high_precision,
+            premultiply_output: options.premultiply_output,
             lf_frame_was_rendered: false,
         }
     }

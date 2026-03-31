@@ -73,18 +73,22 @@ impl ColorCorrelationParams {
         }
     }
 
+    #[inline(always)]
     pub fn y_to_x(&self, factor: i32) -> f32 {
         self.base_correlation_x + (factor as f32) / (self.color_factor as f32)
     }
 
+    #[inline(always)]
     pub fn y_to_x_lf(&self) -> f32 {
         self.y_to_x(self.ytox_lf)
     }
 
+    #[inline(always)]
     pub fn y_to_b(&self, factor: i32) -> f32 {
         self.base_correlation_b + (factor as f32) / (self.color_factor as f32)
     }
 
+    #[inline(always)]
     pub fn y_to_b_lf(&self) -> f32 {
         self.y_to_b(self.ytob_lf)
     }
