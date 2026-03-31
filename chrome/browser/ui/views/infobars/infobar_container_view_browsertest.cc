@@ -64,7 +64,11 @@ class PriorityInfoBarDelegate : public ConfirmInfoBarDelegate {
 
 class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
  protected:
-  InfoBarContainerViewBrowserTest() = default;
+  InfoBarContainerViewBrowserTest() {
+    // Disable animations to avoid flaky tests.
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  }
 
   InfoBarContainerView* GetInfoBarContainer() {
     BrowserView* browser_view =
@@ -104,6 +108,7 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  gfx::AnimationTestApi::RenderModeResetter animation_mode_reset_;
 };
 
 //
@@ -163,14 +168,8 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest, ReplaceInfoBar) {
   EXPECT_EQ("Replacement Message", messages[0]);
 }
 
-// TODO(crbug.com/476366053): Re-enable this test.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#define Maybe_NavigationDismissesInfoBar DISABLED_NavigationDismissesInfoBar
-#else
-#define Maybe_NavigationDismissesInfoBar NavigationDismissesInfoBar
-#endif
 IN_PROC_BROWSER_TEST_F(InfoBarContainerStandardTest,
-                       Maybe_NavigationDismissesInfoBar) {
+                       NavigationDismissesInfoBar) {
   AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault, "Transient");
   ASSERT_EQ(1u, GetVisibleInfoBarMessages().size());
 
@@ -326,10 +325,6 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
 
 IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
                        PromotionRestoresFocusWhenFocusWasInInfobars) {
-  // Disable animations to avoid flaky tests related to focus management.
-  auto animation_mode_reset = gfx::AnimationTestApi::SetRichAnimationRenderMode(
-      gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
-
   infobars::InfoBar* first = AddInfoBar(
       infobars::InfoBarDelegate::InfobarPriority::kDefault, "Default 1");
   AddInfoBar(infobars::InfoBarDelegate::InfobarPriority::kDefault,
