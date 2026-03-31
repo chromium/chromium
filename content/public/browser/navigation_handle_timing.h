@@ -29,6 +29,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
         net::AdvertisedAltSvcState::kUnknown;
     // Whether QUIC is enabled in the HttpNetworkSession for the navigation.
     bool http_network_session_quic_enabled = false;
+    // The time taken for a SPDY/QUIC session to create an active stream due to
+    // max stream limits.
+    std::optional<base::TimeDelta> max_stream_limit_pending_delay;
   };
 
   NavigationHandleTiming();

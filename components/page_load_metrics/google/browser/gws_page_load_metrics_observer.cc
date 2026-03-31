@@ -78,6 +78,8 @@ const char kHistogramGWSConnectedCallbackDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay2";
 const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
+const char kHistogramGWSMaxStreamLimitPendingDelay[] =
+    HISTOGRAM_PREFIX "NavigationTiming.MaxStreamLimitPendingDelay";
 const char kHistogramGWSAcceptCHFrameReceived[] =
     HISTOGRAM_PREFIX "AcceptCHFrameReceived";
 const char kHistogramGWSOnConnectedCalled[] =
@@ -1238,6 +1240,13 @@ void GWSPageLoadMetricsObserver::RecordSessionDetails(
       // `session_source` is expected to be present. Collect a
       // DumpWithoutCrashing report.
       base::debug::DumpWithoutCrashing();
+    }
+
+    if (session_details.max_stream_limit_pending_delay.has_value()) {
+      PAGE_LOAD_SHORT_HISTOGRAM(
+          base::StrCat(
+              {internal::kHistogramGWSMaxStreamLimitPendingDelay, protocol}),
+          *session_details.max_stream_limit_pending_delay);
     }
   }
 

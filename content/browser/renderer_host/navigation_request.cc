@@ -7416,6 +7416,9 @@ void NavigationRequest::UpdateNavigationHandleTimingsOnResponseReceived(
         .http_network_session_quic_enabled =
             response_head_->load_timing_internal_info
                 ->http_network_session_quic_enabled,
+        .max_stream_limit_pending_delay =
+            response_head_->load_timing_internal_info
+                ->max_stream_limit_pending_delay,
     };
   }
 
