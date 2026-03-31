@@ -100,10 +100,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/constants.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/net/chrome_mojo_proxy_resolver_win.h"
 #endif  // BUILDFLAG(IS_WIN)
