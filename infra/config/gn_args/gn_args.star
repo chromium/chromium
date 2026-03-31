@@ -1539,6 +1539,23 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "windows_developer",
+    # Currently, 70% of Windows developers use this configuration.
+    # See: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/windows_build_instructions.md#faster-builds
+    args = {
+        "is_debug": False,
+        "v8_symbol_level": 0,
+        "blink_symbol_level": 0,
+    },
+    configs = [
+        "chrome_with_codecs",
+        "full_symbols",
+        "win",
+        "x64",
+    ],
+)
+
+gn_args.config(
     name = "win",
     args = {
         "target_os": "win",

@@ -2,26 +2,32 @@
   "phases": {
     "ninja": {
       "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
+        "blink_symbol_level": 0,
+        "ffmpeg_branding": "Chrome",
+        "is_debug": false,
+        "proprietary_codecs": true,
         "symbol_level": 2,
         "target_cpu": "x64",
         "target_os": "win",
         "use_reclient": true,
         "use_remoteexec": true,
-        "use_siso": false
+        "use_siso": false,
+        "v8_symbol_level": 0
       }
     },
     "siso_native": {
       "gn_args": {
-        "is_component_build": true,
-        "is_debug": true,
+        "blink_symbol_level": 0,
+        "ffmpeg_branding": "Chrome",
+        "is_debug": false,
+        "proprietary_codecs": true,
         "symbol_level": 2,
         "target_cpu": "x64",
         "target_os": "win",
         "use_reclient": false,
         "use_remoteexec": true,
-        "use_siso": true
+        "use_siso": true,
+        "v8_symbol_level": 0
       }
     }
   }

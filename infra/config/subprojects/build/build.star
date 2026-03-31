@@ -698,8 +698,8 @@ This builder measures build performance for Windows developer builds, by simulat
         ),
     ),
     gn_args = {
-        "ninja": gn_args.config(configs = ["developer", "remoteexec", "no_siso", "reclient", "win", "x64"]),
-        "siso_native": gn_args.config(configs = ["developer", "remoteexec", "no_reclient", "win", "x64"]),
+        "ninja": gn_args.config(configs = ["windows_developer", "remoteexec", "no_siso", "reclient"]),
+        "siso_native": gn_args.config(configs = ["windows_developer", "remoteexec", "no_reclient"]),
         # TODO(https://crbug.com/425537956): Add no clang modules build config after enabling clang modules on Windows.
     },
     os = os.WINDOWS_DEFAULT,
