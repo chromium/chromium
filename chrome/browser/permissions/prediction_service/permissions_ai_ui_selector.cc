@@ -225,12 +225,12 @@ void PermissionsAiUiSelector::InquireOnDeviceAiv4AndServerModelIfAvailable(
 
   auto language_detected_cbk = base::BindOnce(
       &PermissionsAiUiSelector::GetInnerText, weak_ptr_factory_.GetWeakPtr(),
-      web_contents->GetPrimaryMainFrame(),
+      web_contents->GetWeakPtr(),
       ModelExecutionData{features, request_metadata,
                          PredictionModelType::kOnDeviceAiV4Model},
       base::BindOnce(&PermissionsAiUiSelector::TakeSnapshot,
                      weak_ptr_factory_.GetWeakPtr(),
-                     web_contents->GetRenderWidgetHostView()));
+                     web_contents->GetWeakPtr()));
 
   language_detection_observer_->Init(
       web_contents, std::move(language_detected_cbk),
@@ -447,6 +447,7 @@ void PermissionsAiUiSelector::OnTimeout() {
 void PermissionsAiUiSelector::Cancel() {
   timeout_timer_.Stop();
   callback_.Reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
   Cleanup();
 }
 
@@ -733,10 +734,14 @@ void PermissionsAiUiSelector::set_snapshot_for_testing(SkBitmap snapshot) {
 }
 
 void PermissionsAiUiSelector::TakeSnapshot(
-    content::RenderWidgetHostView* host_view,
+    base::WeakPtr<content::WebContents> web_contents,
     ModelExecutionData model_data) {
   VLOG(1) << "[PermissionsAIvX] TakeSnapshot";
   auto snapshot_inquire_start_time = base::TimeTicks::Now();
+
+  content::RenderWidgetHostView* host_view =
+      web_contents ? web_contents->GetRenderWidgetHostView() : nullptr;
+
   if (snapshot_for_testing_.has_value()) {
     OnSnapshotTakenForOnDeviceModel(snapshot_inquire_start_time,
                                     std::move(model_data),
@@ -762,7 +767,7 @@ void PermissionsAiUiSelector::TakeSnapshot(
 }
 
 void PermissionsAiUiSelector::GetInnerText(
-    content::RenderFrameHost* render_frame_host,
+    base::WeakPtr<content::WebContents> web_contents,
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback) {
   VLOG(1) << "[PermissionsAI] GetInnerText";
@@ -772,6 +777,15 @@ void PermissionsAiUiSelector::GetInnerText(
         std::make_unique<content_extraction::InnerTextResult>(
             std::move(inner_text_for_testing_.value())));
   }
+
+  content::RenderFrameHost* render_frame_host =
+      web_contents ? web_contents->GetPrimaryMainFrame() : nullptr;
+
+  if (!render_frame_host) {
+    return OnGetInnerTextForOnDeviceModel(
+        std::move(model_data), std::move(model_execution_callback), nullptr);
+  }
+
   content_extraction::GetInnerText(
       *render_frame_host, /*node_id=*/std::nullopt,
       base::BindOnce(&PermissionsAiUiSelector::OnGetInnerTextForOnDeviceModel,

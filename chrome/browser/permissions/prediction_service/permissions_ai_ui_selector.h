@@ -219,7 +219,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   // creation failed, on-device model execution is not attempted and instead it
   // proceeds with the basic CPSSv3 workflow without the output of the
   // on-device model.
-  void TakeSnapshot(content::RenderWidgetHostView* host_view,
+  void TakeSnapshot(base::WeakPtr<content::WebContents> web_contents,
                     ModelExecutionData model_data);
 
   // Part of the AivX model workflow.
@@ -228,7 +228,7 @@ class PermissionsAiUiSelector : public permissions::PermissionUiSelector {
   // If rendered_text is an empty string, on-device model execution is not
   // attempted and instead it proceeds with the basic CPSSv3 workflow without
   // the output of the on-device model.
-  void GetInnerText(content::RenderFrameHost* render_frame_host,
+  void GetInnerText(base::WeakPtr<content::WebContents> web_contents,
                     ModelExecutionData model_data,
                     ModelExecutionCallback model_execution_callback);
 
