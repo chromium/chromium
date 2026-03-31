@@ -7,7 +7,10 @@
 #import <MessageUI/MessageUI.h>
 
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
@@ -59,30 +62,31 @@
     [_alertCoordinator start];
     return;
   }
-  MFMailComposeViewController* mailViewController =
-      [[MFMailComposeViewController alloc] init];
-  [mailViewController setModalPresentationStyle:UIModalPresentationFormSheet];
-  [mailViewController setToRecipients:[self.context toRecipients]];
-  [mailViewController setSubject:[self.context subject]];
-  [mailViewController setMessageBody:[self.context body] isHTML:NO];
 
   const base::FilePath& textFile = [self.context textFileToAttach];
-  if (!textFile.empty()) {
-    NSString* filename = base::SysUTF8ToNSString(textFile.value());
-    NSData* data = [NSData dataWithContentsOfFile:filename];
-    if (data) {
-      NSString* displayName =
-          base::SysUTF8ToNSString(textFile.BaseName().value());
-      [mailViewController addAttachmentData:data
-                                   mimeType:@"text/plain"
-                                   fileName:displayName];
-    }
+  if (textFile.empty()) {
+    [self presentMailComposerWithAttachmentData:nil displayName:nil];
+    return;
   }
 
-  [mailViewController setMailComposeDelegate:self];
-  [self.baseViewController presentViewController:mailViewController
-                                        animated:YES
-                                      completion:nil];
+  // Read the file on a background thread to avoid blocking the main thread,
+  // as net export log files can be large.
+  NSString* displayName = base::SysUTF8ToNSString(textFile.BaseName().value());
+  __weak NetExportCoordinator* weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&base::ReadFileToBytes, textFile),
+      base::BindOnce(^(std::optional<std::vector<uint8_t>> fileBytes) {
+        NSData* data = nil;
+        if (fileBytes.has_value()) {
+          data = [NSData dataWithBytes:fileBytes->data()
+                                length:fileBytes->size()];
+        }
+        [weakSelf presentMailComposerWithAttachmentData:data
+                                            displayName:displayName];
+      }));
 }
 
 - (void)stop {
@@ -98,6 +102,29 @@
 }
 
 #pragma mark - private
+
+// Presents the mail compose view controller. If `data` is non-nil, attaches
+// it to the email with the given `displayName`.
+- (void)presentMailComposerWithAttachmentData:(NSData*)data
+                                  displayName:(NSString*)displayName {
+  MFMailComposeViewController* mailViewController =
+      [[MFMailComposeViewController alloc] init];
+  [mailViewController setModalPresentationStyle:UIModalPresentationFormSheet];
+  [mailViewController setToRecipients:[self.context toRecipients]];
+  [mailViewController setSubject:[self.context subject]];
+  [mailViewController setMessageBody:[self.context body] isHTML:NO];
+
+  if (data) {
+    [mailViewController addAttachmentData:data
+                                 mimeType:@"text/plain"
+                                 fileName:displayName];
+  }
+
+  [mailViewController setMailComposeDelegate:self];
+  [self.baseViewController presentViewController:mailViewController
+                                        animated:YES
+                                      completion:nil];
+}
 
 - (void)stopAlertCoordinator {
   [_alertCoordinator stop];
