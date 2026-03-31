@@ -113,6 +113,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Content.SslError.CallbackDuration" units="ms"
+    expires_after="2027-03-30">
+  <owner>peconn@google.com</owner>
+  <owner>src/content/OWNERS</owner>
+  <summary>
+    The amount of time between StoragePartitionImpl::OnSSLCertificateError being
+    called and the answer being received. This measures the latency introduced
+    by the browser process and the embedder (including any app callbacks) for
+    all platforms. Recorded on SSL error.
+  </summary>
+</histogram>
+
 <histogram name="ContentCapture.CaptureContentTime2" units="microseconds"
     expires_after="2026-06-01">
   <owner>elabadysayed@chromium.org</owner>
