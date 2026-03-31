@@ -1053,11 +1053,15 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
         // Toolbar show at the correct spot. The current math here is to reduce the capture size
         // with toolbar height and hairline height.
         int diff = 0;
-        if (captureHeight > 0) {
-            diff =
-                    captureHeight
-                            - mControlContainer.getToolbarHeight()
-                            - mControlContainer.getToolbarHairlineHeight();
+        // When switching omnibox from bottom to top, the toolbar capture size may not have been
+        // updated yet (e.g. captureHeight=1 while toolbarHeight=137). Using a stale capture
+        // height produces a large negative diff that pushes the cc layer below the toolbar,
+        // creating a "ghost view". Only compute diff when capture height is at least as large
+        // as the toolbar, indicating the capture is up-to-date.
+        int toolbarHeight = mControlContainer.getToolbarHeight();
+        int hairlineHeight = mControlContainer.getToolbarHairlineHeight();
+        if (captureHeight >= toolbarHeight) {
+            diff = captureHeight - toolbarHeight - hairlineHeight;
         }
 
         // As toolbar hairline is part of the capture, there are times we need to hide the hairline
