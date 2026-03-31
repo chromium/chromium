@@ -1,6 +1,3 @@
-Do not use the `read_many_files` tool. Read files one at a time with
-`read_file`.
-
 Any time you want to use `find`, use `fdfind` instead.
 
 If running `fdfind` fails because the executable is missing, tell the
