@@ -235,8 +235,10 @@ public class LocationBarTabletUnitTest {
                 mLocationBarTablet
                         .getResources()
                         .getDimensionPixelSize(R.dimen.location_bar_tablet_fusebox_popup_inset);
+        int glifLayerIndex = background.findIndexByLayerId(R.id.glif_border_layer);
         assertEquals(cornerRadius, outerRect.getCornerRadius(), MathUtils.EPSILON);
         assertEquals(inset, background.getLayerInsetBottom(1));
+        assertEquals(inset, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(inset, mLocationBarTablet.getPaddingBottom());
 
         mLocationBarTablet.onSuggestionsChanged(true);
@@ -246,6 +248,7 @@ public class LocationBarTabletUnitTest {
                 outerRect.getCornerRadii(),
                 MathUtils.EPSILON);
         assertEquals(0, background.getLayerInsetBottom(1));
+        assertEquals(0, background.getLayerInsetBottom(glifLayerIndex));
         assertEquals(0, mLocationBarTablet.getPaddingBottom());
     }
 
