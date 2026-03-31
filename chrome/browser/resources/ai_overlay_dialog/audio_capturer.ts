@@ -141,13 +141,15 @@ export class BlobAudioCapturer implements AudioCapturer {
   }
 
   /* Sends the audio data to the callback. */
-  async send(blob: Blob): Promise<void> {
+  send(blob: Blob, onSpeechDone?: () => void): Promise<void> {
     // Chain the send operation to the previous one to prevent interleaving.
-    this.sendPromise = this.sendPromise.then(() => this.sendInternal(blob));
+    this.sendPromise =
+        this.sendPromise.then(() => this.sendInternal(blob, onSpeechDone));
     return this.sendPromise;
   }
 
-  private async sendInternal(blob: Blob): Promise<void> {
+  private async sendInternal(blob: Blob, onSpeechDone?: () => void):
+      Promise<void> {
     if (!this.onAudioCallback || !this.audioContext) {
       log('BlobAudioCapturer not ready');
       return;
@@ -190,6 +192,13 @@ export class BlobAudioCapturer implements AudioCapturer {
       nextTick += chunkMs;
       const delay = Math.max(0, nextTick - performance.now());
       await new Promise(resolve => setTimeout(resolve, delay));
+    }
+
+    // Notify the caller that the actual speech audio has finished playing.
+    // Note that the Promise for this method won't resolve until the trailing
+    // silence (below) has also finished injecting.
+    if (onSpeechDone) {
+      onSpeechDone();
     }
 
     // Send 500ms of silence to ensure the server detects the end of speech,

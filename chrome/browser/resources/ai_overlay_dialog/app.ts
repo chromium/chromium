@@ -260,19 +260,15 @@ export class AppElement extends CrLitElement {
     }
 
     log(`Injecting audio: ${button.name}, length: ${button.wavdata.length}`);
-    try {
-      const binaryString = atob(button.wavdata);
-      const bytes = new Uint8Array(binaryString.length);
-      for (let i = 0; i < binaryString.length; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-      }
-      const blob = new Blob([bytes], {type: 'audio/wav'});
-      this.blobCapturer.send(blob).then(() => {
-        this.conversation?.markMockAudioEndTime(performance.now());
-      });
-    } catch (e) {
-      log('Failed to inject audio:', e);
+    const binaryString = atob(button.wavdata);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
     }
+    const blob = new Blob([bytes], {type: 'audio/wav'});
+    this.blobCapturer.send(blob).then(() => {
+      this.conversation?.markMockAudioEndTime(performance.now());
+    });
   }
 
   private createAudioPlayer(): AudioPlayer {
