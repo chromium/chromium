@@ -308,6 +308,7 @@ constexpr CGFloat kAnimationDuration = 0.2f;
                               (1 - progress) * kLocationBarHeightFullscreen;
   _locationBarHeightConstraint.constant = locationBarHeight;
   _locationBarBackground.layer.cornerRadius = locationBarHeight / 2.0;
+  _locationBarContainer.layer.cornerRadius = locationBarHeight / 2.0;
 
   _locationBarBackground.alpha = progress;
 
@@ -583,11 +584,6 @@ constexpr CGFloat kAnimationDuration = 0.2f;
 // Handles tools menu button tap.
 - (void)toolsMenuButtonTapped {
   [self.popupMenuHandler showToolsMenuPopup];
-}
-
-// Handles omnibox tap.
-- (void)omniboxTapped {
-  [self.browserCoordinatorHandler showComposebox];
 }
 
 // Handles tab grid button touch down.
