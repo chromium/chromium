@@ -363,18 +363,11 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
                             .getDimensionPixelSize(
                                     org.chromium.chrome.browser.toolbar.R.dimen
                                             .toolbar_button_width);
-            int toolbarDividerWidth =
-                    mContainer
-                            .getResources()
-                            .getDimensionPixelSize(
-                                    org.chromium.chrome.browser.toolbar.R.dimen
-                                            .toolbar_divider_width);
-            int totalWidth = puzzleButtonWidth + toolbarDividerWidth;
-            mCanShowMenuIcon = totalWidth <= availableWidth;
+            mCanShowMenuIcon = puzzleButtonWidth <= availableWidth;
 
             updateMenuIconVisibility();
 
-            return shouldShowMenuIcon() ? totalWidth : 0;
+            return shouldShowMenuIcon() ? puzzleButtonWidth : 0;
         }
 
         @Override
