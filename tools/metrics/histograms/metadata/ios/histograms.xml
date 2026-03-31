@@ -7988,14 +7988,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.WidgetsForMIM.DeletedAccountUiDisplayed"
-    enum="IOSWidgetKitDeletedUiCount" expires_after="2026-05-10">
+    enum="IOSWidgetKitDeletedUiCount" expires_after="2026-10-01">
   <owner>fedegermi@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
     Logs the number of times that the deleted account ui was displayed on
-    widgets. Note that this is only available if widgets for multi-profile
-    feature is enabled. This data is collected when the ui is presented on the
-    widget. The value is then added to the histogram when the app is launched.
+    widgets. This data is collected when the ui is presented on the widget. The
+    value is then added to the histogram when the app is launched.
   </summary>
 </histogram>
 
