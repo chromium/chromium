@@ -17,6 +17,7 @@
 #include "base/check_is_test.h"
 #include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/common/content_features.h"
 
 // Has to come after all the FromJniType() / ToJniType() headers.
@@ -137,8 +138,37 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
     const base::android::JavaRef<jobject>& prefetch_params,
     const base::android::JavaRef<jobject>& callback,
     const base::android::JavaRef<jobject>& callback_executor) {
+  return StartPrefetchRequestInternal(
+      env, url, prefetch_params, callback, callback_executor,
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrefetch));
+}
+
+AwPrefetchKey AwPrefetchManager::StartPrefetchRequestAheadOfPrerender(
+    base::PassKey<AwContents>,
+    JNIEnv* env,
+    const std::string& url,
+    const base::android::JavaRef<jobject>& prefetch_params,
+    scoped_refptr<content::PreloadPipelineInfo> preload_pipeline_info) {
+  return StartPrefetchRequestInternal(
+      env, url, prefetch_params,
+      // Callbacks are not set for prefetch ahead of prerender. Callers are
+      // expected to observe failures etc. via prerender.
+      /*callback=*/base::android::JavaRef(),
+      /*callback_executor=*/base::android::JavaRef(),
+      std::move(preload_pipeline_info));
+}
+
+AwPrefetchKey AwPrefetchManager::StartPrefetchRequestInternal(
+    JNIEnv* env,
+    const std::string& url,
+    const base::android::JavaRef<jobject>& prefetch_params,
+    const base::android::JavaRef<jobject>& callback,
+    const base::android::JavaRef<jobject>& callback_executor,
+    scoped_refptr<content::PreloadPipelineInfo> preload_pipeline_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  TRACE_EVENT0("android_webview", "AwPrefetchManager::StartPrefetchRequest");
+  TRACE_EVENT0("android_webview",
+               "AwPrefetchManager::StartPrefetchRequestInternal");
 
   GURL pf_url = GURL(url);
   net::HttpRequestHeaders additional_headers =
@@ -164,8 +194,6 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
   if (java_obj_ && callback && callback_executor) {
     request_status_listener = std::make_unique<AwPrefetchRequestStatusListener>(
         java_obj_, callback, callback_executor);
-  } else {
-    CHECK_IS_TEST();
   }
 
   // For WebView we will check if there is already a duplicate
@@ -215,7 +243,8 @@ AwPrefetchKey AwPrefetchManager::StartPrefetchRequest(
               ::features::kWebViewPrefetchHighestPrefetchPriority)
               ? std::optional(content::PrefetchPriority::kHighest)
               : std::nullopt,
-          additional_headers, std::move(request_status_listener),
+          std::move(preload_pipeline_info), additional_headers,
+          std::move(request_status_listener),
           base::Seconds(aw_prefetch_manager_data_.GetTtlInSec()),
           /*should_append_variations_header=*/false,
           base::FeatureList::IsEnabled(

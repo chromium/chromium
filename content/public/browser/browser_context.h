@@ -23,6 +23,7 @@
 #include "content/public/browser/prefetch_handle.h"
 #include "content/public/browser/prefetch_priority.h"
 #include "content/public/browser/prefetch_request_status_listener.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_request_headers.h"
@@ -219,6 +220,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       bool javascript_enabled,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       std::optional<PrefetchPriority> priority,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       const net::HttpRequestHeaders& additional_headers,
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
       base::TimeDelta ttl,

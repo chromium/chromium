@@ -162,7 +162,10 @@ TEST_F(PrefetchNetworkContextTest,
           /*referrer=*/{},
           /*javascript_enabled=*/{}, kReferringOrigin,
           /*no_vary_search_hint=*/{},
-          /*priority=*/{});
+          /*priority=*/{},
+          PreloadPipelineInfo::Create(
+              /*planned_max_preloading_type=*/content::PreloadingType::
+                  kPrefetch));
   CreatePrefetchURLLoaderFactory(prefetch_request->browser_context()
                                      ->GetDefaultStoragePartition()
                                      ->GetNetworkContext(),

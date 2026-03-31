@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/prefetch/aw_prefetch_handle_wrapper.h"
 #include "android_webview/browser/prefetch/aw_prefetch_manager_data.h"
 #include "base/android/scoped_java_ref.h"
@@ -70,6 +71,13 @@ class AwPrefetchManager {
       const base::android::JavaRef<jobject>& prefetch_params,
       const base::android::JavaRef<jobject>& callback,
       const base::android::JavaRef<jobject>& callback_executor);
+  // From `AwContents::StartPrerendering()`.
+  AwPrefetchKey StartPrefetchRequestAheadOfPrerender(
+      base::PassKey<AwContents>,
+      JNIEnv* env,
+      const std::string& url,
+      const base::android::JavaRef<jobject>& prefetch_params,
+      scoped_refptr<content::PreloadPipelineInfo> preload_pipeline_info);
 
   void CancelPrefetch(JNIEnv* env, AwPrefetchKey prefetch_key);
 
@@ -104,6 +112,14 @@ class AwPrefetchManager {
   // provided, any previously registered prefetch experiment will be cleared.
   static void SetOrClearExternalPrefetchExperiment(
       std::optional<int> variations_id);
+
+  AwPrefetchKey StartPrefetchRequestInternal(
+      JNIEnv* env,
+      const std::string& url,
+      const base::android::JavaRef<jobject>& prefetch_params,
+      const base::android::JavaRef<jobject>& callback,
+      const base::android::JavaRef<jobject>& callback_executor,
+      scoped_refptr<content::PreloadPipelineInfo> preload_pipeline_info);
 
   const raw_ref<content::BrowserContext> browser_context_;
 

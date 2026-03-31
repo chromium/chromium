@@ -525,8 +525,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
       bool should_disable_block_until_head_timeout = false) {
     return browser_context()->StartBrowserPrefetchRequest(
         url, test::kPreloadingEmbedderHistgramSuffixForTesting, true,
-        no_vary_search_data, PrefetchPriority::kHighest, additional_headers,
-        std::move(request_status_listener), ttl,
+        no_vary_search_data, PrefetchPriority::kHighest,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
+        additional_headers, std::move(request_status_listener), ttl,
         /*should_append_variations_header=*/true,
         should_disable_block_until_head_timeout,
         /*should_bypass_http_cache=*/false);

@@ -251,6 +251,8 @@ class AwBrowserContext : public content::BrowserContext,
   // Adds a QUIC hints for the given origins.
   void AddQuicHints(JNIEnv* env, const std::vector<GURL>& origins);
 
+  AwPrefetchManager& GetPrefetchManager() { return *prefetch_manager_.get(); }
+
  private:
   friend class AwBrowserContextIoThreadHandle;
   void CreateUserPrefService();

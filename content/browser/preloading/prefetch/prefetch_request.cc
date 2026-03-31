@@ -201,6 +201,7 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
     const std::optional<url::Origin>& referring_origin,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     std::optional<PrefetchPriority> priority,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     const net::HttpRequestHeaders& additional_headers,
     std::unique_ptr<PrefetchRequestStatusListener> request_status_listener,
@@ -212,11 +213,9 @@ PrefetchRequest::CreateBrowserInitiatedWithoutWebContents(
       base::PassKey<PrefetchRequest>(), prefetch_type,
       PrefetchKey(std::optional<blink::DocumentToken>(std::nullopt), url),
       std::move(no_vary_search_hint), std::move(priority),
-      PreloadPipelineInfo::Create(
-          /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
-      std::move(attempt), /*referring_web_contents=*/nullptr,
-      javascript_enabled, referrer, referring_origin,
-      browser_context->GetWeakPtr(),
+      std::move(preload_pipeline_info), std::move(attempt),
+      /*referring_web_contents=*/nullptr, javascript_enabled, referrer,
+      referring_origin, browser_context->GetWeakPtr(),
       /*speculation_rules_tags=*/
       std::nullopt, additional_headers, ttl,
       /*holdback_status_override=*/PreloadingHoldbackStatus::kUnspecified,

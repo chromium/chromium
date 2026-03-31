@@ -121,6 +121,7 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
         CreateBrowserContextPrefetchRequest(prefetch_url, additional_headers,
                                             should_append_additional_headers));
   }
+
   std::unique_ptr<const PrefetchRequest> CreateBrowserContextPrefetchRequest(
       const GURL& prefetch_url,
       const net::HttpRequestHeaders& additional_headers = {},
@@ -135,6 +136,8 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
         /*referring_origin=*/std::nullopt,
         /*no_vary_search_hint=*/std::nullopt,
         /*priority=*/PrefetchPriority::kHighest,
+        PreloadPipelineInfo::Create(
+            /*planned_max_preloading_type=*/content::PreloadingType::kPrefetch),
         /*attempt=*/nullptr, additional_headers,
         /*request_status_listener=*/nullptr, base::Minutes(10),
         should_append_additional_headers,

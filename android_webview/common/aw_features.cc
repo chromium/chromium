@@ -117,6 +117,9 @@ BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
 // This enables WebView crashes.
 BASE_FEATURE(kWebViewEnableCrash, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kWebViewPrefetchAheadOfPrerender,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Prefetches the native WebView code to memory during startup.
 BASE_FEATURE(kWebViewPrefetchNativeLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 

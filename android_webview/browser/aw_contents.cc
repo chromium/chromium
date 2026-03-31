@@ -1527,6 +1527,19 @@ int64_t AwContents::StartPrerendering(
 
   net::HttpRequestHeaders additional_headers =
       GetAdditionalHeadersFromPrefetchParameters(env, j_prefetch_params);
+  scoped_refptr<content::PreloadPipelineInfo> preload_pipeline_info =
+      content::PreloadPipelineInfo::Create(
+          /*planned_max_preloading_type=*/content::PreloadingType::kPrerender);
+
+  // Trigger prefetch ahead of prerender.
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewPrefetchAheadOfPrerender)) {
+    auto* browser_context =
+        AwBrowserContext::FromWebContents(web_contents_.get());
+    browser_context->GetPrefetchManager().StartPrefetchRequestAheadOfPrerender(
+        base::PassKey<AwContents>(), env, prerendering_url, j_prefetch_params,
+        preload_pipeline_info);
+  }
 
   // This is the same as the page transition of WebView.loadUrl().
   auto page_transition = ui::PageTransitionFromInt(
@@ -1545,9 +1558,7 @@ int64_t AwContents::StartPrerendering(
               features::kPrerender2WarmUpCompositorForWebView),
           /*should_prepare_paint_tree=*/false,
           content::PreloadingHoldbackStatus::kUnspecified,
-          content::PreloadPipelineInfo::Create(
-              /*planned_max_preloading_type=*/content::PreloadingType::
-                  kPrerender),
+          std::move(preload_pipeline_info),
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{},
           /*allow_reuse=*/false);

@@ -170,6 +170,7 @@ class CONTENT_EXPORT PrefetchRequest final {
       const std::optional<url::Origin>& referring_origin,
       std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
       std::optional<PrefetchPriority> priority,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr,
       const net::HttpRequestHeaders& additional_headers = {},
       std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
