@@ -42,6 +42,7 @@ class Configurator;
 }
 
 namespace extensions {
+class ChromeProcessManagerDelegate;
 class ComponentExtensionResourceManager;
 class EventRouterForwarder;
 class ExtensionCache;
@@ -337,7 +338,7 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
       const std::string& extra);
 
   // Support for ProcessManager. May be null on some platforms (e.g. Android).
-  std::unique_ptr<ProcessManagerDelegate> process_manager_delegate_;
+  std::unique_ptr<ChromeProcessManagerDelegate> process_manager_delegate_;
 
   // May be null on some platforms (e.g. Android).
   std::unique_ptr<ComponentExtensionResourceManager> resource_manager_;

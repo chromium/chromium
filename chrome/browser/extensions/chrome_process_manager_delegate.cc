@@ -12,9 +12,8 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -32,7 +31,6 @@
 namespace extensions {
 
 ChromeProcessManagerDelegate::ChromeProcessManagerDelegate() {
-  BrowserList::AddObserver(this);
   DCHECK(g_browser_process);
   // The profile manager can be null in unit tests.
   if (ProfileManager* profile_manager = g_browser_process->profile_manager()) {
@@ -41,13 +39,14 @@ ChromeProcessManagerDelegate::ChromeProcessManagerDelegate() {
     // that we missed.
     DCHECK_EQ(0U, profile_manager->GetLoadedProfiles().size());
   }
+  browser_collection_observation_.Observe(
+      GlobalBrowserCollection::GetInstance());
 }
 
 ChromeProcessManagerDelegate::~ChromeProcessManagerDelegate() {
   DCHECK(!g_browser_process)
       << "ChromeProcessManagerDelegate expects to be shut down during "
          "BrowserProcess shutdown, after |g_browser_process| is set to null";
-  BrowserList::RemoveObserver(this);
 }
 
 bool ChromeProcessManagerDelegate::AreBackgroundPagesAllowedForContext(
@@ -104,8 +103,9 @@ bool ChromeProcessManagerDelegate::DeferCreatingStartupBackgroundHosts(
   return !ExtensionsBrowserClient::Get()->IsValidContext(context);
 }
 
-void ChromeProcessManagerDelegate::OnBrowserAdded(Browser* browser) {
-  Profile* profile = browser->profile();
+void ChromeProcessManagerDelegate::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  Profile* profile = browser->GetProfile();
   DCHECK(profile);
 
   // Inform the process manager for this profile that the window is ready.
@@ -173,6 +173,10 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
       observed_profiles_.RemoveObservation(otr);
     }
   }
+}
+
+void ChromeProcessManagerDelegate::StartTearDown() {
+  browser_collection_observation_.Reset();
 }
 
 }  // namespace extensions

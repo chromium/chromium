@@ -71,6 +71,10 @@ void ChromeExtensionsBrowserClient::Init() {
   safe_browsing_delegate_ = std::make_unique<SafeBrowsingDelegate>();
 }
 
+void ChromeExtensionsBrowserClient::StartTearDown() {
+  user_script_listener_->StartTearDown();
+}
+
 ProcessManagerDelegate*
 ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return nullptr;

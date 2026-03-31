@@ -45,6 +45,7 @@
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_interface_binders.h"
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
+#include "chrome/browser/extensions/chrome_process_manager_delegate.h"
 #include "chrome/browser/extensions/chrome_url_request_util.h"
 #include "chrome/browser/extensions/event_router_forwarder.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -264,10 +265,6 @@ ChromeExtensionsBrowserClient::ChromeExtensionsBrowserClient()
 }
 
 ChromeExtensionsBrowserClient::~ChromeExtensionsBrowserClient() = default;
-
-void ChromeExtensionsBrowserClient::StartTearDown() {
-  user_script_listener_->StartTearDown();
-}
 
 bool ChromeExtensionsBrowserClient::IsShuttingDown() {
   return g_browser_process->IsShuttingDown();

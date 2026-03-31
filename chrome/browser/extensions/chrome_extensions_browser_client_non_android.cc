@@ -47,6 +47,11 @@ void ChromeExtensionsBrowserClient::Init() {
 #endif
 }
 
+void ChromeExtensionsBrowserClient::StartTearDown() {
+  user_script_listener_->StartTearDown();
+  process_manager_delegate_->StartTearDown();
+}
+
 ProcessManagerDelegate*
 ChromeExtensionsBrowserClient::GetProcessManagerDelegate() const {
   return process_manager_delegate_.get();

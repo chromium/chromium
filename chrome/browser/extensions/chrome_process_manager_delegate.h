@@ -10,10 +10,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "extensions/browser/process_manager_delegate.h"
 
-class Browser;
+class BrowserWindowInterface;
+class GlobalBrowserCollection;
 class Profile;
 class ProfileManager;
 
@@ -22,7 +23,7 @@ namespace extensions {
 // Support for ProcessManager. Controls cases where Chrome wishes to disallow
 // extension background pages or defer their creation.
 class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
-                                     public BrowserListObserver,
+                                     public BrowserCollectionObserver,
                                      public ProfileManagerObserver,
                                      public ProfileObserver {
  public:
@@ -43,8 +44,8 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
   bool DeferCreatingStartupBackgroundHosts(
       content::BrowserContext* context) const override;
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
+  // BrowserCollectionObserver:
+  void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
@@ -54,7 +55,12 @@ class ChromeProcessManagerDelegate : public ProcessManagerDelegate,
   void OnOffTheRecordProfileCreated(Profile* off_the_record_profile) override;
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
+  void StartTearDown();
+
  private:
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
+
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
 
