@@ -23,7 +23,6 @@
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 

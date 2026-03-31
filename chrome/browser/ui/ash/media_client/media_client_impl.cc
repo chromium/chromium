@@ -50,7 +50,6 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_manager/user_manager.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/video_capture_service.h"

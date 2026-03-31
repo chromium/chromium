@@ -12,7 +12,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"

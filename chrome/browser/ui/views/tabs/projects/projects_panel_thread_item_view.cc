@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"

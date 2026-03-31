@@ -11,7 +11,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/sharing_ui_controller.h"

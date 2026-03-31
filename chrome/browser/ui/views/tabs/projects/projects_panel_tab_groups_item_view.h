@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/uuid.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"

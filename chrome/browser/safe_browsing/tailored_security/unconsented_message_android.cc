@@ -5,7 +5,6 @@
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"

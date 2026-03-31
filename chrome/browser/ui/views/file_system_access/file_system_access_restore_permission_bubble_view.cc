@@ -13,7 +13,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/permissions/permission_util.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

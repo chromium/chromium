@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/screen_sharing_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/infobars/content/content_infobar_manager.h"
-#include "components/vector_icons/vector_icons.h"
 #include "extensions/common/constants.h"
 #include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"

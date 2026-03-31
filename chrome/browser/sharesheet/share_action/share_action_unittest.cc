@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"

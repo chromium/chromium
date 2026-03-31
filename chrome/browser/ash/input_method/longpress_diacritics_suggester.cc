@@ -12,7 +12,6 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/anchored_nudge_manager.h"
-#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
 #include "base/containers/fixed_flat_map.h"

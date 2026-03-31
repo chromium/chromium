@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
-#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "third_party/blink/public/common/features_generated.h"

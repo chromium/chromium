@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
