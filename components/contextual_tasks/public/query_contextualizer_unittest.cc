@@ -1099,4 +1099,125 @@ TEST_F(QueryContextualizerTest,
                                  session_handle_.get(), done_callback.Get());
   CompleteAllUploads();
 }
+TEST_F(QueryContextualizerTest,
+       Contextualize_RecontextualizeIgnoresSupersededFileInfo) {
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with uploaded tab.
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Setup FileInfo list. First is superseded, second is active.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+
+  contextual_search::FileInfo file_info_superseded;
+  file_info_superseded.tab_session_id = session_id;
+  file_info_superseded.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info_superseded.is_superceded = true;
+  file_info_superseded.request_id.emplace();
+  file_info_superseded.request_id->set_context_id(12344);
+
+  auto input_data_superseded = std::make_unique<lens::ContextualInputData>();
+  std::string old_content_superseded = "old content";
+  auto old_content_span_superseded =
+      base::as_bytes(base::span(old_content_superseded));
+  std::vector<uint8_t> old_bytes_superseded(old_content_span_superseded.begin(),
+                                            old_content_span_superseded.end());
+  lens::ContextualInput old_input_superseded(std::move(old_bytes_superseded),
+                                             lens::MimeType::kPlainText);
+  input_data_superseded->context_input.emplace().push_back(
+      std::move(old_input_superseded));
+  file_info_superseded.input_data = std::move(input_data_superseded);
+
+  contextual_search::FileInfo file_info_active;
+  file_info_active.tab_session_id = session_id;
+  file_info_active.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info_active.is_superceded = false;
+  file_info_active.request_id.emplace();
+  file_info_active.request_id->set_context_id(12345);
+
+  auto input_data_active = std::make_unique<lens::ContextualInputData>();
+  std::string old_content_active = "same content";
+  auto old_content_span_active = base::as_bytes(base::span(old_content_active));
+  std::vector<uint8_t> old_bytes_active(old_content_span_active.begin(),
+                                        old_content_span_active.end());
+  lens::ContextualInput old_input_active(std::move(old_bytes_active),
+                                         lens::MimeType::kPlainText);
+  input_data_active->context_input.emplace().push_back(
+      std::move(old_input_active));
+  file_info_active.input_data = std::move(input_data_active);
+
+  file_info_list.push_back(&file_info_superseded);
+  file_info_list.push_back(&file_info_active);
+
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call with SAME content as active file info.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        std::string new_content = "same content";
+        auto new_content_span = base::as_bytes(base::span(new_content));
+        std::vector<uint8_t> new_bytes(new_content_span.begin(),
+                                       new_content_span.end());
+        lens::ContextualInput new_input(std::move(new_bytes),
+                                        lens::MimeType::kPlainText);
+        data->context_input.emplace().push_back(std::move(new_input));
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->page_title = "about:blank";
+        data->context_id = 12345;
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Since it ignores the superseded file (which had "old content") and checks
+  // against the active one ("same content"), it should not upload.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_CALL(*delegate_, OnTabProcessedForQueryContextualization(tab_id));
+
+  base::MockCallback<base::OnceClosure> done_callback;
+  EXPECT_CALL(done_callback, Run());
+
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 session_handle_.get(), done_callback.Get());
+}
+
 }  // namespace contextual_tasks
