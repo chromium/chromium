@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.ui.side_ui;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.ViewStub;
 
 import androidx.annotation.Px;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
@@ -28,18 +31,28 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     @Nullable private SideUiContainer mSideUiContainer;
     private final ObserverList<SideUiObserver> mSideUiObservers = new ObserverList<>();
 
+    private final NonNullObservableSupplier<Integer> mTopMarginSupplier;
+    private final Callback<Integer> mTopMarginObserver;
+
     /**
      * Constructor for a {@link SideUiCoordinatorImpl}.
      *
      * @param startAnchorContainerStub The {@link ViewStub} for the start-anchored container.
      * @param endAnchorContainerStub The {@link ViewStub} for the end-anchored container.
+     * @param topMarginSupplier The supplier for the Side UI's top margin.
      */
     /* package */ SideUiCoordinatorImpl(
-            ViewStub startAnchorContainerStub, ViewStub endAnchorContainerStub) {
+            ViewStub startAnchorContainerStub,
+            ViewStub endAnchorContainerStub,
+            NonNullObservableSupplier<Integer> topMarginSupplier) {
         // TODO(crbug.com/485309827): Account for the height of Side UI. Specifically, show beneath
         //  the tab strip when it is visible.
         mStartAnchorContainer = (ViewGroup) startAnchorContainerStub.inflate();
         mEndAnchorContainer = (ViewGroup) endAnchorContainerStub.inflate();
+
+        mTopMarginObserver = this::onTopMarginChanged;
+        mTopMarginSupplier = topMarginSupplier;
+        mTopMarginSupplier.addSyncObserver(mTopMarginObserver);
     }
 
     // SideUiCoordinator Implementation
@@ -82,7 +95,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
 
     @Override
     public void destroy() {
-        if (mSideUiContainer != null) unregisterSideUiContainer(mSideUiContainer);
+        if (mSideUiContainer != null) {
+            unregisterSideUiContainer(mSideUiContainer);
+        }
+        mTopMarginSupplier.removeObserver(mTopMarginObserver);
     }
 
     // SideUiStateProvider Implementation
@@ -216,6 +232,24 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         for (SideUiObserver observer : mSideUiObservers) {
             observer.onSideUiSpecsChanged(newSideUiSpecs);
         }
+    }
+
+    /**
+     * Called to respond to the tab strip location changing. The side UI anchor containers will
+     * adjust their top margins accordingly.
+     *
+     * @param tabStripBottomPx The tab strip's bottom in relation to the top of the window in px.
+     */
+    private void onTopMarginChanged(@Px int tabStripBottomPx) {
+        MarginLayoutParams startLayoutParams =
+                ((MarginLayoutParams) mStartAnchorContainer.getLayoutParams());
+        startLayoutParams.topMargin = tabStripBottomPx;
+        mStartAnchorContainer.setLayoutParams(startLayoutParams);
+
+        MarginLayoutParams endLayoutParams =
+                ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
+        endLayoutParams.topMargin = tabStripBottomPx;
+        mEndAnchorContainer.setLayoutParams(endLayoutParams);
     }
 
     // Test Support

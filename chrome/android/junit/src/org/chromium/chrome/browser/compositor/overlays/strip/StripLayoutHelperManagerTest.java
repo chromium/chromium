@@ -1763,4 +1763,31 @@ public class StripLayoutHelperManagerTest {
                 scrimOpacityCaptor.getValue(),
                 0.01f);
     }
+
+    @Test
+    public void testStripBottomPxSupplier_onLayerYOffsetChanged() {
+        int yOffsetPx = 10;
+        int visibleHeightPx = 40;
+        mStripLayoutHelperManager.onLayerYOffsetChanged(yOffsetPx, visibleHeightPx);
+
+        assertEquals(
+                "Unexpected bottom px value.",
+                (Integer) (yOffsetPx + visibleHeightPx),
+                mStripLayoutHelperManager.getStripBottomPxSupplier().get());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
+    public void testStripBottomPxSupplier_getUpdatedSceneOverlayTree() {
+        int topControlOffset = 10;
+        when(mBrowserControlStateProvider.getTopControlOffset()).thenReturn(topControlOffset);
+        when(mBrowserControlStateProvider.isVisibilityForced()).thenReturn(true);
+        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
+                new RectF(), new RectF(), mResourceManager);
+
+        assertEquals(
+                "Unexpected bottom px value.",
+                (Integer) (TAB_STRIP_HEIGHT_PX + topControlOffset),
+                mStripLayoutHelperManager.getStripBottomPxSupplier().get());
+    }
 }

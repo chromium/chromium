@@ -26,6 +26,9 @@ android_library("java") {
 
 # Public Java factory
 android_library_factory("factory_java") {
-  deps = [ ":java" ]
+  deps = [
+    ":java",
+    "//base:supplier_java",
+  ]
   sources = [ "//chrome/browser/ui/side_ui/internal/android/java/src/org/chromium/chrome/browser/ui/side_ui/SideUiCoordinatorFactory.java" ]
 }

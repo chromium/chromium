@@ -1915,9 +1915,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_end_anchor_container_stub);
+
+        NonNullObservableSupplier<Integer> stripBottomPxSupplier = null;
+        StripLayoutHelperManager stripLayoutHelperManager =
+                mLayoutManager.getStripLayoutHelperManager();
+        if (stripLayoutHelperManager != null) {
+            stripBottomPxSupplier = stripLayoutHelperManager.getStripBottomPxSupplier();
+        }
+
         mSideUiCoordinator =
                 SideUiCoordinatorFactory.create(
-                        sideUiStartAnchorContainerStub, sideUiEndAnchorContainerStub);
+                        sideUiStartAnchorContainerStub,
+                        sideUiEndAnchorContainerStub,
+                        stripBottomPxSupplier);
         if (mSideUiCoordinator == null) {
             return;
         }

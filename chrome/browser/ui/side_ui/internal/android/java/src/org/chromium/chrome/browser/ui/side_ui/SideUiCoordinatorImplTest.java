@@ -15,8 +15,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Px;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,6 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
@@ -43,6 +48,9 @@ public class SideUiCoordinatorImplTest {
     @Mock private ViewStub mStartAnchorContainerStub;
     @Mock private ViewStub mEndAnchorContainerStub;
     @Mock private SideUiObserver mSideUiObserver;
+
+    private final SettableNonNullObservableSupplier<Integer> mTopMarginSupplier =
+            ObservableSuppliers.createNonNull(0);
 
     private ViewGroup mStartAnchorContainer;
     private ViewGroup mEndAnchorContainer;
@@ -64,7 +72,8 @@ public class SideUiCoordinatorImplTest {
         doReturn(mEndAnchorContainer).when(mEndAnchorContainerStub).inflate();
 
         mCoordinator =
-                new SideUiCoordinatorImpl(mStartAnchorContainerStub, mEndAnchorContainerStub);
+                new SideUiCoordinatorImpl(
+                        mStartAnchorContainerStub, mEndAnchorContainerStub, mTopMarginSupplier);
     }
 
     @Test
@@ -171,6 +180,26 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 200));
         assertEquals(mEndAnchorContainer, mSideUiContainerView.getParent());
+    }
+
+    @Test
+    public void testOnTopMarginChanged() {
+        // Set initial params, since these Views aren't actually attached.
+        mStartAnchorContainer.setLayoutParams(new MarginLayoutParams(0, 0));
+        mEndAnchorContainer.setLayoutParams(new MarginLayoutParams(0, 0));
+
+        // Notify of a top margin change.
+        @Px int topMarginPx = 30;
+        mTopMarginSupplier.set(topMarginPx);
+
+        // Verify the topMargin is set appropriately.
+        MarginLayoutParams startLayoutParams =
+                ((MarginLayoutParams) mStartAnchorContainer.getLayoutParams());
+        assertEquals("Unexpected top margin.", topMarginPx, startLayoutParams.topMargin);
+
+        MarginLayoutParams endLayoutParams =
+                ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
+        assertEquals("Unexpected top margin.", topMarginPx, endLayoutParams.topMargin);
     }
 
     private int getSideUiContainerViewWidth() {
