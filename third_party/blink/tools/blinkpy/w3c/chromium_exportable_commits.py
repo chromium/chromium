@@ -9,7 +9,8 @@ from blinkpy.w3c.known_exported_change_ids import KNOWN_EXPORTED_CHANGE_IDS
 
 _log = logging.getLogger(__name__)
 
-DEFAULT_COMMIT_HISTORY_WINDOW = 10000
+# This represents ~2 months worth of commits.
+DEFAULT_COMMIT_HISTORY_WINDOW = 20_000
 
 
 def exportable_commits_over_last_n_commits(
