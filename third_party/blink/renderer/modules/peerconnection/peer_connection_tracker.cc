@@ -369,7 +369,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 
     base::ListValue result_list;
 
-    if (!pc_handler_) {
+    if (!pc_handler_ || !pc_handler_->frame()) {
       return result_list;
     }
     auto* local_frame = To<WebLocalFrameImpl>(*pc_handler_->frame()).GetFrame();

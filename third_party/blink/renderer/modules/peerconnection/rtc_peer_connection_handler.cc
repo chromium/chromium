@@ -830,6 +830,7 @@ void RTCPeerConnectionHandler::CloseAndUnregister() {
   // Clear the pointer to client_ so that it does not interfere with
   // garbage collection.
   client_ = nullptr;
+  frame_ = nullptr;
   is_unregistered_ = true;
 
   // Reset the `PeerConnectionDependencyFactory` so we don't prevent it from
