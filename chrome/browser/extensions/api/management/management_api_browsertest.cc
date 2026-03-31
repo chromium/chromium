@@ -406,17 +406,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementApiEscalationTest,
   SetEnabled(true, false, keys::kGestureNeededForEscalationError,
              source_extension);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/397754565): Enable this block on desktop Android when
-  // ExtensionInstallPrompt is supported. The rest of this test passes because
-  // the Android stub for ExtensionInstallPrompt always accepts the dialog.
   {
     // Expect an error that user cancelled the dialog.
     ScopedTestDialogAutoConfirm auto_confirm(
         ScopedTestDialogAutoConfirm::CANCEL);
     SetEnabled(true, true, keys::kUserDidNotReEnableError, source_extension);
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   {
     // The extension should load when the user accepts the dialog, triggering
