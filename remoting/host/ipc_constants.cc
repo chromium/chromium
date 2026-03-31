@@ -17,22 +17,27 @@ namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_LINUX)
-
 #if !defined(NDEBUG)
 // Use a different IPC name for debug builds so that we can run the host
 // directly from out/Debug without interfering with the production host that
 // might also be running.
-constexpr char kChromotingHostServicesIpcNamePattern[] =
+constexpr char kChromotingHostServicesIpcName[] =
+    "chromoting.host_services_debug_mojo_ipc";
+
+#if BUILDFLAG(IS_LINUX)
+constexpr char kLegacyChromotingHostServicesIpcNamePattern[] =
     "chromoting.%s.host_services_debug_mojo_ipc";
-#else
-constexpr char kChromotingHostServicesIpcNamePattern[] =
+#endif
+
+#else  // defined(NDEBUG)
+constexpr char kChromotingHostServicesIpcName[] =
+    "chromoting.host_services_mojo_ipc";
+
+#if BUILDFLAG(IS_LINUX)
+constexpr char kLegacyChromotingHostServicesIpcNamePattern[] =
     "chromoting.%s.host_services_mojo_ipc";
 #endif
 
-#else
-constexpr char kChromotingHostServicesIpcName[] =
-    "chromoting.host_services_mojo_ipc";
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -97,23 +102,24 @@ GetChromotingHostServicesServerName() {
   static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
       server_name(
           named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
-#if BUILDFLAG(IS_LINUX)
-              // Linux host creates the socket file in /tmp, and it won't be
-              // deleted until reboot, so we put username in the path in case
-              // the user switches the host owner.
-              base::StringPrintf(kChromotingHostServicesIpcNamePattern,
-                                 GetUsername().c_str())
-#else
-              // None of the core Windows processes runs as the host owner so we
-              // can't just put username in the path. This is fine since the
-              // named pipe is accessible by all authenticated users.
-              // On Mac, the channel is managed by the AgentProcessBroker, which
-              // runs as root, so we can't put the username in the path either.
-              kChromotingHostServicesIpcName
-#endif
-                  ));
+              kChromotingHostServicesIpcName));
   return *server_name;
 }
+
+#if BUILDFLAG(IS_LINUX)
+const mojo::NamedPlatformChannel::ServerName&
+GetLegacyChromotingHostServicesServerName() {
+  // The legacy Linux single-process host is run as the login user, so we put
+  // the username in the path in case there are multiple host services running
+  // on the same machine.
+  static const base::NoDestructor<mojo::NamedPlatformChannel::ServerName>
+      server_name(
+          named_mojo_ipc_server::WorkingDirectoryIndependentServerNameFromUTF8(
+              base::StringPrintf(kLegacyChromotingHostServicesIpcNamePattern,
+                                 GetUsername().c_str())));
+  return *server_name;
+}
+#endif
 
 #if BUILDFLAG(IS_MAC)
 
