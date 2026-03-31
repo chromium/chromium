@@ -306,14 +306,17 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // permit `save_timer_` to start periodically triggering saving to disk.
   bool allow_save_ = false;
 
-  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
+  // TODO(crbug.com/496477486): remove when the FullRestoreSaveHandler is no
+  // longer outliving the Env and the AppRestoreArcInfo it observes.
+  base::ScopedObservation<aura::Env, aura::EnvObserver>::LeakedDanglingUntriaged
+      env_observer_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
   base::ScopedObservation<app_restore::AppRestoreArcInfo,
-                          app_restore::AppRestoreArcInfo::Observer>
-      arc_info_observer_{this};
+                          app_restore::AppRestoreArcInfo::Observer>::
+      LeakedDanglingUntriaged arc_info_observer_{this};
 
   base::WeakPtrFactory<FullRestoreSaveHandler> weak_factory_{this};
 };
