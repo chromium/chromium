@@ -841,6 +841,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAppRatingPromptFeature.name == feature->name) {
+    // A config that allows the App Rating Prompt IPH to be shown only if
+    // no other startup promos have been shown in the last 3 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    // Ensure no other startup promos were shown in the last 72 hours (3 days).
+    config.trigger = EventConfig("android_startup_promo_shown",
+                                 Comparator(EQUAL, 0), 3, 360);
+    return config;
+  }
+
   if (kIPHAppSpecificHistory.name == feature->name) {
     // A config that allows the AppSpecificHistory IPH to be shown once
     // a week, up to 3 times, unless the button is clicked at least once.

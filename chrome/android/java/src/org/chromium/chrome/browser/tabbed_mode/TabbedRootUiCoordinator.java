@@ -237,6 +237,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -1349,7 +1350,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         || RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
                                 profile, mMessageDispatcher, mActivity);
 
-        if (!didTriggerPromo) {
+        if (didTriggerPromo) {
+            TrackerFactory.getTrackerForProfile(profile)
+                    .notifyEvent(EventConstants.ANDROID_STARTUP_PROMO_SHOWN);
+        } else {
             mToolbarButtonInProductHelpController.showColdStartIph();
             mReadLaterIphController.showColdStartIph();
             if (MultiWindowUtils.shouldShowManageWindowsMenu()) {

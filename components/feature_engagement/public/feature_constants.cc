@@ -336,6 +336,9 @@ BASE_FEATURE(kIPHPageSummaryWebMenuFeature,
 BASE_FEATURE(kIPHPageSummaryPdfMenuFeature,
              "IPH_PageSummaryPdfMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAppRatingPromptFeature,
+             "IPH_AppRatingPrompt",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAppSpecificHistory,
              "IPH_AppSpecificHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);

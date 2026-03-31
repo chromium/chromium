@@ -50,6 +50,9 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
             "adaptive_toolbar_page_summary_web_used";
 
+    /** A generic event that any startup promo should notify when it is shown. */
+    public static final String ANDROID_STARTUP_PROMO_SHOWN = "android_startup_promo_shown";
+
     /** Read later related events. */
     public static final String APP_MENU_BOOKMARK_STAR_ICON_PRESSED =
             "app_menu_bookmark_star_icon_pressed";
