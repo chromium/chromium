@@ -489,10 +489,11 @@ TEST(FrameIntervalMatcherInputsTest, WriteIntoTrace) {
   interval_inputs1.content_interval_info.push_back(
       {ContentFrameIntervalType::kVideo, base::Milliseconds(32)});
 
-  EXPECT_EQ(perfetto::TracedValueToString(inputs),
-            "{FrameSinkId(0, 1):"
-            "{time_diff_us:0,has_input:false,only_content:false},"
-            "content_info_0:{type:video,interval_us:32000,duplicate_count:0}}");
+  EXPECT_EQ(
+      perfetto::TracedValueToString(inputs),
+      "{FrameSinkId(0, 1):"
+      "{time_diff_us:0,has_input:false,only_content:false,"
+      "content_info_0:{type:video,interval_us:32000,duplicate_count:0}}}");
 }
 
 TEST(FrameIntervalMatchersTest, UserInputBoostMatcher) {
