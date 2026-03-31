@@ -319,6 +319,18 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
       destroy_buffer = 1;
     }
   } else {
+    for (uint8_t ref_idx : options.reference_buffers) {
+      if (ref_idx >= GetMaxNumOfManualRefBuffers()) {
+        return {EncoderStatus::Codes::kBadReferenceBuffer,
+                "Manual reference buffer index exceeds that is supported by "
+                "encoder"};
+      }
+    }
+    if (options.reference_buffers.size() > list0_reference_frames_.size()) {
+      return {EncoderStatus::Codes::kBadReferenceBuffer,
+              "Number of manual reference buffers exceeds that is supported by "
+              "encoder"};
+    }
     reference_buffers = options.reference_buffers;
     update_buffer = options.update_buffer;
   }
@@ -376,7 +388,6 @@ EncoderStatus D3D12VideoEncodeH265Delegate::EncodeImpl(
     pic_params_.pList0ReferenceFrames = nullptr;
   } else {
     pic_params_.FrameType = D3D12_VIDEO_ENCODER_FRAME_TYPE_HEVC_P_FRAME;
-    CHECK_LE(reference_buffers.size(), list0_reference_frames_.size());
     for (size_t i = 0; i < reference_buffers.size(); i++) {
       std::optional<uint32_t> descriptor_index =
           reference_frame_manager_.GetReferenceFrameId(reference_buffers[i]);
