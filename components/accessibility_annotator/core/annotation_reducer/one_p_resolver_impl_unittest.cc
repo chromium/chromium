@@ -65,14 +65,14 @@ class OnePResolverImplTest : public ::testing::Test {
 
     if (feature_state == FeatureState::kEnabledWithUrl) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          kAccessibilityAnnotationReducerOnePResolver,
+          features::kAccessibilityAnnotationReducerOnePResolver,
           {{"one_p_service_url", test_server_.GetURL("/context").spec()}});
     } else if (feature_state == FeatureState::kEnabledEmptyUrl) {
       scoped_feature_list_.InitAndEnableFeature(
-          kAccessibilityAnnotationReducerOnePResolver);
+          features::kAccessibilityAnnotationReducerOnePResolver);
     } else {
       scoped_feature_list_.InitAndDisableFeature(
-          kAccessibilityAnnotationReducerOnePResolver);
+          features::kAccessibilityAnnotationReducerOnePResolver);
     }
   }
 

@@ -72,7 +72,7 @@ void OnePResolverImpl::Query(std::u16string query, QueryCallback callback) {
   // Pre-flight checks. Validate feature state, user sign-in status, and the
   // configured endpoint URL.
   if (!base::FeatureList::IsEnabled(
-          kAccessibilityAnnotationReducerOnePResolver)) {
+          features::kAccessibilityAnnotationReducerOnePResolver)) {
     post_empty();
     return;
   }
@@ -83,7 +83,7 @@ void OnePResolverImpl::Query(std::u16string query, QueryCallback callback) {
     return;
   }
 
-  GURL url(kAccessibilityAnnotatorOnePServiceUrl.Get());
+  GURL url(features::kAccessibilityAnnotatorOnePServiceUrl.Get());
   if (!url.is_valid()) {
     post_empty();
     return;

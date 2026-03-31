@@ -243,7 +243,7 @@ TEST_F(AccessibilityAnnotationSyncBridgeTest, EnforceTTLOnStartup) {
 
   base::Time expired_time =
       base::Time::Now() -
-      accessibility_annotator::kAccessibilityAnnotationTTL.Get() -
+      accessibility_annotator::features::kAccessibilityAnnotationTTL.Get() -
       base::Days(1);
   base::Time valid_time = base::Time::Now() - base::Days(1);
   AddInitialSpecificsToStore(kExpiredId, expired_time);
@@ -286,7 +286,7 @@ TEST_F(AccessibilityAnnotationSyncBridgeTest, EnforceTTLOnIncrementalChanges) {
 
   base::Time expired_time =
       base::Time::Now() -
-      accessibility_annotator::kAccessibilityAnnotationTTL.Get() -
+      accessibility_annotator::features::kAccessibilityAnnotationTTL.Get() -
       base::Days(1);
   base::Time valid_time = base::Time::Now() - base::Days(1);
 

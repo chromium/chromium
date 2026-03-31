@@ -31,7 +31,7 @@ bool IsInvalidChar(char c) {
 std::unique_ptr<ContentAnnotationValidator>
 ContentAnnotationValidator::Create() {
   std::string schema_json =
-      kContentAnnotatorExtractedDataValidationSchema.Get();
+      features::kContentAnnotatorExtractedDataValidationSchema.Get();
 
   if (schema_json.empty()) {
     return std::make_unique<ContentAnnotationValidator>(base::DictValue());

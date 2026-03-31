@@ -76,7 +76,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(kContentAnnotator);
+    enabled_features.push_back(features::kContentAnnotator);
 #if BUILDFLAG(IS_CHROMEOS)
     enabled_features.push_back(
         chromeos::features::kFeatureManagementPassageEmbedder);

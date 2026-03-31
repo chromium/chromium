@@ -46,7 +46,7 @@ std::unique_ptr<KeyedService>
 AccessibilityAnnotationServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(
-          accessibility_annotator::kAccessibilityAnnotator)) {
+          accessibility_annotator::features::kAccessibilityAnnotator)) {
     return nullptr;
   }
 
@@ -59,8 +59,8 @@ AccessibilityAnnotationServiceFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<accessibility_annotator::EntityDataProvider> provider =
       nullptr;
-  if (base::FeatureList::IsEnabled(
-          accessibility_annotator::kAccessibilityAnnotatorGetEntities)) {
+  if (base::FeatureList::IsEnabled(accessibility_annotator::features::
+                                       kAccessibilityAnnotatorGetEntities)) {
     provider =
         std::make_unique<accessibility_annotator::DirectServerEntityProvider>(
             *backend);

@@ -31,7 +31,8 @@ AccessibilityAnnotatorBackendImpl::AccessibilityAnnotatorBackendImpl(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
           db_path_)),
-      content_annotations_cache_(kContentAnnotatorMaxCacheAnnotations.Get()) {
+      content_annotations_cache_(
+          features::kContentAnnotatorMaxCacheAnnotations.Get()) {
   auto processor = std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
       syncer::ACCESSIBILITY_ANNOTATION,
       /*dump_stack=*/base::DoNothing());

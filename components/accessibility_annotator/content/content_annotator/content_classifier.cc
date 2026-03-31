@@ -28,7 +28,7 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create(
     passage_embeddings::Embedder* embedder) {
   std::unique_ptr<ContentAnnotatorRuleBasedClassifier> title_keyword_classifier;
   const std::string& title_keyword_rules =
-      kContentAnnotatorClassifierTitleKeywordRules.Get();
+      features::kContentAnnotatorClassifierTitleKeywordRules.Get();
   if (!title_keyword_rules.empty()) {
     title_keyword_classifier =
         ContentAnnotatorRuleBasedClassifier::Create(title_keyword_rules);
@@ -39,7 +39,7 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create(
 
   std::unique_ptr<ContentAnnotatorUrlMatcherClassifier> url_match_classifier;
   const std::string& url_match_rules =
-      kContentAnnotatorClassifierUrlMatchRules.Get();
+      features::kContentAnnotatorClassifierUrlMatchRules.Get();
   if (!url_match_rules.empty()) {
     url_match_classifier =
         ContentAnnotatorUrlMatcherClassifier::Create(url_match_rules);
@@ -52,7 +52,7 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create(
   base::flat_map<std::string, ContentClassifierRelevance>
       classifier_relevance_values;
   const std::string& relevance_values_json =
-      kContentAnnotatorClassifierRelevanceValues.Get();
+      features::kContentAnnotatorClassifierRelevanceValues.Get();
   if (!relevance_values_json.empty()) {
     classifier_relevance_values =
         ParseRelevanceValuesFromJson(relevance_values_json);
@@ -63,8 +63,8 @@ std::unique_ptr<ContentClassifier> ContentClassifier::Create(
 
   // Parse the supported languages.
   base::flat_set<std::string> supported_languages(
-      base::SplitString(kContentAnnotatorSupportedLanguages.Get(), ",",
-                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+      base::SplitString(features::kContentAnnotatorSupportedLanguages.Get(),
+                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
 
   return std::make_unique<ContentClassifier>(
       PassKey(), embedder, std::move(title_keyword_classifier),
@@ -97,7 +97,7 @@ void ContentClassifier::OnEmbedderModelChanged() {
   }
 
   const std::string& semantic_rules =
-      kContentAnnotatorClassifierSemanticMatchRules.Get();
+      features::kContentAnnotatorClassifierSemanticMatchRules.Get();
   if (semantic_rules.empty()) {
     return;
   }
@@ -254,7 +254,7 @@ void ContentClassifier::RunSemanticMatchClassifier(
 
     if (classification_result &&
         classification_result->score >=
-            kContentAnnotatorSemanticMatchThreshold.Get()) {
+            features::kContentAnnotatorSemanticMatchThreshold.Get()) {
       semantic_result.category = classification_result->category;
       // TODO(crbug.com/478246547): Log the value to UKM.
     }
@@ -291,7 +291,7 @@ ContentClassificationResult ContentClassifier::Classify(
       ukm_builder(input.ukm_source_id);
 
   // 1. Check whether the page is in one of the target language(s).
-  if (kContentAnnotatorLanguageCheckEnabled.Get()) {
+  if (features::kContentAnnotatorLanguageCheckEnabled.Get()) {
     result.is_in_target_language =
         supported_languages_.contains(*input.adopted_language);
     base::UmaHistogramBoolean("AccessibilityAnnotator.LanguageCheck",
@@ -300,8 +300,8 @@ ContentClassificationResult ContentClassifier::Classify(
   }
 
   // 2. Check whether the page is within the sensitivity threshold.
-  result.is_sensitive =
-      *input.sensitivity_score > kContentAnnotatorSensitivityThreshold.Get();
+  result.is_sensitive = *input.sensitivity_score >
+                        features::kContentAnnotatorSensitivityThreshold.Get();
   base::UmaHistogramBoolean("AccessibilityAnnotator.SensitivityCheck",
                             !result.is_sensitive.value());
 

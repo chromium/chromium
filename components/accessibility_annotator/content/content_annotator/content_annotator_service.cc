@@ -111,7 +111,7 @@ ContentAnnotatorService::ContentAnnotatorService(
       page_embeddings_service_(page_embeddings_service),
       accessibility_annotator_backend_(accessibility_annotator_backend),
       embedder_(embedder),
-      join_entries_(kContentAnnotatorMaxPendingUrls.Get()),
+      join_entries_(features::kContentAnnotatorMaxPendingUrls.Get()),
       content_classifier_(std::move(content_classifier)),
       validator_(std::move(validator)) {
   CHECK(content_classifier_);
@@ -249,7 +249,8 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
       PassesSafetyChecks(result);
   base::UmaHistogramBoolean("AccessibilityAnnotator.FullAnnotationReached",
                             reached_annotation);
-  if (reached_annotation && kContentAnnotatorEnableFullAnnotation.Get()) {
+  if (reached_annotation &&
+      features::kContentAnnotatorEnableFullAnnotation.Get()) {
     optimization_guide::proto::PageContext page_context;
     page_context.set_url(complete_data.url.spec());
     page_context.set_title(complete_data.page_title.value());
@@ -269,7 +270,7 @@ void ContentAnnotatorService::GenerateAnnotations(
   optimization_guide_remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
       std::move(request),
-      {.execution_timeout = kContentAnnotatorAnnotationTimeout.Get()},
+      {.execution_timeout = features::kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
                      weak_ptr_factory_.GetWeakPtr(), url,
                      std::move(page_title)));

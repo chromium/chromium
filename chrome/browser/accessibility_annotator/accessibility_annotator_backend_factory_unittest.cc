@@ -29,7 +29,7 @@ class AccessibilityAnnotatorBackendFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      accessibility_annotator::kAccessibilityAnnotator};
+      accessibility_annotator::features::kAccessibilityAnnotator};
   std::unique_ptr<TestingProfile> profile_;
 };
 
@@ -50,7 +50,7 @@ TEST_F(AccessibilityAnnotatorBackendFactoryTest,
 
 TEST_F(AccessibilityAnnotatorBackendFactoryTest, ServiceDisabled) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(kAccessibilityAnnotator);
+  scoped_feature_list_.InitAndDisableFeature(features::kAccessibilityAnnotator);
 
   EXPECT_EQ(nullptr, AccessibilityAnnotatorBackendFactory::GetForProfile(
                          profile_.get()));

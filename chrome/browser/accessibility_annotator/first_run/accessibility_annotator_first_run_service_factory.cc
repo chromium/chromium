@@ -49,7 +49,8 @@ AccessibilityAnnotatorFirstRunServiceFactory::
 std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRun)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorFirstRun)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

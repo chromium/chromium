@@ -99,38 +99,39 @@ class ContentClassifierTest : public testing::Test {
       const ClassifierTestOptions& options = {}) {
     base::FieldTrialParams params;
     if (!options.title_keyword_rules.empty()) {
-      params[kContentAnnotatorClassifierTitleKeywordRules.name] =
+      params[features::kContentAnnotatorClassifierTitleKeywordRules.name] =
           options.title_keyword_rules;
     }
     if (!options.url_match_rules.empty()) {
-      params[kContentAnnotatorClassifierUrlMatchRules.name] =
+      params[features::kContentAnnotatorClassifierUrlMatchRules.name] =
           options.url_match_rules;
     }
     if (!options.relevance_values.empty()) {
-      params[kContentAnnotatorClassifierRelevanceValues.name] =
+      params[features::kContentAnnotatorClassifierRelevanceValues.name] =
           options.relevance_values;
     }
     if (!options.semantic_match_rules.empty()) {
-      params[kContentAnnotatorClassifierSemanticMatchRules.name] =
+      params[features::kContentAnnotatorClassifierSemanticMatchRules.name] =
           options.semantic_match_rules;
     }
 
     if (options.sensitivity_threshold.has_value()) {
-      params[kContentAnnotatorSensitivityThreshold.name] =
+      params[features::kContentAnnotatorSensitivityThreshold.name] =
           base::NumberToString(*options.sensitivity_threshold);
     }
 
     if (options.language_check_enabled.has_value()) {
-      params[kContentAnnotatorLanguageCheckEnabled.name] =
+      params[features::kContentAnnotatorLanguageCheckEnabled.name] =
           *options.language_check_enabled ? "true" : "false";
     }
 
     if (options.semantic_match_threshold.has_value()) {
-      params[kContentAnnotatorSemanticMatchThreshold.name] =
+      params[features::kContentAnnotatorSemanticMatchThreshold.name] =
           base::NumberToString(*options.semantic_match_threshold);
     }
 
-    feature_list_.InitAndEnableFeatureWithParameters(kContentAnnotator, params);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kContentAnnotator, params);
 
     return ContentClassifier::Create(&test_embedder_);
   }

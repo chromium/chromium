@@ -47,9 +47,9 @@ AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
   // The backend is shared between the content annotator and the accessibility
   // annotator services. Disable if BOTH features are disabled.
   if (!base::FeatureList::IsEnabled(
-          accessibility_annotator::kContentAnnotator) &&
+          accessibility_annotator::features::kContentAnnotator) &&
       !base::FeatureList::IsEnabled(
-          accessibility_annotator::kAccessibilityAnnotator)) {
+          accessibility_annotator::features::kAccessibilityAnnotator)) {
     return nullptr;
   }
 

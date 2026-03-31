@@ -24,7 +24,8 @@ AccessibilityAnnotatorDatabase::AccessibilityAnnotatorDatabase() = default;
 AccessibilityAnnotatorDatabase::~AccessibilityAnnotatorDatabase() = default;
 
 bool AccessibilityAnnotatorDatabase::Init(const base::FilePath& db_path) {
-  if (!base::FeatureList::IsEnabled(kAccessibilityAnnotatorDatabaseStorage)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityAnnotatorDatabaseStorage)) {
     return false;
   }
 

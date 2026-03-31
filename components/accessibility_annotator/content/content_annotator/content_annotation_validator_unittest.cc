@@ -25,7 +25,7 @@ class ContentAnnotationValidatorTest : public testing::Test {
   void SetSchema(const std::string& schema) {
     feature_list_.Reset();
     feature_list_.InitAndEnableFeatureWithParameters(
-        kContentAnnotator,
+        features::kContentAnnotator,
         {{"content_annotator_extracted_data_validation_schema", schema}});
   }
 

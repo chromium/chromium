@@ -247,7 +247,7 @@ void AccessibilityAnnotationSyncBridge::OnDataTypeStoreCommit(
 bool AccessibilityAnnotationSyncBridge::DeleteExpiredAnnotations(
     syncer::DataTypeStore::WriteBatch* batch) {
   base::Time now = base::Time::Now();
-  base::TimeDelta ttl = kAccessibilityAnnotationTTL.Get();
+  base::TimeDelta ttl = features::kAccessibilityAnnotationTTL.Get();
   std::vector<std::string> expired_keys;
   for (const auto& [storage_key, specifics] : annotation_entries_) {
     base::Time modification_time =

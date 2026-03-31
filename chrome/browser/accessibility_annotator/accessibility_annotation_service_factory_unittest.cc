@@ -24,7 +24,7 @@ class AccessibilityAnnotationServiceFactoryTest : public testing::Test {
 
 TEST_F(AccessibilityAnnotationServiceFactoryTest,
        ServiceCreatedForRegularProfile) {
-  base::test::ScopedFeatureList feature_list{kAccessibilityAnnotator};
+  base::test::ScopedFeatureList feature_list{features::kAccessibilityAnnotator};
   TestingProfile profile;
   EXPECT_NE(nullptr,
             AccessibilityAnnotationServiceFactory::GetForProfile(&profile));
@@ -32,7 +32,7 @@ TEST_F(AccessibilityAnnotationServiceFactoryTest,
 
 TEST_F(AccessibilityAnnotationServiceFactoryTest,
        ServiceRedirectedForIncognitoProfile) {
-  base::test::ScopedFeatureList feature_list{kAccessibilityAnnotator};
+  base::test::ScopedFeatureList feature_list{features::kAccessibilityAnnotator};
   TestingProfile profile;
   Profile* otr_profile = profile.GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);
@@ -44,7 +44,7 @@ TEST_F(AccessibilityAnnotationServiceFactoryTest,
 
 TEST_F(AccessibilityAnnotationServiceFactoryTest, ServiceDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAccessibilityAnnotator);
+  feature_list.InitAndDisableFeature(features::kAccessibilityAnnotator);
   TestingProfile profile;
   EXPECT_EQ(nullptr,
             AccessibilityAnnotationServiceFactory::GetForProfile(&profile));
@@ -53,8 +53,9 @@ TEST_F(AccessibilityAnnotationServiceFactoryTest, ServiceDisabled) {
 TEST_F(AccessibilityAnnotationServiceFactoryTest,
        EntityDataProviderCreatedWhenFeatureEnabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kAccessibilityAnnotator, kAccessibilityAnnotatorGetEntities}, {});
+  feature_list.InitWithFeatures({features::kAccessibilityAnnotator,
+                                 features::kAccessibilityAnnotatorGetEntities},
+                                {});
   TestingProfile profile;
   AccessibilityAnnotationService* service =
       AccessibilityAnnotationServiceFactory::GetForProfile(&profile);
@@ -65,8 +66,8 @@ TEST_F(AccessibilityAnnotationServiceFactoryTest,
 TEST_F(AccessibilityAnnotationServiceFactoryTest,
        EntityDataProviderNullWhenFeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kAccessibilityAnnotator},
-                                {kAccessibilityAnnotatorGetEntities});
+  feature_list.InitWithFeatures({features::kAccessibilityAnnotator},
+                                {features::kAccessibilityAnnotatorGetEntities});
   TestingProfile profile;
   AccessibilityAnnotationService* service =
       AccessibilityAnnotationServiceFactory::GetForProfile(&profile);

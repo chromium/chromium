@@ -55,7 +55,7 @@ ContentAnnotatorServiceFactory::~ContentAnnotatorServiceFactory() = default;
 std::unique_ptr<KeyedService>
 ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(kContentAnnotator)) {
+  if (!base::FeatureList::IsEnabled(features::kContentAnnotator)) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);

@@ -111,14 +111,14 @@ class ContentAnnotatorServiceFactoryTest : public testing::Test {
 
 TEST_F(ContentAnnotatorServiceFactoryTest, CreatesServiceWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
-      accessibility_annotator::kContentAnnotator);
+      accessibility_annotator::features::kContentAnnotator);
   TestingProfile profile;
   EXPECT_NE(nullptr, ContentAnnotatorServiceFactory::GetForProfile(&profile));
 }
 
 TEST_F(ContentAnnotatorServiceFactoryTest, NoServiceWithFlagDisabled) {
   scoped_feature_list_.InitAndDisableFeature(
-      accessibility_annotator::kContentAnnotator);
+      accessibility_annotator::features::kContentAnnotator);
   TestingProfile profile;
   EXPECT_EQ(nullptr, ContentAnnotatorServiceFactory::GetForProfile(&profile));
 }
@@ -126,7 +126,7 @@ TEST_F(ContentAnnotatorServiceFactoryTest, NoServiceWithFlagDisabled) {
 TEST_F(ContentAnnotatorServiceFactoryTest,
        NoServiceForIncognitoWithFlagEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
-      accessibility_annotator::kContentAnnotator);
+      accessibility_annotator::features::kContentAnnotator);
   TestingProfile profile;
   Profile* otr_profile = profile.GetOffTheRecordProfile(
       Profile::OTRProfileID::PrimaryID(), /*create_if_needed=*/true);

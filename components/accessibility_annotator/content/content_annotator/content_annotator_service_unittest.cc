@@ -57,7 +57,8 @@ class ContentAnnotatorFeatureList {
  public:
   ContentAnnotatorFeatureList() {
     feature_list_.InitAndEnableFeatureWithParameters(
-        kContentAnnotator, {{kContentAnnotatorMaxPendingUrls.name, "2"}});
+        features::kContentAnnotator,
+        {{features::kContentAnnotatorMaxPendingUrls.name, "2"}});
   }
 
  private:
@@ -501,10 +502,10 @@ TEST_F(ContentAnnotatorServiceTest,
 }
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
-  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  // 1. Enable features::kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "true"}});
 
   GURL url("https://example.com/full");
@@ -593,10 +594,10 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationReached) {
 
 TEST_F(ContentAnnotatorServiceTest,
        TestMaybeAnnotate_FullAnnotationNotTriggeredOnFailure) {
-  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  // 1. Enable features::kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "true"}});
 
   GURL url("https://example.com");
@@ -625,10 +626,10 @@ TEST_F(ContentAnnotatorServiceTest,
 
 TEST_F(ContentAnnotatorServiceTest,
        TestMaybeAnnotate_FullAnnotationNotTriggeredWhenFlagDisabled) {
-  // 1. Disable kContentAnnotatorEnableFullAnnotation flag.
+  // 1. Disable features::kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "false"}});
 
   GURL url("https://example.com");
@@ -664,7 +665,7 @@ TEST_F(ContentAnnotatorServiceTest,
        TestMaybeAnnotate_FullAnnotationReachedAfterEmbedderMetadataUpdate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "true"}});
 
   GURL url("https://example.com/");
@@ -703,7 +704,7 @@ TEST_F(ContentAnnotatorServiceTest,
        TestMaybeAnnotate_FullAnnotationReachedValidationFails) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "true"}});
 
   GURL url("https://example.com/validation_failed");
@@ -767,10 +768,10 @@ TEST_F(ContentAnnotatorServiceTest,
 
 TEST_F(ContentAnnotatorServiceTest,
        TestHandleModelExecutionResult_StripsMarkdown) {
-  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  // 1. Enable features::kContentAnnotatorEnableFullAnnotation flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      kContentAnnotator,
+      features::kContentAnnotator,
       {{"content_annotator_enable_full_annotation", "true"}});
 
   GURL url("https://example.com/markdown");
