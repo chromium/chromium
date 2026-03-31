@@ -82,6 +82,8 @@ class TestTabModel : public TabModel {
       const base::Time& end_time) const override;
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override;
+  tabs::TabStripCollection* GetTabStripCollection(
+      base::PassKey<tabs_api::AndroidTabStripModelAdapter>) override;
 
   // TODO(crbug.com/415351293): Implement these.
   // TabListInterface implementation.
@@ -199,6 +201,8 @@ class OwningTestTabModel : public TabModel {
       const base::Time& end_time) const override;
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override;
+  tabs::TabStripCollection* GetTabStripCollection(
+      base::PassKey<tabs_api::AndroidTabStripModelAdapter>) override;
 
   // Test accessors:
 

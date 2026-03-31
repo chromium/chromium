@@ -42,6 +42,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -477,6 +478,13 @@ void TabModelJniBridge::CloseTabsNavigatedInTimeWindow(
   int64_t end_time_ms = end_time.InMillisecondsSinceUnixEpoch();
   return Java_TabModelJniBridge_closeTabsNavigatedInTimeWindow(
       env, java_object_.get(env), begin_time_ms, end_time_ms);
+}
+
+tabs::TabStripCollection* TabModelJniBridge::GetTabStripCollection(
+    base::PassKey<tabs_api::AndroidTabStripModelAdapter>) {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_TabModelJniBridge_getTabStripCollection(env,
+                                                      java_object_.get(env));
 }
 
 void TabModelJniBridge::ActivateTab(tabs::TabHandle tab) {

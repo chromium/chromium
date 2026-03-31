@@ -159,6 +159,12 @@ int TestTabModel::GetTabCountNavigatedInTimeWindow(
 void TestTabModel::CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                                   const base::Time& end_time) {}
 
+tabs::TabStripCollection* TestTabModel::GetTabStripCollection(
+    base::PassKey<tabs_api::AndroidTabStripModelAdapter>) {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 void TestTabModel::ActivateTab(tabs::TabHandle tab) {
   NOTIMPLEMENTED();
 }
@@ -487,6 +493,12 @@ void OwningTestTabModel::CloseTabsNavigatedInTimeWindow(
     const base::Time& begin_time,
     const base::Time& end_time) {
   NOTIMPLEMENTED();
+}
+
+tabs::TabStripCollection* OwningTestTabModel::GetTabStripCollection(
+    base::PassKey<tabs_api::AndroidTabStripModelAdapter>) {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 void OwningTestTabModel::ActivateTab(tabs::TabHandle tab) {

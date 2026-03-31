@@ -115,6 +115,9 @@ class TabModelJniBridge : public TabModel {
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override;
 
+  tabs::TabStripCollection* GetTabStripCollection(
+      base::PassKey<tabs_api::AndroidTabStripModelAdapter>) override;
+
   tabs::TabInterface* DuplicateTab(TabAndroid* tab);
 
   // TODO(crbug.com/415351293): Implement these.

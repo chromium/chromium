@@ -67,8 +67,11 @@ class AndroidTabStripModelAdapter : public TabStripModelAdapter {
   std::string GetWindowId() const override;
 
  private:
+  friend class AndroidTabStripApiBrowserTest;
+  static base::PassKey<AndroidTabStripModelAdapter> GetPassKey();
+
   raw_ref<TabModel> model_;
-  std::unique_ptr<tabs::TabCollection> fake_root_;
+  raw_ptr<tabs::TabStripCollection> root_;
 };
 
 }  // namespace tabs_api

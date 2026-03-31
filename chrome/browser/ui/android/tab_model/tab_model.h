@@ -34,6 +34,14 @@ namespace sync_sessions {
 class SyncedWindowDelegate;
 }
 
+namespace tabs {
+class TabStripCollection;
+}
+
+namespace tabs_api {
+class AndroidTabStripModelAdapter;
+}
+
 class Profile;
 class TabAndroid;
 class TabModelObserver;
@@ -307,6 +315,9 @@ class TabModel : public TabListInterface {
   // committed within the time range [`begin_time`, `end_time`).
   virtual void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                               const base::Time& end_time) = 0;
+
+  virtual tabs::TabStripCollection* GetTabStripCollection(
+      base::PassKey<tabs_api::AndroidTabStripModelAdapter>) = 0;
 
   chrome::android::ActivityType activity_type() const { return activity_type_; }
   const std::optional<chrome::android::CustomTabProfileType>&
