@@ -22,7 +22,6 @@
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_password_store_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

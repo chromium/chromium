@@ -137,8 +137,8 @@ source_set("store_factory") {
     "ios_chrome_profile_password_store_factory.mm",
     "ios_password_manager_settings_service_factory.h",
     "ios_password_manager_settings_service_factory.mm",
-    "ios_password_store_utils.h",
-    "ios_password_store_utils.mm",
+    "ios_password_store.h",
+    "ios_password_store.mm",
   ]
   deps = [
     "//base",
@@ -146,6 +146,7 @@ source_set("store_factory") {
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/password_store:password_store_impl",
     "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
     "//components/sync",

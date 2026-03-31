@@ -22,7 +22,7 @@
 #import "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/credentials_cleaner_runner_factory.h"
-#import "ios/chrome/browser/passwords/model/ios_password_store_utils.h"
+#import "ios/chrome/browser/passwords/model/ios_password_store.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -75,12 +75,14 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabase(password_manager::kProfileStore,
                                             profile->GetStatePath(),
                                             profile->GetPrefs()));
-  scoped_refptr<password_manager::PasswordStore> store =
-      base::MakeRefCounted<password_manager::PasswordStore>(
-          std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-              std::move(login_db),
-              syncer::WipeModelUponSyncDisabledBehavior::kNever,
-              profile->GetPrefs(), GetApplicationContext()->GetOSCryptAsync()));
+  std::unique_ptr<password_manager::PasswordStoreBackend> backend =
+      std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+          std::move(login_db),
+          syncer::WipeModelUponSyncDisabledBehavior::kNever,
+          profile->GetPrefs(), GetApplicationContext()->GetOSCryptAsync());
+  scoped_refptr<password_manager::PasswordStoreIOS> store =
+      base::MakeRefCounted<password_manager::PasswordStoreIOS>(
+          std::move(backend), profile);
   AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   store->Init(std::make_unique<AffiliatedMatchHelper>(affiliation_service));
@@ -88,9 +90,6 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
       CredentialsCleanerRunnerFactory::GetForProfile(profile), store,
       password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
       base::NullCallback());
-  if (!profile->IsOffTheRecord()) {
-    DelayReportingPasswordStoreMetrics(profile);
-  }
   auto password_affiliation_adapter =
       std::make_unique<password_manager::PasswordAffiliationSourceAdapter>();
   password_affiliation_adapter->RegisterPasswordStore(store.get());
