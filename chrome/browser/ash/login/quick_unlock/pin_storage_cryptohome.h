@@ -87,7 +87,6 @@ class PinStorageCryptohome {
                                       std::optional<AuthenticationError> error);
 
   bool salt_obtained_ = false;
-  std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
   std::unique_ptr<PinSaltStorage> pin_salt_storage_;
   AuthFactorEditor auth_factor_editor_;

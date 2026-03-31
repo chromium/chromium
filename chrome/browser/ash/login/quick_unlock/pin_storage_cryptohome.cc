@@ -241,8 +241,9 @@ void PinStorageCryptohome::RemovePin(std::unique_ptr<UserContext> user_context,
 
 void PinStorageCryptohome::OnSystemSaltObtained(
     const std::string& system_salt) {
+  // TODO(crbug.com/498085249): Figure out why system_salt_callbacks_ need to be
+  // delayed until system salt is ready.
   salt_obtained_ = true;
-  system_salt_ = system_salt;
 
   std::vector<base::OnceClosure> callbacks;
   std::swap(callbacks, system_salt_callbacks_);
