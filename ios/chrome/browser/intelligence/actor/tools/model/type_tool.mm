@@ -2,22 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 
+#import <memory>
+#import <utility>
+
+#import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/action_target_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
-#import "ios/chrome/browser/intelligence/actor/tools/model/click_tool_java_script_feature.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/type_tool_java_script_feature.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
-ClickTool::~ClickTool() = default;
+TypeTool::~TypeTool() = default;
 
 // static
-base::expected<std::unique_ptr<ClickTool>, ActorToolError> ClickTool::Create(
-    const optimization_guide::proto::ClickAction& action,
+base::expected<std::unique_ptr<TypeTool>, ActorToolError> TypeTool::Create(
+    const optimization_guide::proto::TypeAction& action,
     ProfileIOS* profile) {
   if (!action.has_tab_id()) {
     return base::unexpected(
@@ -29,7 +34,7 @@ base::expected<std::unique_ptr<ClickTool>, ActorToolError> ClickTool::Create(
     return base::unexpected(resolution_result.error());
   }
 
-  if (!action.has_click_count() || !action.has_click_type()) {
+  if (!action.has_text() || !action.has_mode()) {
     return base::unexpected(
         ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
   }
@@ -49,11 +54,11 @@ base::expected<std::unique_ptr<ClickTool>, ActorToolError> ClickTool::Create(
         ActorToolError{ActorToolErrorCode::kCreationMissingRequiredFields});
   }
 
-  return std::unique_ptr<ClickTool>(
-      new ClickTool(action, resolution_result.value().web_state));
+  return std::unique_ptr<TypeTool>(
+      new TypeTool(action, resolution_result.value().web_state));
 }
 
-void ClickTool::Execute(ActorCallback callback) {
+void TypeTool::Execute(ActorCallback callback) {
   if (!web_state_) {
     std::move(callback).Run(base::unexpected(
         ActorToolError{ActorToolErrorCode::kExecutionMissingDependencies}));
@@ -69,13 +74,19 @@ void ClickTool::Execute(ActorCallback callback) {
 
   ResolveTargetFrame(web_state_, frames_manager->GetMainWebFrame()->AsWeakPtr(),
                      action_.target(),
-                     base::BindOnce(&ClickTool::OnTargetFrameResolved,
+                     base::BindOnce(&TypeTool::OnTargetFrameResolved,
                                     weak_ptr_factory_.GetWeakPtr(), action_,
                                     std::move(callback)));
 }
 
-void ClickTool::OnTargetFrameResolved(
-    const optimization_guide::proto::ClickAction& action,
+TypeTool::TypeTool(const optimization_guide::proto::TypeAction& action,
+                   base::WeakPtr<web::WebState> web_state)
+    : action_(action),
+      web_state_(web_state),
+      js_feature_(TypeToolJavaScriptFeature::GetInstance()) {}
+
+void TypeTool::OnTargetFrameResolved(
+    optimization_guide::proto::TypeAction action,
     ActorCallback callback,
     base::expected<ActionTargetJavaScriptFeature::TargetFrameResult,
                    ActorToolError> result) {
@@ -95,14 +106,7 @@ void ClickTool::OnTargetFrameResolved(
 
   // Update the target with the potentially translated coordinates relative
   // to the target frame.
-  optimization_guide::proto::ClickAction new_action = action;
-  *new_action.mutable_target() = target_frame.target;
+  *action.mutable_target() = target_frame.target;
 
-  js_feature_->Click(target_web_frame, new_action, std::move(callback));
+  js_feature_->Type(target_web_frame, action, std::move(callback));
 }
-
-ClickTool::ClickTool(const optimization_guide::proto::ClickAction& action,
-                     base::WeakPtr<web::WebState> web_state)
-    : action_(action),
-      web_state_(web_state),
-      js_feature_(ClickToolJavaScriptFeature::GetInstance()) {}

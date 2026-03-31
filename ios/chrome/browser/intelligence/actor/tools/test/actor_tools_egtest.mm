@@ -18,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/base/url_util.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/http_request.h"
@@ -60,6 +61,10 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
 
   if (node.content_attributes().has_text_data() &&
       node.content_attributes().text_data().text_content() == text) {
+    return {&node, frame_token};
+  }
+  if (node.content_attributes().has_form_control_data() &&
+      node.content_attributes().form_control_data().field_value() == text) {
     return {&node, frame_token};
   }
   for (const auto& child : node.children_nodes()) {
@@ -391,6 +396,99 @@ FindNodeWithText(const optimization_guide::proto::ContentNode& node,
   [self executeAction:action];
 
   [ChromeEarlGrey waitForWebStateContainingText:"PageB"];
+}
+
+// Tests that the TypeTool can successfully type in an <input> given its
+// coordinates.
+- (void)testTypeTool_typesByCoordinates {
+  const std::string inputHTML = "<input type='text'>";
+  [ChromeEarlGrey loadURL:[self URLForHTML:inputHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"input"]];
+
+  NSString* getCoordinates = base::SysUTF8ToNSString(
+      R"(
+      (function() {
+        const rect = document.querySelector('input').getBoundingClientRect();
+        return {x: Math.round(rect.x + rect.width / 2),
+                y: Math.round(rect.y + rect.height / 2)};
+      })();
+      )");
+  base::Value coordinates = [ChromeEarlGrey evaluateJavaScript:getCoordinates];
+  GREYAssertTrue(coordinates.is_dict(), @"Result is not a dict");
+
+  int x = static_cast<int>(coordinates.GetDict().FindDouble("x").value());
+  int y = static_cast<int>(coordinates.GetDict().FindDouble("y").value());
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::TypeAction* typeAction = action.mutable_type();
+  typeAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  typeAction->set_text("Hello World");
+  typeAction->set_mode(optimization_guide::proto::TypeAction::APPEND);
+
+  optimization_guide::proto::ActionTarget* target =
+      typeAction->mutable_target();
+  target->mutable_coordinate()->set_x(x);
+  target->mutable_coordinate()->set_y(y);
+
+  [self executeAction:action];
+
+  base::Value value = [ChromeEarlGrey
+      evaluateJavaScript:@"document.querySelector('input').value"];
+  GREYAssertEqualObjects(base::SysUTF8ToNSString(value.GetString()),
+                         @"Hello World", @"Input value did not match");
+}
+
+// Tests that the TypeTool can successfully type in an <input> given its
+// document and node identifiers.
+- (void)testTypeTool_typesByIdentifiers {
+  const std::string initialValue = "Initial";
+  const std::string inputHTML = base::StringPrintf(
+      "<input type='text' value='%s'>", initialValue.c_str());
+  const std::string iframeURL = [self URLForHTML:inputHTML].spec();
+  const std::string iframeHTML =
+      base::StringPrintf("<iframe src='%s'></iframe>", iframeURL.c_str());
+
+  [ChromeEarlGrey loadURL:[self URLForHTML:iframeHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"iframe"]];
+
+  NSData* apcData = [ActorAppInterface fetchLatestAPC];
+  optimization_guide::proto::PageContext pageContext;
+  GREYAssertTrue(pageContext.ParseFromArray([apcData bytes], [apcData length]),
+                 @"Failed to parse PageContext");
+
+  std::string mainFrameToken = pageContext.annotated_page_content()
+                                   .main_frame_data()
+                                   .document_identifier()
+                                   .serialized_token();
+  auto [node, token] =
+      FindNodeWithText(pageContext.annotated_page_content().root_node(),
+                       initialValue, mainFrameToken);
+
+  GREYAssertTrue(node != nullptr, @"Failed to find input node");
+  int nodeId = node->content_attributes().common_ancestor_dom_node_id();
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::TypeAction* typeAction = action.mutable_type();
+  typeAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  typeAction->set_text("Hello World");
+  typeAction->set_mode(optimization_guide::proto::TypeAction::DELETE_EXISTING);
+
+  optimization_guide::proto::ActionTarget* target =
+      typeAction->mutable_target();
+  target->set_content_node_id(nodeId);
+  target->mutable_document_identifier()->set_serialized_token(token);
+
+  [self executeAction:action];
+
+  base::Value value = [ChromeEarlGrey
+      evaluateJavaScript:
+          @"window.frames[0].document.querySelector('input').value"];
+  GREYAssertEqualObjects(base::SysUTF8ToNSString(value.GetString()),
+                         @"Hello World", @"Input value did not match");
 }
 
 @end

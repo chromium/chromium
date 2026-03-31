@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/history_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/navigate_tool.h"
+#import "ios/chrome/browser/intelligence/actor/tools/model/type_tool.h"
 
 ActorToolFactory::ActorToolFactory() = default;
 ActorToolFactory::~ActorToolFactory() = default;
@@ -26,6 +27,8 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return HistoryTool::Create(action.back(), profile);
     case optimization_guide::proto::Action::kForward:
       return HistoryTool::Create(action.forward(), profile);
+    case optimization_guide::proto::Action::kType:
+      return TypeTool::Create(action.type(), profile);
     default:
       return base::unexpected(
           ActorToolError{ActorToolErrorCode::kUnsupportedAction});
