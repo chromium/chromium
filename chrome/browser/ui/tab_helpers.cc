@@ -286,6 +286,8 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/contextual_tasks/search_ai_mode_promo_tab_helper.h"
+#include "components/contextual_tasks/public/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 using content::WebContents;
@@ -588,8 +590,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   SafetyTipWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  contextual_tasks::SearchAiModePromoTabHelper::CreateForWebContents(
-      web_contents);
+  if (base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo) &&
+      base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    contextual_tasks::SearchAiModePromoTabHelper::CreateForWebContents(
+        web_contents);
+  }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (site_engagement::SiteEngagementService::IsEnabled()) {
     site_engagement::SiteEngagementService::Helper::CreateForWebContents(

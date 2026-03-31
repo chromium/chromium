@@ -23,8 +23,10 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/search_ai_mode/signin_promo_controller.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -80,6 +82,7 @@ class ContextualTaskNavigationObserver
                     web_contents->GetBrowserContext()))),
         on_completion_callback_(std::move(on_completion_callback)) {
     CHECK(contextual_tasks_ui_service_);
+    CHECK(on_completion_callback_);
   }
 
   ~ContextualTaskNavigationObserver() override = default;
@@ -160,12 +163,9 @@ SearchAiModePromoTabHelper::SearchAiModePromoTabHelper(
               Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       identity_manager_(IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
-    if (base::FeatureList::IsEnabled(
-            switches::kEnableSearchAIModeSigninPromo)) {
-      // TODO(crbug.com/486858611): This tab helper will be created only if the
-      // feature is enabled.
-      CHECK(contextual_tasks_ui_service_);
-    }
+  CHECK(base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo));
+  CHECK(base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks));
+  CHECK(contextual_tasks_ui_service_);
 }
 
 SearchAiModePromoTabHelper::~SearchAiModePromoTabHelper() = default;
@@ -180,6 +180,7 @@ void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
   aim_search_web_contents_.reset();
 
   if (!original_entry || !target_url_.is_valid()) {
+    SelfDestruct();
     return;
   }
   content::NavigationController::LoadURLParams params(original_entry->GetURL());
@@ -200,9 +201,8 @@ void SearchAiModePromoTabHelper::TriggerCoBrowsePostSignIn() {
   contextual_task_observer_ =
       std::make_unique<ContextualTaskNavigationObserver>(
           web_contents(), target_url_,
-          base::BindOnce(
-              &SearchAiModePromoTabHelper::OnSearchResultNavigationComplete,
-              weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&SearchAiModePromoTabHelper::SelfDestruct,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SearchAiModePromoTabHelper::DidFinishNavigation(
@@ -211,11 +211,9 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
   if (has_checked_initial_navigation_) {
     return;
   }
-  if (!base::FeatureList::IsEnabled(switches::kEnableSearchAIModeSigninPromo)) {
-    return;
-  }
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage() ||
+      !navigation_handle->GetURL().is_valid()) {
     return;
   }
   has_checked_initial_navigation_ = true;
@@ -223,17 +221,20 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
   // If the user is already signed in, no promo is needed.
   if (!contextual_tasks_ui_service_ ||
       contextual_tasks_ui_service_->IsSignedInToBrowserWithValidCredentials()) {
+    SelfDestruct();
     return;
   }
 
-  // Determine if the navigation was initiated from an AI page.
+  // Determine if the navigation was initiated from an AI search page.
   std::optional<base::WeakPtr<content::WebContents>> initiator =
       GetInitiatorWebContents(*navigation_handle);
   if (!initiator.has_value() || !IsAIModeSearch(initiator.value().get())) {
+    SelfDestruct();
     return;
   }
   aim_search_web_contents_ = initiator.value();
   target_url_ = navigation_handle->GetURL();
+
   signin_promo_controller_ =
       std::make_unique<SearchAIModeSignInPromoController>(web_contents());
 
@@ -247,19 +248,33 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
       signin_promo_controller_->ShowPromo(browser_view);
     }
   }
+
+  // If we do not await a sign-in event, remove this observer.
+  if (!identity_manager_scoped_observation_.IsObserving()) {
+    SelfDestruct();
+  }
 }
 
 void SearchAiModePromoTabHelper::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
-  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
-      signin::PrimaryAccountChangeEvent::Type::kSet) {
-    return;
+  auto event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  switch (event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      SelfDestruct();
+      return;
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      break;
   }
   if (event_details.GetSetPrimaryAccountAccessPoint() !=
       signin_metrics::AccessPoint::kSearchAIModeBubble) {
-    // We can stop observing early in that case, as the purpose of this class
-    // is to promote sign-in to the user.
-    identity_manager_scoped_observation_.Reset();
+    // If the user signed in from a different access point then remove this
+    // observer.
+    if (web_contents()) {
+      SelfDestruct();
+    }
     return;
   }
   const CoreAccountInfo& account_info =
@@ -281,8 +296,7 @@ void SearchAiModePromoTabHelper::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void SearchAiModePromoTabHelper::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  identity_manager_scoped_observation_.Reset();
-  identity_manager_ = nullptr;
+  SelfDestruct();
 }
 
 void SearchAiModePromoTabHelper::MaybeTriggerCobrowse(
@@ -312,8 +326,11 @@ bool SearchAiModePromoTabHelper::IsAIModeSearch(
       web_contents->GetLastCommittedURL());
 }
 
-void SearchAiModePromoTabHelper::OnSearchResultNavigationComplete() {
+void SearchAiModePromoTabHelper::SelfDestruct() {
   contextual_task_observer_.reset();
+  identity_manager_scoped_observation_.Reset();
+  if (web_contents()) {
+    web_contents()->RemoveUserData(SearchAiModePromoTabHelper::UserDataKey());
+  }
 }
-
 }  // namespace contextual_tasks

@@ -62,8 +62,8 @@ class SearchAiModePromoTabHelper
   void MaybeTriggerCobrowse(const CoreAccountInfo& account_info);
 
   bool IsAIModeSearch(content::WebContents* web_contents);
-
-  void OnSearchResultNavigationComplete();
+  // Stops all the observations and destructs `this` object.
+  void SelfDestruct();
 
   raw_ptr<ContextualTasksUiService> contextual_tasks_ui_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
