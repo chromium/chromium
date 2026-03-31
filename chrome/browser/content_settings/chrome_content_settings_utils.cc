@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -27,20 +28,23 @@ void RecordPopupsAction(PopupsAction action) {
 
 void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser)
     return;
 
-  if (browser->tab_strip_model()->GetActiveWebContents() != web_contents)
+  if (browser->GetTabStripModel()->GetActiveWebContents() != web_contents) {
     return;
+  }
 
-  LocationBar* location_bar = browser->window()->GetLocationBar();
+  LocationBar* location_bar =
+      browser->GetBrowserForMigrationOnly()->window()->GetLocationBar();
   if (location_bar)
     location_bar->UpdateContentSettingsIcons();
 
   // The document PiP window does not have a location bar, but has some content
   // setting views that need to be updated too.
-  if (browser->is_type_picture_in_picture()) {
+  if (browser->GetType() ==
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
         browser_view->browser_widget()->GetFrameView());

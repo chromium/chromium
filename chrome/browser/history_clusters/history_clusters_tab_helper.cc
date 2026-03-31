@@ -32,6 +32,7 @@
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -42,10 +43,11 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   DCHECK(contents);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (Browser* browser = chrome::FindBrowserWithTab(contents)) {
-    int tab_index = browser->tab_strip_model()->GetIndexOfWebContents(contents);
+  if (BrowserWindowInterface* browser = chrome::FindBrowserWithTab(contents)) {
+    int tab_index =
+        browser->GetTabStripModel()->GetIndexOfWebContents(contents);
     if (tab_index != TabStripModel::kNoTab &&
-        browser->tab_strip_model()->GetTabGroupForTab(tab_index).has_value()) {
+        browser->GetTabStripModel()->GetTabGroupForTab(tab_index).has_value()) {
       return true;
     }
   }

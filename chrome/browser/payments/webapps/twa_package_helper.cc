@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -35,14 +36,15 @@ std::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
   }
 
   DCHECK(rfh);
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!web_app::AppBrowserController::IsWebApp(browser)) {
     return std::nullopt;
   }
 
-  webapps::AppId app_id = browser->app_controller()->app_id();
+  webapps::AppId app_id =
+      web_app::AppBrowserController::From(browser)->app_id();
   auto* web_app_provider =
-      web_app::WebAppProvider::GetForWebApps(browser->profile());
+      web_app::WebAppProvider::GetForWebApps(browser->GetProfile());
   if (!web_app_provider ||
       !web_app_provider->registrar_unsafe().IsUrlInAppScope(
           web_contents->GetLastCommittedURL(), app_id)) {

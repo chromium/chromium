@@ -1523,7 +1523,8 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
 }
 
 bool RenderViewContextMenu::IsHTML5Fullscreen() const {
-  Browser* browser = chrome::FindBrowserWithTab(embedder_web_contents_);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(embedder_web_contents_);
   if (!browser) {
     return false;
   }
@@ -1535,7 +1536,8 @@ bool RenderViewContextMenu::IsHTML5Fullscreen() const {
 }
 
 bool RenderViewContextMenu::IsPressAndHoldEscRequiredToExitFullscreen() const {
-  Browser* browser = chrome::FindBrowserWithTab(source_web_contents_);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(source_web_contents_);
   if (!browser) {
     return false;
   }

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer_impl.h"
@@ -230,9 +231,9 @@ bool ChromePaymentRequestDelegate::IsBrowserWindowActive() const {
   if (!FrameSupportsPayments(rfh))
     return false;
 
-  Browser* browser = chrome::FindBrowserWithTab(
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(
       content::WebContents::FromRenderFrameHost(rfh));
-  return browser && browser->window() && browser->window()->IsActive();
+  return browser && browser->GetWindow() && browser->GetWindow()->IsActive();
 }
 
 void ChromePaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(

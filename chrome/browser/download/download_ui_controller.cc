@@ -263,15 +263,15 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
       DownloadController::CloseTabIfEmpty(web_contents, item);
     }
 #else   // BUILDFLAG(IS_ANDROID)
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
+    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
     // If the download occurs in a new tab, and it's not a save page
     // download (started before initial navigation completed) close it.
     // Avoid calling CloseContents if the tab is not in this browser's tab strip
     // model; this can happen if the download was initiated by something
     // internal to Chrome, such as by the app list.
     if (browser && web_contents->GetController().IsInitialNavigation() &&
-        browser->tab_strip_model()->count() > 1 &&
-        browser->tab_strip_model()->GetIndexOfWebContents(web_contents) !=
+        browser->GetTabStripModel()->count() > 1 &&
+        browser->GetTabStripModel()->GetIndexOfWebContents(web_contents) !=
             TabStripModel::kNoTab &&
         !item->IsSavePackageDownload()) {
       web_contents->Close();

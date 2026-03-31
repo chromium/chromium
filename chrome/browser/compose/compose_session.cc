@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -898,7 +899,7 @@ void ComposeSession::OpenBugReportingLink() {
 void ComposeSession::OpenComposeLearnMorePage() {
   if (base::FeatureList::IsEnabled(
           compose::features::kEnableComposeProactiveNudge)) {
-    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
     CHECK(browser);
 
     chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);

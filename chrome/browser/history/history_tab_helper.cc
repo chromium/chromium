@@ -49,6 +49,7 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #endif
 
 namespace {
@@ -144,19 +145,19 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
 #else
-  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
-  switch (browser->type()) {
-    case Browser::TYPE_NORMAL:
+  switch (browser->GetType()) {
+    case BrowserWindowInterface::Type::TYPE_NORMAL:
       return history::VisitContextAnnotations::BrowserType::kTabbed;
-    case Browser::TYPE_POPUP:
-    case Browser::TYPE_APP:
-    case Browser::TYPE_APP_POPUP:
-    case Browser::TYPE_PICTURE_IN_PICTURE:
+    case BrowserWindowInterface::Type::TYPE_POPUP:
+    case BrowserWindowInterface::Type::TYPE_APP:
+    case BrowserWindowInterface::Type::TYPE_APP_POPUP:
+    case BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE:
       return history::VisitContextAnnotations::BrowserType::kPopup;
-    case Browser::TYPE_DEVTOOLS:
+    case BrowserWindowInterface::Type::TYPE_DEVTOOLS:
       return history::VisitContextAnnotations::BrowserType::kUnknown;
   }
 #endif  // BUILDFLAG(IS_ANDROID)

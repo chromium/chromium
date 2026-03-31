@@ -130,6 +130,7 @@
 #include "chrome/browser/download/download_item_web_app_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/actor.mojom-shared.h"
 #endif
@@ -2295,13 +2296,13 @@ void ChromeDownloadManagerDelegate::AttachExtraInfo(
     download::DownloadItem* item) {
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
-  Browser* browser =
+  BrowserWindowInterface* browser =
       web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
   // Attach the info for whether the download came from a web app.
   if (browser && web_app::AppBrowserController::IsWebApp(browser) &&
-      browser->app_controller()) {
+      web_app::AppBrowserController::From(browser)) {
     DownloadItemWebAppData::CreateAndAttachToItem(
-        item, browser->app_controller()->app_id());
+        item, web_app::AppBrowserController::From(browser)->app_id());
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

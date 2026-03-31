@@ -547,6 +547,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -4793,11 +4794,14 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       // if the app navigates off scope. This is not a problem because we still
       // want to use the scope of the app associated with the window, not the
       // WebContents.
-      Browser* browser = chrome::FindBrowserWithTab(web_contents);
-      if (browser && browser->app_controller()) {
+      BrowserWindowInterface* browser =
+          chrome::FindBrowserWithTab(web_contents);
+      web_app::AppBrowserController* app_controller =
+          browser ? web_app::AppBrowserController::From(browser) : nullptr;
+      if (app_controller) {
         web_app::WebAppProvider* const web_app_provider =
             web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
-        const webapps::AppId& app_id = browser->app_controller()->app_id();
+        const webapps::AppId& app_id = app_controller->app_id();
         const web_app::WebAppRegistrar& registrar =
             web_app_provider->registrar_unsafe();
         if (registrar.AppMatches(app_id,
@@ -4807,7 +4811,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
 
         // IWA with window management permission can close windows and
         // focus windows without user gesture.
-        if (browser->app_controller()->IsIsolatedWebApp() &&
+        if (app_controller->IsIsolatedWebApp() &&
             profile->GetPermissionController()
                     ->GetPermissionStatusForCurrentDocument(
                         content::PermissionDescriptorUtil::
@@ -4819,7 +4823,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
           web_prefs->allow_unrestricted_window_focus = true;
         }
 #if BUILDFLAG(IS_CHROMEOS)
-        auto* system_app = browser->app_controller()->system_app();
+        auto* system_app = app_controller->system_app();
         if (system_app) {
           web_prefs->allow_scripts_to_close_windows =
               system_app->ShouldAllowScriptsToCloseWindows();

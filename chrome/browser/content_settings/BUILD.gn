@@ -197,6 +197,7 @@ source_set("content_settings_util_impl") {
   deps = [
     ":content_settings_util",
     "//base",
+    "//chrome/browser/ui/browser_window",
     "//content/public/browser",
   ]
 

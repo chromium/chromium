@@ -38,6 +38,7 @@ source_set("impl") {
     "//chrome/browser:primitives",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common:constants",
     "//components/prefs",
     "//components/url_matcher",

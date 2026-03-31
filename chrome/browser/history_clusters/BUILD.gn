@@ -51,6 +51,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui/browser_window",
     "//components/bookmarks/browser",
     "//components/history/core/browser",
     "//components/history_clusters/core",

@@ -1349,7 +1349,8 @@ void ChromePasswordManagerClient::NavigateToManagePasswordsPage(
   if (!browser) {
     browser = chrome::FindLastActive();
   }
-  ::NavigateToManagePasswordsPage(browser, referrer);
+  ::NavigateToManagePasswordsPage(browser->GetBrowserForMigrationOnly(),
+                                  referrer);
 #endif
 }
 

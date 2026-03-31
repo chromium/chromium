@@ -264,8 +264,9 @@ BrowserWindow* DevToolsToolboxDelegate::GetInspectedBrowserWindow() {
   if (!inspected_web_contents_) {
     return nullptr;
   }
-  Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents_.get());
-  return browser ? browser->window() : nullptr;
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(inspected_web_contents_.get());
+  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
 }
 #endif
 
@@ -1056,14 +1057,15 @@ void DevToolsWindow::Show(const DevToolsToggleAction& action) {
     DCHECK(can_dock_);
     content::WebContents* inspected_web_contents = GetInspectedWebContents();
     DCHECK(inspected_web_contents);
-    Browser* inspected_browser =
+    BrowserWindowInterface* inspected_browser =
         chrome::FindBrowserWithTab(inspected_web_contents);
     DCHECK(inspected_browser);
 
     RegisterModalDialogManager(inspected_browser);
 
     // Tell inspected browser to update splitter and switch to inspected panel.
-    BrowserWindow* inspected_window = inspected_browser->window();
+    BrowserWindow* inspected_window =
+        inspected_browser->GetBrowserForMigrationOnly()->window();
     main_web_contents_->SetDelegate(this);
     main_web_contents_->SetIgnoreZoomGestures(true);
 
@@ -1126,13 +1128,13 @@ void DevToolsWindow::ActivateInspectedTab() {
     return;
   }
 
-  Browser* inspected_browser =
+  BrowserWindowInterface* inspected_browser =
       chrome::FindBrowserWithTab(inspected_web_contents);
   if (!inspected_browser) {
     return;
   }
 
-  TabStripModel* tab_strip_model = inspected_browser->tab_strip_model();
+  TabStripModel* tab_strip_model = inspected_browser->GetTabStripModel();
   if (tab_strip_model->GetActiveWebContents() != inspected_web_contents) {
     int inspected_tab_index =
         tab_strip_model->GetIndexOfWebContents(inspected_web_contents);
@@ -1368,13 +1370,15 @@ DevToolsWindow* DevToolsWindow::Create(
 #else
   if (inspected_web_contents) {
     // Check for a place to dock.
-    Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
+    BrowserWindowInterface* browser =
+        chrome::FindBrowserWithTab(inspected_web_contents);
 #if BUILDFLAG(IS_MAC)
     if (browser) {
-      inspected_browser_session_id = browser->session_id();
+      inspected_browser_session_id = browser->GetSessionID();
     }
 #endif  // BUILDFLAG(IS_MAC)
-    if (!browser || !browser->window()->CanDockDevTools()) {
+    if (!browser ||
+        !browser->GetBrowserForMigrationOnly()->window()->CanDockDevTools()) {
       can_dock = false;
     }
   }
@@ -1944,11 +1948,12 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  Browser* browser = chrome::FindBrowserWithTab(inspected_contents);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(inspected_contents);
   if (!browser) {
     return;
   }
-  gfx::NativeWindow parent = browser->window()->GetNativeWindow();
+  gfx::NativeWindow parent = browser->GetWindow()->GetNativeWindow();
   ::ShowCertificateViewer(inspected_contents, parent, cert.get());
 #endif
 }

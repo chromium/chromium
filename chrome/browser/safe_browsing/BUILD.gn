@@ -45,6 +45,7 @@ static_library("safe_browsing") {
     "//chrome/browser/site_protection:utils",
     "//chrome/browser/sync",
     "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//chrome/common:constants",
     "//components/browser_sync",

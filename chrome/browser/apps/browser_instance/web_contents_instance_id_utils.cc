@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -54,14 +55,15 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
   // Note: It is possible to come here after a tab got removed from the browser
   // before it gets destroyed, in which case there is no browser.
-  Browser* browser = chrome::FindBrowserWithTab(tab);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(tab);
 
   // Use the Browser's app name to determine the web app for app windows and use
   // the tab's url for app tabs.
   if (auto* provider =
           web_app::WebAppProvider::GetForLocalAppsUnchecked(profile)) {
     if (browser) {
-      web_app::AppBrowserController* app_controller = browser->app_controller();
+      web_app::AppBrowserController* app_controller =
+          web_app::AppBrowserController::From(browser);
       if (app_controller) {
         return app_controller->app_id();
       }
@@ -83,8 +85,11 @@ std::optional<std::string> GetInstanceAppIdForWebContents(
   }
 
   // Use the Browser's app name.
-  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
-    return web_app::GetAppIdFromApplicationName(browser->app_name());
+  if (browser &&
+      (browser->GetType() == BrowserWindowInterface::TYPE_APP ||
+       browser->GetType() == BrowserWindowInterface::TYPE_APP_POPUP)) {
+    return web_app::GetAppIdFromApplicationName(
+        browser->GetBrowserForMigrationOnly()->app_name());
   }
 
   const extensions::Extension* extension =

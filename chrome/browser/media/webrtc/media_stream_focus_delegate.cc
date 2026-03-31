@@ -55,12 +55,13 @@ MediaStreamFocusDelegate::MediaStreamFocusDelegate(
     return;
   }
 
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
+  BrowserWindowInterface* const browser =
+      chrome::FindBrowserWithTab(web_contents);
   if (!browser) {
     return;
   }
 
-  TabStripModel* const tab_strip_model = browser->tab_strip_model();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
 
   if (!tab_strip_model) {
     return;
@@ -154,9 +155,10 @@ void MediaStreamFocusDelegate::FocusTab(
   }
 
   delegate->ActivateContents(web_contents);
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
-  if (browser && browser->window()) {
-    browser->window()->Activate();
+  BrowserWindowInterface* const browser =
+      chrome::FindBrowserWithTab(web_contents);
+  if (browser && browser->GetWindow()) {
+    browser->GetWindow()->Activate();
   }
 }
 

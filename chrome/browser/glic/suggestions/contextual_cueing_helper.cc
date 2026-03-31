@@ -114,11 +114,11 @@ glic::GlicNudgeController* ContextualCueingHelper::GetGlicNudgeController() {
     return nullptr;
   }
 
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents());
   if (!browser) {
     return nullptr;
   }
-  return browser->browser_window_features()->glic_nudge_controller();
+  return browser->GetFeatures().glic_nudge_controller();
 #else  // NEEDS_ANDROID_IMPL
   return nullptr;
 #endif

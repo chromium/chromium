@@ -110,8 +110,9 @@ BrowserWindow* DevToolsWindow::GetInspectedBrowserWindow() {
   if (!inspected_web_contents) {
     return nullptr;
   }
-  Browser* browser = chrome::FindBrowserWithTab(inspected_web_contents);
-  return browser ? browser->window() : nullptr;
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(inspected_web_contents);
+  return browser ? browser->GetBrowserForMigrationOnly()->window() : nullptr;
 }
 
 void DevToolsWindow::UpdateBrowserToolbar() {

@@ -130,9 +130,12 @@ void PrintPreviewDialogDelegate::GetDialogSize(gfx::Size* size) const {
   if (!outermost_web_contents)
     return;
 
-  Browser* browser = chrome::FindBrowserWithTab(outermost_web_contents);
+  BrowserWindowInterface* browser =
+      chrome::FindBrowserWithTab(outermost_web_contents);
   if (browser)
-    host = browser->window()->GetWebContentsModalDialogHost();
+    host = browser->GetBrowserForMigrationOnly()
+               ->window()
+               ->GetWebContentsModalDialogHost();
 
   if (host)
     size->SetToMax(host->GetMaximumDialogSize());

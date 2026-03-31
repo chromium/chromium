@@ -132,6 +132,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -241,13 +242,14 @@ void DefaultBindingsDelegate::OpenInNewTab(const std::string& url) {
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   // Check if the browser is still alive, as it might have been closed in the
   // meantime.
   // TODO(https://crbug.com/403946437): We should definitely understand why this
   // happens.
   if (browser) {
-    browser->OpenURL(params, /*navigation_handle_callback=*/{});
+    browser->GetBrowserForMigrationOnly()->OpenURL(
+        params, /*navigation_handle_callback=*/{});
   }
 #endif
 }
@@ -257,16 +259,17 @@ void DefaultBindingsDelegate::OpenSearchResultsInNewTab(
 #if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
 #else
-  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  BrowserWindowInterface* browser = chrome::FindBrowserWithTab(web_contents_);
   TemplateURLService* url_service =
-      TemplateURLServiceFactory::GetForProfile(browser->profile());
+      TemplateURLServiceFactory::GetForProfile(browser->GetProfile());
   DCHECK(url_service);
   GURL url =
       GetDefaultSearchURLForSearchTerms(url_service, base::UTF8ToUTF16(query));
   content::OpenURLParams params(GURL(url), content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_LINK, false);
-  browser->OpenURL(params, /*navigation_handle_callback=*/{});
+  browser->GetBrowserForMigrationOnly()->OpenURL(
+      params, /*navigation_handle_callback=*/{});
 #endif
 }
 
