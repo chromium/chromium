@@ -74,7 +74,7 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateTopLevel(
   }
 
   string server_tag = syncer::DataTypeToProtocolRootTag(data_type);
-  string name = syncer::DataTypeToDebugString(data_type);
+  std::string name = std::string(syncer::DataTypeToDebugString(data_type));
   string id = LoopbackServerEntity::GetTopLevelId(data_type);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(data_type, &entity_specifics);

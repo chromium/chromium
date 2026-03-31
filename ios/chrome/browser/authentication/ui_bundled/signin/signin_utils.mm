@@ -558,10 +558,8 @@ void LogFullscreenSigninPromoManagerMigrationDone() {
 void FetchUnsyncedDataForSignOutOrProfileSwitching(
     syncer::SyncService* sync_service,
     UnsyncedDataForSignoutOrProfileSwitchingCallback callback) {
-  constexpr syncer::DataTypeSet kDataTypesToQuery =
-      syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   sync_service->GetTypesWithUnsyncedData(
-      kDataTypesToQuery,
+      syncer::TypesRequiringUnsyncedDataCheckOnSignout(),
       base::BindOnce(&DataCountsMapToDataTypeSet).Then(std::move(callback)));
 }
 

@@ -214,7 +214,7 @@ SyncerError Commit::PostAndProcessResponse(
   // Let the contributors process the responses to each of their requests.
   SyncerError processing_result = SyncerError::Success();
   for (const auto& [type, contributions] : contributions_) {
-    const char* data_type_str = DataTypeToDebugString(type);
+    std::string_view data_type_str = DataTypeToDebugString(type);
     TRACE_EVENT1("sync", "ProcessCommitResponse", "type", data_type_str);
     SyncerError type_result =
         contributions->ProcessCommitResponse(response, status);

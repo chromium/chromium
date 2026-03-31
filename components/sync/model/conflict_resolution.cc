@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 
 namespace syncer {
 
@@ -14,8 +15,8 @@ void RecordDataTypeEntityConflictResolution(
     DataType data_type,
     ConflictResolution resolution_type) {
   base::UmaHistogramEnumeration(
-      std::string("Sync.DataTypeEntityConflictResolution.") +
-          DataTypeToHistogramSuffix(data_type),
+      base::StrCat({"Sync.DataTypeEntityConflictResolution.",
+                    DataTypeToHistogramSuffix(data_type)}),
       resolution_type);
 }
 

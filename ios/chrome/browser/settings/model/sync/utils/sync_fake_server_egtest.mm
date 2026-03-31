@@ -64,7 +64,7 @@ void WaitForEntitiesOnFakeServer(int entity_count,
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(kSyncOperationTimeout,
                                                           condition),
              @"Expected %d %s entities but found %d", entity_count,
-             syncer::DataTypeToDebugString(entity_type),
+             std::string(syncer::DataTypeToDebugString(entity_type)).c_str(),
              [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
 }
 

@@ -458,8 +458,9 @@ void ClientTagBasedDataTypeProcessor::ReportErrorImpl(const ModelError& error,
     return;
   }
 
-  const std::string type_suffix = DataTypeToHistogramSuffix(type_);
-  base::UmaHistogramEnumeration(kErrorSiteHistogramPrefix + type_suffix, site);
+  const std::string_view type_suffix = DataTypeToHistogramSuffix(type_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({kErrorSiteHistogramPrefix, type_suffix}), site);
 
   if (dump_stack_) {
     // Upload a stack trace if possible.
@@ -1395,7 +1396,7 @@ void ClientTagBasedDataTypeProcessor::GetAllNodesForDebugging(
   }
 
   base::ListValue all_nodes;
-  std::string type_string = DataTypeToDebugString(type_);
+  std::string_view type_string = DataTypeToDebugString(type_);
 
   while (batch->HasNext()) {
     auto [storage_key, data] = batch->Next();

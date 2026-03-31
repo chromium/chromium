@@ -4,126 +4,1120 @@
 
 #include "components/sync/base/data_type.h"
 
+#include <array>
 #include <ostream>
+#include <string_view>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
 namespace {
 
-static_assert(63 == syncer::GetNumDataTypes(),
-              "When adding a new type, update enum SyncDataTypes in enums.xml "
-              "and suffix SyncDataType in histograms.xml.");
+// Determines when and if the additional Nigori encryption layer is used for a
+// datatype.
+enum class EncryptionPolicy {
+  // Default: the type is encrypted using Nigori encryption only if the user
+  // configured a custom passphrase (or the legacy frozen implicit passphrase).
+  kEncryptedIfCustomPassphraseSet,
+  // The type is always encrypted (e.g. PASSWORDS).
+  kAlwaysEncrypted,
+  // The type is never encrypted (e.g. DEVICE_INFO).
+  kNeverEncrypted,
+};
 
-static_assert(63 == syncer::GetNumDataTypes(),
-              "When adding a new type, follow the integration checklist in "
+// Determines the priority of downloading or uploading changes for a datatype.
+enum class DataTypePriority {
+  kLow,
+  kRegular,
+  kHigh,
+};
+
+// Used to identify the communication direction of a data type.
+enum class CommunicationDirection {
+  kRegularTwoWay,
+  kCommitOnly,
+};
+
+enum class UnsyncedDataCheckOnSignoutPolicy {
+  kNone,
+  kRequired,
+};
+
+enum class CrossUserSharingPolicy {
+  kNone,
+  kShared,
+};
+
+enum class ApplyUpdatesBatchPolicy {
+  kStandard,
+  kImmediately,
+};
+
+struct DataTypeInfo {
+  DataType type;
+  int specifics_field_number;
+  std::string_view debug_string;
+  std::string_view histogram_suffix;
+  std::string_view stable_lowercase_string;
+  EncryptionPolicy encryption_policy;
+  DataTypePriority priority;
+  CommunicationDirection communication_direction;
+  ApplyUpdatesBatchPolicy apply_updates_batch_policy;
+  UnsyncedDataCheckOnSignoutPolicy unsynced_data_check_on_signout_policy;
+  CrossUserSharingPolicy cross_user_sharing_policy;
+};
+
+constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
+    kDataTypeInfoTable = {{
+        {
+            .type = UNSPECIFIED,
+            .specifics_field_number = -1,
+            .debug_string = "Unspecified",
+            .histogram_suffix = "",
+            .stable_lowercase_string = "",
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = BOOKMARKS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kBookmarkFieldNumber,
+            .debug_string = "Bookmarks",
+            .histogram_suffix = "BOOKMARK",
+            .stable_lowercase_string = "bookmarks",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PREFERENCES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPreferenceFieldNumber,
+            .debug_string = "Preferences",
+            .histogram_suffix = "PREFERENCE",
+            .stable_lowercase_string = "preferences",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PASSWORDS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPasswordFieldNumber,
+            .debug_string = "Passwords",
+            .histogram_suffix = "PASSWORD",
+            .stable_lowercase_string = "passwords",
+            .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_PROFILE,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillProfileFieldNumber,
+            .debug_string = "Autofill Profiles",
+            .histogram_suffix = "AUTOFILL_PROFILE",
+            .stable_lowercase_string = "autofill_profiles",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillFieldNumber,
+            .debug_string = "Autofill",
+            .histogram_suffix = "AUTOFILL",
+            .stable_lowercase_string = "autofill",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_WALLET_CREDENTIAL,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillWalletCredentialFieldNumber,
+            .debug_string = "Autofill Wallet Credential",
+            .histogram_suffix = "AUTOFILL_WALLET_CREDENTIAL",
+            .stable_lowercase_string = "autofill_wallet_credential",
+            .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_WALLET_DATA,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillWalletFieldNumber,
+            .debug_string = "Autofill Wallet",
+            .histogram_suffix = "AUTOFILL_WALLET",
+            .stable_lowercase_string = "autofill_wallet",
+            // Wallet data is not encrypted since it actually originates on the
+            // server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_WALLET_METADATA,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWalletMetadataFieldNumber,
+            .debug_string = "Autofill Wallet Metadata",
+            .histogram_suffix = "WALLET_METADATA",
+            .stable_lowercase_string = "autofill_wallet_metadata",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_WALLET_OFFER,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillOfferFieldNumber,
+            .debug_string = "Autofill Wallet Offer",
+            .histogram_suffix = "AUTOFILL_OFFER",
+            .stable_lowercase_string = "autofill_wallet_offer",
+            // Wallet data is not encrypted since it actually originates on the
+            // server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_WALLET_USAGE,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber,
+            .debug_string = "Autofill Wallet Usage",
+            .histogram_suffix = "AUTOFILL_WALLET_USAGE",
+            .stable_lowercase_string = "autofill_wallet_usage",
+            // Wallet data is not encrypted since it actually originates on the
+            // server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = THEMES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kThemeFieldNumber,
+            .debug_string = "Themes",
+            .histogram_suffix = "THEME",
+            .stable_lowercase_string = "themes",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = EXTENSIONS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kExtensionFieldNumber,
+            .debug_string = "Extensions",
+            .histogram_suffix = "EXTENSION",
+            .stable_lowercase_string = "extensions",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SEARCH_ENGINES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSearchEngineFieldNumber,
+            .debug_string = "Search Engines",
+            .histogram_suffix = "SEARCH_ENGINE",
+            .stable_lowercase_string = "search_engines",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SESSIONS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSessionFieldNumber,
+            .debug_string = "Sessions",
+            .histogram_suffix = "SESSION",
+            .stable_lowercase_string = "sessions",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = APPS,
+            .specifics_field_number = sync_pb::EntitySpecifics::kAppFieldNumber,
+            .debug_string = "Apps",
+            .histogram_suffix = "APP",
+            .stable_lowercase_string = "apps",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = APP_SETTINGS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAppSettingFieldNumber,
+            .debug_string = "App settings",
+            .histogram_suffix = "APP_SETTING",
+            .stable_lowercase_string = "app_settings",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = EXTENSION_SETTINGS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kExtensionSettingFieldNumber,
+            .debug_string = "Extension settings",
+            .histogram_suffix = "EXTENSION_SETTING",
+            .stable_lowercase_string = "extension_settings",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = HISTORY_DELETE_DIRECTIVES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kHistoryDeleteDirectiveFieldNumber,
+            .debug_string = "History Delete Directives",
+            .histogram_suffix = "HISTORY_DELETE_DIRECTIVE",
+            .stable_lowercase_string = "history_delete_directives",
+            // History Sync is disabled if encryption is enabled.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = DICTIONARY,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kDictionaryFieldNumber,
+            .debug_string = "Dictionary",
+            .histogram_suffix = "DICTIONARY",
+            .stable_lowercase_string = "dictionary",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = DEVICE_INFO,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kDeviceInfoFieldNumber,
+            .debug_string = "Device Info",
+            .histogram_suffix = "DEVICE_INFO",
+            .stable_lowercase_string = "device_info",
+            // Never encrypted because consumed server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PRIORITY_PREFERENCES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPriorityPreferenceFieldNumber,
+            .debug_string = "Priority Preferences",
+            .histogram_suffix = "PRIORITY_PREFERENCE",
+            .stable_lowercase_string = "priority_preferences",
+            // Never encrypted because also written server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SUPERVISED_USER_SETTINGS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kManagedUserSettingFieldNumber,
+            .debug_string = "Managed User Settings",
+            .histogram_suffix = "MANAGED_USER_SETTING",
+            .stable_lowercase_string = "managed_user_settings",
+            // Never encrypted because also written server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = APP_LIST,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAppListFieldNumber,
+            .debug_string = "App List",
+            .histogram_suffix = "APP_LIST",
+            .stable_lowercase_string = "app_list",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = ARC_PACKAGE,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kArcPackageFieldNumber,
+            .debug_string = "Arc Package",
+            .histogram_suffix = "ARC_PACKAGE",
+            .stable_lowercase_string = "arc_package",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PRINTERS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPrinterFieldNumber,
+            .debug_string = "Printers",
+            .histogram_suffix = "PRINTER",
+            .stable_lowercase_string = "printers",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = READING_LIST,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kReadingListFieldNumber,
+            .debug_string = "Reading List",
+            .histogram_suffix = "READING_LIST",
+            .stable_lowercase_string = "reading_list",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = USER_EVENTS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kUserEventFieldNumber,
+            .debug_string = "User Events",
+            .histogram_suffix = "USER_EVENT",
+            .stable_lowercase_string = "user_events",
+            // Commit-only types are never encrypted since they are consumed
+            // server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kLow,
+            .communication_direction = CommunicationDirection::kCommitOnly,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = USER_CONSENTS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kUserConsentFieldNumber,
+            .debug_string = "User Consents",
+            .histogram_suffix = "USER_CONSENT",
+            .stable_lowercase_string = "user_consent",
+            // Commit-only types are never encrypted since they are consumed
+            // server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kCommitOnly,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SEND_TAB_TO_SELF,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSendTabToSelfFieldNumber,
+            .debug_string = "Send Tab To Self",
+            .histogram_suffix = "SEND_TAB_TO_SELF",
+            .stable_lowercase_string = "send_tab_to_self",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SECURITY_EVENTS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSecurityEventFieldNumber,
+            .debug_string = "Security Events",
+            .histogram_suffix = "SECURITY_EVENT",
+            .stable_lowercase_string = "security_events",
+            // Commit-only types are never encrypted since they are consumed
+            // server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kCommitOnly,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = WIFI_CONFIGURATIONS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWifiConfigurationFieldNumber,
+            .debug_string = "Wifi Configurations",
+            .histogram_suffix = "WIFI_CONFIGURATION",
+            .stable_lowercase_string = "wifi_configurations",
+            .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = WEB_APPS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWebAppFieldNumber,
+            .debug_string = "Web Apps",
+            .histogram_suffix = "WEB_APP",
+            .stable_lowercase_string = "web_apps",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = WEB_APKS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWebApkFieldNumber,
+            .debug_string = "Web Apks",
+            .histogram_suffix = "WEB_APK",
+            .stable_lowercase_string = "webapks",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = OS_PREFERENCES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kOsPreferenceFieldNumber,
+            .debug_string = "OS Preferences",
+            .histogram_suffix = "OS_PREFERENCE",
+            .stable_lowercase_string = "os_preferences",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = OS_PRIORITY_PREFERENCES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kOsPriorityPreferenceFieldNumber,
+            .debug_string = "OS Priority Preferences",
+            .histogram_suffix = "OS_PRIORITY_PREFERENCE",
+            .stable_lowercase_string = "os_priority_preferences",
+            // Never encrypted because also written server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SHARING_MESSAGE,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSharingMessageFieldNumber,
+            .debug_string = "Sharing Message",
+            .histogram_suffix = "SHARING_MESSAGE",
+            .stable_lowercase_string = "sharing_message",
+            // Commit-only types are never encrypted since they are consumed
+            // server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kCommitOnly,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = WORKSPACE_DESK,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWorkspaceDeskFieldNumber,
+            .debug_string = "Workspace Desk",
+            .histogram_suffix = "WORKSPACE_DESK",
+            .stable_lowercase_string = "workspace_desk",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = HISTORY,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kHistoryFieldNumber,
+            .debug_string = "History",
+            .histogram_suffix = "HISTORY",
+            .stable_lowercase_string = "history",
+            // History Sync is disabled if encryption is enabled.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kLow,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kImmediately,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PRINTERS_AUTHORIZATION_SERVERS,
+            .specifics_field_number = sync_pb::EntitySpecifics::
+                kPrintersAuthorizationServerFieldNumber,
+            .debug_string = "Printers Authorization Servers",
+            .histogram_suffix = "PRINTERS_AUTHORIZATION_SERVER",
+            .stable_lowercase_string = "printers_authorization_servers",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = CONTACT_INFO,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kContactInfoFieldNumber,
+            .debug_string = "Contact Info",
+            .histogram_suffix = "CONTACT_INFO",
+            .stable_lowercase_string = "contact_info",
+            // Not encrypted since it originates on the server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SAVED_TAB_GROUP,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber,
+            .debug_string = "Saved Tab Group",
+            .histogram_suffix = "SAVED_TAB_GROUP",
+            .stable_lowercase_string = "saved_tab_group",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kRequired,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = WEBAUTHN_CREDENTIAL,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber,
+            .debug_string = "WebAuthn Credentials",
+            .histogram_suffix = "WEBAUTHN_CREDENTIAL",
+            .stable_lowercase_string = "webauthn_credential",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = INCOMING_PASSWORD_SHARING_INVITATION,
+            .specifics_field_number = sync_pb::EntitySpecifics::
+                kIncomingPasswordSharingInvitationFieldNumber,
+            .debug_string = "Incoming Password Sharing Invitations",
+            .histogram_suffix = "INCOMING_PASSWORD_SHARING_INVITATION",
+            .stable_lowercase_string = "incoming_password_sharing_invitation",
+            // Password sharing invitations have different encryption
+            // implementation.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kLow,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = OUTGOING_PASSWORD_SHARING_INVITATION,
+            .specifics_field_number = sync_pb::EntitySpecifics::
+                kOutgoingPasswordSharingInvitationFieldNumber,
+            .debug_string = "Outgoing Password Sharing Invitations",
+            .histogram_suffix = "OUTGOING_PASSWORD_SHARING_INVITATION",
+            .stable_lowercase_string = "outgoing_password_sharing_invitation",
+            // Password sharing invitations have different encryption
+            // implementation. Also commit-only types are never encrypted since
+            // they are consumed server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kCommitOnly,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SHARED_TAB_GROUP_DATA,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSharedTabGroupDataFieldNumber,
+            .debug_string = "Shared Tab Group Data",
+            .histogram_suffix = "SHARED_TAB_GROUP_DATA",
+            .stable_lowercase_string = "shared_tab_group_data",
+            // Never encrypted because consumed server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kShared,
+        },
+        {
+            .type = COLLABORATION_GROUP,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kCollaborationGroupFieldNumber,
+            .debug_string = "Collaboration Group",
+            .histogram_suffix = "COLLABORATION_GROUP",
+            .stable_lowercase_string = "collaboration_group",
+            // Not encrypted since it originates on the server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kHigh,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PLUS_ADDRESS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPlusAddressFieldNumber,
+            .debug_string = "Plus Address",
+            .histogram_suffix = "PLUS_ADDRESS",
+            .stable_lowercase_string = "plus_address",
+            // Plus addresses and their settings are never encrypted because
+            // they originate from outside Chrome.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PRODUCT_COMPARISON,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
+            .debug_string = "Product Comparison",
+            .histogram_suffix = "PRODUCT_COMPARISON",
+            .stable_lowercase_string = "product_comparison",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = COOKIES,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kCookieFieldNumber,
+            .debug_string = "Cookies",
+            .histogram_suffix = "COOKIE",
+            .stable_lowercase_string = "cookies",
+            .encryption_policy = EncryptionPolicy::kAlwaysEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = PLUS_ADDRESS_SETTING,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
+            .debug_string = "Plus Address Setting",
+            .histogram_suffix = "PLUS_ADDRESS_SETTING",
+            .stable_lowercase_string = "plus_address_setting",
+            // Plus addresses and their settings are never encrypted because
+            // they originate from outside Chrome.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_VALUABLE,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillValuableFieldNumber,
+            .debug_string = "Autofill Valuable",
+            .histogram_suffix = "AUTOFILL_VALUABLE",
+            .stable_lowercase_string = "autofill_valuable",
+            // Valuables are never encrypted because they can be generated from
+            // outside Chrome.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AUTOFILL_VALUABLE_METADATA,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAutofillValuableMetadataFieldNumber,
+            .debug_string = "Autofill Valuable Metadata",
+            .histogram_suffix = "AUTOFILL_VALUABLE_METADATA",
+            .stable_lowercase_string = "autofill_valuable_metadata",
+            // Valuable metadata is accessed on the server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SHARED_TAB_GROUP_ACCOUNT_DATA,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
+            .debug_string = "Shared Tab Group Account Data",
+            .histogram_suffix = "SHARED_TAB_GROUP_ACCOUNT_DATA",
+            .stable_lowercase_string = "shared_tab_group_account_data",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SHARED_COMMENT,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSharedCommentFieldNumber,
+            .debug_string = "SharedComment",
+            .histogram_suffix = "SHARED_COMMENT",
+            .stable_lowercase_string = "shared_comment",
+            // Never encrypted because consumed server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = ACCOUNT_SETTING,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAccountSettingFieldNumber,
+            .debug_string = "Account Setting",
+            .histogram_suffix = "ACCOUNT_SETTING",
+            .stable_lowercase_string = "account_setting",
+            // Account settings are read-only and therefore never encrypted.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = AI_THREAD,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAiThreadFieldNumber,
+            .debug_string = "AI Thread",
+            .histogram_suffix = "AI_THREAD",
+            .stable_lowercase_string = "ai_thread",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = CONTEXTUAL_TASK,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kContextualTaskFieldNumber,
+            .debug_string = "Contextual Task",
+            .histogram_suffix = "CONTEXTUAL_TASK",
+            .stable_lowercase_string = "contextual_task",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = SKILL,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kSkillFieldNumber,
+            .debug_string = "Skill",
+            .histogram_suffix = "SKILL",
+            .stable_lowercase_string = "skill",
+            // Never encrypted because consumed server-side.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = GEMINI_THREAD,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kGeminiThreadFieldNumber,
+            .debug_string = "Gemini Thread",
+            .histogram_suffix = "GEMINI_THREAD",
+            .stable_lowercase_string = "gemini_thread",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = THEMES_IOS,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kThemeIosFieldNumber,
+            .debug_string = "Themes (iOS)",
+            .histogram_suffix = "THEME_IOS",
+            .stable_lowercase_string = "themes_ios",
+            .encryption_policy =
+                EncryptionPolicy::kEncryptedIfCustomPassphraseSet,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = ACCESSIBILITY_ANNOTATION,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber,
+            .debug_string = "Accessibility Annotation",
+            .histogram_suffix = "ACCESSIBILITY_ANNOTATION",
+            .stable_lowercase_string = "accessibility_annotation",
+            // Not encrypted since it originates from the server.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+        {
+            .type = NIGORI,
+            .specifics_field_number =
+                sync_pb::EntitySpecifics::kNigoriFieldNumber,
+            .debug_string = "Encryption Keys",
+            .histogram_suffix = "NIGORI",
+            .stable_lowercase_string = "nigori",
+            // Nigori has built-in encryption and powers the encryption of other
+            // datatypes.
+            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
+            .priority = DataTypePriority::kRegular,
+            .communication_direction = CommunicationDirection::kRegularTwoWay,
+            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
+            .unsynced_data_check_on_signout_policy =
+                UnsyncedDataCheckOnSignoutPolicy::kNone,
+            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
+        },
+    }};
+
+// LINT.IfChange(DataTypeHistogramSuffix)
+static_assert(GetNumDataTypes() == 63,
+              "When adding a new type, update kDataTypeInfoTable, update "
+              "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
               "integration-checklist/");
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
 
-// kSpecificsFieldNumberToDataTypeMap must have size syncer::GetNumDataTypes().
-//
-// NOTE: size here acts as a static assert on the constraint above.
-using kSpecificsFieldNumberToDataTypeMap =
-    base::fixed_flat_map<int, DataType, syncer::GetNumDataTypes()>;
+const DataTypeInfo& GetDataTypeInfo(DataType type) {
+  static const base::NoDestructor<
+      absl::flat_hash_map<DataType, const DataTypeInfo*>>
+      type_to_info([] {
+        absl::flat_hash_map<DataType, const DataTypeInfo*> map;
+        for (const auto& info : kDataTypeInfoTable) {
+          map.emplace(info.type, &info);
+        }
+        return map;
+      }());
 
-constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
-    base::MakeFixedFlatMap<int, DataType>({
-        {-1, UNSPECIFIED},
-        {sync_pb::EntitySpecifics::kBookmarkFieldNumber, BOOKMARKS},
-        {sync_pb::EntitySpecifics::kPreferenceFieldNumber, PREFERENCES},
-        {sync_pb::EntitySpecifics::kPasswordFieldNumber, PASSWORDS},
-        {sync_pb::EntitySpecifics::kAutofillProfileFieldNumber,
-         AUTOFILL_PROFILE},
-        {sync_pb::EntitySpecifics::kAutofillFieldNumber, AUTOFILL},
-        {sync_pb::EntitySpecifics::kAutofillWalletCredentialFieldNumber,
-         AUTOFILL_WALLET_CREDENTIAL},
-        {sync_pb::EntitySpecifics::kAutofillWalletFieldNumber,
-         AUTOFILL_WALLET_DATA},
-        {sync_pb::EntitySpecifics::kWalletMetadataFieldNumber,
-         AUTOFILL_WALLET_METADATA},
-        {sync_pb::EntitySpecifics::kAutofillOfferFieldNumber,
-         AUTOFILL_WALLET_OFFER},
-        {sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber,
-         AUTOFILL_WALLET_USAGE},
-        {sync_pb::EntitySpecifics::kThemeFieldNumber, THEMES},
-        {sync_pb::EntitySpecifics::kExtensionFieldNumber, EXTENSIONS},
-        {sync_pb::EntitySpecifics::kSearchEngineFieldNumber, SEARCH_ENGINES},
-        {sync_pb::EntitySpecifics::kSessionFieldNumber, SESSIONS},
-        {sync_pb::EntitySpecifics::kAppFieldNumber, APPS},
-        {sync_pb::EntitySpecifics::kAppSettingFieldNumber, APP_SETTINGS},
-        {sync_pb::EntitySpecifics::kExtensionSettingFieldNumber,
-         EXTENSION_SETTINGS},
-        {sync_pb::EntitySpecifics::kHistoryDeleteDirectiveFieldNumber,
-         HISTORY_DELETE_DIRECTIVES},
-        {sync_pb::EntitySpecifics::kDictionaryFieldNumber, DICTIONARY},
-        {sync_pb::EntitySpecifics::kDeviceInfoFieldNumber, DEVICE_INFO},
-        {sync_pb::EntitySpecifics::kPriorityPreferenceFieldNumber,
-         PRIORITY_PREFERENCES},
-        {sync_pb::EntitySpecifics::kManagedUserSettingFieldNumber,
-         SUPERVISED_USER_SETTINGS},
-        {sync_pb::EntitySpecifics::kAppListFieldNumber, APP_LIST},
-        {sync_pb::EntitySpecifics::kArcPackageFieldNumber, ARC_PACKAGE},
-        {sync_pb::EntitySpecifics::kPrinterFieldNumber, PRINTERS},
-        {sync_pb::EntitySpecifics::kReadingListFieldNumber, READING_LIST},
-        {sync_pb::EntitySpecifics::kUserEventFieldNumber, USER_EVENTS},
-        {sync_pb::EntitySpecifics::kUserConsentFieldNumber, USER_CONSENTS},
-        {sync_pb::EntitySpecifics::kSendTabToSelfFieldNumber, SEND_TAB_TO_SELF},
-        {sync_pb::EntitySpecifics::kSecurityEventFieldNumber, SECURITY_EVENTS},
-        {sync_pb::EntitySpecifics::kWifiConfigurationFieldNumber,
-         WIFI_CONFIGURATIONS},
-        {sync_pb::EntitySpecifics::kWebAppFieldNumber, WEB_APPS},
-        {sync_pb::EntitySpecifics::kWebApkFieldNumber, WEB_APKS},
-        {sync_pb::EntitySpecifics::kOsPreferenceFieldNumber, OS_PREFERENCES},
-        {sync_pb::EntitySpecifics::kOsPriorityPreferenceFieldNumber,
-         OS_PRIORITY_PREFERENCES},
-        {sync_pb::EntitySpecifics::kSharingMessageFieldNumber, SHARING_MESSAGE},
-        {sync_pb::EntitySpecifics::kWorkspaceDeskFieldNumber, WORKSPACE_DESK},
-        {sync_pb::EntitySpecifics::kHistoryFieldNumber, HISTORY},
-        {sync_pb::EntitySpecifics::kPrintersAuthorizationServerFieldNumber,
-         PRINTERS_AUTHORIZATION_SERVERS},
-        {sync_pb::EntitySpecifics::kContactInfoFieldNumber, CONTACT_INFO},
-        {sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber, SAVED_TAB_GROUP},
-        {sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber,
-         WEBAUTHN_CREDENTIAL},
-        {sync_pb::EntitySpecifics::
-             kIncomingPasswordSharingInvitationFieldNumber,
-         INCOMING_PASSWORD_SHARING_INVITATION},
-        {sync_pb::EntitySpecifics::
-             kOutgoingPasswordSharingInvitationFieldNumber,
-         OUTGOING_PASSWORD_SHARING_INVITATION},
-        {sync_pb::EntitySpecifics::kSharedTabGroupDataFieldNumber,
-         SHARED_TAB_GROUP_DATA},
-        {sync_pb::EntitySpecifics::kCollaborationGroupFieldNumber,
-         COLLABORATION_GROUP},
-        {sync_pb::EntitySpecifics::kPlusAddressFieldNumber, PLUS_ADDRESS},
-        {sync_pb::EntitySpecifics::kProductComparisonFieldNumber,
-         PRODUCT_COMPARISON},
-        {sync_pb::EntitySpecifics::kCookieFieldNumber, COOKIES},
-        {sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber,
-         PLUS_ADDRESS_SETTING},
-        {sync_pb::EntitySpecifics::kAutofillValuableFieldNumber,
-         AUTOFILL_VALUABLE},
-        {sync_pb::EntitySpecifics::kAutofillValuableMetadataFieldNumber,
-         AUTOFILL_VALUABLE_METADATA},
-        {sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber,
-         SHARED_TAB_GROUP_ACCOUNT_DATA},
-        {sync_pb::EntitySpecifics::kAccountSettingFieldNumber, ACCOUNT_SETTING},
-        {sync_pb::EntitySpecifics::kSharedCommentFieldNumber, SHARED_COMMENT},
-        {sync_pb::EntitySpecifics::kAiThreadFieldNumber, AI_THREAD},
-        {sync_pb::EntitySpecifics::kContextualTaskFieldNumber, CONTEXTUAL_TASK},
-        {sync_pb::EntitySpecifics::kSkillFieldNumber, SKILL},
-        {sync_pb::EntitySpecifics::kGeminiThreadFieldNumber, GEMINI_THREAD},
-        {sync_pb::EntitySpecifics::kThemeIosFieldNumber, THEMES_IOS},
-        {sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber,
-         ACCESSIBILITY_ANNOTATION},
-        // ---- Control Types ----
-        {sync_pb::EntitySpecifics::kNigoriFieldNumber, NIGORI},
-    });
+  auto it = type_to_info->find(type);
+  CHECK(it != type_to_info->end())
+      << "Unknown data type: " << static_cast<int>(type);
+  return *it->second;
+}
 
 }  // namespace
 
@@ -322,146 +1316,26 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
 }
 
 DataType GetDataTypeFromSpecificsFieldNumber(int field_number) {
-  kSpecificsFieldNumberToDataTypeMap::const_iterator it =
-      specifics_field_number2data_type.find(field_number);
-  return (it == specifics_field_number2data_type.end() ? UNSPECIFIED
-                                                       : it->second);
+  static const base::NoDestructor<absl::flat_hash_map<int, DataType>>
+      field_number_to_type([] {
+        absl::flat_hash_map<int, DataType> map;
+        for (const auto& info : kDataTypeInfoTable) {
+          if (info.specifics_field_number != -1) {
+            map.emplace(info.specifics_field_number, info.type);
+          }
+        }
+        return map;
+      }());
+
+  auto it = field_number_to_type->find(field_number);
+  return (it != field_number_to_type->end()) ? it->second : UNSPECIFIED;
 }
 
 int GetSpecificsFieldNumberFromDataType(DataType data_type) {
-  DCHECK(ProtocolTypes().Has(data_type))
-      << "Only protocol types have field values.";
-  switch (data_type) {
-    case UNSPECIFIED:
-      return -1;
-    case BOOKMARKS:
-      return sync_pb::EntitySpecifics::kBookmarkFieldNumber;
-    case PREFERENCES:
-      return sync_pb::EntitySpecifics::kPreferenceFieldNumber;
-    case PASSWORDS:
-      return sync_pb::EntitySpecifics::kPasswordFieldNumber;
-    case AUTOFILL_PROFILE:
-      return sync_pb::EntitySpecifics::kAutofillProfileFieldNumber;
-    case AUTOFILL:
-      return sync_pb::EntitySpecifics::kAutofillFieldNumber;
-    case AUTOFILL_WALLET_CREDENTIAL:
-      return sync_pb::EntitySpecifics::kAutofillWalletCredentialFieldNumber;
-    case AUTOFILL_WALLET_DATA:
-      return sync_pb::EntitySpecifics::kAutofillWalletFieldNumber;
-    case AUTOFILL_WALLET_METADATA:
-      return sync_pb::EntitySpecifics::kWalletMetadataFieldNumber;
-    case AUTOFILL_WALLET_OFFER:
-      return sync_pb::EntitySpecifics::kAutofillOfferFieldNumber;
-    case AUTOFILL_WALLET_USAGE:
-      return sync_pb::EntitySpecifics::kAutofillWalletUsageFieldNumber;
-    case THEMES:
-      return sync_pb::EntitySpecifics::kThemeFieldNumber;
-    case THEMES_IOS:
-      return sync_pb::EntitySpecifics::kThemeIosFieldNumber;
-    case EXTENSIONS:
-      return sync_pb::EntitySpecifics::kExtensionFieldNumber;
-    case SEARCH_ENGINES:
-      return sync_pb::EntitySpecifics::kSearchEngineFieldNumber;
-    case SESSIONS:
-      return sync_pb::EntitySpecifics::kSessionFieldNumber;
-    case APPS:
-      return sync_pb::EntitySpecifics::kAppFieldNumber;
-    case APP_SETTINGS:
-      return sync_pb::EntitySpecifics::kAppSettingFieldNumber;
-    case EXTENSION_SETTINGS:
-      return sync_pb::EntitySpecifics::kExtensionSettingFieldNumber;
-    case HISTORY_DELETE_DIRECTIVES:
-      return sync_pb::EntitySpecifics::kHistoryDeleteDirectiveFieldNumber;
-    case DICTIONARY:
-      return sync_pb::EntitySpecifics::kDictionaryFieldNumber;
-    case DEVICE_INFO:
-      return sync_pb::EntitySpecifics::kDeviceInfoFieldNumber;
-    case PRIORITY_PREFERENCES:
-      return sync_pb::EntitySpecifics::kPriorityPreferenceFieldNumber;
-    case SUPERVISED_USER_SETTINGS:
-      return sync_pb::EntitySpecifics::kManagedUserSettingFieldNumber;
-    case APP_LIST:
-      return sync_pb::EntitySpecifics::kAppListFieldNumber;
-    case ARC_PACKAGE:
-      return sync_pb::EntitySpecifics::kArcPackageFieldNumber;
-    case PRINTERS:
-      return sync_pb::EntitySpecifics::kPrinterFieldNumber;
-    case READING_LIST:
-      return sync_pb::EntitySpecifics::kReadingListFieldNumber;
-    case USER_EVENTS:
-      return sync_pb::EntitySpecifics::kUserEventFieldNumber;
-    case USER_CONSENTS:
-      return sync_pb::EntitySpecifics::kUserConsentFieldNumber;
-    case SEND_TAB_TO_SELF:
-      return sync_pb::EntitySpecifics::kSendTabToSelfFieldNumber;
-    case SECURITY_EVENTS:
-      return sync_pb::EntitySpecifics::kSecurityEventFieldNumber;
-    case WIFI_CONFIGURATIONS:
-      return sync_pb::EntitySpecifics::kWifiConfigurationFieldNumber;
-    case WEB_APPS:
-      return sync_pb::EntitySpecifics::kWebAppFieldNumber;
-    case WEB_APKS:
-      return sync_pb::EntitySpecifics::kWebApkFieldNumber;
-    case OS_PREFERENCES:
-      return sync_pb::EntitySpecifics::kOsPreferenceFieldNumber;
-    case OS_PRIORITY_PREFERENCES:
-      return sync_pb::EntitySpecifics::kOsPriorityPreferenceFieldNumber;
-    case SHARING_MESSAGE:
-      return sync_pb::EntitySpecifics::kSharingMessageFieldNumber;
-    case WORKSPACE_DESK:
-      return sync_pb::EntitySpecifics::kWorkspaceDeskFieldNumber;
-    case HISTORY:
-      return sync_pb::EntitySpecifics::kHistoryFieldNumber;
-    case PRINTERS_AUTHORIZATION_SERVERS:
-      return sync_pb::EntitySpecifics::kPrintersAuthorizationServerFieldNumber;
-    case CONTACT_INFO:
-      return sync_pb::EntitySpecifics::kContactInfoFieldNumber;
-    case SAVED_TAB_GROUP:
-      return sync_pb::EntitySpecifics::kSavedTabGroupFieldNumber;
-    case WEBAUTHN_CREDENTIAL:
-      return sync_pb::EntitySpecifics::kWebauthnCredentialFieldNumber;
-    case INCOMING_PASSWORD_SHARING_INVITATION:
-      return sync_pb::EntitySpecifics::
-          kIncomingPasswordSharingInvitationFieldNumber;
-    case OUTGOING_PASSWORD_SHARING_INVITATION:
-      return sync_pb::EntitySpecifics::
-          kOutgoingPasswordSharingInvitationFieldNumber;
-    case SHARED_TAB_GROUP_DATA:
-      return sync_pb::EntitySpecifics::kSharedTabGroupDataFieldNumber;
-    case COLLABORATION_GROUP:
-      return sync_pb::EntitySpecifics::kCollaborationGroupFieldNumber;
-    case PLUS_ADDRESS:
-      return sync_pb::EntitySpecifics::kPlusAddressFieldNumber;
-    case PRODUCT_COMPARISON:
-      return sync_pb::EntitySpecifics::kProductComparisonFieldNumber;
-    case COOKIES:
-      return sync_pb::EntitySpecifics::kCookieFieldNumber;
-    case PLUS_ADDRESS_SETTING:
-      return sync_pb::EntitySpecifics::kPlusAddressSettingFieldNumber;
-    case AUTOFILL_VALUABLE:
-      return sync_pb::EntitySpecifics::kAutofillValuableFieldNumber;
-    case AUTOFILL_VALUABLE_METADATA:
-      return sync_pb::EntitySpecifics::kAutofillValuableMetadataFieldNumber;
-    case ACCOUNT_SETTING:
-      return sync_pb::EntitySpecifics::kAccountSettingFieldNumber;
-    case SHARED_TAB_GROUP_ACCOUNT_DATA:
-      return sync_pb::EntitySpecifics::kSharedTabGroupAccountDataFieldNumber;
-    case SHARED_COMMENT:
-      return sync_pb::EntitySpecifics::kSharedCommentFieldNumber;
-    case AI_THREAD:
-      return sync_pb::EntitySpecifics::kAiThreadFieldNumber;
-    case CONTEXTUAL_TASK:
-      return sync_pb::EntitySpecifics::kContextualTaskFieldNumber;
-    case NIGORI:
-      return sync_pb::EntitySpecifics::kNigoriFieldNumber;
-    case SKILL:
-      return sync_pb::EntitySpecifics::kSkillFieldNumber;
-    case GEMINI_THREAD:
-      return sync_pb::EntitySpecifics::kGeminiThreadFieldNumber;
-    case ACCESSIBILITY_ANNOTATION:
-      return sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber;
-  }
-  NOTREACHED();
+  CHECK(ProtocolTypes().Has(data_type))
+      << "Only protocol types have field values: "
+      << DataTypeToDebugString(data_type);
+  return GetDataTypeInfo(data_type).specifics_field_number;
 }
 
 void internal::GetDataTypeSetFromSpecificsFieldNumberListHelper(
@@ -488,6 +1362,25 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 
   return GetDataTypeFromSpecificsFieldNumber(
       specifics.specifics_variant_case());
+}
+
+DataTypeSet ProtocolTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.type != UNSPECIFIED) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet UserTypes() {
+  static const DataTypeSet types =
+      DataTypeSet::FromRange(FIRST_USER_DATA_TYPE, LAST_USER_DATA_TYPE);
+  return types;
 }
 
 DataTypeSet AlwaysPreferredUserTypes() {
@@ -520,321 +1413,125 @@ DataTypeSet AlwaysPreferredUserTypes() {
   return types;
 }
 
-DataTypeSet EncryptableUserTypes() {
-  static_assert(63 == syncer::GetNumDataTypes(),
-                "If adding an unencryptable type, remove from "
-                "encryptable_user_types below.");
-  DataTypeSet encryptable_user_types = UserTypes();
-  // Accessibility annotations are not encrypted since they originate from the
-  // server.
-  encryptable_user_types.Remove(ACCESSIBILITY_ANNOTATION);
-  // Account settings are read-only and therefore never encrypted.
-  encryptable_user_types.Remove(ACCOUNT_SETTING);
-  // Valuables are never encrypted because they can be generated from outside
-  // of Chrome.
-  encryptable_user_types.Remove(AUTOFILL_VALUABLE);
-  // Wallet data is not encrypted since it actually originates on the server.
-  encryptable_user_types.Remove(AUTOFILL_WALLET_DATA);
-  encryptable_user_types.Remove(AUTOFILL_WALLET_OFFER);
-  encryptable_user_types.Remove(AUTOFILL_WALLET_USAGE);
-  // Similarly, collaboration group is not encrypted since it originates on the
-  // server.
-  encryptable_user_types.Remove(COLLABORATION_GROUP);
-  // Similarly, contact info is not encrypted since it originates on the server.
-  encryptable_user_types.Remove(CONTACT_INFO);
-  // Commit-only types are never encrypted since they are consumed server-side.
-  encryptable_user_types.RemoveAll(CommitOnlyTypes());
-  // History Sync is disabled if encryption is enabled.
-  encryptable_user_types.Remove(HISTORY);
-  encryptable_user_types.Remove(HISTORY_DELETE_DIRECTIVES);
-  // Never encrypted because consumed server-side.
-  encryptable_user_types.Remove(DEVICE_INFO);
-  // Never encrypted because also written server-side.
-  encryptable_user_types.Remove(PRIORITY_PREFERENCES);
-  encryptable_user_types.Remove(OS_PRIORITY_PREFERENCES);
-  encryptable_user_types.Remove(SUPERVISED_USER_SETTINGS);
-  encryptable_user_types.Remove(SKILL);
-  // Password sharing invitations have different encryption implementation.
-  encryptable_user_types.Remove(INCOMING_PASSWORD_SHARING_INVITATION);
-  encryptable_user_types.Remove(OUTGOING_PASSWORD_SHARING_INVITATION);
-  // Never encrypted because consumed server-side.
-  encryptable_user_types.Remove(SHARED_COMMENT);
-  encryptable_user_types.Remove(SHARED_TAB_GROUP_DATA);
-  // Plus addresses and their settings are never encrypted because they
-  // originate from outside Chrome.
-  encryptable_user_types.Remove(PLUS_ADDRESS);
-  encryptable_user_types.Remove(PLUS_ADDRESS_SETTING);
-  // Valuable metadata is accessed on the server.
-  encryptable_user_types.Remove(AUTOFILL_VALUABLE_METADATA);
+DataTypeSet AlwaysEncryptedUserTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      switch (info.encryption_policy) {
+        case EncryptionPolicy::kAlwaysEncrypted:
+          types.Put(info.type);
+          break;
+        case EncryptionPolicy::kEncryptedIfCustomPassphraseSet:
+        case EncryptionPolicy::kNeverEncrypted:
+          break;
+      }
+    }
+    return types;
+  }();
+  return types;
+}
 
+DataTypeSet HighPriorityUserTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.priority == DataTypePriority::kHigh) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet LowPriorityUserTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.priority == DataTypePriority::kLow) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet ControlTypes() {
+  return {NIGORI};
+}
+
+DataTypeSet CommitOnlyTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.communication_direction == CommunicationDirection::kCommitOnly) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet ApplyUpdatesImmediatelyTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.apply_updates_batch_policy ==
+          ApplyUpdatesBatchPolicy::kImmediately) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet SharedTypes() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.cross_user_sharing_policy == CrossUserSharingPolicy::kShared) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
+  static const DataTypeSet types = [] {
+    DataTypeSet types;
+    for (const auto& info : kDataTypeInfoTable) {
+      if (info.unsynced_data_check_on_signout_policy ==
+          UnsyncedDataCheckOnSignoutPolicy::kRequired) {
+        types.Put(info.type);
+      }
+    }
+    return types;
+  }();
+  return types;
+}
+
+DataTypeSet EncryptableUserTypes() {
+  DataTypeSet encryptable_user_types;
+  for (const auto& info : kDataTypeInfoTable) {
+    if (UserTypes().Has(info.type) &&
+        info.encryption_policy != EncryptionPolicy::kNeverEncrypted) {
+      encryptable_user_types.Put(info.type);
+    }
+  }
   return encryptable_user_types;
 }
 
-const char* DataTypeToDebugString(DataType data_type) {
-  // This is used for displaying debug information.
-  switch (data_type) {
-    case UNSPECIFIED:
-      return "Unspecified";
-    case BOOKMARKS:
-      return "Bookmarks";
-    case PREFERENCES:
-      return "Preferences";
-    case PASSWORDS:
-      return "Passwords";
-    case AUTOFILL_PROFILE:
-      return "Autofill Profiles";
-    case AUTOFILL:
-      return "Autofill";
-    case AUTOFILL_WALLET_CREDENTIAL:
-      return "Autofill Wallet Credential";
-    case AUTOFILL_WALLET_DATA:
-      return "Autofill Wallet";
-    case AUTOFILL_WALLET_METADATA:
-      return "Autofill Wallet Metadata";
-    case AUTOFILL_WALLET_OFFER:
-      return "Autofill Wallet Offer";
-    case AUTOFILL_WALLET_USAGE:
-      return "Autofill Wallet Usage";
-    case THEMES:
-      return "Themes";
-    case THEMES_IOS:
-      return "Themes (iOS)";
-    case EXTENSIONS:
-      return "Extensions";
-    case SEARCH_ENGINES:
-      return "Search Engines";
-    case SESSIONS:
-      return "Sessions";
-    case APPS:
-      return "Apps";
-    case APP_SETTINGS:
-      return "App settings";
-    case EXTENSION_SETTINGS:
-      return "Extension settings";
-    case HISTORY_DELETE_DIRECTIVES:
-      return "History Delete Directives";
-    case DICTIONARY:
-      return "Dictionary";
-    case DEVICE_INFO:
-      return "Device Info";
-    case PRIORITY_PREFERENCES:
-      return "Priority Preferences";
-    case SUPERVISED_USER_SETTINGS:
-      return "Managed User Settings";
-    case APP_LIST:
-      return "App List";
-    case ARC_PACKAGE:
-      return "Arc Package";
-    case PRINTERS:
-      return "Printers";
-    case READING_LIST:
-      return "Reading List";
-    case USER_EVENTS:
-      return "User Events";
-    case USER_CONSENTS:
-      return "User Consents";
-    case SEND_TAB_TO_SELF:
-      return "Send Tab To Self";
-    case SECURITY_EVENTS:
-      return "Security Events";
-    case WIFI_CONFIGURATIONS:
-      return "Wifi Configurations";
-    case WEB_APPS:
-      return "Web Apps";
-    case WEB_APKS:
-      return "Web Apks";
-    case OS_PREFERENCES:
-      return "OS Preferences";
-    case OS_PRIORITY_PREFERENCES:
-      return "OS Priority Preferences";
-    case SHARING_MESSAGE:
-      return "Sharing Message";
-    case WORKSPACE_DESK:
-      return "Workspace Desk";
-    case HISTORY:
-      return "History";
-    case PRINTERS_AUTHORIZATION_SERVERS:
-      return "Printers Authorization Servers";
-    case CONTACT_INFO:
-      return "Contact Info";
-    case SAVED_TAB_GROUP:
-      return "Saved Tab Group";
-    case WEBAUTHN_CREDENTIAL:
-      return "WebAuthn Credentials";
-    case INCOMING_PASSWORD_SHARING_INVITATION:
-      return "Incoming Password Sharing Invitations";
-    case OUTGOING_PASSWORD_SHARING_INVITATION:
-      return "Outgoing Password Sharing Invitations";
-    case SHARED_TAB_GROUP_DATA:
-      return "Shared Tab Group Data";
-    case COLLABORATION_GROUP:
-      return "Collaboration Group";
-    case PLUS_ADDRESS:
-      return "Plus Address";
-    case PRODUCT_COMPARISON:
-      return "Product Comparison";
-    case COOKIES:
-      return "Cookies";
-    case PLUS_ADDRESS_SETTING:
-      return "Plus Address Setting";
-    case AUTOFILL_VALUABLE:
-      return "Autofill Valuable";
-    case AUTOFILL_VALUABLE_METADATA:
-      return "Autofill Valuable Metadata";
-    case ACCOUNT_SETTING:
-      return "Account Setting";
-    case SHARED_TAB_GROUP_ACCOUNT_DATA:
-      return "Shared Tab Group Account Data";
-    case SHARED_COMMENT:
-      return "SharedComment";
-    case AI_THREAD:
-      return "AI Thread";
-    case CONTEXTUAL_TASK:
-      return "Contextual Task";
-    case NIGORI:
-      return "Encryption Keys";
-    case SKILL:
-      return "Skill";
-    case GEMINI_THREAD:
-      return "Gemini Thread";
-    case ACCESSIBILITY_ANNOTATION:
-      return "Accessibility Annotation";
-  }
-  NOTREACHED();
+std::string_view DataTypeToDebugString(DataType data_type) {
+  return GetDataTypeInfo(data_type).debug_string;
 }
 
-const char* DataTypeToHistogramSuffix(DataType data_type) {
-  // LINT.IfChange(DataTypeHistogramSuffix)
-  switch (data_type) {
-    case UNSPECIFIED:
-      return "";
-    case BOOKMARKS:
-      return "BOOKMARK";
-    case PREFERENCES:
-      return "PREFERENCE";
-    case PASSWORDS:
-      return "PASSWORD";
-    case AUTOFILL_PROFILE:
-      return "AUTOFILL_PROFILE";
-    case AUTOFILL:
-      return "AUTOFILL";
-    case AUTOFILL_WALLET_CREDENTIAL:
-      return "AUTOFILL_WALLET_CREDENTIAL";
-    case AUTOFILL_WALLET_DATA:
-      return "AUTOFILL_WALLET";
-    case AUTOFILL_WALLET_METADATA:
-      return "WALLET_METADATA";
-    case AUTOFILL_WALLET_OFFER:
-      return "AUTOFILL_OFFER";
-    case AUTOFILL_WALLET_USAGE:
-      return "AUTOFILL_WALLET_USAGE";
-    case THEMES:
-      return "THEME";
-    case THEMES_IOS:
-      return "THEME_IOS";
-    case EXTENSIONS:
-      return "EXTENSION";
-    case SEARCH_ENGINES:
-      return "SEARCH_ENGINE";
-    case SESSIONS:
-      return "SESSION";
-    case APPS:
-      return "APP";
-    case APP_SETTINGS:
-      return "APP_SETTING";
-    case EXTENSION_SETTINGS:
-      return "EXTENSION_SETTING";
-    case HISTORY_DELETE_DIRECTIVES:
-      return "HISTORY_DELETE_DIRECTIVE";
-    case DICTIONARY:
-      return "DICTIONARY";
-    case DEVICE_INFO:
-      return "DEVICE_INFO";
-    case PRIORITY_PREFERENCES:
-      return "PRIORITY_PREFERENCE";
-    case SUPERVISED_USER_SETTINGS:
-      return "MANAGED_USER_SETTING";
-    case APP_LIST:
-      return "APP_LIST";
-    case ARC_PACKAGE:
-      return "ARC_PACKAGE";
-    case PRINTERS:
-      return "PRINTER";
-    case READING_LIST:
-      return "READING_LIST";
-    case USER_EVENTS:
-      return "USER_EVENT";
-    case USER_CONSENTS:
-      return "USER_CONSENT";
-    case SEND_TAB_TO_SELF:
-      return "SEND_TAB_TO_SELF";
-    case SECURITY_EVENTS:
-      return "SECURITY_EVENT";
-    case WIFI_CONFIGURATIONS:
-      return "WIFI_CONFIGURATION";
-    case WEB_APPS:
-      return "WEB_APP";
-    case WEB_APKS:
-      return "WEB_APK";
-    case OS_PREFERENCES:
-      return "OS_PREFERENCE";
-    case OS_PRIORITY_PREFERENCES:
-      return "OS_PRIORITY_PREFERENCE";
-    case SHARING_MESSAGE:
-      return "SHARING_MESSAGE";
-    case WORKSPACE_DESK:
-      return "WORKSPACE_DESK";
-    case HISTORY:
-      return "HISTORY";
-    case PRINTERS_AUTHORIZATION_SERVERS:
-      return "PRINTERS_AUTHORIZATION_SERVER";
-    case CONTACT_INFO:
-      return "CONTACT_INFO";
-    case SAVED_TAB_GROUP:
-      return "SAVED_TAB_GROUP";
-    case WEBAUTHN_CREDENTIAL:
-      return "WEBAUTHN_CREDENTIAL";
-    case INCOMING_PASSWORD_SHARING_INVITATION:
-      return "INCOMING_PASSWORD_SHARING_INVITATION";
-    case OUTGOING_PASSWORD_SHARING_INVITATION:
-      return "OUTGOING_PASSWORD_SHARING_INVITATION";
-    case SHARED_TAB_GROUP_DATA:
-      return "SHARED_TAB_GROUP_DATA";
-    case COLLABORATION_GROUP:
-      return "COLLABORATION_GROUP";
-    case PLUS_ADDRESS:
-      return "PLUS_ADDRESS";
-    case PRODUCT_COMPARISON:
-      return "PRODUCT_COMPARISON";
-    case COOKIES:
-      return "COOKIE";
-    case PLUS_ADDRESS_SETTING:
-      return "PLUS_ADDRESS_SETTING";
-    case AUTOFILL_VALUABLE:
-      return "AUTOFILL_VALUABLE";
-    case AUTOFILL_VALUABLE_METADATA:
-      return "AUTOFILL_VALUABLE_METADATA";
-    case SHARED_TAB_GROUP_ACCOUNT_DATA:
-      return "SHARED_TAB_GROUP_ACCOUNT_DATA";
-    case SHARED_COMMENT:
-      return "SHARED_COMMENT";
-    case AI_THREAD:
-      return "AI_THREAD";
-    case CONTEXTUAL_TASK:
-      return "CONTEXTUAL_TASK";
-    case NIGORI:
-      return "NIGORI";
-    case ACCOUNT_SETTING:
-      return "ACCOUNT_SETTING";
-    case SKILL:
-      return "SKILL";
-    case GEMINI_THREAD:
-      return "GEMINI_THREAD";
-    case ACCESSIBILITY_ANNOTATION:
-      return "ACCESSIBILITY_ANNOTATION";
-  }
-  // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/histograms.xml:DataTypeHistogramSuffix)
-  NOTREACHED();
+std::string_view DataTypeToHistogramSuffix(DataType data_type) {
+  return GetDataTypeInfo(data_type).histogram_suffix;
 }
 
 DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
@@ -985,140 +1682,8 @@ std::string DataTypeSetToDebugString(DataTypeSet data_types) {
   return result;
 }
 
-const char* DataTypeToStableLowerCaseString(DataType data_type) {
-  // WARNING: existing strings must not be changed without migration, they are
-  // persisted!
-  switch (data_type) {
-    case UNSPECIFIED:
-      return "";
-    case BOOKMARKS:
-      return "bookmarks";
-    case PREFERENCES:
-      return "preferences";
-    case PASSWORDS:
-      return "passwords";
-    case AUTOFILL_PROFILE:
-      return "autofill_profiles";
-    case AUTOFILL:
-      return "autofill";
-    case AUTOFILL_WALLET_CREDENTIAL:
-      return "autofill_wallet_credential";
-    case AUTOFILL_WALLET_DATA:
-      return "autofill_wallet";
-    case AUTOFILL_WALLET_METADATA:
-      return "autofill_wallet_metadata";
-    case AUTOFILL_WALLET_OFFER:
-      return "autofill_wallet_offer";
-    case AUTOFILL_WALLET_USAGE:
-      return "autofill_wallet_usage";
-    case THEMES:
-      return "themes";
-    case THEMES_IOS:
-      return "themes_ios";
-    case EXTENSIONS:
-      return "extensions";
-    case SEARCH_ENGINES:
-      return "search_engines";
-    case SESSIONS:
-      return "sessions";
-    case APPS:
-      return "apps";
-    case APP_SETTINGS:
-      return "app_settings";
-    case EXTENSION_SETTINGS:
-      return "extension_settings";
-    case HISTORY_DELETE_DIRECTIVES:
-      return "history_delete_directives";
-    case DICTIONARY:
-      return "dictionary";
-    case DEVICE_INFO:
-      return "device_info";
-    case PRIORITY_PREFERENCES:
-      return "priority_preferences";
-    case SUPERVISED_USER_SETTINGS:
-      return "managed_user_settings";
-    case APP_LIST:
-      return "app_list";
-    case ARC_PACKAGE:
-      return "arc_package";
-    case PRINTERS:
-      return "printers";
-    case READING_LIST:
-      return "reading_list";
-    case USER_EVENTS:
-      return "user_events";
-    case USER_CONSENTS:
-      return "user_consent";
-    case SEND_TAB_TO_SELF:
-      return "send_tab_to_self";
-    case SECURITY_EVENTS:
-      return "security_events";
-    case WIFI_CONFIGURATIONS:
-      return "wifi_configurations";
-    case WEB_APPS:
-      return "web_apps";
-    case WEB_APKS:
-      return "webapks";
-    case OS_PREFERENCES:
-      return "os_preferences";
-    case OS_PRIORITY_PREFERENCES:
-      return "os_priority_preferences";
-    case SHARING_MESSAGE:
-      return "sharing_message";
-    case WORKSPACE_DESK:
-      return "workspace_desk";
-    case HISTORY:
-      return "history";
-    case PRINTERS_AUTHORIZATION_SERVERS:
-      return "printers_authorization_servers";
-    case CONTACT_INFO:
-      return "contact_info";
-    case SAVED_TAB_GROUP:
-      return "saved_tab_group";
-    case WEBAUTHN_CREDENTIAL:
-      return "webauthn_credential";
-    case INCOMING_PASSWORD_SHARING_INVITATION:
-      return "incoming_password_sharing_invitation";
-    case OUTGOING_PASSWORD_SHARING_INVITATION:
-      return "outgoing_password_sharing_invitation";
-    case SHARED_TAB_GROUP_DATA:
-      return "shared_tab_group_data";
-    case COLLABORATION_GROUP:
-      return "collaboration_group";
-    case PLUS_ADDRESS:
-      return "plus_address";
-    case PRODUCT_COMPARISON:
-      return "product_comparison";
-    case COOKIES:
-      return "cookies";
-    case PLUS_ADDRESS_SETTING:
-      return "plus_address_setting";
-    case AUTOFILL_VALUABLE:
-      return "autofill_valuable";
-    case AUTOFILL_VALUABLE_METADATA:
-      return "autofill_valuable_metadata";
-    case ACCOUNT_SETTING:
-      return "account_setting";
-    case SHARED_TAB_GROUP_ACCOUNT_DATA:
-      return "shared_tab_group_account_data";
-    case SHARED_COMMENT:
-      return "shared_comment";
-    case AI_THREAD:
-      return "ai_thread";
-    case CONTEXTUAL_TASK:
-      return "contextual_task";
-    case NIGORI:
-      return "nigori";
-    case SKILL:
-      return "skill";
-    case GEMINI_THREAD:
-      return "gemini_thread";
-    case ACCESSIBILITY_ANNOTATION:
-      return "accessibility_annotation";
-  }
-  // WARNING: existing strings must not be changed without migration, they
-  // are persisted!
-  NOTREACHED();
+std::string_view DataTypeToStableLowerCaseString(DataType data_type) {
+  return GetDataTypeInfo(data_type).stable_lowercase_string;
 }
 
 std::ostream& operator<<(std::ostream& out, DataType data_type) {
@@ -1130,10 +1695,10 @@ std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set) {
 }
 
 std::string DataTypeToProtocolRootTag(DataType data_type) {
-  DCHECK(ProtocolTypes().Has(data_type));
-  DCHECK(IsRealDataType(data_type));
-  const std::string root_tag = DataTypeToStableLowerCaseString(data_type);
-  DCHECK(!root_tag.empty());
+  CHECK(ProtocolTypes().Has(data_type));
+  CHECK(IsRealDataType(data_type));
+  const std::string root_tag(DataTypeToStableLowerCaseString(data_type));
+  CHECK(!root_tag.empty());
   return "google_chrome_" + root_tag;
 }
 

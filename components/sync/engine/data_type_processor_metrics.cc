@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 
 namespace syncer {
 
@@ -19,10 +19,10 @@ void LogDataTypeConfigurationTime(DataType data_type,
       base::Time::Now() - configuration_start_time;
 
   base::UmaHistogramCustomTimes(
-      base::StringPrintf(
-          "Sync.DataTypeConfigurationTime.%s.%s",
-          (mode == SyncMode::kTransportOnly) ? "Ephemeral" : "Persistent",
-          DataTypeToHistogramSuffix(data_type)),
+      base::StrCat(
+          {"Sync.DataTypeConfigurationTime.",
+           (mode == SyncMode::kTransportOnly) ? "Ephemeral" : "Persistent", ".",
+           DataTypeToHistogramSuffix(data_type)}),
       configuration_duration,
       /*min=*/base::Milliseconds(1),
       /*max=*/base::Seconds(60),
@@ -41,8 +41,8 @@ void LogNonReflectionUpdateFreshnessToUma(DataType type,
       /*buckets=*/50);
 
   base::UmaHistogramCustomTimes(
-      std::string("Sync.NonReflectionUpdateFreshnessPossiblySkewed2.") +
-          DataTypeToHistogramSuffix(type),
+      base::StrCat({"Sync.NonReflectionUpdateFreshnessPossiblySkewed2.",
+                    DataTypeToHistogramSuffix(type)}),
       freshness,
       /*min=*/base::Milliseconds(100),
       /*max=*/base::Days(7),

@@ -496,8 +496,8 @@ void SyncableServiceBasedBridge::OnSyncableServiceReady(
     } else {
       // Using the same range as Sync.DataTypeConfigurationTime.* metric.
       base::UmaHistogramCustomTimes(
-          base::StringPrintf("Sync.SyncableServiceStartTime.%s",
-                             DataTypeToHistogramSuffix(type_)),
+          base::StrCat({"Sync.SyncableServiceStartTime.",
+                        DataTypeToHistogramSuffix(type_)}),
           base::Time::Now() - init_start_time_,
           /*min=*/base::Milliseconds(1),
           /*max=*/base::Seconds(60), /*buckets=*/50);

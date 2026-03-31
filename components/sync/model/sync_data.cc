@@ -10,6 +10,7 @@
 
 #include "base/json/json_writer.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -106,14 +107,15 @@ std::string SyncData::ToString() const {
     return "<Invalid SyncData>";
   }
 
-  std::string type = DataTypeToDebugString(GetDataType());
+  std::string_view type = DataTypeToDebugString(GetDataType());
   std::string specifics;
   base::JSONWriter::WriteWithOptions(EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &specifics);
 
-  return "{ type: " + type + ", tagHash: " + GetClientTagHash().value() +
-         ", title: " + GetTitle() + ", specifics: " + specifics + "}";
+  return base::StrCat(
+      {"{ type: ", type, ", tagHash: ", GetClientTagHash().value(),
+       ", title: ", GetTitle(), ", specifics: ", specifics, "}"});
 }
 
 void PrintTo(const SyncData& sync_data, std::ostream* os) {

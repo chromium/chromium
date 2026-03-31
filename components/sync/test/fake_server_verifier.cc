@@ -63,7 +63,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByType(
     syncer::DataType data_type) const {
   base::DictValue entities = fake_server_->GetEntitiesAsDictForTesting();
 
-  string data_type_string = DataTypeToDebugString(data_type);
+  std::string_view data_type_string = DataTypeToDebugString(data_type);
   const base::ListValue* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
   if (expected_count != entity_list->size()) {
@@ -82,7 +82,7 @@ AssertionResult FakeServerVerifier::VerifyEntityCountByTypeAndName(
     const string& name) const {
   base::DictValue entities = fake_server_->GetEntitiesAsDictForTesting();
 
-  string data_type_string = DataTypeToDebugString(data_type);
+  std::string_view data_type_string = DataTypeToDebugString(data_type);
   const base::ListValue* entity_list = entities.FindList(data_type_string);
   DCHECK(entity_list);
 

@@ -84,7 +84,7 @@ class DataTypeController {
   DataType type() const { return type_; }
 
   // Name of this data type.  For logging purposes only.
-  std::string name() const { return DataTypeToDebugString(type()); }
+  std::string_view name() const { return DataTypeToDebugString(type()); }
 
   // Returns whether the datatype knows how to, and wants to, run in
   // transport-only mode (see syncer::SyncMode enum).

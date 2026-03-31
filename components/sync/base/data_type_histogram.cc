@@ -88,33 +88,37 @@ void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason,
 }
 
 void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes) {
-  std::string type_string = DataTypeToHistogramSuffix(data_type);
-  std::string full_histogram_name =
-      kDataTypeMemoryHistogramPrefix + type_string;
-  base::UmaHistogramCounts1M(full_histogram_name, bytes / 1024);
+  base::UmaHistogramCounts1M(
+      base::StrCat({kDataTypeMemoryHistogramPrefix,
+                    DataTypeToHistogramSuffix(data_type)}),
+      bytes / 1024);
 }
 
 void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count) {
-  std::string type_string = DataTypeToHistogramSuffix(data_type);
-  std::string full_histogram_name = kDataTypeCountHistogramPrefix + type_string;
-  base::UmaHistogramCounts1M(full_histogram_name, count);
+  base::UmaHistogramCounts1M(
+      base::StrCat({kDataTypeCountHistogramPrefix,
+                    DataTypeToHistogramSuffix(data_type)}),
+      count);
 }
 
 void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
                                            bool is_tombstone,
                                            size_t specifics_bytes,
                                            size_t total_bytes) {
-  std::string type_string = DataTypeToHistogramSuffix(data_type);
+  std::string_view type_string = DataTypeToHistogramSuffix(data_type);
   if (is_tombstone) {
     // For tombstones, don't bother recording the `specifics_size` since the
     // specifics is always empty.
     base::UmaHistogramCounts100000(
-        kEntitySizeTombstoneHistogramPrefix + type_string, total_bytes);
+        base::StrCat({kEntitySizeTombstoneHistogramPrefix, type_string}),
+        total_bytes);
   } else {
     base::UmaHistogramCounts100000(
-        kEntitySizeSpecificsOnlyHistogramPrefix + type_string, specifics_bytes);
+        base::StrCat({kEntitySizeSpecificsOnlyHistogramPrefix, type_string}),
+        specifics_bytes);
     base::UmaHistogramCounts100000(
-        kEntitySizeWithMetadataHistogramPrefix + type_string, total_bytes);
+        base::StrCat({kEntitySizeWithMetadataHistogramPrefix, type_string}),
+        total_bytes);
   }
 }
 
