@@ -152,6 +152,10 @@ public class FuseboxSessionState implements UserData {
             mAutocompleteInput.setUserText(editUrl).setSelection(0, Integer.MAX_VALUE);
         }
 
+        // The session is activated for the first time. Preserve the initial value of the User Text
+        // now. If the session is re-activated later, the user text will be preserved.
+        mAutocompleteInput.setInitialUserText(mAutocompleteInput.getUserText());
+
         // Stop here if we're already waiting for profile.
         // This makes sense in scenarios where session object goes through a full cycle
         // (active -> inactive -> active again) before Profile becomes available, to avoid

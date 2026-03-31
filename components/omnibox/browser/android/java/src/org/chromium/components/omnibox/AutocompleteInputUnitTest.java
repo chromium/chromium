@@ -370,12 +370,43 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    public void getSetInitialUserText() {
+        mInput.setInitialUserText("initial");
+        assertEquals("initial", mInput.getInitialUserText());
+
+        mInput.setInitialUserText("");
+        assertEquals("", mInput.getInitialUserText());
+
+        mInput.setInitialUserText(null);
+        assertEquals(null, mInput.getInitialUserText());
+    }
+
+    @Test
+    public void shouldSuppressAutomaticSuggestionsUntilUserStartsTyping_updatesOwnState() {
+        mInput.setInitialUserText("initial");
+        mInput.setUserText("initial");
+        mInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(true);
+
+        // Still matches initial text.
+        assertTrue(mInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+
+        // Diverges from initial text.
+        mInput.setUserText("initial typing");
+        assertFalse(mInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+
+        // Reverts to initial text - should still be false.
+        mInput.setUserText("initial");
+        assertFalse(mInput.shouldSuppressAutomaticSuggestionsUntilUserStartsTyping());
+    }
+
+    @Test
     public void testCopyFrom() {
         long urlFocusTime = 12345L;
         GURL pageUrl = GURL.emptyGURL();
         int pageClassification = PageClassification.OTHER_VALUE;
         String pageTitle = "pageTitle";
-        String userText = "userText";
+        String userText = "initialUserText";
+        String initialUserText = "initialUserText";
         boolean hasAttachments = true;
         boolean suppressAutomaticSuggestionsUntilUserStartsTyping = true;
         int selectionStart = 1;
@@ -392,6 +423,7 @@ public class AutocompleteInputUnitTest {
         input1.setPageClassification(pageClassification);
         input1.setPageTitle(pageTitle);
         input1.setUserText(userText);
+        input1.setInitialUserText(initialUserText);
         input1.setHasAttachments(hasAttachments);
         input1.setSuppressAutomaticSuggestionsUntilUserStartsTyping(
                 suppressAutomaticSuggestionsUntilUserStartsTyping);
@@ -411,6 +443,7 @@ public class AutocompleteInputUnitTest {
         assertEquals(pageClassification, input2.getRawPageClassification());
         assertEquals(pageTitle, input2.getPageTitle());
         assertEquals(userText, input2.getUserText());
+        assertEquals(initialUserText, input2.getInitialUserText());
         assertEquals(input1.allowExactKeywordMatch(), input2.allowExactKeywordMatch());
         assertEquals(
                 suppressAutomaticSuggestionsUntilUserStartsTyping,
