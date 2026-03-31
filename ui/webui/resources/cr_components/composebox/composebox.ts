@@ -632,10 +632,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.clearAutocompleteMatches();
   }
 
-  getMatchesElement(): ComposeboxDropdownElement {
-    return this.$.matches;
-  }
-
   getHasAutomaticActiveTabChipToken() {
     return this.automaticActiveTab_ !== null;
   }

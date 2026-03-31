@@ -501,7 +501,7 @@ suite('ContextualTasksComposeboxTest', () => {
     await searchboxCallbackRouterRemote.$.flushForTesting();
     mockTimer.tick(0);
 
-    const matchesEl = composebox.getMatchesElement();
+    const matchesEl = composebox.getDropdownElement();
     assertTrue(matchesEl.result !== null, 'Matches should be populated');
     assertEquals(2, matchesEl.result.matches.length, 'Should have 2 matches');
 
@@ -511,10 +511,10 @@ suite('ContextualTasksComposeboxTest', () => {
 
     // Wait for Lit updates to propagate
     mockTimer.tick(100);
-    await composebox.getMatchesElement().updateComplete;
+    await composebox.getDropdownElement().updateComplete;
     await composebox.updateComplete;
     assertEquals(
-        0, composebox.getMatchesElement().selectedMatchIndex,
+        0, composebox.getDropdownElement().selectedMatchIndex,
         'Index should be 0');
     assertEquals(
         'match 1', inputElement.value, 'Input value should be match 1');
@@ -701,7 +701,7 @@ suite('ContextualTasksComposeboxTest', () => {
         mockTimer);
 
     // Wait for the matches to be populated in the dropdown.
-    while (!composebox.getMatchesElement().result) {
+    while (!composebox.getDropdownElement().result) {
       mockTimer.tick(10);
       await Promise.resolve();
     }

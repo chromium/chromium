@@ -197,7 +197,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         searchboxCallbackRouterRemote, TEST_QUERY, mockTimer);
 
     // Wait for the matches to be populated.
-    while (!composebox.getMatchesElement().result) {
+    while (!composebox.getDropdownElement().result) {
       mockTimer.tick(10);
       await Promise.resolve();
     }
@@ -222,7 +222,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         '', inputElement.value,
         'Input should be cleared, but input = ' + inputElement.value);
     assertEquals(
-        null, composebox.getMatchesElement().result,
+        null, composebox.getDropdownElement().result,
         'Matches should be cleared');
   });
 

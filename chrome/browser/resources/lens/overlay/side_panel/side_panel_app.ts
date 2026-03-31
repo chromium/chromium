@@ -435,11 +435,11 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       });
       this.composeboxDropdownResizeObserver_ = new ResizeObserver(() => {
         this.composeboxDropdownHeight_ =
-            composebox.getMatchesElement().offsetHeight;
+            composebox.getDropdownElement().offsetHeight;
       });
       this.composeboxResizeObserver_.observe(composebox);
       this.composeboxDropdownResizeObserver_.observe(
-          composebox.getMatchesElement());
+          composebox.getDropdownElement());
     }
   }
 
