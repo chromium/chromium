@@ -368,25 +368,6 @@ TEST(PickleTest, PeekNextOverflow) {
   EXPECT_EQ(pickle_size, std::numeric_limits<uint32_t>::max() / 2);
 }
 
-TEST(PickleTest, GetReadPointerAndAdvance) {
-  Pickle pickle;
-
-  PickleIterator iter(pickle);
-  EXPECT_FALSE(iter.GetReadPointerAndAdvance(1));
-
-  pickle.WriteInt(1);
-  pickle.WriteInt(2);
-  int bytes = sizeof(int) * 2;
-
-  EXPECT_TRUE(PickleIterator(pickle).GetReadPointerAndAdvance(0));
-  EXPECT_TRUE(PickleIterator(pickle).GetReadPointerAndAdvance(1));
-  EXPECT_FALSE(PickleIterator(pickle).GetReadPointerAndAdvance(-1));
-  EXPECT_TRUE(PickleIterator(pickle).GetReadPointerAndAdvance(bytes));
-  EXPECT_FALSE(PickleIterator(pickle).GetReadPointerAndAdvance(bytes + 1));
-  EXPECT_FALSE(PickleIterator(pickle).GetReadPointerAndAdvance(INT_MAX));
-  EXPECT_FALSE(PickleIterator(pickle).GetReadPointerAndAdvance(INT_MIN));
-}
-
 TEST(PickleTest, ReadingTooMuchPreventsFutureReads) {
   Pickle pickle;
   pickle.WriteUInt32(1);

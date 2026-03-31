@@ -18,9 +18,11 @@
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/stack_allocated.h"
 #include "base/strings/string_view_util.h"
 
 namespace base {
@@ -30,8 +32,10 @@ class Pickle;
 // PickleIterator reads data from a Pickle. The Pickle object must remain valid
 // while the PickleIterator object is in use.
 class BASE_EXPORT PickleIterator {
+  STACK_ALLOCATED();
+
  public:
-  PickleIterator() : payload_(nullptr), read_index_(0), end_index_(0) {}
+  PickleIterator() = default;
   explicit PickleIterator(const Pickle& pickle);
 
   // Equivalent to PickleIterator(Pickle::WithUnownedBuffer(data)) but avoids
@@ -73,23 +77,16 @@ class BASE_EXPORT PickleIterator {
 
   // A version of ReadInt() that checks for the result not being negative. Use
   // it for reading the object sizes.
-  [[nodiscard]] bool ReadLength(size_t* result) {
-    int result_int;
-    if (!ReadInt(&result_int) || result_int < 0) {
-      return false;
-    }
-    *result = static_cast<size_t>(result_int);
-    return true;
-  }
+  [[nodiscard]] bool ReadLength(size_t* result);
 
   // Skips bytes in the read buffer and returns true if there are at least
   // num_bytes available. Otherwise, does nothing and returns false.
   [[nodiscard]] bool SkipBytes(size_t num_bytes) {
-    return !!GetReadPointerAndAdvance(num_bytes);
+    return !!ReadBytes(num_bytes);
   }
 
   // Returns true if all the data in the Pickle has been consumed.
-  bool ReachedEnd() const { return read_index_ == end_index_; }
+  bool ReachedEnd() const { return !RemainingBytes(); }
 
   // Returns the number of unused bytes remaining in the Pickle. Most code
   // should not use this. Just call a Read* method and check the return value.
@@ -97,35 +94,10 @@ class BASE_EXPORT PickleIterator {
   // before reading the data that will fill the container. In that case, this
   // method can be used to check if the size is plausible before attempting the
   // allocation.
-  size_t RemainingBytes() const { return end_index_ - read_index_; }
+  size_t RemainingBytes() const { return reader_.remaining(); }
 
  private:
-  // Read Type from Pickle.
-  template <typename Type>
-  bool ReadBuiltinType(Type* result);
-
-  // Advance read_index_ but do not allow it to exceed end_index_.
-  // Keeps read_index_ aligned.
-  void Advance(size_t size);
-
-  // Get read pointer for Type and advance read pointer.
-  template <typename Type>
-  const char* GetReadPointerAndAdvance();
-
-  // Get read pointer for |num_bytes| and advance read pointer. This method
-  // checks num_bytes for wrapping.
-  const char* GetReadPointerAndAdvance(size_t num_bytes);
-
-  // Get read pointer for (num_elements * size_element) bytes and advance read
-  // pointer. This method checks for overflow and wrapping.
-  const char* GetReadPointerAndAdvance(size_t num_elements,
-                                       size_t size_element);
-
-  const char* payload_;  // Start of our pickle's payload.
-  size_t read_index_;    // Offset of the next readable byte in payload.
-  size_t end_index_;     // Payload size.
-
-  FRIEND_TEST_ALL_PREFIXES(PickleTest, GetReadPointerAndAdvance);
+  SpanReader<const uint8_t> reader_;
 };
 
 // This class provides facilities for basic binary value packing and unpacking.
@@ -377,6 +349,9 @@ class BASE_EXPORT Pickle {
 
  private:
   friend class PickleIterator;
+
+  // TODO(https://crbug.com/478784025): Use `SpanWriter` for writing data
+  // instead of manual management.
 
   // `header_` is not a raw_ptr<...> for performance reasons (based on analysis
   // of sampling profiler data).

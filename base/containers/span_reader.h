@@ -25,6 +25,9 @@ class SpanReader {
   STACK_ALLOCATED();
 
  public:
+  // Construct an empty SpanReader.
+  SpanReader() : original_size_(0) {}
+
   // Construct SpanReader from a span.
   explicit SpanReader(span<T> buf) : buf_(buf), original_size_(buf_.size()) {}
 
@@ -256,6 +259,18 @@ class SpanReader {
     requires(std::same_as<std::remove_const_t<T>, uint8_t>)
   {
     return ReadAnd<1>([&](auto buf) { value = static_cast<char>(buf[0u]); });
+  }
+
+  bool ReadFloatNativeEndian(float& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<4>([&](auto buf) { value = FloatFromNativeEndian(buf); });
+  }
+
+  bool ReadDoubleNativeEndian(double& value)
+    requires(std::same_as<std::remove_const_t<T>, uint8_t>)
+  {
+    return ReadAnd<8>([&](auto buf) { value = DoubleFromNativeEndian(buf); });
   }
 
   // Returns the number of objects remaining to be read from the original span.

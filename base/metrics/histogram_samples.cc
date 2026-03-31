@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/clamped_math.h"
@@ -35,6 +36,8 @@ constexpr size_t kSizeMax = std::numeric_limits<size_t>::max();
 constexpr int32_t kDisabledSingleSample = -1;
 
 class SampleCountPickleIterator : public SampleCountIterator {
+  STACK_ALLOCATED();
+
  public:
   explicit SampleCountPickleIterator(PickleIterator* iter);
 

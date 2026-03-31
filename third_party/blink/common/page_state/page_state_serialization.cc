@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/stack_allocated.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/pickle.h"
@@ -192,6 +193,9 @@ struct SerializeObject {
 };
 
 struct DeserializeObject {
+  STACK_ALLOCATED();
+
+ public:
   explicit DeserializeObject(base::span<const uint8_t> data)
       : iter(base::PickleIterator::WithData(data)) {}
 
