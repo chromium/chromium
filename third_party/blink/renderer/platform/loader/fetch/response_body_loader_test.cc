@@ -81,7 +81,7 @@ class ResponseBodyLoaderTest : public testing::Test {
     }
     void DidReceiveDecodedData(
         const String& data,
-        std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override {}
+        std::unique_ptr<SecureStringDigest> digest) override {}
     void DidFinishLoadingBody() override {
       DCHECK(!finished_);
       DCHECK(!failed_);

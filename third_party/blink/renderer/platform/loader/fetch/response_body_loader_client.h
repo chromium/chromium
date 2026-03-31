@@ -24,7 +24,7 @@ class ResponseBodyLoaderClient : public GarbageCollectedMixin {
   // be called at most once.
   virtual void DidReceiveDecodedData(
       const String& data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) = 0;
+      std::unique_ptr<SecureStringDigest> digest) = 0;
 
   // Called when finishing reading the entire body. This must be the last
   // signal.

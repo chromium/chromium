@@ -259,7 +259,7 @@ enum class ParkableStringImpl::Status : uint8_t {
 
 ParkableStringImpl::ParkableMetadata::ParkableMetadata(
     String string,
-    std::unique_ptr<SecureDigest> digest)
+    std::unique_ptr<SecureStringDigest> digest)
     : lock_(),
       lock_depth_(0),
       state_(State::kUnparked),
@@ -271,8 +271,8 @@ ParkableStringImpl::ParkableMetadata::ParkableMetadata(
       length_(string.length()) {}
 
 // static
-std::unique_ptr<ParkableStringImpl::SecureDigest>
-ParkableStringImpl::HashString(StringImpl* string) {
+std::unique_ptr<SecureStringDigest> ParkableStringImpl::HashString(
+    StringImpl* string) {
   DigestValue digest_result;
 
   Digestor digestor(kHashAlgorithmSha256);
@@ -289,11 +289,11 @@ ParkableStringImpl::HashString(StringImpl* string) {
   if (digestor.has_failed()) {
     // Don't know the exact size, the SHA256 spec hints at ~64 (block size)
     // + 32 (digest) bytes.
-    base::TerminateBecauseOutOfMemory(64 + kDigestSize);
+    base::TerminateBecauseOutOfMemory(64 + kSha256Bytes);
   }
   // Unless SHA256 is... not 256 bits?
-  DCHECK(digest_result.size() == kDigestSize);
-  return std::make_unique<SecureDigest>(digest_result);
+  DCHECK(digest_result.size() == kSha256Bytes);
+  return std::make_unique<SecureStringDigest>(digest_result);
 }
 
 // static
@@ -313,7 +313,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringImpl::MakeNonParkable(
 // static
 scoped_refptr<ParkableStringImpl> ParkableStringImpl::MakeParkable(
     scoped_refptr<StringImpl>&& impl,
-    std::unique_ptr<SecureDigest> digest) {
+    std::unique_ptr<SecureStringDigest> digest) {
   DCHECK(!!digest);
   return base::AdoptRef(
       new ParkableStringImpl(std::move(impl), std::move(digest)));
@@ -333,8 +333,9 @@ ParkableStringImpl::GetCompressionAlgorithm() {
   return CompressionAlgorithm::kZlib;
 }
 
-ParkableStringImpl::ParkableStringImpl(scoped_refptr<StringImpl>&& impl,
-                                       std::unique_ptr<SecureDigest> digest)
+ParkableStringImpl::ParkableStringImpl(
+    scoped_refptr<StringImpl>&& impl,
+    std::unique_ptr<SecureStringDigest> digest)
     : string_(std::move(impl)),
       metadata_(digest ? std::make_unique<ParkableMetadata>(string_,
                                                             std::move(digest))
@@ -1040,9 +1041,8 @@ void ParkableStringImpl::OnWritingCompleteOnMainThread(
 ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl)
     : ParkableString(std::move(impl), nullptr) {}
 
-ParkableString::ParkableString(
-    scoped_refptr<StringImpl>&& impl,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+ParkableString::ParkableString(scoped_refptr<StringImpl>&& impl,
+                               std::unique_ptr<SecureStringDigest> digest) {
   if (!impl) {
     impl_ = nullptr;
     return;

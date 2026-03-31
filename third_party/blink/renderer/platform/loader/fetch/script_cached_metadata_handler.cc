@@ -116,8 +116,8 @@ ScriptCachedMetadataHandlerWithHashing::ScriptCachedMetadataHandlerWithHashing(
 void ScriptCachedMetadataHandlerWithHashing::Check(
     CodeCacheHost* code_cache_host,
     const ParkableString& source_text) {
-  std::unique_ptr<ParkableStringImpl::SecureDigest> digest_holder;
-  const ParkableStringImpl::SecureDigest* digest;
+  std::unique_ptr<SecureStringDigest> digest_holder;
+  const SecureStringDigest* digest;
   // ParkableStrings have usually already computed the digest unless they're
   // quite short (see ParkableStringManager::ShouldPark), so usually we can just
   // use the pre-existing digest.

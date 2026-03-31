@@ -99,15 +99,15 @@ class PLATFORM_EXPORT ParkableStringManager
   static const char* kAllocatorDumpName;
 
   // Compares not the pointers, but the arrays. Uses pointers to save space.
-  struct SecureDigestHashTraits
-      : GenericHashTraits<const ParkableStringImpl::SecureDigest*> {
-    static unsigned GetHash(const ParkableStringImpl::SecureDigest* digest) {
+  struct SecureStringDigestHashTraits
+      : GenericHashTraits<const SecureStringDigest*> {
+    static unsigned GetHash(const SecureStringDigest* digest) {
       // The first bytes of the hash are as good as anything else.
       return *reinterpret_cast<const unsigned*>(digest->data());
     }
 
-    static bool Equal(const ParkableStringImpl::SecureDigest* const a,
-                      const ParkableStringImpl::SecureDigest* const b) {
+    static bool Equal(const SecureStringDigest* const a,
+                      const SecureStringDigest* const b) {
       return a == b || *a == *b;
     }
 
@@ -116,9 +116,9 @@ class PLATFORM_EXPORT ParkableStringManager
 
   // Relies on secure hash equality for deduplication. If one day SHA256 becomes
   // insecure, then this would need to be updated to a more robust hash.
-  using StringMap = HashMap<const ParkableStringImpl::SecureDigest*,
+  using StringMap = HashMap<const SecureStringDigest*,
                             ParkableStringImpl*,
-                            SecureDigestHashTraits>;
+                            SecureStringDigestHashTraits>;
 
   bool IsOnParkedMapForTesting(ParkableStringImpl* string);
   bool IsOnDiskMapForTesting(ParkableStringImpl* string);
@@ -129,7 +129,7 @@ class PLATFORM_EXPORT ParkableStringManager
 
   scoped_refptr<ParkableStringImpl> Add(
       scoped_refptr<StringImpl>&&,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest);
+      std::unique_ptr<SecureStringDigest> digest);
 
   void RemoveOnMainThread(ParkableStringImpl* string);
   // If on a background thread, posts a `RemoveOnMainThread` task to the Main

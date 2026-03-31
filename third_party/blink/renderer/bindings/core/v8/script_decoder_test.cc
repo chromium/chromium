@@ -42,7 +42,7 @@ class DummyResponseBodyLoaderClient
   }
   void DidReceiveDecodedData(
       const String& decoded_data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override {
+      std::unique_ptr<SecureStringDigest> digest) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     decoded_data_ = decoded_data;
     digest_ = std::move(digest);
@@ -59,7 +59,7 @@ class DummyResponseBodyLoaderClient
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return decoded_data_;
   }
-  const std::unique_ptr<ParkableStringImpl::SecureDigest>& digest() const {
+  const std::unique_ptr<SecureStringDigest>& digest() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return digest_;
   }
@@ -67,7 +67,7 @@ class DummyResponseBodyLoaderClient
  private:
   Deque<Vector<char>> raw_data_;
   String decoded_data_;
-  std::unique_ptr<ParkableStringImpl::SecureDigest> digest_;
+  std::unique_ptr<SecureStringDigest> digest_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

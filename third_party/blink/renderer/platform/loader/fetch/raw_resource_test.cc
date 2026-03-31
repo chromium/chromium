@@ -70,7 +70,7 @@ class RawResourceTest : public testing::Test {
     void DidReceiveData(base::span<const char>) override {}
     void DidReceiveDecodedData(
         const String& data,
-        std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override {}
+        std::unique_ptr<SecureStringDigest> digest) override {}
     void DidFinishLoadingBody() override {}
     void DidFailLoadingBody() override {}
     void DidCancelLoadingBody() override {}

@@ -169,7 +169,7 @@ base::TimeDelta ParkableStringManager::AgingInterval() {
 
 scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
     scoped_refptr<StringImpl>&& string,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<SecureStringDigest> digest) {
   DCHECK(IsMainThread());
 
   ScheduleAgingTaskIfNeeded();
@@ -181,7 +181,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
 #if DCHECK_IS_ON()
     // Verify that the provided hash is the same that we would have computed.
     // Otherwise the lookups below would not correctly deduplicate strings.
-    std::unique_ptr<ParkableStringImpl::SecureDigest> expected_digest =
+    std::unique_ptr<SecureStringDigest> expected_digest =
         ParkableStringImpl::HashString(string_impl.get());
     CHECK(*expected_digest == *digest);
 #endif  // DCHECK_IS_ON()

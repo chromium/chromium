@@ -435,7 +435,7 @@ void ResponseBodyLoader::DidReceiveData(base::span<const char> data) {
 
 void ResponseBodyLoader::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<SecureStringDigest> digest) {
   if (aborted_)
     return;
 

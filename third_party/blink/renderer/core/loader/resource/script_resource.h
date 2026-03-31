@@ -108,7 +108,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       scoped_refptr<base::SingleThreadTaskRunner> loader_task_runner) override;
   void DidReceiveDecodedData(
       const String& data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;
+      std::unique_ptr<SecureStringDigest> digest) override;
 
   void Trace(Visitor*) const override;
 

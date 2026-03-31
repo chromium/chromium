@@ -383,10 +383,10 @@ class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
   class CORE_EXPORT Result {
    public:
     Result(String decoded_data,
-           std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+           std::unique_ptr<SecureStringDigest> digest,
            std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source);
     Result(String decoded_data,
-           std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+           std::unique_ptr<SecureStringDigest> digest,
            std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
                consume_code_cache_task);
     ~Result() = default;
@@ -398,7 +398,7 @@ class CORE_EXPORT BackgroundResourceScriptStreamer : public ScriptStreamer {
     Result& operator=(Result&&) = default;
 
     String decoded_data;
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest;
+    std::unique_ptr<SecureStringDigest> digest;
     std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source;
     std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
         consume_code_cache_task;

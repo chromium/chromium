@@ -49,7 +49,7 @@ class CORE_EXPORT ScriptDecoder {
    public:
     Result(SegmentedBuffer raw_data,
            String decoded_data,
-           std::unique_ptr<ParkableStringImpl::SecureDigest> digest);
+           std::unique_ptr<SecureStringDigest> digest);
     ~Result() = default;
 
     Result(const Result&) = delete;
@@ -60,7 +60,7 @@ class CORE_EXPORT ScriptDecoder {
 
     SegmentedBuffer raw_data;
     String decoded_data;
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest;
+    std::unique_ptr<SecureStringDigest> digest;
   };
   using OnDecodeFinishedCallback = CrossThreadOnceFunction<void(Result)>;
 

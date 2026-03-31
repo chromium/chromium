@@ -492,7 +492,7 @@ void ScriptResource::ResponseBodyReceived(
 
 void ScriptResource::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<SecureStringDigest> digest) {
   source_text_ = ParkableString(data.Impl(), std::move(digest));
   SetDecodedSize(source_text_.CharactersSizeInBytes());
 }

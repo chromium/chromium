@@ -355,7 +355,7 @@ void ResourceLoader::Run() {
 
 void ResourceLoader::DidReceiveDecodedData(
     const String& data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {
+    std::unique_ptr<SecureStringDigest> digest) {
   resource_->DidReceiveDecodedData(data, std::move(digest));
 }
 

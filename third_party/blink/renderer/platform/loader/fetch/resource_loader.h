@@ -184,7 +184,7 @@ class PLATFORM_EXPORT ResourceLoader final
   void DidReceiveData(base::span<const char> data) override;
   void DidReceiveDecodedData(
       const String& data,
-      std::unique_ptr<ParkableStringImpl::SecureDigest> digest) override;
+      std::unique_ptr<SecureStringDigest> digest) override;
   void DidFinishLoadingBody() override;
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;

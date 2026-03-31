@@ -89,8 +89,6 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandler
 class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
     : public ScriptCachedMetadataHandler {
  public:
-  static constexpr uint32_t kSha256Bytes = 256 / 8;
-
   ScriptCachedMetadataHandlerWithHashing(
       const TextEncoding& encoding,
       std::unique_ptr<CachedMetadataSender> sender);
@@ -118,7 +116,7 @@ class PLATFORM_EXPORT ScriptCachedMetadataHandlerWithHashing final
   void CommitToPersistentStorage(CodeCacheHost*) override;
 
  private:
-  uint8_t hash_[kSha256Bytes] = {0};
+  uint8_t hash_[kSha256Bytes] = {};
 
   enum HashState {
     kUninitialized,  // hash_ has not been written.
@@ -143,7 +141,7 @@ struct CachedMetadataHeaderWithHash {
   // the tag is defined behavior and V8 doesn't copy the data again for better
   // alignment (see AlignedCachedData).
   uint32_t padding = 0;
-  uint8_t hash[ScriptCachedMetadataHandlerWithHashing::kSha256Bytes] = {0};
+  uint8_t hash[kSha256Bytes] = {};
 };
 
 // Describes a few interesting states of the ScriptCachedMetadataHandler when

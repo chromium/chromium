@@ -1148,7 +1148,7 @@ BuildCompileHintsForStreaming(
 
 BackgroundResourceScriptStreamer::Result::Result(
     String decoded_data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+    std::unique_ptr<SecureStringDigest> digest,
     std::unique_ptr<v8::ScriptCompiler::StreamedSource> streamed_source)
     : decoded_data(std::move(decoded_data)),
       digest(std::move(digest)),
@@ -1156,7 +1156,7 @@ BackgroundResourceScriptStreamer::Result::Result(
 
 BackgroundResourceScriptStreamer::Result::Result(
     String decoded_data,
-    std::unique_ptr<ParkableStringImpl::SecureDigest> digest,
+    std::unique_ptr<SecureStringDigest> digest,
     std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask>
         consume_code_cache_task)
     : decoded_data(std::move(decoded_data)),
@@ -1401,8 +1401,7 @@ class BackgroundJSStreamManager : public BackgroundStreamManager {
   // If the streamer started consuming the code cache data before checking
   // whether that data is correct for the current script, then this array
   // contains the script hash from the code cache data.
-  std::unique_ptr<ParkableStringImpl::SecureDigest>
-      sha256_digest_from_code_cache_;
+  std::unique_ptr<SecureStringDigest> sha256_digest_from_code_cache_;
   raw_ptr<SourceStream> source_stream_ptr_ = nullptr;
   BackgroundStreamingState state_ = BackgroundStreamingState::kResponseReceived;
   std::optional<ScriptDecoder::Result> decoder_result_;
@@ -1909,8 +1908,7 @@ BackgroundJSStreamManager::MaybeCreateConsumeCodeCacheTask(
     if (!metadata) {
       return nullptr;
     }
-    sha256_digest_from_code_cache_ =
-        std::make_unique<ParkableStringImpl::SecureDigest>();
+    sha256_digest_from_code_cache_ = std::make_unique<SecureStringDigest>();
     sha256_digest_from_code_cache_->append_range(header->hash);
   }
   std::unique_ptr<v8::ScriptCompiler::ConsumeCodeCacheTask> task;
