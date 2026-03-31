@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -23,6 +24,9 @@ using base::android::JavaRef;
 namespace {
 
 class WatcherImpl {
+  // TODO(https://crbug.com/496639647): Remove this macro.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   WatcherImpl()
       : watcher_(FROM_HERE,
