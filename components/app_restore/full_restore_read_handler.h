@@ -223,14 +223,17 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreReadHandler
   // started yet.
   std::set<base::FilePath> should_check_restore_data_;
 
-  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
+  // TODO(crbug.com/496462846): remove when the FullRestoreReadHandler is no
+  // longer outliving the Env and the AppRestoreArcInfo it observes.
+  base::ScopedObservation<aura::Env, aura::EnvObserver>::LeakedDanglingUntriaged
+      env_observer_{this};
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
 
   base::ScopedObservation<app_restore::AppRestoreArcInfo,
-                          app_restore::AppRestoreArcInfo::Observer>
-      arc_info_observer_{this};
+                          app_restore::AppRestoreArcInfo::Observer>::
+      LeakedDanglingUntriaged arc_info_observer_{this};
 
   base::WeakPtrFactory<FullRestoreReadHandler> weak_factory_{this};
 };
