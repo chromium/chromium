@@ -141,7 +141,7 @@ EntityDataManagerAndroid::GetEntityInstance(JNIEnv* env,
   return EntityInstanceAndroid(
       *entity,
       entity->type().enabled(entity_data_manager_->GetVariationCountryCode()),
-      requires_reauth_to_see);
+      IsEligibleForWalletStorage(entity->type()), requires_reauth_to_see);
 }
 
 void EntityDataManagerAndroid::RemoveEntityInstance(JNIEnv* env,
@@ -228,7 +228,8 @@ EntityDataManagerAndroid::GetEntitiesWithLabels(JNIEnv* env) {
           entity->guid().value(),
           EntityTypeAndroid(
               type,
-              type.enabled(entity_data_manager_->GetVariationCountryCode())),
+              type.enabled(entity_data_manager_->GetVariationCountryCode()),
+              IsEligibleForWalletStorage(type)),
           entity->type().GetNameForI18n(),
           base::JoinString(label, kLabelSeparator),
           entity->record_type() == EntityInstance::RecordType::kServerWallet);
@@ -244,7 +245,8 @@ std::vector<EntityTypeAndroid> EntityDataManagerAndroid::GetWritableEntityTypes(
            entity_data_manager_->GetVariationCountryCode())) {
     entity_types.emplace_back(
         entity_type,
-        entity_type.enabled(entity_data_manager_->GetVariationCountryCode()));
+        entity_type.enabled(entity_data_manager_->GetVariationCountryCode()),
+        IsEligibleForWalletStorage(entity_type));
   }
   return entity_types;
 }
@@ -257,7 +259,8 @@ EntityDataManagerAndroid::GetSortedEntityTypesForListDisplay(
   std::ranges::sort(all_types, EntityType::ListOrder);
   return base::ToVector(all_types, [this](const EntityType& type) {
     return EntityTypeAndroid(
-        type, type.enabled(entity_data_manager_->GetVariationCountryCode()));
+        type, type.enabled(entity_data_manager_->GetVariationCountryCode()),
+        IsEligibleForWalletStorage(type));
   });
 }
 
@@ -291,7 +294,7 @@ bool EntityDataManagerAndroid::CanListEntityInstancesInSettings(JNIEnv* env) {
       /*entity_type=*/std::nullopt);
 }
 
-bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() {
+bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() const {
   return account_setting_service_ &&
          account_setting_service_
              ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
@@ -304,7 +307,7 @@ bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabled(JNIEnv* env) {
 
 bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
     AutofillAiAction action,
-    std::optional<EntityType> entity_type) {
+    std::optional<EntityType> entity_type) const {
   return MayPerformAutofillAiAction(
       google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
       sync_service_, IsWalletPublicPassStorageEnabledHelper(),
@@ -314,7 +317,7 @@ bool EntityDataManagerAndroid::RunMayPerformAutofillAiAction(
 
 // Returns true if the `entity_type` supports wallet storage.
 bool EntityDataManagerAndroid::IsEligibleForWalletStorage(
-    EntityType entity_type) {
+    EntityType entity_type) const {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kImportToWallet,
                                        entity_type) &&
          base::FeatureList::IsEnabled(

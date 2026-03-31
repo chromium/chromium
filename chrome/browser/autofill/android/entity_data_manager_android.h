@@ -123,8 +123,9 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
 
   ~EntityDataManagerAndroid() override;
 
-  bool RunMayPerformAutofillAiAction(AutofillAiAction action,
-                                     std::optional<EntityType> entity_type);
+  bool RunMayPerformAutofillAiAction(
+      AutofillAiAction action,
+      std::optional<EntityType> entity_type) const;
 
   // EntityDataManager::Observer implementation.
   void OnEntityInstancesChanged() override;
@@ -133,13 +134,17 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
     return entity_data_manager_.get();
   }
 
+  EntityDataManager& entity_data_manager() const {
+    return entity_data_manager_.get();
+  }
+
   // Same as `IsWalletPublicPassStorageEnabled` but without the `env` so
   // it can be reused internally.
-  bool IsWalletPublicPassStorageEnabledHelper();
+  bool IsWalletPublicPassStorageEnabledHelper() const;
 
   // Runs permission checks on whether an entity of `entity_type` can be stored
   // on Google Wallet servers.
-  bool IsEligibleForWalletStorage(EntityType entity_type);
+  bool IsEligibleForWalletStorage(EntityType entity_type) const;
 
   // `entity_instance` is the instance that is going to be saved either locally
   // or to Google Wallet servers. `targeted_record_type` reflects whether the

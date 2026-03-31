@@ -33,6 +33,7 @@ struct EntityInstanceAndroid {
 
   EntityInstanceAndroid(const EntityInstance& entity_instance,
                         bool is_enabled,
+                        bool is_eligible_for_wallet_storage,
                         bool requires_reauth_to_see);
   EntityInstanceAndroid(EntityTypeAndroid entity_type,
                         std::string guid,

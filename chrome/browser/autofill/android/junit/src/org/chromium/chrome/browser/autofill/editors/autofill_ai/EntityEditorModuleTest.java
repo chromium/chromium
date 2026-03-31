@@ -125,6 +125,7 @@ public class EntityEditorModuleTest {
                     /* typeName= */ EntityTypeName.PASSPORT,
                     /* isReadOnly= */ false,
                     /* isEnabled= */ true,
+                    /* isEligibleForWalletStorage= */ false,
                     /* typeNameAsString= */ "Passport",
                     /* typeNameAsMetricsString= */ "Passport",
                     /* addEntityTypeString= */ "Add passport",

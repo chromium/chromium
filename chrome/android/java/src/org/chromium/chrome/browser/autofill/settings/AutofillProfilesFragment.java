@@ -458,6 +458,12 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                             new EntityInstance.Builder(entityType)
                                     .setModifiedDate(modifiedDate)
                                     .setUseCount(0)
+                                    .setRecordType(
+                                            entityType.isEligibleForWalletStorage()
+                                                    ? org.chromium.components.autofill.autofill_ai
+                                                            .RecordType.SERVER_WALLET
+                                                    : org.chromium.components.autofill.autofill_ai
+                                                            .RecordType.LOCAL)
                                     .build());
                     return true;
                 });

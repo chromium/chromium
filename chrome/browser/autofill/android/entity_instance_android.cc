@@ -52,8 +52,11 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
 EntityInstanceAndroid::EntityInstanceAndroid(
     const EntityInstance& entity_instance,
     bool is_enabled,
+    bool is_eligible_for_wallet_storage,
     bool requires_reauth_to_see)
-    : entity_type(entity_instance.type(), is_enabled),
+    : entity_type(entity_instance.type(),
+                  is_enabled,
+                  is_eligible_for_wallet_storage),
       guid(*entity_instance.guid()),
       record_type(entity_instance.record_type()),
       metadata(entity_instance.date_modified(),
