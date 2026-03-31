@@ -297,6 +297,7 @@ export function panelOpeningDataToClient(
             conversationInfoToClient) :
         undefined,
     conversationInfo,
+    freOverride: enumToClient(panelOpeningData.freOverride),
   };
 }
 

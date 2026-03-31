@@ -78,6 +78,12 @@ export function enumToClient(
   val: mojomGlic.FormFactor | null):
     glicApi.FormFactor | undefined;
 export function enumToClient(
+  val: mojomGlic.FreOverride):
+    glicApi.FreOverride;
+export function enumToClient(
+  val: mojomGlic.FreOverride | null):
+    glicApi.FreOverride | undefined;
+export function enumToClient(
   val: mojomGlic.HostCapability):
     glicApi.HostCapability;
 export function enumToClient(
@@ -279,6 +285,12 @@ export function enumFromClient(
 export function enumFromClient(
   val: glicApi.FormFactor | undefined):
     mojomGlic.FormFactor | null;
+export function enumFromClient(
+  val: glicApi.FreOverride):
+    mojomGlic.FreOverride;
+export function enumFromClient(
+  val: glicApi.FreOverride | undefined):
+    mojomGlic.FreOverride | null;
 export function enumFromClient(
   val: glicApi.HostCapability):
     mojomGlic.HostCapability;

@@ -210,6 +210,8 @@ class Host : public GlicSharingManagerProvider {
     // active first.
     std::optional<std::vector<glic::mojom::ConversationInfoPtr>>
         recently_active_conversations;
+    // An override for the First Run Experience.
+    mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified;
   };
   void PanelWillOpen(mojom::InvocationSource invocation_source,
                      PanelWillOpenOptions options);
