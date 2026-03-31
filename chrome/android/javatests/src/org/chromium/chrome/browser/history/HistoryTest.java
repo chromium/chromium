@@ -392,6 +392,7 @@ public class HistoryTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // Flaky on desktop crbug.com/498132516
     public void testHistoryClustering_RemoveCluster() throws Exception {
         mActivityTestRule.startOnBlankPage();
         String urlOne =
