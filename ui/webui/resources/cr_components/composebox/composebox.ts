@@ -219,6 +219,9 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
       },
       disableComposeboxAnimation: {type: Boolean},
+      // Embedders can opt out of public composebox resize events when they do not
+      // use them.
+      observeResize: {type: Boolean},
       enableCarouselScrolling: {type: Boolean},
       inputPlaceholderOverride: {type: String},
       showContextMenuDescription_: {type: Boolean},
@@ -239,6 +242,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
+  accessor observeResize: boolean = true;
   accessor enableCarouselScrolling: boolean = false;
   accessor lensButtonTriggersOverlay: boolean = false;
   accessor showLensButton: boolean = true;
@@ -428,7 +432,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.inputState = inputState.state;
     }
 
-    this.setupResizeObservers_();
+    this.syncResizeObservers_();
   }
 
   private setupResizeObservers_() {
@@ -448,6 +452,21 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     composeboxDropdownResizeObserver.observe(this.$.matches);
   }
 
+  private tearDownResizeObservers_() {
+    for (const observer of this.resizeObservers_) {
+      observer.disconnect();
+    }
+    this.resizeObservers_ = [];
+  }
+
+  private syncResizeObservers_() {
+    this.tearDownResizeObservers_();
+    if (!this.isConnected || !this.observeResize) {
+      return;
+    }
+    this.setupResizeObservers_();
+  }
+
   override disconnectedCallback() {
     super.disconnectedCallback();
 
@@ -460,10 +479,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
     this.eventTracker_.removeAll();
 
-    for (const observer of this.resizeObservers_) {
-      observer.disconnect();
-    }
-    this.resizeObservers_ = [];
+    this.tearDownResizeObservers_();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -512,6 +528,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (changedProperties.has('observeResize')) {
+      this.syncResizeObservers_();
+    }
+
     if (changedProperties.has('inputState')) {
       const oldInputState = changedProperties.get('inputState') as InputState | undefined;
       if (this.inputState?.activeTool !== oldInputState?.activeTool) {

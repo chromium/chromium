@@ -68,6 +68,7 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
             ?searchbox-next-enabled="${this.ntpRealboxNextEnabled_}"
             .submitButtonIconType="${this.ntpRealboxNextEnabled_ ? SubmitButtonIconType.FORWARD : SubmitButtonIconType.UPWARD}"
             ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
+            .observeResize="${false}"
             .state="${this.composeboxState_}"
             @close-composebox="${this.onCloseComposebox_}"
             @voice-search-action="${this.onComposeVoiceSearchAction_}"
