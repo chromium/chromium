@@ -5,6 +5,7 @@
 package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
+import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.os.ConditionVariable;
 
@@ -46,7 +47,9 @@ class TestNetworkQualityThroughputListener extends NetworkQualityThroughputListe
      * Blocks until the first throughput observation is received.
      */
     public void waitUntilFirstThroughputObservationReceived() {
-        mWaitForThroughput.block();
+        assertWithMessage("Throughput observation didn't arrive in time")
+                .that(mWaitForThroughput.block(/* timeoutMs= */ 5000))
+                .isTrue();
     }
 
     public int throughputObservationCount() {
