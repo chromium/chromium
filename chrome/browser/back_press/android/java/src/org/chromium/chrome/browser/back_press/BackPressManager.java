@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import static androidx.activity.BackEventCompat.EDGE_LEFT;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
@@ -23,12 +25,15 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.components.browser_ui.widget.gesture.OnSystemNavigationObserver;
+import org.chromium.components.feature_engagement.EventConstants;
 
 import java.util.function.Supplier;
 
@@ -161,6 +166,16 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                 if (mLastCalledHandlerType == Type.TAB_HISTORY) {
                     BackPressMetrics.recordTabNavigationSwipedFromEdge(
                             mLastBackEvent.getSwipeEdge());
+
+                    // Tracks back swipe from left edge
+                    if (mLastBackEvent.getSwipeEdge() == EDGE_LEFT && mProfileSupplier != null) {
+                        Profile profile = mProfileSupplier.get();
+                        if (profile != null) {
+                            TrackerFactory.getTrackerForProfile(profile)
+                                    .notifyEvent(
+                                            EventConstants.SWIPE_ON_LEFT_EDGE_FOR_NAVIGATION_USED);
+                        }
+                    }
                 }
             }
             mActiveHandler = null;
@@ -209,6 +224,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
+    private @Nullable Supplier<Profile> mProfileSupplier;
     private final ObserverList<OnSystemNavigationObserver> mOnSystemNavigationObservers =
             new ObserverList<>();
 
@@ -365,6 +381,11 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
     /** Set a supplier to provide whether gesture nav mode is on when called. */
     public void setIsGestureNavEnabledSupplier(Supplier<Boolean> supplier) {
         mIsGestureNavEnabledSupplier = supplier;
+    }
+
+    /** Set a supplier to provide the current Profile. */
+    public void setProfileSupplier(Supplier<Profile> supplier) {
+        mProfileSupplier = supplier;
     }
 
     /**

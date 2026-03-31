@@ -232,6 +232,10 @@ public final class EventConstants {
     /** Reengagement events. */
     public static final String STARTED_FROM_MAIN_INTENT = "started_from_main_intent";
 
+    /** Swipe on left edge for navigation used. */
+    public static final String SWIPE_ON_LEFT_EDGE_FOR_NAVIGATION_USED =
+            "swipe_on_left_edge_for_navigation_used";
+
     /** User has finished drop-to-merge to create a group. */
     public static final String TAB_DRAG_AND_DROP_TO_GROUP = "tab_drag_and_drop_to_group";
 

@@ -2132,7 +2132,6 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHGestureUserEducation.name == feature->name) {
-    // TODO(crbug.com/493307156): Add final values for IPH
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);  // Always available
@@ -2142,6 +2141,10 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // Only show the IPH once per year
     config.trigger = EventConfig("gesture_user_education_trigger",
                                  Comparator(ANY, 0), 0, 360);
+    // The IPH will only be shown if the back swipe has been used less than two
+    // times in the last 360 days.
+    config.used = EventConfig("swipe_on_left_edge_for_navigation_used",
+                              Comparator(LESS_THAN, 2), 360, 360);
     return config;
   }
 // CONFIGURATION_ANDROID_END
