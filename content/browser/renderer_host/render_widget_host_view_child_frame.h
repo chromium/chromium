@@ -43,7 +43,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
-class CrossProcessFrameConnector;
+class FrameConnector;
 class RenderWidgetHost;
 class RenderWidgetHostViewChildFrameTest;
 class TouchSelectionControllerClientChildFrame;
@@ -72,7 +72,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   RenderWidgetHostViewChildFrame& operator=(
       const RenderWidgetHostViewChildFrame&) = delete;
 
-  void SetFrameConnector(CrossProcessFrameConnector* frame_connector);
+  void SetFrameConnector(FrameConnector* frame_connector);
 
   // TouchSelectionControllerClientManager::Observer implementation.
   void OnManagerWillDestroy(
@@ -217,9 +217,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void OnFrameTokenChanged(uint32_t frame_token,
                            base::TimeTicks activation_time) override;
 
-  CrossProcessFrameConnector* FrameConnectorForTesting() const {
-    return frame_connector_;
-  }
+  FrameConnector* FrameConnectorForTesting() const { return frame_connector_; }
 
   RenderWidgetHostViewBase* GetParentViewInput() override;
 
@@ -290,7 +288,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
 
   // frame_connector_ provides a platform abstraction. Messages
   // sent through it are routed to the embedding renderer process.
-  raw_ptr<CrossProcessFrameConnector> frame_connector_;
+  raw_ptr<FrameConnector> frame_connector_;
 
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();

@@ -4,6 +4,7 @@
 
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
 
+#include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
@@ -28,8 +29,10 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
   CHECK(!child_web_contents->GetSurfaceEmbedConnector());
   auto connector = base::WrapUnique(new SurfaceEmbedConnectorImpl(
       child_web_contents, parent_web_contents, delegate));
+  auto* connector_ptr = connector.get();
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
+  connector_ptr->UpdateViewForCurrentRenderFrameHost();
 }
 
 // static
@@ -93,17 +96,65 @@ WebContentsImpl* SurfaceEmbedConnectorImpl::parent_web_contents() const {
 
 void SurfaceEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
                                         bool allow_paint_holding) {
+  // Detach ourselves from the previous `view_`.
+  if (view_) {
+    RenderWidgetHostViewBase* root_view = GetRootRenderWidgetHostView();
+    if (root_view && root_view->GetCursorManager()) {
+      // TODO(surface-embed): Consider renaming this API to ViewBeingDetached if
+      // view_ is not necessarily guaranteed to be destroyed.
+      root_view->GetCursorManager()->ViewBeingDestroyed(view_);
+    }
+    // The RenderWidgetHostDelegate needs to be checked because SetView() can
+    // be called during nested WebContents destruction. See
+    // https://crbug.com/644306.
+    if (GetParentRenderWidgetHostView() &&
+        GetParentRenderWidgetHostView()->host()->delegate() &&
+        GetParentRenderWidgetHostView()
+            ->host()
+            ->delegate()
+            ->GetInputEventRouter()) {
+      GetParentRenderWidgetHostView()
+          ->host()
+          ->delegate()
+          ->GetInputEventRouter()
+          ->WillDetachChildView(view_);
+    }
+    view_->SetFrameConnector(nullptr);
+  }
+
+  ResetRectInParentView();
   view_ = view;
+
+  // Attach ourselves to the new view and size it appropriately. Also update
+  // visibility in case the frame owner is hidden in parent process. We should
+  // try to move these updates to a single IPC (see https://crbug.com/750179).
+  if (view_) {
+    view_->SetFrameConnector(this);
+    if (visibility_ != blink::mojom::FrameVisibility::kRenderedInViewport) {
+      OnVisibilityChanged(visibility_);
+    }
+
+    if (delegate_) {
+      delegate_->SetFrameSinkId(dummy_surface_provider_->frame_sink_id());
+    }
+  }
 }
 
 RenderWidgetHostViewBase*
 SurfaceEmbedConnectorImpl::GetParentRenderWidgetHostView() {
-  return nullptr;
+  if (!parent_web_contents_) {
+    return nullptr;
+  }
+  return static_cast<RenderWidgetHostViewBase*>(
+      parent_web_contents()->GetRenderWidgetHostView());
 }
 
 RenderWidgetHostViewBase*
 SurfaceEmbedConnectorImpl::GetRootRenderWidgetHostView() {
-  return nullptr;
+  // Assuming one level of embedding.
+  // TODO(crbug.com/496266440): support multiple levels of embedding, e.g., a
+  // WebUI embeds another WebUI, which in turn embeds an external web page.
+  return GetParentRenderWidgetHostView();
 }
 
 void SurfaceEmbedConnectorImpl::RenderProcessGone() {}
@@ -189,6 +240,8 @@ cc::TouchAction SurfaceEmbedConnectorImpl::InheritedEffectiveTouchAction() {
 }
 
 bool SurfaceEmbedConnectorImpl::IsHidden() {
+  // TODO(crbug.com/496266441): Ensure consistency of the values with the
+  // visibility state as we get more complete visibility support.
   return false;
 }
 
@@ -219,12 +272,14 @@ void SurfaceEmbedConnectorImpl::OnVisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   visibility_ = visibility;
 
-  // TODO(surface-embed): If there is a view, propagate the change in
+  // TODO(crbug.com/496266441): If there is a view, propagate the change in
   // visibility to the current child render frame host and the child web
   // contents.
 }
 
 bool SurfaceEmbedConnectorImpl::IsVisible() {
+  // TODO(crbug.com/496266441): Ensure consistency of the values with the
+  // visibility state as we get more complete visibility support.
   return true;
 }
 
@@ -236,12 +291,39 @@ Visibility SurfaceEmbedConnectorImpl::EmbedderVisibility() {
 
 input::RenderWidgetHostViewInput*
 SurfaceEmbedConnectorImpl::GetParentViewInput() {
-  return nullptr;
+  return GetParentRenderWidgetHostView();
 }
 
 input::RenderWidgetHostViewInput*
 SurfaceEmbedConnectorImpl::GetRootViewInput() {
-  return nullptr;
+  return GetRootRenderWidgetHostView();
+}
+
+void SurfaceEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
+  // Should not get here without attached to a child WebContents.
+  CHECK(child_web_contents_);
+
+  // Get the current RenderWidgetHostView for the child WebContents.
+  auto* base_view = static_cast<RenderWidgetHostViewBase*>(
+      child_web_contents_->GetRenderWidgetHostView());
+
+  if (!base_view) {
+    SetView(nullptr, /*allow_paint_holding=*/false);
+    return;
+  }
+
+  CHECK(base_view->IsRenderWidgetHostViewChildFrame());
+  auto* child_view = static_cast<RenderWidgetHostViewChildFrame*>(base_view);
+
+  if (view_ != child_view) {
+    SetView(child_view, /*allow_paint_holding=*/false);
+  }
+}
+
+void SurfaceEmbedConnectorImpl::ResetRectInParentView() {
+  local_surface_id_ = viz::LocalSurfaceId();
+  rect_in_parent_view_in_dip_ = gfx::Rect();
+  last_received_local_frame_size_ = gfx::Size();
 }
 
 }  // namespace content

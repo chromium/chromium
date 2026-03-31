@@ -186,7 +186,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   GURL b_url(embedded_test_server()->GetURL(
       "b.com", "/render_frame_host/beforeunload.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child_node, b_url));
-  CrossProcessFrameConnector* frame_connector_delegate =
+  FrameConnector* frame_connector_delegate =
       static_cast<RenderWidgetHostViewChildFrame*>(
           child_node->current_frame_host()->GetView())
           ->FrameConnectorForTesting();
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                                  false /* success */);
 
   // First, hide the <iframe>. This goes through RemoteFrameView::Hide() and
-  // eventually updates the CrossProcessFrameConnector. Also,
+  // eventually updates the FrameConnector. Also,
   // RemoteFrameView::self_visible_ will be set to false which can only be
   // undone by calling RemoteFrameView::Show. Therefore, potential calls to
   // RemoteFrameView::SetParentVisible(true) would not update the visibility at
