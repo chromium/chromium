@@ -29,13 +29,18 @@ public class UiConfig {
 
     private final List<DisplayStyleObserver> mObservers = new ArrayList<>();
     private final Context mContext;
+    private final View mView;
+    private final View.OnAttachStateChangeListener mOnAttachStateChangeListener;
 
-    /** @param referenceView the View we observe to deduce the configuration from. */
+    /**
+     * @param referenceView the View we observe to deduce the configuration from.
+     */
     public UiConfig(View referenceView) {
+        mView = referenceView;
         mContext = referenceView.getContext();
         mCurrentDisplayStyle = computeDisplayStyleForCurrentConfig();
 
-        referenceView.addOnAttachStateChangeListener(
+        mOnAttachStateChangeListener =
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View v) {
@@ -44,7 +49,9 @@ public class UiConfig {
 
                     @Override
                     public void onViewDetachedFromWindow(View v) {}
-                });
+                };
+
+        mView.addOnAttachStateChangeListener(mOnAttachStateChangeListener);
     }
 
     /**
@@ -66,7 +73,14 @@ public class UiConfig {
         assert success;
     }
 
-    /** @return The context for the view associated with this UiConfig. */
+    public void destroy() {
+        mView.removeOnAttachStateChangeListener(mOnAttachStateChangeListener);
+        mObservers.clear();
+    }
+
+    /**
+     * @return The context for the view associated with this UiConfig.
+     */
     public Context getContext() {
         return mContext;
     }

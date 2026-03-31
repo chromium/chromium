@@ -124,14 +124,6 @@ public class FeedSurfaceMediator
 
         void destroy() {
             mSigninPromoCoordinator.destroy();
-            if (mOnLayoutChangeListener != null) {
-                mCoordinator.getView().removeOnLayoutChangeListener(mOnLayoutChangeListener);
-            }
-
-            if (mSnapScrollHelper != null) {
-                mSnapScrollHelper.destroy();
-                mSnapScrollHelper = null;
-            }
             mCoordinator.updateHeaderViews(/* signinPromoView= */ null);
         }
 
@@ -336,9 +328,37 @@ public class FeedSurfaceMediator
 
     /** Clears any dependencies. */
     void destroy() {
-        destroyPropertiesForStream();
-        mPrefChangeRegistrar.destroy();
+        // 1. Remove all observers first to stop all incoming events.
         mTemplateUrlService.removeObserver(this);
+
+        // 2. Clean up Mediator-owned UI listeners.
+        if (mOnLayoutChangeListener != null) {
+            mCoordinator.getView().removeOnLayoutChangeListener(mOnLayoutChangeListener);
+            mOnLayoutChangeListener = null;
+        }
+
+        if (mSnapScrollHelper != null) {
+            mSnapScrollHelper.destroy();
+            mSnapScrollHelper = null;
+        }
+
+        // 3. Clear the internal observer list.
+        mScrollListeners.clear();
+
+        // 4. Destroy properties and streams.
+        destroyPropertiesForStream();
+        // Only removes mPrefChangeRegistrar's observers when Feeds is destroyed. They can't be
+        // removed in destroyPropertiesForStream() which is called in updateContent() and may cause
+        // Feeds doesn't load when it is turned on after DSE is changed.
+        mPrefChangeRegistrar.removeObserver(Pref.ENABLE_SNIPPETS);
+        mPrefChangeRegistrar.removeObserver(Pref.ENABLE_SNIPPETS_BY_DSE);
+        mPrefChangeRegistrar.destroy();
+
+        // 5. Null out large references.
+        mStreamHolder = null;
+        mCurrentStream = null;
+        mStreamContentChangedListener = null;
+        mRestoreScrollState = null;
     }
 
     private void initialize() {
