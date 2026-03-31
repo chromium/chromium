@@ -26,13 +26,8 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/480689282): Flaky on ChromeOS debug.
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_App DISABLED_App
-#else
-#define MAYBE_App App
-#endif
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, MAYBE_App) {
+// TODO(crbug.com/487147580): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, DISABLED_App) {
   RunTest("contextual_tasks/app_test.js", "mocha.run();");
 }
 
