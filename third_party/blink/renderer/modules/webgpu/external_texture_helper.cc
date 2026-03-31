@@ -417,6 +417,7 @@ ExternalTexture CreateExternalTexture(
   viz::RasterContextProvider* raster_context_provider =
       context_provider_wrapper->ContextProvider().RasterContextProvider();
 
+  scoped_refptr<CanvasResource> canvas_resource;
   if (use_copy_to_shared_image) {
     gpu::SyncToken sync_token;
     auto client_si = resource_provider->BeginExternalWrite(
@@ -427,6 +428,7 @@ ExternalTexture CreateExternalTexture(
         raster_context_provider, std::move(media_video_frame), client_si,
         sync_token, /*use_visible_rect=*/true);
     resource_provider->EndExternalWrite(sync_token);
+    canvas_resource = resource_provider->ProduceCanvasResource();
   } else {
     // Delegate video transformation to Dawn.
     if (media_video_frame->HasSharedImage()) {
@@ -444,14 +446,13 @@ ExternalTexture CreateExternalTexture(
 
     media::PaintCanvasVideoRenderer::PaintParams params;
     params.dest_rect = gfx::RectF(resource_provider->Size());
-    resource_provider->ExternalCanvasDrawHelper([&](cc::PaintCanvas& canvas) {
-      video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
-                            params, raster_context_provider);
-    });
+    canvas_resource = resource_provider->DoExternalDrawAndProduceResource(
+        [&](cc::PaintCanvas& canvas) {
+          video_renderer->Paint(media_video_frame.get(), &canvas, media_flags,
+                                params, raster_context_provider);
+        });
   }
 
-  scoped_refptr<CanvasResource> canvas_resource =
-      resource_provider->ProduceCanvasResource();
   if (!canvas_resource) {
     return {};
   }
