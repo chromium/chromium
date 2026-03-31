@@ -111,7 +111,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
                         const std::u16string& keyword,
                         const std::u16string& short_name,
                         const std::u16string& new_keyword,
-                        const std::string& search_url);
+                        const std::string& display_url);
 
   // Adds a search engine with the given attributes. The new search engine is
   // active by default. Returns true if the search engine was successfully
@@ -120,7 +120,7 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   bool AddSearchEngine(JNIEnv* env,
                        const std::u16string& short_name,
                        const std::u16string& keyword,
-                       const std::string& search_url);
+                       const std::string& display_url);
 
   // Returns true if the value of |new_name| is a valid search engine name to
   // use.
@@ -174,6 +174,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   // Get current default search engine.
   base::android::ScopedJavaLocalRef<jobject> GetDefaultSearchEngine(
       JNIEnv* env);
+
+  std::u16string GetDisplayUrl(JNIEnv* env, int64_t template_url_ptr);
 
   // Get the image search url and the post content.
   base::android::ScopedJavaLocalRef<jobjectArray> GetImageUrlAndPostContent(

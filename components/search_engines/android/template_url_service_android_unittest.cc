@@ -161,15 +161,17 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, EditSearchEngine) {
 TEST_F(TemplateUrlServiceAndroidUnitTest, AddSearchEngine) {
   const std::u16string keyword = u"chromium";
   const std::u16string short_name = u"Add Test";
-  const std::string search_url = "http://chromium.org/search/add";
+  const std::string search_url_user = "http://chromium.org/search?q=%s";
+  const std::string search_url_internal =
+      "http://chromium.org/search?q={searchTerms}";
 
   EXPECT_TRUE(template_url_service_android().AddSearchEngine(
-      env(), short_name, keyword, search_url));
+      env(), short_name, keyword, search_url_user));
 
   TemplateURL* t_url = template_url_service().GetTemplateURLForKeyword(keyword);
   ASSERT_TRUE(t_url);
   EXPECT_EQ(t_url->short_name(), short_name);
-  EXPECT_EQ(t_url->url(), search_url);
+  EXPECT_EQ(t_url->url(), search_url_internal);
   EXPECT_FALSE(t_url->safe_for_autoreplace());
   EXPECT_EQ(t_url->is_active(), TemplateURLData::ActiveStatus::kTrue);
 }
@@ -400,4 +402,22 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, ActivateAndDeactivateSearchEngine) {
   EXPECT_EQ(
       template_url_service().GetTemplateURLForKeyword(keyword)->is_active(),
       TemplateURLData::ActiveStatus::kFalse);
+}
+
+TEST_F(TemplateUrlServiceAndroidUnitTest, GetDisplayUrl) {
+  const std::u16string keyword = u"chromium";
+  TemplateURLData data;
+  data.SetShortName(u"Display Test");
+  data.SetKeyword(keyword);
+  data.SetURL("http://chromium.org/search?q={searchTerms}");
+  TemplateURL* t_url =
+      template_url_service().Add(std::make_unique<TemplateURL>(data));
+
+  ASSERT_TRUE(t_url);
+
+  const std::u16string display_url =
+      template_url_service_android().GetDisplayUrl(
+          env(), reinterpret_cast<intptr_t>(t_url));
+
+  EXPECT_EQ(display_url, u"http://chromium.org/search?q=%s");
 }

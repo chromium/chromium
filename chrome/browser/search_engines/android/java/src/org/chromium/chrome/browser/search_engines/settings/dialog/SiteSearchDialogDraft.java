@@ -25,12 +25,13 @@ class SiteSearchDialogDraft {
      * Creates a draft model for the dialog.
      *
      * @param templateUrl The template URL to edit, or null if adding a new search engine.
+     * @param displayUrl The display URL of the search engine, or empty if adding.
      */
-    static SiteSearchDialogDraft create(@Nullable TemplateUrl templateUrl) {
+    static SiteSearchDialogDraft create(@Nullable TemplateUrl templateUrl, String displayUrl) {
         if (templateUrl == null) {
             return createForAdd();
         } else {
-            return createForEdit(templateUrl);
+            return createForEdit(templateUrl, displayUrl);
         }
     }
 
@@ -38,11 +39,11 @@ class SiteSearchDialogDraft {
         return new SiteSearchDialogDraft(/* originalKeyword= */ "");
     }
 
-    private static SiteSearchDialogDraft createForEdit(TemplateUrl templateUrl) {
+    private static SiteSearchDialogDraft createForEdit(TemplateUrl templateUrl, String displayUrl) {
         SiteSearchDialogDraft model = new SiteSearchDialogDraft(templateUrl.getKeyword());
         model.setNameInput(templateUrl.getShortName());
         model.setKeywordInput(templateUrl.getKeyword());
-        model.setUrlInput(templateUrl.getURL());
+        model.setUrlInput(displayUrl);
 
         // Pre-populated data is assumed valid.
         model.setNameValid(true);

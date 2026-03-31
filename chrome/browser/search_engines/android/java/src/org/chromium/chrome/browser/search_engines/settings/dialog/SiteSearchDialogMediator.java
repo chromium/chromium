@@ -30,7 +30,6 @@ public class SiteSearchDialogMediator implements ModalDialogProperties.Controlle
     @Nullable private PropertyModel mDialogModel;
     private SiteSearchDialogDraft mDraft;
     private SiteSearchDialogSaveAction mSaveAction;
-    @Nullable private TemplateUrl mTemplateUrl;
 
     public SiteSearchDialogMediator(
             Context context,
@@ -56,8 +55,9 @@ public class SiteSearchDialogMediator implements ModalDialogProperties.Controlle
             @Nullable TemplateUrl templateUrl) {
         mCustomViewModel = customViewModel;
         mSaveAction = saveAction;
-        mTemplateUrl = templateUrl;
-        mDraft = SiteSearchDialogDraft.create(mTemplateUrl);
+        String displayUrl =
+                templateUrl != null ? mTemplateUrlService.getDisplayUrl(templateUrl) : "";
+        mDraft = SiteSearchDialogDraft.create(templateUrl, displayUrl);
     }
 
     void show(PropertyModel dialogModel) {

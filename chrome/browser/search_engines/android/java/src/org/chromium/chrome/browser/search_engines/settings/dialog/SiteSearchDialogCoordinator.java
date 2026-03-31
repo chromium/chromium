@@ -104,7 +104,7 @@ public class SiteSearchDialogCoordinator {
         // Init the default values for existing template url.
         model.set(SiteSearchDialogProperties.NAME, templateUrl.getShortName());
         model.set(SiteSearchDialogProperties.KEYWORD, templateUrl.getKeyword());
-        model.set(SiteSearchDialogProperties.URL, templateUrl.getURL());
+        model.set(SiteSearchDialogProperties.URL, mTemplateUrlService.getDisplayUrl(templateUrl));
 
         boolean isUrlEditable = templateUrl.getPrepopulatedId() <= 0;
         model.set(SiteSearchDialogProperties.URL_ENABLED, isUrlEditable);

@@ -105,7 +105,7 @@ public class SiteSearchDialogCoordinatorUnitTest {
     public void testShowEditDialog_NormalUrl() {
         when(mTemplateUrl.getKeyword()).thenReturn("keyword");
         when(mTemplateUrl.getShortName()).thenReturn("name");
-        when(mTemplateUrl.getURL()).thenReturn("https://test.com");
+        when(mTemplateUrlService.getDisplayUrl(mTemplateUrl)).thenReturn("https://test.com");
         when(mTemplateUrl.getPrepopulatedId()).thenReturn(0);
 
         mCoordinator.showEditDialog(mTemplateUrl);

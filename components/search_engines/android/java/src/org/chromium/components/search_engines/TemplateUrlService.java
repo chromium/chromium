@@ -141,6 +141,14 @@ public class TemplateUrlService {
         return TemplateUrlServiceJni.get().getDefaultSearchEngine(mNativeTemplateUrlServiceAndroid);
     }
 
+    /**
+     * @return The display URL of the search engine (converting {searchTerms} to %s).
+     */
+    public String getDisplayUrl(TemplateUrl templateUrl) {
+        return TemplateUrlServiceJni.get()
+                .getDisplayUrl(mNativeTemplateUrlServiceAndroid, templateUrl.getNativePtr());
+    }
+
     public void setSearchEngine(String selectedKeyword, @ChoiceMadeLocation int choiceLocation) {
         ThreadUtils.assertOnUiThread();
         TemplateUrlServiceJni.get()
@@ -698,6 +706,9 @@ public class TemplateUrlService {
                 @JniType("TemplateUrlServiceAndroid::TemplateUrlCategory") int category);
 
         TemplateUrl getDefaultSearchEngine(long nativeTemplateUrlServiceAndroid);
+
+        @JniType("std::u16string")
+        String getDisplayUrl(long nativeTemplateUrlServiceAndroid, long templateUrlPtr);
 
         String[] getImageUrlAndPostContent(long nativeTemplateUrlServiceAndroid);
 

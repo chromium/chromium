@@ -31,7 +31,7 @@ public class SiteSearchDialogDraftUnitTest {
     @Test
     public void testCreateForAdd() {
         // Passing null mimics the "Add" state.
-        SiteSearchDialogDraft draft = SiteSearchDialogDraft.create(null);
+        SiteSearchDialogDraft draft = SiteSearchDialogDraft.create(null, "");
 
         assertEquals("", draft.getNameInput());
         assertEquals("", draft.getKeywordInput());
@@ -48,10 +48,10 @@ public class SiteSearchDialogDraftUnitTest {
     public void testCreateForEdit() {
         when(mTemplateUrl.getShortName()).thenReturn("My Engine");
         when(mTemplateUrl.getKeyword()).thenReturn("engine.com");
-        when(mTemplateUrl.getURL()).thenReturn("https://engine.com/search?q=%s");
 
         // Passing a TemplateUrl mimics the "Edit" state.
-        SiteSearchDialogDraft draft = SiteSearchDialogDraft.create(mTemplateUrl);
+        SiteSearchDialogDraft draft =
+                SiteSearchDialogDraft.create(mTemplateUrl, "https://engine.com/search?q=%s");
 
         assertEquals("My Engine", draft.getNameInput());
         assertEquals("engine.com", draft.getKeywordInput());
@@ -67,7 +67,7 @@ public class SiteSearchDialogDraftUnitTest {
 
     @Test
     public void testAreAllInputsValid() {
-        SiteSearchDialogDraft draft = SiteSearchDialogDraft.create(null);
+        SiteSearchDialogDraft draft = SiteSearchDialogDraft.create(null, "");
         assertFalse(draft.areAllInputsValid());
 
         draft.setNameValid(true);
