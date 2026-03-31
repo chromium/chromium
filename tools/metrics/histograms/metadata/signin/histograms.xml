@@ -1782,10 +1782,10 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HistoryAlreadyOptedInAccessPoint.{ConsentLevel}"
-    enum="SigninAccessPoint" expires_after="2026-09-06">
-  <owner>treib@google.com</owner>
+    enum="SigninAccessPoint" expires_after="2026-11-30">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
+  <owner>treib@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the signin access point at the moment when the user is
@@ -1799,10 +1799,10 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.HistoryOptInState.{ConsentLevel}" enum="BooleanOptedIn"
-    expires_after="2026-05-10">
-  <owner>treib@google.com</owner>
+    expires_after="2026-11-30">
   <owner>rsult@google.com</owner>
   <owner>droger@chromium.org</owner>
+  <owner>treib@google.com</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
     Records the user's history opt-in state, at the moment when the user is
