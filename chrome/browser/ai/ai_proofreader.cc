@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
+#include "chrome/browser/ai/ai_utils.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/proofreader_api.pb.h"
@@ -31,6 +32,25 @@ AIProofreader::GetDefaultSupportedLanguageBaseCodes() {
       base::MakeFixedFlatSet<std::string_view>({"en"});
   return base::flat_set<std::string>(kSupportedBaseLanguages.begin(),
                                      kSupportedBaseLanguages.end());
+}
+
+on_device_model::mojom::ResponseConstraintPtr GetConstraint(
+    const optimization_guide::OnDeviceSession* session) {
+  if (!session) {
+    return nullptr;
+  }
+  const auto& metadata = session->GetOnDeviceFeatureMetadata();
+  auto proofreader_metadata = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ProofreaderApiMetadata>(metadata);
+  if (!proofreader_metadata || !proofreader_metadata->has_constraints()) {
+    return nullptr;
+  }
+  const auto& constraints = proofreader_metadata->constraints();
+  if (constraints.has_label_mode_constraint()) {
+    const auto& constraint = constraints.label_mode_constraint();
+    return ai::ToMojomResponseConstraint(constraint);
+  }
+  return nullptr;
 }
 
 AIProofreader::AIProofreader(
@@ -72,7 +92,7 @@ void AIProofreader::Proofread(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   StartExecution(input, /*corrected_input=*/"", /*correction_instruction=*/"",
-                 std::move(pending_responder));
+                 /*is_label_mode=*/false, std::move(pending_responder));
 }
 
 void AIProofreader::GetCorrectionType(
@@ -82,7 +102,7 @@ void AIProofreader::GetCorrectionType(
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   StartExecution(input, corrected_input, correction_instruction,
-                 std::move(pending_responder));
+                 /*is_label_mode=*/true, std::move(pending_responder));
 }
 
 void AIProofreader::SetPriority(on_device_model::mojom::Priority priority) {
@@ -96,6 +116,7 @@ void AIProofreader::StartExecution(
     const std::string& input,
     const std::string& corrected_input,
     const std::string& correction_instruction,
+    bool is_label_mode,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
   auto* session = session_wrapper_.session();
@@ -115,12 +136,14 @@ void AIProofreader::StartExecution(
   session->GetExecutionInputSizeInTokens(
       optimization_guide::MultimodalMessageReadView(request),
       base::BindOnce(&AIProofreader::DidGetExecutionInputSizeForProofread,
-                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
+                     weak_ptr_factory_.GetWeakPtr(), responder_id, request,
+                     is_label_mode));
 }
 
 void AIProofreader::DidGetExecutionInputSizeForProofread(
     mojo::RemoteSetElementId responder_id,
     optimization_guide::proto::ProofreaderApiRequest request,
+    bool is_label_mode,
     std::optional<uint32_t> result) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
@@ -154,10 +177,14 @@ void AIProofreader::DidGetExecutionInputSizeForProofread(
     return;
   }
 
+  on_device_model::mojom::ResponseConstraintPtr constraint =
+      is_label_mode ? GetConstraint(session_wrapper_.session()) : nullptr;
+
   session_wrapper_.ExecuteModelOrQueue(
       optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AIProofreader::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), responder_id));
+                          weak_ptr_factory_.GetWeakPtr(), responder_id),
+      std::move(constraint));
 }
 
 void AIProofreader::ModelExecutionCallback(

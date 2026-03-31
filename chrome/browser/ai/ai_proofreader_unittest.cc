@@ -548,4 +548,93 @@ TEST_F(AIProofreaderTest, ServiceCrash) {
   EXPECT_THAT(Proofread(*proofreader_remote, kInputString), ElementsAre("hi"));
 }
 
+TEST_F(AIProofreaderTest, DynamicConstraints) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::proto::ProofreaderApiMetadata metadata;
+  metadata.mutable_constraints()->mutable_label_mode_constraint()->set_regex(
+      "^Correction type.*");
+
+  auto* feature_metadata = config.mutable_feature_metadata();
+  feature_metadata->set_type_url(
+      "type.googleapis.com/optimization_guide.proto.ProofreaderApiMetadata");
+  feature_metadata->set_value(metadata.SerializeAsString());
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"Correction type: Spelling"});
+
+  auto options = GetDefaultOptions();
+  options->include_correction_types = true;
+
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
+      GetAIProofreaderRemote(std::move(options));
+
+  AITestUtils::TestStreamingResponder responder;
+  proofreader_remote->GetCorrectionType(
+      kInputStringWithError, kCorrectedInputWithCorrection,
+      kCorrectionInstruction, responder.BindRemote());
+  EXPECT_TRUE(responder.WaitForCompletion());
+  EXPECT_THAT(responder.responses_without_last(),
+              ElementsAreArray({"Constraint: regex ^Correction type.*",
+                                "Correction type: Spelling"}));
+}
+
+TEST_F(AIProofreaderTest, NoConstraints) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::proto::ProofreaderApiMetadata metadata;
+
+  auto* feature_metadata = config.mutable_feature_metadata();
+  feature_metadata->set_type_url(
+      "type.googleapis.com/optimization_guide.proto.ProofreaderApiMetadata");
+  feature_metadata->set_value(metadata.SerializeAsString());
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"Correction type: Spelling"});
+
+  auto options = GetDefaultOptions();
+  options->include_correction_types = true;
+
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
+      GetAIProofreaderRemote(std::move(options));
+
+  AITestUtils::TestStreamingResponder responder;
+  proofreader_remote->GetCorrectionType(
+      kInputStringWithError, kCorrectedInputWithCorrection,
+      kCorrectionInstruction, responder.BindRemote());
+  EXPECT_TRUE(responder.WaitForCompletion());
+  EXPECT_THAT(responder.responses_without_last(),
+              ElementsAreArray({"Correction type: Spelling"}));
+}
+
+TEST_F(AIProofreaderTest, NoMetadata) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"Correction type: Spelling"});
+
+  auto options = GetDefaultOptions();
+  options->include_correction_types = true;
+
+  mojo::Remote<blink::mojom::AIProofreader> proofreader_remote =
+      GetAIProofreaderRemote(std::move(options));
+
+  AITestUtils::TestStreamingResponder responder;
+  proofreader_remote->GetCorrectionType(
+      kInputStringWithError, kCorrectedInputWithCorrection,
+      kCorrectionInstruction, responder.BindRemote());
+  EXPECT_TRUE(responder.WaitForCompletion());
+  EXPECT_THAT(responder.responses_without_last(),
+              ElementsAreArray({"Correction type: Spelling"}));
+}
+
 }  // namespace

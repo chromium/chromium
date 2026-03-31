@@ -726,4 +726,69 @@ TEST_F(AISummarizerTest, CreatePermissionsPolicyDisabled) {
   EXPECT_EQ(observer.WaitForBadMessage(), "Permissions policy disabled");
 }
 
+TEST_F(AISummarizerTest, DynamicConstraints) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::proto::SummarizeMetadata metadata;
+  metadata.mutable_constraints()->mutable_tldr_constraint()->set_regex(
+      "^TLDR:.*");
+
+  auto* feature_metadata = config.mutable_feature_metadata();
+  feature_metadata->set_type_url(
+      "type.googleapis.com/optimization_guide.proto.SummarizeMetadata");
+  feature_metadata->set_value(metadata.SerializeAsString());
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"TLDR: Result text"});
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(GetDefaultOptions());
+
+  EXPECT_THAT(
+      Summarize(*summarizer_remote, kInputString, kContextString),
+      ElementsAreArray({"Constraint: regex ^TLDR:.*", "TLDR: Result text"}));
+}
+
+TEST_F(AISummarizerTest, NoConstraints) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::proto::SummarizeMetadata metadata;
+
+  auto* feature_metadata = config.mutable_feature_metadata();
+  feature_metadata->set_type_url(
+      "type.googleapis.com/optimization_guide.proto.SummarizeMetadata");
+  feature_metadata->set_value(metadata.SerializeAsString());
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"Result text"});
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(GetDefaultOptions());
+
+  EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
+              ElementsAreArray({"Result text"}));
+}
+
+TEST_F(AISummarizerTest, NoMetadata) {
+  optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config =
+      CreateConfig();
+
+  optimization_guide::FakeAdaptationAsset fake_asset({.config = config});
+  fake_broker_->UpdateModelAdaptation(fake_asset);
+
+  fake_broker_->settings().set_execute_result({"Result text"});
+
+  mojo::Remote<blink::mojom::AISummarizer> summarizer_remote =
+      GetAISummarizerRemote(GetDefaultOptions());
+
+  EXPECT_THAT(Summarize(*summarizer_remote, kInputString, kContextString),
+              ElementsAreArray({"Result text"}));
+}
+
 }  // namespace

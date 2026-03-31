@@ -13,8 +13,10 @@ AIOnDeviceSession::~AIOnDeviceSession() = default;
 void AIOnDeviceSession::ExecuteModelOrQueue(
     optimization_guide::MultimodalMessage request,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-        callback) {
-  requests_.push({std::move(request), std::move(callback)});
+        callback,
+    on_device_model::mojom::ResponseConstraintPtr constraint) {
+  requests_.emplace(std::move(request), std::move(callback),
+                    std::move(constraint));
   MaybeRunNextExecutionRequest();
 }
 
@@ -23,15 +25,15 @@ void AIOnDeviceSession::MaybeRunNextExecutionRequest() {
     return;
   }
 
-  auto request_pair = std::move(requests_.front());
+  auto request = std::move(requests_.front());
   requests_.pop();
 
   is_execution_in_progress_ = true;
-  session_->ExecuteModel(
-      request_pair.first.BuildProtoMessage(),
+  session_->ExecuteModelWithResponseConstraint(
+      request.message.BuildProtoMessage(), std::move(request.constraint),
       base::BindRepeating(&AIOnDeviceSession::ModelExecutionCallback,
                           weak_ptr_factory_.GetWeakPtr(),
-                          std::move(request_pair.second)));
+                          std::move(request.callback)));
 }
 
 void AIOnDeviceSession::ModelExecutionCallback(
@@ -47,3 +49,17 @@ void AIOnDeviceSession::ModelExecutionCallback(
 
   MaybeRunNextExecutionRequest();
 }
+
+AIOnDeviceSession::ExecutionRequest::ExecutionRequest(
+    optimization_guide::MultimodalMessage message,
+    optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+        callback,
+    on_device_model::mojom::ResponseConstraintPtr constraint)
+    : message(std::move(message)),
+      callback(std::move(callback)),
+      constraint(std::move(constraint)) {}
+
+AIOnDeviceSession::ExecutionRequest::ExecutionRequest(ExecutionRequest&&) =
+    default;
+
+AIOnDeviceSession::ExecutionRequest::~ExecutionRequest() = default;

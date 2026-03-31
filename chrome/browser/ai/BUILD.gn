@@ -21,6 +21,7 @@ source_set("ai") {
     "ai_proofreader.h",
     "ai_rewriter.h",
     "ai_summarizer.h",
+    "ai_utils.h",
     "ai_writer.h",
     "features.cc",
     "features.h",
@@ -54,6 +55,7 @@ source_set("impl") {
     "ai_proofreader.cc",
     "ai_rewriter.cc",
     "ai_summarizer.cc",
+    "ai_utils.cc",
     "ai_writer.cc",
   ]
 
@@ -121,6 +123,7 @@ source_set("unit_tests") {
     "ai_proofreader_unittest.cc",
     "ai_rewriter_unittest.cc",
     "ai_summarizer_unittest.cc",
+    "ai_utils_unittest.cc",
     "ai_writer_unittest.cc",
   ]
   deps = [

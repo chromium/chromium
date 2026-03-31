@@ -60,12 +60,14 @@ class AIProofreader : public AIContextBoundObject,
   void StartExecution(const std::string& input,
                       const std::string& corrected_input,
                       const std::string& correction_instruction,
+                      bool is_label_mode,
                       mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                           pending_responder);
 
   void DidGetExecutionInputSizeForProofread(
       mojo::RemoteSetElementId responder_id,
       optimization_guide::proto::ProofreaderApiRequest request,
+      bool is_label_mode,
       std::optional<uint32_t> result);
 
   void ModelExecutionCallback(

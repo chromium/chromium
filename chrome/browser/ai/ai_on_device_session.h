@@ -7,6 +7,8 @@
 
 #include "base/containers/queue.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 // Execution set for Optimization Guide sessions. It handles queueing requests
 // for `ExecuteModel()` since multiple executions are not supported currently.
@@ -30,7 +32,8 @@ class AIOnDeviceSession {
   void ExecuteModelOrQueue(
       optimization_guide::MultimodalMessage request,
       optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
-          callback);
+          callback,
+      on_device_model::mojom::ResponseConstraintPtr constraint = nullptr);
 
   optimization_guide::OnDeviceSession* session() { return session_.get(); }
 
@@ -49,11 +52,21 @@ class AIOnDeviceSession {
   std::unique_ptr<optimization_guide::OnDeviceSession> session_;
 
   // Queue holding execution requests.
-  base::queue<
-      std::pair<optimization_guide::MultimodalMessage,
-                optimization_guide::
-                    OptimizationGuideModelExecutionResultStreamingCallback>>
-      requests_;
+  struct ExecutionRequest {
+    ExecutionRequest(
+        optimization_guide::MultimodalMessage message,
+        optimization_guide::
+            OptimizationGuideModelExecutionResultStreamingCallback callback,
+        on_device_model::mojom::ResponseConstraintPtr constraint);
+    ExecutionRequest(ExecutionRequest&&);
+    ~ExecutionRequest();
+
+    optimization_guide::MultimodalMessage message;
+    optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+        callback;
+    on_device_model::mojom::ResponseConstraintPtr constraint;
+  };
+  base::queue<ExecutionRequest> requests_;
 
   bool is_execution_in_progress_ = false;
 

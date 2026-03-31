@@ -11,6 +11,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
+#include "chrome/browser/ai/ai_utils.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -55,6 +56,46 @@ optimization_guide::proto::SummarizerOutputLength ToProtoLength(
     case blink::mojom::AISummarizerLength::kLong:
       return optimization_guide::proto::SUMMARIZER_OUTPUT_LENGTH_LONG;
   }
+}
+
+on_device_model::mojom::ResponseConstraintPtr GetConstraint(
+    const optimization_guide::OnDeviceSession* session,
+    blink::mojom::AISummarizerType type) {
+  if (!session) {
+    return nullptr;
+  }
+  const auto& metadata = session->GetOnDeviceFeatureMetadata();
+  auto summarize_metadata = optimization_guide::ParsedAnyMetadata<
+      ::optimization_guide::proto::SummarizeMetadata>(metadata);
+  if (!summarize_metadata || !summarize_metadata->has_constraints()) {
+    return nullptr;
+  }
+  const auto& constraints = summarize_metadata->constraints();
+  switch (type) {
+    case blink::mojom::AISummarizerType::kTLDR:
+      if (constraints.has_tldr_constraint()) {
+        return ai::ToMojomResponseConstraint(constraints.tldr_constraint());
+      }
+      break;
+    case blink::mojom::AISummarizerType::kKeyPoints:
+      if (constraints.has_keypoints_constraint()) {
+        return ai::ToMojomResponseConstraint(
+            constraints.keypoints_constraint());
+      }
+      break;
+    case blink::mojom::AISummarizerType::kTeaser:
+      if (constraints.has_teaser_constraint()) {
+        return ai::ToMojomResponseConstraint(constraints.teaser_constraint());
+      }
+      break;
+    case blink::mojom::AISummarizerType::kHeadline:
+      if (constraints.has_headlines_constraint()) {
+        return ai::ToMojomResponseConstraint(
+            constraints.headlines_constraint());
+      }
+      break;
+  }
+  return nullptr;
 }
 
 }  // namespace
@@ -186,10 +227,14 @@ void AISummarizer::DidGetExecutionInputSizeForSummarize(
     return;
   }
 
+  on_device_model::mojom::ResponseConstraintPtr constraint =
+      GetConstraint(session_wrapper_.session(), options_->type);
+
   session_wrapper_.ExecuteModelOrQueue(
       optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AISummarizer::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(), responder_id));
+                          weak_ptr_factory_.GetWeakPtr(), responder_id),
+      std::move(constraint));
 }
 
 void AISummarizer::ModelExecutionCallback(
