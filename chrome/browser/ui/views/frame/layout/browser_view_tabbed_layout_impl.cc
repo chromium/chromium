@@ -420,6 +420,19 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
             .value_or(0.0);
   }
 
+  if (motion == TabStripAnimations::kExpand) {
+    // These values have to be interpreted in terms of the most recent values
+    // before the expand animation was playing.
+    animation.bottom_corner =
+        std::max(last_bottom_corner_value_, animation.bottom_corner);
+    animation.expand_on_hover *= last_expand_on_hover_;
+  } else {
+    // Save these so that if an expand animation is played over them, it
+    // continues from there.
+    last_bottom_corner_value_ = animation.bottom_corner;
+    last_expand_on_hover_ = animation.expand_on_hover;
+  }
+
   // Once the top pulls away from the top of the browser, we cannot have an
   // external corner.
   if (animation.top_offset > 0) {

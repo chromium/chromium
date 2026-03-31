@@ -43,7 +43,13 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
                       Keyframe(AtPercent(1.0), Value(1.0))),
              Sequence(kTabStripTop,
                       Keyframe(AtPercent(kFirstCheckpoint), Value(1.0)),
-                      Keyframe(AtPercent(kSecondCheckpoint), Value(0.0)))),
+                      Keyframe(AtPercent(kSecondCheckpoint), Value(0.0))),
+             // These are only used when transitioning from hovered to expanded;
+             // the values are combined with the previous state to determine a
+             // bound or starting point for the animation and should not be used
+             // directly during this motion.
+             Animate(kTabStripHoverWidth, FromValue(1.0), ToValue(0.0)),
+             Animate(kBottomCorner, FromValue(-1.0), ToValue(1.0))),
       Motion(kCollapse, TotalDurationMs(duration_ms), expand_collapse_tween,
              Animate(kTabStripWidth, FromValue(1.0), ToValue(0.0)),
              Sequence(kTopCorner, Keyframe(AtPercent(0), Value(1.0)),

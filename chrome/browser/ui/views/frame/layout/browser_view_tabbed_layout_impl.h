@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
 
-#include <optional>
 #include <utility>
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
@@ -141,6 +140,14 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // Returns the leading margin for the horizontal tab strip region.
   int GetHorizontalTabStripLeadingMargin(
       const BrowserLayoutParams& params) const;
+
+  // These cached values serve as a starting point when an expand-on-hover state
+  // for the vertical tab strip is animated directly to the expanded state. They
+  // are cached every time the animation state is calculated except during the
+  // expand animation, so that they can be used as starting points for the
+  // expand animation.
+  mutable double last_expand_on_hover_ = 0.0;
+  mutable double last_bottom_corner_value_ = 1.0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
