@@ -288,6 +288,9 @@
   <message name="IDS_SETTINGS_GLIC_INSTRUCTIONS_BUTTON_SUBLABEL" desc="Description for the Gemini instructions linkout.">
     Customize how Gemini responds to you
   </message>
+  <message name="IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE" desc="Label for the Gemini experimental triggering setting" translateable="false">
+    Allow experimental triggering
+  </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_CHROME_WEB_ACTUATION_TOGGLE" desc="Title for the Gemini feature introduction screen" formatter_data="android_java">
     Let Chrome browse for you
   </message>

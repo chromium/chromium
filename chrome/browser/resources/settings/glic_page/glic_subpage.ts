@@ -51,6 +51,7 @@ export enum SettingsGlicPageFeaturePrefName {
   USER_STATUS = 'glic.user_status',
   DEFAULT_TAB_CONTEXT_ENABLED = 'glic.default_tab_context_enabled',
   WEB_ACTUATION_ENABLED = 'glic.user_enabled_actuation_on_web',
+  EXPERIMENTAL_TRIGGERING_ENABLED = 'glic.experimental_triggering_enabled',
   KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_ENABLED =
       'glic.keep_sidepanel_open_on_new_tabs_enabled',
 }
@@ -145,6 +146,11 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('showGlicDefaultTabContextSetting'),
+      },
+
+      showGlicExperimentalTriggering_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showGlicExperimentalTriggering'),
       },
 
       showGlicPersonalContextLink_: {
@@ -313,6 +319,7 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   declare private glicUserStatusCheckFeatureEnabled_: boolean;
   declare private glicSelectionFeatureEnabled_: boolean;
   declare private showGlicDefaultTabContextSetting_: boolean;
+  declare private showGlicExperimentalTriggering_: boolean;
   declare private showGlicPersonalContextLink_: boolean;
   declare private showGlicInstructionLink_: boolean;
   declare private showGlicKeepSidepanelOpenOnNewTabsSetting_: boolean;

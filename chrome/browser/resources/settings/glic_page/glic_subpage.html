@@ -481,6 +481,12 @@
           </div>
         </cr-collapse>
       </div>
+      <template is="dom-if" if="[[showGlicExperimentalTriggering_]]">
+        <settings-toggle-button id="glicExperimentalTriggeringToggle"
+            pref="{{prefs.glic.experimental_triggering_enabled}}"
+            label="$i18n{glicExperimentalTriggering}">
+        </settings-toggle-button>
+      </template>
       <template is="dom-if" if="[[actorLoginFederatedLoginSupportEnabled_]]"
           restamp>
         <cr-link-row id="actorLoginPermissionsButton"

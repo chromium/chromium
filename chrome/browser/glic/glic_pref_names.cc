@@ -57,6 +57,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled,
                                 true);
 
+  // Boolean pref that enables or disables experimental triggering.
+  registry->RegisterBooleanPref(prefs::kGlicExperimentalTriggeringEnabled,
+                                true);
+
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,
       std::to_underlying(GetGlicActuationOnWebPolicyState()));

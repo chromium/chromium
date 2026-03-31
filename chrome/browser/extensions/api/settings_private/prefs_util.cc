@@ -1360,6 +1360,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         settings_api::PrefType::kBoolean;
     (*s_allowlist)[glic::prefs::kGlicKeepSidepanelOpenOnNewTabsEnabled] =
         settings_api::PrefType::kBoolean;
+    (*s_allowlist)[glic::prefs::kGlicExperimentalTriggeringEnabled] =
+        settings_api::PrefType::kBoolean;
   }
 
   return *s_allowlist;

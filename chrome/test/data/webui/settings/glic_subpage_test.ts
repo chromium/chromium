@@ -838,6 +838,28 @@ suite('GlicSubpage', function() {
       assertFalse(infoCard.opened);
     });
   });
+  suite('ExperimentalTriggeringToggle', () => {
+    test('ToggleVisibleWhenEnabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        showGlicExperimentalTriggering: true,
+      });
+      await createGlicPage('⌃A');
+      const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
+      assertTrue(!!toggle);
+      assertTrue(isVisible(toggle));
+    });
+
+    test('ToggleHiddenWhenDisabled', async () => {
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        showGlicExperimentalTriggering: false,
+      });
+      await createGlicPage('⌃A');
+      const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
+      assertFalse(isVisible(toggle));
+    });
+  });
 
   suite('MicrophoneToggleVisible', () => {
     test('assert toggle is visible', () => {

@@ -100,6 +100,10 @@ inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 inline constexpr char kGlicDefaultTabContextEnabled[] =
     "glic.default_tab_context_enabled";
 
+// Boolean pref that enables or disables experimental triggering.
+inline constexpr char kGlicExperimentalTriggeringEnabled[] =
+    "glic.experimental_triggering_enabled";
+
 // Boolean pref that determines the rollout eligibility for the user profile.
 inline constexpr char kGlicRolloutEligibility[] =
     "sync.glic_rollout_eligibility";

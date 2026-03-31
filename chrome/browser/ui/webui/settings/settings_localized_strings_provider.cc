@@ -888,6 +888,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_WHEN_ON_2},
       {"glicWebActuationToggleConsider1",
        IDS_SETTINGS_GLIC_PERMISSIONS_WEB_ACTUATION_TOGGLE_CONSIDER_1},
+      {"glicExperimentalTriggering",
+       IDS_SETTINGS_GLIC_EXPERIMENTAL_TRIGGERING_TOGGLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -986,6 +988,10 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
   html_source->AddBoolean(
       "glicSelectionFeatureEnabled",
       base::FeatureList::IsEnabled(features::kGlicCaptureRegion));
+  html_source->AddBoolean(
+      "showGlicExperimentalTriggering",
+      base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering) &&
+          GlicHandler::ShouldShowWebActuationToggle(profile));
 }
 
 void AddResetStrings(content::WebUIDataSource* html_source, Profile* profile) {
