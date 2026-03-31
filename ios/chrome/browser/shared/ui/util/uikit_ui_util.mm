@@ -190,13 +190,12 @@ CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue) {
 
 UIImage* ImageWithColor(UIColor* color) {
   CGRect rect = CGRectMake(0, 0, 1, 1);
-  UIGraphicsBeginImageContext(rect.size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [color CGColor]);
-  CGContextFillRect(context, rect);
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:rect.size];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
+    [color setFill];
+    [context fillRect:rect];
+  }];
 }
 
 UIImage* CircularImageFromImage(UIImage* image, CGFloat width) {

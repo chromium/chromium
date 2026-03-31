@@ -46,30 +46,28 @@ UIImage* GetFallbackImageWithStringAndColor(NSString* string,
                                             UIColor* backgroundColor,
                                             UIColor* textColor) {
   CGRect rect = CGRectMake(0, 0, kFallbackIconSize, kFallbackIconSize);
-  UIGraphicsBeginImageContext(rect.size);
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextSetFillColorWithColor(context, [backgroundColor CGColor]);
-  CGContextSetStrokeColorWithColor(context, [textColor CGColor]);
-  UIBezierPath* rounded =
-      [UIBezierPath bezierPathWithRoundedRect:rect
-                                 cornerRadius:kFallbackRoundedCorner];
-  [rounded fill];
-  UIFont* font = [UIFont systemFontOfSize:(kFallbackIconSize / 2)
-                                   weight:UIFontWeightRegular];
-  CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
-                               kFallbackIconSize, [font lineHeight]);
-  NSMutableParagraphStyle* paragraphStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  [paragraphStyle setAlignment:NSTextAlignmentCenter];
-  NSMutableDictionary* attributes = [[NSMutableDictionary alloc] init];
-  [attributes setValue:font forKey:NSFontAttributeName];
-  [attributes setValue:textColor forKey:NSForegroundColorAttributeName];
-  [attributes setValue:paragraphStyle forKey:NSParagraphStyleAttributeName];
-
-  [string drawInRect:textRect withAttributes:attributes];
-  UIImage* image = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return image;
+  UIGraphicsImageRenderer* renderer =
+      [[UIGraphicsImageRenderer alloc] initWithSize:rect.size];
+  return [renderer imageWithActions:^(UIGraphicsImageRendererContext* ctx) {
+    [backgroundColor setFill];
+    UIBezierPath* rounded =
+        [UIBezierPath bezierPathWithRoundedRect:rect
+                                   cornerRadius:kFallbackRoundedCorner];
+    [rounded fill];
+    UIFont* font = [UIFont systemFontOfSize:(kFallbackIconSize / 2)
+                                     weight:UIFontWeightRegular];
+    CGRect textRect = CGRectMake(0, (kFallbackIconSize - [font lineHeight]) / 2,
+                                 kFallbackIconSize, [font lineHeight]);
+    NSMutableParagraphStyle* paragraphStyle =
+        [[NSMutableParagraphStyle alloc] init];
+    [paragraphStyle setAlignment:NSTextAlignmentCenter];
+    NSDictionary* attributes = @{
+      NSFontAttributeName : font,
+      NSForegroundColorAttributeName : textColor,
+      NSParagraphStyleAttributeName : paragraphStyle
+    };
+    [string drawInRect:textRect withAttributes:attributes];
+  }];
 }
 
 }  // namespace
