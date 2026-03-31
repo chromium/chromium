@@ -474,8 +474,11 @@ void Tab::Layout(PassKey) {
     // overflow the left side of the contents_rect, in that case it will be
     // placed in the middle of the tab.
     const int visible_left =
-        std::max(close_x - close_button_visible_size,
-                 Center(width(), close_button_visible_size));
+        (center_icon_ &&
+         base::FeatureList::IsEnabled(features::kTabStripDeclutter))
+            ? Center(width(), close_button_visible_size)
+            : std::max(close_x - close_button_visible_size,
+                       Center(width(), close_button_visible_size));
 
     // Offset the new bounds rect by the extra padding in the close button.
     const int non_visible_left_padding =
@@ -1201,6 +1204,21 @@ void Tab::UpdateIconVisibility() {
       if (!closing_) {
         center_icon_ = true;
       }
+    }
+  }
+
+  if (!closing_ && base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+    const int title_padding =
+        showing_icon_ ? GetLayoutConstant(LayoutConstant::kTabPreTitlePadding)
+                      : 0;
+    const int title_width =
+        available_width - title_padding -
+        GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+    const bool show_title = ShouldRenderAsNormalTab() && title_width > 0;
+    const int num_elements = showing_icon_ + showing_alert_indicator_ +
+                             showing_close_button_ + show_title;
+    if (num_elements == 1) {
+      center_icon_ = true;
     }
   }
 
