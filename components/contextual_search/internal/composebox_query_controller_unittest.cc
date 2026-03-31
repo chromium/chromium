@@ -5633,4 +5633,38 @@ TEST_F(ComposeboxQueryControllerTest, UploadRawFileRequestSuccess) {
   EXPECT_EQ(request_id->mime_type(), "application/pdf");
 }
 
+TEST_F(ComposeboxQueryControllerTest, BackgroundUploadTaskCleanup) {
+  CreateController(
+      /*send_lns_surface=*/false,
+      /*suppress_lns_surface_param_if_no_image=*/true,
+      /*enable_viewport_images=*/true,
+      /*use_separate_request_ids_for_viewport_images=*/false,
+      /*enable_cluster_info_ttl=*/false,
+      /*prioritize_suggestions_for_the_first_attached_document=*/false,
+      /*attach_page_title_and_url_to_suggest_requests=*/false,
+      /*enable_send_vit_for_single_context_next_queries=*/true,
+      /*enable_send_raw_file_media_types=*/true);
+
+  controller().InitializeIfNeeded();
+  WaitForClusterInfo();
+
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  std::unique_ptr<lens::ContextualInputData> input_data =
+      std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPdf;
+  input_data->mime_type_string = "application/pdf";
+  input_data->context_input = std::vector<lens::ContextualInput>();
+  input_data->context_input->push_back(
+      lens::ContextualInput(std::vector<uint8_t>(), lens::MimeType::kPdf));
+
+  controller().StartFileUploadFlow(file_token, std::move(input_data),
+                                   /*image_options=*/std::nullopt);
+
+  WaitForFileUpload(file_token, lens::MimeType::kPdf);
+
+#if BUILDFLAG(IS_IOS)
+  EXPECT_EQ(
+      0, base::ios::ScopedCriticalAction::GetNumActiveBackgroundTasksForTest());
+#endif
+}
 }  // namespace contextual_search
