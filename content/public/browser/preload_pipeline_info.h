@@ -27,7 +27,7 @@ namespace content {
 // Note that this can be moved from a `PrefetchContainer` to another
 // `PrefetchContainer`. See `PrefetchContainer::MigrateNewlyAdded()`.
 class CONTENT_EXPORT PreloadPipelineInfo
-    : public base::RefCounted<PreloadPipelineInfo> {
+    : public base::RefCountedThreadSafe<PreloadPipelineInfo> {
  public:
   // Creates `PreloadPipelineInfo`.
   //
@@ -45,7 +45,7 @@ class CONTENT_EXPORT PreloadPipelineInfo
       PreloadingType planned_max_preloading_type);
 
  protected:
-  friend class base::RefCounted<PreloadPipelineInfo>;
+  friend class base::RefCountedThreadSafe<PreloadPipelineInfo>;
 
   virtual ~PreloadPipelineInfo() = default;
 };

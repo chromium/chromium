@@ -57,7 +57,7 @@ class CONTENT_EXPORT PreloadPipelineInfoImpl final
   void MarkPrerenderMatchedWithPrefetch(PrerenderHostId prerender_host_id);
 
  private:
-  friend class base::RefCounted<PreloadPipelineInfo>;
+  friend class base::RefCountedThreadSafe<PreloadPipelineInfo>;
 
   ~PreloadPipelineInfoImpl() override;
 
