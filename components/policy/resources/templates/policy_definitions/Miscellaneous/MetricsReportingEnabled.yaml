@@ -8,8 +8,6 @@ desc: |-
   When this policy is not set, users can choose the anonymous reporting behavior at installation or first run, and can change this setting later.
 
   (For <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>, see <ph name="DEVICE_METRICS_REPORTING_ENABLED_POLICY_NAME">DeviceMetricsReportingEnabled</ph>.)
-
-  If the <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME">RestructureMetricsConsentSettings</ph> experiment is active on the device and both this policy and the <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME">MetricsReportingLevel</ph> policy are set, the <ph name="METRICS_REPORTING_LEVEL_POLICY_NAME">MetricsReportingLevel</ph> policy takes precedence.
 example_value: true
 features:
   can_be_recommended: true

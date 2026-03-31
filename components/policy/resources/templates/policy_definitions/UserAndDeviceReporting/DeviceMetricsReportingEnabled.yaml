@@ -6,8 +6,6 @@ desc: |-
   For managed devices, this policy is enabled by default and sends metrics to Google.
 
   For unmanaged devices, the user can make the decision to send the metrics when the policy is unset.
-
-  If the <ph name="RESTRUCTURE_METRICS_CONSENT_SETTINGS_EXPERIMENT_NAME">RestructureMetricsConsentSettings</ph> experiment is active on the device and both this policy and the <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME">DeviceMetricsReportingLevel</ph> policy are set, the <ph name="DEVICE_METRICS_REPORTING_LEVEL_POLICY_NAME">DeviceMetricsReportingLevel</ph> policy takes precedence.
 default: null
 device_only: true
 example_value: true

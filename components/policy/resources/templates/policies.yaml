@@ -1436,8 +1436,6 @@ policies:
   1435: SharedWorkerExtendedLifetimeEnabled
   1436: MaxConnectionsPerProxyForWebSocket
   1437: KrispNoiseCancellationEnabled
-  1438: MetricsReportingLevel
-  1439: DeviceMetricsReportingLevel
 
 atomic_groups:
   1: Homepage
