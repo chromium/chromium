@@ -5,12 +5,12 @@
 #ifndef REMOTING_HOST_SECURITY_KEY_REMOTE_SECURITY_KEY_MAIN_H_
 #define REMOTING_HOST_SECURITY_KEY_REMOTE_SECURITY_KEY_MAIN_H_
 
-#include "remoting/host/host_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
 // The remote_security_key entry point exported from remoting_core.dll.
-HOST_EXPORT int RemoteSecurityKeyMain(int argc, char** argv);
+REMOTING_EXPORT int RemoteSecurityKeyMain(int argc, char** argv);
 
 }  // namespace remoting
 

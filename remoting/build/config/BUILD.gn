@@ -30,8 +30,8 @@ config("remoting_me2me_host") {
   }
 }
 
-# Config to be added to sources that implement a HOST_EXPORT function. Applying
-# this config will make symbols annotated with HOST_EXPORT visible to external
+# Config to be added to sources that implement a REMOTING_EXPORT function. Applying
+# this config will make symbols annotated with REMOTING_EXPORT visible to external
 # binaries.
 config("host_implementation") {
   defines = []

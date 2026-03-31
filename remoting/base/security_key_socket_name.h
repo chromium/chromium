@@ -7,15 +7,15 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "remoting/base/base_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
 // Returns the default security key socket name.
-REMOTING_BASE_EXPORT base::FilePath GetDefaultSecurityKeySocketName();
+REMOTING_EXPORT base::FilePath GetDefaultSecurityKeySocketName();
 
 // Sets an override for the default security key socket name, for testing.
-REMOTING_BASE_EXPORT void SetDefaultSecurityKeySocketNameForTest(
+REMOTING_EXPORT void SetDefaultSecurityKeySocketNameForTest(
     const base::FilePath& path);
 
 }  // namespace remoting

@@ -5,11 +5,11 @@
 #ifndef REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_MAIN_H_
 #define REMOTING_HOST_WEBAUTHN_REMOTE_WEBAUTHN_MAIN_H_
 
-#include "remoting/host/host_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
-HOST_EXPORT int RemoteWebAuthnMain(int argc, char** argv);
+REMOTING_EXPORT int RemoteWebAuthnMain(int argc, char** argv);
 
 }  // namespace remoting
 

@@ -5,11 +5,11 @@
 #ifndef REMOTING_HOST_LINUX_REMOTE_SESSION_INFO_MAIN_H_
 #define REMOTING_HOST_LINUX_REMOTE_SESSION_INFO_MAIN_H_
 
-#include "remoting/host/host_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
-HOST_EXPORT int RemoteSessionInfoMain(int argc, char** argv);
+REMOTING_EXPORT int RemoteSessionInfoMain(int argc, char** argv);
 
 }  // namespace remoting
 

@@ -5,12 +5,12 @@
 #ifndef REMOTING_HOST_CRASH_CRASH_UPLOADER_MAIN_H_
 #define REMOTING_HOST_CRASH_CRASH_UPLOADER_MAIN_H_
 
-#include "remoting/host/host_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
 // The remoting_crash_uploader entry point exported from libremoting_core.so
-HOST_EXPORT int CrashUploaderMain(int argc, char** argv);
+REMOTING_EXPORT int CrashUploaderMain(int argc, char** argv);
 
 }  // namespace remoting
 

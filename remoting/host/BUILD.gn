@@ -98,10 +98,8 @@ source_set("host_main_headers") {
     "//remoting/host/win:remoting_desktop",
     "//remoting/host/win:remoting_me2me_host",
   ]
-  sources = [
-    "host_export.h",
-    "host_main.h",
-  ]
+  sources = [ "host_main.h" ]
+  public_deps = [ "//remoting/base:remoting_export" ]
 }
 
 source_set("common_headers") {

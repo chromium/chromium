@@ -5,12 +5,12 @@
 #ifndef REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_MAIN_H_
 #define REMOTING_HOST_IT2ME_IT2ME_NATIVE_MESSAGING_HOST_MAIN_H_
 
-#include "remoting/host/host_export.h"
+#include "remoting/base/remoting_export.h"
 
 namespace remoting {
 
 // The me2me native messaging host entry point exported from remoting_core.dll.
-HOST_EXPORT int It2MeNativeMessagingHostMain(int argc, char** argv);
+REMOTING_EXPORT int It2MeNativeMessagingHostMain(int argc, char** argv);
 
 }  // namespace remoting
 

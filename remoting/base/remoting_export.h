@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_BASE_BASE_EXPORT_H_
-#define REMOTING_BASE_BASE_EXPORT_H_
+#ifndef REMOTING_BASE_REMOTING_EXPORT_H_
+#define REMOTING_BASE_REMOTING_EXPORT_H_
 
 #include "build/build_config.h"
 
@@ -12,15 +12,15 @@
 // link against remoting_core.so.
 #if defined(WIN32)
 #if defined(HOST_IMPLEMENTATION)
-#define REMOTING_BASE_EXPORT __declspec(dllexport)
+#define REMOTING_EXPORT __declspec(dllexport)
 #else
-#define REMOTING_BASE_EXPORT __declspec(dllimport)
+#define REMOTING_EXPORT __declspec(dllimport)
 #endif  // defined(HOST_IMPLEMENTATION)
 #else   // !defined(WIN32)
-#define REMOTING_BASE_EXPORT __attribute__((visibility("default")))
+#define REMOTING_EXPORT __attribute__((visibility("default")))
 #endif  // !defined(WIN32)
 #else   // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
-#define REMOTING_BASE_EXPORT
+#define REMOTING_EXPORT
 #endif
 
-#endif  // REMOTING_BASE_BASE_EXPORT_H_
+#endif  // REMOTING_BASE_REMOTING_EXPORT_H_

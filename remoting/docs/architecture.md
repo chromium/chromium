@@ -111,7 +111,7 @@ process with a standalone binary:
 1.  Ask if the developer wants to add everything to a new subdirectory or to an
     existing directory.
 1.  Create a main function header for the new binary. Make sure the function has
-    `HOST_EXPORT`. See remoting/host/remote_open_url/remote_open_url_main.h as
+    `REMOTING_EXPORT`. See remoting/host/remote_open_url/remote_open_url_main.h as
     an example.
 1.  Implement the main function. See
     remoting/host/remote_open_url/remote_open_url_main.cc as an example.

@@ -47,9 +47,8 @@ source_set("authentication_method") {
   ]
 }
 
-source_set("base_export") {
-  sources = [ "base_export.h" ]
-  public_deps = [ "//base" ]
+source_set("remoting_export") {
+  sources = [ "remoting_export.h" ]
   if (is_linux || is_mac || is_win) {
     configs += [ "//remoting/build/config:host_implementation" ]
   }
@@ -62,7 +61,7 @@ if (is_posix) {
       "security_key_socket_name.h",
     ]
     deps = [
-      ":base_export",
+      ":remoting_export",
       "//base",
     ]
   }
