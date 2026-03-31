@@ -16,6 +16,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -84,18 +86,28 @@ public class AutofillVirtualCardEnrollmentDialog {
                         .inflate(R.layout.virtual_card_enrollment_dialog, null);
 
         TextView titleTextView = customView.findViewById(R.id.dialog_title);
-        AutofillUiUtils.inlineTitleStringWithLogo(
-                mContext,
-                titleTextView,
-                mContext.getString(R.string.autofill_virtual_card_enrollment_dialog_title_label),
-                R.drawable.google_pay_with_divider);
+        if (ChromeFeatureList.isEnabled(AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2)) {
+            titleTextView.setText(
+                    mContext.getString(
+                            R.string.autofill_virtual_card_enrollment_dialog_title_label_v2));
+        } else {
+            AutofillUiUtils.inlineTitleStringWithLogo(
+                    mContext,
+                    titleTextView,
+                    mContext.getString(
+                            R.string.autofill_virtual_card_enrollment_dialog_title_label),
+                    R.drawable.google_pay_with_divider);
+        }
 
         TextView virtualCardEducationTextView =
                 customView.findViewById(R.id.virtual_card_education);
         virtualCardEducationTextView.setText(
                 AutofillUiUtils.getSpannableStringWithClickableSpansToOpenLinksInCustomTabs(
                         mContext,
-                        R.string.autofill_virtual_card_enrollment_dialog_education_text,
+                        ChromeFeatureList.isEnabled(
+                                        AutofillFeatures.AUTOFILL_ENABLE_WALLET_BRANDING_V2)
+                                ? R.string.autofill_virtual_card_enrollment_dialog_education_text_v2
+                                : R.string.autofill_virtual_card_enrollment_dialog_education_text,
                         ChromeStringConstants.AUTOFILL_VIRTUAL_CARD_ENROLLMENT_SUPPORT_URL,
                         url ->
                                 mOnLinkClicked.call(

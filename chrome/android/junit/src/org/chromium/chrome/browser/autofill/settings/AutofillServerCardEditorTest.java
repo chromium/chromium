@@ -89,7 +89,10 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+@DisableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_WALLET_BRANDING_V2,
+    ChromeFeatureList.SETTINGS_MULTI_COLUMN
+})
 public class AutofillServerCardEditorTest {
 
     private static final long NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE = 100L;
