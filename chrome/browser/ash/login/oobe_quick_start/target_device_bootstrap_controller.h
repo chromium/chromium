@@ -239,7 +239,13 @@ class TargetDeviceBootstrapController
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
   // TODO: Should we enforce one observer at a time here too?
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   Status status_;
 
