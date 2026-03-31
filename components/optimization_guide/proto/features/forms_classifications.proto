@@ -69,6 +69,8 @@ message FormMedia {
 message AutofillAiTypeResponse {
   // A list of field-level type predictions for the form.
   repeated FieldTypeResponse field_responses = 1;
+
+  reserved 2;
 }
 
 // Next ID: 9

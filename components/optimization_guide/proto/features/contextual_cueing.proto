@@ -35,6 +35,23 @@ message ContextualCueingLoggingData {
 message ContextualCueingRequest {
   // The page context for the active tab.
   PageContext active_tab_page_context = 1 [features = { field_presence: EXPLICIT }];
+
+  // The background tabs.
+  //
+  // Only the URL and title will be populated for each background tab.
+  repeated Tab background_tabs = 2;
+
+  // The surfaces that are supported by the client.
+  repeated ContextualCueingSurface supported_surfaces = 3;
+
+  // The history of contextual cueing shown to the user sorted in
+  // reverse-chronological order.
+  repeated ContextualCueingHistory contextual_cueing_history = 4;
+}
+
+message ContextualCueingHistory {
+  // The user journey the shown cue was for.
+  string cuj = 1 [features = { field_presence: EXPLICIT }];
 }
 
 // Next ID: 4
@@ -62,4 +79,13 @@ message AnchoredMessageCue {
 message GeminiInChromeSurface {
   // The prompt to use for the Gemini in Chrome surface.
   string prompt = 1 [features = { field_presence: EXPLICIT }];
+
+  // The tabs that should be shared with Gemini in Chrome on click.
+  repeated Tab tabs_to_share = 2;
+}
+
+enum ContextualCueingSurface {
+  CONTEXTUAL_CUEING_SURFACE_UNSPECIFIED = 0;
+
+  CONTEXTUAL_CUEING_SURFACE_GEMINI_IN_CHROME = 1;
 }

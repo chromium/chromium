@@ -276,7 +276,7 @@ message ContentNode {
   ContentAttributes content_attributes = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 29
+// Next ID: 30
 message ContentAttributes {
   oneof content_data {
     // Only set if attribute_type is CONTENT_ATTRIBUTE_TEXT.
@@ -368,6 +368,9 @@ message ContentAttributes {
 
   // Whether the content node is from an ad.
   bool is_ad_related = 28 [features = { field_presence: EXPLICIT }];
+
+  // Redaction decision for the node.
+  RedactionDecision redaction_decision = 29 [features = { field_presence: EXPLICIT }];
 
   reserved 5, 6, 7, 17, 18, 1, 22;
 }
@@ -685,7 +688,11 @@ message FormControlData {
   bool is_required = 7 [features = { field_presence: EXPLICIT }];
 
   // Redaction decision for form fields.
-  RedactionDecision redaction_decision = 8 [features = { field_presence: EXPLICIT }];
+  // Deprecated in favor of redaction_decision on ContentAttributes.
+  RedactionDecision redaction_decision = 8 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // The types of data that can be autofilled this field. This does not imply
   // that the user has data to fill of this type on file.
