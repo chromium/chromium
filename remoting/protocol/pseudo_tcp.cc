@@ -2,17 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert to safer constructs.
-// This code was moved from WebRTC which predates unsafe buffer checks.
-// The unsafe buffer usage is in existing low-level networking code that
-// requires careful buffer manipulation for TCP protocol implementation.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/pseudo_tcp.h"
 
 #include <algorithm>
+#include <array>
 #include <cerrno>
 #include <cstddef>
 #include <cstdint>
@@ -23,9 +16,12 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
+#include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -44,7 +40,7 @@ namespace protocol {
 //////////////////////////////////////////////////////////////////////
 
 // Standard MTUs
-const uint16_t PACKET_MAXIMUMS[] = {
+const auto PACKET_MAXIMUMS = std::to_array<uint16_t>({
     65535,  // Theoretical maximum, Hyperchannel
     32000,  // Nothing
     17914,  // 16Mb IBM Token Ring
@@ -64,7 +60,7 @@ const uint16_t PACKET_MAXIMUMS[] = {
     296,  // Point-to-Point (low delay)
     // 68,     // Official minimum
     0,  // End of list marker
-};
+});
 
 const uint32_t MAX_PACKET = 65535;
 // Note: we removed lowest level because packet overhead was larger!
@@ -86,77 +82,6 @@ inline int32_t TimeDiff32(uint32_t later, uint32_t earlier) {
   return static_cast<int32_t>(later - earlier);
 }
 
-// Simple ByteBuffer implementations to replace WebRTC ones
-class ByteBufferWriter {
- public:
-  ByteBufferWriter() = default;
-  void WriteUInt32(uint32_t val) {
-    uint32_t nval = base::HostToNet32(val);
-    data_.insert(data_.end(), reinterpret_cast<const uint8_t*>(&nval),
-                 reinterpret_cast<const uint8_t*>(&nval) + sizeof(nval));
-  }
-  void WriteUInt16(uint16_t val) {
-    uint16_t nval = base::HostToNet16(val);
-    data_.insert(data_.end(), reinterpret_cast<const uint8_t*>(&nval),
-                 reinterpret_cast<const uint8_t*>(&nval) + sizeof(nval));
-  }
-  void WriteUInt8(uint8_t val) { data_.push_back(val); }
-  void WriteString(const char* str, size_t len) {
-    data_.insert(data_.end(), str, str + len);
-  }
-  const uint8_t* Data() const { return data_.data(); }
-  size_t Length() const { return data_.size(); }
-
- private:
-  std::vector<uint8_t> data_;
-};
-
-class ByteBufferReader {
- public:
-  ByteBufferReader(const uint8_t* data, size_t len)
-      : data_(data), len_(len), pos_(0) {}
-  bool ReadUInt32(uint32_t* val) {
-    if (pos_ + sizeof(uint32_t) > len_) {
-      return false;
-    }
-    *val = base::NetToHost32(*reinterpret_cast<const uint32_t*>(data_ + pos_));
-    pos_ += sizeof(uint32_t);
-    return true;
-  }
-  bool ReadUInt16(uint16_t* val) {
-    if (pos_ + sizeof(uint16_t) > len_) {
-      return false;
-    }
-    *val = base::NetToHost16(*reinterpret_cast<const uint16_t*>(data_ + pos_));
-    pos_ += sizeof(uint16_t);
-    return true;
-  }
-  bool ReadUInt8(uint8_t* val) {
-    if (pos_ + sizeof(uint8_t) > len_) {
-      return false;
-    }
-    *val = data_[pos_++];
-    return true;
-  }
-  bool ReadString(char* str, size_t len) {
-    if (pos_ + len > len_) {
-      return false;
-    }
-    memcpy(str, data_ + pos_, len);
-    pos_ += len;
-    return true;
-  }
-  size_t Length() const { return len_ - pos_; }
-  const uint8_t* Data() const { return data_ + pos_; }
-  void Consume(size_t len) { pos_ += len; }
-
- private:
-  const uint8_t* data_;
-  size_t len_;
-  size_t pos_;
-};
-
-//////////////////////////////////////////////////////////////////////
 // Global Constants and Functions
 //////////////////////////////////////////////////////////////////////
 //
@@ -433,12 +358,12 @@ void PseudoTcp::NotifyClock(uint32_t now) {
 #endif  // PSEUDO_KEEPALIVE
 }
 
-bool PseudoTcp::NotifyPacket(const char* buffer, size_t len) {
-  if (len > MAX_PACKET) {
+bool PseudoTcp::NotifyPacket(base::span<const uint8_t> buffer) {
+  if (buffer.size() > MAX_PACKET) {
     LOG(WARNING) << "packet too large";
     return false;
   }
-  return parse(reinterpret_cast<const uint8_t*>(buffer), uint32_t(len));
+  return parse(buffer);
 }
 
 bool PseudoTcp::GetNextClock(uint32_t now, long& timeout) {
@@ -494,14 +419,14 @@ uint32_t PseudoTcp::GetRoundTripTimeEstimateMs() const {
 // IPStream Implementation
 //
 
-int PseudoTcp::Recv(char* buffer, size_t len) {
+int PseudoTcp::Recv(base::span<uint8_t> buffer) {
   if (m_state != TCP_ESTABLISHED) {
     m_error = ENOTCONN;
     return SOCKET_ERROR;
   }
 
   size_t read = 0;
-  if (!m_rbuf.Read(buffer, len, &read)) {
+  if (!m_rbuf.Read(buffer, &read)) {
     m_bReadEnable = true;
     m_error = EWOULDBLOCK;
     return SOCKET_ERROR;
@@ -510,7 +435,7 @@ int PseudoTcp::Recv(char* buffer, size_t len) {
   size_t available_space = 0;
   m_rbuf.GetWriteRemaining(&available_space);
 
-  if (uint32_t(available_space) - m_rcv_wnd >=
+  if (base::checked_cast<uint32_t>(available_space) - m_rcv_wnd >=
       std::min<uint32_t>(m_rbuf_len / 2, m_mss)) {
     // TODO(jbeda): !?! Not sure about this was closed business
     bool bWasClosed = (m_rcv_wnd == 0);
@@ -524,7 +449,7 @@ int PseudoTcp::Recv(char* buffer, size_t len) {
   return static_cast<int>(read);
 }
 
-int PseudoTcp::Send(const char* buffer, size_t len) {
+int PseudoTcp::Send(base::span<const uint8_t> buffer) {
   if (m_state != TCP_ESTABLISHED) {
     m_error = ENOTCONN;
     return SOCKET_ERROR;
@@ -539,7 +464,7 @@ int PseudoTcp::Send(const char* buffer, size_t len) {
     return SOCKET_ERROR;
   }
 
-  int written = queue(buffer, uint32_t(len), false);
+  int written = queue(buffer, false);
   attemptSend();
   return written;
 }
@@ -557,28 +482,28 @@ int PseudoTcp::GetError() {
 // Internal Implementation
 //
 
-uint32_t PseudoTcp::queue(const char* data, uint32_t len, bool bCtrl) {
+uint32_t PseudoTcp::queue(base::span<const uint8_t> data, bool bCtrl) {
   size_t available_space = 0;
   m_sbuf.GetWriteRemaining(&available_space);
 
-  if (len > static_cast<uint32_t>(available_space)) {
+  if (data.size() > available_space) {
     DCHECK(!bCtrl);
-    len = static_cast<uint32_t>(available_space);
+    data = data.first(available_space);
   }
 
   // We can concatenate data if the last segment is the same type
   // (control v. regular data), and has not been transmitted yet
   if (!m_slist.empty() && (m_slist.back().bCtrl == bCtrl) &&
       (m_slist.back().xmit == 0)) {
-    m_slist.back().len += len;
+    m_slist.back().len += data.size();
   } else {
-    SSegment sseg(static_cast<uint32_t>(m_snd_una + m_sbuf.GetBuffered()), len,
-                  bCtrl);
+    SSegment sseg(static_cast<uint32_t>(m_snd_una + m_sbuf.GetBuffered()),
+                  data.size(), bCtrl);
     m_slist.push_back(sseg);
   }
 
   size_t written = 0;
-  m_sbuf.Write(data, len, &written);
+  m_sbuf.Write(data, &written);
   return static_cast<uint32_t>(written);
 }
 
@@ -590,25 +515,24 @@ IPseudoTcpNotify::WriteResult PseudoTcp::packet(uint32_t seq,
 
   uint32_t now = Now();
 
-  auto buffer = base::HeapArray<uint8_t>::Uninit(MAX_PACKET);
-  long_to_bytes(m_conv, buffer.data());
-  long_to_bytes(seq, buffer.subspan(4u).data());
-  long_to_bytes(m_rcv_nxt, buffer.subspan(8u).data());
-  buffer[12] = 0;
-  buffer[13] = flags;
-  short_to_bytes(static_cast<uint16_t>(m_rcv_wnd >> m_rwnd_scale),
-                 buffer.subspan(14u).data());
+  auto buffer = base::HeapArray<uint8_t>::WithSize(MAX_PACKET);
+  base::SpanWriter writer(buffer.as_span());
+  writer.WriteU32BigEndian(m_conv);
+  writer.WriteU32BigEndian(seq);
+  writer.WriteU32BigEndian(m_rcv_nxt);
+  writer.WriteU8BigEndian(0);
+  writer.WriteU8BigEndian(flags);
+  writer.WriteU16BigEndian(static_cast<uint16_t>(m_rcv_wnd >> m_rwnd_scale));
 
   // Timestamp computations
-  long_to_bytes(now, buffer.subspan(16u).data());
-  long_to_bytes(m_ts_recent, buffer.subspan(20u).data());
+  writer.WriteU32BigEndian(now);
+  writer.WriteU32BigEndian(m_ts_recent);
   m_ts_lastack = m_rcv_nxt;
 
   if (len) {
     size_t bytes_read = 0;
-    auto payload = buffer.subspan(HEADER_SIZE, len);
-    bool result =
-        m_sbuf.ReadOffset(payload.data(), payload.size(), offset, &bytes_read);
+    bool result = m_sbuf.ReadOffset(buffer.subspan(HEADER_SIZE, len), offset,
+                                    &bytes_read);
     DCHECK(result);
     DCHECK(static_cast<uint32_t>(bytes_read) == len);
   }
@@ -640,30 +564,32 @@ IPseudoTcpNotify::WriteResult PseudoTcp::packet(uint32_t seq,
   return IPseudoTcpNotify::WR_SUCCESS;
 }
 
-bool PseudoTcp::parse(const uint8_t* buffer, uint32_t size) {
-  if (size < HEADER_SIZE) {
+bool PseudoTcp::parse(base::span<const uint8_t> buffer) {
+  if (buffer.size() < HEADER_SIZE) {
     return false;
   }
 
   Segment seg;
-  seg.conv = bytes_to_long(buffer);
-  seg.seq = bytes_to_long(buffer + 4);
-  seg.ack = bytes_to_long(buffer + 8);
-  seg.flags = buffer[13];
-  seg.wnd = bytes_to_short(buffer + 14);
+  base::SpanReader<const uint8_t> reader(buffer);
+  reader.ReadU32BigEndian(seg.conv);
+  reader.ReadU32BigEndian(seg.seq);
+  reader.ReadU32BigEndian(seg.ack);
+  // Skip the zero byte corresponding to position 13, set in the writer.
+  reader.Skip(1u);
+  reader.ReadU8BigEndian(seg.flags);
+  reader.ReadU16BigEndian(seg.wnd);
+  reader.ReadU32BigEndian(seg.tsval);
+  reader.ReadU32BigEndian(seg.tsecr);
 
-  seg.tsval = bytes_to_long(buffer + 16);
-  seg.tsecr = bytes_to_long(buffer + 20);
-
-  seg.data = reinterpret_cast<const char*>(buffer) + HEADER_SIZE;
-  seg.len = size - HEADER_SIZE;
+  seg.data = buffer.subspan(HEADER_SIZE);
 
 #if _DEBUGMSG >= _DBG_VERBOSE
   VLOG(1) << "--> <CONV=" << seg.conv
           << "><FLG=" << static_cast<unsigned>(seg.flags) << "><SEQ=" << seg.seq
-          << ":" << seg.seq + seg.len << "><ACK=" << seg.ack
+          << ":" << seg.seq + seg.data.size() << "><ACK=" << seg.ack
           << "><WND=" << seg.wnd << "><TS=" << (seg.tsval % 10000)
-          << "><TSR=" << (seg.tsecr % 10000) << "><LEN=" << seg.len << ">";
+          << "><TSR=" << (seg.tsecr % 10000) << "><LEN=" << seg.data.size()
+          << ">";
 #endif  // _DEBUGMSG
 
   return process(seg);
@@ -740,14 +666,14 @@ bool PseudoTcp::process(Segment& seg) {
   // Check for control data
   bool bConnect = false;
   if (seg.flags & FLAG_CTL) {
-    if (seg.len == 0) {
+    if (seg.data.empty()) {
       LOG(ERROR) << "Missing control code";
       return false;
     } else if (seg.data[0] == CTL_CONNECT) {
       bConnect = true;
 
       // TCP options are in the remainder of the payload after CTL_CONNECT.
-      parseOptions(&seg.data[1], seg.len - 1);
+      parseOptions(seg.data.subspan<1u>());
 
       if (m_state == TCP_LISTEN) {
         m_state = TCP_SYN_RECEIVED;
@@ -770,7 +696,7 @@ bool PseudoTcp::process(Segment& seg) {
   }
 
   // Update timestamp
-  if ((seg.seq <= m_ts_lastack) && (m_ts_lastack < seg.seq + seg.len)) {
+  if ((seg.seq <= m_ts_lastack) && (m_ts_lastack < seg.seq + seg.data.size())) {
     m_ts_recent = seg.tsval;
   }
 
@@ -858,7 +784,7 @@ bool PseudoTcp::process(Segment& seg) {
     m_snd_wnd = static_cast<uint32_t>(seg.wnd) << m_swnd_scale;
 
     // Check duplicate acks
-    if (seg.len > 0) {
+    if (seg.data.size() > 0) {
       // it's a dup ack, but with a data payload, so don't modify m_dup_acks
     } else if (m_snd_una != m_snd_nxt) {
       m_dup_acks += 1;
@@ -917,7 +843,7 @@ bool PseudoTcp::process(Segment& seg) {
   SendFlags sflags = sfNone;
   if (seg.seq != m_rcv_nxt) {
     sflags = sfImmediateAck;  // (Fast Recovery)
-  } else if (seg.len != 0) {
+  } else if (!seg.data.empty()) {
     if (m_ack_delay == 0) {
       sflags = sfImmediateAck;
     } else {
@@ -928,7 +854,7 @@ bool PseudoTcp::process(Segment& seg) {
   if (sflags == sfImmediateAck) {
     if (seg.seq > m_rcv_nxt) {
       VLOG(1) << "too new";
-    } else if (seg.seq + seg.len <= m_rcv_nxt) {
+    } else if (seg.seq + seg.data.size() <= m_rcv_nxt) {
       VLOG(1) << "too old";
     }
   }
@@ -937,37 +863,36 @@ bool PseudoTcp::process(Segment& seg) {
   // Adjust the incoming segment to fit our receive buffer
   if (seg.seq < m_rcv_nxt) {
     uint32_t nAdjust = m_rcv_nxt - seg.seq;
-    if (nAdjust < seg.len) {
+    if (nAdjust < seg.data.size()) {
       seg.seq += nAdjust;
-      seg.data += nAdjust;
-      seg.len -= nAdjust;
+      seg.data = seg.data.subspan(nAdjust);
     } else {
-      seg.len = 0;
+      seg.data = {};
     }
   }
 
   size_t available_space = 0;
   m_rbuf.GetWriteRemaining(&available_space);
 
-  if ((seg.seq + seg.len - m_rcv_nxt) >
+  if ((seg.seq + seg.data.size() - m_rcv_nxt) >
       static_cast<uint32_t>(available_space)) {
-    uint32_t nAdjust =
-        seg.seq + seg.len - m_rcv_nxt - static_cast<uint32_t>(available_space);
-    if (nAdjust < seg.len) {
-      seg.len -= nAdjust;
+    uint32_t nAdjust = seg.seq + seg.data.size() - m_rcv_nxt -
+                       static_cast<uint32_t>(available_space);
+    if (nAdjust < seg.data.size()) {
+      seg.data = seg.data.first(seg.data.size() - nAdjust);
     } else {
-      seg.len = 0;
+      seg.data = {};
     }
   }
 
   bool bIgnoreData = (seg.flags & FLAG_CTL) || (m_shutdown != SD_NONE);
   bool bNewData = false;
 
-  if (seg.len > 0) {
+  if (seg.data.size() > 0) {
     bool bRecover = false;
     if (bIgnoreData) {
       if (seg.seq == m_rcv_nxt) {
-        m_rcv_nxt += seg.len;
+        m_rcv_nxt += seg.data.size();
         // If we received a data segment out of order relative to a control
         // segment, then we wrote it into the receive buffer at an offset (see
         // "WriteOffset") below. So we need to advance the position in the
@@ -979,8 +904,8 @@ bool PseudoTcp::process(Segment& seg) {
         // true in the problematic scenario, since control frames are always
         // sent first in the stream.
         if (m_rbuf.GetBuffered() == 0) {
-          m_rbuf.ConsumeWriteBuffer(seg.len);
-          m_rbuf.ConsumeReadData(seg.len);
+          m_rbuf.ConsumeWriteBuffer(seg.data.size());
+          m_rbuf.ConsumeReadData(seg.data.size());
           // After shifting the position in the buffer, we may have
           // out-of-order packets ready to be recovered.
           bRecover = true;
@@ -989,27 +914,27 @@ bool PseudoTcp::process(Segment& seg) {
     } else {
       uint32_t nOffset = seg.seq - m_rcv_nxt;
 
-      if (!m_rbuf.WriteOffset(seg.data, seg.len, nOffset, nullptr)) {
+      if (!m_rbuf.WriteOffset(base::as_byte_span(seg.data), nOffset, nullptr)) {
         // Ignore incoming packets outside of the receive window.
         return false;
       }
 
       if (seg.seq == m_rcv_nxt) {
-        m_rbuf.ConsumeWriteBuffer(seg.len);
-        m_rcv_nxt += seg.len;
-        m_rcv_wnd -= seg.len;
+        m_rbuf.ConsumeWriteBuffer(seg.data.size());
+        m_rcv_nxt += seg.data.size();
+        m_rcv_wnd -= seg.data.size();
         bNewData = true;
         // May be able to recover packets previously received out-of-order
         // now.
         bRecover = true;
       } else {
 #if _DEBUGMSG >= _DBG_NORMAL
-        VLOG(1) << "Saving " << seg.len << " bytes (" << seg.seq << " -> "
-                << seg.seq + seg.len << ")";
+        VLOG(1) << "Saving " << seg.data.size() << " bytes (" << seg.seq
+                << " -> " << seg.seq + seg.data.size() << ")";
 #endif  // _DEBUGMSG
         RSegment rseg;
         rseg.seq = seg.seq;
-        rseg.len = seg.len;
+        rseg.len = seg.data.size();
         RList::iterator it = m_rlist.begin();
         while ((it != m_rlist.end()) && (it->seq < rseg.seq)) {
           ++it;
@@ -1251,29 +1176,31 @@ void PseudoTcp::disableWindowScale() {
 }
 
 void PseudoTcp::queueConnectMessage() {
-  ByteBufferWriter buf;
+  // We always write a single byte (`CTL_CONNECT`) and optionally when
+  // `m_support_wnd_scale` is true 3 additional bytes.
+  constexpr size_t kMaxBytesToWrite = 4u;
+  std::array<uint8_t, kMaxBytesToWrite> buf;
+  base::SpanWriter writer((base::span(buf)));
 
-  buf.WriteUInt8(CTL_CONNECT);
+  writer.WriteU8BigEndian(CTL_CONNECT);
   if (m_support_wnd_scale) {
-    buf.WriteUInt8(TCP_OPT_WND_SCALE);
-    buf.WriteUInt8(1);
-    buf.WriteUInt8(m_rwnd_scale);
+    writer.WriteU8BigEndian(TCP_OPT_WND_SCALE);
+    writer.WriteU8BigEndian(1);
+    writer.WriteU8BigEndian(m_rwnd_scale);
   }
-  m_snd_wnd = static_cast<uint32_t>(buf.Length());
-  queue(reinterpret_cast<const char*>(buf.Data()),
-        static_cast<uint32_t>(buf.Length()), true);
+  m_snd_wnd = static_cast<uint32_t>(writer.num_written());
+  queue(base::span(buf).first(writer.num_written()), true);
 }
 
-void PseudoTcp::parseOptions(const char* data, uint32_t len) {
+void PseudoTcp::parseOptions(base::span<const uint8_t> data) {
   std::set<uint8_t> options_specified;
 
   // See http://www.freesoft.org/CIE/Course/Section4/8.htm for
   // parsing the options list.
-  ByteBufferReader buf(reinterpret_cast<const uint8_t*>(data), len);
-  while (buf.Length()) {
+  base::SpanReader<const uint8_t> buf(data);
+  while (buf.remaining() > 0) {
     uint8_t kind = TCP_OPT_EOL;
-    buf.ReadUInt8(&kind);
-
+    CHECK(buf.ReadU8BigEndian(kind));
     if (kind == TCP_OPT_EOL) {
       // End of option list.
       break;
@@ -1283,14 +1210,16 @@ void PseudoTcp::parseOptions(const char* data, uint32_t len) {
     }
 
     // Length of this option.
-    DCHECK(len != 0);
+    DCHECK(!data.empty());
     uint8_t opt_len = 0;
-    buf.ReadUInt8(&opt_len);
+    CHECK(buf.ReadU8BigEndian(opt_len));
 
     // Content of this option.
-    if (opt_len <= buf.Length()) {
-      applyOption(kind, reinterpret_cast<const char*>(buf.Data()), opt_len);
-      buf.Consume(opt_len);
+    std::optional<base::span<const uint8_t>> opt_data =
+        buf.Read(size_t{opt_len});
+    if (opt_data) {
+      applyOption(kind, reinterpret_cast<const char*>(opt_data->data()),
+                  opt_len);
     } else {
       LOG(ERROR) << "Invalid option length received.";
       return;
@@ -1363,8 +1292,7 @@ void PseudoTcp::resizeReceiveBuffer(uint32_t new_size) {
 }
 
 PseudoTcp::LockedFifoBuffer::LockedFifoBuffer(size_t size)
-    : buffer_(new char[size]),
-      buffer_length_(size),
+    : buffer_(base::HeapArray<uint8_t>::WithSize(size)),
       data_length_(0),
       read_position_(0) {}
 
@@ -1381,48 +1309,60 @@ bool PseudoTcp::LockedFifoBuffer::SetCapacity(size_t size) {
     return false;
   }
 
-  if (size != buffer_length_) {
-    char* buffer = new char[size];
+  if (size != buffer_.size()) {
+    auto new_buffer = base::HeapArray<uint8_t>::WithSize(size);
+
     const size_t copy = data_length_;
-    const size_t tail_copy = std::min(copy, buffer_length_ - read_position_);
-    memcpy(buffer, &buffer_[read_position_], tail_copy);
-    memcpy(buffer + tail_copy, &buffer_[0], copy - tail_copy);
-    buffer_.reset(buffer);
+    const size_t tail_copy = std::min(copy, buffer_.size() - read_position_);
+
+    // Split `new_buffer` into |:tail_copy:|:copy - tail_copy:| spans.
+    auto [new_buffer_first, new_buffer_last] =
+        new_buffer.as_span().first(copy).split_at(tail_copy);
+    // Split `buffer` into | buffer_.size() - read_position | read_position |
+    auto [old_buffer_start, old_buffer_end] =
+        buffer_.as_span().split_at(read_position_);
+    // Note: size >= data_length_, but buffer_.size() >= data_length_ and
+    // unknown relation to size. Any value after read_position_ is the
+    // |tail_copy|, but old_buffer_end could be larger then the remaining
+    // |tail_copy - copy| so we adjust it to make them equal (old_buffer_end
+    // might be empty).
+    CHECK_EQ(old_buffer_start.size(), tail_copy);
+    old_buffer_end = old_buffer_end.first(tail_copy - copy);
+
+    new_buffer_first.copy_from(old_buffer_start);
+    new_buffer_last.copy_from(old_buffer_end);
+    buffer_ = std::move(new_buffer);
     read_position_ = 0;
-    buffer_length_ = size;
   }
 
   return true;
 }
 
-bool PseudoTcp::LockedFifoBuffer::ReadOffset(void* buffer,
-                                             size_t bytes,
+bool PseudoTcp::LockedFifoBuffer::ReadOffset(base::span<uint8_t> buffer,
                                              size_t offset,
                                              size_t* bytes_read) {
   base::AutoLock lock(lock_);
-  return ReadOffsetLocked(buffer, bytes, offset, bytes_read);
+  return ReadOffsetLocked(buffer, offset, bytes_read);
 }
 
-bool PseudoTcp::LockedFifoBuffer::WriteOffset(const void* buffer,
-                                              size_t bytes,
+bool PseudoTcp::LockedFifoBuffer::WriteOffset(base::span<const uint8_t> buffer,
                                               size_t offset,
                                               size_t* bytes_written) {
   base::AutoLock lock(lock_);
-  return WriteOffsetLocked(buffer, bytes, offset, bytes_written);
+  return WriteOffsetLocked(buffer, offset, bytes_written);
 }
 
-bool PseudoTcp::LockedFifoBuffer::Read(void* buffer,
-                                       size_t bytes,
+bool PseudoTcp::LockedFifoBuffer::Read(base::span<uint8_t> buffer,
                                        size_t* bytes_read) {
   base::AutoLock lock(lock_);
   size_t copy = 0;
-  if (!ReadOffsetLocked(buffer, bytes, 0, &copy)) {
+  if (!ReadOffsetLocked(buffer, 0, &copy)) {
     return false;
   }
 
   // If read was successful then adjust the read position and number of
   // bytes buffered.
-  read_position_ = (read_position_ + copy) % buffer_length_;
+  read_position_ = (read_position_ + copy) % buffer_.size();
   data_length_ -= copy;
   if (bytes_read) {
     *bytes_read = copy;
@@ -1431,12 +1371,11 @@ bool PseudoTcp::LockedFifoBuffer::Read(void* buffer,
   return true;
 }
 
-bool PseudoTcp::LockedFifoBuffer::Write(const void* buffer,
-                                        size_t bytes,
+bool PseudoTcp::LockedFifoBuffer::Write(base::span<const uint8_t> buffer,
                                         size_t* bytes_written) {
   base::AutoLock lock(lock_);
   size_t copy = 0;
-  if (!WriteOffsetLocked(buffer, bytes, 0, &copy)) {
+  if (!WriteOffsetLocked(buffer, 0, &copy)) {
     return false;
   }
 
@@ -1452,24 +1391,23 @@ bool PseudoTcp::LockedFifoBuffer::Write(const void* buffer,
 void PseudoTcp::LockedFifoBuffer::ConsumeReadData(size_t size) {
   base::AutoLock lock(lock_);
   DCHECK(size <= data_length_);
-  read_position_ = (read_position_ + size) % buffer_length_;
+  read_position_ = (read_position_ + size) % buffer_.size();
   data_length_ -= size;
 }
 
 void PseudoTcp::LockedFifoBuffer::ConsumeWriteBuffer(size_t size) {
   base::AutoLock lock(lock_);
-  DCHECK(size <= buffer_length_ - data_length_);
+  DCHECK(size <= buffer_.size() - data_length_);
   data_length_ += size;
 }
 
 bool PseudoTcp::LockedFifoBuffer::GetWriteRemaining(size_t* size) const {
   base::AutoLock lock(lock_);
-  *size = buffer_length_ - data_length_;
+  *size = buffer_.size() - data_length_;
   return true;
 }
 
-bool PseudoTcp::LockedFifoBuffer::ReadOffsetLocked(void* buffer,
-                                                   size_t bytes,
+bool PseudoTcp::LockedFifoBuffer::ReadOffsetLocked(base::span<uint8_t> buffer,
                                                    size_t offset,
                                                    size_t* bytes_read) {
   if (offset >= data_length_) {
@@ -1477,12 +1415,12 @@ bool PseudoTcp::LockedFifoBuffer::ReadOffsetLocked(void* buffer,
   }
 
   const size_t available = data_length_ - offset;
-  const size_t read_position = (read_position_ + offset) % buffer_length_;
-  const size_t copy = std::min(bytes, available);
-  const size_t tail_copy = std::min(copy, buffer_length_ - read_position);
-  char* const p = static_cast<char*>(buffer);
-  memcpy(p, &buffer_[read_position], tail_copy);
-  memcpy(p + tail_copy, &buffer_[0], copy - tail_copy);
+  const size_t read_position = (read_position_ + offset) % buffer_.size();
+  const size_t copy = std::min(buffer.size(), available);
+  const size_t tail_copy = std::min(copy, buffer_.size() - read_position);
+  auto [dest_first, dest_last] = buffer.first(copy).split_at(tail_copy);
+  dest_first.copy_from(buffer_.subspan(read_position, tail_copy));
+  dest_last.copy_from(buffer_.first(copy - tail_copy));
 
   if (bytes_read) {
     *bytes_read = copy;
@@ -1491,22 +1429,22 @@ bool PseudoTcp::LockedFifoBuffer::ReadOffsetLocked(void* buffer,
   return true;
 }
 
-bool PseudoTcp::LockedFifoBuffer::WriteOffsetLocked(const void* buffer,
-                                                    size_t bytes,
-                                                    size_t offset,
-                                                    size_t* bytes_written) {
-  if (data_length_ + offset >= buffer_length_) {
+bool PseudoTcp::LockedFifoBuffer::WriteOffsetLocked(
+    base::span<const uint8_t> buffer,
+    size_t offset,
+    size_t* bytes_written) {
+  if (data_length_ + offset >= buffer_.size()) {
     return false;
   }
 
-  const size_t available = buffer_length_ - data_length_ - offset;
+  const size_t available = buffer_.size() - data_length_ - offset;
   const size_t write_position =
-      (read_position_ + data_length_ + offset) % buffer_length_;
-  const size_t copy = std::min(bytes, available);
-  const size_t tail_copy = std::min(copy, buffer_length_ - write_position);
-  const char* const p = static_cast<const char*>(buffer);
-  memcpy(&buffer_[write_position], p, tail_copy);
-  memcpy(&buffer_[0], p + tail_copy, copy - tail_copy);
+      (read_position_ + data_length_ + offset) % buffer_.size();
+  const size_t copy = std::min(buffer.size(), available);
+  const size_t tail_copy = std::min(copy, buffer_.size() - write_position);
+  auto [src_first, src_last] = buffer.first(copy).split_at(tail_copy);
+  buffer_.subspan(write_position, tail_copy).copy_from(src_first);
+  buffer_.first(copy - tail_copy).copy_from(src_last);
 
   if (bytes_written) {
     *bytes_written = copy;

@@ -10,8 +10,10 @@
 #include <list>
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 
@@ -52,8 +54,8 @@ class PseudoTcp {
   virtual ~PseudoTcp();
 
   int Connect();
-  int Recv(char* buffer, size_t len);
-  int Send(const char* buffer, size_t len);
+  int Recv(base::span<uint8_t> buffer);
+  int Send(base::span<const uint8_t> buffer);
   void Close(bool force);
   int GetError();
 
@@ -75,7 +77,7 @@ class PseudoTcp {
 
   // Call this whenever a packet arrives.
   // Returns true if the packet was processed successfully.
-  bool NotifyPacket(const char* buffer, size_t len);
+  bool NotifyPacket(base::span<const uint8_t> buffer);
 
   // Call this to determine the next time NotifyClock should be called.
   // Returns false if the socket is ready to be destroyed.
@@ -112,13 +114,14 @@ class PseudoTcp {
 
  protected:
   enum SendFlags { sfNone, sfDelayedAck, sfImmediateAck };
-
   struct Segment {
+    STACK_ALLOCATED();
+
+   public:
     uint32_t conv, seq, ack;
     uint8_t flags;
     uint16_t wnd;
-    const char* data;
-    uint32_t len;
+    base::span<const uint8_t> data;
     uint32_t tsval, tsecr;
   };
 
@@ -136,7 +139,7 @@ class PseudoTcp {
     uint32_t seq, len;
   };
 
-  uint32_t queue(const char* data, uint32_t len, bool bCtrl);
+  uint32_t queue(base::span<const uint8_t> data, bool bCtrl);
 
   // Creates a packet and submits it to the network. This method can either
   // send payload or just an ACK packet.
@@ -150,7 +153,7 @@ class PseudoTcp {
                                        uint8_t flags,
                                        uint32_t offset,
                                        uint32_t len);
-  bool parse(const uint8_t* buffer, uint32_t size);
+  bool parse(base::span<const uint8_t> buffer);
 
   void attemptSend(SendFlags sflags = sfNone);
 
@@ -176,7 +179,7 @@ class PseudoTcp {
   void queueConnectMessage();
 
   // Parse TCP options in the header.
-  void parseOptions(const char* data, uint32_t len);
+  void parseOptions(base::span<const uint8_t> data);
 
   // Apply a TCP option that has been read from the header.
   void applyOption(char kind, const char* data, uint32_t len);
@@ -198,35 +201,29 @@ class PseudoTcp {
 
     size_t GetBuffered() const;
     bool SetCapacity(size_t size);
-    bool ReadOffset(void* buffer,
-                    size_t bytes,
+    bool ReadOffset(base::span<uint8_t> buffer,
                     size_t offset,
                     size_t* bytes_read);
-    bool WriteOffset(const void* buffer,
-                     size_t bytes,
+    bool WriteOffset(base::span<const uint8_t> buffer,
                      size_t offset,
                      size_t* bytes_written);
-    bool Read(void* buffer, size_t bytes, size_t* bytes_read);
-    bool Write(const void* buffer, size_t bytes, size_t* bytes_written);
+    bool Read(base::span<uint8_t> buffer, size_t* bytes_read);
+    bool Write(base::span<const uint8_t> buffer, size_t* bytes_written);
     void ConsumeReadData(size_t size);
     void ConsumeWriteBuffer(size_t size);
     bool GetWriteRemaining(size_t* size) const;
 
    private:
-    bool ReadOffsetLocked(void* buffer,
-                          size_t bytes,
+    bool ReadOffsetLocked(base::span<uint8_t> buffer,
                           size_t offset,
                           size_t* bytes_read) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-    bool WriteOffsetLocked(const void* buffer,
-                           size_t bytes,
+    bool WriteOffsetLocked(base::span<const uint8_t> buffer,
                            size_t offset,
                            size_t* bytes_written)
         EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
     // the allocated buffer
-    std::unique_ptr<char[]> buffer_ GUARDED_BY(lock_);
-    // size of the allocated buffer
-    size_t buffer_length_ GUARDED_BY(lock_);
+    base::HeapArray<uint8_t> buffer_ GUARDED_BY(lock_);
     // amount of readable data in the buffer
     size_t data_length_ GUARDED_BY(lock_);
     // offset to the readable data

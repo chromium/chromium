@@ -194,7 +194,7 @@ class PseudoTcpTestBase : public ::testing::Test,
         base::BindOnce(
             [](PseudoTcp* other, std::string packet, PseudoTcpTestBase* test) {
               --test->packets_in_flight_;
-              other->NotifyPacket(packet.c_str(), packet.size());
+              other->NotifyPacket(base::as_byte_span(packet));
               test->UpdateClock(*other);
             },
             other, std::move(packet), this),
@@ -356,10 +356,10 @@ class PseudoTcpTest : public PseudoTcpTestBase {
   }
 
   void ReadData() {
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     int received;
     do {
-      received = remote_.Recv(block.data(), block.size());
+      received = remote_.Recv(base::span(block));
       if (received > 0) {
         recv_buffer_.insert(recv_buffer_.end(), block.begin(),
                             block.begin() + received);
@@ -371,15 +371,15 @@ class PseudoTcpTest : public PseudoTcpTestBase {
   }
   void WriteData(bool* done) {
     int sent;
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     do {
-      size_t tosend = std::min(static_cast<size_t>(kBlockSize),
-                               send_buffer_.size() - send_stream_pos_);
-      if (tosend > 0) {
-        base::as_writable_bytes(base::span(block).first(tosend))
-            .copy_from(base::as_bytes(
-                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
-        sent = local_.Send(block.data(), tosend);
+      auto tosend = base::span(block).first(
+          std::min(static_cast<size_t>(kBlockSize),
+                   send_buffer_.size() - send_stream_pos_));
+      if (!tosend.empty()) {
+        tosend.copy_from(base::as_bytes(
+            base::span(send_buffer_).subspan(send_stream_pos_, tosend.size())));
+        sent = local_.Send(tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;
@@ -391,7 +391,7 @@ class PseudoTcpTest : public PseudoTcpTestBase {
         }
       } else {
         sent = 0;
-        tosend = 0;
+        tosend = base::span<uint8_t>();
       }
     } while (sent > 0);
     *done = (send_stream_pos_ >= send_buffer_.size());
@@ -520,10 +520,10 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
   }
 
   void ReadData() {
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     int received;
     do {
-      received = receiver_->Recv(block.data(), block.size());
+      received = receiver_->Recv(block);
       if (received > 0) {
         recv_buffer_.insert(recv_buffer_.end(), block.begin(),
                             block.begin() + received);
@@ -535,18 +535,18 @@ class PseudoTcpTestPingPong : public PseudoTcpTestBase {
   }
   void WriteData() {
     int sent;
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     do {
-      size_t tosend = bytes_per_send_
-                          ? std::min(static_cast<size_t>(bytes_per_send_),
+      size_t bytes_tosend =
+          bytes_per_send_ ? std::min(static_cast<size_t>(bytes_per_send_),
                                      send_buffer_.size() - send_stream_pos_)
                           : std::min(static_cast<size_t>(kBlockSize),
                                      send_buffer_.size() - send_stream_pos_);
-      if (tosend > 0) {
-        base::as_writable_bytes(base::span(block).first(tosend))
-            .copy_from(base::as_bytes(
-                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
-        sent = sender_->Send(block.data(), tosend);
+      auto tosend = base::span(block).first(bytes_tosend);
+      if (!tosend.empty()) {
+        base::as_writable_bytes(tosend).copy_from(base::as_bytes(
+            base::span(send_buffer_).subspan(send_stream_pos_, tosend.size())));
+        sent = sender_->Send(tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;
@@ -634,11 +634,11 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
   void OnTcpWriteable(PseudoTcp* /* tcp */) override {}
 
   void ReadUntilIOPending() {
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     int received;
 
     do {
-      received = remote_.Recv(block.data(), block.size());
+      received = remote_.Recv(block);
       if (received > 0) {
         recv_buffer_.insert(recv_buffer_.end(), block.begin(),
                             block.begin() + received);
@@ -662,15 +662,15 @@ class PseudoTcpTestReceiveWindow : public PseudoTcpTestBase {
 
   void WriteData() {
     int sent;
-    std::array<char, kBlockSize> block;
+    std::array<uint8_t, kBlockSize> block;
     do {
-      size_t tosend = std::min(static_cast<size_t>(kBlockSize),
-                               send_buffer_.size() - send_stream_pos_);
-      if (tosend > 0) {
-        base::as_writable_bytes(base::span(block).first(tosend))
-            .copy_from(base::as_bytes(
-                base::span(send_buffer_).subspan(send_stream_pos_, tosend)));
-        sent = local_.Send(block.data(), tosend);
+      auto tosend = base::span(block).first(
+          std::min(static_cast<size_t>(kBlockSize),
+                   send_buffer_.size() - send_stream_pos_));
+      if (!tosend.empty()) {
+        tosend.copy_from(base::as_bytes(
+            base::span(send_buffer_).subspan(send_stream_pos_, tosend.size())));
+        sent = local_.Send(tosend);
         UpdateLocalClock();
         if (sent != -1) {
           send_stream_pos_ += sent;
