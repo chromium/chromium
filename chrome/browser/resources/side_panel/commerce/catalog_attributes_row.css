@@ -1,4 +1,15 @@
-<style include="cr-icons cr-hidden-style">
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-icons-lit cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
   :host {
     display: flex;
   }
@@ -30,15 +41,3 @@
     height: var(--icon-size);
     width: var(--icon-size);
   }
-</style>
-
-<div id="attributesRow">
-  <div hidden="[[!priceInsightsInfo.hasMultipleCatalogs]]" class="attributes">
-    [[priceInsightsInfo.catalogAttributes]]
-  </div>
-  <a href="#" hidden="[[!priceInsightsInfo.jackpot.length]]"
-      class="link" on-click="openJackpot_">
-    <span>$i18n{buyOptions}</span>
-    <cr-icon icon="cr:open-in-new"></cr-icon>
-  </a>
-</div>

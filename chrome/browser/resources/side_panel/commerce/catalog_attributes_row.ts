@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
@@ -13,30 +10,35 @@ import type {PriceInsightsInfo} from '//resources/cr_components/commerce/shoppin
 import {PriceInsightsInfo_PriceBucket} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './catalog_attributes_row.html.js';
+import {getCss} from './catalog_attributes_row.css.js';
+import {getHtml} from './catalog_attributes_row.html.js';
 
-export class CatalogAttributesRow extends PolymerElement {
+export class CatalogAttributesRowElement extends CrLitElement {
   static get is() {
     return 'catalog-attributes-row';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      priceInsightsInfo: Object,
+      priceInsightsInfo: {type: Object},
     };
   }
 
-  declare priceInsightsInfo: PriceInsightsInfo;
+  accessor priceInsightsInfo: PriceInsightsInfo;
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 
-  private openJackpot_() {
+  protected onJackpotClick_() {
     this.shoppingApi_.openUrlInNewTab(this.priceInsightsInfo.jackpot);
     chrome.metricsPrivate.recordEnumerationValue(
         'Commerce.PriceInsights.BuyingOptionsClicked',
@@ -47,8 +49,9 @@ export class CatalogAttributesRow extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'catalog-attributes-row': CatalogAttributesRow;
+    'catalog-attributes-row': CatalogAttributesRowElement;
   }
 }
 
-customElements.define(CatalogAttributesRow.is, CatalogAttributesRow);
+customElements.define(
+    CatalogAttributesRowElement.is, CatalogAttributesRowElement);

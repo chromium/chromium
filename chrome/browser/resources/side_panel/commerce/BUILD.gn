@@ -13,18 +13,22 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
-    "catalog_attributes_row.ts",
     "history_graph.ts",
     "price_tracking_section.ts",
   ]
 
   ts_files = [
+    "catalog_attributes_row.html.ts",
+    "catalog_attributes_row.ts",
     "insights_comment_row.html.ts",
     "insights_comment_row.ts",
     "price_insights_browser_proxy.ts",
   ]
 
-  css_files = [ "insights_comment_row.css" ]
+  css_files = [
+    "catalog_attributes_row.css",
+    "insights_comment_row.css",
+  ]
 
   mojo_files_deps =
       [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]

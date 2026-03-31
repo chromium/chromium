@@ -174,16 +174,16 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(!!attributesRow);
     assertTrue(isVisible(attributesRow));
 
-    const attributes = attributesRow.shadowRoot!.querySelector('.attributes');
+    const attributes = attributesRow.shadowRoot.querySelector('.attributes');
     assertTrue(!!attributes);
     assertEquals('Unlocked, 4GB', attributes.textContent.trim());
 
-    const buyOption = attributesRow.shadowRoot!.querySelector('.link');
+    const buyOption = attributesRow.shadowRoot.querySelector('.link');
     assertTrue(!!buyOption);
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent.trim());
 
-    const button = attributesRow.shadowRoot!.querySelector('cr-icon');
+    const button = attributesRow.shadowRoot.querySelector('cr-icon');
     assertTrue(!!button);
     button.click();
     const url = await shoppingServiceApi.whenCalled('openUrlInNewTab');
@@ -276,9 +276,9 @@ suite('ShoppingInsightsAppTest', () => {
     assertTrue(isVisible(attributesRow));
 
     assertFalse(
-        isVisible(attributesRow.shadowRoot!.querySelector('.attributes')));
+        isVisible(attributesRow.shadowRoot.querySelector('.attributes')));
     const buyOption =
-        attributesRow.shadowRoot!.querySelector<HTMLElement>('.link');
+        attributesRow.shadowRoot.querySelector<HTMLElement>('.link');
     assertTrue(!!buyOption);
     assertEquals(
         loadTimeData.getString('buyOptions'), buyOption.textContent.trim());
