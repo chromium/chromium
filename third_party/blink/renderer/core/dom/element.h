@@ -2036,6 +2036,15 @@ class CORE_EXPORT Element : public ContainerNode {
   // }
   virtual bool IsRenderedInTopLayer() const { return false; }
 
+  // Returns whether this element is or has ever been identified as a custom
+  // password field via CSS -webkit-text-security heuristics.
+  // This is distinct from native passwords (<input type=password>).
+  bool HasBeenHeuristicCustomPasswordCSS() const;
+
+  // Latch the element as a custom password field via CSS -webkit-text-security
+  // heuristics.
+  void SetHasBeenHeuristicCustomPasswordCSS();
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }

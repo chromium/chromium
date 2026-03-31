@@ -1646,6 +1646,25 @@ TEST_F(ElementTest, ParseFocusgroupAttrBehaviorFirstRequirement) {
       FocusgroupData(FocusgroupBehavior::kOptOut, FocusgroupFlags::kNone));
 }
 
+TEST_F(ElementTest, HeuristicCustomPasswordDetectionCSS) {
+  SetBodyInnerHTML("<div id='target'>abc</div>");
+  auto* target = To<HTMLElement>(GetElementById("target"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->HasBeenHeuristicCustomPasswordCSS());
+
+  // Applying -webkit-text-security should trigger detection for any
+  // HTMLElement.
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("-webkit-text-security: disc;"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->HasBeenHeuristicCustomPasswordCSS());
+
+  // Removing the style should not clear the "has ever been" state.
+  target->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->HasBeenHeuristicCustomPasswordCSS());
+}
+
 // Provide assertion-prettify function for gtest.
 namespace focusgroup {
 void PrintTo(FocusgroupFlags flags, std::ostream* os) {

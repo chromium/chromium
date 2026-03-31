@@ -943,6 +943,17 @@ std::pair<String, TextOffsetMap> LayoutText::SecureText(const String& plain,
     return std::make_pair(plain, TextOffsetMap());
   }
 
+  if (Node* node = GetNode()) {
+    auto ancestors = FlatTreeTraversal::InclusiveAncestorsOf(*node);
+    auto it = std::ranges::find_if(ancestors, [](Node& n) {
+      return n.IsElementNode() && !n.IsInUserAgentShadowRoot();
+    });
+
+    if (it != ancestors.end()) {
+      To<Element>(*it).SetHasBeenHeuristicCustomPasswordCSS();
+    }
+  }
+
   int last_typed_character_offset_to_reveal = -1;
   if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
     last_typed_character_offset_to_reveal =

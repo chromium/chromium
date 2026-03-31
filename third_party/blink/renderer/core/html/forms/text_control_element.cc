@@ -152,10 +152,6 @@ TextControlElement::TextControlElement(const QualifiedName& tag_name,
                             .ShouldConsiderSelectionAsDirectional()
           ? kSelectionHasForwardDirection
           : kSelectionHasNoDirection;
-
-  if (IsTextControl()) {
-    SetHasCustomStyleCallbacks();
-  }
 }
 
 TextControlElement::~TextControlElement() = default;
@@ -1027,7 +1023,7 @@ void TextControlElement::SetInnerEditorValue(const String& value) {
   AdjustPlaceholderBreakElement();
 
   if (text_is_changed) {
-    MaybeSetHasCustomPasswordJS();
+    MaybeSetHasBeenHeuristicCustomPasswordJS();
 
     if (GetLayoutObject()) {
       if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache()) {
@@ -1490,47 +1486,10 @@ bool TextControlElement::ShouldSkipNextSetValueAutoDiff() const {
   return skip_next_set_value_auto_diff_;
 }
 
-void TextControlElement::DidRecalcStyle(const StyleRecalcChange change) {
-  HTMLFormControlElementWithState::DidRecalcStyle(change);
-  MaybeSetHasCustomPasswordCSS();
-}
-
-void TextControlElement::MaybeUpdateCustomPasswordHeuristicSource() {
-  MaybeSetHasCustomPasswordCSS();
-  MaybeSetHasCustomPasswordJS();
-}
-
-void TextControlElement::MaybeSetHasCustomPasswordCSS() {
-  if (!IsTextControl()) {
-    ClearCustomPasswordHeuristicSource();
-    return;
-  }
-
-  if (HasBeenHeuristicCustomPasswordField()) {
-    return;
-  }
-
-  if (const ComputedStyle* style = GetComputedStyle();
-      style && IsCSSSecurityMaskingEnabled(*style)) {
-    custom_password_heuristic_source_ =
-        CustomPasswordHeuristicSource::kHeuristicCSS;
-  }
-}
-
-void TextControlElement::MaybeSetHasCustomPasswordJS() {
-  if (!IsTextControl()) {
-    ClearCustomPasswordHeuristicSource();
-    return;
-  }
-
-  if (HasBeenHeuristicCustomPasswordField()) {
-    return;
-  }
-
-  if (IsLikelyJSCustomPasswordField(Value())) {
-    custom_password_heuristic_source_ =
-        CustomPasswordHeuristicSource::kHeuristicJS;
-  }
+void TextControlElement::MaybeSetHasBeenHeuristicCustomPasswordJS() {
+  has_been_heuristic_custom_password_js_ =
+      IsTextControl() && (has_been_heuristic_custom_password_js_ ||
+                          IsLikelyJSCustomPasswordField(Value()));
 }
 
 }  // namespace blink

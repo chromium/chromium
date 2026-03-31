@@ -407,7 +407,7 @@ void HTMLInputElement::InitializeTypeInParsing() {
 
   UpdateHasBeenPasswordField(new_type_name);
 
-  MaybeUpdateCustomPasswordHeuristicSource();
+  MaybeSetHasBeenHeuristicCustomPasswordJS();
 
   UpdateWillValidateCache();
 
@@ -637,7 +637,7 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
   UpdateHasBeenPasswordField(new_type_name);
 
-  MaybeUpdateCustomPasswordHeuristicSource();
+  MaybeSetHasBeenHeuristicCustomPasswordJS();
 
   SetNeedsValidityCheck();
   if ((could_be_successful_submit_button || CanBeSuccessfulSubmitButton()) &&

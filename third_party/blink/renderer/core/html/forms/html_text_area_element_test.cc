@@ -522,18 +522,16 @@ TEST_F(HTMLTextAreaElementTest, GetTextInfoLayoutAlign) {
 }
 
 TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionCSS) {
-  SetBodyContent("<textarea id=test></textarea>");
+  SetBodyContent("<textarea id=test>abc</textarea>");
   auto& textarea = TestElement();
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(textarea.HasBeenHeuristicCustomPasswordField());
+  EXPECT_FALSE(textarea.HasBeenHeuristicCustomPasswordCSS());
 
   // Applying -webkit-text-security should trigger detection.
   textarea.setAttribute(html_names::kStyleAttr,
                         AtomicString("-webkit-text-security: disc;"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordField());
-  EXPECT_EQ(textarea.GetCustomPasswordHeuristicSource(),
-            TextControlElement::CustomPasswordHeuristicSource::kHeuristicCSS);
+  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordCSS());
 }
 
 TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionJS) {
@@ -542,18 +540,14 @@ TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionJS) {
 
   // Programmatic value change.
   textarea.SetValue("****a");
-  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordField());
-  EXPECT_EQ(textarea.GetCustomPasswordHeuristicSource(),
-            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordJS());
 }
 
 TEST_F(HTMLTextAreaElementTest, HeuristicCustomPasswordDetectionJSBetweenTag) {
   SetBodyContent("<textarea id=test>****a</textarea>");
   auto& textarea = TestElement();
 
-  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordField());
-  EXPECT_EQ(textarea.GetCustomPasswordHeuristicSource(),
-            TextControlElement::CustomPasswordHeuristicSource::kHeuristicJS);
+  EXPECT_TRUE(textarea.HasBeenHeuristicCustomPasswordJS());
 }
 
 }  // namespace blink

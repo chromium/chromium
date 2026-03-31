@@ -8942,6 +8942,21 @@ void Element::SetHasUndoStack(bool value) {
   EnsureRareData().SetHasUndoStack(value);
 }
 
+void Element::SetHasBeenHeuristicCustomPasswordCSS() {
+  if (HasBeenHeuristicCustomPasswordCSS()) {
+    return;
+  }
+
+  EnsureRareData().SetHasBeenHeuristicCustomPasswordCSS();
+}
+
+bool Element::HasBeenHeuristicCustomPasswordCSS() const {
+  if (const ElementRareDataVector* data = RareData()) {
+    return data->HasBeenHeuristicCustomPasswordCSS();
+  }
+  return false;
+}
+
 void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureRareData().SetPseudoElementStylesChangeCounters(value);
 }

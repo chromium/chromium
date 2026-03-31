@@ -1189,13 +1189,15 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
     // Don't include password values as they are sensitive.
     const auto* input_element =
         DynamicTo<HTMLInputElement>(text_control_element);
-    bool is_native_password =
+    const bool is_native_password =
         input_element && input_element->HasBeenPasswordField();
-    bool is_custom_password =
-        text_control_element->HasBeenHeuristicCustomPasswordField();
+    const bool is_custom_password_css =
+        text_control_element->HasBeenHeuristicCustomPasswordCSS();
+    const bool is_custom_password_js =
+        text_control_element->HasBeenHeuristicCustomPasswordJS();
     bool should_redact_value = false;
 
-    if (is_native_password || is_custom_password) {
+    if (is_native_password || is_custom_password_css || is_custom_password_js) {
       if (text_control_element->Value().empty()) {
         form_control_data->redaction_decision =
             is_native_password ? mojom::blink::AIPageContentRedactionDecision::
@@ -1206,21 +1208,12 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
         if (is_native_password) {
           form_control_data->redaction_decision = mojom::blink::
               AIPageContentRedactionDecision::kRedacted_HasBeenPassword;
-        } else {
-          switch (text_control_element->GetCustomPasswordHeuristicSource()) {
-            case TextControlElement::CustomPasswordHeuristicSource::
-                kHeuristicCSS:
-              form_control_data->redaction_decision = mojom::blink::
-                  AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
-              break;
-            case TextControlElement::CustomPasswordHeuristicSource::
-                kHeuristicJS:
-              form_control_data->redaction_decision = mojom::blink::
-                  AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
-              break;
-            case TextControlElement::CustomPasswordHeuristicSource::kNone:
-              NOTREACHED();
-          }
+        } else if (is_custom_password_css) {
+          form_control_data->redaction_decision = mojom::blink::
+              AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
+        } else if (is_custom_password_js) {
+          form_control_data->redaction_decision = mojom::blink::
+              AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
         }
         should_redact_value = true;
       }

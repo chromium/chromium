@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/custom_password_heuristics.h"
 
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -55,13 +54,6 @@ bool IsSecurityMaskCharacter(UChar c) {
 }
 
 }  // namespace
-
-bool IsCSSSecurityMaskingEnabled(const ComputedStyle& style) {
-  // Checks the computed value of the non-standard CSS property
-  // `-webkit-text-security`. Authors sometimes use this on non-password
-  // elements to create custom masked "password-like" fields.
-  return style.TextSecurity() != ETextSecurity::kNone;
-}
 
 bool IsLikelyJSCustomPasswordField(const String& value) {
   // Heuristic for JS-masked values where most characters are replaced by

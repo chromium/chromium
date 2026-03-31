@@ -9,12 +9,7 @@
 
 namespace blink {
 
-class ComputedStyle;
 class String;
-
-// Returns whether CSS masking via -webkit-text-security is active for an
-// element's computed style.
-CORE_EXPORT bool IsCSSSecurityMaskingEnabled(const ComputedStyle& style);
 
 // Returns whether a JS-masked text value looks password-like and should be
 // treated as sensitive (for example "••••a" or "•••••").
