@@ -478,9 +478,6 @@ ExternalTexture CreateExternalTexture(
           device->GetDawnControlClient(), device->GetHandle(),
           wgpu::TextureUsage::TextureBinding, canvas_resource->GetSharedImage(),
           canvas_resource->sync_token(), std::move(recyclable_canvas_resource));
-  if (!mailbox_texture) {
-    return {};
-  }
 
   wgpu::TextureViewDescriptor view_desc = {};
   wgpu::TextureView plane0 =

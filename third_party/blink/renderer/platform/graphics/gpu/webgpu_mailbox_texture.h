@@ -38,6 +38,7 @@ class PLATFORM_EXPORT WebGPUMailboxTexture
       const gfx::Rect& image_sub_rect,
       bool is_dummy_mailbox_texture);
 
+  // Always returns a valid WebGPUMailboxTexture.
   static scoped_refptr<WebGPUMailboxTexture> FromCanvasResource(
       scoped_refptr<DawnControlClientHolder> dawn_control_client,
       const wgpu::Device& device,
