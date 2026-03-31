@@ -291,6 +291,7 @@ regional_capabilities::FunnelStage ToFunnelStage(
 
 void RecordLegacyStaticEligibilityInternal(
     search_engines::SearchEngineChoiceService::Client& client,
+    metrics::ProfileMetricsService& profile_metrics_service,
     SearchEngineChoiceScreenConditions condition) {
   if (base::FeatureList::IsEnabled(
           switches::kInvalidateSearchEngineChoiceOnDeviceRestoreDetection) &&
@@ -299,7 +300,7 @@ void RecordLegacyStaticEligibilityInternal(
         kChoiceScreenProfileInitConditionsPostRestoreHistogram, condition);
   }
 
-  base::UmaHistogramEnumeration(
+  profile_metrics_service.UmaHistogramEnumeration(
       kSearchEngineChoiceScreenProfileInitConditionsHistogram, condition);
   base::PumaHistogramEnumeration(
       base::PumaType::kRc,
@@ -687,7 +688,8 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
     SearchEngineChoiceScreenConditions condition) {
 #if !BUILDFLAG(IS_IOS)
   // On iOS, this function is called directly.
-  RecordLegacyStaticEligibilityInternal(*client_.get(), condition);
+  RecordLegacyStaticEligibilityInternal(*client_.get(),
+                                        *profile_metrics_service_, condition);
 #endif  // !BUILDFLAG(IS_IOS)
 
   regional_capabilities::RecordEligibilityFunnelStageDetails(condition);
@@ -706,7 +708,8 @@ void SearchEngineChoiceService::RecordProfileLoadEligibility(
 #if BUILDFLAG(IS_IOS)
 void SearchEngineChoiceService::RecordLegacyStaticEligibility(
     SearchEngineChoiceScreenConditions condition) {
-  RecordLegacyStaticEligibilityInternal(*client_.get(), condition);
+  RecordLegacyStaticEligibilityInternal(*client_.get(),
+                                        *profile_metrics_service_, condition);
 }
 
 bool SearchEngineChoiceService::IsSurfaceEligible(
@@ -733,7 +736,7 @@ void SearchEngineChoiceService::RecordTriggeringEligibility(
         kChoiceScreenNavigationConditionsPostRestoreHistogram, condition);
   }
 
-  base::UmaHistogramEnumeration(
+  profile_metrics_service_->UmaHistogramEnumeration(
       kSearchEngineChoiceScreenNavigationConditionsHistogram, condition);
   base::PumaHistogramEnumeration(
       base::PumaType::kRc, kPumaSearchChoiceScreenNavigationConditionsHistogram,

@@ -74,21 +74,22 @@ namespace {
 const CountryId kBelgiumCountryId = CountryId("BE");
 
 // Checks for the given histogram name and the Profile1 and PUMA variants.
+template <typename T>
 void ExpectHistogramsSampleCount(const base::HistogramTester& histogram_tester,
                                  const std::string& base_histogram_name,
-                                 SearchEngineType engine_type,
+                                 T sample,
                                  int expected_count,
                                  const base::Location& location = FROM_HERE) {
-  histogram_tester.ExpectUniqueSample(base_histogram_name, engine_type,
+  histogram_tester.ExpectUniqueSample(base_histogram_name, sample,
                                       expected_count, location);
 
   std::string profile1_name = base::StrCat({base_histogram_name, ".Profile1"});
-  histogram_tester.ExpectUniqueSample(profile1_name, engine_type,
-                                      expected_count, location);
+  histogram_tester.ExpectUniqueSample(profile1_name, sample, expected_count,
+                                      location);
 
   std::string puma_name =
       base::StrCat({"PUMA.RegionalCapabilities.", base_histogram_name});
-  histogram_tester.ExpectUniqueSample(puma_name, engine_type, expected_count,
+  histogram_tester.ExpectUniqueSample(puma_name, sample, expected_count,
                                       location);
 }
 
@@ -1523,11 +1524,9 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
           ? SearchEngineChoiceScreenConditions::kEligibleForRestore
           : SearchEngineChoiceScreenConditions::kAlreadyCompleted;
 #endif
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
-      expected_eligibility_condition, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::kPumaSearchChoiceScreenProfileInitConditionsHistogram,
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Eligibility",
@@ -1545,11 +1544,9 @@ TEST_P(SearchEngineChoiceServiceDeviceRestoreTest, RepromptOnRestoreDetection) {
         search_engines::kChoiceScreenProfileInitConditionsPostRestoreHistogram,
         0);
   }
-  histogram_tester_.ExpectUniqueSample(
+  ExpectHistogramsSampleCount(
+      histogram_tester_,
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
-      expected_eligibility_condition, 1);
-  histogram_tester_.ExpectUniqueSample(
-      search_engines::kPumaSearchChoiceScreenNavigationConditionsHistogram,
       expected_eligibility_condition, 1);
   histogram_tester_.ExpectUniqueSample(
       "RegionalCapabilities.FunnelStage.Triggering",
