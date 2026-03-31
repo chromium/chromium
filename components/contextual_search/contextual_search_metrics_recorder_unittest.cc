@@ -71,6 +71,8 @@ const char kContextualSearchToolModeOnSubmission[] =
     "ContextualSearch.Tools.ModeOnSubmission.Unknown";
 const char kContextualSearchModelModeOnSubmission[] =
     "ContextualSearch.Models.ModeOnSubmission.Unknown";
+const char kContextualSearchInputsTypeOnSubmission[] =
+    "ContextualSearch.Inputs.TypeOnSubmission.Unknown";
 const char kContextualSearchTabContextAdded[] =
     "ContextualSearch.TabContextAdded.V2.Unknown";
 const char kContextualSearchTabContextAddedFromSuggestionChip[] =
@@ -382,7 +384,10 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModelMode) {
 TEST_F(ContextualSearchMetricsRecorderTest, ModesOnSubmission) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   metrics().RecordModesOnSubmission(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
-                                    omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+                                    omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+                                    {omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                     omnibox::InputType::INPUT_TYPE_LENS_IMAGE,
+                                     omnibox::InputType::INPUT_TYPE_LENS_FILE});
   DestructMetricsRecorder();
   histogram_tester().ExpectUniqueSample(kContextualSearchToolModeOnSubmission,
                                         omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
@@ -390,6 +395,14 @@ TEST_F(ContextualSearchMetricsRecorderTest, ModesOnSubmission) {
   histogram_tester().ExpectUniqueSample(
       kContextualSearchModelModeOnSubmission,
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO, 1);
+  histogram_tester().ExpectBucketCount(
+      kContextualSearchInputsTypeOnSubmission,
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE, 1);
+  histogram_tester().ExpectBucketCount(kContextualSearchInputsTypeOnSubmission,
+                                       omnibox::InputType::INPUT_TYPE_LENS_FILE,
+                                       1);
+  histogram_tester().ExpectTotalCount(kContextualSearchInputsTypeOnSubmission,
+                                      2);
 }
 
 TEST_F(ContextualSearchMetricsRecorderTest, TabContextAdded) {

@@ -147,7 +147,9 @@ class MockContextualSearchMetricsRecorder
               (override));
   MOCK_METHOD(void,
               RecordModesOnSubmission,
-              (omnibox::ToolMode tool_mode, omnibox::ModelMode model_mode),
+              (omnibox::ToolMode tool_mode,
+               omnibox::ModelMode model_mode,
+               const std::vector<omnibox::InputType>& input_types),
               (override));
   MOCK_METHOD(void, RecordZeroSuggestClick, (bool is_contextual), (override));
   MOCK_METHOD(void,
@@ -176,10 +178,12 @@ class MockContextualSearchMetricsRecorder
     ContextualSearchMetricsRecorder::RecordModelMode(model_mode);
   }
 
-  void RecordModesOnSubmissionBase(omnibox::ToolMode tool_mode,
-                                   omnibox::ModelMode model_mode) {
-    ContextualSearchMetricsRecorder::RecordModesOnSubmission(tool_mode,
-                                                             model_mode);
+  void RecordModesOnSubmissionBase(
+      omnibox::ToolMode tool_mode,
+      omnibox::ModelMode model_mode,
+      const std::vector<omnibox::InputType>& input_types) {
+    ContextualSearchMetricsRecorder::RecordModesOnSubmission(
+        tool_mode, model_mode, input_types);
   }
 
   void RecordZeroSuggestClickBase(bool is_contextual) {

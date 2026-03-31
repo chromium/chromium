@@ -1520,8 +1520,11 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
       _contextualSearchSession ? _contextualSearchSession->GetMetricsRecorder()
                                : nullptr;
   if (recorder) {
-    recorder->RecordModesOnSubmission(_inputState.active_tool,
-                                      _inputState.active_model);
+    std::vector<omnibox::InputType> active_input_types =
+        contextual_search::InputStateModel::GetCurrentInputTypes(
+            _contextualSearchSession.get());
+    recorder->RecordModesOnSubmission(
+        _inputState.active_tool, _inputState.active_model, active_input_types);
   }
 }
 

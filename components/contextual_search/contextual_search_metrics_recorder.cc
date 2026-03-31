@@ -624,7 +624,8 @@ void ContextualSearchMetricsRecorder::RecordNavigationResult(bool navigated) {
 
 void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
     omnibox::ToolMode tool_mode,
-    omnibox::ModelMode model_mode) {
+    omnibox::ModelMode model_mode,
+    const std::vector<omnibox::InputType>& input_types) {
   base::UmaHistogramEnumeration(
       base::StrCat(
           {"ContextualSearch.Tools.ModeOnSubmission", ".", metrics_suffix_}),
@@ -633,6 +634,16 @@ void ContextualSearchMetricsRecorder::RecordModesOnSubmission(
       base::StrCat(
           {"ContextualSearch.Models.ModeOnSubmission", ".", metrics_suffix_}),
       model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+
+  std::set<omnibox::InputType> unique_input_types(input_types.begin(),
+                                                  input_types.end());
+  for (const auto& input_type : unique_input_types) {
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"ContextualSearch.Inputs.TypeOnSubmission", ".", metrics_suffix_}),
+        input_type,
+        static_cast<omnibox::InputType>(omnibox::InputType_MAX + 1));
+  }
 }
 
 void ContextualSearchMetricsRecorder::RecordZeroSuggestClick(

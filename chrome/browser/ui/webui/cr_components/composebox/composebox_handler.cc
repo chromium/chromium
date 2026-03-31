@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/contextual_search_types.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -255,8 +256,11 @@ void ComposeboxHandler::SubmitQuery(
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     // Record AIM tool and model mode on query submission.
     const auto& input_state = GetInputState();
-    metrics_recorder->RecordModesOnSubmission(input_state.active_tool,
-                                              input_state.active_model);
+    std::vector<omnibox::InputType> active_input_types =
+        contextual_search::InputStateModel::GetCurrentInputTypes(
+            GetContextualSessionHandle());
+    metrics_recorder->RecordModesOnSubmission(
+        input_state.active_tool, input_state.active_model, active_input_types);
   }
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entrypoint,

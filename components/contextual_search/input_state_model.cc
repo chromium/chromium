@@ -122,6 +122,15 @@ std::optional<omnibox::ModelMode> GetActiveModelFromUrl(
   return active_model;
 }
 
+// Checks if a set of items are all present in an allowed list.
+template <typename T, typename U>
+bool AreItemsAllowed(const T& items, const U& allowed_items) {
+  return std::all_of(items.begin(), items.end(),
+                     [&allowed_items](const auto& item) {
+                       return std::ranges::contains(allowed_items, item);
+                     });
+}
+
 }  // namespace
 
 InputStateModel::InputStateModel(
@@ -235,36 +244,8 @@ InputStateModel::InputStateModel(
 
 InputStateModel::~InputStateModel() = default;
 
-void InputStateModel::Initialize() {
-  notifySubscribers();
-}
-
-void InputStateModel::SetPrefService(const PrefService* pref_service) {
-  pref_service_ = pref_service;
-  updateDisabledState();
-}
-
-base::CallbackListSubscription InputStateModel::subscribe(Subscriber callback) {
-  return subscribers_.Add(std::move(callback));
-}
-
-void InputStateModel::notifySubscribers() {
-  subscribers_.Notify(state_);
-}
-
-namespace {
-
-// Checks if a set of items are all present in an allowed list.
-template <typename T, typename U>
-bool AreItemsAllowed(const T& items, const U& allowed_items) {
-  return std::all_of(items.begin(), items.end(),
-                     [&allowed_items](const auto& item) {
-                       return std::ranges::contains(allowed_items, item);
-                     });
-}
-
-// Gets the current input types from the session handle.
-std::vector<omnibox::InputType> GetCurrentInputTypes(
+// static
+std::vector<omnibox::InputType> InputStateModel::GetCurrentInputTypes(
     const contextual_search::ContextualSearchSessionHandle* session_handle) {
   std::vector<omnibox::InputType> input_types;
   if (!session_handle) {
@@ -285,13 +266,29 @@ std::vector<omnibox::InputType> GetCurrentInputTypes(
         input_types.push_back(omnibox::InputType::INPUT_TYPE_LENS_FILE);
         break;
       default:
+        input_types.push_back(omnibox::InputType::INPUT_TYPE_UNSPECIFIED);
         break;
     }
   }
   return input_types;
 }
 
-}  // namespace
+void InputStateModel::Initialize() {
+  notifySubscribers();
+}
+
+void InputStateModel::SetPrefService(const PrefService* pref_service) {
+  pref_service_ = pref_service;
+  updateDisabledState();
+}
+
+base::CallbackListSubscription InputStateModel::subscribe(Subscriber callback) {
+  return subscribers_.Add(std::move(callback));
+}
+
+void InputStateModel::notifySubscribers() {
+  subscribers_.Notify(state_);
+}
 
 void InputStateModel::setActiveTool(ToolMode tool) {
   updateSelectedState(tool, state_.active_model);

@@ -15,6 +15,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "third_party/omnibox_proto/input_type.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 
@@ -184,9 +185,11 @@ class ContextualSearchMetricsRecorder {
   // resulted in a successful navigation or was abandoned.
   virtual void RecordNavigationResult(bool navigated);
 
-  // Records tool mode and model mode on query submission.
-  virtual void RecordModesOnSubmission(omnibox::ToolMode tool_mode,
-                                       omnibox::ModelMode model_mode);
+  // Records tool mode, model mode, and input types on query submission.
+  virtual void RecordModesOnSubmission(
+      omnibox::ToolMode tool_mode,
+      omnibox::ModelMode model_mode,
+      const std::vector<omnibox::InputType>& input_types);
 
   // Records when a zero-suggest suggestion is clicked.
   virtual void RecordZeroSuggestClick(bool is_contextual);

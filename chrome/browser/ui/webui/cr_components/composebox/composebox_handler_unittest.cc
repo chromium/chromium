@@ -221,6 +221,11 @@ TEST_F(ComposeboxHandlerTest, TakeSessionHandle_TransfersOwnership) {
 
 TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   // Submit with no tools enabled.
+  EXPECT_CALL(metrics_recorder(),
+              RecordModesOnSubmission(
+                  omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+                  omnibox::ModelMode::MODEL_MODE_UNSPECIFIED, testing::_))
+      .Times(1);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
@@ -236,6 +241,11 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
   handler().RecordModelSelectionAction(
       omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
+  EXPECT_CALL(metrics_recorder(),
+              RecordModesOnSubmission(
+                  omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH,
+                  omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR, testing::_))
+      .Times(1);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
@@ -250,6 +260,11 @@ TEST_F(ComposeboxHandlerTest, SubmitQueryWithToolMetric) {
   handler().SetActiveModelMode(omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
   handler().RecordModelSelectionAction(
       omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+  EXPECT_CALL(metrics_recorder(),
+              RecordModesOnSubmission(omnibox::ToolMode::TOOL_MODE_IMAGE_GEN,
+                                      omnibox::ModelMode::MODEL_MODE_GEMINI_PRO,
+                                      testing::_))
+      .Times(1);
   SubmitQueryAndWaitForNavigation();
   histogram_tester().ExpectBucketCount(
       "ContextualSearch.Tools.ModeOnSubmission.NewTabPage",
