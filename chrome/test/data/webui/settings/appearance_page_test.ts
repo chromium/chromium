@@ -499,6 +499,8 @@ suite('TabStripPositionSettings', () => {
 });
 
 suite('TabStripComboButtonSettings', () => {
+  let metricsBrowserProxy: TestMetricsBrowserProxy;
+
   setup(async () => {
     loadTimeData.overrideValues({
       showTabStripComboButtonEnabled: true,
@@ -507,6 +509,9 @@ suite('TabStripComboButtonSettings', () => {
 
     appearanceBrowserProxy = new TestAppearanceBrowserProxy();
     AppearanceBrowserProxyImpl.setInstance(appearanceBrowserProxy);
+
+    metricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
 
     createAppearancePage();
 
@@ -545,6 +550,30 @@ suite('TabStripComboButtonSettings', () => {
         appearancePage.get('prefs.projects_panel.pinned_to_tabstrip.value'));
   });
 
+  test('Toggles record metrics', async function() {
+    const tabSearchToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showTabSearchButton');
+    assertTrue(!!tabSearchToggle);
+    tabSearchToggle.click();
+    let action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.TabSearch.Unpinned', action);
+
+    metricsBrowserProxy.resetResolver('recordAction');
+    tabSearchToggle.click();
+    action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.TabSearch.Pinned', action);
+
+    const projectsToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showProjectsPanelButton');
+    assertTrue(!!projectsToggle);
+    metricsBrowserProxy.resetResolver('recordAction');
+    projectsToggle.click();
+    action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.ProjectsPanel.Unpinned', action);
+  });
+
   test('Everything menu toggle updates correct pref', async function() {
     loadTimeData.overrideValues({
       showTabStripComboButtonEnabled: true,
@@ -567,6 +596,30 @@ suite('TabStripComboButtonSettings', () => {
     await microtasksFinished();
     assertFalse(
         appearancePage.get('prefs.everything_menu.pinned_to_tabstrip.value'));
+  });
+
+  test('Everything menu toggle records metrics', async function() {
+    loadTimeData.overrideValues({
+      showTabSearchEnabled: true,
+      showProjectsPanelEnabled: false,
+      showEverythingMenuEnabled: true,
+    });
+    createAppearancePage();
+    await microtasksFinished();
+
+    const everythingToggle =
+        appearancePage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#showEverythingMenuButton');
+    assertTrue(!!everythingToggle);
+
+    everythingToggle.click();
+    const action = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.EverythingMenu.Unpinned', action);
+
+    metricsBrowserProxy.resetResolver('recordAction');
+    everythingToggle.click();
+    const action2 = await metricsBrowserProxy.whenCalled('recordAction');
+    assertEquals('TabStripComboButton.EverythingMenu.Pinned', action2);
   });
 
   test('Toggles hidden when disabled', async function() {
