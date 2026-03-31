@@ -1177,9 +1177,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
                              : EDisplay::kInline);
     }
 
-    // We don't adjust the first letter style earlier because we may change the
-    // display setting in AdjustStyleForHTMLElement() above.
-    AdjustStyleForFirstLetter(builder, parent_style);
     AdjustStyleForMarker(builder, parent_style, &state.GetElement());
 
     if (builder.StyleType() != kPseudoIdScrollMarker) {
@@ -1229,9 +1226,12 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       // layout children of the container element.
       builder.SetContain(builder.Contain() | kContainsLayout);
     }
-  } else {
-    AdjustStyleForFirstLetter(builder, parent_style);
   }
+
+  // We don't adjust the first letter style earlier because we may change the
+  // display setting above (including in AdjustStyleForHTMLElement()),
+  // and this needs to override those changes.
+  AdjustStyleForFirstLetter(builder, parent_style);
 
   builder.SetForcesStackingContext(false);
 
