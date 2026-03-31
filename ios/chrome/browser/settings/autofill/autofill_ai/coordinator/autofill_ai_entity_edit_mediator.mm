@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_utils.h"
+#import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/proto/server.pb.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
@@ -52,6 +53,9 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   // The entity data manager. It outlives the mediator.
   raw_ptr<EntityDataManager> _entityDataManager;
 
+  // The Wallet pass manager. It outlives the mediator.
+  raw_ptr<autofill::WalletPassAccessManager> _walletPassManager;
+
   // The locale used to get info from the entity instance.
   std::string _locale;
 
@@ -69,11 +73,14 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 }
 
 - (instancetype)initWithEntityInstance:(EntityInstance)entityInstance
-                     entityDataManager:(EntityDataManager*)entityDataManager {
+                     entityDataManager:(EntityDataManager*)entityDataManager
+                     walletPassManager:
+                         (autofill::WalletPassAccessManager*)walletPassManager {
   self = [super init];
   if (self) {
     _entityInstance = std::move(entityInstance);
     _entityDataManager = entityDataManager;
+    _walletPassManager = walletPassManager;
     _locale = GetApplicationContext()->GetApplicationLocaleStorage()->Get();
     _dateFormatter = CreateDateFormatterForLocale(_locale);
     _itemFactory =
@@ -175,7 +182,35 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   }
 
   _entityInstance = builder.Build();
-  _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
+
+  BOOL isEligibleForWalletStorage = autofill::IsMaskedStorageSupported(
+      _entityInstance->type(), _entityInstance->record_type());
+  if (isEligibleForWalletStorage && _walletPassManager) {
+    [self.consumer showLoadingState];
+
+    autofill::EntityInstance originalEntity = *_entityInstance;
+
+    // TODO(crbug.com/496450943): Set appropriate sessionId.
+    consent_auditor::ConsentAuditor::SessionId sessionId;
+    __weak __typeof(self) weakSelf = self;
+    auto callback = base::BindOnce(
+        [](__typeof(self) weakSelf,
+           autofill::EntityInstance fallbackOriginalEntity,
+           std::optional<autofill::EntityInstance> savedEntity) {
+          [weakSelf
+              onSavePrivatePassToWalletFinished:std::move(savedEntity)
+                                 originalEntity:std::move(
+                                                    fallbackOriginalEntity)];
+        },
+        weakSelf, std::move(originalEntity));
+
+    _walletPassManager->SaveWalletEntityInstance(*_entityInstance, sessionId,
+                                                 std::move(callback));
+  } else {
+    // Standard local save.
+    _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
+    [self.consumer didFinishSaving];
+  }
 }
 
 - (void)didChangeDate:(NSDate*)date
@@ -202,6 +237,28 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 - (GURL)walletManagementURL {
   CHECK(_entityInstance.has_value());
   return GURL(autofill::GetWalletManagementURL(*_entityInstance));
+}
+
+#pragma mark - Private
+
+- (void)onSavePrivatePassToWalletFinished:
+            (std::optional<autofill::EntityInstance>)savedEntity
+                           originalEntity:
+                               (autofill::EntityInstance)originalEntity {
+  [self.consumer hideLoadingState];
+
+  if (savedEntity.has_value()) {
+    _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));
+  } else {
+    // Wallet save failed, fallback to Local.
+    autofill::EntityInstance localEntity = originalEntity.CopyWithNewRecordType(
+        autofill::EntityInstance::RecordType::kLocal);
+    _entityDataManager->AddOrUpdateEntityInstance(std::move(localEntity));
+
+    // TODO(crbug.com/493915491): Show local save alert.
+  }
+
+  [self.consumer didFinishSaving];
 }
 
 @end

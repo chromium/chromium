@@ -108,14 +108,30 @@ TEST_F(AutofillAIEntityEditTableViewControllerTest, TestDidTapSaveNewEntity) {
   view_controller.mode = AutofillAIEntityEditMode::kCreate;
   [view_controller loadViewIfNeeded];
 
-  // Expect the mutator to save and the delegate to close.
+  // Expect the mutator to save.
   OCMExpect([mock_mutator_ saveEntityInstance]);
-  OCMExpect([mock_delegate_ didTapCloseButton:view_controller]);
 
   // Trigger the save action.
   [view_controller didTapSaveNewEntity];
 
   [mock_mutator_ verify];
+}
+
+TEST_F(AutofillAIEntityEditTableViewControllerTest,
+       TestEditButtonPressedForWalletItem) {
+  AutofillAIEntityEditTableViewController* view_controller =
+      base::apple::ObjCCastStrict<AutofillAIEntityEditTableViewController>(
+          controller());
+
+  // Mark the item as a Server Wallet item.
+  [view_controller setIsServerWalletItem:YES];
+
+  // Expect the delegate to handle the external Wallet edit flow.
+  OCMExpect([mock_delegate_ didTapEditInWalletButton:view_controller]);
+
+  // Trigger the edit action.
+  [view_controller editButtonPressed];
+
   [mock_delegate_ verify];
 }
 

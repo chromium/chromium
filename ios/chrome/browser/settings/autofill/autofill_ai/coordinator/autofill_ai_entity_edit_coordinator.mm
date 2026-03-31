@@ -10,6 +10,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_coordinator_delegate.h"
@@ -133,9 +134,14 @@ std::optional<autofill::EntityInstance> GetOrCreateEntityInstance(
     return;
   }
 
+  autofill::WalletPassAccessManager* walletPassManager =
+      IOSWalletPassAccessManagerFactory::GetForProfile(
+          self.browser->GetProfile());
+
   _mediator = [[AutofillAIEntityEditMediator alloc]
       initWithEntityInstance:std::move(*instance)
-           entityDataManager:entityDataManager];
+           entityDataManager:entityDataManager
+           walletPassManager:walletPassManager];
 
   _viewController = [[AutofillAIEntityEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];

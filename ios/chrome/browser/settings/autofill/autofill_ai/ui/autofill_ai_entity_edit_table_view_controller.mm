@@ -169,6 +169,18 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   [self.tableView reloadData];
 }
 
+- (void)showLoadingState {
+  // TODO(crbug.com/493915491): Implement loading state.
+}
+
+- (void)hideLoadingState {
+  // TODO(crbug.com/493915491): Implement hiding of loading state.
+}
+
+- (void)didFinishSaving {
+  [self.delegate didTapCloseButton:self];
+}
+
 #pragma mark - AutofillAIEntityEditDateItemDelegate
 
 - (void)didChangeDate:(NSDate*)date
@@ -208,7 +220,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)didTapSaveNewEntity {
   CHECK(self.mode == AutofillAIEntityEditMode::kCreate);
   [self.mutator saveEntityInstance];
-  [self.delegate didTapCloseButton:self];
 }
 
 #pragma mark -

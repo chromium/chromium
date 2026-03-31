@@ -27,6 +27,15 @@
 // Updates the given item.
 - (void)updateItem:(TableViewItem*)item;
 
+// Displays a loading state while the entity is being saved to the server.
+- (void)showLoadingState;
+
+// Hides the loading state.
+- (void)hideLoadingState;
+
+// Instructs the consumer that saving is complete and it can now dismiss.
+- (void)didFinishSaving;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_EDIT_CONSUMER_H_

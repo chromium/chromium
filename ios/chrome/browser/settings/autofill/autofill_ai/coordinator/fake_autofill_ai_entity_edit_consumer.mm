@@ -12,4 +12,16 @@
   // Empty implementation to satisfy protocol.
 }
 
+- (void)showLoadingState {
+  self.showLoadingStateCalled = YES;
+}
+
+- (void)hideLoadingState {
+  self.hideLoadingStateCalled = YES;
+}
+
+- (void)didFinishSaving {
+  self.didFinishSavingCalled = YES;
+}
+
 @end
