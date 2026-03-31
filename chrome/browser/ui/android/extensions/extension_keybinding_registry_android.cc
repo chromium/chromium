@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -61,7 +62,9 @@ ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
           context,
           ExtensionFilter::ALL_EXTENSIONS,
           std::make_unique<ExtensionKeybindingRegistryDelegateAndroid>(
-              context)) {}
+              context)) {
+  Init();
+}
 
 ExtensionKeybindingRegistryAndroid::~ExtensionKeybindingRegistryAndroid() =
     default;
@@ -128,7 +131,16 @@ ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
   }
   auto it = active_action_accelerators_.find(accelerator);
   if (it != active_action_accelerators_.end()) {
-    return it->second;
+    Profile* profile = Profile::FromBrowserContext(browser_context());
+    ToolbarActionsModel* toolbar_model = ToolbarActionsModel::Get(profile);
+
+    // Check the model is in `ToolbarActionsModel`.
+    const ExtensionId& extension_id = it->second;
+    if (toolbar_model && toolbar_model->HasAction(extension_id)) {
+      return extension_id;
+    }
+
+    return false;
   }
 
   return NotifyEventTargets(accelerator);
