@@ -181,6 +181,10 @@ void AAudioInputStream::HandleDeviceChange() {
     return;
   }
 
+  // Notify AudioManager before starting the new stream so that global
+  // audio routing (e.g. Bluetooth SCO) can be configured correctly.
+  audio_manager_->OnAAudioInputStreamDeviceChanged(this);
+
   if (!stream_wrapper_->Start()) {
     callback_->OnError();
   }

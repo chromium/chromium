@@ -181,9 +181,15 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // providing audio data.
   void OnStartAAudioInputStream(AAudioInputStream* stream);
 
+  // Called by an `AAudioInputStream` when its underlying audio device is
+  // changed, i.e. it stops and restarts providing audio data.
+  void OnAAudioInputStreamDeviceChanged(AAudioInputStream* stream);
+
   // Called by an `AAudioInputStream` when it is stopped, i.e. it stops
   // providing audio data.
   void OnStopAAudioInputStream(AAudioInputStream* stream);
+
+  bool IsUsingBluetoothSco(AAudioInputStream* stream);
 
   void SetJniDelegateForTesting(std::unique_ptr<JniDelegate> jni_delegate);
 
