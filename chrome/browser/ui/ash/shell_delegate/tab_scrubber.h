@@ -95,7 +95,10 @@ class TabScrubber : public ui::EventHandler,
 
   bool GetEnabledForTesting() const { return enabled_; }
 
-  base::ScopedObservation<BrowserController, BrowserController::Observer>
+  // TODO(crbug.com/496467424): remove when the TabScrubber is no
+  // longer outliving the BrowserController it observes.
+  base::ScopedObservation<BrowserController,
+                          BrowserController::Observer>::LeakedDanglingUntriaged
       browser_controller_observation_{this};
 
   // Are we currently scrubbing?.
