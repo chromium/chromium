@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/advanced_memory_safety_checks.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,6 +44,9 @@ class AHardwareBufferImageBackingFactory;
 #endif
 
 class GPU_GLES2_EXPORT SharedImageFactory {
+  // TODO(crbug.com/497136403): Remove this macro once the bug gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // All objects passed are expected to outlive this class.
   SharedImageFactory(const GpuPreferences& gpu_preferences,
