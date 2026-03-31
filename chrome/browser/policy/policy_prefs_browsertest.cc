@@ -171,7 +171,13 @@ class ChunkedPolicyPrefsTest : public PolicyPrefsTest,
 // failure/flakiness.
 // IMPORTANT: Please add hendrich@chromium.org on any related bugs when
 // disabling this test.
-IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, PolicyToPrefsMapping) {
+// TODO(crbug.com/497928956): Re-enable this test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PolicyToPrefsMapping DISABLED_PolicyToPrefsMapping
+#else
+#define MAYBE_PolicyToPrefsMapping PolicyToPrefsMapping
+#endif
+IN_PROC_BROWSER_TEST_P(ChunkedPolicyPrefsTest, MAYBE_PolicyToPrefsMapping) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
 #if !BUILDFLAG(IS_CHROMEOS)
