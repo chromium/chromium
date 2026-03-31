@@ -13,7 +13,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist_factory.h"
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -28,6 +27,7 @@
 #include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blocklist.h"
+#include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -179,7 +179,7 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::FilePath& unpacked_install_directory,
     bool autoupdate_enabled,
     bool extensions_enabled) {
-  if (CWSInfoService::Get(profile_) == nullptr) {
+  if (CWSInfoServiceFactory::GetForProfile(profile_) == nullptr) {
     Profile* profile = profile_;
 #if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40891982): Refactor this convenience upstream to test

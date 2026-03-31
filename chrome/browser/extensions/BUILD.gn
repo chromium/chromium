@@ -264,8 +264,6 @@ source_set("extensions") {
     "corrupted_extension_reinstaller.h",
     "corrupted_extension_reinstaller_factory.cc",
     "corrupted_extension_reinstaller_factory.h",
-    "cws_info_service.cc",
-    "cws_info_service.h",
     "cws_info_service_factory.cc",
     "cws_info_service_factory.h",
     "data_deleter.cc",

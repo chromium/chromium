@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "extensions/browser/cws_info_service.h"
 
 #include "base/command_line.h"
 #include "base/test/bind.h"
@@ -135,10 +135,15 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   extension_registry_ = ExtensionRegistry::Get(profile_.get());
 
   // Create CWSInfoService instance.
-  cws_info_service_ = CWSInfoService::Get(profile_.get());
+  cws_info_service_ = CWSInfoServiceFactory::GetForProfile(profile_.get());
 
   // Skip official Google API key check for testing.
   cws_info_service_->SetSkipApiCheckForTesting(true);
+
+  // Sets the SharedURLLoaderFactory, as CWSInfoService relies on a browser
+  // context that does not provide its own GetURLLoaderFactory() override.
+  cws_info_service_->SetSharedURLLoaderFactoryForTesting(
+      test_url_loader_factory_.GetSafeWeakWrapper());
 
   extension_registrar_delegate_ =
       std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());

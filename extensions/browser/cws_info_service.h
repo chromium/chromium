@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
-#define CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
+#ifndef EXTENSIONS_BROWSER_CWS_INFO_SERVICE_H_
+#define EXTENSIONS_BROWSER_CWS_INFO_SERVICE_H_
 
 #include <optional>
 #include <string>
@@ -20,7 +20,10 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class PrefService;
-class Profile;
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -101,10 +104,7 @@ class CWSInfoServiceInterface {
 // changes). Only extensions that update from CWS are queried.
 class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
  public:
-  // Convenience method to get the service for a profile.
-  static CWSInfoService* Get(Profile* profile);
-
-  explicit CWSInfoService(Profile* profile);
+  explicit CWSInfoService(content::BrowserContext* browser_context);
 
   CWSInfoService(const CWSInfoService&) = delete;
   CWSInfoService& operator=(const CWSInfoService&) = delete;
@@ -133,6 +133,8 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   base::Time GetCWSInfoFetchErrorTimestampForTesting() const;
   void SetMaxExtensionIdsPerRequestForTesting(int max);
   static void SetSkipApiCheckForTesting(bool skip_api_key_check);
+  void SetSharedURLLoaderFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
  protected:
   // Only used for testing to create a fake derived class.
@@ -163,7 +165,7 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   bool MaybeSaveResponseToPrefs(
       const BatchGetStoreMetadatasResponse& response_proto);
 
-  const raw_ptr<Profile> profile_ = nullptr;
+  const raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   const raw_ptr<PrefService> pref_service_ = nullptr;
   const raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   const raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
@@ -203,4 +205,4 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_CWS_INFO_SERVICE_H_
+#endif  // EXTENSIONS_BROWSER_CWS_INFO_SERVICE_H_

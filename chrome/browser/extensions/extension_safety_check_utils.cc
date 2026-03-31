@@ -5,7 +5,7 @@
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -14,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -208,7 +209,7 @@ developer::SafetyCheckWarningReason GetSafetyCheckWarningReason(
     Profile* profile,
     bool unpublished_only) {
   CWSInfoService* cws_info_service =
-      CWSInfoService::Get(Profile::FromBrowserContext(profile));
+      CWSInfoServiceFactory::GetForProfile(profile);
   BitMapBlocklistState blocklist_state =
       blocklist_prefs::GetExtensionBlocklistState(extension.id(),
                                                   ExtensionPrefs::Get(profile));

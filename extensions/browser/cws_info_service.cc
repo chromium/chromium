@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/cws_info_service.h"
+#include "extensions/browser/cws_info_service.h"
 
 #include <algorithm>
 #include <optional>
@@ -23,15 +23,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/extensions/cws_info_service_factory.h"
-#include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/storage_partition.h"
 #include "extensions/browser/cws_item_service.pb.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/common/api_key_request_util.h"
@@ -234,17 +234,14 @@ struct CWSInfoService::FetchContext {
   bool metadata_changed = false;
 };
 
-// static
-CWSInfoService* CWSInfoService::Get(Profile* profile) {
-  return CWSInfoServiceFactory::GetInstance()->GetForProfile(profile);
-}
-
-CWSInfoService::CWSInfoService(Profile* profile)
-    : profile_(profile),
-      pref_service_(profile->GetPrefs()),
-      extension_prefs_(ExtensionPrefs::Get(profile)),
-      extension_registry_(ExtensionRegistry::Get(profile)),
-      url_loader_factory_(profile->GetURLLoaderFactory()),
+CWSInfoService::CWSInfoService(content::BrowserContext* browser_context)
+    : browser_context_(browser_context),
+      pref_service_(ExtensionsBrowserClient::Get()->GetPrefServiceForContext(
+          browser_context)),
+      extension_prefs_(ExtensionPrefs::Get(browser_context)),
+      extension_registry_(ExtensionRegistry::Get(browser_context)),
+      url_loader_factory_(browser_context->GetDefaultStoragePartition()
+                              ->GetURLLoaderFactoryForBrowserProcess()),
       max_ids_per_request_(kMaxExtensionIdsPerRequest),
       current_fetch_interval_secs_(GetNextFetchInterval()) {
   // Vary the startup check out between 30s to 10min, unless FastCheck
@@ -375,9 +372,10 @@ std::unique_ptr<CWSInfoService::FetchContext> CWSInfoService::CreateRequests(
     bool& new_info_requested) {
   new_info_requested = false;
 
-  auto* extension_mgmt =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-  if (!extension_mgmt) {
+  auto* extension_mgmt_client =
+      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(
+          browser_context_);
+  if (!extension_mgmt_client) {
     return nullptr;
   }
   ExtensionSet installed_extensions =
@@ -390,7 +388,7 @@ std::unique_ptr<CWSInfoService::FetchContext> CWSInfoService::CreateRequests(
   FetchContext::Request* request = nullptr;
   int num_ids_added_in_request = 0;
   for (const auto& extension : installed_extensions) {
-    if (extension_mgmt->UpdatesFromWebstore(*extension) == false) {
+    if (extension_mgmt_client->UpdatesFromWebstore(*extension) == false) {
       continue;
     }
     if (extension_prefs_->ReadPrefAsDict(extension->id(), kCWSInfo) ==
@@ -599,6 +597,11 @@ base::Time CWSInfoService::GetCWSInfoFetchErrorTimestampForTesting() const {
 // static
 void CWSInfoService::SetSkipApiCheckForTesting(bool skip_api_key_check) {
   skip_api_key_check_for_testing = skip_api_key_check;
+}
+
+void CWSInfoService::SetSharedURLLoaderFactoryForTesting(  // IN-TEST
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  url_loader_factory_ = url_loader_factory;
 }
 
 }  // namespace extensions

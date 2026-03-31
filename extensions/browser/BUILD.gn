@@ -262,6 +262,8 @@ source_set("browser_sources") {
     "convert_user_script.h",
     "crx_file_info.cc",
     "crx_file_info.h",
+    "cws_info_service.cc",
+    "cws_info_service.h",
     "deferred_start_render_host.h",
     "delayed_install_manager.cc",
     "delayed_install_manager.h",
@@ -586,6 +588,7 @@ source_set("browser_sources") {
   ]
 
   deps = [
+    ":cws_item_service_proto",
     "//base",
     "//base:i18n",
     "//build:android_buildflags",
@@ -642,6 +645,7 @@ source_set("browser_sources") {
     "//extensions/common/api",
     "//extensions/strings",
     "//google_apis",
+    "//google_apis/common:request_util",
     "//net",
     "//pdf:buildflags",
     "//pdf:features",

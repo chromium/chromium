@@ -21,7 +21,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/password_status_check_service.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 

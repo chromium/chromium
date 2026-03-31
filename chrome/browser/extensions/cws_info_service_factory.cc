@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/browser_context.h"
+#include "extensions/browser/cws_info_service.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/pref_names.h"

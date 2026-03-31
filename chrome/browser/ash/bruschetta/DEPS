@@ -22,7 +22,6 @@ include_rules = [
   "+chrome/browser/content_settings",
   "+chrome/browser/enterprise/util",
   "+chrome/browser/extensions/api/terminal",
-  "+chrome/browser/extensions/cws_info_service.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser.h",
