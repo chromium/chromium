@@ -6474,6 +6474,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SaveToDrive.SignIn.Result"
+    enum="IOSSaveToDriveSignInResultType" expires_after="2027-03-27">
+  <owner>josephlanza@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when the sign-in coordinator for the &quot;Save To Drive&quot;
+    feature returns the result of the sign-in attempt e.g. sign-in success,
+    sign-in failure or sign-in cancelled.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SaveToDrive.SignIn.Status"
+    enum="IOSSaveToDriveSignInStatusType" expires_after="2027-03-27">
+  <owner>josephlanza@google.com</owner>
+  <owner>qpubert@google.com</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>
+    Logged when the &quot;Save&quot; button of the Save to Drive feature is
+    tapped, indicating the sign in status of the user e.g. signed-in, signed-out
+    without account, signed-out with account.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SaveToDrive.UI.FileSizeMB.{Outcome}" units="MB"
     expires_after="2027-01-15">
   <owner>qpubert@google.com</owner>

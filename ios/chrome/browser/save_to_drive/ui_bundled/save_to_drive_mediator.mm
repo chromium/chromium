@@ -13,6 +13,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_mimetype_util.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
@@ -221,6 +222,11 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
 
 - (BOOL)selectedFileDestinationRequiresSignin {
   return _fileDestination == FileDestination::kDrive && ![self isSignedIn];
+}
+
+- (BOOL)hasIdentitiesOnDevice {
+  return [signin::GetIdentitiesOnDevice(_identityManager,
+                                        _accountManagerService) count] > 0;
 }
 
 #pragma mark - Properties getters/setters

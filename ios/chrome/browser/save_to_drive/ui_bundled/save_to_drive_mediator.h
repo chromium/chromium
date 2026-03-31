@@ -71,6 +71,12 @@ class DownloadTask;
 // in and the user is not signed in.
 - (BOOL)selectedFileDestinationRequiresSignin;
 
+// Returns true if the user has any identities on device.
+- (BOOL)hasIdentitiesOnDevice;
+
+// Returns true if the user is signed in.
+- (BOOL)isSignedIn;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_DRIVE_UI_BUNDLED_SAVE_TO_DRIVE_MEDIATOR_H_

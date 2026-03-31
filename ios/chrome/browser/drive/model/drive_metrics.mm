@@ -44,3 +44,7 @@ const char kSaveToDriveUIMimeType[] = "IOS.SaveToDrive.UI.MimeType";
 const char kSaveToDriveUIFileSize[] = "IOS.SaveToDrive.UI.FileSizeMB";
 const char kSaveToDriveUINumberOfAttempts[] =
     "IOS.SaveToDrive.UI.NumberOfAttempts";
+
+// Save to Drive Sign In histograms.
+const char kSaveToDriveSignInStatus[] = "IOS.SaveToDrive.SignIn.Status";
+const char kSaveToDriveSignInResult[] = "IOS.SaveToDrive.SignIn.Result";

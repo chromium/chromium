@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_logger.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
@@ -152,8 +153,17 @@
     if ([_mediator selectedFileDestinationRequiresSignin]) {
       _shouldShowSignIn = YES;
       [_accountPickerCoordinator stopAnimated:YES];
+      base::UmaHistogramEnumeration(
+          kSaveToDriveSignInStatus,
+          [_mediator hasIdentitiesOnDevice]
+              ? SaveToDriveSignInStatus::kSignedOutWithAccountOnDevice
+              : SaveToDriveSignInStatus::kSignedOutWithoutAccountOnDevice);
       return;
     }
+  }
+  if ([_mediator isSignedIn]) {
+    base::UmaHistogramEnumeration(kSaveToDriveSignInStatus,
+                                  SaveToDriveSignInStatus::kSignedIn);
   }
   [_mediator saveWithSelectedIdentity:identity];
 }
@@ -315,8 +325,25 @@
                             identity:(id<SystemIdentity>)identity {
   [_signinCoordinator stop];
   _signinCoordinator = nil;
-  if (result == SigninCoordinatorResultSuccess) {
-    [_mediator saveWithSelectedIdentity:identity];
+  switch (result) {
+    case SigninCoordinatorResultSuccess:
+      base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
+                                    SaveToDriveSignInResult::kSignInSuccess);
+      [_mediator saveWithSelectedIdentity:identity];
+      break;
+    case SigninCoordinatorResultCanceledByUser:
+      base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
+                                    SaveToDriveSignInResult::kSignInCanceled);
+      break;
+    case SigninCoordinatorProfileSwitch:
+      base::UmaHistogramEnumeration(
+          kSaveToDriveSignInResult,
+          SaveToDriveSignInResult::kSignInSuccessWithProfileSwitch);
+      break;
+    default:
+      base::UmaHistogramEnumeration(kSaveToDriveSignInResult,
+                                    SaveToDriveSignInResult::kSignInFailed);
+      break;
   }
 }
 

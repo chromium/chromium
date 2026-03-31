@@ -15,10 +15,12 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/views/views_constants.h"
 #import "ios/chrome/browser/download/ui/download_manager_constants.h"
+#import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/drive/model/drive_policy.h"
 #import "ios/chrome/browser/drive/model/test_constants.h"
 #import "ios/chrome/browser/google_one/test/constants.h"
 #import "ios/chrome/browser/google_one/test/google_one_app_interface.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/scoped_policy_list.h"
 #import "ios/chrome/browser/save_to_drive/ui_bundled/file_destination_picker_constants.h"
@@ -130,6 +132,11 @@ id<GREYMatcher> SigninPromoPrimaryButton() {
   return chrome_test_util::ConsistencySigninPrimaryButtonMatcher();
 }
 
+// Matcher for consistency sign-in promo cancel button.
+id<GREYMatcher> SigninPromoCancelButton() {
+  return chrome_test_util::ConsistencySigninSkipButtonMatcher();
+}
+
 // Provides downloads landing page with download link.
 std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
@@ -159,6 +166,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       base::BindRepeating(&testing::HandleDownload)));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
 }
 
 - (void)tearDownHelper {
@@ -170,8 +180,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   AppLaunchConfiguration configuration = [super appConfigurationForTestCase];
   if ([self isRunningTest:@selector(testSaveToDriveDisplayedWhenSignedOut)] ||
       [self isRunningTest:@selector
-            (testSaveToDriveDisplayedWhenSignedOutWithAccountOnDevice)] ||
-      [self isRunningTest:@selector(testDriveFullStorageSignedOut)]) {
+            (testSaveToDriveWhenSignedOutWithAccountOnDevice)] ||
+      [self isRunningTest:@selector(testDriveFullStorageSignedOut)] ||
+      [self isRunningTest:@selector(testCanDownloadToDrive)]) {
     configuration.features_enabled.push_back(kIOSSaveToDriveSignedOut);
   }
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
@@ -316,6 +327,14 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
+  // Check that the sign-in status histogram records kSignedIn.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          SaveToDriveSignInStatus::kSignedIn)
+                         forHistogram:@(kSaveToDriveSignInStatus)],
+      @"Unexpected histogram error for sign in status.");
 }
 
 // Tests that if the storage is full, an alert is displayed and user can open G1
@@ -355,7 +374,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 // user can open G1 settings to manage their storage.
 - (void)testDriveFullStorageSignedOut {
   [GoogleOneAppInterface overrideGoogleOneController];
-  // Sign-in.
+  // Add account on device.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Load a page with a download button and tap the download button.
@@ -480,11 +499,31 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE))]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap the "Cancel" button.
+  [[EarlGrey selectElementWithMatcher:SigninPromoCancelButton()]
+      performAction:grey_tap()];
+  // Check that the sign-in status histogram records
+  // kSignedOutWithoutAccountOnDevice.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          SaveToDriveSignInStatus::
+                                              kSignedOutWithoutAccountOnDevice)
+                         forHistogram:@(kSaveToDriveSignInStatus)],
+      @"Unexpected histogram error for sign in status.");
+  // Check that the sign-in result histogram records kSignInCanceled.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(SaveToDriveSignInResult::
+                                                           kSignInCanceled)
+                         forHistogram:@(kSaveToDriveSignInResult)],
+      @"Unexpected histogram error for sign in result.");
 }
 
-// Test that the account picker is displayed when signed out with account on
-// device.
-- (void)testSaveToDriveDisplayedWhenSignedOutWithAccountOnDevice {
+// Test Save to Drive when signed out with account on device.
+- (void)testSaveToDriveWhenSignedOutWithAccountOnDevice {
   // Add fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -529,6 +568,24 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       waitForUIElementToAppearWithMatcher:DownloadManagerGetTheAppButton()
                                   timeout:base::test::ios::
                                               kWaitForDownloadTimeout];
+  // Check that the sign-in status histogram records
+  // kSignedOutWithAccountOnDevice.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          SaveToDriveSignInStatus::
+                                              kSignedOutWithAccountOnDevice)
+                         forHistogram:@(kSaveToDriveSignInStatus)],
+      @"Unexpected histogram error for sign in status.");
+  // Check that the sign-in result histogram records kSignInSuccess.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(SaveToDriveSignInResult::
+                                                           kSignInSuccess)
+                         forHistogram:@(kSaveToDriveSignInResult)],
+      @"Unexpected histogram error for sign in result.");
 }
 
 // Tests that "DOWNLOAD" button is presented instead of "SAVE..." in Incognito.

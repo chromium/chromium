@@ -33,6 +33,10 @@ extern const char kSaveToDriveUIMimeType[];
 extern const char kSaveToDriveUIFileSize[];
 extern const char kSaveToDriveUINumberOfAttempts[];
 
+// Save to Drive Sign In histograms.
+extern const char kSaveToDriveSignInStatus[];
+extern const char kSaveToDriveSignInResult[];
+
 // Enum for the IOS.SaveToPhotos histogram.
 // Keep in sync with "IOSSaveToDriveOutcomeType"
 // in tools/metrics/histograms/metadata/ios/enums.xml.
@@ -80,5 +84,30 @@ enum class UploadTaskStateHistogram {
   kMaxValue = kFailed
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
+// Enum for the IOS.SaveToDrive.SignIn.Status histogram.
+// Keep in sync with "IOSSaveToDriveSignInStatusType"
+// in tools/metrics/histograms/metadata/ios/enums.xml.
+// LINT.IfChange(SaveToDriveSignInStatus)
+enum class SaveToDriveSignInStatus {
+  kSignedIn = 0,
+  kSignedOutWithoutAccountOnDevice = 1,
+  kSignedOutWithAccountOnDevice = 2,
+  kMaxValue = kSignedOutWithAccountOnDevice,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSaveToDriveSignInStatusType)
+
+// Enum for the IOS.SaveToDrive.SignIn.Result histogram.
+// Keep in sync with "IOSSaveToDriveSignInResultType"
+// in tools/metrics/histograms/metadata/ios/enums.xml.
+// LINT.IfChange(SaveToDriveSignInResult)
+enum class SaveToDriveSignInResult {
+  kSignInSuccess = 0,
+  kSignInSuccessWithProfileSwitch = 1,
+  kSignInCanceled = 2,
+  kSignInFailed = 3,
+  kMaxValue = kSignInFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSaveToDriveSignInResultType)
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_METRICS_H_

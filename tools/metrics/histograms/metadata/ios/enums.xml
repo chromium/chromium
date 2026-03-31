@@ -1610,6 +1610,27 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Success - Opted to Manage Storage"/>
 </enum>
 
+<!-- LINT.IfChange(IOSSaveToDriveSignInResultType) -->
+
+<enum name="IOSSaveToDriveSignInResultType">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success With Profile Switch"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/drive/model/drive_metrics.h:SaveToDriveSignInResult) -->
+
+<!-- LINT.IfChange(IOSSaveToDriveSignInStatusType) -->
+
+<enum name="IOSSaveToDriveSignInStatusType">
+  <int value="0" label="Signed In"/>
+  <int value="1" label="Signed Out Without Account On Device"/>
+  <int value="2" label="Signed Out With Account On Device"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/drive/model/drive_metrics.h:SaveToDriveSignInStatus) -->
+
 <enum name="IOSSaveToDriveUploadTaskStateType">
   <int value="0" label="Not Started"/>
   <int value="1" label="In Progress"/>
