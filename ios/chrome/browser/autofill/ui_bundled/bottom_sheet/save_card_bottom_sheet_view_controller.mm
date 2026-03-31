@@ -256,7 +256,10 @@ CGFloat const kChromeLogoHeight = 22;
       return MakeSymbolMulticolor(CustomSymbolWithPointSize(
           base::FeatureList::IsEnabled(
               autofill::features::kAutofillEnableWalletBranding)
-              ? kGoogleWalletSymbol
+              ? (base::FeatureList::IsEnabled(
+                     autofill::features::kAutofillEnableWalletBrandingV2)
+                     ? kGoogleWalletIconSymbol
+                     : kGoogleWalletSymbol)
               : kGooglePaySymbol,
           kGoogleWalletLogoHeight));
     case kNoLogo:
