@@ -165,20 +165,22 @@ void AAudioInputStream::HandleDeviceChange() {
 
   bool open_success = stream_wrapper_->Open();
 
-  base::AutoLock al(lock_);
-  if (!open_success) {
-    if (callback_) {
-      callback_->OnError();
-    } else {
-      // Report this error at the next start() call.
-      error_during_device_change_ = true;
+  {
+    base::AutoLock al(lock_);
+    if (!open_success) {
+      if (callback_) {
+        callback_->OnError();
+      } else {
+        // Report this error at the next start() call.
+        error_during_device_change_ = true;
+      }
+      return;
     }
-    return;
-  }
 
-  if (!callback_) {
-    // `this` might have been stopped between OnDeviceChange() and now.
-    return;
+    if (!callback_) {
+      // `this` might have been stopped between OnDeviceChange() and now.
+      return;
+    }
   }
 
   // Notify AudioManager before starting the new stream so that global
@@ -186,7 +188,10 @@ void AAudioInputStream::HandleDeviceChange() {
   audio_manager_->OnAAudioInputStreamDeviceChanged(this);
 
   if (!stream_wrapper_->Start()) {
-    callback_->OnError();
+    base::AutoLock al(lock_);
+    if (callback_) {
+      callback_->OnError();
+    }
   }
 }
 
