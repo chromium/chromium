@@ -1,0 +1,6 @@
+Tests that iterator invalidation in AutoAttacherDestroyed is fixed.
+Enabled auto attach on browser target.
+Created 3 targets. Throttles are now deferred.
+Called setAutoAttach again on browser target.
+All targets loaded successfully.
+
