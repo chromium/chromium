@@ -4636,5 +4636,152 @@ INSTANTIATE_TEST_SUITE_P(
       return "Other";
     });
 
+TEST_F(LayerContextImplTest, UpdateTransformTreeRootWithValidParentFails) {
+  auto update = CreateDefaultUpdate();
+  auto node = mojom::TransformNode::New();
+  node->id = cc::kRootPropertyNodeId;
+  node->parent_id = cc::kSecondaryRootPropertyNodeId;
+  update->transform_nodes[0] = std::move(node);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Root property node must have an invalid parent ID");
+}
+
+TEST_F(LayerContextImplTest, UpdateClipTreeRootWithValidParentFails) {
+  auto update = CreateDefaultUpdate();
+  auto node = mojom::ClipNode::New();
+  node->id = cc::kRootPropertyNodeId;
+  node->parent_id = cc::kSecondaryRootPropertyNodeId;
+  node->transform_id = cc::kRootPropertyNodeId;
+  update->clip_nodes[0] = std::move(node);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Root property node must have an invalid parent ID");
+}
+
+TEST_F(LayerContextImplTest, UpdateEffectTreeRootWithValidParentFails) {
+  auto update = CreateDefaultUpdate();
+  auto node = mojom::EffectNode::New();
+  node->id = cc::kRootPropertyNodeId;
+  node->parent_id = cc::kSecondaryRootPropertyNodeId;
+  node->transform_id = cc::kRootPropertyNodeId;
+  node->clip_id = cc::kRootPropertyNodeId;
+  node->target_id = cc::kRootPropertyNodeId;
+  update->effect_nodes[0] = std::move(node);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Root property node must have an invalid parent ID");
+}
+
+TEST_F(LayerContextImplTest, UpdateScrollTreeRootWithValidParentFails) {
+  auto update = CreateDefaultUpdate();
+  auto node = mojom::ScrollNode::New();
+  node->id = cc::kRootPropertyNodeId;
+  node->parent_id = cc::kSecondaryRootPropertyNodeId;
+  node->transform_id = cc::kRootPropertyNodeId;
+  update->scroll_nodes[0] = std::move(node);
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Root property node must have an invalid parent ID");
+}
+
+TEST_F(LayerContextImplTest, EmptyTransformTreeSucceeds) {
+  auto update = CreateDefaultUpdate();
+  // Clear all trees.
+  update->num_transform_nodes = 0;
+  update->transform_nodes.clear();
+  update->num_clip_nodes = 0;
+  update->clip_nodes.clear();
+  update->num_effect_nodes = 0;
+  update->effect_nodes.clear();
+  update->num_scroll_nodes = 0;
+  update->scroll_nodes.clear();
+
+  // Clear all layers to avoid references to property trees.
+  update->layers.clear();
+  update->layer_order = std::vector<int>();
+
+  // We also need to clear viewport property ids because they index
+  // transform/scroll nodes.
+  update->overscroll_elasticity_transform = cc::kInvalidPropertyNodeId;
+  update->page_scale_transform = cc::kInvalidPropertyNodeId;
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_clip = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+}
+
+TEST_F(LayerContextImplTest, EmptyClipTreeSucceeds) {
+  auto update = CreateDefaultUpdate();
+  // Transform tree has nodes from CreateDefaultUpdate.
+  update->num_clip_nodes = 0;
+  update->clip_nodes.clear();
+  // Clear other dependent trees.
+  update->num_effect_nodes = 0;
+  update->effect_nodes.clear();
+  update->num_scroll_nodes = 0;
+  update->scroll_nodes.clear();
+
+  // Clear all layers.
+  update->layers.clear();
+  update->layer_order = std::vector<int>();
+
+  update->outer_clip = cc::kInvalidPropertyNodeId;
+  // scroll tree also cleared, so clear its viewport property ids.
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+}
+
+TEST_F(LayerContextImplTest, EmptyEffectTreeSucceeds) {
+  auto update = CreateDefaultUpdate();
+  // Effect tree MUST have at least one node.
+  update->num_effect_nodes = 0;
+  update->effect_nodes.clear();
+  // Clear clip tree too, because clip root node references transform node.
+  update->num_clip_nodes = 0;
+  update->clip_nodes.clear();
+  update->outer_clip = cc::kInvalidPropertyNodeId;
+  // Clear scroll tree.
+  update->num_scroll_nodes = 0;
+  update->scroll_nodes.clear();
+
+  // Clear all layers.
+  update->layers.clear();
+  update->layer_order = std::vector<int>();
+
+  // scroll tree also cleared, so clear its viewport property ids.
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+}
+
+TEST_F(LayerContextImplTest, EmptyScrollTreeSucceeds) {
+  auto update = CreateDefaultUpdate();
+  // All other trees have root nodes from CreateDefaultUpdate.
+  update->num_scroll_nodes = 0;
+  update->scroll_nodes.clear();
+
+  // Clear all layers.
+  update->layers.clear();
+  update->layer_order = std::vector<int>();
+
+  update->inner_scroll = cc::kInvalidPropertyNodeId;
+  update->outer_scroll = cc::kInvalidPropertyNodeId;
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  EXPECT_TRUE(result.has_value()) << (result.has_value() ? "" : result.error());
+}
+
 }  // namespace
 }  // namespace viz
