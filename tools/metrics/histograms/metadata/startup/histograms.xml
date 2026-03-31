@@ -638,6 +638,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.Android.OptionalPromoTypeShown"
+    enum="OptionalPromoType" expires_after="2027-03-25">
+  <owner>mschillaci@google.com</owner>
+  <owner>agazal@google.com</owner>
+  <owner>twellington@google.com</owner>
+  <summary>
+    Records the type of optional promo shown during startup, if any. Optional
+    promos are from the TabbedRootUICoordinator's &quot;maybeShowPromo&quot;
+    method, which have the lowest priority in the queue. Recorded when a promo
+    is chosen to show. The &quot;None shown&quot; (NONE_SHOWN) bucket refers
+    only to this method's return and not promos in general, i.e. some feature
+    implementations may trigger a promo from a different location (e.g.
+    notification opt-in).
+  </summary>
+</histogram>
+
 <histogram name="Startup.Android.StartComponent" enum="ProcessCreationReason"
     expires_after="2026-08-30">
   <owner>nafisabedin@google.com</owner>

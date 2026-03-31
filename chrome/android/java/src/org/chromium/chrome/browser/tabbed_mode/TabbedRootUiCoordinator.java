@@ -227,6 +227,8 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.user_education.UserEducationUtils;
+import org.chromium.chrome.browser.user_education.UserEducationUtils.OptionalPromoType;
 import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.components.browser_ui.accessibility.PageZoomUtils;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -2153,6 +2155,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         // is most effective when shown shortly after the first-run experience. It is therefore
         // at the front of the list of promotions.
         if (PwaRestorePromoUtils.launchPromoIfNeeded(profile, mWindowAndroid)) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.PWA_RESTORE_PROMO);
             return true;
         }
         if (FullscreenSigninPromoLauncher.launchPromoIfNeeded(
@@ -2160,6 +2163,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 profile,
                 SigninAndHistorySyncActivityLauncherImpl.get(),
                 VersionInfo.getProductMajorVersion())) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.FULLSCREEN_SIGNIN_PROMO);
             return true;
         }
         if (DefaultBrowserPromoUtils.getInstance()
@@ -2168,13 +2172,19 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mWindowAndroid,
                         TrackerFactory.getTrackerForProfile(profile),
                         DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint.CHROME_STARTUP)) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.DEFAULT_BROWSER_PROMO);
             return true;
         }
-        return AppLanguagePromoDialog.maybeShowPrompt(
+        if (AppLanguagePromoDialog.maybeShowPrompt(
                 mActivity,
                 profile,
                 mModalDialogManagerSupplier.get(),
-                () -> ApplicationLifetime.terminate(true));
+                () -> ApplicationLifetime.terminate(true))) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.APP_LANGUAGE_PROMO);
+            return true;
+        }
+        UserEducationUtils.recordOptionalPromoType(OptionalPromoType.NONE_SHOWN);
+        return false;
     }
 
     private void createBookmarkBarIfNecessary() {

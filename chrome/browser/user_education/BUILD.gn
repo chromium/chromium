@@ -13,6 +13,7 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/user_education/IphCommand.java",
       "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilder.java",
       "java/src/org/chromium/chrome/browser/user_education/UserEducationHelper.java",
+      "java/src/org/chromium/chrome/browser/user_education/UserEducationUtils.java",
     ]
 
     deps = [

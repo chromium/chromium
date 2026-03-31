@@ -132,6 +132,19 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Open external action URL"/>
 </enum>
 
+<!-- LINT.IfChange(OptionalPromoType) -->
+
+<enum name="OptionalPromoType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None shown"/>
+  <int value="2" label="PWA Restore Promo"/>
+  <int value="3" label="Fullscreen Signin Promo"/>
+  <int value="4" label="Default Browser Promo"/>
+  <int value="5" label="App Language Promo"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/user_education/java/src/org/chromium/chrome/browser/user_education/UserEducationUtils.java:OptionalPromoType) -->
+
 <enum name="ProcessCreationReason">
   <int value="0" label="Activity"/>
   <int value="1" label="Service"/>
