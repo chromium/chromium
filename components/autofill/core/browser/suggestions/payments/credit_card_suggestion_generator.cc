@@ -188,7 +188,8 @@ std::vector<Suggestion> GenerateCreditCardOrCvcFieldSuggestionsSync(
   if (should_show_pay_later_tab_suggestions) {
     const PaymentsDataManager& payments_data_manager =
         client.GetPersonalDataManager().payments_data_manager();
-    if (payments::ShouldStartPayLaterWithLoadingSpinner(
+    if (is_card_number_field_empty &&
+        payments::ShouldStartPayLaterWithLoadingSpinner(
             payments_data_manager)) {
       suggestions.push_back(GetLoadingSuggestionForPayLaterTab(
           payments_data_manager.GetBnplIssuers().size()));
