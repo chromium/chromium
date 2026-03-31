@@ -80,7 +80,7 @@ impl HybridUint {
         (hi << nbits) | bits
     }
 
-    #[inline(always)]
+    #[inline]
     pub fn read(&self, symbol: u32, br: &mut BitReader) -> u32 {
         if symbol < self.split_token {
             return symbol;

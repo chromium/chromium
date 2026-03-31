@@ -1259,9 +1259,7 @@ impl JxlColorProfile {
                     _ => false,
                 }
             }
-            // Same ICC profile bytes means same color encoding -- skip CMS
-            (Self::Icc(a), Self::Icc(b)) => a == b,
-            // Mixed Simple/ICC always requires CMS
+            // ICC profiles require CMS
             _ => false,
         }
     }
@@ -2738,7 +2736,7 @@ mod test {
 
     #[test]
     fn test_same_color_encoding_icc_profile() {
-        // ICC vs Simple are never the same
+        // ICC profiles are never considered same (even with themselves)
         let srgb = JxlColorProfile::Simple(JxlColorEncoding::RgbColorSpace {
             white_point: JxlWhitePoint::D65,
             primaries: JxlPrimaries::SRGB,
@@ -2748,11 +2746,7 @@ mod test {
         let icc = JxlColorProfile::Icc(vec![0u8; 100]); // Dummy ICC profile
         assert!(!srgb.same_color_encoding(&icc));
         assert!(!icc.same_color_encoding(&srgb));
-        // Same ICC bytes ARE the same encoding (skip CMS identity transform)
-        assert!(icc.same_color_encoding(&icc));
-        // Different ICC bytes are NOT the same
-        let icc2 = JxlColorProfile::Icc(vec![1u8; 100]);
-        assert!(!icc.same_color_encoding(&icc2));
+        assert!(!icc.same_color_encoding(&icc));
     }
 
     #[test]

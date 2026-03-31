@@ -665,33 +665,19 @@ impl FrameHeader {
 
     fn check(&self, nonserialized: &FrameHeaderNonserialized) -> Result<(), Error> {
         if self.upsampling > 1
-            && let Some((dim_shift, effective_upsampling)) = nonserialized
+            && let Some((info, upsampling)) = nonserialized
                 .extra_channel_info
                 .iter()
                 .zip(&self.ec_upsampling)
-                .find_map(|(info, ec_upsampling)| {
-                    let effective_upsampling = ec_upsampling << info.dim_shift();
-                    ((effective_upsampling < self.upsampling) || (effective_upsampling > 8))
-                        .then_some((info.dim_shift(), effective_upsampling))
+                .find(|(info, ec_upsampling)| {
+                    ((*ec_upsampling << info.dim_shift()) < self.upsampling)
+                        || (**ec_upsampling > 8)
                 })
         {
             return Err(Error::InvalidEcUpsampling(
                 self.upsampling,
-                dim_shift,
-                effective_upsampling,
-            ));
-        }
-
-        if self.has_patches()
-            && self.upsampling != 1
-            && let Some(&ec_upsampling) = self
-                .ec_upsampling
-                .iter()
-                .find(|&&ec_upsampling| ec_upsampling != self.upsampling)
-        {
-            return Err(Error::PatchesUnsupportedMixedUpsampling(
-                self.upsampling,
-                ec_upsampling,
+                info.dim_shift(),
+                *upsampling,
             ));
         }
 
@@ -769,8 +755,6 @@ impl FrameHeader {
 
 #[cfg(test)]
 mod test_frame_header {
-    use super::super::bit_depth::BitDepth;
-    use super::super::extra_channels::{ExtraChannel, ExtraChannelInfo};
     use super::super::permutation::Permutation;
     use super::super::toc::Toc;
     use super::*;
@@ -834,31 +818,6 @@ mod test_frame_header {
 
         let err = frame_header.check(&nonserialized).unwrap_err();
         assert!(matches!(err, Error::InvalidBlendingAlphaChannel(_, _)));
-    }
-
-    #[test]
-    fn test_invalid_ec_upsampling_after_dim_shift() {
-        let (file_header, mut frame_header, _) =
-            read_headers_and_toc(include_bytes!("../../resources/test/extra_channels.jxl"))
-                .unwrap();
-        let mut nonserialized = file_header.frame_header_nonserialized();
-
-        nonserialized.extra_channel_info[0] = ExtraChannelInfo::new(
-            false,
-            ExtraChannel::Alpha,
-            BitDepth::integer_samples(8),
-            3,
-            String::new(),
-            false,
-            None,
-            None,
-        );
-
-        frame_header.upsampling = 8;
-        frame_header.ec_upsampling[0] = 4;
-
-        let err = frame_header.check(&nonserialized).unwrap_err();
-        assert!(matches!(err, Error::InvalidEcUpsampling(8, 3, 32)));
     }
 
     #[test]
