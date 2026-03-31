@@ -409,9 +409,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         if (!newWindow
                 || MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)
                         >= MultiWindowUtils.getMaxInstances()) {
-            return assumeNonNull(
-                    getTabCreator(/* isIncognito= */ false)
-                            .createNewTab(loadParams, launchType, null));
+            return getTabCreator(/* isIncognito= */ false)
+                    .createNewTab(loadParams, launchType, null);
         }
 
         // Creating a new window is asynchronous on Android, so create a background tab that we can

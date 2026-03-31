@@ -261,6 +261,8 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
                                 TabLaunchType.FROM_CHROME_UI,
                                 currentTab);
 
+        if (newTab == null) return;
+
         // Move tab to a new window.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
                 Collections.singletonList(newTab),

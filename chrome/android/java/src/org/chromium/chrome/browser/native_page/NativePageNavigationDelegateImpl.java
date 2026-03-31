@@ -102,7 +102,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
     }
 
     @Override
-    public Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
+    public @Nullable Tab openUrlInGroup(int windowOpenDisposition, LoadUrlParams loadUrlParams) {
         Tab newTab =
                 mTabModelSelector.openNewTab(
                         loadUrlParams,
@@ -112,7 +112,7 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
         return newTab;
     }
 
-    private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {
+    private @Nullable Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {
         int tabLaunchType = TabLaunchType.FROM_LONGPRESS_BACKGROUND;
         if (windowOpenDisposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;

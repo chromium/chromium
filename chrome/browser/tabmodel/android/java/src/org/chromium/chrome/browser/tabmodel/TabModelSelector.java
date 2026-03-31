@@ -120,7 +120,7 @@ public interface TabModelSelector {
      * @param incognito Whether to open the new tab in incognito mode.
      * @return The newly opened tab.
      */
-    Tab openNewTab(
+    @Nullable Tab openNewTab(
             LoadUrlParams loadUrlParams,
             @TabLaunchType int type,
             @Nullable Tab parent,
