@@ -5169,7 +5169,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-loading@chromium.org</owner>
   <summary>
     The result of inline script cache fetch attempts. This is recorded for each
-    inline script only if the inline script caching is enabled.
+    inline script only if the inline script caching is enabled and cache fetch
+    is not skipped (e.g., for small scripts).
   </summary>
 </histogram>
 

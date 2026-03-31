@@ -558,10 +558,7 @@ ClassicScript* ClassicPendingScript::GetSource() const {
           CHECK(!source_text_for_inline_script_.IsNull());
           // Stores an empty `mojo_base::BigBuffer` on cache miss.
           code_cache = cache_host->FetchInlineScriptCacheSync(
-              base::span<const uint8_t, kSha256Bytes>(
-                  ParkableString(source_text_for_inline_script_.Impl())
-                      .Digest()
-                      .Get()));
+              ParkableString(source_text_for_inline_script_.Impl()));
         }
         cached_metadata_handler =
             MakeGarbageCollected<SourceKeyedCachedMetadataHandler>(

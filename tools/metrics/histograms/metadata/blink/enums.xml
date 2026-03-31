@@ -7332,6 +7332,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="0" label="Fetch succeeded with non-empty cache"/>
   <int value="1" label="Fetch succeeded with empty cache"/>
   <int value="2" label="Fetch timed out"/>
+  <int value="3" label="Fetch skipped because script is too small"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/platform/loader/fetch/code_cache_host.cc:InlineScriptCacheFetchResult) -->

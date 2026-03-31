@@ -57,7 +57,8 @@ enum class InlineScriptCacheFetchResult {
   kFetchedNonEmpty = 0,
   kFetchedEmpty = 1,
   kTimedOut = 2,
-  kMaxValue = kTimedOut,
+  kSkippedForSmallScript = 3,
+  kMaxValue = kSkippedForSmallScript,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:InlineScriptCacheFetchResult)
 
@@ -74,7 +75,7 @@ class CodeCacheHostImpl : public CodeCacheHost {
   }
 
   mojo_base::BigBuffer FetchInlineScriptCacheSync(
-      base::span<const uint8_t, kSha256Bytes> source_hash) override {
+      const ParkableString& script_source) override {
     // Source-keyed code cache is currently only for inline script cache, which
     // must be handled by `CodeCacheWithPersistentCacheHostImpl`.
     NOTREACHED();
@@ -115,28 +116,38 @@ class CodeCacheWithPersistentCacheHostImpl
                     remote.Unbind()) {}
 
   mojo_base::BigBuffer FetchInlineScriptCacheSync(
-      base::span<const uint8_t, kSha256Bytes> source_hash) override {
+      const ParkableString& script_source) override {
     TRACE_EVENT(
         "loading",
         "CodeCacheWithPersistentCacheHostImpl::FetchInlineScriptCacheSync");
     CHECK(features::IsInlineScriptCacheEnabled());
 
     std::optional<mojo_base::BigBuffer> result;
-    {
-      base::ScopedUmaHistogramTimer timer(
-          "Blink.Script.InlineScriptCache.FetchTime");
-      scoped_refptr fetcher = base::MakeRefCounted<InlineScriptCacheFetcher>();
-      result = fetcher->FetchAsyncAndAwaitForResult(
-          async_host_, base::HeapArray<uint8_t>::CopiedFrom(source_hash));
-    }
-
     InlineScriptCacheFetchResult result_metric;
-    if (!result.has_value()) {
-      result_metric = InlineScriptCacheFetchResult::kTimedOut;
-    } else if (result->size() == 0) {
-      result_metric = InlineScriptCacheFetchResult::kFetchedEmpty;
+    if (script_source.length() <
+        features::kInlineScriptCacheMinScriptLength.Get()) {
+      // Code cache is not produced for small scripts. Skip unnecessary fetch
+      // for performance.
+      result = mojo_base::BigBuffer{};
+      result_metric = InlineScriptCacheFetchResult::kSkippedForSmallScript;
     } else {
-      result_metric = InlineScriptCacheFetchResult::kFetchedNonEmpty;
+      {
+        base::ScopedUmaHistogramTimer timer(
+            "Blink.Script.InlineScriptCache.FetchTime");
+        scoped_refptr fetcher =
+            base::MakeRefCounted<InlineScriptCacheFetcher>();
+        auto script_hash =
+            base::HeapArray<uint8_t>::CopiedFrom(script_source.Digest().Get());
+        result = fetcher->FetchAsyncAndAwaitForResult(async_host_,
+                                                      std::move(script_hash));
+      }
+      if (!result.has_value()) {
+        result_metric = InlineScriptCacheFetchResult::kTimedOut;
+      } else if (result->size() == 0) {
+        result_metric = InlineScriptCacheFetchResult::kFetchedEmpty;
+      } else {
+        result_metric = InlineScriptCacheFetchResult::kFetchedNonEmpty;
+      }
     }
     base::UmaHistogramEnumeration("Blink.Script.InlineScriptCache.FetchResult",
                                   result_metric);

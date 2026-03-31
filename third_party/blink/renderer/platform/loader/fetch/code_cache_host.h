@@ -43,7 +43,7 @@ class BLINK_PLATFORM_EXPORT CodeCacheHost {
   // therefore any implementation of this virtual function shall NOT post any
   // task.
   [[nodiscard]] virtual mojo_base::BigBuffer FetchInlineScriptCacheSync(
-      base::span<const uint8_t, kSha256Bytes> source_hash) = 0;
+      const ParkableString& script_source) = 0;
 
   // Get a weak pointer to this `CodeCacheHost`. Only valid when the remote
   // has been bound.
