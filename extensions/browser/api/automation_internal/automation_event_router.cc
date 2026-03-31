@@ -120,10 +120,8 @@ void AutomationEventRouter::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   }
 }
 
-void AutomationEventRouter::DispatchActionResult(
-    const ui::AXActionData& data,
-    bool result,
-    content::BrowserContext* browser_context) {
+void AutomationEventRouter::DispatchActionResult(const ui::AXActionData& data,
+                                                 bool result) {
   CHECK(!data.source_extension_id.empty());
 
   for (const auto& remote : automation_remote_set_) {

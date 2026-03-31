@@ -71,10 +71,8 @@ class MockAutomationEventRouter
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 
-  void DispatchActionResult(
-      const ui::AXActionData& data,
-      bool result,
-      content::BrowserContext* browser_context = nullptr) override {
+  void DispatchActionResult(const ui::AXActionData& data,
+                            bool result) override {
     last_dispatched_action_data_ = data;
     last_dispatched_action_result_ = result;
   }

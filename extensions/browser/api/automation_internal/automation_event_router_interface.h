@@ -14,10 +14,6 @@
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace ui {
 struct AXActionData;
 }  // namespace ui
@@ -43,10 +39,8 @@ class AutomationEventRouterInterface {
   virtual void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) = 0;
 
   // Notify the source extension of the action of an action result.
-  virtual void DispatchActionResult(
-      const ui::AXActionData& data,
-      bool result,
-      content::BrowserContext* browser_context = nullptr) = 0;
+  virtual void DispatchActionResult(const ui::AXActionData& data,
+                                    bool result) = 0;
 
   // Notify the source extension of the result to getTextLocation.
   // Currently only supported by ARC++ in response to

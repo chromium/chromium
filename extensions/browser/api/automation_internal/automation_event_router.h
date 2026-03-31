@@ -31,10 +31,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
-namespace content {
-class BrowserContext;
-}  // namespace content
-
 namespace ui {
 struct AXActionData;
 }  // namespace ui
@@ -98,10 +94,7 @@ class AutomationEventRouter
       const ui::AXTreeID& tree_id,
       const ui::AXScrollChange& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
-  void DispatchActionResult(
-      const ui::AXActionData& data,
-      bool result,
-      content::BrowserContext* browser_context = nullptr) override;
+  void DispatchActionResult(const ui::AXActionData& data, bool result) override;
   void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
       const std::optional<gfx::Rect>& rect) override;
