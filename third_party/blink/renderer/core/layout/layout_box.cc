@@ -801,6 +801,10 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
         layout_invalidation_reason::kStyleChange);
   }
 
+  if (diff.needs_box_paint_property_update) {
+    SetNeedsPaintPropertyUpdate();
+  }
+
   // Update the script style map, from the new computed style.
   if (IsCustomItem())
     GetCustomLayoutChild()->styleMap()->UpdateStyle(GetDocument(), StyleRef());

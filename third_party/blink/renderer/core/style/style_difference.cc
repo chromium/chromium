@@ -70,6 +70,9 @@ std::ostream& operator<<(std::ostream& out, const StyleDifference& diff) {
   if (diff.z_index_changed) {
     out << ", ZIndexChanged";
   }
+  if (diff.needs_box_paint_property_update) {
+    out << ", NeedsPaintPropertyUpdate";
+  }
 
   out << ", disableScrollAnchoring=" << diff.disable_scroll_anchoring;
 

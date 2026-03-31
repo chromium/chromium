@@ -844,6 +844,9 @@ StyleDifference ComputedStyle::VisualInvalidationDiff(
   if (field_diff & kClipPath) {
     diff.clip_path_changed = true;
   }
+  if (field_diff & kBoxPaintProperty) {
+    diff.needs_box_paint_property_update = true;
+  }
   if (field_diff & kColor) {
     diff.text_decoration_or_color_changed = true;
   }

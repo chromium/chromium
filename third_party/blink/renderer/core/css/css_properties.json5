@@ -359,6 +359,7 @@
         "border-shape",
         "border-visual",
         "border-width",
+        "box-paint-property",
         "clip",
         "clip-path",
         "color",
@@ -8692,7 +8693,7 @@
       // anchor() functions compute relative to the containing block that is
       // modified by position-area in AnchorEvaluatorImpl.
       priority: 1,
-      invalidate: ["layout", "out-of-flow", "paint"],
+      invalidate: ["layout", "out-of-flow", "paint", "box-paint-property"],
     },
     // Shorthands
     {
