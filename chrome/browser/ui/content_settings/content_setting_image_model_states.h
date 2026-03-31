@@ -49,23 +49,23 @@ class ContentSettingImageModelStates
 
   // Array of bool for whether an animation has run for a given image model.
   // This bit is reset to false when the image is hidden.
-  std::array<bool, static_cast<int>(ImageType::NUM_IMAGE_TYPES)> animations_ =
+  std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1> animations_ =
       {};
 
   // Array of bool for whether accessibility has been notified when an image
   // needs to be read out. Bit is stored per image type. This bit is reset to
   // false when the image is hidden.
-  std::array<bool, static_cast<int>(ImageType::NUM_IMAGE_TYPES)>
+  std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1>
       accessibility_notified_ = {};
 
   // Array of bool for whether the bubble was auto-opened for a given image
   // model. This bit is reset to false when the image is hidden.
-  std::array<bool, static_cast<int>(ImageType::NUM_IMAGE_TYPES)>
+  std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1>
       auto_opened_bubbles_ = {};
 
   // Array of bool for whether the indicator had a promo shown for a image
   // model. This bit is reset to false when the image is hidden.
-  std::array<bool, static_cast<int>(ImageType::NUM_IMAGE_TYPES)>
+  std::array<bool, static_cast<size_t>(ImageType::kMaxValue) + 1>
       promo_was_shown_ = {};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

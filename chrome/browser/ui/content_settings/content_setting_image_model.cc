@@ -247,7 +247,7 @@ class ContentSettingSmartCardImageModel
     : public ContentSettingSimpleImageModel {
  public:
   ContentSettingSmartCardImageModel()
-      : ContentSettingSimpleImageModel(ImageType::SMART_CARD,
+      : ContentSettingSimpleImageModel(ImageType::kSmartCard,
                                        ContentSettingsType::SMART_CARD_GUARD) {}
 
   ContentSettingSmartCardImageModel(const ContentSettingSmartCardImageModel&) =
@@ -508,58 +508,55 @@ ContentSettingSimpleImageModel::CreateBubbleModelImpl(
 std::unique_ptr<ContentSettingImageModel>
 ContentSettingImageModel::CreateForContentType(ImageType image_type) {
   switch (image_type) {
-    case ImageType::COOKIES:
+    case ImageType::kCookies:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::COOKIES, ContentSettingsType::COOKIES);
-    case ImageType::IMAGES:
+          ImageType::kCookies, ContentSettingsType::COOKIES);
+    case ImageType::kImages:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::IMAGES, ContentSettingsType::IMAGES);
-    case ImageType::JAVASCRIPT:
+          ImageType::kImages, ContentSettingsType::IMAGES);
+    case ImageType::kJavaScript:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::JAVASCRIPT, ContentSettingsType::JAVASCRIPT);
-    case ImageType::POPUPS:
+          ImageType::kJavaScript, ContentSettingsType::JAVASCRIPT);
+    case ImageType::kPopups:
       return std::make_unique<ContentSettingPopupImageModel>();
-    case ImageType::GEOLOCATION:
+    case ImageType::kGeolocation:
       return std::make_unique<ContentSettingGeolocationImageModel>();
-    case ImageType::MIXEDSCRIPT:
+    case ImageType::kMixedScript:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::MIXEDSCRIPT, ContentSettingsType::MIXEDSCRIPT);
-    case ImageType::PROTOCOL_HANDLERS:
+          ImageType::kMixedScript, ContentSettingsType::MIXEDSCRIPT);
+    case ImageType::kProtocolHandlers:
       return std::make_unique<ContentSettingRPHImageModel>();
-    case ImageType::MEDIASTREAM:
+    case ImageType::kMediaStream:
       return std::make_unique<ContentSettingMediaImageModel>();
-    case ImageType::ADS:
+    case ImageType::kAds:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::ADS, ContentSettingsType::ADS);
-    case ImageType::AUTOMATIC_DOWNLOADS:
+          ImageType::kAds, ContentSettingsType::ADS);
+    case ImageType::kAutomaticDownloads:
       return std::make_unique<ContentSettingDownloadsImageModel>();
-    case ImageType::MIDI_SYSEX:
+    case ImageType::kMidiSysex:
       return std::make_unique<ContentSettingMIDISysExImageModel>();
-    case ImageType::SOUND:
+    case ImageType::kSound:
       return std::make_unique<ContentSettingBlockedImageModel>(
-          ImageType::SOUND, ContentSettingsType::SOUND);
-    case ImageType::FRAMEBUST:
+          ImageType::kSound, ContentSettingsType::SOUND);
+    case ImageType::kFramebust:
       return std::make_unique<ContentSettingFramebustBlockImageModel>();
-    case ImageType::CLIPBOARD_READ_WRITE:
+    case ImageType::kClipboardReadWrite:
       return std::make_unique<ContentSettingClipboardReadWriteImageModel>();
-    case ImageType::SENSORS:
+    case ImageType::kSensors:
       return std::make_unique<ContentSettingSensorsImageModel>();
-    case ImageType::STORAGE_ACCESS:
+    case ImageType::kStorageAccess:
       return std::make_unique<ContentSettingStorageAccessImageModel>();
-    case ImageType::NOTIFICATIONS:
+    case ImageType::kNotifications:
       return std::make_unique<ContentSettingNotificationsImageModel>();
 #if BUILDFLAG(IS_CHROMEOS)
-    case ImageType::SMART_CARD:
+    case ImageType::kSmartCard:
       return std::make_unique<ContentSettingSmartCardImageModel>();
 #endif
 #if BUILDFLAG(IS_WIN)
-    case ImageType::PROTECTED_MEDIA_IDENTIFIER:
+    case ImageType::kProtectedMediaIdentifier:
       return std::make_unique<
           ContentSettingProtectedMediaIdentifierImageModel>();
 #endif  // BUILDFLAG(IS_WIN)
-
-    case ImageType::NUM_IMAGE_TYPES:
-      break;
   }
   NOTREACHED();
 }
@@ -704,7 +701,7 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 // Geolocation -----------------------------------------------------------------
 
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
-    : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
+    : ContentSettingImageModel(ImageType::kGeolocation, kNotifyAccessibility) {}
 
 ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() =
     default;
@@ -786,7 +783,7 @@ ContentSettingGeolocationImageModel::CreateBubbleModelImpl(
 // Protocol handlers -----------------------------------------------------------
 
 ContentSettingRPHImageModel::ContentSettingRPHImageModel()
-    : ContentSettingSimpleImageModel(ImageType::PROTOCOL_HANDLERS,
+    : ContentSettingSimpleImageModel(ImageType::kProtocolHandlers,
                                      ContentSettingsType::PROTOCOL_HANDLERS) {
   SetIcon(ContentSettingsType::PROTOCOL_HANDLERS, /*blocked=*/false);
   set_tooltip(l10n_util::GetStringUTF16(IDS_REGISTER_PROTOCOL_HANDLER_TOOLTIP));
@@ -809,7 +806,7 @@ bool ContentSettingRPHImageModel::UpdateAndGetVisibility(
 // MIDI SysEx ------------------------------------------------------------------
 
 ContentSettingMIDISysExImageModel::ContentSettingMIDISysExImageModel()
-    : ContentSettingSimpleImageModel(ImageType::MIDI_SYSEX,
+    : ContentSettingSimpleImageModel(ImageType::kMidiSysex,
                                      ContentSettingsType::MIDI_SYSEX) {}
 
 bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
@@ -840,7 +837,7 @@ bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
 // Automatic downloads ---------------------------------------------------------
 
 ContentSettingDownloadsImageModel::ContentSettingDownloadsImageModel()
-    : ContentSettingSimpleImageModel(ImageType::AUTOMATIC_DOWNLOADS,
+    : ContentSettingSimpleImageModel(ImageType::kAutomaticDownloads,
                                      ContentSettingsType::AUTOMATIC_DOWNLOADS) {
 }
 
@@ -876,7 +873,7 @@ bool ContentSettingDownloadsImageModel::UpdateAndGetVisibility(
 ContentSettingClipboardReadWriteImageModel::
     ContentSettingClipboardReadWriteImageModel()
     : ContentSettingSimpleImageModel(
-          ImageType::CLIPBOARD_READ_WRITE,
+          ImageType::kClipboardReadWrite,
           ContentSettingsType::CLIPBOARD_READ_WRITE) {}
 
 bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
@@ -903,7 +900,7 @@ bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
 // Media -----------------------------------------------------------------------
 
 ContentSettingMediaImageModel::ContentSettingMediaImageModel()
-    : ContentSettingImageModel(ImageType::MEDIASTREAM, kNotifyAccessibility) {}
+    : ContentSettingImageModel(ImageType::kMediaStream, kNotifyAccessibility) {}
 
 bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -1102,7 +1099,7 @@ ContentSettingMediaImageModel::CreateBubbleModelImpl(
 
 // Blocked Framebust -----------------------------------------------------------
 ContentSettingFramebustBlockImageModel::ContentSettingFramebustBlockImageModel()
-    : ContentSettingImageModel(ImageType::FRAMEBUST) {}
+    : ContentSettingImageModel(ImageType::kFramebust) {}
 
 bool ContentSettingFramebustBlockImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -1129,7 +1126,7 @@ ContentSettingFramebustBlockImageModel::CreateBubbleModelImpl(
 // Sensors ---------------------------------------------------------------------
 
 ContentSettingSensorsImageModel::ContentSettingSensorsImageModel()
-    : ContentSettingSimpleImageModel(ImageType::SENSORS,
+    : ContentSettingSimpleImageModel(ImageType::kSensors,
                                      ContentSettingsType::SENSORS) {}
 
 bool ContentSettingSensorsImageModel::UpdateAndGetVisibility(
@@ -1172,7 +1169,7 @@ bool ContentSettingSensorsImageModel::UpdateAndGetVisibility(
 // Popups ---------------------------------------------------------------------
 
 ContentSettingPopupImageModel::ContentSettingPopupImageModel()
-    : ContentSettingSimpleImageModel(ImageType::POPUPS,
+    : ContentSettingSimpleImageModel(ImageType::kPopups,
                                      ContentSettingsType::POPUPS) {}
 
 bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
@@ -1194,7 +1191,7 @@ bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
 // ---------------------------------------------------------------------
 
 ContentSettingStorageAccessImageModel::ContentSettingStorageAccessImageModel()
-    : ContentSettingSimpleImageModel(ImageType::STORAGE_ACCESS,
+    : ContentSettingSimpleImageModel(ImageType::kStorageAccess,
                                      ContentSettingsType::STORAGE_ACCESS) {}
 
 bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
@@ -1226,7 +1223,7 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
 
 ContentSettingNotificationsImageModel::ContentSettingNotificationsImageModel()
     : ContentSettingSimpleImageModel(
-          ImageType::NOTIFICATIONS,
+          ImageType::kNotifications,
           ContentSettingsType::NOTIFICATIONS,
           true /* image_type_should_notify_accessibility */) {
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
@@ -1326,7 +1323,7 @@ ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
 ContentSettingProtectedMediaIdentifierImageModel::
     ContentSettingProtectedMediaIdentifierImageModel()
     : ContentSettingSimpleImageModel(
-          ImageType::PROTECTED_MEDIA_IDENTIFIER,
+          ImageType::kProtectedMediaIdentifier,
           ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
           /*image_type_should_notify_accessibility=*/true) {}
 
@@ -1371,50 +1368,48 @@ void ContentSettingImageModel::SetIconSize(int icon_size) {
 
 ui::ElementIdentifier ContentSettingImageModel::GetElementIdentifier() const {
   switch (image_type_) {
-    case ImageType::COOKIES:
+    case ImageType::kCookies:
       return kCookiesIconElementId;
-    case ImageType::IMAGES:
+    case ImageType::kImages:
       return kImagesIconElementId;
-    case ImageType::JAVASCRIPT:
+    case ImageType::kJavaScript:
       return kJavaScriptIconElementId;
-    case ImageType::POPUPS:
+    case ImageType::kPopups:
       return kPopupsIconElementId;
-    case ImageType::GEOLOCATION:
+    case ImageType::kGeolocation:
       return kGeolocationIconElementId;
-    case ImageType::MIXEDSCRIPT:
+    case ImageType::kMixedScript:
       return kMixedScriptIconElementId;
-    case ImageType::PROTOCOL_HANDLERS:
+    case ImageType::kProtocolHandlers:
       return kProtocolHandlersIconElementId;
-    case ImageType::MEDIASTREAM:
+    case ImageType::kMediaStream:
       return kMediaStreamIconElementId;
-    case ImageType::ADS:
+    case ImageType::kAds:
       return kAdsIconElementId;
-    case ImageType::AUTOMATIC_DOWNLOADS:
+    case ImageType::kAutomaticDownloads:
       return kAutomaticDownloadsIconElementId;
-    case ImageType::MIDI_SYSEX:
+    case ImageType::kMidiSysex:
       return kMidiSysexIconElementId;
-    case ImageType::SOUND:
+    case ImageType::kSound:
       return kSoundIconElementId;
-    case ImageType::FRAMEBUST:
+    case ImageType::kFramebust:
       return kFramebustElementId;
-    case ImageType::SENSORS:
+    case ImageType::kSensors:
       return kSensorsElementId;
-    case ImageType::CLIPBOARD_READ_WRITE:
+    case ImageType::kClipboardReadWrite:
       return kClipboardRWElementId;
-    case ImageType::STORAGE_ACCESS:
+    case ImageType::kStorageAccess:
       return kStorageAccessElementId;
-    case ImageType::NOTIFICATIONS:
+    case ImageType::kNotifications:
       return kNotificationContentSettingImageView;
 #if BUILDFLAG(IS_CHROMEOS)
-    case ImageType::SMART_CARD:
+    case ImageType::kSmartCard:
       return kSmartCardIconElementId;
 #endif
 #if BUILDFLAG(IS_WIN)
-    case ImageType::PROTECTED_MEDIA_IDENTIFIER:
+    case ImageType::kProtectedMediaIdentifier:
       return kProtectedMediaElementId;
 #endif
-    case ImageType::NUM_IMAGE_TYPES:
-      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -1449,35 +1444,35 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
   // The ordering of the models here influences the order in which icons are
   // shown in the omnibox.
   constexpr ImageType kContentSettingImageOrder[] = {
-      ImageType::COOKIES,
-      ImageType::IMAGES,
-      ImageType::JAVASCRIPT,
-      ImageType::POPUPS,
-      ImageType::GEOLOCATION,
-      ImageType::MIXEDSCRIPT,
-      ImageType::PROTOCOL_HANDLERS,
-      ImageType::MEDIASTREAM,
-      ImageType::SENSORS,
-      ImageType::ADS,
-      ImageType::AUTOMATIC_DOWNLOADS,
-      ImageType::MIDI_SYSEX,
-      ImageType::SOUND,
-      ImageType::FRAMEBUST,
-      ImageType::CLIPBOARD_READ_WRITE,
-      ImageType::NOTIFICATIONS,
-      ImageType::STORAGE_ACCESS,
+      ImageType::kCookies,
+      ImageType::kImages,
+      ImageType::kJavaScript,
+      ImageType::kPopups,
+      ImageType::kGeolocation,
+      ImageType::kMixedScript,
+      ImageType::kProtocolHandlers,
+      ImageType::kMediaStream,
+      ImageType::kSensors,
+      ImageType::kAds,
+      ImageType::kAutomaticDownloads,
+      ImageType::kMidiSysex,
+      ImageType::kSound,
+      ImageType::kFramebust,
+      ImageType::kClipboardReadWrite,
+      ImageType::kNotifications,
+      ImageType::kStorageAccess,
 #if BUILDFLAG(IS_CHROMEOS)
-      ImageType::SMART_CARD,
+      ImageType::kSmartCard,
 #endif
 #if BUILDFLAG(IS_WIN)
-      ImageType::PROTECTED_MEDIA_IDENTIFIER,
+      ImageType::kProtectedMediaIdentifier,
 #endif
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
   for (auto type : kContentSettingImageOrder) {
 #if BUILDFLAG(IS_WIN)
-    if (type == ImageType::PROTECTED_MEDIA_IDENTIFIER &&
+    if (type == ImageType::kProtectedMediaIdentifier &&
         !base::FeatureList::IsEnabled(
             media::kProtectedMediaIdentifierIndicator)) {
       continue;

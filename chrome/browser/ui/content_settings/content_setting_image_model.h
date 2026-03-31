@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model_delegate.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-shared.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image.h"
@@ -30,39 +31,7 @@ struct VectorIcon;
 // that are displayed in the location bar.
 class ContentSettingImageModel {
  public:
-  // The type of the content setting image model. This enum is used in
-  // histograms and thus is append-only.
-  enum class ImageType {
-    COOKIES = 0,
-    IMAGES = 1,
-    JAVASCRIPT = 2,
-    // PPAPI_BROKER = 3, // Deprecated.
-    POPUPS = 5,
-    GEOLOCATION = 6,
-    MIXEDSCRIPT = 7,
-    PROTOCOL_HANDLERS = 8,
-    MEDIASTREAM = 9,
-    ADS = 10,
-    AUTOMATIC_DOWNLOADS = 11,
-    MIDI_SYSEX = 12,
-    SOUND = 13,
-    FRAMEBUST = 14,
-    // CLIPBOARD_READ = 15, // Replaced by CLIPBOARD_READ_WRITE in M81.
-    SENSORS = 16,
-    // NOTIFICATIONS_QUIET_PROMPT = 17, // Replaced by NOTIFICATIONS in M124
-    CLIPBOARD_READ_WRITE = 18,
-    STORAGE_ACCESS = 19,
-    // MIDI = 20, // Deprecated.
-    NOTIFICATIONS = 21,
-#if BUILDFLAG(IS_CHROMEOS)
-    SMART_CARD = 22,
-#endif
-#if BUILDFLAG(IS_WIN)
-    PROTECTED_MEDIA_IDENTIFIER = 23,
-#endif
-
-    NUM_IMAGE_TYPES
-  };
+  using ImageType = toolbar_ui_api::mojom::ContentSettingImageType;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCookiesIconElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kImagesIconElementId);

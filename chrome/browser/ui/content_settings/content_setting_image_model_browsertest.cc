@@ -52,10 +52,10 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {
   // to the same setting.
   static constexpr ContentSettingImageModel::ImageType
       content_settings_to_test[] = {
-          ImageType::COOKIES,     ImageType::IMAGES,
-          ImageType::JAVASCRIPT,  ImageType::POPUPS,
-          ImageType::MIXEDSCRIPT, ImageType::PROTOCOL_HANDLERS,
-          ImageType::MIDI_SYSEX,
+          ImageType::kCookies,     ImageType::kImages,
+          ImageType::kJavaScript,  ImageType::kPopups,
+          ImageType::kMixedScript, ImageType::kProtocolHandlers,
+          ImageType::kMidiSysex,
       };
 
   for (auto type : content_settings_to_test) {
@@ -94,7 +94,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   auto model =
-      ContentSettingImageModel::CreateForContentType(ImageType::IMAGES);
+      ContentSettingImageModel::CreateForContentType(ImageType::kImages);
 
   EXPECT_TRUE(model->ShouldRunAnimation(web_contents));
   model->SetAnimationHasRun(web_contents);
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest,
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  auto model = ContentSettingImageModel::CreateForContentType(ImageType::ADS);
+  auto model = ContentSettingImageModel::CreateForContentType(ImageType::kAds);
   std::unique_ptr<ContentSettingBubbleModel> bubble(model->CreateBubbleModel(
       browser()->GetFeatures().content_setting_bubble_model_delegate(),
       web_contents));

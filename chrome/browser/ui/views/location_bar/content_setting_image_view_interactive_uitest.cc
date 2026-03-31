@@ -75,7 +75,7 @@ class LocationBarViewQuietNotificationInteractiveUITest
   ContentSettingImageView* GetNotificationView() {
     return *std::ranges::find(
         *content_setting_views_,
-        ContentSettingImageModel::ImageType::NOTIFICATIONS,
+        ContentSettingImageModel::ImageType::kNotifications,
         &ContentSettingImageView::GetType);
   }
 

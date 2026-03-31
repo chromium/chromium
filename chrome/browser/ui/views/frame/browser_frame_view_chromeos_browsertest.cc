@@ -601,7 +601,7 @@ class WebAppFrameViewChromeOSTest
     content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
 
     return *std::ranges::find(*content_setting_views_,
-                              ContentSettingImageModel::ImageType::GEOLOCATION,
+                              ContentSettingImageModel::ImageType::kGeolocation,
                               &ContentSettingImageView::GetType);
   }
 

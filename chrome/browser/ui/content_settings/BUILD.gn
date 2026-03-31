@@ -11,6 +11,7 @@ source_set("content_settings") {
     "//base",
     "//chrome/app/vector_icons",
     "//chrome/browser/ui/blocked_content",
+    "//components/browser_apis/ui_controllers/toolbar:mojom_data_model",
     "//components/content_settings/browser",
     "//components/content_settings/core/common",
     "//components/custom_handlers",

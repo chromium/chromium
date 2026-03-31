@@ -535,7 +535,8 @@ std::u16string PermissionDashboardController::GetIndicatorTitle(
     ContentSettingImageModel* model) {
   // Currently PermissionDashboardController supports only Camera and
   // Microphone.
-  if (model->image_type() != ContentSettingImageModel::ImageType::MEDIASTREAM) {
+  if (model->image_type() !=
+      ContentSettingImageModel::ImageType::kMediaStream) {
     DUMP_WILL_BE_NOTREACHED();
     return std::u16string();
   }

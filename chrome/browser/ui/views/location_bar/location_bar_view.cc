@@ -1631,8 +1631,8 @@ bool LocationBarView::RefreshContentSettingViews() {
   for (ContentSettingImageView* v : content_setting_views_) {
     const bool was_visible = v->GetVisible();
     // The Left-Hand Side indicators currently supports only
-    // `ImageType::MEDIASTREAM`.
-    if (v->GetType() == ContentSettingImageModel::ImageType::MEDIASTREAM &&
+    // `ImageType::kMediaStream`.
+    if (v->GetType() == ContentSettingImageModel::ImageType::kMediaStream &&
         // WebApps do not support the Left-Hand Side indicators.
         !web_app::AppBrowserController::IsWebApp(browser_) &&
         base::FeatureList::IsEnabled(

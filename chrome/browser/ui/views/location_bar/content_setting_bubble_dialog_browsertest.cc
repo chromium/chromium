@@ -282,7 +282,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     }
     OverrideContentSettingsProvider(types);
     ApplyMediastreamSettings(apply_mic_settings, apply_camera_settings);
-    ShowDialogBubble(ImageType::MEDIASTREAM);
+    ShowDialogBubble(ImageType::kMediaStream);
     return;
   }
 
@@ -304,7 +304,7 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
       reason = QuietUiReason::kServicePredictedVeryUnlikelyGrant;
     }
     TriggerQuietNotificationPermissionRequest(reason);
-    ShowDialogBubble(ImageType::NOTIFICATIONS);
+    ShowDialogBubble(ImageType::kNotifications);
     return;
   }
 
@@ -313,21 +313,22 @@ void ContentSettingBubbleDialogTest::ShowUi(const std::string& name) {
     ContentSettingsType content_type;
     ContentSettingImageModel::ImageType image_type;
   } content_settings_values[] = {
-      {"cookies", ContentSettingsType::COOKIES, ImageType::COOKIES},
-      {"images", ContentSettingsType::IMAGES, ImageType::IMAGES},
-      {"javascript", ContentSettingsType::JAVASCRIPT, ImageType::JAVASCRIPT},
-      {"popups", ContentSettingsType::POPUPS, ImageType::POPUPS},
-      {"geolocation", ContentSettingsType::GEOLOCATION, ImageType::GEOLOCATION},
+      {"cookies", ContentSettingsType::COOKIES, ImageType::kCookies},
+      {"images", ContentSettingsType::IMAGES, ImageType::kImages},
+      {"javascript", ContentSettingsType::JAVASCRIPT, ImageType::kJavaScript},
+      {"popups", ContentSettingsType::POPUPS, ImageType::kPopups},
+      {"geolocation", ContentSettingsType::GEOLOCATION,
+       ImageType::kGeolocation},
       {"mixed_script", ContentSettingsType::MIXEDSCRIPT,
-       ImageType::MIXEDSCRIPT},
+       ImageType::kMixedScript},
       {"protocol_handlers", ContentSettingsType::PROTOCOL_HANDLERS,
-       ImageType::PROTOCOL_HANDLERS},
+       ImageType::kProtocolHandlers},
       {"automatic_downloads", ContentSettingsType::AUTOMATIC_DOWNLOADS,
-       ImageType::AUTOMATIC_DOWNLOADS},
-      {"midi_sysex", ContentSettingsType::MIDI_SYSEX, ImageType::MIDI_SYSEX},
-      {"ads", ContentSettingsType::ADS, ImageType::ADS},
+       ImageType::kAutomaticDownloads},
+      {"midi_sysex", ContentSettingsType::MIDI_SYSEX, ImageType::kMidiSysex},
+      {"ads", ContentSettingsType::ADS, ImageType::kAds},
       {"storage_access", ContentSettingsType::STORAGE_ACCESS,
-       ImageType::STORAGE_ACCESS},
+       ImageType::kStorageAccess},
   };
   for (auto content_settings : content_settings_values) {
     if (base::StartsWith(name, content_settings.name,

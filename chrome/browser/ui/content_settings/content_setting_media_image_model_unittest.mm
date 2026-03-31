@@ -81,7 +81,7 @@ TEST_F(ContentSettingMediaImageModelTest, MediaUpdate) {
   const GURL kTestOrigin("https://www.example.com");
   auto content_setting_image_model =
       ContentSettingImageModel::CreateForContentType(
-          ContentSettingImageModel::ImageType::MEDIASTREAM);
+          ContentSettingImageModel::ImageType::kMediaStream);
   MediaAuthorizationWrapperTest auth_wrapper;
   system_permission_settings::SetMediaAuthorizationWrapperForTesting(
       &auth_wrapper);

@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
 
   // Get the geolocation icon on the omnibox.
   ContentSettingImageView& geolocation_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::GEOLOCATION);
+      ContentSettingImageModel::ImageType::kGeolocation);
   // Geolocation icon should be off in the beginning.
   EXPECT_FALSE(geolocation_icon.GetVisible());
 

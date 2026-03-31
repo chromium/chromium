@@ -272,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, ScriptBlockedIcon) {
 
   // Get the script blocked icon on the omnibox. It should be hidden.
   ContentSettingImageView& script_blocked_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::JAVASCRIPT);
+      ContentSettingImageModel::ImageType::kJavaScript);
   EXPECT_FALSE(script_blocked_icon.GetVisible());
 
   // Disable javascript.
@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewGeolocationBackForwardCacheBrowserTest,
 
   // Get the geolocation icon on the omnibox.
   ContentSettingImageView& geolocation_icon = GetContentSettingImageView(
-      ContentSettingImageModel::ImageType::GEOLOCATION);
+      ContentSettingImageModel::ImageType::kGeolocation);
 
   // Geolocation icon should be off in the beginning.
   EXPECT_FALSE(geolocation_icon.GetVisible());

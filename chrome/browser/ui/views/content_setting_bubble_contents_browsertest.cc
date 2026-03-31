@@ -54,14 +54,14 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsBrowserTest,
   LocationBarTesting* bar =
       browser()->window()->GetLocationBar()->GetLocationBarForTesting();
   EXPECT_TRUE(bar->TestContentSettingImagePressed(
-      static_cast<size_t>(ContentSettingImageModel::ImageType::GEOLOCATION)));
+      static_cast<size_t>(ContentSettingImageModel::ImageType::kGeolocation)));
   EXPECT_TRUE(bar->IsContentSettingBubbleShowing(
-      static_cast<size_t>(ContentSettingImageModel::ImageType::GEOLOCATION)));
+      static_cast<size_t>(ContentSettingImageModel::ImageType::kGeolocation)));
 
   // Close the tab, and make sure the bubble is gone. Note that window closure
   // in Aura is asynchronous, so it's necessary to spin the run loop here.
   chrome::CloseTab(browser());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(bar->IsContentSettingBubbleShowing(
-      static_cast<size_t>(ContentSettingImageModel::ImageType::GEOLOCATION)));
+      static_cast<size_t>(ContentSettingImageModel::ImageType::kGeolocation)));
 }

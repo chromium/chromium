@@ -64,6 +64,44 @@ struct HomeControlState {
   bool is_context_menu_visible;
 };
 
+// The type of the content setting image model.
+//
+// Unlike ContentSettingsType, which defines the underlying settings, this enum
+// defines the icon to display.  This distinction matters for things like
+// kFramebust (iframe tried to navigate the top-level frame without user
+// activation and was blocked), which has a separate icon from kPopups
+// (window.open() called without user activation and was blocked), even though
+// they share the same underlying setting to disable blocking.
+//
+// Therefore, this enum is UI-specific, unlike ContentSettingsType.
+enum ContentSettingImageType {
+  kCookies = 0,
+  kImages = 1,
+  kJavaScript = 2,
+  // kPpapiBroker = 3, // Deprecated.
+  kPopups = 5,
+  kGeolocation = 6,
+  kMixedScript = 7,
+  kProtocolHandlers = 8,
+  kMediaStream = 9,
+  kAds = 10,
+  kAutomaticDownloads = 11,
+  kMidiSysex = 12,
+  kSound = 13,
+  kFramebust = 14,
+  // kClipboardRead = 15, // Replaced by kClipboardReadWrite in M81.
+  kSensors = 16,
+  // kNotificationsQuietPrompt = 17, // Replaced by kNotifications in M124
+  kClipboardReadWrite = 18,
+  kStorageAccess = 19,
+  // kMidi = 20, // Deprecated.
+  kNotifications = 21,
+  [EnableIf=is_chromeos]
+  kSmartCard = 22,
+  [EnableIf=is_win]
+  kProtectedMediaIdentifier = 23,
+};
+
 // The set of information about URL bar RHS content setting icons sent from
 // browser to UI.
 struct ContentSettingState {
