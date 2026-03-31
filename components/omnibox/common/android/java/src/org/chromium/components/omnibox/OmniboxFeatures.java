@@ -82,7 +82,7 @@ public class OmniboxFeatures {
     // session.
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
-    // Timeout requests after 30 minutes if we somehow fail to remove our listener.
+    // Timeout requests after 10 minutes if we somehow fail to remove our listener.
     private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 10;
 
     // Minimum number of characters required to trigger rich inline autocomplete.
