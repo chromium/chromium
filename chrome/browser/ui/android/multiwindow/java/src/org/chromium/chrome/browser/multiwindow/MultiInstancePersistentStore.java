@@ -68,7 +68,6 @@ public class MultiInstancePersistentStore {
         }
         // 2. Migration enabled, execute migration if it hasn't been completed, otherwise read data
         // from the file.
-        // TODO: Add retry logic and metrics.
         else if (isMigrationCompleted) {
             sData = loadProtoFromFile();
         } else {

@@ -68,6 +68,7 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
 
     @Before
     public void setUp() {
+        MultiInstancePersistentStore.resetForTesting();
         mPrefs = MultiInstanceSharedPreferences.getInstance();
     }
 
@@ -77,7 +78,6 @@ public class MultiInstanceProtoMigrationControllerUnitTest {
         for (String key : MultiInstancePreferenceKeys.getAllGlobalKeys()) {
             mPrefs.removeKey(key);
         }
-        MultiInstancePersistentStore.resetForTesting();
     }
 
     @Test

@@ -70,6 +70,7 @@ public class MultiWindowTestUtils {
 
     /** Clears instance information. */
     public static void resetInstanceInfo() {
+        MultiInstancePersistentStore.resetForTesting();
         SharedPreferencesManager prefs = MultiInstanceSharedPreferences.getInstance();
         prefs.removeKeysWithPrefix(MultiInstancePreferenceKeys.MULTI_INSTANCE_URL);
         prefs.removeKeysWithPrefix(MultiInstancePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);

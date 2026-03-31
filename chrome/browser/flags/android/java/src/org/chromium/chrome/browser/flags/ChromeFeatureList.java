@@ -1036,7 +1036,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sMultiInstanceSharedPrefsMigration =
-            newCachedFlag(MULTI_INSTANCE_SHARED_PREFS_MIGRATION, false);
+            newCachedFlag(MULTI_INSTANCE_SHARED_PREFS_MIGRATION, true);
     public static final CachedFlag sMvcUpdateViewWhenModelChanged =
             newCachedFlag(
                     MVC_UPDATE_VIEW_WHEN_MODEL_CHANGED,

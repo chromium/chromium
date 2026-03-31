@@ -124,6 +124,7 @@ public class MultiWindowUtilsUnitTest {
 
     @Before
     public void setUp() {
+        MultiInstancePersistentStore.resetForTesting();
         mTabModelSupplier = ObservableSuppliers.createMonotonic(mNormalTabModel);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
