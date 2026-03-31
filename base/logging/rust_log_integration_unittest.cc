@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
+#include "base/test/gtest_util.h"
 #include "base/test/logging/test_rust_logger_consumer.rs.h"
 #include "base/test/mock_log.h"
+#include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
 
@@ -70,6 +73,32 @@ TEST_F(RustLogIntegrationTest, MAYBE_Placeholders) {
       .WillOnce(testing::Return(true));
 
   base::test::print_test_error_log_with_placeholder(2);
+}
+
+// TODO(crbug.com/374023535): Logging does not work in component builds.
+#if defined(COMPONENT_BUILD)
+#define MAYBE_Panic DISABLED_Panic
+#else
+#define MAYBE_Panic Panic
+#endif
+TEST(RustLogIntegrationTestWithoutMocking, MAYBE_Panic) {
+  std::string expected_msg;
+
+  // Verify presence of `LOG(FATAL)`-specific prefix in the message.
+  expected_msg += "\\bFATAL\\b.*base.test.logging.test_rust_logger_consumer.rs";
+  expected_msg += "[\\s\\S]*";  // Skip over a newline
+
+  // Verify presence of Rust-provided, generic panicking message
+  expected_msg += "panicked at.*base.test.logging.test_rust_logger_consumer.rs";
+  expected_msg += "[\\s\\S]*";  // Skip over a newline
+
+  // Verify presence of the custom message passed to `panic!` (including the
+  // placeholder).
+  expected_msg += "panic with placeholder 123";
+
+  BASE_EXPECT_DEATH(
+      { base::test::panic_from_rust_with_placeholder(123); },
+      expected_msg);
 }
 
 }  // namespace

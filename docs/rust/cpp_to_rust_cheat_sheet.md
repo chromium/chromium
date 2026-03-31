@@ -41,9 +41,17 @@ Note that `build/config/BUILD.gn`
 [consistently applies](https://source.chromium.org/chromium/chromium/src/+/main:build/config/BUILD.gn;l=50-53;drc=5f2c0dbe2bf823c4cb9af69f43b38ae68b5e9cd7)
 `dcheck_always_on` *both* to C++ and Rust, which means that
 `debug_assert!` is active exactly when `DCHECK` is active
-and should in general behave in a similar way
-(note that https://crbug.com/491515771 tracks some known issues
-which should eventually be fixed).
+and should in general behave in a similar way.
+
+`NOTREACHED() << "Foo is " << foo` from C++ is spelled as `panic!("Foo is
+{foo}")` in Rust.  Rust panics (triggered via `panic!`, `assert!`,
+`debug_assert!`, etc.) are translated into `LOG(FATAL)` calls and therefore
+should result in the same behaviour wrt printing a task trace, crash keys,
+communicating the crash to the test harness, etc.
+
+TODO(https://crbug.com/343218479): Static linking of Rust standard library
+means that Chromium's custom panic hook is only active in `//base` component
+and not in other binaries.
 
 ## `#if`, `BUILDFLAG`
 
