@@ -33,6 +33,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/search_engines/template_url_service.h"
@@ -264,9 +265,11 @@ void SearchEnginesHandler::OnTemplateURLServiceChanged() {
 
   list_controller_.UpdateIdToTemplateURLMapping();
 
-  // TODO(crbug.com/490315684): Fire `GetCategorizedTemplateUrls()` when
-  // `SearchSettingsUpdate` is enabled instead.
-  FireWebUIListener("search-engines-changed", GetSearchEnginesList());
+  FireWebUIListener(
+      "search-engines-changed",
+      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate)
+          ? GetCategorizedTemplateUrls()
+          : GetSearchEnginesList());
 }
 
 base::DictValue SearchEnginesHandler::CreateDictionaryForEngine(

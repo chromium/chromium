@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import type {SettingsSearchEngineListDialogElement, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
+import type {CategorizedTemplateUrls, SearchEnginesInfo, SettingsSearchPageElement} from 'chrome://settings/settings.js';
 import type {CrCheckboxElement} from 'chrome://settings/lazy_load.js';
 import {SearchEnginesBrowserProxyImpl, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -30,6 +30,21 @@ function generateSearchEngineInfo(): SearchEnginesInfo {
     actives: [],
     others: [],
     extensions: [],
+  };
+}
+
+function generateCategorizedTemplateUrls(): CategorizedTemplateUrls {
+  const searchEngines0 = createSampleSearchEngine(
+      {canBeDefault: true, isPrepopulated: true, default: true, id: 0});
+  const searchEngines1 = createSampleSearchEngine(
+      {canBeDefault: true, id: 1, isPrepopulated: true});
+  const searchEngines2 = createSampleSearchEngine({canBeDefault: true, id: 2});
+
+  return {
+    activeSiteShortcuts: [searchEngines0, searchEngines1, searchEngines2],
+    inactiveSiteShortcuts: [],
+    activeFeatureShortcuts: [],
+    inactiveFeatureShortcuts: [],
   };
 }
 
@@ -75,8 +90,8 @@ suite('SearchPageTests', function() {
     await flushTasks();
 
     const searchEngineListDialog =
-        page.shadowRoot!.querySelector<SettingsSearchEngineListDialogElement>(
-            'settings-search-engine-list-dialog')!;
+        page.shadowRoot!.querySelector('settings-search-engine-list-dialog');
+    assertTrue(!!searchEngineListDialog);
 
     const radioGroupElement =
         searchEngineListDialog.shadowRoot!.querySelector('cr-radio-group')!;
@@ -180,8 +195,8 @@ suite('SearchPageTests', function() {
     await flushTasks();
 
     const searchEngineListDialog =
-        page.shadowRoot!.querySelector<SettingsSearchEngineListDialogElement>(
-            'settings-search-engine-list-dialog')!;
+        page.shadowRoot!.querySelector('settings-search-engine-list-dialog');
+    assertTrue(!!searchEngineListDialog);
 
     const saveGuestChoiceCheckbox =
         searchEngineListDialog.shadowRoot!.querySelector<CrCheckboxElement>(
@@ -214,13 +229,16 @@ suite('SearchPageTests', function() {
 suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
   let page: SettingsSearchPageElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
+  let metrics: MetricsTracker;
 
-  setup(function() {
+  setup(async function() {
+    metrics = fakeMetricsPrivate();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues(
         {searchSettingsUpdate: true, isEeaChoiceCountry: false});
 
     browserProxy = new TestSearchEnginesBrowserProxy();
+    browserProxy.setCategorizedTemplateUrls(generateCategorizedTemplateUrls());
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
 
     page = document.createElement('settings-search-page');
@@ -231,13 +249,40 @@ suite('SearchPageWithSearchSettingsUpdateEnabledTests', function() {
     };
     document.body.appendChild(page);
 
+    await browserProxy.whenCalled('getCategorizedTemplateUrls');
     return flushTasks();
   });
 
-  test('Link row to search engines subpage is not visible', async function() {
-    await flushTasks();
+  test('Link row to search engines subpage is not visible', function() {
     const trigger =
         page.shadowRoot!.querySelector<HTMLElement>('#enginesSubpageTrigger');
     assertFalse(!!trigger);
   });
+
+  test(
+      'Categorized template URLs passed to search engine list dialog',
+      async function() {
+        // Open the search engine list dialog.
+        const openSearchEngineListButton =
+            page.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#openDialogButton');
+        assertTrue(!!openSearchEngineListButton);
+        openSearchEngineListButton.click();
+        assertEquals(1, metrics.count('ChooseDefaultSearchEngine'));
+        await flushTasks();
+
+        const searchEngineListDialog = page.shadowRoot!.querySelector(
+            'settings-search-engine-list-dialog');
+        assertTrue(!!searchEngineListDialog);
+
+        // The dialog received the expected engines.
+        const categorizedTemplateUrls = generateCategorizedTemplateUrls();
+        assertEquals(2, searchEngineListDialog.searchEngines.length);
+        assertEquals(
+            categorizedTemplateUrls.activeSiteShortcuts[0]!.id,
+            searchEngineListDialog.searchEngines[0]!.id);
+        assertEquals(
+            categorizedTemplateUrls.activeSiteShortcuts[1]!.id,
+            searchEngineListDialog.searchEngines[1]!.id);
+      });
 });

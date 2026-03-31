@@ -15,12 +15,13 @@ import '../settings_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './search_engine.html.js';
-import type {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
+import type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_engines_browser_proxy.js';
 import {SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
 const SettingsSearchEngineElementBase =
@@ -52,18 +53,37 @@ export class SettingsSearchEngineElement extends
     this.browserProxy_ = SearchEnginesBrowserProxyImpl.getInstance();
   }
 
-  override ready(): void {
-    super.ready();
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (loadTimeData.getBoolean('searchSettingsUpdate')) {
+      this.browserProxy_.getCategorizedTemplateUrls().then(
+          this.updateCurrentSearchEngineFromCategorizedUrls_.bind(this));
+      this.addWebUiListener(
+          'search-engines-changed',
+          this.updateCurrentSearchEngineFromCategorizedUrls_.bind(this));
+      return;
+    }
 
     this.browserProxy_.getSearchEnginesList().then(
-        this.updateCurrentSearchEngine_.bind(this));
+        this.updateCurrentSearchEngineFromDefaults_.bind(this));
     this.addWebUiListener(
-        'search-engines-changed', this.updateCurrentSearchEngine_.bind(this));
+        'search-engines-changed',
+        this.updateCurrentSearchEngineFromDefaults_.bind(this));
   }
 
-  private updateCurrentSearchEngine_(searchEngines: SearchEnginesInfo): void {
+  private updateCurrentSearchEngineFromDefaults_(
+      searchEngines: SearchEnginesInfo): void {
     const defaultSearchEngine = castExists(
         searchEngines.defaults.find(searchEngine => searchEngine.default));
+    this.currentSearchEngine_ = defaultSearchEngine;
+  }
+
+  private updateCurrentSearchEngineFromCategorizedUrls_(
+      categorizedTemplateUrls: CategorizedTemplateUrls) {
+    const defaultSearchEngine =
+        castExists(categorizedTemplateUrls.activeSiteShortcuts.find(
+            searchEngine => searchEngine.default));
     this.currentSearchEngine_ = defaultSearchEngine;
   }
 

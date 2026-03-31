@@ -30,6 +30,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -296,6 +297,10 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                          ash::external_urls::kScannerLearnMoreUrl);
 
   html_source->AddBoolean("isQuickAnswersSupported", IsQuickAnswersSupported());
+
+  html_source->AddBoolean(
+      "searchSettingsUpdate",
+      base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate));
 
   bool is_magic_boost_feature_enabled =
       chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures() ||
