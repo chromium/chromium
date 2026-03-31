@@ -337,6 +337,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   contextual_search::InputState _inputState;
   // The subscription for updates on the input state.
   base::CallbackListSubscription _inputStateSubscription;
+  // The previously observed mode of the composebox.
+  ComposeboxMode _previousMode;
 }
 
 - (instancetype)
@@ -372,6 +374,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     _isIncognito = isIncognito;
     _modeHolder = modeHolder;
     [_modeHolder addObserver:self];
+    _previousMode = _modeHolder.mode;
     _templateURLService = templateURLService;
     _searchEngineObserver =
         std::make_unique<SearchEngineObserverBridge>(self, _templateURLService);
@@ -775,6 +778,15 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 - (void)composeboxModeDidChange:(ComposeboxMode)mode {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  BOOL transitionedToAIMode = mode != ComposeboxMode::kRegularSearch &&
+                              _previousMode == ComposeboxMode::kRegularSearch;
+
+  if (transitionedToAIMode) {
+    [self.metricsRecorder
+        recordTextEditedBeforeAiMode:(_userInputInProgress && _hasText)];
+  }
+  _previousMode = mode;
 
   [self updateMode];
 
