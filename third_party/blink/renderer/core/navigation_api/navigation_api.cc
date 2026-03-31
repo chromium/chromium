@@ -832,6 +832,11 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
                 : DynamicTo<HTMLFormElement>(params->source_element.Get());
     if (form && form->Method() == FormSubmission::kPostMethod) {
       init->setFormData(FormData::Create(form, control, ASSERT_NO_EXCEPTION));
+      if (ongoing_navigate_event_ || !window_ || !window_->GetFrame()) {
+        // `FormData::Create` can fire a synchronous `formdata` event that
+        // starts another navigation or detaches the frame.
+        return DispatchResult::kAbort;
+      }
     }
   }
   if (ongoing_api_method_tracker_) {
