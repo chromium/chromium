@@ -26,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.os.Handler;
 import android.view.ContextThemeWrapper;
@@ -1673,5 +1674,18 @@ public class AutocompleteMediatorUnitTest {
 
         assertNull(session.getAutocompleteInput().getSiteSearchData());
         verify(mAutocompleteDelegate).setOmniboxEditingText("new text");
+    }
+
+    @Test
+    @SmallTest
+    public void testExternallyDrivenFadeAnimation() {
+        doReturn(true).when(mEmbedder).isTablet();
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        @Nullable Animator result = mMediator.setupSuggestionsListShowAnimation();
+        UnsyncedSuggestionsListAnimationDriver animationDriver =
+                (UnsyncedSuggestionsListAnimationDriver) mMediator.getAnimationDriverForTesting();
+        assertFalse(animationDriver.isRunning());
     }
 }

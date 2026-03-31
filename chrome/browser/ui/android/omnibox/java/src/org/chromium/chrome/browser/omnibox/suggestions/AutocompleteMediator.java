@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -78,6 +80,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -492,11 +495,6 @@ class AutocompleteMediator
             // - before stopAutocomplete() (when current suggestions are erased).
             mDropdownViewInfoListBuilder.onOmniboxSessionStateChange(true);
 
-            if (mAnimationDriver.isAnimationEnabled()) {
-                mAnimationDriver.onOmniboxSessionStateChange(true);
-                mDelegate.setKeyboardVisibility(true, false);
-            }
-
             updateModel();
 
             // Do not attach IME observer when omnibox autofocus feature enabled and Incognito NTP
@@ -589,6 +587,40 @@ class AutocompleteMediator
 
         mSessionState = null;
         setFuseboxAttachmentModelList(null);
+    }
+
+    @Nullable Animator setupSuggestionsListShowAnimation() {
+        // The fade-in animation is performed in sync with a LocationBar fade. We set it up but
+        // don't start it or set its duration since that's the job of the caller.
+        if (shouldAnimateFuseboxPopover()) {
+            mListPropertyModel.set(SuggestionListProperties.ALPHA, 0.0f);
+            var animator =
+                    PropertyModelAnimatorFactory.ofFloat(
+                            mListPropertyModel, SuggestionListProperties.ALPHA, 1.0f);
+            animator.addListener(
+                    new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            propagateOmniboxSessionStateChange(true);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            propagateOmniboxSessionStateChange(true);
+                            mListPropertyModel.set(SuggestionListProperties.ALPHA, 1.0f);
+                        }
+                    });
+            return animator;
+        }
+
+        // If not performing the popover fade, we run our own animation that's not synced. We start
+        // it and it runs on its own cadence.
+        if (mAnimationDriver.isAnimationEnabled()) {
+            mAnimationDriver.onOmniboxSessionStateChange(true);
+            mDelegate.setKeyboardVisibility(true, false);
+        }
+
+        return null;
     }
 
     private void setAutocompleteController(@Nullable AutocompleteController controller) {
@@ -1170,6 +1202,11 @@ class AutocompleteMediator
         boolean fuseboxOnTablet = mEmbedder.isTablet() && fuseboxState != FuseboxState.DISABLED;
         mListPropertyModel.set(SuggestionListProperties.ROUND_TOP_CORNERS, !fuseboxOnTablet);
         mListPropertyModel.set(SuggestionListProperties.DRAW_OVER_ANCHOR, !fuseboxOnTablet);
+    }
+
+    boolean shouldAnimateFuseboxPopover() {
+        return mFuseboxCoordinator.getFuseboxStateSupplier().get() != FuseboxState.DISABLED
+                && mEmbedder.isTablet();
     }
 
     /**

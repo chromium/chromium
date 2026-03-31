@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.base.KeyNavigationUtil.isTabNavigation;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -279,6 +280,14 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
     public void onUrlAnimationFinished() {
         mMediator.onUrlAnimationFinished();
+    }
+
+    /**
+     * Setup the animation for showing the suggestions list. If the animation exists and can be
+     * synchronized, it is returned in an unstarted state; otherwise null is returned.
+     */
+    public @Nullable Animator setupSuggestionsListShowAnimation() {
+        return mMediator.setupSuggestionsListShowAnimation();
     }
 
     /**
