@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -10,19 +11,17 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/views/interaction/element_tracker_views.h"
 
 namespace glic {
 
 namespace {
-base::OnceCallback<gfx::Point(ui::TrackedElement*)> MoveMouseToCallback(
-    gfx::Vector2d offset) {
-  return base::BindOnce(
-      [](gfx::Vector2d offset, ui::TrackedElement* el) {
-        auto* view =
-            views::test::InteractiveViewsTestApi::AsView<views::View>(el);
-        return view->GetBoundsInScreen().origin() + offset;
-      },
-      std::move(offset));
+auto GetPointWithOffset(int x, int y) {
+  return base::BindLambdaForTesting([x, y](ui::TrackedElement* el) {
+    auto* view = views::test::InteractiveViewsTestApi::AsView<views::View>(el);
+    return view->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
+  });
 }
 }  // namespace
 
@@ -58,6 +57,153 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
       // glic-selection-overlay is expected to be displayed.
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, MultiRegionSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kStaticRegion = {"selection-overlay-app",
+                                   "glic-selection-overlay",
+                                   "post-selection-renderer", ".static-region"};
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      // 0. Verify multi-region selection is enabled.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.multiRegionSelectionEnabled === true"),
+
+      // 1. Draw first region (drag from 50,50 to 150,150).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      // Verify first region is active.
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kRenderer,
+          "el => el.hasSelection() && el.selectedRegions.length === 1"),
+
+      // 2. Draw second region (starting far from the first one).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(400, 400)),
+      // Verify the newly added region which the mouse is on is the active
+      // region.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      // Verify that the first region is now a static region and that there are
+      // 2 total regions.
+      WaitForElementVisible(kOverlayWebContentsId, kStaticRegion),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.staticRegions.length === 1 && "
+                        "el.selectedRegions.length === 2"),
+
+      // 3. Move mouse back over the first region (center is 100, 100).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(100, 100)),
+
+      // Verify that hovering upon the first created region is now the active
+      // region, and the second region becomes static.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      WaitForElementVisible(kOverlayWebContentsId, kStaticRegion),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.staticRegions.length === 1 && "
+                        "el.selectedRegions.length === 2")
+
+  );
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, DeleteActiveRegion) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  const DeepQuery kOverlayApp = {"selection-overlay-app"};
+  const DeepQuery kRenderer = {"selection-overlay-app",
+                               "glic-selection-overlay",
+                               "post-selection-renderer"};
+  const DeepQuery kCloseButton = {"selection-overlay-app",
+                                  "glic-selection-overlay",
+                                  "post-selection-renderer", ".close-button"};
+  const DeepQuery kStaticRegion = {"selection-overlay-app",
+                                   "glic-selection-overlay",
+                                   "post-selection-renderer", ".static-region"};
+
+  RunTestSequence(
+      InstrumentTab(kActiveTab), OpenGlic(),
+      ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlayApp,
+                        "el => el.screenshot_ !== null"),
+      // 0. Verify multi-region selection is enabled.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.multiRegionSelectionEnabled === true"),
+
+      // 1. Draw first region (drag from 50,50 to 150,150).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(50, 50)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(150, 150)),
+      // Verify first region is active.
+      WaitForJsResultAt(
+          kOverlayWebContentsId, kRenderer,
+          "el => el.hasSelection() && el.selectedRegions.length === 1"),
+
+      // 2. Draw second region (starting far from the first one).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(300, 300)),
+      DragMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(400, 400)),
+      // Verify the newly added region which the mouse is on is the active
+      // region.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      // Verify that the first region is now a static region and that there are
+      // 2 total regions.
+      WaitForElementVisible(kOverlayWebContentsId, kStaticRegion),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.staticRegions.length === 1 && "
+                        "el.selectedRegions.length === 2"),
+
+      // 3. Move mouse back over the first region (center is 100, 100).
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(100, 100)),
+
+      // Verify that hovering upon the first created region is now the active
+      // region, and the second region becomes static.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection()"),
+      WaitForElementVisible(kOverlayWebContentsId, kStaticRegion),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.staticRegions.length === 1 && "
+                        "el.selectedRegions.length === 2"),
+      // Click the close button for closing first region.
+      ClickElement(kOverlayWebContentsId, kCloseButton),
+      // Now move mouse to the first region.
+      MoveMouseTo(OverlayBaseController::kOverlayId,
+                  GetPointWithOffset(350, 350)),
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => el.hasSelection() && "
+                        "el.selectedRegions.length === 1"),
+      // Click the close button for closing second region.
+      ClickElement(kOverlayWebContentsId, kCloseButton),
+      // Verify there is no active regions or static regions.
+      WaitForJsResultAt(kOverlayWebContentsId, kRenderer,
+                        "el => !el.hasSelection() && "
+                        "el.selectedRegions.length === 0"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -193,9 +339,9 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
                   return instance && instance->HasFocus();
                 }),
       MoveMouseTo(OverlayBaseController::kOverlayId,
-                  MoveMouseToCallback(gfx::Vector2d(10, 10))),
+                  GetPointWithOffset(10, 10)),
       DragMouseTo(OverlayBaseController::kOverlayId,
-                  MoveMouseToCallback(gfx::Vector2d(100, 100))),
+                  GetPointWithOffset(100, 100)),
       WaitForState(kGlicHasFocus, true));
 }
 

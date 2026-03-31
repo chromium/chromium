@@ -156,6 +156,7 @@ export class SelectionOverlayElementElement extends
       this.draggingRespondent = DragFeature.MANUAL_REGION;
 
       this.activeRegionId = '';
+      this.baseHandler.activeRegionId = '';
       this.selectionElements.postSelectionRenderer.clearSelection();
 
       // TODO(crbug.com/421002691): follow the convention where the layer
