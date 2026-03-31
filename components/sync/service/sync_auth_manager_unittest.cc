@@ -429,14 +429,14 @@ TEST_P(SyncAuthManagerTest,
   auth_manager->ConnectionOpened();
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
 
   // Expect no backoff the first time the request is canceled.
   EXPECT_FALSE(auth_manager->IsRetryingAccessTokenFetchForTest());
 
   // Cancel the retry as well.
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
 
   // Expect retry with backoff when the first retry was also canceled.
   EXPECT_TRUE(auth_manager->IsRetryingAccessTokenFetchForTest());
@@ -457,7 +457,7 @@ TEST_P(SyncAuthManagerTest,
   auth_manager->ConnectionOpened();
 
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::REQUEST_CANCELED));
+      GoogleServiceAuthError::CreateRequestCanceled());
 
   // Expect no backoff the first time the request is canceled.
   EXPECT_FALSE(auth_manager->IsRetryingAccessTokenFetchForTest());

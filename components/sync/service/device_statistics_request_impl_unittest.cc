@@ -98,7 +98,8 @@ TEST_F(DeviceStatisticsRequestImplTest, ShouldHandleAuthError) {
   base::test::TestFuture<void> future;
   request.Start(future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable(/*error_message=*/
+                                                     std::string()));
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(DeviceStatisticsRequest::State::kFailed, request.GetState());
 }

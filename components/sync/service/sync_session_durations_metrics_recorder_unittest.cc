@@ -54,8 +54,8 @@ class SyncSessionDurationsMetricsRecorderTest : public testing::Test {
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         identity_test_env_.identity_manager()->GetPrimaryAccountId(
             signin::ConsentLevel::kSignin),
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   void ClearAuthError() {
@@ -242,7 +242,8 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest,
       identity_test_env_.MakeAccountAvailable("foo@gmail.com");
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   base::HistogramTester ht;
   StartAndEndSession(kSessionTime);
