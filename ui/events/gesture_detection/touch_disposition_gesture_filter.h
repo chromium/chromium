@@ -32,6 +32,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilterClient {
 // sequence based on the ack dispositions of the generating touch events.
 class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
  public:
+  using AckTimestampOverride = base::AutoReset<base::TimeTicks>;
+
   explicit TouchDispositionGestureFilter(
       TouchDispositionGestureFilterClient* client);
 
@@ -76,10 +78,6 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
 
   void ResetGestureHandlingState();
 
- protected:
-  friend class GestureScrollUpdatesCompensatedTest;
-
-  using AckTimestampOverride = base::AutoReset<base::TimeTicks>;
   static AckTimestampOverride OverrideReferenceTimestampForTesting(
       base::TimeTicks reference_timestamp);
 
