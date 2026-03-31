@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +38,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -328,7 +330,15 @@ void PaymentHandlerWebFlowViewController::FillContentView(
       ->SetOpenedWindow(
           /*payment_handler_web_contents=*/web_contents());
 
-  web_view->LoadInitialURL(target_);
+  if (base::FeatureList::IsEnabled(
+          payments::features::kPaymentHandlerDialogUseInitiatorInUrlLoad)) {
+    content::NavigationController::LoadURLParams params(target_);
+    params.initiator_origin =
+        url::Origin::Create(state()->GetWebContents()->GetLastCommittedURL());
+    web_view->GetWebContents()->GetController().LoadURLWithParams(params);
+  } else {
+    web_view->LoadInitialURL(target_);
+  }
 
   // Make the web view show up in the task manager.
   task_manager::WebContentsTags::CreateForTabContents(web_contents());

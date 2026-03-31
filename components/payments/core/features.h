@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kPaymentRequestRejectTooSmallWindows);
 // differentiate between 'internal error' and 'user cancelled' as outcomes.
 BASE_DECLARE_FEATURE(kPaymentRequestSupportReportingAppError);
 
+// Used to control whether Payment Handler dialog includes an initiator during
+// the URL load.
+BASE_DECLARE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad);
+
 }  // namespace features
 }  // namespace payments
 

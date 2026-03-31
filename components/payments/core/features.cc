@@ -54,5 +54,8 @@ BASE_FEATURE(kPaymentRequestRejectTooSmallWindows,
 BASE_FEATURE(kPaymentRequestSupportReportingAppError,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPaymentHandlerDialogUseInitiatorInUrlLoad,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments
