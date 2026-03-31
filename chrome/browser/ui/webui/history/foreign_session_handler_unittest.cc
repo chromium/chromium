@@ -9,11 +9,13 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_types.h"
 #include "components/sync_sessions/mock_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,6 +26,11 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace browser_sync {
+
+MATCHER_P(TabHasUrl, url, "") {
+  return !arg.navigations.empty() &&
+         arg.navigations.back().virtual_url() == url;
+}
 
 // Partial SessionSyncService that can fake behavior for
 // SubscribeToForeignSessionsChanged() including the notification to
@@ -78,8 +85,8 @@ class ForeignSessionHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
 
     handler_ = std::make_unique<ForeignSessionHandler>(
-        handler_remote_.BindNewPipeAndPassReceiver(), profile(),
-        web_contents());
+        handler_remote_.BindNewPipeAndPassReceiver(), profile(), web_contents(),
+        restore_tab_callback_.Get(), restore_windows_callback_.Get());
     handler_->SetPage(page_.BindAndGetRemote());
   }
 
@@ -110,6 +117,12 @@ class ForeignSessionHandlerTest : public ChromeRenderViewHostTestHarness {
   MockForeignSessionPage page_;
   mojo::Remote<history::mojom::ForeignSessionPageHandler> handler_remote_;
   std::unique_ptr<ForeignSessionHandler> handler_;
+
+  base::MockCallback<ForeignSessionHandler::RestoreForeignSessionTabCallback>
+      restore_tab_callback_;
+  base::MockCallback<
+      ForeignSessionHandler::RestoreForeignSessionWindowsCallback>
+      restore_windows_callback_;
 };
 
 TEST_F(ForeignSessionHandlerTest, ShouldFireForeignSessionsChanged) {
@@ -119,21 +132,57 @@ TEST_F(ForeignSessionHandlerTest, ShouldFireForeignSessionsChanged) {
 }
 
 TEST_F(ForeignSessionHandlerTest, OpenForeignSessionAllTabs) {
+  ::sessions::SessionWindow window1;
+  std::vector<const ::sessions::SessionWindow*> windows = {&window1};
+
   EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
               GetForeignSession("my_session_tag"))
-      .Times(testing::AtLeast(1));
+      .WillOnce(testing::Return(windows));
+
+  EXPECT_CALL(restore_windows_callback_, Run(profile(), windows));
 
   handler()->OpenForeignSessionAllTabs("my_session_tag");
 }
 
-TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTab) {
+TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabLeftClick) {
+  ::sessions::SessionTab session_tab;
+  session_tab.navigations.emplace_back();
+  session_tab.navigations.back().set_virtual_url(
+      GURL("https://www.google.com"));
+
   EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
               GetForeignTab("my_session_tag",
                             SessionID::FromSerializedValue(456), testing::_))
-      .Times(testing::AtLeast(1));
+      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(&session_tab),
+                               testing::Return(true)));
 
-  handler()->OpenForeignSessionTab("my_session_tag", 456,
-                                   ui::mojom::ClickModifiers::New());
+  EXPECT_CALL(restore_tab_callback_,
+              Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
+                  WindowOpenDisposition::CURRENT_TAB));
+
+  ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
+  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
+}
+
+TEST_F(ForeignSessionHandlerTest, OpenForeignSessionTabMiddleClick) {
+  ::sessions::SessionTab session_tab;
+  session_tab.navigations.emplace_back();
+  session_tab.navigations.back().set_virtual_url(
+      GURL("https://www.google.com"));
+
+  EXPECT_CALL(*session_sync_service()->GetOpenTabsUIDelegate(),
+              GetForeignTab("my_session_tag",
+                            SessionID::FromSerializedValue(456), testing::_))
+      .WillOnce(testing::DoAll(testing::SetArgPointee<2>(&session_tab),
+                               testing::Return(true)));
+
+  EXPECT_CALL(restore_tab_callback_,
+              Run(web_contents(), TabHasUrl(GURL("https://www.google.com")),
+                  WindowOpenDisposition::NEW_BACKGROUND_TAB));
+
+  ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
+  modifiers->middle_button = true;
+  handler_->OpenForeignSessionTab("my_session_tag", 456, std::move(modifiers));
 }
 
 TEST_F(ForeignSessionHandlerTest, DeleteForeignSession) {

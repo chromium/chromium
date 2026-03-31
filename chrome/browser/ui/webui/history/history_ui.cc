@@ -27,6 +27,7 @@
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -59,6 +60,7 @@
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
 #include "components/prefs/pref_service.h"
+#include "components/sessions/core/session_types.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -292,7 +294,19 @@ void HistoryUI::BindInterface(
   foreign_session_handler_ =
       std::make_unique<browser_sync::ForeignSessionHandler>(
           std::move(pending_page_handler), Profile::FromWebUI(web_ui()),
-          web_ui()->GetWebContents());
+          web_ui()->GetWebContents(),
+          base::BindRepeating([](content::WebContents* source_web_contents,
+                                 const ::sessions::SessionTab& tab,
+                                 WindowOpenDisposition disposition) {
+            SessionRestore::RestoreForeignSessionTab(source_web_contents, tab,
+                                                     disposition);
+          }),
+          base::BindRepeating(
+              [](Profile* profile,
+                 const std::vector<const ::sessions::SessionWindow*>& windows) {
+                SessionRestore::RestoreForeignSessionWindows(
+                    profile, windows.begin(), windows.end(), base::DoNothing());
+              }));
 }
 
 void HistoryUI::BindInterface(

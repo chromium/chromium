@@ -140,10 +140,17 @@ ForeignSessionHandler::ForeignSessionHandler(
     mojo::PendingReceiver<history::mojom::ForeignSessionPageHandler>
         pending_page_handler,
     Profile* profile,
-    content::WebContents* web_contents)
+    content::WebContents* web_contents,
+    RestoreForeignSessionTabCallback restore_tab_callback,
+    RestoreForeignSessionWindowsCallback restore_windows_callback)
     : profile_(profile),
       web_contents_(web_contents),
-      receiver_(this, std::move(pending_page_handler)) {
+      receiver_(this, std::move(pending_page_handler)),
+      restore_tab_callback_(std::move(restore_tab_callback)),
+      restore_windows_callback_(std::move(restore_windows_callback)) {
+  CHECK(restore_tab_callback_);
+  CHECK(restore_windows_callback_);
+
   sync_sessions::SessionSyncService* service =
       SessionSyncServiceFactory::GetInstance()->GetForProfile(profile_);
 
@@ -201,8 +208,7 @@ void ForeignSessionHandler::OpenForeignSessionAllTabs(
     return;
   }
 
-  SessionRestore::RestoreForeignSessionWindows(
-      profile_, windows.begin(), windows.end(), base::DoNothing());
+  restore_windows_callback_.Run(profile_, windows);
 }
 
 void ForeignSessionHandler::OpenForeignSessionTab(
@@ -235,7 +241,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
       modifiers->middle_button, modifiers->alt_key, modifiers->ctrl_key,
       modifiers->meta_key, modifiers->shift_key);
 
-  SessionRestore::RestoreForeignSessionTab(web_contents_, *tab, disposition);
+  restore_tab_callback_.Run(web_contents_, *tab, disposition);
 }
 
 void ForeignSessionHandler::DeleteForeignSession(
