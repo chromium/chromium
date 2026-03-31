@@ -432,7 +432,11 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
     }
 
     private static @Nullable String getIdForUrl(
-            String url, ActivityTabProvider activityTabProvider) {
+            String url,
+            ActivityTabProvider activityTabProvider,
+            @Nullable String targetPackage,
+            boolean addTextUri,
+            boolean addProtoUri) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_CONTENT_PROVIDER)) {
             return null;
         }
@@ -449,7 +453,8 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
                         new PageContentInvocationState(
                                 UUID.randomUUID().toString(), url, activityTabProvider);
 
-                grantAccessToId(sInvocationState.mInvocationId);
+                grantAccessToId(
+                        sInvocationState.mInvocationId, targetPackage, addTextUri, addProtoUri);
 
                 // Invalidate this ID after 60 seconds.
                 String invocationId = sInvocationState.mInvocationId;
@@ -491,7 +496,46 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
      */
     public static @Nullable String getAssistContentStructuredDataForUrl(
             String url, ActivityTabProvider activityTabProvider, boolean isManagedProfile) {
-        String invocationId = getIdForUrl(url, activityTabProvider);
+        return getAssistContentStructuredDataForUrl(
+                url,
+                activityTabProvider,
+                isManagedProfile,
+                /* addTextUri= */ true,
+                /* addProtoUri= */ true,
+                /* targetPackage= */ null);
+    }
+
+    /**
+     * Generates a JSON string to be attached to AssistContent to be shared with the specified
+     * package.
+     *
+     * @param url The URL of the currently active page, the returned URI will only work for this
+     *     URL.
+     * @param activityTabProvider Provider used to ensure that {@code url} is still active on all
+     *     calls to {@code query()}
+     * @param isManagedProfile Whether the current profile has an enterprise owner.
+     * @param addTextUri Whether to include a URI for the text format.
+     * @param addProtoUri Whether to include a URI for the proto format.
+     * @param targetPackage The package to grant access to. If null, the default assistant package
+     *     will be used.
+     * @return A JSON string containing a URI to be used with the {@code query()} method to extract
+     *     the text of {@code url}.
+     */
+    public static @Nullable String getAssistContentStructuredDataForUrl(
+            String url,
+            ActivityTabProvider activityTabProvider,
+            boolean isManagedProfile,
+            boolean addTextUri,
+            boolean addProtoUri,
+            @Nullable String targetPackage) {
+        RecordHistogram.recordBooleanHistogram(
+                "Android.AssistContent.WebPageContentProvider.TargetPackageProvided",
+                targetPackage != null);
+        if (!addTextUri && !addProtoUri) {
+            return null;
+        }
+        String invocationId =
+                getIdForUrl(url, activityTabProvider, targetPackage, addTextUri, addProtoUri);
         if (invocationId == null) {
             PageContentProviderMetrics.recordPageProviderEvent(
                     PageContentProviderEvent.GET_CONTENT_URI_FAILED);
@@ -501,17 +545,14 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         String structuredData;
 
         try {
-            structuredData =
-                    new JSONObject()
-                            .put(
-                                    "page_metadata",
-                                    new JSONObject()
-                                            .put("is_work_profile", isManagedProfile)
-                                            .put("content_uri", buildTextFormatUri(invocationId))
-                                            .put(
-                                                    "proto_content_uri",
-                                                    buildProtoFormatUri(invocationId)))
-                            .toString();
+            JSONObject metadata = new JSONObject().put("is_work_profile", isManagedProfile);
+            if (addTextUri) {
+                metadata.put("content_uri", buildTextFormatUri(invocationId));
+            }
+            if (addProtoUri) {
+                metadata.put("proto_content_uri", buildProtoFormatUri(invocationId));
+            }
+            structuredData = new JSONObject().put("page_metadata", metadata).toString();
         } catch (JSONException e) {
             PageContentProviderMetrics.recordPageProviderEvent(
                     PageContentProviderEvent.GET_CONTENT_URI_FAILED);
@@ -544,28 +585,40 @@ public class PageContentProviderImpl extends SplitCompatContentProvider.Impl {
         return buildContentUri(PROTO_FORMAT_PATH, invocationId);
     }
 
-    private static void grantAccessToId(String invocationId) {
-        var assistantPackageName =
-                PackageUtils.getDefaultAssistantPackageName(ContextUtils.getApplicationContext());
-        RecordHistogram.recordBooleanHistogram(
-                "Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult",
-                assistantPackageName != null);
-        if (assistantPackageName == null) {
-            return;
+    private static void grantAccessToId(
+            String invocationId,
+            @Nullable String packageName,
+            boolean addTextUri,
+            boolean addProtoUri) {
+        if (packageName == null) {
+            // Use the default assistant package if not provided.
+            packageName =
+                    PackageUtils.getDefaultAssistantPackageName(
+                            ContextUtils.getApplicationContext());
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.AssistContent.WebPageContentProvider.GetAssistantPackageResult",
+                    packageName != null);
+            if (packageName == null) {
+                return;
+            }
         }
 
         // TODO: Calls to grantUriPermission seem to cause ANRs, maybe call this asynchronously or
         // grant the permission before AssistContent is requested.
-        ContextUtils.getApplicationContext()
-                .grantUriPermission(
-                        assistantPackageName,
-                        buildTextFormatUri(invocationId),
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        ContextUtils.getApplicationContext()
-                .grantUriPermission(
-                        assistantPackageName,
-                        buildProtoFormatUri(invocationId),
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        if (addTextUri) {
+            ContextUtils.getApplicationContext()
+                    .grantUriPermission(
+                            packageName,
+                            buildTextFormatUri(invocationId),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
+        if (addProtoUri) {
+            ContextUtils.getApplicationContext()
+                    .grantUriPermission(
+                            packageName,
+                            buildProtoFormatUri(invocationId),
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }
     }
 
     private static void revokeAccessToId(String invocationId) {

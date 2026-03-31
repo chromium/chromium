@@ -726,6 +726,18 @@ chromium-metrics-reviews@google.com.
   <token key="Format" variants="PageContentProvider_OutputFormat"/>
 </histogram>
 
+<histogram
+    name="Android.AssistContent.WebPageContentProvider.TargetPackageProvided"
+    enum="Boolean" expires_after="2026-09-06">
+  <owner>salg@google.com</owner>
+  <owner>tivi@google.com</owner>
+  <summary>
+    Records whether the targetPackage argument is non-null when AssistContent is
+    requested for web pages. A false value means the default assistant package
+    will be used.
+  </summary>
+</histogram>
+
 <!-- LINT.IfChange(DeviceLockSource) -->
 
 <histogram name="Android.Automotive.DeviceLockDialogAction.{Source}"
