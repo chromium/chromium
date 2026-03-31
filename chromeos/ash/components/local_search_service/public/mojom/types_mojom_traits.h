@@ -19,8 +19,8 @@ struct EnumTraits<ash::local_search_service::mojom::IndexId,
                   ash::local_search_service::IndexId> {
   static ash::local_search_service::mojom::IndexId ToMojom(
       ash::local_search_service::IndexId input);
-  static bool FromMojom(ash::local_search_service::mojom::IndexId input,
-                        ash::local_search_service::IndexId* output);
+  static ash::local_search_service::IndexId FromMojom(
+      ash::local_search_service::mojom::IndexId input);
 };
 
 template <>
@@ -28,8 +28,8 @@ struct EnumTraits<ash::local_search_service::mojom::Backend,
                   ash::local_search_service::Backend> {
   static ash::local_search_service::mojom::Backend ToMojom(
       ash::local_search_service::Backend input);
-  static bool FromMojom(ash::local_search_service::mojom::Backend input,
-                        ash::local_search_service::Backend* output);
+  static ash::local_search_service::Backend FromMojom(
+      ash::local_search_service::mojom::Backend input);
 };
 
 template <>
@@ -133,8 +133,8 @@ struct EnumTraits<ash::local_search_service::mojom::ResponseStatus,
                   ash::local_search_service::ResponseStatus> {
   static ash::local_search_service::mojom::ResponseStatus ToMojom(
       ash::local_search_service::ResponseStatus input);
-  static bool FromMojom(ash::local_search_service::mojom::ResponseStatus input,
-                        ash::local_search_service::ResponseStatus* out);
+  static ash::local_search_service::ResponseStatus FromMojom(
+      ash::local_search_service::mojom::ResponseStatus input);
 };
 
 }  // namespace mojo

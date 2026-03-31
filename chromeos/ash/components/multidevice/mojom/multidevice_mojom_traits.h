@@ -68,8 +68,8 @@ class EnumTraits<ash::multidevice::mojom::SoftwareFeature,
  public:
   static ash::multidevice::mojom::SoftwareFeature ToMojom(
       ash::multidevice::SoftwareFeature input);
-  static bool FromMojom(ash::multidevice::mojom::SoftwareFeature input,
-                        ash::multidevice::SoftwareFeature* out);
+  static ash::multidevice::SoftwareFeature FromMojom(
+      ash::multidevice::mojom::SoftwareFeature input);
 };
 
 template <>
@@ -78,8 +78,8 @@ class EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
  public:
   static ash::multidevice::mojom::SoftwareFeatureState ToMojom(
       ash::multidevice::SoftwareFeatureState input);
-  static bool FromMojom(ash::multidevice::mojom::SoftwareFeatureState input,
-                        ash::multidevice::SoftwareFeatureState* out);
+  static ash::multidevice::SoftwareFeatureState FromMojom(
+      ash::multidevice::mojom::SoftwareFeatureState input);
 };
 
 }  // namespace mojo

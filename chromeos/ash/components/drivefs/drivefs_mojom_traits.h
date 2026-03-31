@@ -17,8 +17,7 @@ struct COMPONENT_EXPORT(DRIVEFS_MOJOM)
     EnumTraits<drivefs::mojom::FileError, drive::FileError> {
   static drivefs::mojom::FileError ToMojom(drive::FileError input);
 
-  static bool FromMojom(drivefs::mojom::FileError input,
-                        drive::FileError* output);
+  static drive::FileError FromMojom(drivefs::mojom::FileError input);
 };
 
 }  // namespace mojo

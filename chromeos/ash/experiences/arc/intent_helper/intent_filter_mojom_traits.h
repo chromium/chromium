@@ -79,8 +79,7 @@ struct StructTraits<arc::mojom::AuthorityEntryDataView,
 template <>
 struct EnumTraits<arc::mojom::PatternType, arc::PatternType> {
   static arc::mojom::PatternType ToMojom(arc::PatternType input);
-  static bool FromMojom(arc::mojom::PatternType input,
-                        arc::PatternType* output);
+  static arc::PatternType FromMojom(arc::mojom::PatternType input);
 };
 
 template <>

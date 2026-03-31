@@ -39,21 +39,17 @@ struct EnumTraits<chromeos::cdm::mojom::CdmMessageType,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(chromeos::cdm::mojom::CdmMessageType input,
-                        ::media::CdmMessageType* output) {
+  static std::optional<::media::CdmMessageType> FromMojom(
+      chromeos::cdm::mojom::CdmMessageType input) {
     switch (input) {
       case chromeos::cdm::mojom::CdmMessageType::LICENSE_REQUEST:
-        *output = ::media::CdmMessageType::LICENSE_REQUEST;
-        return true;
+        return ::media::CdmMessageType::LICENSE_REQUEST;
       case chromeos::cdm::mojom::CdmMessageType::LICENSE_RENEWAL:
-        *output = ::media::CdmMessageType::LICENSE_RENEWAL;
-        return true;
+        return ::media::CdmMessageType::LICENSE_RENEWAL;
       case chromeos::cdm::mojom::CdmMessageType::LICENSE_RELEASE:
-        *output = ::media::CdmMessageType::LICENSE_RELEASE;
-        return true;
+        return ::media::CdmMessageType::LICENSE_RELEASE;
       case chromeos::cdm::mojom::CdmMessageType::INDIVIDUALIZATION_REQUEST:
-        *output = ::media::CdmMessageType::INDIVIDUALIZATION_REQUEST;
-        return true;
+        return ::media::CdmMessageType::INDIVIDUALIZATION_REQUEST;
     }
 
     NOTREACHED();
@@ -77,15 +73,13 @@ struct EnumTraits<chromeos::cdm::mojom::CdmSessionType,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(chromeos::cdm::mojom::CdmSessionType input,
-                        ::media::CdmSessionType* output) {
+  static std::optional<::media::CdmSessionType> FromMojom(
+      chromeos::cdm::mojom::CdmSessionType input) {
     switch (input) {
       case chromeos::cdm::mojom::CdmSessionType::kTemporary:
-        *output = ::media::CdmSessionType::kTemporary;
-        return true;
+        return ::media::CdmSessionType::kTemporary;
       case chromeos::cdm::mojom::CdmSessionType::kPersistentLicense:
-        *output = ::media::CdmSessionType::kPersistentLicense;
-        return true;
+        return ::media::CdmSessionType::kPersistentLicense;
     }
 
     NOTREACHED();
@@ -113,21 +107,17 @@ struct EnumTraits<chromeos::cdm::mojom::EmeInitDataType,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(chromeos::cdm::mojom::EmeInitDataType input,
-                        ::media::EmeInitDataType* output) {
+  static std::optional<::media::EmeInitDataType> FromMojom(
+      chromeos::cdm::mojom::EmeInitDataType input) {
     switch (input) {
       case chromeos::cdm::mojom::EmeInitDataType::WEBM:
-        *output = ::media::EmeInitDataType::WEBM;
-        return true;
+        return ::media::EmeInitDataType::WEBM;
       case chromeos::cdm::mojom::EmeInitDataType::CENC:
-        *output = ::media::EmeInitDataType::CENC;
-        return true;
+        return ::media::EmeInitDataType::CENC;
       case chromeos::cdm::mojom::EmeInitDataType::KEYIDS:
-        *output = ::media::EmeInitDataType::KEYIDS;
-        return true;
+        return ::media::EmeInitDataType::KEYIDS;
       case chromeos::cdm::mojom::EmeInitDataType::UNKNOWN:
-        *output = ::media::EmeInitDataType::UNKNOWN;
-        return true;
+        return ::media::EmeInitDataType::UNKNOWN;
     }
 
     NOTREACHED();
@@ -165,39 +155,29 @@ struct EnumTraits<chromeos::cdm::mojom::HdcpVersion, ::media::HdcpVersion> {
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(chromeos::cdm::mojom::HdcpVersion input,
-                        ::media::HdcpVersion* output) {
+  static std::optional<::media::HdcpVersion> FromMojom(
+      chromeos::cdm::mojom::HdcpVersion input) {
     switch (input) {
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersionNone:
-        *output = ::media::HdcpVersion::kHdcpVersionNone;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersionNone;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion1_0:
-        *output = ::media::HdcpVersion::kHdcpVersion1_0;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion1_0;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion1_1:
-        *output = ::media::HdcpVersion::kHdcpVersion1_1;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion1_1;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion1_2:
-        *output = ::media::HdcpVersion::kHdcpVersion1_2;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion1_2;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion1_3:
-        *output = ::media::HdcpVersion::kHdcpVersion1_3;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion1_3;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion1_4:
-        *output = ::media::HdcpVersion::kHdcpVersion1_4;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion1_4;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion2_0:
-        *output = ::media::HdcpVersion::kHdcpVersion2_0;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion2_0;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion2_1:
-        *output = ::media::HdcpVersion::kHdcpVersion2_1;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion2_1;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion2_2:
-        *output = ::media::HdcpVersion::kHdcpVersion2_2;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion2_2;
       case chromeos::cdm::mojom::HdcpVersion::kHdcpVersion2_3:
-        *output = ::media::HdcpVersion::kHdcpVersion2_3;
-        return true;
+        return ::media::HdcpVersion::kHdcpVersion2_3;
     }
 
     NOTREACHED();
@@ -225,21 +205,17 @@ struct EnumTraits<chromeos::cdm::mojom::PromiseException,
 
   // Returning false results in deserialization failure and causes the
   // message pipe receiving it to be disconnected.
-  static bool FromMojom(chromeos::cdm::mojom::PromiseException input,
-                        ::media::CdmPromise::Exception* output) {
+  static std::optional<::media::CdmPromise::Exception> FromMojom(
+      chromeos::cdm::mojom::PromiseException input) {
     switch (input) {
       case chromeos::cdm::mojom::PromiseException::INVALID_STATE_ERROR:
-        *output = ::media::CdmPromise::Exception::INVALID_STATE_ERROR;
-        return true;
+        return ::media::CdmPromise::Exception::INVALID_STATE_ERROR;
       case chromeos::cdm::mojom::PromiseException::QUOTA_EXCEEDED_ERROR:
-        *output = ::media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR;
-        return true;
+        return ::media::CdmPromise::Exception::QUOTA_EXCEEDED_ERROR;
       case chromeos::cdm::mojom::PromiseException::TYPE_ERROR:
-        *output = ::media::CdmPromise::Exception::TYPE_ERROR;
-        return true;
+        return ::media::CdmPromise::Exception::TYPE_ERROR;
       case chromeos::cdm::mojom::PromiseException::NOT_SUPPORTED_ERROR:
-        *output = ::media::CdmPromise::Exception::NOT_SUPPORTED_ERROR;
-        return true;
+        return ::media::CdmPromise::Exception::NOT_SUPPORTED_ERROR;
     }
 
     NOTREACHED();

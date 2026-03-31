@@ -50,61 +50,44 @@ EnumTraits<arc::mojom::AudioDeviceType, ash::AudioDeviceType>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<arc::mojom::AudioDeviceType, ash::AudioDeviceType>::FromMojom(
-    arc::mojom::AudioDeviceType input,
-    ash::AudioDeviceType* out) {
+ash::AudioDeviceType
+EnumTraits<arc::mojom::AudioDeviceType, ash::AudioDeviceType>::FromMojom(
+    arc::mojom::AudioDeviceType input) {
   switch (input) {
     case arc::mojom::AudioDeviceType::HEADPHONE:
-      *out = ash::AudioDeviceType::kHeadphone;
-      return true;
+      return ash::AudioDeviceType::kHeadphone;
     case arc::mojom::AudioDeviceType::MIC:
-      *out = ash::AudioDeviceType::kMic;
-      return true;
+      return ash::AudioDeviceType::kMic;
     case arc::mojom::AudioDeviceType::USB:
-      *out = ash::AudioDeviceType::kUsb;
-      return true;
+      return ash::AudioDeviceType::kUsb;
     case arc::mojom::AudioDeviceType::BLUETOOTH:
-      *out = ash::AudioDeviceType::kBluetooth;
-      return true;
+      return ash::AudioDeviceType::kBluetooth;
     case arc::mojom::AudioDeviceType::BLUETOOTH_NB_MIC:
-      *out = ash::AudioDeviceType::kBluetoothNbMic;
-      return true;
+      return ash::AudioDeviceType::kBluetoothNbMic;
     case arc::mojom::AudioDeviceType::HDMI:
-      *out = ash::AudioDeviceType::kHdmi;
-      return true;
+      return ash::AudioDeviceType::kHdmi;
     case arc::mojom::AudioDeviceType::INTERNAL_SPEAKER:
-      *out = ash::AudioDeviceType::kInternalSpeaker;
-      return true;
+      return ash::AudioDeviceType::kInternalSpeaker;
     case arc::mojom::AudioDeviceType::INTERNAL_MIC:
-      *out = ash::AudioDeviceType::kInternalMic;
-      return true;
+      return ash::AudioDeviceType::kInternalMic;
     case arc::mojom::AudioDeviceType::FRONT_MIC:
-      *out = ash::AudioDeviceType::kFrontMic;
-      return true;
+      return ash::AudioDeviceType::kFrontMic;
     case arc::mojom::AudioDeviceType::REAR_MIC:
-      *out = ash::AudioDeviceType::kRearMic;
-      return true;
+      return ash::AudioDeviceType::kRearMic;
     case arc::mojom::AudioDeviceType::KEYBOARD_MIC:
-      *out = ash::AudioDeviceType::kKeyboardMic;
-      return true;
+      return ash::AudioDeviceType::kKeyboardMic;
     case arc::mojom::AudioDeviceType::HOTWORD:
-      *out = ash::AudioDeviceType::kHotword;
-      return true;
+      return ash::AudioDeviceType::kHotword;
     case arc::mojom::AudioDeviceType::LINEOUT:
-      *out = ash::AudioDeviceType::kLineout;
-      return true;
+      return ash::AudioDeviceType::kLineout;
     case arc::mojom::AudioDeviceType::POST_MIX_LOOPBACK:
-      *out = ash::AudioDeviceType::kPostMixLoopback;
-      return true;
+      return ash::AudioDeviceType::kPostMixLoopback;
     case arc::mojom::AudioDeviceType::POST_DSP_LOOPBACK:
-      *out = ash::AudioDeviceType::kPostDspLoopback;
-      return true;
+      return ash::AudioDeviceType::kPostDspLoopback;
     case arc::mojom::AudioDeviceType::ALSA_LOOPBACK:
-      *out = ash::AudioDeviceType::kAlsaLoopback;
-      return true;
+      return ash::AudioDeviceType::kAlsaLoopback;
     case arc::mojom::AudioDeviceType::OTHER:
-      *out = ash::AudioDeviceType::kOther;
-      return true;
+      return ash::AudioDeviceType::kOther;
   }
   NOTREACHED();
 }

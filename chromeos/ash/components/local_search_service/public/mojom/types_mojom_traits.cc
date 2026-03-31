@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/local_search_service/public/mojom/types_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 
 namespace mojo {
@@ -29,26 +30,21 @@ EnumTraits<ash::local_search_service::mojom::IndexId,
 }
 
 // static
-bool EnumTraits<ash::local_search_service::mojom::IndexId,
-                ash::local_search_service::IndexId>::
-    FromMojom(ash::local_search_service::mojom::IndexId input,
-              ash::local_search_service::IndexId* output) {
+ash::local_search_service::IndexId
+EnumTraits<ash::local_search_service::mojom::IndexId,
+           ash::local_search_service::IndexId>::
+    FromMojom(ash::local_search_service::mojom::IndexId input) {
   switch (input) {
     case ash::local_search_service::mojom::IndexId::kCrosSettings:
-      *output = ash::local_search_service::IndexId::kCrosSettings;
-      return true;
+      return ash::local_search_service::IndexId::kCrosSettings;
     case ash::local_search_service::mojom::IndexId::kHelpApp:
-      *output = ash::local_search_service::IndexId::kHelpApp;
-      return true;
+      return ash::local_search_service::IndexId::kHelpApp;
     case ash::local_search_service::mojom::IndexId::kHelpAppLauncher:
-      *output = ash::local_search_service::IndexId::kHelpAppLauncher;
-      return true;
+      return ash::local_search_service::IndexId::kHelpAppLauncher;
     case ash::local_search_service::mojom::IndexId::kPersonalization:
-      *output = ash::local_search_service::IndexId::kPersonalization;
-      return true;
+      return ash::local_search_service::IndexId::kPersonalization;
     case ash::local_search_service::mojom::IndexId::kShortcutsApp:
-      *output = ash::local_search_service::IndexId::kShortcutsApp;
-      return true;
+      return ash::local_search_service::IndexId::kShortcutsApp;
   }
   NOTREACHED();
 }
@@ -68,17 +64,15 @@ EnumTraits<ash::local_search_service::mojom::Backend,
 }
 
 // static
-bool EnumTraits<ash::local_search_service::mojom::Backend,
-                ash::local_search_service::Backend>::
-    FromMojom(ash::local_search_service::mojom::Backend input,
-              ash::local_search_service::Backend* output) {
+ash::local_search_service::Backend
+EnumTraits<ash::local_search_service::mojom::Backend,
+           ash::local_search_service::Backend>::
+    FromMojom(ash::local_search_service::mojom::Backend input) {
   switch (input) {
     case ash::local_search_service::mojom::Backend::kLinearMap:
-      *output = ash::local_search_service::Backend::kLinearMap;
-      return true;
+      return ash::local_search_service::Backend::kLinearMap;
     case ash::local_search_service::mojom::Backend::kInvertedIndex:
-      *output = ash::local_search_service::Backend::kInvertedIndex;
-      return true;
+      return ash::local_search_service::Backend::kInvertedIndex;
   }
   NOTREACHED();
 }
@@ -175,23 +169,19 @@ EnumTraits<ash::local_search_service::mojom::ResponseStatus,
 }
 
 // static
-bool EnumTraits<ash::local_search_service::mojom::ResponseStatus,
-                ash::local_search_service::ResponseStatus>::
-    FromMojom(ash::local_search_service::mojom::ResponseStatus input,
-              ash::local_search_service::ResponseStatus* output) {
+ash::local_search_service::ResponseStatus
+EnumTraits<ash::local_search_service::mojom::ResponseStatus,
+           ash::local_search_service::ResponseStatus>::
+    FromMojom(ash::local_search_service::mojom::ResponseStatus input) {
   switch (input) {
     case ash::local_search_service::mojom::ResponseStatus::kUnknownError:
-      *output = ash::local_search_service::ResponseStatus::kUnknownError;
-      return true;
+      return ash::local_search_service::ResponseStatus::kUnknownError;
     case ash::local_search_service::mojom::ResponseStatus::kSuccess:
-      *output = ash::local_search_service::ResponseStatus::kSuccess;
-      return true;
+      return ash::local_search_service::ResponseStatus::kSuccess;
     case ash::local_search_service::mojom::ResponseStatus::kEmptyQuery:
-      *output = ash::local_search_service::ResponseStatus::kEmptyQuery;
-      return true;
+      return ash::local_search_service::ResponseStatus::kEmptyQuery;
     case ash::local_search_service::mojom::ResponseStatus::kEmptyIndex:
-      *output = ash::local_search_service::ResponseStatus::kEmptyIndex;
-      return true;
+      return ash::local_search_service::ResponseStatus::kEmptyIndex;
   }
   NOTREACHED();
 }

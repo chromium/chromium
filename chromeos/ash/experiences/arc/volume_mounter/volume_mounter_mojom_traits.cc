@@ -27,19 +27,16 @@ EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
-    arc::mojom::DeviceType input,
-    ash::DeviceType* out) {
+std::optional<ash::DeviceType>
+EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
+    arc::mojom::DeviceType input) {
   switch (input) {
     case arc::mojom::DeviceType::DEVICE_TYPE_USB:
-      *out = ash::DeviceType::kUSB;
-      return true;
+      return ash::DeviceType::kUSB;
     case arc::mojom::DeviceType::DEVICE_TYPE_SD:
-      *out = ash::DeviceType::kSD;
-      return true;
+      return ash::DeviceType::kSD;
     case arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN:
-      *out = ash::DeviceType::kUnknown;
-      return true;
+      return ash::DeviceType::kUnknown;
   }
   NOTREACHED();
 }
@@ -56,17 +53,14 @@ EnumTraits<arc::mojom::MountEvent, ash::disks::DiskMountManager::MountEvent>::
   NOTREACHED();
 }
 
-bool EnumTraits<arc::mojom::MountEvent,
-                ash::disks::DiskMountManager::MountEvent>::
-    FromMojom(arc::mojom::MountEvent input,
-              ash::disks::DiskMountManager::MountEvent* out) {
+std::optional<ash::disks::DiskMountManager::MountEvent>
+EnumTraits<arc::mojom::MountEvent, ash::disks::DiskMountManager::MountEvent>::
+    FromMojom(arc::mojom::MountEvent input) {
   switch (input) {
     case arc::mojom::MountEvent::MOUNTING:
-      *out = ash::disks::DiskMountManager::MountEvent::MOUNTING;
-      return true;
+      return ash::disks::DiskMountManager::MountEvent::MOUNTING;
     case arc::mojom::MountEvent::UNMOUNTING:
-      *out = ash::disks::DiskMountManager::MountEvent::UNMOUNTING;
-      return true;
+      return ash::disks::DiskMountManager::MountEvent::UNMOUNTING;
   }
   NOTREACHED();
 }

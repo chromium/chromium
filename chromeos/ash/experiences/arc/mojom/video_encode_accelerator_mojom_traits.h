@@ -22,9 +22,8 @@ struct EnumTraits<arc::mojom::VideoFrameStorageType,
                   media::VideoEncodeAccelerator::Config::StorageType> {
   static arc::mojom::VideoFrameStorageType ToMojom(
       media::VideoEncodeAccelerator::Config::StorageType input);
-  static bool FromMojom(
-      arc::mojom::VideoFrameStorageType input,
-      media::VideoEncodeAccelerator::Config::StorageType* output);
+  static std::optional<media::VideoEncodeAccelerator::Config::StorageType>
+  FromMojom(arc::mojom::VideoFrameStorageType input);
 };
 
 template <>

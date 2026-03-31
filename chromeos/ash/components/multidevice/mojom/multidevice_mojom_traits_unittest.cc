@@ -107,14 +107,9 @@ TEST(DeviceSyncMojomEnumTraitsTest, SoftwareFeature) {
 
   for (auto feature_in : kTestSoftwareFeatures) {
     ash::multidevice::SoftwareFeature feature_out;
-
-    ash::multidevice::mojom::SoftwareFeature serialized_feature =
-        mojo::EnumTraits<
-            ash::multidevice::mojom::SoftwareFeature,
-            ash::multidevice::SoftwareFeature>::ToMojom(feature_in);
-    ASSERT_TRUE((mojo::EnumTraits<ash::multidevice::mojom::SoftwareFeature,
-                                  ash::multidevice::SoftwareFeature>::
-                     FromMojom(serialized_feature, &feature_out)));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<
+            ash::multidevice::mojom::SoftwareFeature>(feature_in, feature_out));
     EXPECT_EQ(feature_in, feature_out);
   }
 }

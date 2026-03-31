@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static
@@ -21,16 +23,13 @@ arc::mojom::ClockId EnumTraits<arc::mojom::ClockId, clockid_t>::ToMojom(
 }
 
 // static
-bool EnumTraits<arc::mojom::ClockId, clockid_t>::FromMojom(
-    arc::mojom::ClockId input,
-    clockid_t* output) {
+std::optional<clockid_t> EnumTraits<arc::mojom::ClockId, clockid_t>::FromMojom(
+    arc::mojom::ClockId input) {
   switch (input) {
     case arc::mojom::ClockId::REALTIME_ALARM:
-      *output = CLOCK_REALTIME_ALARM;
-      return true;
+      return CLOCK_REALTIME_ALARM;
     case arc::mojom::ClockId::BOOTTIME_ALARM:
-      *output = CLOCK_BOOTTIME_ALARM;
-      return true;
+      return CLOCK_BOOTTIME_ALARM;
   }
   NOTREACHED();
 }

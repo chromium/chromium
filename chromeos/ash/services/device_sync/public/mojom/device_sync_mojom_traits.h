@@ -20,8 +20,8 @@ class EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
  public:
   static ash::device_sync::mojom::ConnectivityStatus ToMojom(
       cryptauthv2::ConnectivityStatus input);
-  static bool FromMojom(ash::device_sync::mojom::ConnectivityStatus input,
-                        cryptauthv2::ConnectivityStatus* out);
+  static cryptauthv2::ConnectivityStatus FromMojom(
+      ash::device_sync::mojom::ConnectivityStatus input);
 };
 
 template <>
@@ -30,8 +30,8 @@ class EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
  public:
   static ash::device_sync::mojom::GroupPrivateKeyStatus ToMojom(
       ash::device_sync::GroupPrivateKeyStatus input);
-  static bool FromMojom(ash::device_sync::mojom::GroupPrivateKeyStatus input,
-                        ash::device_sync::GroupPrivateKeyStatus* out);
+  static ash::device_sync::GroupPrivateKeyStatus FromMojom(
+      ash::device_sync::mojom::GroupPrivateKeyStatus input);
 };
 
 template <>
@@ -40,9 +40,8 @@ class EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
  public:
   static ash::device_sync::mojom::BetterTogetherMetadataStatus ToMojom(
       ash::device_sync::BetterTogetherMetadataStatus input);
-  static bool FromMojom(
-      ash::device_sync::mojom::BetterTogetherMetadataStatus input,
-      ash::device_sync::BetterTogetherMetadataStatus* out);
+  static ash::device_sync::BetterTogetherMetadataStatus FromMojom(
+      ash::device_sync::mojom::BetterTogetherMetadataStatus input);
 };
 
 template <>
@@ -51,8 +50,8 @@ class EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
  public:
   static ash::device_sync::mojom::FeatureStatusChange ToMojom(
       ash::device_sync::FeatureStatusChange input);
-  static bool FromMojom(ash::device_sync::mojom::FeatureStatusChange input,
-                        ash::device_sync::FeatureStatusChange* out);
+  static ash::device_sync::FeatureStatusChange FromMojom(
+      ash::device_sync::mojom::FeatureStatusChange input);
 };
 
 template <>
@@ -61,8 +60,8 @@ class EnumTraits<ash::device_sync::mojom::CryptAuthService,
  public:
   static ash::device_sync::mojom::CryptAuthService ToMojom(
       cryptauthv2::TargetService input);
-  static bool FromMojom(ash::device_sync::mojom::CryptAuthService input,
-                        cryptauthv2::TargetService* out);
+  static cryptauthv2::TargetService FromMojom(
+      ash::device_sync::mojom::CryptAuthService input);
 };
 
 }  // namespace mojo

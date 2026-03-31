@@ -25,7 +25,7 @@ struct EnumTraits<ash::ime::mojom::SuggestionMode,
   using SuggestionMode = ::ash::ime::mojom::SuggestionMode;
 
   static SuggestionMode ToMojom(AssistiveSuggestionMode mode);
-  static bool FromMojom(SuggestionMode input, AssistiveSuggestionMode* output);
+  static AssistiveSuggestionMode FromMojom(SuggestionMode input);
 };
 
 template <>
@@ -35,7 +35,7 @@ struct EnumTraits<ash::ime::mojom::SuggestionType,
   using SuggestionType = ::ash::ime::mojom::SuggestionType;
 
   static SuggestionType ToMojom(AssistiveSuggestionType type);
-  static bool FromMojom(SuggestionType input, AssistiveSuggestionType* output);
+  static AssistiveSuggestionType FromMojom(SuggestionType input);
 };
 
 template <>
@@ -122,8 +122,7 @@ struct EnumTraits<ash::ime::mojom::AssistiveWindowType,
   using AssistiveWindowType = ::ash::ime::AssistiveWindowType;
 
   static AssistiveWindowTypeMojo ToMojom(AssistiveWindowType type);
-  static bool FromMojom(AssistiveWindowTypeMojo input,
-                        AssistiveWindowType* output);
+  static AssistiveWindowType FromMojom(AssistiveWindowTypeMojo input);
 };
 
 template <>
@@ -155,8 +154,8 @@ struct EnumTraits<ash::ime::mojom::AutocorrectSuggestionProvider,
 
   static AutocorrectSuggestionProviderMojo ToMojom(
       AutocorrectSuggestionProvider provider);
-  static bool FromMojom(AutocorrectSuggestionProviderMojo input,
-                        AutocorrectSuggestionProvider* output);
+  static AutocorrectSuggestionProvider FromMojom(
+      AutocorrectSuggestionProviderMojo input);
 };
 
 }  // namespace mojo

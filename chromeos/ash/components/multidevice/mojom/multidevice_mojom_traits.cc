@@ -202,59 +202,43 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeature,
   NOTREACHED();
 }
 
-bool EnumTraits<ash::multidevice::mojom::SoftwareFeature,
-                ash::multidevice::SoftwareFeature>::
-    FromMojom(ash::multidevice::mojom::SoftwareFeature input,
-              ash::multidevice::SoftwareFeature* out) {
+ash::multidevice::SoftwareFeature
+EnumTraits<ash::multidevice::mojom::SoftwareFeature,
+           ash::multidevice::SoftwareFeature>::
+    FromMojom(ash::multidevice::mojom::SoftwareFeature input) {
   switch (input) {
     case ash::multidevice::mojom::SoftwareFeature::BETTER_TOGETHER_HOST:
-      *out = ash::multidevice::SoftwareFeature::kBetterTogetherHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kBetterTogetherHost;
     case ash::multidevice::mojom::SoftwareFeature::BETTER_TOGETHER_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kBetterTogetherClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kBetterTogetherClient;
     case ash::multidevice::mojom::SoftwareFeature::EASY_UNLOCK_HOST:
-      *out = ash::multidevice::SoftwareFeature::kSmartLockHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kSmartLockHost;
     case ash::multidevice::mojom::SoftwareFeature::EASY_UNLOCK_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kSmartLockClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kSmartLockClient;
     case ash::multidevice::mojom::SoftwareFeature::MAGIC_TETHER_HOST:
-      *out = ash::multidevice::SoftwareFeature::kInstantTetheringHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kInstantTetheringHost;
     case ash::multidevice::mojom::SoftwareFeature::MAGIC_TETHER_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kInstantTetheringClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kInstantTetheringClient;
     case ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_HOST:
-      *out = ash::multidevice::SoftwareFeature::kMessagesForWebHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kMessagesForWebHost;
     case ash::multidevice::mojom::SoftwareFeature::SMS_CONNECT_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kMessagesForWebClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kMessagesForWebClient;
     case ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_HOST:
-      *out = ash::multidevice::SoftwareFeature::kPhoneHubHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kPhoneHubHost;
     case ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kPhoneHubClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kPhoneHubClient;
     case ash::multidevice::mojom::SoftwareFeature::WIFI_SYNC_HOST:
-      *out = ash::multidevice::SoftwareFeature::kWifiSyncHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kWifiSyncHost;
     case ash::multidevice::mojom::SoftwareFeature::WIFI_SYNC_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kWifiSyncClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kWifiSyncClient;
     case ash::multidevice::mojom::SoftwareFeature::ECHE_HOST:
-      *out = ash::multidevice::SoftwareFeature::kEcheHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kEcheHost;
     case ash::multidevice::mojom::SoftwareFeature::ECHE_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kEcheClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kEcheClient;
     case ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_HOST:
-      *out = ash::multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
-      return true;
+      return ash::multidevice::SoftwareFeature::kPhoneHubCameraRollHost;
     case ash::multidevice::mojom::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
-      *out = ash::multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
-      return true;
+      return ash::multidevice::SoftwareFeature::kPhoneHubCameraRollClient;
   }
 
   NOTREACHED();
@@ -276,20 +260,17 @@ EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
   NOTREACHED();
 }
 
-bool EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
-                ash::multidevice::SoftwareFeatureState>::
-    FromMojom(ash::multidevice::mojom::SoftwareFeatureState input,
-              ash::multidevice::SoftwareFeatureState* out) {
+ash::multidevice::SoftwareFeatureState
+EnumTraits<ash::multidevice::mojom::SoftwareFeatureState,
+           ash::multidevice::SoftwareFeatureState>::
+    FromMojom(ash::multidevice::mojom::SoftwareFeatureState input) {
   switch (input) {
     case ash::multidevice::mojom::SoftwareFeatureState::kNotSupported:
-      *out = ash::multidevice::SoftwareFeatureState::kNotSupported;
-      return true;
+      return ash::multidevice::SoftwareFeatureState::kNotSupported;
     case ash::multidevice::mojom::SoftwareFeatureState::kSupported:
-      *out = ash::multidevice::SoftwareFeatureState::kSupported;
-      return true;
+      return ash::multidevice::SoftwareFeatureState::kSupported;
     case ash::multidevice::mojom::SoftwareFeatureState::kEnabled:
-      *out = ash::multidevice::SoftwareFeatureState::kEnabled;
-      return true;
+      return ash::multidevice::SoftwareFeatureState::kEnabled;
   }
 
   NOTREACHED();

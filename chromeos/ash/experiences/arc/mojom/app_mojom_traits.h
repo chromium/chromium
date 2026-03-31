@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ARC_MOJOM_APP_MOJOM_TRAITS_H_
 #define CHROMEOS_ASH_EXPERIENCES_ARC_MOJOM_APP_MOJOM_TRAITS_H_
 
+#include <optional>
+
+#include "base/notreached.h"
 #include "chromeos/ash/experiences/arc/app/arc_playstore_search_request_state.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-shared.h"
 
@@ -59,60 +62,42 @@ struct EnumTraits<arc::mojom::AppDiscoveryRequestState,
     NOTREACHED();
   }
 
-  static bool FromMojom(MojoState input, ArcState* out) {
+  static std::optional<ArcState> FromMojom(MojoState input) {
     switch (input) {
       case MojoState::SUCCESS:
-        *out = ArcState::SUCCESS;
-        return true;
+        return ArcState::SUCCESS;
       case MojoState::CANCELED:
-        *out = ArcState::CANCELED;
-        return true;
+        return ArcState::CANCELED;
       case MojoState::ERROR_DEPRECATED:
-        *out = ArcState::ERROR_DEPRECATED;
-        return true;
+        return ArcState::ERROR_DEPRECATED;
       case MojoState::PLAY_STORE_PROXY_NOT_AVAILABLE:
-        *out = ArcState::PLAY_STORE_PROXY_NOT_AVAILABLE;
-        return true;
+        return ArcState::PLAY_STORE_PROXY_NOT_AVAILABLE;
       case MojoState::FAILED_TO_CALL_CANCEL:
-        *out = ArcState::FAILED_TO_CALL_CANCEL;
-        return true;
+        return ArcState::FAILED_TO_CALL_CANCEL;
       case MojoState::FAILED_TO_CALL_FINDAPPS:
-        *out = ArcState::FAILED_TO_CALL_FINDAPPS;
-        return true;
+        return ArcState::FAILED_TO_CALL_FINDAPPS;
       case MojoState::REQUEST_HAS_INVALID_PARAMS:
-        *out = ArcState::REQUEST_HAS_INVALID_PARAMS;
-        return true;
+        return ArcState::REQUEST_HAS_INVALID_PARAMS;
       case MojoState::REQUEST_TIMEOUT:
-        *out = ArcState::REQUEST_TIMEOUT;
-        return true;
+        return ArcState::REQUEST_TIMEOUT;
       case MojoState::PHONESKY_RESULT_REQUEST_CODE_UNMATCHED:
-        return true;
-        *out = ArcState::PHONESKY_RESULT_REQUEST_CODE_UNMATCHED;
-        return true;
+        return ArcState::PHONESKY_RESULT_REQUEST_CODE_UNMATCHED;
       case MojoState::PHONESKY_RESULT_SESSION_ID_UNMATCHED:
-        *out = ArcState::PHONESKY_RESULT_SESSION_ID_UNMATCHED;
-        return true;
+        return ArcState::PHONESKY_RESULT_SESSION_ID_UNMATCHED;
       case MojoState::PHONESKY_REQUEST_REQUEST_CODE_UNMATCHED:
-        *out = ArcState::PHONESKY_REQUEST_REQUEST_CODE_UNMATCHED;
-        return true;
+        return ArcState::PHONESKY_REQUEST_REQUEST_CODE_UNMATCHED;
       case MojoState::PHONESKY_APP_DISCOVERY_NOT_AVAILABLE:
-        *out = ArcState::PHONESKY_APP_DISCOVERY_NOT_AVAILABLE;
-        return true;
+        return ArcState::PHONESKY_APP_DISCOVERY_NOT_AVAILABLE;
       case MojoState::PHONESKY_VERSION_NOT_SUPPORTED:
-        *out = ArcState::PHONESKY_VERSION_NOT_SUPPORTED;
-        return true;
+        return ArcState::PHONESKY_VERSION_NOT_SUPPORTED;
       case MojoState::PHONESKY_UNEXPECTED_EXCEPTION:
-        *out = ArcState::PHONESKY_UNEXPECTED_EXCEPTION;
-        return true;
+        return ArcState::PHONESKY_UNEXPECTED_EXCEPTION;
       case MojoState::PHONESKY_MALFORMED_QUERY:
-        *out = ArcState::PHONESKY_MALFORMED_QUERY;
-        return true;
+        return ArcState::PHONESKY_MALFORMED_QUERY;
       case MojoState::PHONESKY_INTERNAL_ERROR:
-        *out = ArcState::PHONESKY_INTERNAL_ERROR;
-        return true;
+        return ArcState::PHONESKY_INTERNAL_ERROR;
       case MojoState::PHONESKY_RESULT_INVALID_DATA:
-        *out = ArcState::PHONESKY_RESULT_INVALID_DATA;
-        return true;
+        return ArcState::PHONESKY_RESULT_INVALID_DATA;
     }
     NOTREACHED();
   }

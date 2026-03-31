@@ -40,7 +40,7 @@ template <>
 class EnumTraits<MessageType, FastPairMessageType> {
  public:
   static MessageType ToMojom(FastPairMessageType input);
-  static bool FromMojom(MessageType input, FastPairMessageType* out);
+  static FastPairMessageType FromMojom(MessageType input);
 };
 
 template <>

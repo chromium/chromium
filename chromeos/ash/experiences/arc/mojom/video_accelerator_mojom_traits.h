@@ -24,8 +24,8 @@ template <>
 struct EnumTraits<arc::mojom::VideoCodecProfile, media::VideoCodecProfile> {
   static arc::mojom::VideoCodecProfile ToMojom(media::VideoCodecProfile input);
 
-  static bool FromMojom(arc::mojom::VideoCodecProfile input,
-                        media::VideoCodecProfile* output);
+  static std::optional<media::VideoCodecProfile> FromMojom(
+      arc::mojom::VideoCodecProfile input);
 };
 
 template <>
@@ -63,8 +63,8 @@ template <>
 struct EnumTraits<arc::mojom::VideoPixelFormat, media::VideoPixelFormat> {
   static arc::mojom::VideoPixelFormat ToMojom(media::VideoPixelFormat input);
 
-  static bool FromMojom(arc::mojom::VideoPixelFormat input,
-                        media::VideoPixelFormat* output);
+  static std::optional<media::VideoPixelFormat> FromMojom(
+      arc::mojom::VideoPixelFormat input);
 };
 
 template <>
@@ -138,8 +138,8 @@ template <>
 struct EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus> {
   static arc::mojom::DecoderStatus ToMojom(media::DecoderStatus input);
 
-  static bool FromMojom(arc::mojom::DecoderStatus input,
-                        media::DecoderStatus* output);
+  static std::optional<media::DecoderStatus> FromMojom(
+      arc::mojom::DecoderStatus input);
 };
 
 }  // namespace mojo

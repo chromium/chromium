@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "chromeos/ash/experiences/arc/mojom/video_accelerator_mojom_traits.h"
 
 namespace mojo {
@@ -20,20 +21,18 @@ EnumTraits<arc::mojom::VideoFrameStorageType,
   return arc::mojom::VideoFrameStorageType::SHMEM;
 }
 
-bool EnumTraits<arc::mojom::VideoFrameStorageType,
-                media::VideoEncodeAccelerator::Config::StorageType>::
-    FromMojom(arc::mojom::VideoFrameStorageType input,
-              media::VideoEncodeAccelerator::Config::StorageType* output) {
+std::optional<media::VideoEncodeAccelerator::Config::StorageType>
+EnumTraits<arc::mojom::VideoFrameStorageType,
+           media::VideoEncodeAccelerator::Config::StorageType>::
+    FromMojom(arc::mojom::VideoFrameStorageType input) {
   switch (input) {
     case arc::mojom::VideoFrameStorageType::SHMEM:
-      *output = media::VideoEncodeAccelerator::Config::StorageType::kShmem;
-      return true;
+      return media::VideoEncodeAccelerator::Config::StorageType::kShmem;
     case arc::mojom::VideoFrameStorageType::DMABUF:
-      *output =
-          media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
-      return true;
+      return media::VideoEncodeAccelerator::Config::StorageType::
+          kGpuMemoryBuffer;
   }
-  return false;
+  return std::nullopt;
 }
 
 // static

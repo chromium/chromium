@@ -16,8 +16,8 @@ class EnumTraits<nearby::connections::mojom::LogSeverity,
  public:
   static nearby::connections::mojom::LogSeverity ToMojom(
       nearby::api::LogMessage::Severity input);
-  static bool FromMojom(nearby::connections::mojom::LogSeverity input,
-                        nearby::api::LogMessage::Severity* out);
+  static nearby::api::LogMessage::Severity FromMojom(
+      nearby::connections::mojom::LogSeverity input);
 };
 
 }  // namespace mojo

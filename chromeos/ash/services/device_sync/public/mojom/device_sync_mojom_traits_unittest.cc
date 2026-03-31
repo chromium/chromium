@@ -18,14 +18,9 @@ TEST(DeviceSyncMojomTraitsTest, ConnectivityStatus) {
 
   for (auto status_in : kTestConnectivityStatuses) {
     cryptauthv2::ConnectivityStatus status_out;
-
-    ash::device_sync::mojom::ConnectivityStatus serialized_status =
-        mojo::EnumTraits<ash::device_sync::mojom::ConnectivityStatus,
-                         cryptauthv2::ConnectivityStatus>::ToMojom(status_in);
-    ASSERT_TRUE((mojo::EnumTraits<
-                 ash::device_sync::mojom::ConnectivityStatus,
-                 cryptauthv2::ConnectivityStatus>::FromMojom(serialized_status,
-                                                             &status_out)));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                ash::device_sync::mojom::ConnectivityStatus>(status_in,
+                                                             status_out));
     EXPECT_EQ(status_in, status_out);
   }
 }
@@ -51,15 +46,9 @@ TEST(DeviceSyncMojomTraitsTest, GroupPrivateKeyStatus) {
 
   for (auto status_in : kTestGroupPrivateKeyStatuses) {
     ash::device_sync::GroupPrivateKeyStatus status_out;
-
-    ash::device_sync::mojom::GroupPrivateKeyStatus serialized_status =
-        mojo::EnumTraits<
-            ash::device_sync::mojom::GroupPrivateKeyStatus,
-            ash::device_sync::GroupPrivateKeyStatus>::ToMojom(status_in);
-    ASSERT_TRUE(
-        (mojo::EnumTraits<ash::device_sync::mojom::GroupPrivateKeyStatus,
-                          ash::device_sync::GroupPrivateKeyStatus>::
-             FromMojom(serialized_status, &status_out)));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                ash::device_sync::mojom::GroupPrivateKeyStatus>(status_in,
+                                                                status_out));
     EXPECT_EQ(status_in, status_out);
   }
 }
@@ -81,15 +70,9 @@ TEST(DeviceSyncMojomTraitsTest, BetterTogetherMetadataStatus) {
 
   for (auto status_in : kTestBetterTogetherMetadataStatuses) {
     ash::device_sync::BetterTogetherMetadataStatus status_out;
-
-    ash::device_sync::mojom::BetterTogetherMetadataStatus serialized_status =
-        mojo::EnumTraits<
-            ash::device_sync::mojom::BetterTogetherMetadataStatus,
-            ash::device_sync::BetterTogetherMetadataStatus>::ToMojom(status_in);
-    ASSERT_TRUE(
-        (mojo::EnumTraits<ash::device_sync::mojom::BetterTogetherMetadataStatus,
-                          ash::device_sync::BetterTogetherMetadataStatus>::
-             FromMojom(serialized_status, &status_out)));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                ash::device_sync::mojom::BetterTogetherMetadataStatus>(
+        status_in, status_out));
     EXPECT_EQ(status_in, status_out);
   }
 }
@@ -104,13 +87,9 @@ TEST(DeviceSyncMojomTraitsTest, FeatureStatusChange) {
   for (auto status_in : kTestFeatureStatusChanges) {
     ash::device_sync::FeatureStatusChange status_out;
 
-    ash::device_sync::mojom::FeatureStatusChange serialized_status =
-        mojo::EnumTraits<
-            ash::device_sync::mojom::FeatureStatusChange,
-            ash::device_sync::FeatureStatusChange>::ToMojom(status_in);
-    ASSERT_TRUE((mojo::EnumTraits<ash::device_sync::mojom::FeatureStatusChange,
-                                  ash::device_sync::FeatureStatusChange>::
-                     FromMojom(serialized_status, &status_out)));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                ash::device_sync::mojom::FeatureStatusChange>(status_in,
+                                                              status_out));
     EXPECT_EQ(status_in, status_out);
   }
 }
@@ -122,14 +101,9 @@ TEST(DeviceSyncMojomTraitsTest, TargetService) {
 
   for (auto status_in : kTestTargetServices) {
     cryptauthv2::TargetService status_out;
-
-    ash::device_sync::mojom::CryptAuthService serialized_status =
-        mojo::EnumTraits<ash::device_sync::mojom::CryptAuthService,
-                         cryptauthv2::TargetService>::ToMojom(status_in);
-    ASSERT_TRUE((mojo::EnumTraits<
-                 ash::device_sync::mojom::CryptAuthService,
-                 cryptauthv2::TargetService>::FromMojom(serialized_status,
-                                                        &status_out)));
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<
+            ash::device_sync::mojom::CryptAuthService>(status_in, status_out));
     EXPECT_EQ(status_in, status_out);
   }
 }

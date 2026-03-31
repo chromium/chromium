@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/drivefs/drivefs_mojom_traits.h"
+
+#include "base/notreached.h"
 #include "components/drive/file_errors.h"
 
 namespace mojo {
@@ -55,72 +57,52 @@ EnumTraits<drivefs::mojom::FileError, drive::FileError>::ToMojom(
   return drivefs::mojom::FileError::kFailed;
 }
 
-bool EnumTraits<drivefs::mojom::FileError, drive::FileError>::FromMojom(
-    drivefs::mojom::FileError input,
-    drive::FileError* output) {
+drive::FileError
+EnumTraits<drivefs::mojom::FileError, drive::FileError>::FromMojom(
+    drivefs::mojom::FileError input) {
   switch (input) {
     case drivefs::mojom::FileError::kOk:
-      *output = drive::FILE_ERROR_OK;
-      return true;
+      return drive::FILE_ERROR_OK;
     case drivefs::mojom::FileError::kFailed:
-      *output = drive::FILE_ERROR_FAILED;
-      return true;
+      return drive::FILE_ERROR_FAILED;
     case drivefs::mojom::FileError::kInUse:
-      *output = drive::FILE_ERROR_IN_USE;
-      return true;
+      return drive::FILE_ERROR_IN_USE;
     case drivefs::mojom::FileError::kExists:
-      *output = drive::FILE_ERROR_EXISTS;
-      return true;
+      return drive::FILE_ERROR_EXISTS;
     case drivefs::mojom::FileError::kNotFound:
-      *output = drive::FILE_ERROR_NOT_FOUND;
-      return true;
+      return drive::FILE_ERROR_NOT_FOUND;
     case drivefs::mojom::FileError::kAccessDenied:
-      *output = drive::FILE_ERROR_ACCESS_DENIED;
-      return true;
+      return drive::FILE_ERROR_ACCESS_DENIED;
     case drivefs::mojom::FileError::kTooManyOpened:
-      *output = drive::FILE_ERROR_TOO_MANY_OPENED;
-      return true;
+      return drive::FILE_ERROR_TOO_MANY_OPENED;
     case drivefs::mojom::FileError::kNoMemory:
-      *output = drive::FILE_ERROR_NO_MEMORY;
-      return true;
+      return drive::FILE_ERROR_NO_MEMORY;
     case drivefs::mojom::FileError::kNoServerSpace:
-      *output = drive::FILE_ERROR_NO_SERVER_SPACE;
-      return true;
+      return drive::FILE_ERROR_NO_SERVER_SPACE;
     case drivefs::mojom::FileError::kNotADirectory:
-      *output = drive::FILE_ERROR_NOT_A_DIRECTORY;
-      return true;
+      return drive::FILE_ERROR_NOT_A_DIRECTORY;
     case drivefs::mojom::FileError::kInvalidOperation:
-      *output = drive::FILE_ERROR_INVALID_OPERATION;
-      return true;
+      return drive::FILE_ERROR_INVALID_OPERATION;
     case drivefs::mojom::FileError::kSecurity:
-      *output = drive::FILE_ERROR_SECURITY;
-      return true;
+      return drive::FILE_ERROR_SECURITY;
     case drivefs::mojom::FileError::kAbort:
-      *output = drive::FILE_ERROR_ABORT;
-      return true;
+      return drive::FILE_ERROR_ABORT;
     case drivefs::mojom::FileError::kNotAFile:
-      *output = drive::FILE_ERROR_NOT_A_FILE;
-      return true;
+      return drive::FILE_ERROR_NOT_A_FILE;
     case drivefs::mojom::FileError::kNotEmpty:
-      *output = drive::FILE_ERROR_NOT_EMPTY;
-      return true;
+      return drive::FILE_ERROR_NOT_EMPTY;
     case drivefs::mojom::FileError::kInvalidUrl:
-      *output = drive::FILE_ERROR_INVALID_URL;
-      return true;
+      return drive::FILE_ERROR_INVALID_URL;
     case drivefs::mojom::FileError::kNoConnection:
-      *output = drive::FILE_ERROR_NO_CONNECTION;
-      return true;
+      return drive::FILE_ERROR_NO_CONNECTION;
     case drivefs::mojom::FileError::kNoLocalSpace:
-      *output = drive::FILE_ERROR_NO_LOCAL_SPACE;
-      return true;
+      return drive::FILE_ERROR_NO_LOCAL_SPACE;
     case drivefs::mojom::FileError::kServiceUnavailable:
-      *output = drive::FILE_ERROR_SERVICE_UNAVAILABLE;
-      return true;
+      return drive::FILE_ERROR_SERVICE_UNAVAILABLE;
     case drivefs::mojom::FileError::kOkWithMoreResults:
-      *output = drive::FILE_ERROR_OK_WITH_MORE_RESULTS;
-      return true;
+      return drive::FILE_ERROR_OK_WITH_MORE_RESULTS;
   }
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

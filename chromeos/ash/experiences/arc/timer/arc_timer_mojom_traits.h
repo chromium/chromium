@@ -7,6 +7,8 @@
 
 #include <time.h>
 
+#include <optional>
+
 #include "chromeos/ash/experiences/arc/mojom/timer.mojom-shared.h"
 
 namespace mojo {
@@ -14,7 +16,7 @@ namespace mojo {
 template <>
 struct EnumTraits<arc::mojom::ClockId, clockid_t> {
   static arc::mojom::ClockId ToMojom(clockid_t clock_id);
-  static bool FromMojom(arc::mojom::ClockId input, clockid_t* output);
+  static std::optional<clockid_t> FromMojom(arc::mojom::ClockId input);
 };
 
 }  // namespace mojo

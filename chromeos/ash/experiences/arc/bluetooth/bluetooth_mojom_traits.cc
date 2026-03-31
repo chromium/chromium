@@ -135,17 +135,14 @@ bool StructTraits<arc::mojom::BluetoothUUIDDataView,
 template <>
 struct EnumTraits<arc::mojom::BluetoothAdvertisementType,
                   device::BluetoothAdvertisement::AdvertisementType> {
-  static bool FromMojom(
-      arc::mojom::BluetoothAdvertisementType mojom_type,
-      device::BluetoothAdvertisement::AdvertisementType* type) {
+  static device::BluetoothAdvertisement::AdvertisementType FromMojom(
+      arc::mojom::BluetoothAdvertisementType mojom_type) {
     switch (mojom_type) {
       case arc::mojom::BluetoothAdvertisementType::ADV_TYPE_CONNECTABLE:
       case arc::mojom::BluetoothAdvertisementType::ADV_TYPE_SCANNABLE:
-        *type = device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL;
-        return true;
+        return device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_PERIPHERAL;
       case arc::mojom::BluetoothAdvertisementType::ADV_TYPE_NON_CONNECTABLE:
-        *type = device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST;
-        return true;
+        return device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST;
     }
     NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
   }

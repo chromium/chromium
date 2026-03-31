@@ -23,16 +23,14 @@ EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
 }
 
 // static
-bool EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
-    FromMojom(arc::mojom::ChangeType mojom_type,
-              storage::WatcherManager::ChangeType* type) {
+std::optional<storage::WatcherManager::ChangeType>
+EnumTraits<arc::mojom::ChangeType, storage::WatcherManager::ChangeType>::
+    FromMojom(arc::mojom::ChangeType mojom_type) {
   switch (mojom_type) {
     case arc::mojom::ChangeType::CHANGED:
-      *type = storage::WatcherManager::CHANGED;
-      return true;
+      return storage::WatcherManager::CHANGED;
     case arc::mojom::ChangeType::DELETED:
-      *type = storage::WatcherManager::DELETED;
-      return true;
+      return storage::WatcherManager::DELETED;
   }
   NOTREACHED();
 }

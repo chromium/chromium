@@ -18,8 +18,8 @@ class EnumTraits<ash::secure_channel::mojom::ConnectionMedium,
  public:
   static ash::secure_channel::mojom::ConnectionMedium ToMojom(
       ash::secure_channel::ConnectionMedium input);
-  static bool FromMojom(ash::secure_channel::mojom::ConnectionMedium input,
-                        ash::secure_channel::ConnectionMedium* out);
+  static ash::secure_channel::ConnectionMedium FromMojom(
+      ash::secure_channel::mojom::ConnectionMedium input);
 };
 
 template <>
@@ -28,8 +28,8 @@ class EnumTraits<ash::secure_channel::mojom::ConnectionPriority,
  public:
   static ash::secure_channel::mojom::ConnectionPriority ToMojom(
       ash::secure_channel::ConnectionPriority input);
-  static bool FromMojom(ash::secure_channel::mojom::ConnectionPriority input,
-                        ash::secure_channel::ConnectionPriority* out);
+  static ash::secure_channel::ConnectionPriority FromMojom(
+      ash::secure_channel::mojom::ConnectionPriority input);
 };
 
 }  // namespace mojo

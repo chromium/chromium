@@ -27,8 +27,8 @@ struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
   static chromeos::cdm::mojom::DecryptStatus ToMojom(
       ::media::Decryptor::Status input);
 
-  static bool FromMojom(chromeos::cdm::mojom::DecryptStatus input,
-                        ::media::Decryptor::Status* output);
+  static std::optional<::media::Decryptor::Status> FromMojom(
+      chromeos::cdm::mojom::DecryptStatus input);
 };
 
 template <>
@@ -38,8 +38,8 @@ struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
   static chromeos::cdm::mojom::EncryptionScheme ToMojom(
       ::media::EncryptionScheme input);
 
-  static bool FromMojom(chromeos::cdm::mojom::EncryptionScheme input,
-                        ::media::EncryptionScheme* output);
+  static std::optional<::media::EncryptionScheme> FromMojom(
+      chromeos::cdm::mojom::EncryptionScheme input);
 };
 
 template <>

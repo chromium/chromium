@@ -66,44 +66,32 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
     NOTREACHED();
   }
 
-  static bool FromMojom(MojoType input, ui::TextInputType* out) {
+  static ui::TextInputType FromMojom(MojoType input) {
     switch (input) {
       case MojoType::NONE:
-        *out = ui::TEXT_INPUT_TYPE_NONE;
-        return true;
+        return ui::TEXT_INPUT_TYPE_NONE;
       case MojoType::TEXT:
-        *out = ui::TEXT_INPUT_TYPE_TEXT;
-        return true;
+        return ui::TEXT_INPUT_TYPE_TEXT;
       case MojoType::PASSWORD:
-        *out = ui::TEXT_INPUT_TYPE_PASSWORD;
-        return true;
+        return ui::TEXT_INPUT_TYPE_PASSWORD;
       case MojoType::SEARCH:
-        *out = ui::TEXT_INPUT_TYPE_SEARCH;
-        return true;
+        return ui::TEXT_INPUT_TYPE_SEARCH;
       case MojoType::EMAIL:
-        *out = ui::TEXT_INPUT_TYPE_EMAIL;
-        return true;
+        return ui::TEXT_INPUT_TYPE_EMAIL;
       case MojoType::NUMBER:
-        *out = ui::TEXT_INPUT_TYPE_NUMBER;
-        return true;
+        return ui::TEXT_INPUT_TYPE_NUMBER;
       case MojoType::TELEPHONE:
-        *out = ui::TEXT_INPUT_TYPE_TELEPHONE;
-        return true;
+        return ui::TEXT_INPUT_TYPE_TELEPHONE;
       case MojoType::URL:
-        *out = ui::TEXT_INPUT_TYPE_URL;
-        return true;
+        return ui::TEXT_INPUT_TYPE_URL;
       case MojoType::DATE:
-        *out = ui::TEXT_INPUT_TYPE_DATE;
-        return true;
+        return ui::TEXT_INPUT_TYPE_DATE;
       case MojoType::TIME:
-        *out = ui::TEXT_INPUT_TYPE_TIME;
-        return true;
+        return ui::TEXT_INPUT_TYPE_TIME;
       case MojoType::DATETIME:
-        *out = ui::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
-        return true;
+        return ui::TEXT_INPUT_TYPE_DATE_TIME_LOCAL;
       case MojoType::ANDROID_NULL:
-        *out = ui::TEXT_INPUT_TYPE_NULL;
-        return true;
+        return ui::TEXT_INPUT_TYPE_NULL;
     }
     NOTREACHED();
   }

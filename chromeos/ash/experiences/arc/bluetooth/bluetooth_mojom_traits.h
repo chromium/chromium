@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_EXPERIENCES_ARC_BLUETOOTH_BLUETOOTH_MOJOM_TRAITS_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "chromeos/ash/experiences/arc/mojom/bluetooth.mojom.h"
@@ -35,22 +36,17 @@ struct EnumTraits<arc::mojom::BluetoothDeviceType, device::BluetoothTransport> {
     }
   }
 
-  static bool FromMojom(arc::mojom::BluetoothDeviceType mojom_type,
-                        device::BluetoothTransport* type) {
+  static std::optional<device::BluetoothTransport> FromMojom(
+      arc::mojom::BluetoothDeviceType mojom_type) {
     switch (mojom_type) {
       case arc::mojom::BluetoothDeviceType::BREDR:
-        *type = device::BLUETOOTH_TRANSPORT_CLASSIC;
-        break;
+        return device::BLUETOOTH_TRANSPORT_CLASSIC;
       case arc::mojom::BluetoothDeviceType::BLE:
-        *type = device::BLUETOOTH_TRANSPORT_LE;
-        break;
+        return device::BLUETOOTH_TRANSPORT_LE;
       case arc::mojom::BluetoothDeviceType::DUAL:
-        *type = device::BLUETOOTH_TRANSPORT_DUAL;
-        break;
-      default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
+        return device::BLUETOOTH_TRANSPORT_DUAL;
     }
-    return true;
+    NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(mojom_type);
   }
 };
 
@@ -74,9 +70,8 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
     }
   }
 
-  static bool FromMojom(
-      arc::mojom::BluetoothSdpAttributeType input,
-      bluez::BluetoothServiceAttributeValueBlueZ::Type* output) {
+  static std::optional<bluez::BluetoothServiceAttributeValueBlueZ::Type>
+  FromMojom(arc::mojom::BluetoothSdpAttributeType input) {
     switch (input) {
       case arc::mojom::BluetoothSdpAttributeType::NULLTYPE:
       case arc::mojom::BluetoothSdpAttributeType::UINT:
@@ -86,12 +81,10 @@ struct EnumTraits<arc::mojom::BluetoothSdpAttributeType,
       case arc::mojom::BluetoothSdpAttributeType::BOOL:
       case arc::mojom::BluetoothSdpAttributeType::SEQUENCE:
       case arc::mojom::BluetoothSdpAttributeType::URL:
-        *output = static_cast<bluez::BluetoothServiceAttributeValueBlueZ::Type>(
+        return static_cast<bluez::BluetoothServiceAttributeValueBlueZ::Type>(
             input);
-        return true;
-      default:
-        NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
     }
+    NOTREACHED() << "Invalid type: " << static_cast<uint32_t>(input);
   }
 };
 

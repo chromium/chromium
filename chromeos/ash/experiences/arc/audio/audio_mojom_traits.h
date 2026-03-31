@@ -14,8 +14,7 @@ template <>
 struct EnumTraits<arc::mojom::AudioDeviceType, ash::AudioDeviceType> {
   static arc::mojom::AudioDeviceType ToMojom(
       ash::AudioDeviceType audio_device_type);
-  static bool FromMojom(arc::mojom::AudioDeviceType input,
-                        ash::AudioDeviceType* out);
+  static ash::AudioDeviceType FromMojom(arc::mojom::AudioDeviceType input);
 };
 
 }  // namespace mojo

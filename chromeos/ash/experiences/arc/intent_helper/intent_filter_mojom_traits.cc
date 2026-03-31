@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace mojo {
@@ -99,31 +100,25 @@ EnumTraits<arc::mojom::PatternType, arc::PatternType>::ToMojom(
   NOTREACHED();
 }
 
-bool EnumTraits<arc::mojom::PatternType, arc::PatternType>::FromMojom(
-    arc::mojom::PatternType input,
-    arc::PatternType* output) {
+arc::PatternType
+EnumTraits<arc::mojom::PatternType, arc::PatternType>::FromMojom(
+    arc::mojom::PatternType input) {
   switch (input) {
     case arc::mojom::PatternType::kUnknown:
-      *output = arc::PatternType::kUnknown;
-      return true;
+      return arc::PatternType::kUnknown;
     case arc::mojom::PatternType::PATTERN_LITERAL:
-      *output = arc::PatternType::kLiteral;
-      return true;
+      return arc::PatternType::kLiteral;
     case arc::mojom::PatternType::PATTERN_PREFIX:
-      *output = arc::PatternType::kPrefix;
-      return true;
+      return arc::PatternType::kPrefix;
     case arc::mojom::PatternType::PATTERN_SIMPLE_GLOB:
-      *output = arc::PatternType::kSimpleGlob;
-      return true;
+      return arc::PatternType::kSimpleGlob;
     case arc::mojom::PatternType::PATTERN_ADVANCED_GLOB:
-      *output = arc::PatternType::kAdvancedGlob;
-      return true;
+      return arc::PatternType::kAdvancedGlob;
     case arc::mojom::PatternType::PATTERN_SUFFIX:
-      *output = arc::PatternType::kSuffix;
-      return true;
+      return arc::PatternType::kSuffix;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<arc::mojom::PatternMatcherDataView,

@@ -20,8 +20,8 @@ struct COMPONENT_EXPORT(CHROMEOS_CDM_MOJOM)
   static chromeos::cdm::mojom::CdmKeyStatus ToMojom(
       ::media::CdmKeyInformation::KeyStatus input);
 
-  static bool FromMojom(chromeos::cdm::mojom::CdmKeyStatus input,
-                        ::media::CdmKeyInformation::KeyStatus* output);
+  static std::optional<::media::CdmKeyInformation::KeyStatus> FromMojom(
+      chromeos::cdm::mojom::CdmKeyStatus input);
 };
 
 template <>

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/ime/public/mojom/ime_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/services/ime/public/mojom/input_method_host.mojom-shared.h"
 
@@ -43,22 +44,20 @@ SuggestionMode EnumTraits<SuggestionMode, AssistiveSuggestionMode>::ToMojom(
   }
 }
 
-bool EnumTraits<SuggestionMode, AssistiveSuggestionMode>::FromMojom(
-    SuggestionMode input,
-    AssistiveSuggestionMode* output) {
+AssistiveSuggestionMode
+EnumTraits<SuggestionMode, AssistiveSuggestionMode>::FromMojom(
+    SuggestionMode input) {
   switch (input) {
     case SuggestionMode::kUnknown:
       // The browser process should never receive an unknown suggestion mode.
       // When adding a new SuggestionMode, the Chromium side should be updated
       // first to handle it, before changing the other calling side to send the
       // new suggestion mode.
-      return false;
+      NOTREACHED();
     case SuggestionMode::kCompletion:
-      *output = AssistiveSuggestionMode::kCompletion;
-      return true;
+      return AssistiveSuggestionMode::kCompletion;
     case SuggestionMode::kPrediction:
-      *output = AssistiveSuggestionMode::kPrediction;
-      return true;
+      return AssistiveSuggestionMode::kPrediction;
   }
 }
 
@@ -78,31 +77,26 @@ SuggestionType EnumTraits<SuggestionType, AssistiveSuggestionType>::ToMojom(
   }
 }
 
-bool EnumTraits<SuggestionType, AssistiveSuggestionType>::FromMojom(
-    SuggestionType input,
-    AssistiveSuggestionType* output) {
+AssistiveSuggestionType
+EnumTraits<SuggestionType, AssistiveSuggestionType>::FromMojom(
+    SuggestionType input) {
   switch (input) {
     case SuggestionType::kUnknown:
       // The browser process should never receive an unknown suggestion type.
       // When adding a new SuggestionType, the Chromium side should be updated
       // first to handle it, before changing the other calling side to send the
       // new suggestion type.
-      return false;
+      NOTREACHED();
     case SuggestionType::kAssistivePersonalInfo:
-      *output = AssistiveSuggestionType::kAssistivePersonalInfo;
-      return true;
+      return AssistiveSuggestionType::kAssistivePersonalInfo;
     case SuggestionType::kAssistiveEmoji:
-      *output = AssistiveSuggestionType::kAssistiveEmoji;
-      return true;
+      return AssistiveSuggestionType::kAssistiveEmoji;
     case SuggestionType::kMultiWord:
-      *output = AssistiveSuggestionType::kMultiWord;
-      return true;
+      return AssistiveSuggestionType::kMultiWord;
     case SuggestionType::kGrammar:
-      *output = AssistiveSuggestionType::kGrammar;
-      return true;
+      return AssistiveSuggestionType::kGrammar;
     case SuggestionType::kLongpressDiacritic:
-      *output = AssistiveSuggestionType::kLongpressDiacritic;
-      return true;
+      return AssistiveSuggestionType::kLongpressDiacritic;
   }
 }
 
@@ -162,30 +156,24 @@ EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::ToMojom(
   }
 }
 
-bool EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
-    AssistiveWindowTypeMojo input,
-    AssistiveWindowType* output) {
+AssistiveWindowType
+EnumTraits<AssistiveWindowTypeMojo, AssistiveWindowType>::FromMojom(
+    AssistiveWindowTypeMojo input) {
   switch (input) {
     case AssistiveWindowTypeMojo::kHidden:
-      *output = AssistiveWindowType::kNone;
-      return true;
+      return AssistiveWindowType::kNone;
     case AssistiveWindowTypeMojo::kUndo:
-      *output = AssistiveWindowType::kUndoWindow;
-      return true;
+      return AssistiveWindowType::kUndoWindow;
     case AssistiveWindowTypeMojo::kPersonalInfoSuggestion:
-      *output = AssistiveWindowType::kPersonalInfoSuggestion;
-      return true;
+      return AssistiveWindowType::kPersonalInfoSuggestion;
     case AssistiveWindowTypeMojo::kGrammarSuggestion:
-      *output = AssistiveWindowType::kGrammarSuggestion;
-      return true;
+      return AssistiveWindowType::kGrammarSuggestion;
     case AssistiveWindowTypeMojo::kMultiWordSuggestion:
-      *output = AssistiveWindowType::kMultiWordSuggestion;
-      return true;
+      return AssistiveWindowType::kMultiWordSuggestion;
     case AssistiveWindowTypeMojo::kLongpressDiacriticsSuggestion:
-      *output = AssistiveWindowType::kLongpressDiacriticsSuggestion;
-      return true;
+      return AssistiveWindowType::kLongpressDiacriticsSuggestion;
     default:
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -218,26 +206,20 @@ EnumTraits<AutocorrectSuggestionProviderMojo, AutocorrectSuggestionProvider>::
   }
 }
 
-bool EnumTraits<AutocorrectSuggestionProviderMojo,
-                AutocorrectSuggestionProvider>::
-    FromMojom(AutocorrectSuggestionProviderMojo input,
-              AutocorrectSuggestionProvider* output) {
+AutocorrectSuggestionProvider
+EnumTraits<AutocorrectSuggestionProviderMojo, AutocorrectSuggestionProvider>::
+    FromMojom(AutocorrectSuggestionProviderMojo input) {
   switch (input) {
     case AutocorrectSuggestionProviderMojo::kUsEnglishPrebundled:
-      *output = AutocorrectSuggestionProvider::kUsEnglishPrebundled;
-      return true;
+      return AutocorrectSuggestionProvider::kUsEnglishPrebundled;
     case AutocorrectSuggestionProviderMojo::kUsEnglishDownloaded:
-      *output = AutocorrectSuggestionProvider::kUsEnglishDownloaded;
-      return true;
+      return AutocorrectSuggestionProvider::kUsEnglishDownloaded;
     case AutocorrectSuggestionProviderMojo::kUsEnglish840:
-      *output = AutocorrectSuggestionProvider::kUsEnglish840;
-      return true;
+      return AutocorrectSuggestionProvider::kUsEnglish840;
     case AutocorrectSuggestionProviderMojo::kUsEnglish840V2:
-      *output = AutocorrectSuggestionProvider::kUsEnglish840V2;
-      return true;
+      return AutocorrectSuggestionProvider::kUsEnglish840V2;
     default:
-      *output = AutocorrectSuggestionProvider::kUnknown;
-      return true;
+      return AutocorrectSuggestionProvider::kUnknown;
   }
 }
 

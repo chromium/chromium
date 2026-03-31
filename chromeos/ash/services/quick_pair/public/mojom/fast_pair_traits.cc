@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -26,9 +27,8 @@ bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
   if (!data.ReadSalt(&salt_bytes) || salt_bytes.size() != out->salt.size())
     return false;
 
-  if (!EnumTraits<MessageType, FastPairMessageType>::FromMojom(
-          data.message_type(), &out->message_type))
-    return false;
+  out->message_type = EnumTraits<MessageType, FastPairMessageType>::FromMojom(
+      data.message_type());
 
   if (!data.ReadSecondaryAddressBytes(&out->secondary_address_bytes)) {
     return false;
@@ -50,9 +50,8 @@ bool StructTraits<DecryptedPasskeyDataView, DecryptedPasskey>::Read(
   if (!data.ReadSalt(&salt_bytes) || salt_bytes.size() != out->salt.size())
     return false;
 
-  if (!EnumTraits<MessageType, FastPairMessageType>::FromMojom(
-          data.message_type(), &out->message_type))
-    return false;
+  out->message_type = EnumTraits<MessageType, FastPairMessageType>::FromMojom(
+      data.message_type());
 
   out->passkey = data.passkey();
   std::ranges::copy(salt_bytes, out->salt.begin());
@@ -76,25 +75,20 @@ MessageType EnumTraits<MessageType, FastPairMessageType>::ToMojom(
 }
 
 // static
-bool EnumTraits<MessageType, FastPairMessageType>::FromMojom(
-    MessageType input,
-    FastPairMessageType* out) {
+FastPairMessageType EnumTraits<MessageType, FastPairMessageType>::FromMojom(
+    MessageType input) {
   switch (input) {
     case MessageType::kKeyBasedPairingRequest:
-      *out = FastPairMessageType::kKeyBasedPairingRequest;
-      return true;
+      return FastPairMessageType::kKeyBasedPairingRequest;
     case MessageType::kKeyBasedPairingResponse:
-      *out = FastPairMessageType::kKeyBasedPairingResponse;
-      return true;
+      return FastPairMessageType::kKeyBasedPairingResponse;
     case MessageType::kSeekersPasskey:
-      *out = FastPairMessageType::kSeekersPasskey;
-      return true;
+      return FastPairMessageType::kSeekersPasskey;
     case MessageType::kProvidersPasskey:
-      *out = FastPairMessageType::kProvidersPasskey;
-      return true;
+      return FastPairMessageType::kProvidersPasskey;
   }
 
-  return false;
+  NOTREACHED();
 }
 
 // static
