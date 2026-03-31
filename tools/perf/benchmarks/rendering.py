@@ -84,6 +84,7 @@ class _RenderingBenchmark(perf_benchmark.PerfBenchmark):
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--enable-gpu-benchmarking')
     options.AppendExtraBrowserArgs('--touch-events=enabled')
+    options.AppendExtraBrowserArgs('--enable-automation')
     # TODO(jonross): Catapult's record_wpr.py calls SetExtraBrowserOptions
     # before calling ProcessCommandLineArgs. This will crash attempting to
     # record new rendering benchmarks. We do not want to support software
