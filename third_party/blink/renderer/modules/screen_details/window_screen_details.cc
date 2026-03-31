@@ -89,7 +89,6 @@ ScriptPromise<ScreenDetails> WindowScreenDetails::GetScreenDetails(
                /*permission_requested=*/has_transient_user_activation);
   if (has_transient_user_activation) {
     permission_service_->RequestPermission(std::move(permission_descriptor),
-                                           /*user_gesture=*/true,
                                            std::move(callback));
   } else {
     permission_service_->HasPermission(std::move(permission_descriptor),

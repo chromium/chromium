@@ -296,7 +296,6 @@ class LocalNetworkAccessPermission final
     callback_ = std::move(callback);
     permission_service_->RequestPermission(
         CreatePermissionDescriptor(permission_name),
-        /*user_gesture=*/false,
         BindRepeating(
             &LocalNetworkAccessPermission::OnPermissionRequested,
             // This is safe because this class owns `permission_service_` which

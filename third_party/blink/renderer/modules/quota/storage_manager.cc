@@ -118,7 +118,6 @@ ScriptPromise<IDLBoolean> StorageManager::persist(
 
   GetPermissionService(window)->RequestPermission(
       CreatePermissionDescriptor(PermissionName::PERSISTENT_STORAGE),
-      LocalFrame::HasTransientUserActivation(window->GetFrame()),
       BindOnce(&StorageManager::PermissionRequestComplete, WrapPersistent(this),
                WrapPersistent(resolver)));
 

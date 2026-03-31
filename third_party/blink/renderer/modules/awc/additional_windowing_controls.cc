@@ -94,7 +94,6 @@ ScriptPromise<IDLUndefined> MaybePromptWindowManagementPermission(
   if (LocalFrame::HasTransientUserActivation(window->GetFrame())) {
     LocalFrame::ConsumeTransientUserActivation(window->GetFrame());
     permission_service->RequestPermission(std::move(permission_descriptor),
-                                          /*user_gesture=*/true,
                                           std::move(callback));
   } else {
     permission_service->HasPermission(std::move(permission_descriptor),

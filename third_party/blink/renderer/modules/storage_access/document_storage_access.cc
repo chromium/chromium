@@ -344,8 +344,6 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
       ->GetPermissionService(ExecutionContext::From(resolver->GetScriptState()))
       ->RequestPermission(
           std::move(descriptor),
-          LocalFrame::HasTransientUserActivation(
-              GetSupplementable()->GetFrame()),
           blink::BindOnce(
               &DocumentStorageAccess::ProcessStorageAccessPermissionState<T>,
               WrapPersistent(this), WrapPersistent(resolver),
@@ -512,8 +510,6 @@ ScriptPromise<IDLUndefined> DocumentStorageAccess::requestStorageAccessFor(
       ->GetPermissionService(ExecutionContext::From(script_state))
       ->RequestPermission(
           std::move(descriptor),
-          LocalFrame::HasTransientUserActivation(
-              GetSupplementable()->GetFrame()),
           BindOnce(&DocumentStorageAccess::
                        ProcessTopLevelStorageAccessPermissionState,
                    WrapPersistent(this), WrapPersistent(resolver)));

@@ -99,12 +99,10 @@ void PermissionElementTestPermissionService::RequestPageEmbeddedPermission(
 
 void PermissionElementTestPermissionService::RequestPermission(
     mojom::blink::PermissionDescriptorPtr permission,
-    bool user_gesture,
     RequestPermissionCallback) {}
 
 void PermissionElementTestPermissionService::RequestPermissions(
     Vector<mojom::blink::PermissionDescriptorPtr> permissions,
-    bool user_gesture,
     RequestPermissionsCallback) {}
 
 void PermissionElementTestPermissionService::RevokePermission(

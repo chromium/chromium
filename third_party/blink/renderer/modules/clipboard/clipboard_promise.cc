@@ -765,9 +765,8 @@ void ClipboardPromise::ValidatePreconditions(
 
   // Note that extra checks are performed browser-side in
   // `ContentBrowserClient::IsClipboardPasteAllowed()`.
-  permission_service_->RequestPermission(
-      std::move(permission_descriptor),
-      /*user_gesture=*/has_transient_user_activation, std::move(callback));
+  permission_service_->RequestPermission(std::move(permission_descriptor),
+                                         std::move(callback));
 }
 
 LocalFrame* ClipboardPromise::GetLocalFrame() const {

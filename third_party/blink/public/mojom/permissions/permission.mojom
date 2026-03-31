@@ -193,9 +193,9 @@ interface PermissionService {
       => (EmbeddedPermissionControlResult status);
   // Request permission for the given `PermissionDescriptor`, and returns
   // permission status result.
-  RequestPermission(PermissionDescriptor permission, bool user_gesture)
+  RequestPermission(PermissionDescriptor permission)
       => (PermissionStatusWithDetails status);
-  RequestPermissions(array<PermissionDescriptor> permission, bool user_gesture)
+  RequestPermissions(array<PermissionDescriptor> permission)
       => (array<PermissionStatus> statuses);
   RevokePermission(PermissionDescriptor permission)
       => (PermissionStatus status);

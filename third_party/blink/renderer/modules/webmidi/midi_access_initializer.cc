@@ -50,7 +50,6 @@ ScriptPromise<MIDIAccess> MIDIAccessInitializer::Start(LocalDOMWindow* window) {
           base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)
               ? true
               : options_->hasSysex() && options_->sysex()),
-      LocalFrame::HasTransientUserActivation(window->GetFrame()),
       BindOnce(&MIDIAccessInitializer::OnPermissionRequestResult,
                WrapPersistent(this)));
 

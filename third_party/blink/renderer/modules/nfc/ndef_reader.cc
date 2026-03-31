@@ -199,7 +199,6 @@ ScriptPromise<IDLUndefined> NDEFReader::scan(ScriptState* script_state,
       script_state, exception_state.GetContext());
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
-      LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
       BindOnce(&NDEFReader::ReadOnRequestPermission, WrapPersistent(this),
                WrapPersistent(options)));
   return scan_resolver_->Promise();
@@ -348,7 +347,6 @@ ScriptPromise<IDLUndefined> NDEFReader::write(
 
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
-      LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
       BindOnce(&NDEFReader::WriteOnRequestPermission, WrapPersistent(this),
                WrapPersistent(resolver), std::move(scoped_abort_state),
                WrapPersistent(options), std::move(message)));
@@ -462,7 +460,6 @@ ScriptPromise<IDLUndefined> NDEFReader::makeReadOnly(
 
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(PermissionName::NFC),
-      LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame()),
       BindOnce(&NDEFReader::MakeReadOnlyOnRequestPermission,
                WrapPersistent(this), WrapPersistent(resolver),
                std::move(scoped_abort_state), WrapPersistent(options)));

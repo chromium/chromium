@@ -125,8 +125,7 @@ TEST_F(PermissionServiceImplTest, RequestPermission) {
     descriptor->name = blink::mojom::PermissionName::GEOLOCATION;
 
     base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr> future;
-    remote()->RequestPermission(std::move(descriptor), /*user_gesture=*/true,
-                                future.GetCallback());
+    remote()->RequestPermission(std::move(descriptor), future.GetCallback());
     EXPECT_EQ(future.Take(), expected_status);
   }
 }

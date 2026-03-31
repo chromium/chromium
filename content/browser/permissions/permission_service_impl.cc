@@ -303,7 +303,6 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
 
 void PermissionServiceImpl::RequestPermission(
     PermissionDescriptorPtr permission,
-    bool user_gesture,
     RequestPermissionCallback callback) {
   // TODO(antoniosartori): Remove this logic duplication and reuse
   // RequestPermissions once that migrates to PermissionStatusWithDetails, too.
@@ -328,14 +327,15 @@ void PermissionServiceImpl::RequestPermission(
 
   RequestPermissionsInternal(
       context_->GetBrowserContext(),
-      PermissionRequestDescription(std::move(permissions), user_gesture),
+      PermissionRequestDescription(
+          std::move(permissions),
+          context_->render_frame_host()->HasTransientUserActivation()),
       base::BindOnce(&PermissionRequestResponseCallbackWrapper,
                      std::move(callback)));
 }
 
 void PermissionServiceImpl::RequestPermissions(
     std::vector<PermissionDescriptorPtr> permissions,
-    bool user_gesture,
     RequestPermissionsCallback callback) {
   BrowserContext* browser_context = context_->GetBrowserContext();
   if (!browser_context) {
@@ -372,7 +372,6 @@ void PermissionServiceImpl::RequestPermissions(
       browser_context,
       PermissionRequestDescription(
           std::move(permissions),
-          user_gesture &&
               context_->render_frame_host()->HasTransientUserActivation()),
       base::BindOnce(
           // TODO(crbug.com/494089503): Simplify this once the migration to

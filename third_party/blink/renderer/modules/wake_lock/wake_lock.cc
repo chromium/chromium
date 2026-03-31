@@ -177,11 +177,8 @@ void WakeLock::DoRequest(V8WakeLockType::Enum type,
       break;
   }
 
-  auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext());
-  auto* local_frame = window ? window->GetFrame() : nullptr;
   GetPermissionService()->RequestPermission(
       CreatePermissionDescriptor(permission_name),
-      LocalFrame::HasTransientUserActivation(local_frame),
       resolver->WrapCallbackInScriptScope(
           BindOnce(&WakeLock::DidReceivePermissionResponse,
                    WrapPersistent(this), type)));

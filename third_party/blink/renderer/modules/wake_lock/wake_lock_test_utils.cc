@@ -243,7 +243,6 @@ void MockPermissionService::RequestPageEmbeddedPermission(
 
 void MockPermissionService::RequestPermission(
     PermissionDescriptorPtr permission,
-    bool user_gesture,
     RequestPermissionCallback callback) {
   V8WakeLockType::Enum type;
   if (!GetWakeLockTypeFromDescriptor(permission, &type)) {
@@ -264,7 +263,6 @@ void MockPermissionService::RequestPermission(
 
 void MockPermissionService::RequestPermissions(
     Vector<PermissionDescriptorPtr> permissions,
-    bool user_gesture,
     mojom::blink::PermissionService::RequestPermissionsCallback) {
   NOTREACHED();
 }

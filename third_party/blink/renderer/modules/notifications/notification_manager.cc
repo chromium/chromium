@@ -128,10 +128,8 @@ ScriptPromise<V8NotificationPermission> NotificationManager::RequestPermission(
           script_state);
   auto promise = resolver->Promise();
 
-  LocalDOMWindow* win = To<LocalDOMWindow>(context);
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::NOTIFICATIONS),
-      LocalFrame::HasTransientUserActivation(win ? win->GetFrame() : nullptr),
       BindOnce(&NotificationManager::OnPermissionRequestComplete,
                WrapPersistent(this), WrapPersistent(resolver),
                WrapPersistent(deprecated_callback)));

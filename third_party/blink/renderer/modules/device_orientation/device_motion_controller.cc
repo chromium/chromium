@@ -145,7 +145,6 @@ ScriptPromise<V8PermissionState> DeviceMotionController::RequestPermission(
 
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
-      LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()),
       resolver->WrapCallbackInScriptScope(
           BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
                       mojom::blink::PermissionStatusWithDetailsPtr status) {

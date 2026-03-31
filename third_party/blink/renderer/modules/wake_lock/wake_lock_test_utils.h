@@ -127,11 +127,9 @@ class MockPermissionService final : public mojom::blink::PermissionService {
       mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
       RequestPageEmbeddedPermissionCallback) override;
   void RequestPermission(mojom::blink::PermissionDescriptorPtr permission,
-                         bool user_gesture,
                          RequestPermissionCallback) override;
   void RequestPermissions(
       Vector<mojom::blink::PermissionDescriptorPtr> permissions,
-      bool user_gesture,
       RequestPermissionsCallback) override;
   void RevokePermission(mojom::blink::PermissionDescriptorPtr permission,
                         RevokePermissionCallback) override;

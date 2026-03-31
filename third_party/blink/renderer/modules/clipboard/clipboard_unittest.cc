@@ -143,7 +143,7 @@ TEST_F(ClipboardTest, ClipboardPromiseReadText) {
 
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<2>(
+      .WillOnce(WithArg<1>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
             std::move(callback).Run(
@@ -182,7 +182,7 @@ TEST_F(ClipboardTest, SelectiveClipboardFormatRead) {
 
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<2>(
+      .WillOnce(WithArg<1>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
             std::move(callback).Run(
@@ -227,7 +227,7 @@ TEST_F(ClipboardTest, ReadAllClipboardFormats) {
 
   // Async read clipboard API requires the clipboard read permission.
   EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<2>(
+      .WillOnce(WithArg<1>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
             std::move(callback).Run(
@@ -274,7 +274,7 @@ TEST_F(ClipboardTest, ReadOnlyMimeTypesInClipboardRead) {
 
   // Mock permission service to grant clipboard access
   EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<2>(
+      .WillOnce(WithArg<1>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
             std::move(callback).Run(
@@ -314,7 +314,7 @@ TEST_F(ClipboardTest, ClipboardItemGetTypeTest) {
 
   // Mock permission service
   EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<2>(
+      .WillOnce(WithArg<1>(
           [](mojom::blink::PermissionService::RequestPermissionCallback
                  callback) {
             std::move(callback).Run(

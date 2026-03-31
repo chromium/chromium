@@ -159,11 +159,9 @@ ScriptPromise<PermissionStatus> Permissions::request(
   auto promise = resolver->Promise();
 
   PermissionDescriptorPtr descriptor_copy = descriptor->Clone();
-  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
-  LocalFrame* frame = window ? window->GetFrame() : nullptr;
 
   GetService(context)->RequestPermission(
-      std::move(descriptor), LocalFrame::HasTransientUserActivation(frame),
+      std::move(descriptor),
       BindOnce(&Permissions::VerifyPermissionAndReturnStatus,
                WrapPersistent(this), WrapPersistent(resolver),
                std::move(descriptor_copy)));
@@ -237,12 +235,8 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   for (const auto& descriptor : internal_permissions)
     internal_permissions_copy.push_back(descriptor->Clone());
 
-  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
-  LocalFrame* frame = window ? window->GetFrame() : nullptr;
-
   GetService(context)->RequestPermissions(
       std::move(internal_permissions),
-      LocalFrame::HasTransientUserActivation(frame),
       BindOnce(
           &Permissions::VerifyPermissionsAndReturnStatus, WrapPersistent(this),
           WrapPersistent(resolver), std::move(internal_permissions_copy),

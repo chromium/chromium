@@ -77,7 +77,6 @@ ScriptPromise<V8PermissionState> IdleManager::RequestPermission(
 
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::IDLE_DETECTION),
-      LocalFrame::HasTransientUserActivation(window->GetFrame()),
       BindOnce(&IdleManager::OnPermissionRequestComplete, WrapPersistent(this),
                WrapPersistent(resolver)));
   return promise;

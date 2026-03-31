@@ -49,14 +49,12 @@ class MockClipboardPermissionService final
   MOCK_METHOD(void,
               RequestPermission,
               (mojom::blink::PermissionDescriptorPtr permission,
-               bool user_gesture,
                RequestPermissionCallback),
               (override));
 
   MOCK_METHOD(void,
               RequestPermissions,
               (Vector<mojom::blink::PermissionDescriptorPtr> permissions,
-               bool user_gesture,
                RequestPermissionsCallback),
               (override));
 

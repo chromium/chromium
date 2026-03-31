@@ -62,11 +62,9 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
       blink::mojom::EmbeddedPermissionRequestDescriptorPtr descriptor,
       RequestPageEmbeddedPermissionCallback callback) override;
   void RequestPermission(blink::mojom::PermissionDescriptorPtr permission,
-                         bool user_gesture,
                          RequestPermissionCallback callback) override;
   void RequestPermissions(
       std::vector<blink::mojom::PermissionDescriptorPtr> permissions,
-      bool user_gesture,
       RequestPermissionsCallback callback) override;
   void RevokePermission(blink::mojom::PermissionDescriptorPtr permission,
                         RevokePermissionCallback callback) override;

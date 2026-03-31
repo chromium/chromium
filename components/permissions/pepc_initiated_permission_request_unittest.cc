@@ -201,7 +201,6 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingAllowed) {
       CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_CAMERA)
           .front()
           .Clone(),
-      /* user_gesture= */ true,
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallback,
           base::Unretained(this)));
@@ -244,7 +243,6 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestWhenSettingBlocked) {
       CreatePermissionDescriptorPtrs(ContentSettingsType::MEDIASTREAM_MIC)
           .front()
           .Clone(),
-      /* user_gesture= */ true,
       base::BindOnce(
           &PEPCInitiatedPermissionRequestTest::PermissionServiceCallback,
           base::Unretained(this)));
