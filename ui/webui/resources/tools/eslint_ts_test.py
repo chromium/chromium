@@ -655,6 +655,7 @@ class EslintTsTest(unittest.TestCase):
       self._run_test([
           "with_webui_plugin_lit_element_bindings_violations.ts",
           "with_webui_plugin_lit_element_bindings_violations.html.ts",
+          "with_webui_plugin_lit_element_bindings_violations_child.ts",
       ])
 
     _EXPECTED_STRING = "@webui-eslint/lit-element-expressions"
@@ -670,8 +671,42 @@ class EslintTsTest(unittest.TestCase):
 
     _PROPERTY_TYPE_MISMATCH_ERROR = "Property type mismatch: %(propertyName)s is declared as %(declaredType)s reactive property but is typed as %(tsType)s"
 
+    _BINDING_TYPE_MISMATCH_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s' expects type '%(expectedType)s', but was provided '%(providedType)s'"
+
+    _BINDING_TYPE_MISMATCH_PREFIX_ERROR = "Type mismatch in property binding: Property '%(propertyName)s' on element '%(tagName)s'"
+
     # The following strings *should* appear in the error output.
     errors = [
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'fooString',
+            'tagName': 'hello-world-child',
+            'expectedType': 'string',
+            'providedType': 'number[]',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'fooNumber',
+            'tagName': 'hello-world-child',
+            'expectedType': 'number',
+            'providedType': 'string',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'fooArray',
+            'tagName': 'hello-world-child',
+            'expectedType': 'number[]',
+            'providedType': 'string',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'fooBoolean',
+            'tagName': 'hello-world-child',
+            'expectedType': 'boolean',
+            'providedType': 'string[]',
+        },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'fooObject',
+            'tagName': 'hello-world-child',
+            'expectedType': '{ bar: string; }',
+            'providedType': '"A" | "B"',
+        },
         _INCORRECT_ATTRIBUTE_ERROR % {
             'attributeName': 'value',
             'propertyName': 'value',
@@ -752,6 +787,14 @@ class EslintTsTest(unittest.TestCase):
             'attributeName': 'max',
             'propertyName': 'limits',
             'propertyExpression': '.max=',
+        },
+        _BINDING_TYPE_MISMATCH_PREFIX_ERROR % {
+            'propertyName': 'innerHTML',
+            'tagName': 'div',
+        },
+        _BINDING_TYPE_MISMATCH_PREFIX_ERROR % {
+            'propertyName': 'style',
+            'tagName': 'div',
         },
     ]
     for e in non_errors:

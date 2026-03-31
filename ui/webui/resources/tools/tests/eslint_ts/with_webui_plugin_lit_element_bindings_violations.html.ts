@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 // Test file for @webui-eslint/lit-element-expressions
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {BindingsViolationsElement} from './with_webui_plugin_lit_element_bindings_violations.js';
 
 export function getHtml(this: BindingsViolationsElement) {
+  // clang-format off
   return html`
 <cr-input type=number value="${this.value}" aria-label="${this.label}"
     aria-description="${this.description}"
@@ -17,8 +18,17 @@ export function getHtml(this: BindingsViolationsElement) {
     ?disabled="${false}" ?some-multi-word-attr="${false}"
     ?hidden="${this.someBooleanProp}" some-array="${this.someArrayProp}">
 </cr-input>
+<hello-world-child .fooString="${this.value}" .fooNumber="${this.label}"
+    .fooArray="${this.getErrorMessage()}"
+    .fooBoolean="${this.getLabels()}"
+    .fooObject="${this.disabled ? 'A' : 'B'}">
+</hello-world-child>
 <div ?hidden="${this.getErrorMessage()}" aria-label="${this.getLabels()}">
 </div>
 <button ?disabled="${this.buttonDisabled}"></button>
+<hello-world-child .fooString="${this.value ? 'value' : nothing}">
+</hello-world-child>
+<div .innerHTML="${this.trustedHtml}" .style="${this.errorMessage}"></div>
 `;
+  // clang-format on
 }

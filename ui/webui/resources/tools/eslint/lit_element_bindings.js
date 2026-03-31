@@ -30,6 +30,8 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           'Incorrect assignment to boolean attribute expression \'?{{attributeName}}=\' using \'${false}\'. Use property binding \'.{{propertyName}}="${false}"\' instead.',
       propertyTypeMismatch:
           'Property type mismatch: {{propertyName}} is declared as {{declaredType}} reactive property but is typed as {{tsType}}.',
+      bindingTypeMismatch:
+          'Type mismatch in property binding: Property \'{{propertyName}}\' on element \'{{tagName}}\' expects type \'{{expectedType}}\', but was provided \'{{providedType}}\'.',
     },
   },
   defaultOptions: [],
@@ -45,6 +47,163 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
       const propertiesQuery = esquery.parse(`ClassDeclaration[id.name=/${
           className}/] > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement > ObjectExpression > Property`);
       return esquery.match(ast, propertiesQuery);
+    }
+
+    // Property binding validation: check that the bound property's type
+    // is compatible with |expressionType|.
+    function checkPropertyBinding(
+        currentTagName, propBinding, expression, tsNode, expressionType,
+        expressionTypeStr, checker) {
+      // Use the HTMLElementTagNameMap to get the class name from the
+      // tag name.
+      const mapSymbol = checker.resolveName(
+          'HTMLElementTagNameMap', tsNode, ts.SymbolFlags.Interface,
+          /* escapeGlobals= */ false);
+      assert.ok(mapSymbol && mapSymbol.members);
+      const elSymbol = mapSymbol.members.get(currentTagName);
+      assert.ok(elSymbol);
+      const elementType = checker.getTypeOfSymbolAtLocation(elSymbol, tsNode);
+      const propSymbol = elementType.getProperty(propBinding);
+
+      // Getting the symbol can fail for mixin inherited properties.
+      if (!propSymbol) {
+        return;
+      }
+
+      const expectedType =
+          checker.getTypeOfSymbolAtLocation(propSymbol, tsNode);
+      if (checker.isTypeAssignableTo(expressionType, expectedType)) {
+        return;
+      }
+
+      // Exception 1: Allow TrustedHTML to be assigned to string
+      // properties (e.g. innerHTML) for compatibility with Chromium's
+      // patch.
+      if (checker.typeToString(expressionType) === 'TrustedHTML' &&
+          checker.typeToString(expectedType) === 'string') {
+        return;
+      }
+
+      // Exception 2: style expects a CSSStyleDeclaration. Allow a
+      // string.
+      if (checker.typeToString(expressionType) === 'string' &&
+          checker.typeToString(expectedType) === 'CSSStyleDeclaration') {
+        return;
+      }
+
+      // Exception 3: Lit's "nothing" symbol is allowed. Check if the
+      // expression's text ends with "nothing" to handle cases like
+      // "this.property ? 'val' : nothing".
+      const expressionText = context.sourceCode.getText(expression);
+      if (expressionText.endsWith('nothing')) {
+        return;
+      }
+
+      context.report({
+        node: expression,
+        messageId: 'bindingTypeMismatch',
+        data: {
+          propertyName: propBinding,
+          tagName: currentTagName,
+          expectedType: checker.typeToString(expectedType),
+          providedType: expressionTypeStr,
+        },
+      });
+    }
+
+    // Determine the type that is declared for the Lit reactive property,
+    // for expressions of form "this.someProp". This can fail for reactive
+    // properties that are inherited from mixins.
+    function getReactivePropertyType(propName, declaredProps) {
+      const declaredProp =
+          declaredProps.find(prop => prop.key.name === propName);
+      if (!declaredProp) {
+        return null;
+      }
+      const declaredType =
+          declaredProp.value.properties.find(prop => prop.key.name === 'type');
+      return declaredType ? declaredType.value.name : null;
+    }
+
+    // If info for the class property and corresponding Lit reactive
+    // property both exist, ensure the two match. Note: Not yet
+    // checking this for numbers/strings, as the use of enum types
+    // can complicate the check.
+    function checkDeclaredTypeMatch(
+        expression, declaredProps, propName, expressionTypeStr, isTsBoolean,
+        isTsObjectOrArray) {
+      const declaredTypeName = getReactivePropertyType(propName, declaredProps);
+      if (!declaredTypeName) {
+        // Early return instead of error because the property may be
+        // inherited from a mixin.
+        return;
+      }
+
+      const isBooleanType = declaredTypeName === 'Boolean';
+      const isObjectOrArrayType =
+          declaredTypeName === 'Array' || declaredTypeName === 'Object';
+
+      if ((isBooleanType && !isTsBoolean) ||
+          (isObjectOrArrayType && !isTsObjectOrArray)) {
+        context.report({
+          node: expression,
+          messageId: 'propertyTypeMismatch',
+          data: {
+            propertyName: propName,
+            declaredType: declaredTypeName,
+            tsType: expressionTypeStr,
+          },
+        });
+      }
+    }
+
+    function checkBooleanAttributeBinding(
+        boolName, expression, isTsBoolean, propName) {
+      // Check 1: Should not bind to "true" or "false" literal values.
+      if (expression.type === 'Literal' &&
+          (expression.value === true || expression.value === false)) {
+        context.report({
+          node: expression,
+          messageId: expression.value ? 'noTrueBinding' : 'noFalseBinding',
+          data: {
+            attributeName: boolName,
+            propertyName: dashCaseToCamelCase(boolName),
+          },
+        });
+        return;
+      }
+
+      // Check 2: Should only bind to boolean TS expressions.
+      if (isTsBoolean) {
+        return;
+      }
+
+      context.report({
+        node: expression,
+        messageId: 'incorrectBooleanBinding',
+        data: {
+          attributeExpression: `?${boolName}=`,
+          propertyName: propName,
+        },
+      });
+    }
+
+    // Ensure attribute bindings are never used to bind to objects/arrays.
+    function checkAttributeBindingForObjectsAndArrays(
+        attrName, expression, isTsObjectOrArray, propName) {
+      if (!isTsObjectOrArray) {
+        return;
+      }
+
+      context.report({
+        node: expression,
+        messageId: 'incorrectAttributeBinding',
+        data: {
+          attributeExpression: `${attrName}=`,
+          propertyName: propName,
+          propertyExpression: `.${dashCaseToCamelCase(attrName)}=`,
+        },
+      });
     }
 
     const templateFilename = context.filename.replaceAll('\\', '/');
@@ -95,10 +254,20 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
           return;
         }
 
-        const attrBindingRegex =
-            /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+))="$/;
+        const bindingRegex =
+            /(\s+(?<attrName>[a-z0-9\-]+)|\?(?<boolName>[a-z0-9-]+)|\.(?<propName>[a-zA-Z0-9-]+))="$/;
+        let currentTagName = '';
+
         for (let i = 0; i < node.quasis.length; i++) {
-          const match = attrBindingRegex.exec(node.quasis[i].value.raw);
+          // Extract the last tag name that was seen before an expression
+          // started. This is necessary because quasis and tags are not 1 to 1.
+          const tagMatch =
+              /<([a-zA-Z0-9-]+)[^>]*$/.exec(node.quasis[i].value.raw);
+          if (tagMatch) {
+            currentTagName = tagMatch[1];
+          }
+
+          const match = bindingRegex.exec(node.quasis[i].value.raw);
           if (!match) {
             continue;
           }
@@ -108,106 +277,60 @@ export const litElementExpressions = ESLintUtils.RuleCreator.withoutDocs({
             continue;
           }
 
-          if (expression.type === 'Literal' && !!match.groups['boolName'] &&
-              (expression.value === true || expression.value === false)) {
-            const boolName = match.groups['boolName'];
-            context.report({
-              node: expression,
-              messageId: expression.value ? 'noTrueBinding' : 'noFalseBinding',
-              data: {
-                attributeName: boolName,
-                propertyName: dashCaseToCamelCase(boolName),
-              },
-            });
-            continue;
-          }
-
-          const isPropertyBinding = expression.type === 'MemberExpression' &&
-              expression.object.type === 'ThisExpression';
-          const propName = isPropertyBinding ?
-              expression.property.name :
-              context.sourceCode.getText(expression);
-          let isBooleanType = false;
-          let isObjectOrArrayType = false;
-          let declaredTypeName = null;
-
-          // Determine the type that is declared for the Lit reactive property,
-          // for expressions of form "this.someProp". This can fail for reactive
-          // properties that are inherited from mixins.
-          if (isPropertyBinding) {
-            const declaredProp =
-                declaredProps.find(prop => prop.key.name === propName);
-            if (declaredProp) {
-              const declaredType = declaredProp.value.properties.find(
-                  prop => prop.key.name === 'type');
-              if (declaredType) {
-                declaredTypeName = declaredType.value.name;
-                isBooleanType = declaredTypeName === 'Boolean';
-                isObjectOrArrayType = declaredTypeName === 'Array' ||
-                    declaredTypeName === 'Object';
-              }
-            }
-          }
-
-          // Determine the TypeScript type.
+          // Determine the TypeScript type of the bound expression.
           const checker = services.program.getTypeChecker();
           const tsNode = services.esTreeNodeToTSNodeMap.get(expression);
           assert.ok(tsNode);
-          const type = checker.getTypeAtLocation(tsNode);
-          const typeStr = checker.typeToString(type);
-          const isTsBoolean = typeStr === 'boolean' || typeStr === 'true' ||
-              typeStr === 'false';
-          const isTsObjectOrArray = (type.flags & ts.TypeFlags.Object) !== 0 ||
-              typeStr.endsWith('[]') || typeStr.startsWith('Array<') ||
-              typeStr.startsWith('Record<') || typeStr.startsWith('{') ||
-              typeStr === 'object';
+          const expressionType = checker.getTypeAtLocation(tsNode);
+          const expressionTypeStr = checker.typeToString(expressionType);
 
-          if (declaredTypeName) {
-            // If info for the class property and corresponding Lit reactive
-            // property both exist, ensure the two match.
-            if ((isBooleanType && !isTsBoolean) ||
-                (isObjectOrArrayType && !isTsObjectOrArray)) {
-              context.report({
-                node: expression,
-                messageId: 'propertyTypeMismatch',
-                data: {
-                  propertyName: propName,
-                  declaredType: declaredTypeName,
-                  tsType: typeStr,
-                },
-              });
-              continue;
-            }
-          } else {
-            // Fall back to TS type if a declared type was not found for the
-            // reactive property.
-            isBooleanType = isTsBoolean;
-            isObjectOrArrayType = isTsObjectOrArray;
-          }
-
-          if (!!match.groups['boolName'] && !isBooleanType) {
-            context.report({
-              node: expression,
-              messageId: 'incorrectBooleanBinding',
-              data: {
-                attributeExpression: `?${match.groups['boolName']}=`,
-                propertyName: propName,
-              },
-            });
+          // Validate property bindings
+          const propBinding = match.groups['propName'];
+          if (propBinding && currentTagName) {
+            checkPropertyBinding(
+                currentTagName, propBinding, expression, tsNode, expressionType,
+                expressionTypeStr, checker);
             continue;
           }
 
-          if (!!match.groups['attrName'] && isObjectOrArrayType) {
-            const attrName = match.groups['attrName'];
-            context.report({
-              node: expression,
-              messageId: 'incorrectAttributeBinding',
-              data: {
-                attributeExpression: `${attrName}=`,
-                propertyName: propName,
-                propertyExpression: `.${dashCaseToCamelCase(attrName)}=`,
-              },
-            });
+          // Check for a TypeScript boolean or object/array type.
+          const isTsBoolean = expressionTypeStr === 'boolean' ||
+              expressionTypeStr === 'true' || expressionTypeStr === 'false';
+          const isTsObjectOrArray =
+              (expressionType.flags & ts.TypeFlags.Object) !== 0 ||
+              expressionTypeStr.endsWith('[]') ||
+              expressionTypeStr.startsWith('Array<') ||
+              expressionTypeStr.startsWith('Record<') ||
+              expressionTypeStr.startsWith('{') ||
+              expressionTypeStr === 'object';
+
+          // Determine if binding is to a reactive property.
+          const isBindingToProperty = expression.type === 'MemberExpression' &&
+              expression.object.type === 'ThisExpression';
+          const propName = isBindingToProperty ?
+              expression.property.name :
+              context.sourceCode.getText(expression);
+
+          // Check type declared in properties() is compatible with TS type.
+          if (isBindingToProperty) {
+            checkDeclaredTypeMatch(
+                expression, declaredProps, propName, expressionTypeStr,
+                isTsBoolean, isTsObjectOrArray);
+          }
+
+          // Boolean attribute binding validation
+          const boolName = match.groups['boolName'];
+          if (boolName) {
+            checkBooleanAttributeBinding(
+                boolName, expression, isTsBoolean, propName);
+            continue;
+          }
+
+          // Generic attribute binding validation
+          const attrName = match.groups['attrName'];
+          if (attrName) {
+            checkAttributeBindingForObjectsAndArrays(
+                attrName, expression, isTsObjectOrArray, propName);
           }
         }
       },
