@@ -20,7 +20,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/features_generated.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/common/constants.h"
 #endif
 
@@ -77,7 +77,7 @@ CookieSettingsFactory::BuildServiceInstanceFor(
   }
 
   const char* extension_scheme =
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       extensions::kExtensionScheme;
 #else
       content_settings::kDummyExtensionScheme;

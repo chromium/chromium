@@ -172,7 +172,7 @@ source_set("content_settings_factory_impl") {
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//extensions/browser" ]
   }
 

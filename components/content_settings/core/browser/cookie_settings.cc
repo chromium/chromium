@@ -281,7 +281,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
     return true;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (url.SchemeIs(extension_scheme_) &&
       first_party_url.SchemeIs(extension_scheme_)) {
     return true;
@@ -289,7 +289,7 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
 #else
   // Suppress -Wunused-private-field warning.
   (void)extension_scheme_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return false;
 }

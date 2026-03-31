@@ -584,7 +584,7 @@ TEST_F(CookieSettingsTest, TestAllowlistedScheme) {
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kChromeURL, kHttpSiteForCookies, /*top_frame_origin=*/std::nullopt,
       net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kExtensionURL, kExtensionSiteForCookies,
       /*top_frame_origin=*/std::nullopt, net::CookieSettingOverrides(),
@@ -1742,7 +1742,7 @@ TEST_F(CookieSettingsTest, ExtensionsRegularSettings) {
 TEST_F(CookieSettingsTest, ExtensionsOwnCookies) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extensions can always use cookies (and site data) in their own origin.
   EXPECT_TRUE(cookie_settings_->IsFullCookieAccessAllowed(
       kExtensionURL, kExtensionSiteForCookies,
