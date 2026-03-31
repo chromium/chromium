@@ -1,0 +1,252 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("messaging") {
+  sources = [
+    "chrome_messaging_delegate.cc",
+    "chrome_messaging_delegate.h",
+    "chrome_native_message_port_dispatcher.cc",
+    "chrome_native_message_port_dispatcher.h",
+    "incognito_connectability.cc",
+    "incognito_connectability.h",
+    "incognito_connectability_infobar_delegate.cc",
+    "incognito_connectability_infobar_delegate.h",
+    "native_messaging_host_manifest.cc",
+    "native_messaging_host_manifest.h",
+  ]
+
+  if (is_android) {
+    sources += [
+      "native_message_android_host.cc",
+      "native_message_android_host.h",
+    ]
+  }
+
+  if (!is_chromeos) {
+    sources += [
+      "native_messaging_policy_handler.cc",
+      "native_messaging_policy_handler.h",
+    ]
+
+    if (!is_android) {
+      sources += [
+        "launch_context.cc",
+        "launch_context.h",
+        "native_message_process_host.cc",
+        "native_message_process_host.h",
+        "native_messaging_launch_from_native.cc",
+        "native_messaging_launch_from_native.h",
+        "native_process_launcher.cc",
+        "native_process_launcher.h",
+      ]
+    }
+
+    if (is_posix) {
+      sources += [ "launch_context_posix.cc" ]
+    }
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "native_message_built_in_host.cc",
+      "native_message_built_in_host.h",
+      "native_message_echo_host.cc",
+      "native_message_echo_host.h",
+      "native_message_host_chromeos.cc",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "launch_context_win.cc" ]
+  }
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:buildflags",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//url",
+  ]
+
+  if (!is_android) {
+    deps += [ "//components/keep_alive_registry" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/arc/extensions",
+      "//chrome/browser/ash/drive",
+      "//chrome/browser/ash/guest_os",
+      "//chrome/browser/chromeos/drivefs:native_message_host_origins",
+      "//remoting/host/it2me:chrome_os_host",
+    ]
+  }
+
+  if (is_win) {
+    deps += [ "//components/app_launch_prefetch" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = []
+
+  if (enable_extensions) {
+    sources += [
+      "native_messaging_test_util.cc",
+      "native_messaging_test_util.h",
+    ]
+  }
+
+  deps = [
+    ":messaging",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  if (enable_extensions) {
+    if (!is_chromeos) {
+      sources += [
+        "native_message_process_host_unittest.cc",
+        "native_messaging_host_manifest_unittest.cc",
+        "native_messaging_launch_from_native_unittest.cc",
+        "native_messaging_policy_handler_unittest.cc",
+      ]
+    }
+  }
+
+  deps = [
+    ":messaging",
+    ":test_support",
+    "//base",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/version_info",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
+
+source_set("platform_browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "externally_connectable_messaging_apitest.cc",
+    "messaging_apitest.cc",
+    "service_worker_messaging_apitest.cc",
+  ]
+
+  deps = [
+    ":messaging",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/embedder_support",
+    "//components/infobars/content",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/browser:test_support",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "message_tracker_browsertest.cc",
+    "native_messaging_apitest.cc",
+  ]
+
+  deps = [
+    ":messaging",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/startup",
+    "//chrome/test:test_support",
+    "//extensions:test_support",
+    "//extensions/browser",
+    "//extensions/common",
+    "//testing/gtest",
+  ]
+
+  if (enable_background_mode) {
+    deps += [ "//chrome/browser/background/extensions" ]
+  }
+}
+
+if (is_win) {
+  # The files below are required to exercise the code that properly launches
+  # Native Hosts with paths containing characters that are problematic for
+  # cmd.exe. crbug.com/335558
+  executable("native_messaging_test_echo_host") {
+    testonly = true
+    sources = [ "native_messaging_test_echo_host.cc" ]
+    deps = [ "//base" ]
+  }
+
+  copy("native_messaging_test_echo_&_host") {
+    testonly = true
+    src_tool = ":native_messaging_test_echo_host"
+    sources = [ get_label_info(src_tool, "root_out_dir") +
+                "/native_messaging_test_echo_host.exe" ]
+    outputs = [ "$root_build_dir/native_messaging_test_echo_&_host.exe" ]
+    deps = [ src_tool ]
+  }
+
+  copy("native_messaging_test_echo_space_host") {
+    testonly = true
+    src_tool = ":native_messaging_test_echo_host"
+    sources = [ get_label_info(src_tool, "root_out_dir") +
+                "/native_messaging_test_echo_host.exe" ]
+    outputs = [ "$root_build_dir/native_messaging_test_echo_ _host.exe" ]
+    deps = [ src_tool ]
+  }
+}
