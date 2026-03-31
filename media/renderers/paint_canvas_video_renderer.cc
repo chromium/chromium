@@ -1122,6 +1122,9 @@ scoped_refptr<VideoFrame> DownShiftHighbitVideoFrame(
   scoped_refptr<VideoFrame> ret = VideoFrame::CreateFrame(
       format, video_frame->coded_size(), video_frame->visible_rect(),
       video_frame->natural_size(), video_frame->timestamp());
+  if (!ret) {
+    return nullptr;
+  }
 
   ret->set_color_space(video_frame->ColorSpace());
   // Copy all metadata.
@@ -1337,6 +1340,11 @@ void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
       return;
     default:
       break;
+  }
+
+  // DownShiftHighbitVideoFrame may fail creation of the `temporary_frame`.
+  if (!video_frame) {
+    return;
   }
 
   const size_t n_tasks =
