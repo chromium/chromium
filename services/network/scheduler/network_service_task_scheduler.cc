@@ -55,15 +55,9 @@ void NetworkServiceTaskScheduler::MaybeCreate() {
 
 // static
 std::unique_ptr<NetworkServiceTaskScheduler>
-NetworkServiceTaskScheduler::CreateForTesting() {
-  return base::WrapUnique(new NetworkServiceTaskScheduler(
-      // Use a custom sequence manager for testing, as the current thread might
-      // not have one set up with the correct priority settings, and we take
-      // ownership of it for cleanup.
-      base::sequence_manager::CreateSequenceManagerOnCurrentThread(
-          base::sequence_manager::SequenceManager::Settings::Builder()
-              .SetPrioritySettings(CreateNetworkServiceTaskPrioritySettings())
-              .Build())));
+NetworkServiceTaskScheduler::CreateForTesting(
+    base::sequence_manager::SequenceManager* manager) {
+  return base::WrapUnique(new NetworkServiceTaskScheduler(manager));
 }
 
 // The NetworkServiceTaskScheduler's lifetime is effectively static when
@@ -79,10 +73,6 @@ NetworkServiceTaskScheduler::~NetworkServiceTaskScheduler() {
     net::internal::GetTaskRunnerGlobals().task_runners =
         *original_task_runners_for_testing_;
   }
-  if (original_default_task_runner_.has_value()) {
-    CurrentNetworkServiceThread::GetCurrentSequenceManagerImpl()
-        ->SetDefaultTaskRunner(*original_default_task_runner_);
-  }
 }
 
 NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
@@ -93,19 +83,6 @@ NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
   sequence_manager->EnableCrashKeys("network_service_scheduler_async_stack");
   // Set the default task runner for the current thread.
   sequence_manager->SetDefaultTaskRunner(GetDefaultTaskRunner());
-}
-
-NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
-    std::unique_ptr<base::sequence_manager::SequenceManager>
-        sequence_manager_for_testing)
-    : sequence_manager_for_testing_(std::move(sequence_manager_for_testing)),
-      task_queues_(sequence_manager_for_testing_.get()) {
-  // Saves the default task runner to restore it later for testing scenarios.
-  original_default_task_runner_ =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
-  // Set the default task runner for this scheduler.
-  sequence_manager_for_testing_->SetDefaultTaskRunner(
-      task_queues_.GetDefaultTaskRunner());
 }
 
 void NetworkServiceTaskScheduler::OnTaskCompleted(

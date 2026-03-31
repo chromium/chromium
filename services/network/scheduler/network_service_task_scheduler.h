@@ -54,7 +54,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
   static void MaybeCreate();
 
   // Creates a NetworkServiceTaskScheduler for testing.
-  static std::unique_ptr<NetworkServiceTaskScheduler> CreateForTesting();
+  static std::unique_ptr<NetworkServiceTaskScheduler> CreateForTesting(
+      base::sequence_manager::SequenceManager* manager);
 
   ~NetworkServiceTaskScheduler();
 
@@ -76,11 +77,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
   // Constructor for production, borrows the existing sequence manager.
   explicit NetworkServiceTaskScheduler(
       base::sequence_manager::SequenceManager* sequence_manager);
-
-  // Constructor for testing, takes ownership of `sequence manager_for_testing`.
-  explicit NetworkServiceTaskScheduler(
-      std::unique_ptr<base::sequence_manager::SequenceManager>
-          sequence_manager_for_testing);
 
   // Sets up the global `net` task runners to point to this scheduler's task
   // runners.
@@ -106,11 +102,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskScheduler {
   std::optional<std::array<scoped_refptr<base::SingleThreadTaskRunner>,
                            net::NUM_PRIORITIES>>
       original_task_runners_for_testing_;
-
-  // Stores the original default task runner before `CreateForTesting()`
-  // is called, so it can be restored on destruction.
-  std::optional<scoped_refptr<base::SingleThreadTaskRunner>>
-      original_default_task_runner_;
 };
 
 }  // namespace network
