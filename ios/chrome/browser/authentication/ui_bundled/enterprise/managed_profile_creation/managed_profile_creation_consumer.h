@@ -11,7 +11,7 @@
 @protocol ManagedProfileCreationConsumer <NSObject>
 
 // Informs the UI that the user changed the selection.
-- (void)updateUI;
+- (void)userChangedSelection;
 
 @end
 

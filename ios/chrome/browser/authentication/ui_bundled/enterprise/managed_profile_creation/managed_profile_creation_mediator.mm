@@ -76,12 +76,14 @@
 - (void)updateShouldKeepBrowsingDataSeparate:(BOOL)browsingDataSeparate {
   switch (_mode) {
     case signin::ManagedAccountSigninMode::kForceSeparateProfileDataByPolicy:
-    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
     case signin::ManagedAccountSigninMode::kAutoMergeDuringFRE:
     case signin::ManagedAccountSigninMode::kInformOfForcedMigration:
       // The user should not have been presented with the option to make a
       // choice.
       NOTREACHED();
+    case signin::ManagedAccountSigninMode::kMustSeparateBecauseSignedIn:
+      // This could happen if the user signed-in while the update was made.
+      break;
     case signin::ManagedAccountSigninMode::kSeparateProfileData:
       if (browsingDataSeparate) {
         return;
@@ -94,7 +96,7 @@
       }
       _mode = signin::ManagedAccountSigninMode::kSeparateProfileData;
   }
-  [self.consumer updateUI];
+  [self.consumer userChangedSelection];
 }
 
 #pragma mark - BrowsingDataMigrationViewControllerMutator
@@ -103,8 +105,24 @@
   id<SystemIdentity> identity =
       _accountManagerService->GetIdentityOnDeviceWithGaiaID(GaiaId(_gaiaID));
   if (!identity) {
-    [self.delegate identityRemovedFromDevice];
+    [self.delegate managedProfileCreationMediatorWantsToBeStopped:self];
   }
+}
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSignin) !=
+      signin::PrimaryAccountChangeEvent::Type::kSet) {
+    return;
+  }
+  // The user signed-in a primary account.
+  // This can happen if, on ipad, with two windows, one managed, one signed-out.
+  // The signed-out user open this view in the signed-out. In the other window,
+  // the user switch to a personal account. This should be extremely rare. While
+  // updating the UI to ensure it’s consistent with the expected UI for
+  // signed-in user could be done, closing the UI is an acceptable compromise
+  // that is more future proof.
+  [self.delegate managedProfileCreationMediatorWantsToBeStopped:self];
 }
 
 @end

@@ -27,8 +27,12 @@ enum class ManagedAccountSigninMode;
                                               signin::ManagedAccountSigninMode>)
                                               mode;
 
-// Called when the coordinator requests to be stopped, not due to a user
-// interaction.
+// Called when the Managed Profile Creation must be stopped, without the user
+// having tapped on one of the view’s button. This should be very rare. It can
+// occurs either if the profile was removed from the device (this could be done
+// from another application), or if the user signed-in into an account (this
+// could be done by using a second view, with a managed profile, and switching
+// to a personal profile).
 - (void)managedProfileCreationCoordinatorWantsToBeStopped:
     (ManagedProfileCreationCoordinator*)coordinator;
 

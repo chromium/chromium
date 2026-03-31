@@ -174,7 +174,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
 #pragma mark - ManagedProfileCreationConsumer
 
-- (void)updateUI {
+- (void)userChangedSelection {
   [self updateSnapshotForItemIdentifier:ItemIdentifierBrowsingData];
 }
 

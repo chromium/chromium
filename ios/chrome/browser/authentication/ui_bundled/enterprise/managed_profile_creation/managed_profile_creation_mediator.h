@@ -16,6 +16,7 @@ class ChromeAccountManagerService;
 class GaiaId;
 
 @protocol ManagedProfileCreationConsumer;
+@class ManagedProfileCreationMediator;
 
 namespace signin {
 enum class ManagedAccountSigninMode;
@@ -23,9 +24,13 @@ enum class ManagedAccountSigninMode;
 
 @protocol ManagedProfileCreationMediatorDelegate <NSObject>
 
-// Called when the identity is removed from the device while the dialog is
-// opened.
-- (void)identityRemovedFromDevice;
+// Called when the Managed Profile Creation must be stopped.
+// This should be very rare. It can occurs either if the profile was removed
+// from the device (this could be done from another application), or if the user
+// signed-in into an account (this could be done by using a second view, with a
+// managed profile, and switching to a personal profile).
+- (void)managedProfileCreationMediatorWantsToBeStopped:
+    (ManagedProfileCreationMediator*)mediator;
 
 @end
 

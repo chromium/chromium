@@ -216,7 +216,9 @@
 
 #pragma mark - ManagedProfileCreationMediatorDelegate
 
-- (void)identityRemovedFromDevice {
+- (void)managedProfileCreationMediatorWantsToBeStopped:
+    (ManagedProfileCreationMediator*)mediator {
+  CHECK_EQ(mediator, _mediator);
   [self.delegate managedProfileCreationCoordinatorWantsToBeStopped:self];
 }
 
