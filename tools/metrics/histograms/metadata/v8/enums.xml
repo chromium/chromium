@@ -112,7 +112,8 @@ chromium-metrics-reviews@google.com.
     Blink did not request a code cache because this script is too small
   </int>
   <int value="6" label="kNoCacheBecauseCacheTooCold">
-    Blink did not request a code cache because the cached resource is too cold
+    Blink did not request a code cache for a resource script because the cached
+    resource is too cold
   </int>
   <int value="7" label="kNoCacheNoReason">
     Blink did not request a code cache but gave no reason
@@ -161,7 +162,15 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="20" label="kHitIsolateCacheWhenStreamingSource">
     Blink parsed and compiled the script as it was streamed, but we then hit
-    V8's isolate's compilation cache and did not require the streamed result.
+    V8's isolate's compilation cache and did not require the streamed result
+  </int>
+  <int value="21" label="kNoCacheBecauseStaticCodeCache">
+    The Blink resource was loaded with a static code cache, that does not need
+    to be regenerated or updated
+  </int>
+  <int value="22" label="kNoCacheBecauseInlineScriptCacheTooCold">
+    Blink did not request a code cache for an inline script because the cache is
+    too cold
   </int>
 </enum>
 
