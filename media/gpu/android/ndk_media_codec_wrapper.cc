@@ -56,7 +56,14 @@ NdkMediaCodecWrapper::NdkMediaCodecWrapper(
   weak_this_ = weak_factory_.GetWeakPtr();
 }
 
-NdkMediaCodecWrapper::~NdkMediaCodecWrapper() = default;
+NdkMediaCodecWrapper::~NdkMediaCodecWrapper() {
+  CHECK(!started_);
+
+  // Stop() should ensure the the codec is idle by this point, but to be safe,
+  // force destruction of the MediaCodec before the WeakPtrFactory is destroyed
+  // to ensure no new callbacks can be generated.
+  media_codec_.reset();
+}
 
 bool NdkMediaCodecWrapper::HasInput() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -122,8 +129,11 @@ void NdkMediaCodecWrapper::Stop() {
     return;
   }
 
-  started_ = false;
   AMediaCodec_stop(media_codec_.get());
+
+  started_ = false;
+  output_buffers_.clear();
+  input_buffers_.clear();
 }
 
 base::span<uint8_t> NdkMediaCodecWrapper::GetInputBuffer(size_t idx) {

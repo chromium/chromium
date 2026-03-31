@@ -82,6 +82,7 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
   // Note: Before calling Start(), `media_codec_` should have already been
   //      configured using AMediaCodec_configure() and the codec() accessor.
   // Note: Stop() must be called before calling Start() again.
+  // Note: Stop() must be called before destruction if Start() was called.
   media_status_t Start();
   void Stop();
 
