@@ -1213,8 +1213,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                           kDefaultUsername, kDefaultSite)]
       performAction:grey_tap()];
 
-  // Close the dialog by tapping on Password Details screen done button.
-  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+  // Close the dialog by tapping on the Password Details table.
+  [[EarlGrey selectElementWithMatcher:PasswordDetailsTableViewMatcher()]
       performAction:grey_tap()];
 
   // Check that the current view is still the detail view.
