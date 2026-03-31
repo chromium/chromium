@@ -4,6 +4,10 @@
 
 #include "chrome/browser/actor/tools/script_tool_request.h"
 
+#include "base/feature_list.h"
+#include "base/time/time.h"
+#include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/script_tool_host.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
@@ -48,6 +52,19 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
               task_id, tool_delegate, GetTabHandle(), target_document_id_,
               mojom::ToolAction::NewScriptTool(std::move(script))),
           MakeOkResult()};
+}
+
+ObservationDelayController::PageStabilityConfig
+ScriptToolRequest::GetObservationPageStabilityConfig() const {
+  if (base::FeatureList::IsEnabled(kActorScriptToolDelayObservation)) {
+    return {
+        .supports_paint_stability = false,
+        .start_delay =
+            base::Milliseconds(kActorScriptToolDelayObservationMillis.Get()),
+    };
+  } else {
+    return ToolRequest::GetObservationPageStabilityConfig();
+  }
 }
 
 }  // namespace actor

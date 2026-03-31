@@ -31,6 +31,9 @@ class ScriptToolRequest : public TabToolRequest {
       TaskId task_id,
       ToolDelegate& tool_delegate) const override;
 
+  ObservationDelayController::PageStabilityConfig
+  GetObservationPageStabilityConfig() const override;
+
  private:
   base::UnguessableToken target_document_id_;
   std::string name_;

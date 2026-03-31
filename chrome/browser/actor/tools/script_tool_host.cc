@@ -4,6 +4,8 @@
 
 #include "chrome/browser/actor/tools/script_tool_host.h"
 
+#include "base/feature_list.h"
+#include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -12,6 +14,7 @@
 #include "chrome/common/actor/journal_details_builder.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -61,7 +64,21 @@ mojom::ActionResultPtr ScriptToolHost::TimeOfUseValidation(
 std::unique_ptr<ObservationDelayController>
 ScriptToolHost::GetObservationDelayer(
     ObservationDelayController::PageStabilityConfig page_stability_config) {
-  return nullptr;
+  if (!base::FeatureList::IsEnabled(kActorScriptToolDelayObservation)) {
+    return nullptr;
+  }
+
+  content::RenderFrameHost* frame = new_document_.AsRenderFrameHostIfValid();
+  if (!frame) {
+    frame = target_document_.AsRenderFrameHostIfValid();
+  }
+
+  if (!frame) {
+    return nullptr;
+  }
+
+  return std::make_unique<ObservationDelayController>(
+      *frame, task_id(), journal(), page_stability_config);
 }
 
 void ScriptToolHost::Invoke(ToolCallback callback) {
@@ -148,6 +165,11 @@ tabs::TabHandle ScriptToolHost::GetTargetTab() const {
 
 void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
   TearDown();
+
+  if (result && result->code == mojom::ActionResultCode::kOk) {
+    result->requires_page_stabilization =
+        base::FeatureList::IsEnabled(kActorScriptToolDelayObservation);
+  }
 
   const bool result_on_new_document = result && result->script_tool_response &&
                                       !result->script_tool_response->result;

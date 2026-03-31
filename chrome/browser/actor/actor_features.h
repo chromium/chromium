@@ -106,6 +106,9 @@ extern const base::FeatureParam<base::TimeDelta>
 
 BASE_DECLARE_FEATURE(kGlicActorEnableScriptTools);
 
+BASE_DECLARE_FEATURE(kActorScriptToolDelayObservation);
+extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
+
 }  // namespace actor
 
 #endif  // CHROME_BROWSER_ACTOR_ACTOR_FEATURES_H_

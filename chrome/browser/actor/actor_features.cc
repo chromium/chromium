@@ -159,4 +159,10 @@ const base::FeatureParam<base::TimeDelta>
 
 BASE_FEATURE(kGlicActorEnableScriptTools, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kActorScriptToolDelayObservation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kActorScriptToolDelayObservationMillis{
+    &kActorScriptToolDelayObservation, "script_tool_delay_observation_ms", 0};
+
 }  // namespace actor
