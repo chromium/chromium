@@ -25,6 +25,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.build.annotations.Initializer;
@@ -61,6 +62,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -396,8 +398,19 @@ public class ContextualSearchManager
     }
 
     /**
-     * Destroys the native Contextual Search Manager.
-     * Call this method before orphaning this object to allow it to be garbage collected.
+     * Sets the {@link OneshotSupplier} for {@link SideUiStateProvider}.
+     *
+     * @param sideUiStateProviderSupplier The {@link OneshotSupplier} for {@link
+     *     SideUiStateProvider}.
+     */
+    public void setSideUiStateProviderSupplier(
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+        mSearchPanel.setSideUiStateProviderSupplier(sideUiStateProviderSupplier);
+    }
+
+    /**
+     * Destroys the native Contextual Search Manager. Call this method before orphaning this object
+     * to allow it to be garbage collected.
      */
     @SuppressWarnings("NullAway")
     public void destroy() {

@@ -20,6 +20,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -44,6 +45,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -66,7 +70,7 @@ import java.util.function.Supplier;
  * - and the content area that shows the Search Result.
  */
 @NullMarked
-public class ContextualSearchPanel extends OverlayPanel {
+public class ContextualSearchPanel extends OverlayPanel implements SideUiObserver {
     /** Allows controls that appear in this panel to call back with requests or notifications. */
     interface ContextualSearchPanelSectionHost {
         /** Returns the current Y position of the panel section. */
@@ -144,6 +148,8 @@ public class ContextualSearchPanel extends OverlayPanel {
 
     /** Used for requesting in-product-help. */
     private @Nullable UserEducationHelper mUserEducationHelper;
+
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
 
     // ============================================================================================
     // Constructor
@@ -348,6 +354,29 @@ public class ContextualSearchPanel extends OverlayPanel {
         mDidStartCollapsing = false;
     }
 
+    /**
+     * Sets the {@link OneshotSupplier} for {@link SideUiStateProvider}.
+     *
+     * @param sideUiStateProviderSupplier The {@link OneshotSupplier} for {@link
+     *     SideUiStateProvider}.
+     */
+    public void setSideUiStateProviderSupplier(
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
+        sideUiStateProviderSupplier.onAvailable(
+                (sideUiStateProvider) -> {
+                    mSideUiStateProvider = sideUiStateProvider;
+                    mSideUiStateProvider.addObserver(this);
+                });
+    }
+
+    @Override
+    public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
+        setLayoutMargins(
+                sideUiSpecs.mStartContainerWidth * mPxToDp,
+                sideUiSpecs.mEndContainerWidth * mPxToDp);
+        resizePanelContentView();
+    }
+
     // ============================================================================================
     // Generic Event Handling
     // ============================================================================================
@@ -421,6 +450,15 @@ public class ContextualSearchPanel extends OverlayPanel {
         destroyPromoControl();
         destroyInBarRelatedSearchesControl();
         destroySearchBarControl();
+    }
+
+    @Override
+    public void destroy() {
+        if (mSideUiStateProvider != null) {
+            mSideUiStateProvider.removeObserver(this);
+            mSideUiStateProvider = null;
+        }
+        super.destroy();
     }
 
     @Override

@@ -1910,6 +1910,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         };
     }
 
+    @Override
+    public void initContextualSearchManager() {
+        super.initContextualSearchManager();
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
+            mContextualSearchManagerSupplier
+                    .get()
+                    .setSideUiStateProviderSupplier(mSideUiStateProviderSupplier);
+        }
+    }
+
     private void initializeSideUi() {
         ViewStub sideUiStartAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
