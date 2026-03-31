@@ -948,6 +948,48 @@ TEST_F(LayerContextImplAnimationTest, DeserializeWithStepsTimingFunction) {
             gfx::StepsTimingFunction::StepPosition::END);
 }
 
+TEST_F(LayerContextImplAnimationTest,
+       DeserializeWithInvalidStepsTimingFunctionFails) {
+  constexpr int kTimelineId = 26;
+  constexpr int kAnimationId = 260;
+  constexpr int kKeyframeModelId = 2600;
+  constexpr int kGroupId = 26;
+
+  auto update = CreateDefaultUpdate();
+  update->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom = CreateDefaultMojomTimeline(kTimelineId);
+  auto animation_mojom =
+      CreateDefaultMojomAnimation(kAnimationId, kKeyframeModelId, kGroupId);
+  // Override the keyframe model's timing function with zero steps.
+  animation_mojom->keyframe_models[0]->timing_function =
+      CreateMojomStepsTimingFunction(0, mojom::TimingStepPosition::kEnd);
+  timeline_mojom->new_animations.push_back(std::move(animation_mojom));
+  update->animation_timelines->push_back(std::move(timeline_mojom));
+
+  auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            "Invalid num_steps: must be greater than 0 (or 1 for JumpNone)");
+
+  // Test case for JumpNone with 1 step.
+  auto update2 = CreateDefaultUpdate();
+  update2->animation_timelines = std::vector<mojom::AnimationTimelinePtr>();
+
+  auto timeline_mojom2 = CreateDefaultMojomTimeline(kTimelineId + 1);
+  auto animation_mojom2 = CreateDefaultMojomAnimation(
+      kAnimationId + 1, kKeyframeModelId + 1, kGroupId + 1);
+  animation_mojom2->keyframe_models[0]->timing_function =
+      CreateMojomStepsTimingFunction(1, mojom::TimingStepPosition::kJumpNone);
+  timeline_mojom2->new_animations.push_back(std::move(animation_mojom2));
+  update2->animation_timelines->push_back(std::move(timeline_mojom2));
+
+  auto result2 = layer_context_impl_->DoUpdateDisplayTree(std::move(update2));
+  ASSERT_FALSE(result2.has_value());
+  EXPECT_EQ(result2.error(),
+            "Invalid num_steps: must be greater than 0 (or 1 for JumpNone)");
+}
+
 struct StepsTimingFunctionTestData {
   int timeline_id;
   int animation_id;
