@@ -91,6 +91,11 @@ class SidePanelEntry final : public ui::PropertyHandler {
   void OnEntryWillHide(SidePanelEntryHideReason reason);
   void OnEntryHideCancelled();
   void OnEntryHidden();
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/496962614): compile OnEntryHiddenWithReason() into all
+  // platforms.
+  void OnEntryHiddenWithReason(SidePanelEntryHideReason reason);
+#endif
 
   PanelType type() const { return type_; }
   const Key& key() const { return key_; }

@@ -42,12 +42,22 @@ class TestSidePanelEntryObserver final : public SidePanelEntryObserver {
     id_for_last_entry_hidden_ = entry->key().id();
   }
 
+  void OnEntryHiddenWithReason(SidePanelEntry* entry,
+                               SidePanelEntryHideReason reason) override {
+    id_for_last_entry_hidden_with_reason_ = entry->key().id();
+    reason_for_last_entry_hidden_with_reason_ = reason;
+  }
+
   std::optional<SidePanelEntry::Id> id_for_last_entry_shown_;
 
   std::optional<SidePanelEntry::Id> id_for_last_entry_will_hide_;
   std::optional<SidePanelEntryHideReason> reason_for_last_entry_will_hide_;
 
   std::optional<SidePanelEntry::Id> id_for_last_entry_hidden_;
+
+  std::optional<SidePanelEntry::Id> id_for_last_entry_hidden_with_reason_;
+  std::optional<SidePanelEntryHideReason>
+      reason_for_last_entry_hidden_with_reason_;
 };
 
 std::unique_ptr<SidePanelEntry> CreateSidePanelEntry(
@@ -146,6 +156,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
             entry_observer.reason_for_last_entry_will_hide_.value());
   EXPECT_EQ(entry_key.id(), entry_observer.id_for_last_entry_hidden_.value());
+  EXPECT_EQ(entry_key.id(),
+            entry_observer.id_for_last_entry_hidden_with_reason_.value());
+  EXPECT_EQ(SidePanelEntryHideReason::kSidePanelClosed,
+            entry_observer.reason_for_last_entry_hidden_with_reason_.value());
 }
 
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,

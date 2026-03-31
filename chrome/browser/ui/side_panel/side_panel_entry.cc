@@ -100,6 +100,13 @@ void SidePanelEntry::OnEntryHidden() {
   observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void SidePanelEntry::OnEntryHiddenWithReason(SidePanelEntryHideReason reason) {
+  observers_.Notify(&SidePanelEntryObserver::OnEntryHiddenWithReason, this,
+                    reason);
+}
+#endif
+
 void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {
   observers_.AddObserver(observer);
 }

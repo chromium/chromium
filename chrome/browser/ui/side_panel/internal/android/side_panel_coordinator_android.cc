@@ -79,7 +79,8 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntry::PanelType panel_type,
   // TODO(crbug.com/493930383): Clear current key and trigger OnEntryHidden()
   // when animation ends.
   SetCurrentKey(panel_type, /*new_key=*/std::nullopt);
-  entry->OnEntryHidden();
+  entry->OnEntryHidden();  // TODO(crbug.com/496962614): Remove OnEntryHidden().
+  entry->OnEntryHiddenWithReason(hide_reason);
 }
 
 void SidePanelCoordinatorAndroid::Toggle(SidePanelEntryKey key,
