@@ -36,10 +36,12 @@ class AccountSettingSyncBridge : public syncer::DataTypeSyncBridge {
   void RemoveObserver(Observer* observer);
 
   // Returns the value for the setting of the given `name` if the bridge
-  // is aware of any such setting, and the setting has the expected type.
-  // Otherwise, nullopt is returned.
+  // is aware of any such setting. Otherwise, an empty value is returned.
   // Virtual for testing.
-  virtual std::optional<bool> GetBoolSetting(std::string_view name) const;
+  virtual base::Value GetSetting(std::string_view name) const;
+
+  // Returns the value for the setting of the given `name` if the bridge
+  virtual std::optional<bool> GetBooleanSetting(std::string_view name) const;
   virtual std::optional<int> GetIntSetting(std::string_view name) const;
   virtual std::optional<std::string> GetStringSetting(
       std::string_view name) const;

@@ -124,6 +124,14 @@ class AccountSettingSyncBridgeTest : public testing::Test {
   std::unique_ptr<AccountSettingSyncBridge> bridge_;
 };
 
+TEST_F(AccountSettingSyncBridgeTest, GetSetting) {
+  EXPECT_TRUE(bridge().GetSetting("name").is_none());
+  ASSERT_TRUE(
+      StartSyncingWithServerData({CreateSettingSpecifics("name", "value")}));
+  EXPECT_TRUE(bridge().GetSetting("name").is_string());
+  EXPECT_EQ(bridge().GetSetting("name").GetString(), "value");
+}
+
 TEST_F(AccountSettingSyncBridgeTest, GetStorageKey) {
   syncer::EntityData entity;
   *entity.specifics.mutable_account_setting() =
@@ -204,7 +212,7 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   ASSERT_TRUE(
       StartSyncingWithServerData({CreateSettingSpecifics("name1", true),
                                   CreateSettingSpecifics("name2", "string")}));
-  ASSERT_THAT(bridge().GetBoolSetting("name1"), true);
+  ASSERT_THAT(bridge().GetBooleanSetting("name1"), true);
   ASSERT_THAT(bridge().GetStringSetting("name2"), "string");
   {
     MockObserver o(&bridge());
@@ -215,12 +223,12 @@ TEST_F(AccountSettingSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
     EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
         bridge().CreateMetadataChangeList(), std::move(change_list)));
     // Expect that the change was applied immediately.
-    EXPECT_FALSE(bridge().GetBoolSetting("name1").has_value());
+    EXPECT_FALSE(bridge().GetBooleanSetting("name1").has_value());
     EXPECT_THAT(bridge().GetStringSetting("name2"), "string");
   }
   // Recreate the bridge, reloading from the `store()`.
   RecreateBridgeAndWaitForModelToSync();
-  EXPECT_FALSE(bridge().GetBoolSetting("name1").has_value());
+  EXPECT_FALSE(bridge().GetBooleanSetting("name1").has_value());
   EXPECT_THAT(bridge().GetStringSetting("name2"), "string");
 }
 

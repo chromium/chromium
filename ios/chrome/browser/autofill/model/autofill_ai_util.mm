@@ -34,7 +34,9 @@ bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile) {
   account_settings::AccountSettingService* setting_service =
       IOSAccountSettingServiceFactory::GetForProfile(profile);
   return setting_service &&
-         setting_service->IsWalletPrivacyContextualSurfacingEnabled();
+         setting_service
+             ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
+             .value_or(false);
 }
 
 bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {

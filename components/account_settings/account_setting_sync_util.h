@@ -8,9 +8,13 @@
 #include <string_view>
 #include <variant>
 
+#include "base/values.h"
 #include "components/sync/protocol/account_setting_specifics.pb.h"
 
 namespace account_settings {
+
+base::Value SettingSpecificsToValue(
+    const sync_pb::AccountSettingSpecifics& specifics);
 
 sync_pb::AccountSettingSpecifics CreateSettingSpecifics(
     std::string_view name,

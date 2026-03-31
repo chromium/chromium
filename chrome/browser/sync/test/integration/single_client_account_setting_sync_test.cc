@@ -28,13 +28,11 @@ constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
 using account_settings::AccountSettingService;
 using account_settings::CreateSettingSpecifics;
 
-// Waits until
-// `AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled()` has the
-// `expected_state`.
-// The condition is checked whenever sync's status changes - in particular, each
-// time a sync cycle completes. This works, since setting changes are exposed
-// through AccountSettingService synchronously after the operation on the bridge
-// completes.
+// Waits until `account_settings::kWalletPrivacyContextualSurfacing` has the
+// `expected_state`. The condition is checked whenever sync's status changes -
+// in particular, each time a sync cycle completes. This works, since setting
+// changes are exposed through AccountSettingService synchronously after the
+// operation on the bridge completes.
 class WalletSurfacingChecker : public SingleClientStatusChangeChecker {
  public:
   WalletSurfacingChecker(syncer::SyncServiceImpl* sync_service,
@@ -46,8 +44,9 @@ class WalletSurfacingChecker : public SingleClientStatusChangeChecker {
 
   // SingleClientStatusChangeChecker:
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    return setting_service_->IsWalletPrivacyContextualSurfacingEnabled() ==
-           expected_state_;
+    return setting_service_
+               ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
+               .value_or(false) == expected_state_;
   }
 
  private:

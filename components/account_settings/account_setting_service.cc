@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/account_settings/account_setting_sync_bridge.h"
+#include "components/account_settings/account_settings.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -18,10 +19,16 @@
 #include "components/sync/model/forwarding_data_type_controller_delegate.h"
 
 namespace account_settings {
-
 namespace {
-constexpr std::string_view kWalletPrivacyContextualSurfacingSetting =
-    "WALLET_PRIVACY_CONTEXTUAL_SURFACING";
+bool CheckFeatureRequirements(const AccountSetting& setting) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
+    return false;
+  }
+  if (!setting.feature) {
+    return true;
+  }
+  return base::FeatureList::IsEnabled(*setting.feature);
+}
 }  // namespace
 
 AccountSettingService::AccountSettingService(
@@ -47,13 +54,31 @@ void AccountSettingService::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool AccountSettingService::IsWalletPrivacyContextualSurfacingEnabled() const {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
-    return false;
+std::optional<bool> AccountSettingService::GetBoolean(
+    const AccountSetting& setting) const {
+  CHECK(setting.type == base::Value::Type::BOOLEAN);
+  if (!CheckFeatureRequirements(setting)) {
+    return std::nullopt;
   }
-  std::optional<bool> setting =
-      sync_bridge_->GetBoolSetting(kWalletPrivacyContextualSurfacingSetting);
-  return setting.has_value() && *setting;
+  return sync_bridge_->GetBooleanSetting(setting.name);
+}
+
+std::optional<int> AccountSettingService::GetInteger(
+    const AccountSetting& setting) const {
+  CHECK(setting.type == base::Value::Type::INTEGER);
+  if (!CheckFeatureRequirements(setting)) {
+    return std::nullopt;
+  }
+  return sync_bridge_->GetIntSetting(setting.name);
+}
+
+std::optional<std::string> AccountSettingService::GetString(
+    const AccountSetting& setting) const {
+  CHECK(setting.type == base::Value::Type::STRING);
+  if (!CheckFeatureRequirements(setting)) {
+    return std::nullopt;
+  }
+  return sync_bridge_->GetStringSetting(setting.name);
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
@@ -64,8 +89,9 @@ AccountSettingService::GetSyncControllerDelegate() {
 }
 
 void AccountSettingService::OnDataLoadedFromDisk() {
-  base::UmaHistogramBoolean("Autofill.Ai.WalletContextualSurfacingEnabled",
-                            IsWalletPrivacyContextualSurfacingEnabled());
+  base::UmaHistogramBoolean(
+      "Autofill.Ai.WalletContextualSurfacingEnabled",
+      GetBoolean(kWalletPrivacyContextualSurfacing).value_or(false));
 }
 
 void AccountSettingService::OnDataUpdated() {

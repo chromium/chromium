@@ -20,13 +20,24 @@ namespace account_settings {
 
 namespace {
 
+using ::testing::Eq;
+using ::testing::Optional;
 using ::testing::Return;
 
 class MockAccountSettingSyncBridge : public AccountSettingSyncBridge {
  public:
   using AccountSettingSyncBridge::AccountSettingSyncBridge;
+  MOCK_METHOD(base::Value, GetSetting, (std::string_view), (const, override));
   MOCK_METHOD(std::optional<bool>,
-              GetBoolSetting,
+              GetBooleanSetting,
+              (std::string_view),
+              (const, override));
+  MOCK_METHOD(std::optional<int>,
+              GetIntSetting,
+              (std::string_view),
+              (const, override));
+  MOCK_METHOD(std::optional<std::string>,
+              GetStringSetting,
               (std::string_view),
               (const, override));
 };
@@ -52,11 +63,21 @@ class AccountSettingServiceTest : public testing::Test {
   raw_ptr<MockAccountSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
 
-TEST_F(AccountSettingServiceTest, GetValue) {
-  EXPECT_FALSE(service().IsWalletPrivacyContextualSurfacingEnabled());
-  ON_CALL(bridge(), GetBoolSetting("WALLET_PRIVACY_CONTEXTUAL_SURFACING"))
+TEST_F(AccountSettingServiceTest, GetBoolean) {
+  EXPECT_THAT(service().GetBoolean(kWalletPrivacyContextualSurfacing),
+              Eq(std::nullopt));
+  ON_CALL(bridge(), GetBooleanSetting("WALLET_PRIVACY_CONTEXTUAL_SURFACING"))
       .WillByDefault(Return(true));
-  EXPECT_TRUE(service().IsWalletPrivacyContextualSurfacingEnabled());
+  EXPECT_THAT(service().GetBoolean(kWalletPrivacyContextualSurfacing),
+              Optional(true));
+}
+
+TEST_F(AccountSettingServiceTest, GetBooleanReturnsNulloptIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(syncer::kSyncAccountSettings);
+
+  EXPECT_THAT(service().GetBoolean(kWalletPrivacyContextualSurfacing),
+              Eq(std::nullopt));
 }
 
 }  // namespace

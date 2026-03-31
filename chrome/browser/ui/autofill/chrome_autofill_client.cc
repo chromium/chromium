@@ -1092,7 +1092,9 @@ bool ChromeAutofillClient::IsWalletPublicPassStorageEnabled() const {
   account_settings::AccountSettingService* setting_service =
       AccountSettingServiceFactory::GetForBrowserContext(GetProfile());
   return setting_service &&
-         setting_service->IsWalletPrivacyContextualSurfacingEnabled();
+         setting_service
+             ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
+             .value_or(false);
 }
 
 bool ChromeAutofillClient::IsPasswordManagerEnabled() const {

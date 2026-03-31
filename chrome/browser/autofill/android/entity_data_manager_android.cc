@@ -100,7 +100,9 @@ bool EntityDataManagerAndroid::SetAutofillAiOptInStatus(
     AutofillAiOptInStatus opt_in_status) {
   const bool is_wallet_public_pass_storage_enabled =
       account_setting_service_ &&
-      account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+      account_setting_service_
+          ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
+          .value_or(false);
 
   return autofill::SetAutofillAiOptInStatus(
       google_groups_manager_, prefs_, &entity_data_manager(), identity_manager_,
@@ -241,7 +243,9 @@ bool EntityDataManagerAndroid::CanListEntityInstancesInSettings(JNIEnv* env) {
 
 bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() {
   return account_setting_service_ &&
-         account_setting_service_->IsWalletPrivacyContextualSurfacingEnabled();
+         account_setting_service_
+             ->GetBoolean(account_settings::kWalletPrivacyContextualSurfacing)
+             .value_or(false);
 }
 
 bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabled(JNIEnv* env) {

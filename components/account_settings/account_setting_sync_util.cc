@@ -7,9 +7,24 @@
 #include <string>
 #include <variant>
 
+#include "base/notreached.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace account_settings {
+
+base::Value SettingSpecificsToValue(
+    const sync_pb::AccountSettingSpecifics& specifics) {
+  switch (specifics.Value_case()) {
+    case sync_pb::AccountSettingSpecifics::kBoolValue:
+      return base::Value(specifics.bool_value());
+    case sync_pb::AccountSettingSpecifics::kStringValue:
+      return base::Value(specifics.string_value());
+    case sync_pb::AccountSettingSpecifics::kIntValue:
+      return base::Value(static_cast<int>(specifics.int_value()));
+    case sync_pb::AccountSettingSpecifics::VALUE_NOT_SET:
+      return base::Value();
+  }
+}
 
 sync_pb::AccountSettingSpecifics CreateSettingSpecifics(
     std::string_view name,
