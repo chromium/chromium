@@ -135,7 +135,9 @@ class MockPage : public new_tab_page::mojom::Page {
 
 class MockLogoService : public search_provider_logos::LogoService {
  public:
-  MOCK_METHOD(void, GetLogo, (search_provider_logos::LogoCallbacks, bool));
+  MOCK_METHOD(void,
+              GetLogo,
+              (search_provider_logos::LogoCallbacks, bool, bool));
   MOCK_METHOD(void, GetLogo, (search_provider_logos::LogoObserver*));
 };
 
@@ -357,11 +359,11 @@ class NewTabPageHandlerTest : public testing::Test {
   new_tab_page::mojom::DoodlePtr GetDoodle(
       const search_provider_logos::EncodedLogo& logo) {
     search_provider_logos::EncodedLogoCallback on_cached_encoded_logo_available;
-    EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_))
+    EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, testing::_))
         .Times(1)
         .WillOnce([&on_cached_encoded_logo_available](
                       search_provider_logos::LogoCallbacks callbacks,
-                      bool for_webui_ntp) {
+                      bool for_webui_ntp, bool enable_animated_logo) {
           on_cached_encoded_logo_available =
               std::move(callbacks.on_cached_encoded_logo_available);
         });

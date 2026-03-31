@@ -65,11 +65,15 @@ GURL AppendFingerprintParamToDoodleURL(const GURL& logo_url,
 
 GURL AppendPreliminaryParamsToDoodleURL(bool gray_background,
                                         bool for_webui_ntp,
+                                        bool enable_animated_logo,
                                         const GURL& logo_url) {
   auto url = google_util::AppendToAsyncQueryParam(logo_url, "ntp",
                                                   for_webui_ntp ? "2" : "1");
   if (gray_background) {
     url = google_util::AppendToAsyncQueryParam(url, "graybg", "1");
+  }
+  if (enable_animated_logo) {
+    url = google_util::AppendToAsyncQueryParam(url, "anim", "1");
   }
   return url;
 }

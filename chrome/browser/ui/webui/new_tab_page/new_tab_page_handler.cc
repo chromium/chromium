@@ -643,7 +643,8 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
   // This will trigger re-downloading the doodle and caching it. This means a
   // new doodle will be returned on subsequent NTP loads.
-  logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true);
+  logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true,
+                         /*enable_animated_logo=*/false);
 }
 
 void NewTabPageHandler::UpdatePromoData() {

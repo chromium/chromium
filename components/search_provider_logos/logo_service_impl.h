@@ -79,9 +79,13 @@ class LogoServiceImpl : public LogoService,
   // and/or fresh logos are available.
   //
   // At least one callback must be non-null. All non-null callbacks will be
-  // invoked exactly once.
+  // invoked exactly once. If |for_webui_ntp| is true fetches a logo that is
+  // compatible with the WebUI NTP. If |enable_animated_logo| is true, fetches
+  // an animated logo and mural if available.
   void GetLogo(LogoObserver* observer) override;
-  void GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) override;
+  void GetLogo(LogoCallbacks callbacks,
+               bool for_webui_ntp,
+               bool enable_animated_logo) override;
 
   // Overrides the cache used to store logos.
   void SetLogoCacheForTests(std::unique_ptr<LogoCache> cache);

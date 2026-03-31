@@ -215,10 +215,12 @@ void LogoServiceImpl::GetLogo(search_provider_logos::LogoObserver* observer) {
       base::BindOnce(ObserverOnLogoAvailable, observer, true);
   callbacks.on_fresh_decoded_logo_available =
       base::BindOnce(ObserverOnLogoAvailable, observer, false);
-  GetLogo(std::move(callbacks), false);
+  GetLogo(std::move(callbacks), false, false);
 }
 
-void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
+void LogoServiceImpl::GetLogo(LogoCallbacks callbacks,
+                              bool for_webui_ntp,
+                              bool enable_animated_logo) {
   if (!template_url_service_) {
     RunCallbacksWithDisabled(std::move(callbacks));
     return;
@@ -285,7 +287,8 @@ void LogoServiceImpl::GetLogo(LogoCallbacks callbacks, bool for_webui_ntp) {
     // We encode the type of doodle (regular or gray) in the URL so that the
     // logo cache gets cleared when that value changes.
     GURL prefilled_url = AppendPreliminaryParamsToDoodleURL(
-        want_gray_logo_getter_.Run(), for_webui_ntp, doodle_url);
+        want_gray_logo_getter_.Run(), for_webui_ntp, enable_animated_logo,
+        doodle_url);
     SetServerAPI(
         prefilled_url,
         base::BindRepeating(&search_provider_logos::ParseDoodleLogoResponse,
