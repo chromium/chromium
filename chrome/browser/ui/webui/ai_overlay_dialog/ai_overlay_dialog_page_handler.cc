@@ -55,6 +55,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
+#include "url/url_util.h"
 
 namespace {
 
@@ -504,9 +505,8 @@ void AiOverlayDialogPageHandler::FindAndHighlight(
       std::move(callback));
 
   // Use a text fragment selector for direct highlighting.
-  // The format is "text=<text_to_highlight>"
-  auto selector =
-      blink::mojom::Selector::NewSerializedSelector("text=" + query);
+  auto selector = blink::mojom::Selector::NewSerializedSelector(
+      url::EncodeUriComponent(query));
 
   annotation_container_->CreateAgent(
       std::move(host_remote), std::move(agent_receiver),
