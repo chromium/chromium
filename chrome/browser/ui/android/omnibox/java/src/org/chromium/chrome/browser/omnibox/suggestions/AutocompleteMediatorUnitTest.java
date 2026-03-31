@@ -1256,7 +1256,7 @@ public class AutocompleteMediatorUnitTest {
             var session = createSession(PAGE_URL, PAGE_TITLE, pageClass.getNumber());
             mMediator.beginInput(session);
             // Force an update as "" -> "" is not an observable change.
-            mMediator.onTextChanged("", /* isOnFocusContext= */ true);
+            mMediator.onInputChanged(/* isOnFocusContext= */ true);
             verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
             clearInvocations(mMockCachedZeroSuggestionsManager);
         }
@@ -1503,7 +1503,7 @@ public class AutocompleteMediatorUnitTest {
         // When not on an Incognito NTP, cached suggestions should be shown.
         doReturn(false).when(ntpDelegate).isIncognitoNewTabPageCurrentlyVisible();
         // Force an update as "" -> "" is not an observable change.
-        mMediator.onTextChanged("", /* isOnFocusContext= */ true);
+        mMediator.onInputChanged(/* isOnFocusContext= */ true);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mMockCachedZeroSuggestionsManager, times(1)).readFromCache(anyInt());
 

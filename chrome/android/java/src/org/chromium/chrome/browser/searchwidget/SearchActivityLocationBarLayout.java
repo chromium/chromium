@@ -100,7 +100,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         // Do not prefetch suggestions here; instead, we're asking the server for ZPS directly.
         // Issuing multiple requests would result with only the final one being executed.
-        mAutocompleteCoordinator.onTextChanged(mUrlCoordinator.getTextWithoutAutocomplete());
+        mAutocompleteCoordinator.onInputChanged();
 
         if (mPendingBeginQuery) {
             beginQueryInternal(searchType, windowAndroid);

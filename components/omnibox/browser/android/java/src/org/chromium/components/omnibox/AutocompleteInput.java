@@ -82,6 +82,8 @@ public class AutocompleteInput implements UserData {
     private String mInitialUserText = "";
     private final SettableNonNullObservableSupplier<String> mUserText =
             ObservableSuppliers.createNonNull("");
+    private final SettableNonNullObservableSupplier<Boolean> mAllowUserTextAutocompletion =
+            ObservableSuppliers.createNonNull(true);
     private final SettableNonNullObservableSupplier<@AutocompleteRequestType Integer>
             mRequestTypeSupplier =
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
@@ -129,6 +131,7 @@ public class AutocompleteInput implements UserData {
         mFocusReason = other.mFocusReason;
         mModelMode = other.mModelMode;
         mUserText.set(other.mUserText.get());
+        mAllowUserTextAutocompletion.set(other.mAllowUserTextAutocompletion.get());
         mInitialUserText = other.mInitialUserText;
         mRequestTypeSupplier.set(other.mRequestTypeSupplier.get());
         mToolModeSupplier.set(other.mToolModeSupplier.get());
@@ -384,6 +387,22 @@ public class AutocompleteInput implements UserData {
         return mUserText;
     }
 
+    /** Sets whether user text should be autocompleted. */
+    public AutocompleteInput setAllowUserTextAutocompletion(boolean shouldAllow) {
+        mAllowUserTextAutocompletion.set(shouldAllow);
+        return this;
+    }
+
+    /** Returns whether user text can be autocompleted. */
+    public boolean shouldAllowUserTextAutocompletion() {
+        return mAllowUserTextAutocompletion.get();
+    }
+
+    /** Returns the supplier for the autocompletion status. */
+    public NonNullObservableSupplier<Boolean> getShouldAllowUserTextAutocompletionSupplier() {
+        return mAllowUserTextAutocompletion;
+    }
+
     /** Returns whether current context represents zero-prefix context. */
     public boolean isInZeroPrefixContext() {
         return TextUtils.isEmpty(mUserText.get());
@@ -455,6 +474,7 @@ public class AutocompleteInput implements UserData {
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mUserText.set("");
+        mAllowUserTextAutocompletion.set(true);
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
         mSiteSearchData.set(null);
         mUrlFocusTime = 0;
