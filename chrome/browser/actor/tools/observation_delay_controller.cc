@@ -35,6 +35,9 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
+#include "content/public/browser/webid/identity_credential_source.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
@@ -130,7 +133,7 @@ void ObservationDelayController::Wait(tabs::TabInterface& target_tab,
   if (page_stability_monitor_remote_.is_bound()) {
     MoveToState(State::kWaitForPageStability);
   } else {
-    MoveToState(State::kWaitForLoadCompletion);
+    MoveToState(State::kWaitForFederatedLogin);
   }
 }
 
@@ -142,7 +145,8 @@ void ObservationDelayController::OnPageStable() {
   CHECK(metrics_);
   metrics_->OnPageStable();
 
-  MoveToState(State::kWaitForLoadCompletion);
+  page_stability_monitor_remote_.reset();
+  MoveToState(State::kWaitForFederatedLogin);
 }
 
 void ObservationDelayController::OnMonitorDisconnected() {
@@ -157,6 +161,17 @@ void ObservationDelayController::OnMonitorDisconnected() {
   }
 
   MoveToState(State::kPageStabilityMonitorDisconnected);
+}
+
+void ObservationDelayController::OnFederatedLoginRequestComplete() {
+  if (state_ != State::kWaitForFederatedLogin) {
+    return;
+  }
+
+  CHECK(metrics_);
+  metrics_->OnFederatedLoginRequestComplete();
+
+  PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
 }
 
 void ObservationDelayController::OnAutofillPredictionsFinished() {
@@ -201,14 +216,37 @@ void ObservationDelayController::MoveToState(State new_state) {
       break;
     }
     case State::kPageStabilityMonitorDisconnected: {
-      MoveToState(State::kWaitForLoadCompletion);
+      MoveToState(State::kWaitForFederatedLogin);
+      break;
+    }
+    case State::kWaitForFederatedLogin: {
+      if (!base::FeatureList::IsEnabled(
+              features::kFedCmEmbedderInitiatedLogin)) {
+        MoveToState(State::kWaitForLoadCompletion);
+        break;
+      }
+      auto* request =
+          content::webid::FederatedEmbedderLoginRequest::Get(web_contents());
+      if (!request) {
+        PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
+        break;
+      }
+      inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
+          GURL(), task_id_, MakeBrowserTrackUUID(task_id_),
+          "WaitForFederatedLogin",
+          JournalDetailsBuilder()
+              .Add("idp_origin", request->idp_origin())
+              .Build());
+      federated_login_subscription_ =
+          request->RegisterCompletion(base::BindOnce(
+              &ObservationDelayController::OnFederatedLoginRequestComplete,
+              base::Unretained(this)));
       break;
     }
     case State::kWaitForLoadCompletion: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
           "WaitForLoadCompletion", {});
-      page_stability_monitor_remote_.reset();
 
       bool is_web_contents_loading =
           base::FeatureList::IsEnabled(
@@ -318,6 +356,19 @@ void ObservationDelayController::MoveToState(State new_state) {
       break;
     }
     case State::kDidTimeout: {
+      if (base::FeatureList::IsEnabled(
+              features::kFedCmEmbedderInitiatedLogin)) {
+        if (auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
+                web_contents())) {
+          // We are no longer willing to wait for the federated login request.
+          // Consider it a failure. Note that this will treat the tool as having
+          // failed, since we don't want to confuse an abandoned request as
+          // being successful.
+          request->OnFederatedResultReceived(
+              content::webid::FederatedLoginResult::kTimeoutByEmbedder);
+        }
+      }
+
       MoveToState(State::kDone);
       break;
     }
@@ -327,6 +378,7 @@ void ObservationDelayController::MoveToState(State new_state) {
       CHECK(ready_callback_);
       wait_journal_entry_.reset();
       page_stability_monitor_remote_.reset();
+      federated_login_subscription_ = {};
       PostFinishedTask(
           base::BindOnce([](ReadyCallback callback,
                             Result result) { std::move(callback).Run(result); },
@@ -361,14 +413,18 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
           // clang-format off
           {State::kInitial,
               {State::kWaitForPageStability,
-               State::kWaitForLoadCompletion}},
+               State::kWaitForFederatedLogin}},
           {State::kWaitForPageStability,
-              {State::kWaitForLoadCompletion,
+              {State::kWaitForFederatedLogin,
                State::kPageStabilityMonitorDisconnected,
                State::kDidTimeout,
                State::kPageNavigated}},
           {State::kPageStabilityMonitorDisconnected,
-              {State::kWaitForLoadCompletion}},
+              {State::kWaitForFederatedLogin}},
+          {State::kWaitForFederatedLogin,
+              {State::kWaitForLoadCompletion,
+               State::kDidTimeout,
+               State::kPageNavigated}},
           {State::kWaitForLoadCompletion,
               {State::kDidTimeout,
                State::kPageNavigated,
@@ -440,6 +496,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "WaitForPageStability";
     case State::kPageStabilityMonitorDisconnected:
       return "PageStabilityMonitorDisconnected";
+    case State::kWaitForFederatedLogin:
+      return "WaitForFederatedLogin";
     case State::kWaitForLoadCompletion:
       return "WaitForLoadCompletion";
     case State::kWaitForVisualStateUpdate:

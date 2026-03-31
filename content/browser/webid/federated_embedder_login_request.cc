@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/public/browser/web_contents.h"
@@ -24,6 +25,7 @@ FederatedEmbedderLoginRequest::FederatedEmbedderLoginRequest(
     const std::string& account_id,
     base::OnceCallback<void(FederatedLoginResult)> callback)
     : WebContentsUserData<FederatedEmbedderLoginRequest>(*web_contents),
+      WebContentsObserver(web_contents),
       idp_origin_(idp_origin),
       account_id_(account_id),
       on_federated_result_received_callback_(std::move(callback)) {
@@ -32,7 +34,9 @@ FederatedEmbedderLoginRequest::FederatedEmbedderLoginRequest(
                                       base::Unretained(this)));
 }
 
-FederatedEmbedderLoginRequest::~FederatedEmbedderLoginRequest() = default;
+FederatedEmbedderLoginRequest::~FederatedEmbedderLoginRequest() {
+  DCHECK(completion_callbacks_.empty());
+}
 
 void FederatedEmbedderLoginRequest::OnFederatedResultReceived(
     FederatedLoginResult result) {
@@ -46,12 +50,17 @@ void FederatedEmbedderLoginRequest::OnTimeout() {
   Unset();
 }
 
+void FederatedEmbedderLoginRequest::WillBeDestroyed() {
+  completion_callbacks_.Notify();
+}
+
 // static
 void FederatedEmbedderLoginRequest::Set(
     WebContents* web_contents,
     const url::Origin& idp_origin,
     const std::string& account_id,
     base::OnceCallback<void(FederatedLoginResult)> callback) {
+  Remove(web_contents);
   web_contents->SetUserData(
       FederatedEmbedderLoginRequest::UserDataKey(),
       std::make_unique<FederatedEmbedderLoginRequest>(
@@ -59,13 +68,20 @@ void FederatedEmbedderLoginRequest::Set(
 }
 
 void FederatedEmbedderLoginRequest::Unset() {
+  WillBeDestroyed();
   GetWebContents().RemoveUserData(UserDataKey());
+}
+
+void FederatedEmbedderLoginRequest::WebContentsDestroyed() {
+  WillBeDestroyed();
 }
 
 // static
 void FederatedEmbedderLoginRequest::Remove(WebContents* web_contents) {
   if (web_contents) {
-    web_contents->RemoveUserData(UserDataKey());
+    if (auto* request = FromWebContents(web_contents)) {
+      request->Unset();
+    }
   }
 }
 
@@ -76,9 +92,7 @@ FederatedEmbedderLoginRequest* FederatedEmbedderLoginRequest::Get(
     return nullptr;
   }
 
-  FederatedEmbedderLoginRequest* request =
-      WebContentsUserData<FederatedEmbedderLoginRequest>::FromWebContents(
-          web_contents);
+  FederatedEmbedderLoginRequest* request = FromWebContents(web_contents);
   if (request) {
     return request;
   }
@@ -89,6 +103,11 @@ FederatedEmbedderLoginRequest* FederatedEmbedderLoginRequest::Get(
   }
 
   return Get(WebContents::FromRenderFrameHost(opener_rfh));
+}
+
+base::CallbackListSubscription
+FederatedEmbedderLoginRequest::RegisterCompletion(base::OnceClosure callback) {
+  return completion_callbacks_.Add(std::move(callback));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FederatedEmbedderLoginRequest);

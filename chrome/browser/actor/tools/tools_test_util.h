@@ -18,7 +18,9 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
+#include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 
 namespace content {
 class WebContents;
@@ -68,6 +70,13 @@ class MockActorLoginService : public actor_login::ActorLoginService {
 
   void SetLoginStatus(actor_login::LoginStatusResultOrError login_status);
 
+  using FederatedLoginResumeCallback =
+      base::OnceCallback<void(content::webid::FederatedLoginResult)>;
+  using FederatedLoginDelayCallback =
+      base::OnceCallback<void(FederatedLoginResumeCallback)>;
+  void SetFederatedLoginDelay(
+      FederatedLoginDelayCallback on_federated_login_delay);
+
   const std::optional<actor_login::Credential>& last_credential_used() const;
   bool last_permission_was_permanent() const;
   bool last_sequence_succeeded() const;
@@ -75,11 +84,16 @@ class MockActorLoginService : public actor_login::ActorLoginService {
  private:
   void OnActionSequenceEnded(bool success);
 
+  static void OnFederatedLoginResume(
+      tabs::TabInterface* tab,
+      content::webid::FederatedLoginResult result);
+
   actor_login::CredentialsOrError credentials_;
   actor_login::LoginStatusResultOrError login_status_;
 
   base::WeakPtr<actor_login::ActionSequenceDelegate> action_sequence_delegate_;
   base::CallbackListSubscription action_sequence_subscription_;
+  FederatedLoginDelayCallback on_federated_login_delay_;
 
   std::optional<actor_login::Credential> last_credential_used_;
   bool last_permission_was_permanent_ = false;

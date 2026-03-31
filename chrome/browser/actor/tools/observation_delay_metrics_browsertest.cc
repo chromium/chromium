@@ -13,6 +13,9 @@
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/chrome_features.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
+#include "content/public/browser/webid/identity_credential_source.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
@@ -61,6 +64,8 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsTest, CompleteWithoutLoading) {
       kActorObservationDelayTotalWaitDurationMetricName, 1);
   histogram_tester.ExpectTotalCount(
       kActorObservationDelayStateDurationWaitForPageStabilityMetricName, 1);
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForFederatedLoginMetricName, 0);
   histogram_tester.ExpectTotalCount(
       kActorObservationDelayStateDurationWaitForLoadCompletionMetricName, 0);
   histogram_tester.ExpectTotalCount(
@@ -289,6 +294,49 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsLcpDelayTest, LcpDelayNeeded) {
   histogram_tester.ExpectUniqueSample(
       kActorObservationDelayLcpDelayNeededMetricName,
       /*sample=*/true, 1);
+}
+
+class ObservationDelayMetricsFederatedLoginDelayTest
+    : public ObservationDelayMetricsTest {
+ public:
+  ObservationDelayMetricsFederatedLoginDelayTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFedCmEmbedderInitiatedLogin);
+  }
+  ~ObservationDelayMetricsFederatedLoginDelayTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayMetricsFederatedLoginDelayTest,
+                       FederatedLoginDelay) {
+  base::HistogramTester histogram_tester;
+
+  const GURL url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const url::Origin idp_origin =
+      url::Origin::Create(GURL("https://idp.example"));
+  const std::string account_id = "test_account_id";
+  content::webid::FederatedEmbedderLoginRequest::Set(
+      web_contents(), idp_origin, account_id, base::DoNothing());
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForFederatedLogin));
+
+  content::webid::FederatedEmbedderLoginRequest::Get(web_contents())
+      ->OnFederatedResultReceived(
+          content::webid::FederatedLoginResult::kSuccess);
+
+  ASSERT_TRUE(result.Wait());
+
+  histogram_tester.ExpectTotalCount(
+      kActorObservationDelayStateDurationWaitForFederatedLoginMetricName, 1);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ObservationDelayMetricsNavigateTest);

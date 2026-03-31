@@ -31,6 +31,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
@@ -108,6 +109,38 @@ void MockActorLoginService::AttemptLogin(
 
   last_credential_used_ = credential;
   last_permission_was_permanent_ = should_store_permission;
+
+  if (credential.type == actor_login::CredentialType::kFederated &&
+      on_federated_login_delay_) {
+    // A minimal enum translation for testing purposes.
+    auto to_login_status = [](content::webid::FederatedLoginResult result) {
+      switch (result) {
+        case content::webid::FederatedLoginResult::kSuccess:
+          return actor_login::LoginStatusResult::kSuccessFederated;
+        case content::webid::FederatedLoginResult::kIdpReturnedError:
+          return actor_login::LoginStatusResult::
+              kErrorFederatedIdpReturnedError;
+        case content::webid::FederatedLoginResult::kTimeout:
+        case content::webid::FederatedLoginResult::kTimeoutByEmbedder:
+          return actor_login::LoginStatusResult::kErrorFederatedTimeout;
+        default:
+          ADD_FAILURE() << "Missing enum conversion for test: "
+                        << std::to_underlying(result);
+          return actor_login::LoginStatusResult::kSuccessFederated;
+      }
+    };
+    content::webid::FederatedEmbedderLoginRequest::Set(
+        tab->GetContents(), credential.federation_detail->idp_origin,
+        credential.federation_detail->account_id,
+        base::BindOnce(to_login_status)
+            .Then(base::BindOnce(
+                &actor_login::ActionSequenceDelegate::OnFederatedLoginOutcome,
+                action_sequence_delegate_)));
+    std::move(on_federated_login_delay_)
+        .Run(base::BindOnce(&MockActorLoginService::OnFederatedLoginResume,
+                            tab));
+  }
+
   std::move(callback).Run(login_status_);
 }
 
@@ -124,6 +157,19 @@ void MockActorLoginService::SetCredential(
 void MockActorLoginService::SetLoginStatus(
     actor_login::LoginStatusResultOrError login_status) {
   login_status_ = login_status;
+}
+
+void MockActorLoginService::SetFederatedLoginDelay(
+    FederatedLoginDelayCallback on_federated_login_delay) {
+  on_federated_login_delay_ = std::move(on_federated_login_delay);
+}
+
+// static
+void MockActorLoginService::OnFederatedLoginResume(
+    tabs::TabInterface* tab,
+    content::webid::FederatedLoginResult result) {
+  content::webid::FederatedEmbedderLoginRequest::Get(tab->GetContents())
+      ->OnFederatedResultReceived(result);
 }
 
 const std::optional<actor_login::Credential>&

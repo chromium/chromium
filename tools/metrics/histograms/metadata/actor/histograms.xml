@@ -480,6 +480,7 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="State">
     <variant name="WaitForAutofillPredictions"/>
+    <variant name="WaitForFederatedLogin"/>
     <variant name="WaitForLoadCompletion"/>
     <variant name="WaitForPageStability"/>
     <variant name="WaitForVisualStateUpdate"/>

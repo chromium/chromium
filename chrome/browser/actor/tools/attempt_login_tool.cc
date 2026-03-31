@@ -474,7 +474,8 @@ void AttemptLoginTool::OnAttemptLogin(
     tool_delegate().EnqueueFollowupAction(std::make_unique<ClickToolRequest>(
         tab_handle_, *sign_in_with_google_button_, mojom::ClickType::kLeft,
         mojom::ClickCount::kSingle, requires_opening_web_contents_));
-    PostResponseTask(std::move(invoke_callback_), MakeOkResult());
+    PostResponseTask(std::move(invoke_callback_),
+                     MakeOkResult(/*requires_page_stabilization=*/false));
     return;
   }
 

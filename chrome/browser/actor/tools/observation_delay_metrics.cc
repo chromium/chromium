@@ -16,6 +16,10 @@ const char kActorObservationDelayStateDurationWaitForPageStabilityMetricName[] =
     "Actor.ObservationDelay.StateDuration.WaitForPageStability";
 
 const char
+    kActorObservationDelayStateDurationWaitForFederatedLoginMetricName[] =
+        "Actor.ObservationDelay.StateDuration.WaitForFederatedLogin";
+
+const char
     kActorObservationDelayStateDurationWaitForLoadCompletionMetricName[] =
         "Actor.ObservationDelay.StateDuration.WaitForLoadCompletion";
 
@@ -59,6 +63,9 @@ void ObservationDelayMetrics::WillMoveToState(
       break;
     case ObservationDelayController::State::kPageStabilityMonitorDisconnected:
       break;
+    case ObservationDelayController::State::kWaitForFederatedLogin:
+      wait_for_federated_login_.start_time = now;
+      break;
     case ObservationDelayController::State::kWaitForLoadCompletion:
       wait_for_load_completion_.start_time = now;
       break;
@@ -98,6 +105,12 @@ void ObservationDelayMetrics::WillMoveToState(
               wait_for_page_stability_.end_time -
                   wait_for_page_stability_.start_time);
         }
+        if (wait_for_federated_login_.IsValid()) {
+          base::UmaHistogramTimes(
+              kActorObservationDelayStateDurationWaitForFederatedLoginMetricName,
+              wait_for_federated_login_.end_time -
+                  wait_for_federated_login_.start_time);
+        }
         if (wait_for_load_completion_.IsValid()) {
           base::UmaHistogramTimes(
               kActorObservationDelayStateDurationWaitForLoadCompletionMetricName,
@@ -128,6 +141,11 @@ void ObservationDelayMetrics::WillMoveToState(
 void ObservationDelayMetrics::OnPageStable() {
   wait_for_page_stability_.end_time = base::TimeTicks::Now();
   CHECK(wait_for_page_stability_.IsValid());
+}
+
+void ObservationDelayMetrics::OnFederatedLoginRequestComplete() {
+  wait_for_federated_login_.end_time = base::TimeTicks::Now();
+  CHECK(wait_for_federated_login_.IsValid());
 }
 
 void ObservationDelayMetrics::OnLoadCompleted() {

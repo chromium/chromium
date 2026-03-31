@@ -15,6 +15,8 @@ namespace actor {
 extern const char
     kActorObservationDelayStateDurationWaitForPageStabilityMetricName[];
 extern const char
+    kActorObservationDelayStateDurationWaitForFederatedLoginMetricName[];
+extern const char
     kActorObservationDelayStateDurationWaitForLoadCompletionMetricName[];
 extern const char
     kActorObservationDelayStateDurationWaitForVisualStateUpdateMetricName[];
@@ -35,6 +37,8 @@ class ObservationDelayMetrics {
   void WillMoveToState(ObservationDelayController::State state);
 
   void OnPageStable();
+
+  void OnFederatedLoginRequestComplete();
 
   void OnLoadCompleted();
 
@@ -59,6 +63,9 @@ class ObservationDelayMetrics {
 
   // The duration waiting for page stability.
   StateDuration wait_for_page_stability_;
+
+  // The duration waiting for a federated login request.
+  StateDuration wait_for_federated_login_;
 
   // The duration waiting for page loading.
   StateDuration wait_for_load_completion_;

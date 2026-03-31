@@ -7,9 +7,11 @@
 
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
 
@@ -25,7 +27,8 @@ enum class FederatedLoginResult;
 // Actor feature). The embedder may choose to request a federated token from a
 // specific account, and request to be notified when the request is completed.
 class CONTENT_EXPORT FederatedEmbedderLoginRequest
-    : public WebContentsUserData<FederatedEmbedderLoginRequest> {
+    : public WebContentsUserData<FederatedEmbedderLoginRequest>,
+      public WebContentsObserver {
  public:
   FederatedEmbedderLoginRequest(
       WebContents* web_contents,
@@ -56,9 +59,16 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
   // Removes the embedder login request for the given WebContents.
   static void Remove(WebContents* web_contents);
 
+  // Registers this callback to run when this object is destroyed.
+  base::CallbackListSubscription RegisterCompletion(base::OnceClosure callback);
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 
  private:
+  // WebContentsObserver:
+  void WebContentsDestroyed() override;
+
+  void WillBeDestroyed();
   void Unset();
   void OnTimeout();
 
@@ -66,6 +76,7 @@ class CONTENT_EXPORT FederatedEmbedderLoginRequest
   std::string account_id_;
   base::OnceCallback<void(FederatedLoginResult)>
       on_federated_result_received_callback_;
+  base::OnceClosureList completion_callbacks_;
   base::OneShotTimer timeout_timer_;
 };
 

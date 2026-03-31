@@ -67,6 +67,7 @@ LoginStatusResult FromFederatedLoginResult(
     case content::webid::FederatedLoginResult::kExpectedAccountNotPresent:
       return LoginStatusResult::kErrorFederatedExpectedAccountNotPresent;
     case content::webid::FederatedLoginResult::kTimeout:
+    case content::webid::FederatedLoginResult::kTimeoutByEmbedder:
       return LoginStatusResult::kErrorFederatedTimeout;
   }
   NOTREACHED();

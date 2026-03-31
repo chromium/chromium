@@ -9,6 +9,7 @@
 #include <ostream>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -92,6 +93,7 @@ class ObservationDelayController : public content::WebContentsObserver {
     kInitial,
     kWaitForPageStability,
     kPageStabilityMonitorDisconnected,
+    kWaitForFederatedLogin,
     kWaitForLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
@@ -115,6 +117,7 @@ class ObservationDelayController : public content::WebContentsObserver {
       const ObservationDelayController::State& state);
 
   void OnPageStable();
+  void OnFederatedLoginRequestComplete();
   void OnVisualStateUpdated(bool);
   void OnMonitorDisconnected();
   void OnAutofillPredictionsFinished();
@@ -139,6 +142,8 @@ class ObservationDelayController : public content::WebContentsObserver {
   // provides its own async entries.
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> inner_journal_entry_;
   base::TimeDelta page_stability_start_delay_;
+
+  base::CallbackListSubscription federated_login_subscription_;
 
   std::unique_ptr<ObservationDelayMetrics> metrics_;
 

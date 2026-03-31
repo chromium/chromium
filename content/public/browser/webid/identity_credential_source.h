@@ -33,6 +33,7 @@ enum class FederatedLoginResult {
   kFrameNotActive,
   kExpectedAccountNotPresent,
   kTimeout,
+  kTimeoutByEmbedder,
 };
 
 // A data source for embedder initiated login, used to fetch accounts from
