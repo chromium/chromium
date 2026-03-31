@@ -114,10 +114,10 @@ const char kTabResumptionThresholdParameter[] = "tab-resumption-sync-threshold";
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
-  std::string paramter =
+  std::string parameter =
       command_line->GetSwitchValueASCII(kTabResumptionThresholdParameter);
   int threshold = 0;
-  if (!base::StringToInt(kTabResumptionThresholdParameter, &threshold)) {
+  if (!base::StringToInt(parameter, &threshold)) {
     threshold = 12 * 3600;
   }
   return base::Seconds(threshold);
