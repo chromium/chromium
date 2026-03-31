@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "cc/paint/paint_canvas.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_offscreen_rendering_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_rendering_context.h"
@@ -222,9 +224,11 @@ bool ImageBitmapRenderingContext::PushFrame() {
 
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
-  resource_provider_for_offscreen_canvas_->GetCanvasDeprecated().drawImage(
-      image->PaintImageForCurrentFrame(), 0, 0, SkSamplingOptions(),
-      &paint_flags);
+  resource_provider_for_offscreen_canvas_->ExternalCanvasDrawHelper(
+      [&](cc::PaintCanvas& canvas) {
+        canvas.drawImage(image->PaintImageForCurrentFrame(), 0, 0,
+                         SkSamplingOptions(), &paint_flags);
+      });
   scoped_refptr<CanvasResource> resource =
       resource_provider_for_offscreen_canvas_->ProduceCanvasResource();
   Host()->PushFrame(std::move(resource));
