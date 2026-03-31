@@ -337,6 +337,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
+// Returns the generated text fragment for the given URL, or nil if no entry
+// exists or no fragment is set.
+- (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
+
 // Triggers a sync cycle for a `type`.
 - (void)triggerSyncCycleForType:(syncer::DataType)type;
 

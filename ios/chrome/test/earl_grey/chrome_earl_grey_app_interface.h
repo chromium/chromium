@@ -416,6 +416,10 @@ enum class TipsNotificationType;
 + (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
+// Returns the generated text fragment for the given URL, or nil if no entry
+// exists or no fragment is set.
++ (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
+
 // Adds typed URL into HistoryService.
 + (void)addHistoryServiceTypedURL:(NSString*)URL;
 

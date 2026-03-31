@@ -314,6 +314,7 @@ source_set("web_internal") {
     "//ios/chrome/browser/safe_browsing/model",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/segmentation_platform/model:ukm_client",
+    "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

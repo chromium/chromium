@@ -986,6 +986,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
                                      lastUpdatedTimestamp:lastUpdatedTimestamp];
 }
 
+- (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
+  return
+      [ChromeEarlGreyAppInterface textFragmentForSendTabToSelfEntryWithURL:URL];
+}
+
 - (void)addFakeSyncServerLegacyBookmarkWithURL:(const GURL&)URL
                                          title:(const std::string&)UTF8Title
                      originator_client_item_id:

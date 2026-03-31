@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_java_script_feature.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_tab_helper_factory.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -433,6 +434,7 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   }
 
   features.push_back(LinkToTextJavaScriptFeature::GetInstance());
+  features.push_back(SendTabToSelfTextFragmentSelectorGenerator::GetInstance());
   features.push_back(WebSelectionJavaScriptFeature::GetInstance());
 
   SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(

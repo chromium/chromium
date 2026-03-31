@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/send_tab_to_self/features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -21,15 +24,29 @@
 
 namespace {
 
-const char kPageContent[] = "hello world";
+const char kPageText[] =
+    "This is a long and unique text that should be easy to generate a text "
+    "fragment for without any ambiguity.";
+const char kPageHtml[] =
+    "<html><body>"
+    "<div style='height: 100px; width: 100px; position: absolute; top: 50%; "
+    "left: 50%; transform: translate(-50%, -50%);'>"
+    "  <p id='target'>"
+    "    This is a long and unique text that should be easy to generate a text "
+    "fragment for without any ambiguity."
+    "  </p>"
+    "</div>"
+    "</body></html>";
 NSString* const kTargetDeviceName = @"My other device";
+NSString* const kSendTabToSelfModalCancelButtonId =
+    @"kSendTabToSelfModalCancelButton";
 
 std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
     const net::test_server::HttpRequest& request) {
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   http_response->set_code(net::HTTP_OK);
   http_response->set_content_type("text/html");
-  http_response->set_content(kPageContent);
+  http_response->set_content(kPageHtml);
   return http_response;
 }
 
@@ -39,6 +56,13 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 @end
 
 @implementation SendTabToSelfCoordinatorTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_enabled.push_back(
+      send_tab_to_self::kSendTabToSelfPropagateScrollPosition);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -52,7 +76,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
 // there are no device-level accounts.
 - (void)testShowButtonIfSignedOutAndNoDeviceAccount {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
@@ -67,7 +91,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
@@ -85,15 +109,15 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       performAction:grey_tap()];
 
   // The device list should be shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
 }
 
 - (void)testShowMessageIfSignedInAndNoTargetDevice {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
@@ -101,11 +125,16 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)),
-                            grey_userInteractionEnabled(), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                         IDS_SEND_TAB_TO_SELF_NO_TARGET_DEVICE_LABEL)),
+                     grey_userInteractionEnabled(), nil)];
+
+  // Clean up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButtonId)]
+      performAction:grey_tap()];
 }
 
 - (void)testShowDevicePickerIfSignedInAndHasTargetDevice {
@@ -115,7 +144,7 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
                          lastUpdatedTimestamp:base::Time::Now()];
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
       performAction:grey_tap()];
@@ -123,9 +152,63 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
   [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
 
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
+
+  // Clean up.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSendTabToSelfModalCancelButtonId)]
+      performAction:grey_tap()];
+}
+
+- (void)testSendTabToSelfAndVerifySnackbar {
+  [ChromeEarlGrey addFakeSyncServerDeviceInfo:kTargetDeviceName
+                         lastUpdatedTimestamp:base::Time::Now()];
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageText];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+  NSString* sendTabToSelf =
+      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:sendTabToSelf];
+
+  // Tap the device in the device picker.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       kTargetDeviceName)];
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(kTargetDeviceName)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  // Tap "Send".
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"kSendTabToSelfModalSendButton")]
+      performAction:grey_tap()];
+
+  // Wait for and verify the snackbar message.
+  NSString* snackbarMessage =
+      l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
+                              base::SysNSStringToUTF16(kTargetDeviceName));
+  id<GREYMatcher> snackbarMatcher = grey_allOf(
+      chrome_test_util::SnackbarViewMatcher(),
+      grey_descendant(grey_accessibilityLabel(snackbarMessage)), nil);
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+
+  // Verify that the text fragment was successfully captured and attached to the
+  // STTS entry in the model.
+  NSString* urlString =
+      base::SysUTF8ToNSString(self.testServer->GetURL("/").spec());
+  NSString* textFragment =
+      [ChromeEarlGrey textFragmentForSendTabToSelfEntryWithURL:urlString];
+  GREYAssertTrue(
+      [textFragment caseInsensitiveCompare:base::SysUTF8ToNSString(
+                                               kPageText)] == NSOrderedSame,
+      @"Text fragment should be captured. Expected '%s' (case-insensitive) but "
+      @"got %@",
+      kPageText, textFragment);
 }
 
 @end

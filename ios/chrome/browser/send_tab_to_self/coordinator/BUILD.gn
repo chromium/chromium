@@ -40,6 +40,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model/avatar",
     "//ios/chrome/browser/sync/model",
+    "//ios/web/public",
     "//ui/base",
     "//url",
   ]

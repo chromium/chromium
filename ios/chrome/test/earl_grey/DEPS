@@ -5,6 +5,7 @@ specific_include_rules = {
    "+components/collaboration/public/messaging/messaging_backend_service.h",
    "+components/safe_browsing/core/common/features.h",
    "+components/search_engines/template_url_service.h",
+   "+components/send_tab_to_self",
    "+components/password_manager/core/common/password_manager_features.h",
    "+components/payments/core/features.h",
    "+components/ukm/ios/features.h",

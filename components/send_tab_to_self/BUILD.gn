@@ -10,8 +10,6 @@ static_library("send_tab_to_self") {
   sources = [
     "entry_point_display_reason.cc",
     "entry_point_display_reason.h",
-    "features.cc",
-    "features.h",
     "metrics_util.cc",
     "metrics_util.h",
     "outgoing_tab_form_field_extractor.cc",
@@ -59,7 +57,10 @@ static_library("send_tab_to_self") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ "//components/send_tab_to_self/proto:send_tab_to_self_proto" ]
+  public_deps = [
+    ":features",
+    "//components/send_tab_to_self/proto:send_tab_to_self_proto",
+  ]
   if (is_android) {
     sources += [
       "send_tab_to_self_infobar_delegate.cc",
@@ -70,6 +71,17 @@ static_library("send_tab_to_self") {
       "//content/public/browser",
     ]
   }
+}
+
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+  ]
 }
 
 if (is_android) {

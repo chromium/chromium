@@ -33,6 +33,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/send_tab_to_self/send_tab_to_self_entry.h"
+#import "components/send_tab_to_self/send_tab_to_self_model.h"
+#import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sync/base/pref_names.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -71,6 +74,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/tips_notifications/model/utils.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -903,6 +907,37 @@ NSString* GetIdForWebState(web::WebState* web_state) {
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp {
   chrome_test_util::AddDeviceInfoToFakeSyncServer(
       base::SysNSStringToUTF8(deviceName), lastUpdatedTimestamp);
+}
+
++ (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL {
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
+  if (!service || !service->GetSendTabToSelfModel()) {
+    return nil;
+  }
+
+  send_tab_to_self::SendTabToSelfModel* model =
+      service->GetSendTabToSelfModel();
+  std::string target_url = base::SysNSStringToUTF8(URL);
+
+  for (const std::string& guid : model->GetAllGuids()) {
+    const send_tab_to_self::SendTabToSelfEntry* entry =
+        model->GetEntryByGUID(guid);
+
+    if (!entry || entry->GetURL().spec() != target_url) {
+      continue;
+    }
+
+    const std::string& text_start =
+        entry->GetPageContext().scroll_position.text_fragment.text_start;
+
+    if (!text_start.empty()) {
+      return base::SysUTF8ToNSString(text_start);
+    }
+  }
+
+  return nil;
 }
 
 + (void)addHistoryServiceTypedURL:(NSString*)URL {

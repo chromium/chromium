@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
+
 source_set("model") {
   sources = [
     "ios_send_tab_to_self_infobar_delegate.h",
@@ -10,10 +13,13 @@ source_set("model") {
     "send_tab_push_notification_client.mm",
     "send_tab_to_self_browser_agent.h",
     "send_tab_to_self_browser_agent.mm",
+    "send_tab_to_self_text_fragment_selector_generator.h",
+    "send_tab_to_self_text_fragment_selector_generator.mm",
     "send_tab_to_self_util.h",
     "send_tab_to_self_util.mm",
   ]
   deps = [
+    ":send_tab_to_self_fragments_js",
     "//base",
     "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:util",
@@ -53,12 +59,35 @@ source_set("model") {
   ]
 }
 
+compile_ts("compile_send_tab_to_self_fragments_js") {
+  allow_js = true
+  sources = [
+    "//third_party/text-fragments-polyfill/src/src/fragment-generation-utils.js",
+    "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
+    "resources/send_tab_to_self_fragments.ts",
+  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
+}
+
+optimize_js("send_tab_to_self_fragments_js") {
+  _outputs = get_target_outputs(":compile_send_tab_to_self_fragments_js")
+  _primary_script =
+      filter_include(_outputs, [ "*send_tab_to_self_fragments.js" ])
+  primary_script = _primary_script[0]
+  sources = _primary_script
+  deps = [
+    ":compile_send_tab_to_self_fragments_js",
+    "//ios/web/public/js_messaging:gcrweb",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_send_tab_to_self_infobar_delegate_unittest.mm",
     "send_tab_push_notification_client_unittest.mm",
     "send_tab_to_self_browser_agent_unittest.mm",
+    "send_tab_to_self_text_fragment_selector_generator_unittest.mm",
   ]
   deps = [
     ":model",
