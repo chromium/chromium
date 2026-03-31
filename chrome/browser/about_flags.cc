@@ -2666,6 +2666,12 @@ const FeatureEntry::FeatureParam
         {"force_card_shown", "true"},
         {"show_third_party_card", "true"}};
 
+const FeatureEntry::FeatureParam kAndroidAppRatingPromptBypassChecks[] = {
+    {"bypass_checks", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidAppRatingPromptVariations[] = {
+    {"(Bypass checks)", kAndroidAppRatingPromptBypassChecks, nullptr}};
+
 const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
     {{"Force to show Pixel's notice card",
       kAndroidAppIntegrationModule_ForceCardShown_Pixel, nullptr},
@@ -6389,7 +6395,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-app-rating-prompt",
      flag_descriptions::kAndroidAppRatingPromptName,
      flag_descriptions::kAndroidAppRatingPromptDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidAppRatingPrompt)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidAppRatingPrompt,
+                                    kAndroidAppRatingPromptVariations,
+                                    "AndroidAppRatingPrompt")},
 
     {"android-media-picker", flag_descriptions::kAndroidMediaPickerName,
      flag_descriptions::kAndroidMediaPickerDescription, kOsAndroid,

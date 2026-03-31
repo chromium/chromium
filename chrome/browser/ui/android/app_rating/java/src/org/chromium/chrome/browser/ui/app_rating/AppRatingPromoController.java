@@ -48,6 +48,15 @@ public class AppRatingPromoController {
             return;
         }
 
+        // Bypasses all eligibility checks (Segmentation, prefs, etc.) for manual QA.
+        if (ChromeFeatureList.sAndroidAppRatingPromptBypassChecks.getValue()) {
+            Activity activity = mActivityRef.get();
+            if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+                triggerAppRatingReviewFlow(activity);
+            }
+            return;
+        }
+
         // Ensure the prompt is only shown once
         if (UserPrefs.get(mProfile).getBoolean(Pref.APP_RATING_PROMPT_SHOWN)) {
             return;

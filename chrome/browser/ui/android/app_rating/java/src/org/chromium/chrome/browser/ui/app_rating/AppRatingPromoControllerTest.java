@@ -93,6 +93,21 @@ public class AppRatingPromoControllerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT + ":bypass_checks/true")
+    public void testMaybeShowPromo_BypassChecks() {
+        // Even if it was already shown, bypass_checks should trigger it.
+        when(mPrefService.getBoolean(Pref.APP_RATING_PROMPT_SHOWN)).thenReturn(true);
+
+        mController.maybeShowPromo();
+
+        // Should bypass segmentation entirely.
+        verify(mSegmentationService, never()).getClassificationResult(any(), any(), any(), any());
+
+        // Should trigger the review flow immediately.
+        verify(mAppRatingManager).requestAndShowReviewFlow(eq(mActivity), any());
+    }
+
+    @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_APP_RATING_PROMPT)
     public void testMaybeShowPromo_WouldNotTriggerHelpUi() {
         when(mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE))
