@@ -26,6 +26,8 @@ source_set("factories") {
     "credentials_cleaner_runner_factory.h",
     "field_info_manager_factory.cc",
     "field_info_manager_factory.h",
+    "password_receiver_service_factory.cc",
+    "password_receiver_service_factory.h",
     "password_reuse_manager_factory.cc",
     "password_reuse_manager_factory.h",
     "password_sender_service_factory.cc",
