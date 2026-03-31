@@ -108,8 +108,13 @@ NavigationInterceptor::ProcessRequest() {
     return PROCEED;
   }
 
+  // TODO(crbug.com/498095297): Use only one header name once it is finalized.
   std::optional<std::string> intercept_header =
-      headers->GetNormalizedHeader("FedCM-Intercept-Navigation");
+      headers->GetNormalizedHeader("Federation-Initiate-Request");
+  if (!intercept_header) {
+    intercept_header =
+        headers->GetNormalizedHeader("FedCM-Intercept-Navigation");
+  }
 
   std::optional<std::string> connection_status_header =
       headers->GetNormalizedHeader("Federation-RP-Connection-Status");

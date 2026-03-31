@@ -270,6 +270,59 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   run_loop.Run();
 }
 
+TEST_F(NavigationInterceptorTest,
+       WillProcessResponseWithFederationInitiateRequest) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  std::unique_ptr<MockFederatedAuthRequest> federated_auth_request =
+      std::make_unique<MockFederatedAuthRequest>(
+          web_contents()->GetPrimaryMainFrame());
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-Initiate-Request",
+                     net::structured_headers::SerializeDictionary(
+                         webid::EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  webid::NavigationInterceptor interceptor(
+      registry,
+      base::BindLambdaForTesting(
+          [&federated_auth_request](RenderFrameHost* rfh) -> RequestService* {
+            return federated_auth_request.get();
+          }));
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(*federated_auth_request.get(), RequestToken)
+      .WillOnce([&](auto, auto, auto, auto) {
+        // When RequestToken is finally called, quit the RunLoop.
+        run_loop.Quit();
+      });
+
+  interceptor.WillStartRequest();
+  auto result = interceptor.WillProcessResponse();
+  EXPECT_EQ(result, content::NavigationThrottle::DEFER);
+
+  // This will block the test until run_loop.Quit() is called inside the mock.
+  run_loop.Run();
+}
+
 TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;

@@ -83,6 +83,11 @@ class TestIdP : public net::EmbeddedTestServer {
                 {{"FedCM-Intercept-Navigation",
                   base::StringPrintf("config_url=\"%s\", client_id=\"1234\"",
                                      GetURL("/fedcm.json").spec().c_str())}});
+
+    AddResponse("/oauth-initiate", "interception response", "text/plain",
+                {{"Federation-Initiate-Request",
+                  base::StringPrintf("config_url=\"%s\", client_id=\"1234\"",
+                                     GetURL("/fedcm.json").spec().c_str())}});
   }
 
  private:
@@ -225,12 +230,11 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
                        TargetBlankWithOpener) {
   base::RunLoop run_loop;
   auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-  ON_CALL(*mock, ShowLoadingDialog(_, _, _, _, _)).WillByDefault(Return(true));
-  EXPECT_CALL(*mock, ShowAccountsDialog(_, _, _, _, _, _, _, _, _))
-      .WillOnce(WithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return true;
-      }));
+  ON_CALL(*mock, ShowLoadingDialog).WillByDefault(Return(true));
+  EXPECT_CALL(*mock, ShowAccountsDialog).WillOnce(WithoutArgs([&run_loop]() {
+    run_loop.Quit();
+    return true;
+  }));
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
   SetRpPageContent(
@@ -261,12 +265,11 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
 IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest, NormalNavigation) {
   base::RunLoop run_loop;
   auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-  ON_CALL(*mock, ShowLoadingDialog(_, _, _, _, _)).WillByDefault(Return(true));
-  EXPECT_CALL(*mock, ShowAccountsDialog(_, _, _, _, _, _, _, _, _))
-      .WillOnce(WithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return true;
-      }));
+  ON_CALL(*mock, ShowLoadingDialog).WillByDefault(Return(true));
+  EXPECT_CALL(*mock, ShowAccountsDialog).WillOnce(WithoutArgs([&run_loop]() {
+    run_loop.Quit();
+    return true;
+  }));
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
   SetRpPageContent(
@@ -292,12 +295,11 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest, NormalNavigation) {
 IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest, Popup) {
   base::RunLoop run_loop;
   auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
-  ON_CALL(*mock, ShowLoadingDialog(_, _, _, _, _)).WillByDefault(Return(true));
-  EXPECT_CALL(*mock, ShowAccountsDialog(_, _, _, _, _, _, _, _, _))
-      .WillOnce(WithoutArgs([&run_loop]() {
-        run_loop.Quit();
-        return true;
-      }));
+  ON_CALL(*mock, ShowLoadingDialog).WillByDefault(Return(true));
+  EXPECT_CALL(*mock, ShowAccountsDialog).WillOnce(WithoutArgs([&run_loop]() {
+    run_loop.Quit();
+    return true;
+  }));
   test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
 
   SetRpPageContent(
@@ -322,6 +324,36 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest, Popup) {
   ASSERT_TRUE(new_shell);
   run_loop.Run();
   new_shell->web_contents()->Close();
+}
+
+// Scenario 5: Normal same-window navigation with Federation-Initiate-Request.
+IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
+                       NormalNavigationWithFederationInitiateRequest) {
+  base::RunLoop run_loop;
+  auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+  ON_CALL(*mock, ShowLoadingDialog).WillByDefault(Return(true));
+  EXPECT_CALL(*mock, ShowAccountsDialog).WillOnce(WithoutArgs([&run_loop]() {
+    run_loop.Quit();
+    return true;
+  }));
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  SetRpPageContent(
+      base::StringPrintf(R"(
+    <!-- RP page with a normal same-window link. -->
+    <html>
+      <body>
+        <a id='link' href='%s'>Click</a>
+      </body>
+    </html>
+  )",
+                         idp_server_.GetURL("/oauth-initiate").spec().c_str()));
+
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/rp")));
+  EXPECT_TRUE(
+      ExecJs(web_contents(), "document.getElementById('link').click();"));
+
+  run_loop.Run();
 }
 
 }  // namespace
