@@ -2613,8 +2613,9 @@ IN_PROC_BROWSER_TEST_F(
   RestoreAndVerify(web_contents, "normal");
 }
 
-// TODO(https://crbug.com/458599317) This test is flaky on Wayland.
-#if BUILDFLAG(IS_LINUX) && BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
+// TODO(https://crbug.com/458599317) Maximizing fullscreen window doesn't work
+// correctly on Mac
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FullscreenMaximizeAndRestoreWindowWithApi \
   DISABLED_FullscreenMaximizeAndRestoreWindowWithApi
 #else
@@ -2629,7 +2630,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
 
   SetCanMaximizeAndVerify();
-  WaitForWebContentsLoadedAndWidgetActive(web_contents);
+  content::WaitForLoadStop(web_contents);
 
   EnterFullscreenAndVerify(web_contents);
   MaximizeAndVerifyHasTitleBar(web_contents);
