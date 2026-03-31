@@ -2136,7 +2136,13 @@ TEST_P(LayerWithRealCompositorTest, ModifyHierarchy) {
                              cc::AlphaDiscardingExactPixelComparator()));
 }
 
-TEST_P(LayerWithRealCompositorTest, BackgroundInvert) {
+#if BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_ARM64) && !defined(NDEBUG)
+// This test triggers LLVM 10.0 crashes in swiftshader on arm64 debug builds.
+#define MAYBE_BackgroundInvert DISABLED_BackgroundInvert
+#else
+#define MAYBE_BackgroundInvert BackgroundInvert
+#endif
+TEST_P(LayerWithRealCompositorTest, MAYBE_BackgroundInvert) {
   viz::ParentLocalSurfaceIdAllocator allocator;
   allocator.GenerateId();
   GetCompositor()->SetScaleAndSize(1.0f, gfx::Size(100, 100),
