@@ -125,11 +125,8 @@ void SetUpFieldTrials(PrefService* local_state,
   auto feature_list = std::make_unique<base::FeatureList>();
   variations::PlatformFieldTrials platform_field_trials;
   field_trial_creator.SetUpFieldTrials(
-      variation_ids,
-      command_line.GetSwitchValueASCII(
-          variations::switches::kForceVariationIds),
-      feature_overrides, std::move(feature_list), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      variation_ids, feature_overrides, std::move(feature_list),
+      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false,
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));

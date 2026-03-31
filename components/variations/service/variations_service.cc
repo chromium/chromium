@@ -1004,16 +1004,14 @@ std::string VariationsService::GetLatestCountry() const {
 
 bool VariationsService::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
-    const std::string& command_line_variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     PlatformFieldTrials* platform_field_trials) {
   ForceTrialsAtStartup(*local_state_);
 
   return field_trial_creator_.SetUpFieldTrials(
-      variation_ids, command_line_variation_ids, extra_overrides,
-      std::move(feature_list), state_manager_, platform_field_trials,
-      &safe_seed_manager_,
+      variation_ids, extra_overrides, std::move(feature_list), state_manager_,
+      platform_field_trials, &safe_seed_manager_,
       /*add_entropy_source_to_variations_ids=*/true, *entropy_providers_);
 }
 

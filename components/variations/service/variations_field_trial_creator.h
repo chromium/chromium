@@ -188,7 +188,6 @@ class VariationsFieldTrialCreator {
   // field trials.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
-      const std::string& command_line_variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,

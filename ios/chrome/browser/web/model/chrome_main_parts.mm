@@ -178,19 +178,6 @@ void IOSChromeMainParts::ApplyFeatureList() {
   // local state, in case any of the settings affect policy.
   AppendSwitchesFromExperimentalSettings(command_line);
 
-  // Get the variation IDs passed through the command line. This is done early
-  // on because ConvertFlagsToSwitches() will append to the command line
-  // the variation IDs from flags (so that they are visible in about://version).
-  // This will be passed on to `VariationsService::SetUpFieldTrials()`, which
-  // will manually fetch the variation IDs from flags (hence the reason we do
-  // not pass the mutated command line, otherwise the IDs will be duplicated).
-  // It also distinguishes between variation IDs coming from the command line
-  // and from flags, so we cannot rely on simply putting them all in the
-  // command line.
-  const std::string command_line_variation_ids =
-      command_line->GetSwitchValueASCII(
-          variations::switches::kForceVariationIds);
-
   // Initialize local state.
   local_state_ = application_context_->GetLocalState();
   DCHECK(local_state_);
@@ -203,7 +190,7 @@ void IOSChromeMainParts::ApplyFeatureList() {
   // initialize field trials. The field trials are needed by IOThread's
   // initialization which happens in BrowserProcess:PreCreateThreads. Metrics
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
-  SetUpFieldTrials(command_line_variation_ids);
+  SetUpFieldTrials();
 
   // Initialize //base features that depend on the `FeatureList`.
   base::features::Init();
@@ -393,8 +380,7 @@ void IOSChromeMainParts::PostDestroyThreads() {
 }
 
 // This will be called after the command-line has been mutated by about:flags
-void IOSChromeMainParts::SetUpFieldTrials(
-    const std::string& command_line_variation_ids) {
+void IOSChromeMainParts::SetUpFieldTrials() {
   base::SetRecordActionTaskRunner(web::GetUIThreadTaskRunner({}));
 
 // This will occur inside //content for blink.
@@ -425,8 +411,7 @@ void IOSChromeMainParts::SetUpFieldTrials(
   additional_features_controller->RegisterFeatureList(feature_list.get());
 
   application_context_->GetVariationsService()->SetUpFieldTrials(
-      variation_ids, command_line_variation_ids,
-      std::vector<base::FeatureList::FeatureOverrideInfo>(),
+      variation_ids, std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), &ios_field_trials_);
   additional_features_controller->FeatureListDidCompleteSetup();
 }

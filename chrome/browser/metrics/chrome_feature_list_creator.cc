@@ -104,23 +104,11 @@ ChromeFeatureListCreator* ChromeFeatureListCreator::GetInstance() {
 ChromeFeatureListCreator::~ChromeFeatureListCreator() = default;
 
 void ChromeFeatureListCreator::CreateFeatureList() {
-  // Get the variation IDs passed through the command line. This is done early
-  // on because ConvertFlagsToSwitches() will append to the command line
-  // the variation IDs from flags (so that they are visible in about://version).
-  // This will be passed on to `VariationsService::SetUpFieldTrials()`, which
-  // will manually fetch the variation IDs from flags (hence the reason we do
-  // not pass the mutated command line, otherwise the IDs will be duplicated).
-  // It also distinguishes between variation IDs coming from the command line
-  // and from flags, so we cannot rely on simply putting them all in the
-  // command line.
-  const std::string command_line_variation_ids =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          variations::switches::kForceVariationIds);
   CreatePrefService();
   ConvertFlagsToSwitches();
   CreateMetricsServices();
   SetupInitialPrefs();
-  SetUpFieldTrials(command_line_variation_ids);
+  SetUpFieldTrials();
 }
 
 void ChromeFeatureListCreator::SetApplicationLocale(const std::string& locale) {
@@ -270,8 +258,7 @@ void ChromeFeatureListCreator::CreateNetworkTimeTracker() {
   CHECK(!network_time_tracker_->is_initialized());
 }
 
-void ChromeFeatureListCreator::SetUpFieldTrials(
-    const std::string& command_line_variation_ids) {
+void ChromeFeatureListCreator::SetUpFieldTrials() {
   browser_field_trials_ =
       std::make_unique<ChromeBrowserFieldTrials>(local_state_.get());
 
@@ -292,7 +279,7 @@ void ChromeFeatureListCreator::SetUpFieldTrials(
   variations::VariationsService* variations_service =
       metrics_services_manager_->GetVariationsService();
   variations_service->SetUpFieldTrials(
-      variation_ids, command_line_variation_ids,
+      variation_ids,
       GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       std::move(feature_list), browser_field_trials_.get());

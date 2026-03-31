@@ -411,11 +411,6 @@ TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
   EXPECT_TRUE(command_line3.HasSwitch(kEnableFeatures));
   EXPECT_EQ(command_line3.GetSwitchValueASCII(kEnableFeatures),
             kTestVariation3Cmdline);
-  EXPECT_TRUE(
-      command_line3.HasSwitch(variations::switches::kForceVariationIds));
-  EXPECT_EQ(command_line3.GetSwitchValueASCII(
-                variations::switches::kForceVariationIds),
-            "t123456");
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParameters) {
@@ -479,6 +474,26 @@ TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersNonDefault) {
   // The value should be associated also via the name of the feature.
   EXPECT_EQ(kTestParamValue,
             base::GetFieldTrialParamValueByFeature(kTestFeature1, kTestParam1));
+}
+
+// Verifies that variation IDs are still correctly collected and returned by
+// RegisterAllFeatureVariationParameters().
+TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersVariationIds) {
+  const FeatureEntry& entry = kEntries[11];
+  ASSERT_EQ(kFlags12, entry.internal_name);
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+
+  // Select the 3rd variation (@4).
+  flags_state_->SetFeatureEntryEnabled(
+      &flags_storage_, std::string(kFlags12).append("@4"), true);
+
+  std::vector<std::string> variation_ids =
+      flags_state_->RegisterAllFeatureVariationParameters(&flags_storage_,
+                                                          feature_list.get());
+
+  ASSERT_EQ(1u, variation_ids.size());
+  EXPECT_EQ("t123456", variation_ids[0]);
 }
 
 TEST_F(FlagsStateTest, RegisterAllFeatureVariationParametersWithDefaultTrials) {

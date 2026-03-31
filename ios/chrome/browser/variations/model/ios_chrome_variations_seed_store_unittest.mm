@@ -114,7 +114,7 @@ class IOSChromeVariationsSeedStoreTest : public PlatformTest {
     CHECK(variations_service_);
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     variations_service_->SetUpFieldTrials(
-        std::vector<std::string>(), std::string(),
+        std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::move(feature_list), &ios_field_trials_);
   }

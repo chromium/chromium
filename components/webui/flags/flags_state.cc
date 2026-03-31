@@ -825,8 +825,6 @@ void FlagsState::AddSwitchesToCommandLine(
     modified_flag_switches_.insert(switches::kFlagSwitchesBegin);
   }
 
-  std::vector<std::string> variation_ids;
-
   for (const std::string& entry_name : enabled_entries) {
     const auto& entry_it = name_to_switch_map.find(entry_name);
     if (entry_it == name_to_switch_map.end()) {
@@ -836,9 +834,6 @@ void FlagsState::AddSwitchesToCommandLine(
     const SwitchEntry& entry = entry_it->second;
     if (!entry.feature_name.empty()) {
       feature_switches[entry.feature_name] = entry.feature_state;
-      if (!entry.variation_id.empty()) {
-        variation_ids.push_back(entry.variation_id);
-      }
     } else if (!entry.switch_name.empty()) {
       if (entry.switch_name == enable_features_flag_name ||
           entry.switch_name == disable_features_flag_name) {
@@ -867,9 +862,6 @@ void FlagsState::AddSwitchesToCommandLine(
                                   true, command_line);
     MergeFeatureCommandLineSwitch(feature_switches, disable_features_flag_name,
                                   false, command_line);
-  }
-  if (!variation_ids.empty()) {
-    MergeVariationIdsCommandLineSwitch(variation_ids, command_line);
   }
 
   if (sentinels == kAddSentinels) {
@@ -904,25 +896,6 @@ void FlagsState::MergeFeatureCommandLineSwitch(
   if (switch_value != original_switch_value) {
     command_line->AppendSwitchASCII(switch_name, switch_value);
   }
-}
-
-void FlagsState::MergeVariationIdsCommandLineSwitch(
-    const std::vector<std::string>& variation_ids,
-    base::CommandLine* command_line) {
-  DCHECK(!variation_ids.empty());
-  std::string variation_ids_switch = command_line->GetSwitchValueASCII(
-      variations::switches::kForceVariationIds);
-
-  // At this point, the switch value is guaranteed to change since
-  // |variation_ids| is not empty. Hence, we do not conditionally update the
-  // switch value, as is done in FlagsState::MergeFeatureCommandLineSwitch().
-  // Note that it is an error to try to set the same variation id in multiple
-  // ways.
-  command_line->AppendSwitchASCII(
-      variations::switches::kForceVariationIds,
-      base::StrCat({variation_ids_switch,
-                    variation_ids_switch.empty() ? "" : ",",
-                    base::JoinString(variation_ids, ",")}));
 }
 
 std::set<std::string> FlagsState::SanitizeList(

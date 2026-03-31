@@ -223,7 +223,6 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
 
 bool VariationsFieldTrialCreator::SetUpFieldTrials(
     const std::vector<std::string>& variation_ids,
-    const std::string& command_line_variation_ids,
     const std::vector<base::FeatureList::FeatureOverrideInfo>& extra_overrides,
     std::unique_ptr<base::FeatureList> feature_list,
     metrics::MetricsStateManager* metrics_state_manager,
@@ -245,11 +244,14 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   VariationsIdsProvider* http_header_provider =
       VariationsIdsProvider::GetInstance();
 
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+
   // Force the variation ids selected in chrome://flags and/or specified using
   // the command-line flag.
   auto result = http_header_provider->ForceVariationIds(
-      base::PassKey<VariationsFieldTrialCreator>(),
-      variation_ids, command_line_variation_ids);
+      base::PassKey<VariationsFieldTrialCreator>(), variation_ids,
+      command_line->GetSwitchValueASCII(switches::kForceVariationIds));
 
   switch (result) {
     case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
@@ -265,8 +267,6 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   }
 
   variations_source_.type = VariationsSourceType::kDefaultSeed;
-  const base::CommandLine* command_line =
-      base::CommandLine::ForCurrentProcess();
   bool success = http_header_provider->ForceDisableVariationIds(
       command_line->GetSwitchValueASCII(switches::kForceDisableVariationIds));
   if (!success) {
@@ -285,7 +285,7 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
   // instance is set.
   feature_list->RegisterExtraFeatureOverrides(extra_overrides);
 
-  if (!variation_ids.empty() || !command_line_variation_ids.empty() ||
+  if (!variation_ids.empty() ||
       command_line->HasSwitch(switches::kForceVariationIds) ||
       command_line->HasSwitch(switches::kForceDisableVariationIds) ||
       command_line->HasSwitch(variations::switches::kForceFieldTrialParams) ||

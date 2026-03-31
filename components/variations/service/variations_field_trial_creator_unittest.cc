@@ -420,8 +420,6 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     PlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
-        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            switches::kForceVariationIds),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
         &platform_field_trials, safe_seed_manager_,
@@ -982,7 +980,6 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
 
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
-      /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
@@ -1157,8 +1154,6 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   // active.
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/std::vector<std::string>(),
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kForceVariationIds),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,
@@ -1742,7 +1737,6 @@ TEST_P(LimitedLayerFieldTrialCreatorTest, SetUpFieldTrials) {
   EXPECT_EQ(
       field_trial_creator.SetUpFieldTrials(
           /*variation_ids=*/{},
-          /*command_line_variation_ids=*/std::string(),
           std::vector<base::FeatureList::FeatureOverrideInfo>(),
           std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
           &platform_field_trials, &safe_seed_manager,
@@ -1833,7 +1827,6 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       CreateSeedStore(local_state(), seed_file_path())};
   EXPECT_TRUE(field_trial_creator.SetUpFieldTrials(
       /*variation_ids=*/{},
-      /*command_line_variation_ids=*/std::string(),
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &platform_field_trials, &safe_seed_manager,

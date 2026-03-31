@@ -322,10 +322,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // variation_ids can be overridden by calls to ForceVariationIds in other
   // places.
   variations_field_trial_creator_->SetUpFieldTrials(
-      variation_ids,
-      command_line->GetSwitchValueASCII(
-          variations::switches::kForceVariationIds),
-      GetSwitchDependentFeatureOverrides(*command_line),
+      variation_ids, GetSwitchDependentFeatureOverrides(*command_line),
       std::move(feature_list), metrics_client->metrics_state_manager(),
       aw_field_trials_.get(), &ignored_safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/true, *entropy_providers);

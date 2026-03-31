@@ -140,9 +140,6 @@ void SetupFieldTrials() {
   variations::SafeSeedManager safe_seed_manager(pref_service.get());
 
   const std::vector<std::string> variation_ids;  // Empty for tests.
-  const std::string command_line_variation_ids =
-      command_line->GetSwitchValueASCII(
-          variations::switches::kForceVariationIds);
   auto feature_list = std::make_unique<base::FeatureList>();
 
   variations::test::ScopedVariationsIdsProvider scoped_ids_provider(
@@ -154,9 +151,8 @@ void SetupFieldTrials() {
   // not needed, and thus are set to null or empty values.
   // TODO(crbug.com/40790318): Consider passing a low entropy source.
   field_trial_creator.SetUpFieldTrials(
-      variation_ids, command_line_variation_ids, feature_overrides,
-      std::move(feature_list), metrics_state_manager.get(),
-      &platform_field_trials, &safe_seed_manager,
+      variation_ids, feature_overrides, std::move(feature_list),
+      metrics_state_manager.get(), &platform_field_trials, &safe_seed_manager,
       /*add_entropy_source_to_variations_ids=*/false,
       *metrics_state_manager->CreateEntropyProviders(
           /*enable_limited_entropy_mode=*/false));
