@@ -167,13 +167,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="DuplicateNavigationServingResult">
-  <int value="0" label="Not served then not served"/>
-  <int value="1" label="Not served then served"/>
-  <int value="2" label="Served then not served"/>
-  <int value="3" label="Served then served"/>
-</enum>
-
 <!-- LINT.IfChange(EntryPreservationReason) -->
 
 <enum name="EntryPreservationReason">

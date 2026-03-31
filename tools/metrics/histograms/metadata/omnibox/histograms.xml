@@ -3418,36 +3418,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.SearchPrefetch.DuplicateSearchTermsAge" units="ms"
-    expires_after="2026-08-02">
-  <owner>lingqi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Measures the duration between when the search terms are visited and when the
-    same search terms are visited again.
-
-    Recorded at SearchPrefetchService::RecordInterceptionMetrics when the same
-    search terms are visited again.
-  </summary>
-</histogram>
-
-<histogram
-    name="Omnibox.SearchPrefetch.DuplicateSearchTermsAgeAheadOfNavigationalPrefetch"
-    units="ms" expires_after="2026-09-13">
-  <owner>lingqi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Measures the duration between when the search terms are visited and when the
-    same search terms are prefetched by navigational prefetch predictor.
-
-    Recorded at
-    SearchPrefetchService::RecordPotentialDuplicateSearchTermsAheadofNavigationalPrefetch
-    when the same search terms are prefetch by navigational prefetch predictor.
-  </summary>
-</histogram>
-
 <histogram name="Omnibox.SearchPrefetch.KeepAliveRequestFinalStage"
     enum="FetchKeepAliveRequestStage" expires_after="2026-08-30">
   <owner>lingqi@chromium.org</owner>
@@ -3486,36 +3456,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
     response is taken from the memory cache. This histogram helps understand the
     critical path of loading if a prefetch is triggered. The result determines
     if the navigation itself or the prefetch is in the critical path.
-  </summary>
-</histogram>
-
-<histogram name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge"
-    units="ms" expires_after="2026-08-09">
-  <owner>lingqi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Measures the duration between when the search terms are visited and when the
-    same search terms are visited again, filtered to within 1s cases to rule out
-    the case where restarting chrome affects the distribution.
-
-    Recorded at SearchPrefetchService::RecordInterceptionMetrics when the same
-    search terms are visited again.
-  </summary>
-</histogram>
-
-<histogram
-    name="Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship"
-    enum="DuplicateNavigationServingResult" expires_after="2026-08-16">
-  <owner>lingqi@chromium.org</owner>
-  <owner>nhiroki@chromium.org</owner>
-  <owner>chrome-prerendering@google.com</owner>
-  <summary>
-    Tracks the prefetch serving statuses of two search terms that are the same
-    and are visited within 1s.
-
-    Recorded at SearchPrefetchService::RecordInterceptionMetrics when the same
-    search terms are visited again within 1s.
   </summary>
 </histogram>
 

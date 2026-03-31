@@ -15,7 +15,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "base/trace_event/named_trigger.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -193,34 +192,6 @@ bool IsSlowNetwork() {
   return false;
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(DuplicateNavigationServingResult)
-enum class DuplicateNavigationServingResult : uint8_t {
-  kNotServedThenNotServed = 0,
-  kNotServedThenServed = 1,
-  kServedThenNotServed = 2,
-  kServedThenServed = 3,
-  kMaxValue = kServedThenServed
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/omnibox/enums.xml:DuplicateNavigationServingResult)
-DuplicateNavigationServingResult ConvertToDuplicateNavigationServingResult(
-    bool first_navigation_served_from_prefetch_cache,
-    bool second_navigation_served_from_prefetch_cache) {
-  if (first_navigation_served_from_prefetch_cache &&
-      second_navigation_served_from_prefetch_cache) {
-    return DuplicateNavigationServingResult::kServedThenServed;
-  }
-  if (first_navigation_served_from_prefetch_cache &&
-      !second_navigation_served_from_prefetch_cache) {
-    return DuplicateNavigationServingResult::kServedThenNotServed;
-  }
-  if (!first_navigation_served_from_prefetch_cache &&
-      second_navigation_served_from_prefetch_cache) {
-    return DuplicateNavigationServingResult::kNotServedThenServed;
-  }
-  return DuplicateNavigationServingResult::kNotServedThenNotServed;
-}
 
 }  // namespace
 
@@ -271,29 +242,18 @@ void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
 
 struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
  public:
-  // Passing the SearchPrefetchService pointer is optional. If it is passed,
-  // the recorder will ask the service to track the search terms it in its dtor.
-  explicit SearchPrefetchServingReasonRecorder(
-      bool for_prerender,
-      SearchPrefetchService* service = nullptr)
-      : for_prerender_(for_prerender), service_(service) {}
+  explicit SearchPrefetchServingReasonRecorder(bool for_prerender)
+      : for_prerender_(for_prerender) {}
   ~SearchPrefetchServingReasonRecorder() {
     base::UmaHistogramEnumeration(
         for_prerender_
             ? "Omnibox.SearchPrefetch.PrefetchServingReason2.Prerender"
             : "Omnibox.SearchPrefetch.PrefetchServingReason2",
         reason_);
-    if (service_) {
-      service_->RecordInterceptionMetrics(search_terms_, reason_);
-    }
   }
 
   const bool for_prerender_ = false;
-  // A method of SearchPrefetchService holds this instance, so it is safe to
-  // refer to it with pointer.
-  raw_ptr<SearchPrefetchService> service_;
   SearchPrefetchServingReason reason_ = SearchPrefetchServingReason::kServed;
-  std::u16string search_terms_;
 };
 
 // static
@@ -597,11 +557,7 @@ SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {
   const GURL& navigation_url = tentative_resource_request.url;
   SearchPrefetchServingReasonRecorder recorder(
-      /*for_prerender=*/false,
-      // Not to track back/forward style navigation.
-      tentative_resource_request.load_flags & net::LOAD_SKIP_CACHE_VALIDATION
-          ? nullptr
-          : this);
+      /*for_prerender=*/false);
 
   auto iter =
       RetrieveSearchTermsInMemoryCache(tentative_resource_request, recorder);
@@ -846,7 +802,6 @@ bool SearchPrefetchService::OnNavigationLikely(
     return false;
   }
 
-  RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(search_terms);
 
   // Search history suggestions (those that are not also server suggestions)
   // don't have search term args. If search history suggestions are enabled,
@@ -1206,7 +1161,6 @@ SearchPrefetchService::RetrieveSearchTermsInMemoryCache(
     recorder.reason_ = SearchPrefetchServingReason::kNotDefaultSearchWithTerms;
     return prefetches_.end();
   }
-  recorder.search_terms_ = search_terms;
   const auto& iter = prefetches_.find(canonical_search_url);
 
   // Return early if there is no prefetch found before checking for other
@@ -1327,70 +1281,3 @@ void SearchPrefetchService::SetLoaderDestructionCallbackForTesting(
           std::move(streaming_url_loader_destruction_callback));
 }
 
-void SearchPrefetchService::RecordInterceptionMetrics(
-    const std::u16string& search_terms,
-    SearchPrefetchServingReason serving_status) {
-  // Do not track empty search terms.
-  if (search_terms.empty()) {
-    return;
-  }
-  switch (serving_status) {
-    // Do not track non-DSE navigations.
-    case SearchPrefetchServingReason::kSearchEngineNotValid:
-    case SearchPrefetchServingReason::kJavascriptDisabled:
-    case SearchPrefetchServingReason::kNotDefaultSearchWithTerms:
-      return;
-    case SearchPrefetchServingReason::kServed:
-    case SearchPrefetchServingReason::kNoPrefetch:
-    case SearchPrefetchServingReason::kPrefetchWasForDifferentOrigin:
-    case SearchPrefetchServingReason::kRequestFailed:
-    case SearchPrefetchServingReason::kNotServedOtherReason:
-    case SearchPrefetchServingReason::kPostReloadFormOrLink:
-      break;
-    case SearchPrefetchServingReason::kRequestInFlightNotReady:
-      NOTREACHED();
-  }
-  const bool is_served = serving_status == SearchPrefetchServingReason::kServed;
-  auto iter = search_terms_cache_.Get(search_terms);
-  if (iter != search_terms_cache_.end()) {
-    base::TimeDelta age = base::Time::Now() - iter->second.last_navigation_time;
-    base::UmaHistogramCustomTimes(
-        "Omnibox.SearchPrefetch.DuplicateSearchTermsAge", age,
-        base::Milliseconds(1), base::Hours(10), 100);
-    if (age < base::Milliseconds(30)) {
-      base::trace_event::EmitNamedTrigger("second-search-request-within30");
-    }
-    if (age < base::Seconds(1)) {
-      // Limit the age to 1 second to rule out the case where restarting chrome
-      // affects the distribution.
-      base::UmaHistogramCustomTimes(
-          "Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsAge", age,
-          base::Milliseconds(1), base::Seconds(1), 20);
-      base::UmaHistogramEnumeration(
-          "Omnibox.SearchPrefetch.Within1sDuplicateSearchTermsRelationship",
-          ConvertToDuplicateNavigationServingResult(
-              iter->second.served_from_prefetch_cache, is_served));
-    }
-  }
-  RealNaivigationServingResult result = {
-      .served_from_prefetch_cache = is_served,
-      .last_navigation_time = base::Time::Now()};
-  search_terms_cache_.Put(search_terms, std::move(result));
-  base::trace_event::EmitNamedTrigger("first-search-request");
-}
-
-void SearchPrefetchService::
-    RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(
-        const std::u16string& search_terms) {
-  // Do not affect the order.
-  const auto& iter = search_terms_cache_.Peek(search_terms);
-  if (iter != search_terms_cache_.end()) {
-    // For now we just want to track the very recent duplicate terms which might
-    // be a bug.
-    base::UmaHistogramCustomTimes(
-        "Omnibox.SearchPrefetch."
-        "DuplicateSearchTermsAgeAheadOfNavigationalPrefetch",
-        base::Time::Now() - iter->second.last_navigation_time, base::Milliseconds(1),
-        base::Minutes(2), 50);
-  }
-}
