@@ -99,6 +99,7 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   void NotifyModeChanged();
 
   void OnModeChanged();
+  void OnExpandOnHoverEnabledChanged();
 
   // Updates the SessionService with the current state (collapsed status and
   // uncollapsed width) for the associated session ID.
@@ -143,6 +144,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   bool is_vertical_tabs_enabled_ = false;
   int enable_state_lock_count_ = 0;
+
+  bool is_expand_on_hover_enabled_ = false;
 
   base::WeakPtrFactory<VerticalTabStripStateController> weak_ptr_factory_{this};
 };
