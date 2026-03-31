@@ -3366,6 +3366,26 @@ even if they fit the naming pattern. -->
   </token>
 </histogram>
 
+<histogram
+    name="Accessibility.ReadAnything.RendererRequestFor{Action}.IsFromObservedTree"
+    enum="Boolean" expires_after="2026-12-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether action requests received by the
+    ReadAnythingUntrustedPageHandler (e.g. link click or image download
+    requests) are from the currently observed tree. If not, this may be a
+    malicious request.
+  </summary>
+  <token key="Action">
+    <variant name="ImageDataDownload" summary="requested to download an image"/>
+    <variant name="LinkClick" summary="requested to click a link"/>
+    <variant name="ScrollToTargetNode"
+        summary="requested to scroll to a particular node"/>
+    <variant name="Selection" summary="requested text selection"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
     units="ms" expires_after="2026-08-02">
   <owner>abigailbklein@google.com</owner>

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -57,6 +58,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -239,6 +241,17 @@ InstallationState GetInstallationStateFromStatusCode(
   }
 }
 #endif
+
+constexpr std::string_view kRendererLinkRequestHistogram =
+    "Accessibility.ReadAnything.RendererRequestForLinkClick.IsFromObservedTree";
+constexpr std::string_view kRendererImageRequestHistogram =
+    "Accessibility.ReadAnything.RendererRequestForImageDataDownload."
+    "IsFromObservedTree";
+constexpr std::string_view kRendererScrollRequestHistogram =
+    "Accessibility.ReadAnything.RendererRequestForScrollToTargetNode."
+    "IsFromObservedTree";
+constexpr std::string_view kRendererSelectionRequestHistogram =
+    "Accessibility.ReadAnything.RendererRequestForSelection.IsFromObservedTree";
 
 }  // namespace
 
@@ -817,6 +830,38 @@ void ReadAnythingUntrustedPageHandler::OnCopy() {
   }
 }
 
+bool ReadAnythingUntrustedPageHandler::IsObservingTree(
+    const ui::AXTreeID& tree_id) const {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromAXTreeID(tree_id);
+  if (!rfh) {
+    return false;
+  }
+
+  content::WebContents* contents = !!pdf_observer_
+                                       ? pdf_observer_->web_contents()
+                                       : main_observer_->web_contents();
+
+  if (!contents) {
+    return false;
+  }
+
+  bool are_contents_pdf =
+      chrome_pdf::features::IsOopifPdfEnabled()
+          ? !!pdf::PdfViewerStreamManager::FromWebContents(contents)
+          : !!pdf_observer_;
+
+  if (!are_contents_pdf) {
+    return rfh == contents->GetPrimaryMainFrame();
+  }
+
+  content::RenderFrameHost* pdf_rfh =
+      chrome_pdf::features::IsOopifPdfEnabled()
+          ? pdf_frame_util::FindFullPagePdfExtensionHost(contents)
+          : pdf_frame_util::FindPdfChildFrame(contents->GetPrimaryMainFrame());
+  return pdf_rfh && rfh == pdf_rfh;
+}
+
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
     read_anything::mojom::LineSpacing line_spacing) {
   profile_->GetPrefs()->SetInteger(prefs::kAccessibilityReadAnythingLineSpacing,
@@ -921,6 +966,13 @@ void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
+  bool is_observing_tree = IsObservingTree(target_tree_id);
+  base::UmaHistogramBoolean(kRendererLinkRequestHistogram, is_observing_tree);
+  if (!is_observing_tree) {
+    VLOG(1) << "Received link click request for tree_id " << target_tree_id
+            << " which is not currently being observed";
+    return;
+  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kDoDefault;
@@ -932,6 +984,13 @@ void ReadAnythingUntrustedPageHandler::OnLinkClicked(
 void ReadAnythingUntrustedPageHandler::OnImageDataRequested(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
+  bool is_observing_tree = IsObservingTree(target_tree_id);
+  base::UmaHistogramBoolean(kRendererImageRequestHistogram, is_observing_tree);
+  if (!is_observing_tree) {
+    VLOG(1) << "Received image data request for tree_id " << target_tree_id
+            << " which is not currently being observed";
+    return;
+  }
   main_observer_->web_contents()->DownloadImageFromAxNode(
       target_tree_id, target_node_id,
       /*preferred_size=*/gfx::Size(),
@@ -949,6 +1008,7 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
+  CHECK(IsObservingTree(target_tree_id));
   bool download_was_successful =
       network::IsSuccessfulStatus(http_status_code) || http_status_code == 0;
 
@@ -968,6 +1028,13 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
 void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
     const ui::AXTreeID& target_tree_id,
     ui::AXNodeID target_node_id) {
+  bool is_observing_tree = IsObservingTree(target_tree_id);
+  base::UmaHistogramBoolean(kRendererScrollRequestHistogram, is_observing_tree);
+  if (!is_observing_tree) {
+    VLOG(1) << "Received scroll request for tree_id " << target_tree_id
+            << " which is not currently being observed";
+    return;
+  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.target_node_id = target_node_id;
@@ -1033,6 +1100,7 @@ void ReadAnythingUntrustedPageHandler::OnSpeechEngineStalled() {
 
 void ReadAnythingUntrustedPageHandler::PerformActionInTargetTree(
     const ui::AXActionData& data) {
+  CHECK(IsObservingTree(data.target_tree_id));
   ui::AXActionHandlerBase* handler =
       ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
           data.target_tree_id);
@@ -1048,6 +1116,14 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
     int anchor_offset,
     ui::AXNodeID focus_node_id,
     int focus_offset) {
+  bool is_observing_tree = IsObservingTree(target_tree_id);
+  base::UmaHistogramBoolean(kRendererSelectionRequestHistogram,
+                            is_observing_tree);
+  if (!is_observing_tree) {
+    VLOG(1) << "Received selection request for tree_id " << target_tree_id
+            << " which is not currently being observed";
+    return;
+  }
   ui::AXActionData action_data;
   action_data.target_tree_id = target_tree_id;
   action_data.action = ax::mojom::Action::kSetSelection;
@@ -1055,13 +1131,8 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
   action_data.anchor_offset = anchor_offset;
   action_data.focus_node_id = focus_node_id;
   action_data.focus_offset = focus_offset;
-  ui::AXActionHandlerBase* handler =
-      ui::AXActionHandlerRegistry::GetInstance()->GetActionHandler(
-          target_tree_id);
-  if (!handler) {
-    return;
-  }
-  handler->PerformAction(action_data);
+
+  PerformActionInTargetTree(action_data);
 }
 
 void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {

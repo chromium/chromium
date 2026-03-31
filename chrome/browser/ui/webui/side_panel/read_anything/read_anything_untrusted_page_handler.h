@@ -293,6 +293,10 @@ class ReadAnythingUntrustedPageHandler :
                       content::WebContents* old_contents,
                       content::WebContents* new_contents);
 
+  // Used to verify that an incoming action request is for the currently
+  // observed tree. If it's not, it may be a malicious request.
+  bool IsObservingTree(const ui::AXTreeID& tree_id) const;
+
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
@@ -300,7 +304,6 @@ class ReadAnythingUntrustedPageHandler :
   void GetDependencyParserModel(
       GetDependencyParserModelCallback callback) override;
   void OnCopy() override;
-
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void ScrollToTargetNode(const ui::AXTreeID& target_tree_id,

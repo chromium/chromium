@@ -57,6 +57,8 @@
 #include "ui/accessibility/mojom/ax_event.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_id.mojom.h"
 #include "ui/accessibility/mojom/ax_tree_update.mojom.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/gfx/geometry/size.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/bind.h"
@@ -192,18 +194,6 @@ class TestReadAnythingUntrustedPageHandler
             test_web_ui,
             /*use_screen_ai_service=*/false) {}
 #endif
-  void OnImageDataRequested(const ui::AXTreeID& target_tree_id,
-                            ui::AXNodeID target_node_id) override {
-    OnImageDataDownloaded(target_tree_id, target_node_id, /*id=*/0,
-                          /*http_status_code=*/0, GURL(),
-                          /*bitmaps=*/{test_bitmap_},
-                          /*sizes=*/{gfx::Size(10, 10)});
-  }
-
-  void SetTestBitmap(SkBitmap bitmap) { test_bitmap_ = bitmap; }
-
- private:
-  SkBitmap test_bitmap_;
 };
 
 class FakeTtsEngineDelegate : public content::TtsEngineDelegate {
@@ -1050,16 +1040,39 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
                   base::DictValue().Set(kLang1, kVoice).Set(kLang2, kVoice)));
 }
 
-IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest, BadImageData) {
-  auto test_handler_u_ptr = CreateHandler();
-  auto* test_handler = test_handler_u_ptr.get();
-  handler_ = std::move(test_handler_u_ptr);
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnImageDataRequested_IgnoresBadTreeId) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
   auto tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXNodeID node_id = 1;
-  SkBitmap bitmap;
-  test_handler->SetTestBitmap(bitmap);
+
   OnImageDataRequested(tree_id, node_id);
-  EXPECT_CALL(page_, OnImageDataDownloaded(_, _, _)).Times(0);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload."
+      "IsFromObservedTree",
+      false, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
+                       OnImageDataRequested_WithGoodTreeId) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/downloads/large_image.html")));
+  handler_ = CreateHandler();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto tree_id = web_contents->GetPrimaryMainFrame()->GetAXTreeID();
+
+  OnImageDataRequested(tree_id, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.RendererRequestForImageDataDownload."
+      "IsFromObservedTree",
+      true, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerTest,
