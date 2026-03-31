@@ -202,6 +202,28 @@ class CONTENT_EXPORT PrefetchRequest final {
       bool should_disable_block_until_head_timeout = false,
       bool should_bypass_http_cache = false);
 
+  // For browser-initiated prefetch that doesn't depend on web
+  // contents and main thread.
+  static std::unique_ptr<const PrefetchRequest>
+  CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
+      base::WeakPtr<BrowserContext> browser_context,
+      const GURL& url,
+      const PrefetchType& prefetch_type,
+      const std::string& embedder_histogram_suffix,
+      const blink::mojom::Referrer& referrer,
+      bool javascript_enabled,
+      const std::optional<url::Origin>& referring_origin,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+      std::optional<PrefetchPriority> priority,
+      base::WeakPtr<PreloadingAttempt> attempt = nullptr,
+      const net::HttpRequestHeaders& additional_headers = {},
+      std::unique_ptr<PrefetchRequestStatusListener> request_status_listener =
+          nullptr,
+      base::TimeDelta ttl = PrefetchContainerDefaultTtlInPrefetchService(),
+      bool should_append_variations_header = true,
+      bool should_disable_block_until_head_timeout = false,
+      bool should_bypass_http_cache = false);
+
   // Use `Create*()` above instead.
   PrefetchRequest(
       base::PassKey<PrefetchRequest>,

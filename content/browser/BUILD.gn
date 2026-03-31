@@ -1605,6 +1605,8 @@ source_set("browser") {
     "preloading/prefetch/contamination_delay_navigation_throttle.h",
     "preloading/prefetch/no_vary_search_helper.cc",
     "preloading/prefetch/no_vary_search_helper.h",
+    "preloading/prefetch/pre_prefetch_container.cc",
+    "preloading/prefetch/pre_prefetch_container.h",
     "preloading/prefetch/pre_prefetch_handle_impl.cc",
     "preloading/prefetch/pre_prefetch_handle_impl.h",
     "preloading/prefetch/pre_prefetch_service_impl.cc",

@@ -611,7 +611,10 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 // This helper method is used to create consistent navigational
 // `ResourceRequest`s (exposed to the network service and ServiceWorker fetch
 // handlers) and make them look similar, regardless of whether they are created
-// for prefetches or non-prefetch navigations.
+// for prefetches or non-prefetch navigations. Also note that this is called
+// from non-UI thread when pre-prefetching. (Please see
+// //content/browser/preloading/prefetch/pre_prefetch_container.h for more
+// details.)
 std::unique_ptr<network::ResourceRequest> CreateResourceRequestForNavigation(
     const std::string& method,
     const GURL& url,
