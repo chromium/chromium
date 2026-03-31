@@ -6,21 +6,35 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/layout/box_layout.h"
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "ui/views/border.h"
+#include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 const int kBubbleRowIconSize = 16;
 const int kRedirectIconSize = 20;
+// Size of the circle highlight around the redirect icon.
+const int kRedirectIconRowHeight = 28;
+const int kRowIconTopMargin = 6;
+const int kLabelsContainerTopMargin = 4;
+const int kLayoutInteriorMarginTop = 4;
+const int kLayoutInteriorMarginRight = 8;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
   if (tabs::GlicActorTaskIconManager::RequiresAttention(state)) {
@@ -76,71 +90,143 @@ std::u16string GetRowSubtitle(actor::ActorTask::State state, bool has_tab) {
 ActorTaskListBubbleRowButton::ActorTaskListBubbleRowButton(
     views::Button::PressedCallback on_row_clicked,
     actor::ActorTask::State state,
-    std::u16string title,
+    std::u16string title_text,
     bool requires_processing,
     bool has_tab)
-    : RichHoverButton(std::move(on_row_clicked),
-                      /*icon=*/
-                      ui::ImageModel::FromVectorIcon(
-                          GetRowIcon(state),
-                          GetRowColor(state, has_tab, requires_processing),
-                          kBubbleRowIconSize),
-                      /*title_text=*/title,
-                      /*subtitle_text=*/GetRowSubtitle(state, has_tab)),
-      has_tab_(has_tab),
-      requires_processing_(requires_processing) {
-  SetSubtitleTextStyleAndColor(
-      /*default_style*/ views::style::STYLE_BODY_5,
-      GetRowColor(state, has_tab, requires_processing));
-  if (subtitle()) {
-    // TODO(crbug.com/460121008): Revisit when investigating a custom layout for
-    // the row button. Hovering over the subtitle should also hover the row.
-    subtitle()->SetCanProcessEventsWithinSubtree(false);
-  }
-  MaybeSetDisabledRowUi();
-}
+    : has_tab_(has_tab), requires_processing_(requires_processing) {
+  SetCallback(std::move(on_row_clicked));
+  SetNotifyEnterExitOnChild(true);
 
-void ActorTaskListBubbleRowButton::StateChanged(ButtonState old_state) {
-  // Disable hover for "Tab closed" row after its first appearance.
-  if (IsProcessedTabClosedRow(has_tab_, requires_processing_)) {
-    views::LabelButton::StateChanged(old_state);
-  } else {
-    HoverButton::StateChanged(old_state);
-  }
+  auto insets = ChromeLayoutProvider::Get()->GetInsetsMetric(
+      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
+  const int horizontal_spacing =
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RICH_HOVER_BUTTON_ICON_HORIZONTAL) /
+      2;
+
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+      // Top and right interior margins are adjusted to accommodate the redirect
+      // icon's built-in margins for the hover highlight. This also requires the
+      // row icon and labels container to slightly adjust their margins as well.
+      .SetInteriorMargin(gfx::Insets::TLBR(
+          insets.top() - kLayoutInteriorMarginTop, insets.left(),
+          insets.bottom(), insets.right() - kLayoutInteriorMarginRight));
+
+  row_icon_ = AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          GetRowIcon(state), GetRowColor(state, has_tab, requires_processing),
+          kBubbleRowIconSize)));
+  row_icon_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kRowIconTopMargin, horizontal_spacing, 0,
+                        horizontal_spacing));
+
+  auto* labels_container =
+      AddChildView(std::make_unique<views::FlexLayoutView>());
+  labels_container->SetOrientation(views::LayoutOrientation::kVertical);
+  labels_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  labels_container->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kLabelsContainerTopMargin, horizontal_spacing, 0,
+                        horizontal_spacing));
+
+  title_ = labels_container->AddChildView(
+      std::make_unique<views::Label>(title_text));
+  title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+
+  subtitle_ = labels_container->AddChildView(
+      std::make_unique<views::Label>(GetRowSubtitle(state, has_tab)));
+  subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
+  subtitle_->SetEnabledColor(GetRowColor(state, has_tab, requires_processing));
+
+  redirect_icon_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
+      base::BindRepeating(&ActorTaskListBubbleRowButton::OnRedirectIconPressed,
+                          base::Unretained(this)),
+      vector_icons::kLaunchIcon, kRedirectIconSize, ui::kColorMenuIcon,
+      ui::kColorMenuIcon, ui::kColorMenuIcon));
+
+  // Set the preferred size on the button directly to accommodate the circle
+  // highlight
+  redirect_icon_->SetPreferredSize(
+      gfx::Size(kRedirectIconRowHeight, kRedirectIconRowHeight));
+  views::InstallCircleHighlightPathGenerator(redirect_icon_.get());
+  redirect_icon_->SetVisible(false);
+  redirect_icon_->SetProperty(views::kMarginsKey,
+                              gfx::Insets::VH(0, horizontal_spacing));
+
+  // Add the hover highlight for the button row.
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetBaseColor(kColorHoverButtonBackgroundHovered);
+  views::InkDrop::Get(this)->SetVisibleOpacity(1.0f);
+  views::InkDrop::Get(this)->SetHighlightOpacity(1.0f);
+  views::InstallRectHighlightPathGenerator(this);
+
+  UpdateAccessibleName();
+  MaybeSetDisabledRowUi();
 }
 
 void ActorTaskListBubbleRowButton::MaybeSetDisabledRowUi() {
   // Update UI for "Tab closed" row after its first appearance.
   if (IsProcessedTabClosedRow(has_tab_, requires_processing_)) {
     SetEnabled(false);
-    SetTitleTextStyleAndColor(
-        /*default_style*/ views::style::STYLE_BODY_3_MEDIUM,
-        ui::kColorSysStateDisabled);
+    if (title_) {
+      title_->SetEnabledColor(ui::kColorSysStateDisabled);
+    }
     views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
 }
 
 ActorTaskListBubbleRowButton::~ActorTaskListBubbleRowButton() = default;
 
+void ActorTaskListBubbleRowButton::OnRedirectIconPressed(
+    const ui::Event& event) {
+  NotifyClick(event);
+}
+
 void ActorTaskListBubbleRowButton::OnMouseEntered(const ui::MouseEvent& event) {
-  View::OnMouseEntered(event);
+  Button::OnMouseEntered(event);
   // If the tab is closed, we never want to render the redirect icon.
   if (!has_tab_) {
     return;
   }
   SetState(Button::STATE_HOVERED);
-  SetActionIcon(ui::ImageModel::FromVectorIcon(
-      vector_icons::kLaunchIcon, ui::kColorMenuIcon, kRedirectIconSize));
+  redirect_icon_->SetVisible(true);
 }
 
 void ActorTaskListBubbleRowButton::OnMouseExited(const ui::MouseEvent& event) {
-  View::OnMouseExited(event);
+  Button::OnMouseExited(event);
   // If the tab is closed, we never want to render the redirect icon.
   if (!has_tab_) {
     return;
   }
   SetState(Button::STATE_NORMAL);
-  SetActionIcon(ui::ImageModel());
+  redirect_icon_->SetVisible(false);
+}
+
+std::u16string_view ActorTaskListBubbleRowButton::GetSubtitleText() const {
+  return subtitle_ ? subtitle_->GetText() : std::u16string_view();
+}
+
+std::u16string_view ActorTaskListBubbleRowButton::GetTitleText() const {
+  return title_ ? title_->GetText() : std::u16string_view();
+}
+
+void ActorTaskListBubbleRowButton::UpdateAccessibleName() {
+  std::u16string_view subtitle_text = GetSubtitleText();
+  std::u16string_view title_text = GetTitleText();
+
+  Button::GetViewAccessibility().SetName(
+      subtitle_text.empty() ? std::u16string(title_text)
+                            : base::StrCat({title_text, u", ", subtitle_text}));
 }
 
 BEGIN_METADATA(ActorTaskListBubbleRowButton)

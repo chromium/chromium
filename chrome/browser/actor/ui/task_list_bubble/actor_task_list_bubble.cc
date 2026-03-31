@@ -20,8 +20,7 @@
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
@@ -102,8 +101,8 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
     const absl::flat_hash_map<actor::TaskId, bool>& task_list,
     base::RepeatingCallback<void(actor::TaskId)> on_row_clicked) {
   std::unique_ptr<views::View> contents_view =
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kVertical)
           .SetProperty(views::kElementIdentifierKey, kActorTaskListBubbleView)
           .Build();
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_controller.h"
+#include "chrome/browser/actor/ui/task_list_bubble/actor_task_list_bubble_row_button.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -133,12 +134,12 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasks) {
       GetContentViewInActorTaskListBubble(std::move(actor_task_list_bubble));
 
   EXPECT_EQ(2u, content_view->children().size());
-  EXPECT_EQ(u"Test Task",
-            static_cast<RichHoverButton*>(content_view->children().front())
-                ->GetTitleText());
-  EXPECT_EQ(u"Test Task",
-            static_cast<RichHoverButton*>(content_view->children().back())
-                ->GetTitleText());
+  EXPECT_EQ(u"Test Task", static_cast<ActorTaskListBubbleRowButton*>(
+                              content_view->children().front())
+                              ->GetTitleText());
+  EXPECT_EQ(u"Test Task", static_cast<ActorTaskListBubbleRowButton*>(
+                              content_view->children().back())
+                              ->GetTitleText());
 }
 
 // TODO(crbug.com/469817191): Handle non-existent task_ids alongside completed
@@ -172,12 +173,13 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithClosedTabTask) {
 
   // Check for correct subtitle
   EXPECT_EQ(1u, content_view->children().size());
-  EXPECT_EQ(u"Tab closed",
-            static_cast<RichHoverButton*>(content_view->children().front())
-                ->GetSubtitleText());
+  EXPECT_EQ(u"Tab closed", static_cast<ActorTaskListBubbleRowButton*>(
+                               content_view->children().front())
+                               ->GetSubtitleText());
   // Check for disabled state correctly set (requires_processing is set to
   // false)
-  EXPECT_FALSE(static_cast<RichHoverButton*>(content_view->children().front())
+  EXPECT_FALSE(static_cast<ActorTaskListBubbleRowButton*>(
+                   content_view->children().front())
                    ->GetEnabled());
 }
 
@@ -215,22 +217,26 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
 
   // Check for correct subtitles.
   EXPECT_EQ(4u, content_view->children().size());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
-            static_cast<RichHoverButton*>(content_view->children().at(0))
-                ->GetSubtitleText());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
-            static_cast<RichHoverButton*>(content_view->children().at(1))
-                ->GetSubtitleText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(0))
+          ->GetSubtitleText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(1))
+          ->GetSubtitleText());
   // Last tab is removed on Stop, so the finished task will have a tab closed
   // subtitle.
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
-            static_cast<RichHoverButton*>(content_view->children().at(2))
-                ->GetSubtitleText());
-  EXPECT_EQ(l10n_util::GetStringUTF16(
-                IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
-            static_cast<RichHoverButton*>(content_view->children().at(3))
-                ->GetSubtitleText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(2))
+          ->GetSubtitleText());
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
+      static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(3))
+          ->GetSubtitleText());
 }
