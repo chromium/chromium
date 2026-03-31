@@ -46,6 +46,7 @@ enum class ProfilerThreadType {
   // Display Compositor GPU thread, which is used when DrDC is enabled.
   kDisplayCompositorGpu,
 
+  kMin = kUnknown,
   kMax = kDisplayCompositorGpu,
 };
 
