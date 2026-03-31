@@ -227,11 +227,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
 // the intermediate IO-thread hop.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSlimDirectReceiverIpc);
 
-// When enabled, the overscroll behavior will be respected on all scroll
-// containers.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kOverscrollBehaviorRespectedOnAllScrollContainers);
-
 // When enabled, the overscroll effect will display on non-root scrollers.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
 

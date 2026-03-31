@@ -1420,10 +1420,6 @@ bool PaintLayerScrollableArea::HasVerticalOverflow() const {
 }
 
 bool PaintLayerScrollableArea::CanPropagateScroll() const {
-  if (!base::FeatureList::IsEnabled(
-          ::features::kOverscrollBehaviorRespectedOnAllScrollContainers)) {
-    return true;
-  }
   auto* box = GetLayoutBox();
   // TODO(crbug.com/425353152): Remove the visibility check.
   if (!box || !box->IsScrollContainer() ||
