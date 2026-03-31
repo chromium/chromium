@@ -612,6 +612,12 @@ public final class ToolbarTabletUnitTest {
         CaptureReadinessResult result = mToolbarTablet.isReadyForTextureCapture();
         Assert.assertFalse(result.isReady);
         Assert.assertEquals(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS, result.blockReason);
+        mToolbarTablet.onUrlFocusChange(/* hasFocus= */ false);
+
+        doReturn(true).when(mLocationBar).isUrlBarFocusedWithoutAnimation();
+        result = mToolbarTablet.isReadyForTextureCapture();
+        Assert.assertFalse(result.isReady);
+        Assert.assertEquals(TopToolbarBlockCaptureReason.URL_BAR_HAS_FOCUS, result.blockReason);
     }
 
     @Test
