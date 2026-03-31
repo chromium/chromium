@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
@@ -125,6 +126,7 @@ class RTree {
     uint16_t level = 0;
     std::array<Branch, kMaxChildren> children;
 
+    Node() = default;
     explicit Node(uint16_t level) : level(level) {}
   };
 
@@ -141,8 +143,10 @@ class RTree {
                                       const ResultFunctor& result_handler);
 
   // Consumes the input array.
-  Branch BuildRecursive(std::vector<Branch>& branches, uint16_t level);
-  Node* AllocateNodeAtLevel(uint16_t level);
+  Node* AllocateNodeAtLevel(uint16_t level, size_t& nodes_size);
+  Branch BuildRecursive(std::vector<Branch>& branches,
+                        uint16_t level,
+                        size_t& nodes_size);
 
   static void GetAllBoundsRecursive(const Node& node,
                                     std::map<T, gfx::Rect>* results);
@@ -150,7 +154,7 @@ class RTree {
   // This is the count of data elements (rather than total nodes in the
   // tree)
   size_t num_data_elements_ = 0u;
-  std::vector<Node> nodes_;
+  base::HeapArray<Node> nodes_;
   Branch root_;
 
   // If false, the rtree encountered overflow does not have reliable bounds.
@@ -190,47 +194,56 @@ void RTree<T>::Build(size_t item_count,
   }
 
   num_data_elements_ = branches.size();
+  size_t nodes_size = 0;
   if (num_data_elements_ == 1u) {
-    nodes_.reserve(1);
-    Node* node = AllocateNodeAtLevel(0);
+    // Node is not trivially constructible (because gfx::Rect is not), so we
+    // cannot use base::HeapArray::Uninit.
+    nodes_ = base::HeapArray<Node>::WithSize(1);
+    Node* node = AllocateNodeAtLevel(0, nodes_size);
     root_.subtree = node;
     root_.bounds = branches[0].bounds;
     node->num_children = 1;
     node->children[0] = std::move(branches[0]);
   } else if (num_data_elements_ > 1u) {
-    // Determine a precise upper bound on the number of nodes to prevent
-    // reallocations. This is a bottom-up calculation that determines the number
-    // of nodes required at each level of the tree.
+    // Determine a precise upper bound on the number of nodes. This is a
+    // bottom-up calculation that determines the number of nodes required at
+    // each level of the tree.
     //
     // The total node count is the sum of a geometric series that converges to
     // N / (kMaxChildren - 1). Since N is the size of a vector, and each element
     // is at least 24 bytes, the sum will never overflow SIZE_MAX.
     //
-    // If this calculation is ever wrong, the CHECK_GT in AllocateNodeAtLevel
-    // will catch it before a reallocation invalidates node pointers.
+    // If this calculation is ever wrong, the bounds check in
+    // AllocateNodeAtLevel will catch it.
     size_t node_count = 0;
     for (size_t n = num_data_elements_; n > 1;) {
       n = (n + kMaxChildren - 1) / kMaxChildren;
       node_count += n;
     }
-    nodes_.reserve(node_count);
-    root_ = BuildRecursive(branches, 0);
+    // Node is not trivially constructible (because gfx::Rect is not), so we
+    // cannot use base::HeapArray::Uninit.
+    nodes_ = base::HeapArray<Node>::WithSize(node_count);
+    root_ = BuildRecursive(branches, 0, nodes_size);
   }
-  // We should've wasted at most kMinChildren nodes.
-  DCHECK_LE(nodes_.capacity() - nodes_.size(), kMinChildren);
+  // We should've initialized exactly the number of nodes we calculated.
+  CHECK_EQ(nodes_.size(), nodes_size);
 }
 
 template <typename T>
-auto RTree<T>::AllocateNodeAtLevel(uint16_t level) -> Node* {
-  // We don't allow reallocations, since that would invalidate references to
-  // existing nodes, so verify that capacity > size.
-  CHECK_GT(nodes_.capacity(), nodes_.size());
-  return &nodes_.emplace_back(level);
+auto RTree<T>::AllocateNodeAtLevel(uint16_t level, size_t& nodes_size)
+    -> Node* {
+  // HeapArray does not support reallocations, so pointers to nodes are stable
+  // for the lifetime of the RTree. HeapArray's operator[] will CHECK if we
+  // exceed the pre-allocated capacity.
+  Node& node = nodes_[nodes_size++];
+  node = Node(level);
+  return &node;
 }
 
 template <typename T>
-auto RTree<T>::BuildRecursive(std::vector<Branch>& branches, uint16_t level)
-    -> Branch {
+auto RTree<T>::BuildRecursive(std::vector<Branch>& branches,
+                              uint16_t level,
+                              size_t& nodes_size) -> Branch {
   // Only one branch.  It will be the root.
   if (branches.size() == 1) {
     return std::move(branches[0]);
@@ -268,7 +281,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch>& branches, uint16_t level)
         remainder -= kMaxChildren - kMinChildren;
       }
     }
-    Node* node = AllocateNodeAtLevel(level);
+    Node* node = AllocateNodeAtLevel(level, nodes_size);
     node->num_children = 1;
     node->children[0] = branches[current_branch];
 
@@ -308,7 +321,7 @@ auto RTree<T>::BuildRecursive(std::vector<Branch>& branches, uint16_t level)
     ++new_branch_index;
   }
   branches.resize(new_branch_index);
-  return BuildRecursive(branches, level + 1);
+  return BuildRecursive(branches, level + 1, nodes_size);
 }
 
 template <typename T>
