@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 /**
@@ -50,6 +51,7 @@ public class ActorPictureInPictureController
 
     private static final String TAG = "ActorPiPController";
     private static final int REQUEST_CODE_PAUSE_RESUME = 101;
+    private static final long PIP_EXIT_DELAY_MS = TimeUnit.HOURS.toMillis(1);
 
     private final ComponentActivity mActivity;
     private final Supplier<Profile> mProfileSupplier;
@@ -57,9 +59,13 @@ public class ActorPictureInPictureController
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Runnable mHideTabSwitcherCallback;
     private final BasicPictureInPicture mPipDelegate;
+    private final android.os.Handler mHandler =
+            new android.os.Handler(android.os.Looper.getMainLooper());
+
     private @Nullable ActorKeyedService mActorService;
     private boolean mInActorPiP;
     private @Nullable ActorPictureInPictureOverlayCoordinator mPipOverlayCoordinator;
+    private @Nullable Runnable mExitPipRunnable;
 
     /**
      * @param activity The ComponentActivity.
@@ -153,20 +159,50 @@ public class ActorPictureInPictureController
     public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
         // TODO(crbug.com/491976823): Store active task ID and clear on task complete.
         updatePipState();
-        checkAndExitPipIfFinished();
+
+        ActorKeyedService service = maybeGetActorService();
+        ActorTask task = (service != null) ? service.getTask(taskId) : null;
+
+        if (task != null && task.isCompleted()) {
+            checkAndExitPipIfFinished();
+        } else if (shouldEnterPip()) {
+            cancelPendingExit();
+        }
+
         if (mInActorPiP && mPipOverlayCoordinator != null) {
             updatePipOverlayStatus(newState);
         }
     }
 
     private void checkAndExitPipIfFinished() {
-        if (!mInActorPiP || shouldEnterPip()) return;
+        if (!mInActorPiP) return;
 
-        Log.i(TAG, "No active tasks remaining. Exiting PiP.");
-        mInActorPiP = false;
-        hideOverlay();
-        // Standard way to exit PiP programmatically
-        mActivity.moveTaskToBack(true);
+        if (shouldEnterPip()) {
+            cancelPendingExit();
+            return;
+        }
+
+        if (mExitPipRunnable != null) return;
+
+        Log.i(TAG, "No active tasks remaining. Scheduling PiP exit in 1 hour.");
+        mExitPipRunnable =
+                () -> {
+                    mExitPipRunnable = null;
+                    if (mInActorPiP && !shouldEnterPip()) {
+                        Log.i(TAG, "Exiting PiP after 1 hour delay.");
+                        mInActorPiP = false;
+                        hideOverlay();
+                        mActivity.moveTaskToBack(true);
+                    }
+                };
+        mHandler.postDelayed(mExitPipRunnable, PIP_EXIT_DELAY_MS);
+    }
+
+    private void cancelPendingExit() {
+        if (mExitPipRunnable != null) {
+            mHandler.removeCallbacks(mExitPipRunnable);
+            mExitPipRunnable = null;
+        }
     }
 
     void updatePipOverlayStatus(@ActorTaskState int newState) {
@@ -271,6 +307,7 @@ public class ActorPictureInPictureController
         maybeSelectActingTabOnExpand();
         hideOverlay();
         updatePipState();
+        cancelPendingExit();
     }
 
     private void maybeSelectActingTabOnExpand() {
@@ -289,6 +326,7 @@ public class ActorPictureInPictureController
 
     /** Called when the Activity is destroyed. */
     public void destroy() {
+        cancelPendingExit();
         if (mPipOverlayCoordinator != null) {
             mPipOverlayCoordinator.destroy();
             mPipOverlayCoordinator = null;
