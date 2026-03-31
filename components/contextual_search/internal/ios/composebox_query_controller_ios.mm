@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/omnibox/composebox/ios/composebox_query_controller_ios.h"
+#import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
 
 #import <UIKit/UIKit.h>
 
@@ -11,9 +11,9 @@
 
 #import "base/task/bind_post_task.h"
 #import "base/task/thread_pool.h"
+#import "components/contextual_search/internal/ios/composebox_image_helper_ios.h"
 #import "components/lens/lens_bitmap_processing.h"
 #import "components/lens/ref_counted_lens_overlay_client_logs.h"
-#import "components/omnibox/composebox/ios/composebox_image_helper_ios.h"
 #import "third_party/lens_server_proto/lens_overlay_server.pb.h"
 
 void ComposeboxQueryControllerIOS::CreateImageUploadRequest(

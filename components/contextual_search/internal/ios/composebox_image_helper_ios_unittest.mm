@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/omnibox/composebox/ios/composebox_image_helper_ios.h"
+#import "components/contextual_search/internal/ios/composebox_image_helper_ios.h"
 
 #import <UIKit/UIKit.h>
 
