@@ -5768,13 +5768,10 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
 
   // All images should be registered on the pending layer.
   SetupPendingTree(raster_source, gfx::Size(), Region(gfx::Rect(layer_bounds)));
-  auto* controller = host_impl()->image_animation_controller();
-  EXPECT_EQ(controller->GetDriversForTesting(image1.stable_id())
-                .count(pending_layer()),
-            1u);
-  EXPECT_EQ(controller->GetDriversForTesting(image2.stable_id())
-                .count(pending_layer()),
-            1u);
+  EXPECT_TRUE(
+      host_impl()->GatherImageAnimationState().contains(image1.stable_id()));
+  EXPECT_TRUE(
+      host_impl()->GatherImageAnimationState().contains(image2.stable_id()));
 
   // Make only the first image visible and verify that only this image is
   // animated.
@@ -5786,12 +5783,10 @@ TEST_F(LegacySWPictureLayerImplTest, AnimatedImages) {
   // Now activate and make sure the active layer is registered as well.
   ActivateTree();
   active_layer()->SetVisibleLayerRectForTesting(visible_rect);
-  EXPECT_EQ(controller->GetDriversForTesting(image1.stable_id())
-                .count(active_layer()),
-            1u);
-  EXPECT_EQ(controller->GetDriversForTesting(image2.stable_id())
-                .count(active_layer()),
-            1u);
+  base::flat_map<PaintImage::Id, bool> animation_state;
+  host_impl()->active_tree()->AnnotateAnimatedImages(animation_state);
+  EXPECT_TRUE(animation_state.contains(image1.stable_id()));
+  EXPECT_TRUE(animation_state.contains(image2.stable_id()));
 
   // Once activated, only the active layer should drive animations for these
   // images. Since DrawProperties are not updated on the recycle tree, it has

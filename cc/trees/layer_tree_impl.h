@@ -615,6 +615,9 @@ class CC_EXPORT LayerTreeImpl {
     return layer_list_.PictureLayersWithWorklets();
   }
 
+  void NotifyLayerHasAnimatedImagesChanged(PictureLayerImpl* layer,
+                                           bool has_animated_images);
+  void AnnotateAnimatedImages(base::flat_map<PaintImage::Id, bool>&) const;
   void NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
                                           bool has_worklets);
 

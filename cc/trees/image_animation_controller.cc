@@ -54,46 +54,32 @@ void ImageAnimationController::UpdateAnimatedImage(
   animation_state.UpdateMetadata(data, animation_state_map_);
 }
 
-void ImageAnimationController::RegisterAnimationDriver(
-    PaintImage::Id paint_image_id,
-    AnimationDriver* driver) {
-  auto it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end());
-  it->second.AddDriver(driver);
-  registered_animations_.insert(paint_image_id);
-}
-
-void ImageAnimationController::UnregisterAnimationDriver(
-    PaintImage::Id paint_image_id,
-    AnimationDriver* driver) {
-  auto it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end());
-  it->second.RemoveDriver(driver);
-  if (!it->second.has_drivers())
-    registered_animations_.erase(paint_image_id);
-}
-
 bool ImageAnimationController::IsRegistered(PaintImage::Id paint_image_id) {
   return animation_state_map_.contains(paint_image_id);
 }
 
 const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    const base::flat_map<PaintImage::Id, bool>& should_animate_map) {
   TRACE_EVENT1("cc", "ImageAnimationController::AnimateImagesForSyncTree",
                "frame_time_from_now",
                (base::TimeTicks::Now() - args.frame_time).InMillisecondsF());
   DCHECK(images_animated_on_sync_tree_.empty());
 
   scheduler_.WillAnimate();
+
   std::optional<base::TimeTicks> next_invalidation_time;
+  for (auto& entry : animation_state_map_) {
+    PaintImage::Id image_id = entry.first;
+    AnimationState& state = entry.second;
+    auto should_animate_it = should_animate_map.find(image_id);
+    if (should_animate_it == should_animate_map.end()) {
+      // std::nullopt informs the state that it has no drivers.
+      state.UpdateStateFromDrivers(std::nullopt);
+    } else {
+      state.UpdateStateFromDrivers(should_animate_it->second);
+    }
 
-  for (auto id : registered_animations_) {
-    auto it = animation_state_map_.find(id);
-    CHECK(it != animation_state_map_.end());
-    AnimationState& state = it->second;
-
-    // Is anyone still interested in animating this image?
-    state.UpdateStateFromDrivers();
     if (!state.ShouldAnimate()) {
       TRACE_EVENT_INSTANT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                            "ShouldAnimate - early out",
@@ -104,7 +90,7 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     // If we were able to advance this animation, invalidate it on the sync
     // tree.
     if (state.AdvanceFrame(args, enable_image_animation_resync_)) {
-      images_animated_on_sync_tree_.insert(id);
+      images_animated_on_sync_tree_.insert(image_id);
     }
 
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -127,29 +113,37 @@ const PaintImageIdFlatSet& ImageAnimationController::AnimateForSyncTree(
     }
   }
 
-  if (next_invalidation_time.has_value())
+  if (next_invalidation_time.has_value()) {
     scheduler_.Schedule(next_invalidation_time.value());
-  else
+  } else {
     scheduler_.Cancel();
+  }
 
   return images_animated_on_sync_tree_;
 }
 
-void ImageAnimationController::UpdateStateFromDrivers() {
-  TRACE_EVENT0("cc", "UpdateStateFromAnimationDrivers");
+void ImageAnimationController::UpdateStateFromDrivers(
+    const base::flat_map<PaintImage::Id, bool>& should_animate_map) {
+  TRACE_EVENT0("cc", "ImageAnimationController::UpdateState");
 
   std::optional<base::TimeTicks> next_invalidation_time;
-  for (auto image_id : registered_animations_) {
-    auto it = animation_state_map_.find(image_id);
-    CHECK(it != animation_state_map_.end());
-    AnimationState& state = it->second;
-    state.UpdateStateFromDrivers();
+  for (auto& entry : animation_state_map_) {
+    PaintImage::Id image_id = entry.first;
+    AnimationState& state = entry.second;
+    auto should_animate_it = should_animate_map.find(image_id);
+    if (should_animate_it == should_animate_map.end()) {
+      // std::nullopt informs the state that it has no drivers.
+      state.UpdateStateFromDrivers(std::nullopt);
+    } else {
+      state.UpdateStateFromDrivers(should_animate_it->second);
+    }
 
     // Note that by not updating the |next_invalidation_time| from this image
     // here, we will cancel any pending invalidation scheduled for this image
     // when updating the |scheduler_| at the end of this loop.
-    if (!state.ShouldAnimate())
+    if (!state.ShouldAnimate()) {
       continue;
+    }
 
     if (!next_invalidation_time.has_value()) {
       next_invalidation_time.emplace(state.next_desired_tick_time());
@@ -159,10 +153,11 @@ void ImageAnimationController::UpdateStateFromDrivers() {
     }
   }
 
-  if (next_invalidation_time.has_value())
+  if (next_invalidation_time.has_value()) {
     scheduler_.Schedule(next_invalidation_time.value());
-  else
+  } else {
     scheduler_.Cancel();
+  }
 }
 
 void ImageAnimationController::DidActivate() {
@@ -202,15 +197,6 @@ size_t ImageAnimationController::GetFrameIndexForImage(
 void ImageAnimationController::WillBeginImplFrame(
     const viz::BeginFrameArgs& args) {
   scheduler_.WillBeginImplFrame(args);
-}
-
-const base::flat_set<
-    raw_ptr<ImageAnimationController::AnimationDriver, CtnExperimental>>&
-ImageAnimationController::GetDriversForTesting(
-    PaintImage::Id paint_image_id) const {
-  const auto& it = animation_state_map_.find(paint_image_id);
-  CHECK(it != animation_state_map_.end());
-  return it->second.drivers_for_testing();
 }
 
 size_t ImageAnimationController::GetLastNumOfFramesSkippedForTesting(
@@ -258,9 +244,7 @@ ImageAnimationController::AnimationState&
 ImageAnimationController::AnimationState::operator=(AnimationState&& other) =
     default;
 
-ImageAnimationController::AnimationState::~AnimationState() {
-  DCHECK(drivers_.empty());
-}
+ImageAnimationController::AnimationState::~AnimationState() = default;
 
 bool ImageAnimationController::AnimationState::ShouldAnimate() const {
   return ShouldAnimate(current_state_.repetitions_completed,
@@ -529,23 +513,14 @@ void ImageAnimationController::AnimationState::
   }
 }
 
-void ImageAnimationController::AnimationState::AddDriver(
-    AnimationDriver* driver) {
-  drivers_.insert(driver);
-}
-
-void ImageAnimationController::AnimationState::RemoveDriver(
-    AnimationDriver* driver) {
-  drivers_.erase(driver);
-}
-
-void ImageAnimationController::AnimationState::UpdateStateFromDrivers() {
-  should_animate_from_drivers_ = false;
-  for (AnimationDriver* driver : drivers_) {
-    if (driver->ShouldAnimate(paint_image_id_)) {
-      should_animate_from_drivers_ = true;
-      break;
-    }
+void ImageAnimationController::AnimationState::UpdateStateFromDrivers(
+    const std::optional<bool>& should_animate) {
+  if (!should_animate.has_value()) {
+    has_drivers_ = false;
+    should_animate_from_drivers_ = false;
+  } else {
+    has_drivers_ = true;
+    should_animate_from_drivers_ = should_animate.value();
   }
 }
 
@@ -561,9 +536,9 @@ std::string ImageAnimationController::AnimationState::ToString() const {
   std::ostringstream str;
   str << "paint_image_id[" << paint_image_id_ << "]\nrequested_repetitions["
       << requested_repetitions_ << "]\nrepetitions_completed["
-      << requested_repetitions_ << "]\ndrivers[" << drivers_.size()
-      << "]\nactive_index[" << active_index_ << "]\npending_index["
-      << current_state_.pending_index << "]\nnext_desired_frame_time["
+      << requested_repetitions_ << "]\nactive_index[" << active_index_
+      << "]\npending_index[" << current_state_.pending_index
+      << "]\nnext_desired_frame_time["
       << (current_state_.next_desired_frame_time - animation_started_time_)
              .InMillisecondsF()
       << "]\nnext_desired_tick_time["

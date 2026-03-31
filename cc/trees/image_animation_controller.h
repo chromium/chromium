@@ -39,9 +39,8 @@ class PaintImage;
 //    the frame index of an image used on a tree, and advances the animation to
 //    the desired frame each time a new sync tree is created.
 //
-// 2) An AnimationDriver can register itself for deciding whether the
-//    controller animates an image. The animation is paused if there are no
-//    registered drivers interested in animating it.
+// 2) An animation is paused if there are no animation drivers
+//    (i.e. PictureLayerImpl's) interested in animating it.
 //
 //  3) An animation is only advanced on the sync tree, which is requested to be
 //     created using the |client| callbacks. This effectively means that
@@ -49,19 +48,6 @@ class PaintImage;
 //     a tree, guaranteeing that the image update is atomic.
 class CC_EXPORT ImageAnimationController {
  public:
-  // AnimationDrivers are clients interested in driving image animations. An
-  // animation is ticked if there is at least one driver registered for which
-  // ShouldAnimate returns true. Once
-  // no drivers are registered for an image, or none of the registered drivers
-  // want us to animate, the animation is no longer ticked.
-  class CC_EXPORT AnimationDriver {
-   public:
-    virtual ~AnimationDriver() {}
-
-    // Returns true if the image should be animated.
-    virtual bool ShouldAnimate(PaintImage::Id paint_image_id) const = 0;
-  };
-
   class CC_EXPORT Client {
    public:
     virtual ~Client() {}
@@ -88,14 +74,6 @@ class CC_EXPORT ImageAnimationController {
   void UpdateAnimatedImage(
       const DiscardableImageMap::AnimatedImageMetadata& data);
 
-  // Registers/Unregisters an animation driver interested in animating this
-  // image.
-  // Note that the state for this image must have been populated to the
-  // controller using UpdatePaintImage prior to registering any drivers.
-  void RegisterAnimationDriver(PaintImage::Id paint_image_id,
-                               AnimationDriver* driver);
-  void UnregisterAnimationDriver(PaintImage::Id paint_image_id,
-                                 AnimationDriver* driver);
   bool IsRegistered(PaintImage::Id paint_image_id);
 
   // Called to advance the animations to the frame to be used on the sync tree.
@@ -104,13 +82,14 @@ class CC_EXPORT ImageAnimationController {
   // Returns the set of images that were animated and should be invalidated on
   // this sync tree.
   const PaintImageIdFlatSet& AnimateForSyncTree(
-      const viz::BeginFrameArgs& args);
+      const viz::BeginFrameArgs& args,
+      const base::flat_map<PaintImage::Id, bool>&);
 
   // Called whenever the ShouldAnimate response for a driver could have changed.
   // For instance on a change in the visibility of the image, we would pause
   // off-screen animations.
   // This is called after every DrawProperties update and commit.
-  void UpdateStateFromDrivers();
+  void UpdateStateFromDrivers(const base::flat_map<PaintImage::Id, bool>&);
 
   // Called when the sync tree was activated and the animations' associated
   // state should be pushed to the active tree.
@@ -126,8 +105,6 @@ class CC_EXPORT ImageAnimationController {
   bool did_navigate() const { return did_navigate_; }
   void set_did_navigate() { did_navigate_ = true; }
 
-  const base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>>&
-  GetDriversForTesting(PaintImage::Id paint_image_id) const;
   size_t GetLastNumOfFramesSkippedForTesting(
       PaintImage::Id paint_image_id) const;
 
@@ -173,19 +150,13 @@ class CC_EXPORT ImageAnimationController {
     // If all frames have same frame duration, return that duration.
     std::optional<base::TimeDelta> GetConsistentContentFrameDuration();
 
-    void AddDriver(AnimationDriver* driver);
-    void RemoveDriver(AnimationDriver* driver);
-    void UpdateStateFromDrivers();
-    bool has_drivers() const { return !drivers_.empty(); }
+    void UpdateStateFromDrivers(const std::optional<bool>& should_animate);
+    bool has_drivers() const { return has_drivers_; }
 
     size_t pending_index() const { return current_state_.pending_index; }
     size_t active_index() const { return active_index_; }
     base::TimeTicks next_desired_tick_time() const {
       return current_state_.next_desired_tick_time;
-    }
-    const base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>>&
-    drivers_for_testing() const {
-      return drivers_;
     }
     size_t last_num_frames_skipped_for_testing() const {
       return last_num_frames_skipped_;
@@ -243,8 +214,7 @@ class CC_EXPORT ImageAnimationController {
 
     AnimationAdvancementState current_state_;
 
-    // A set of drivers interested in animating this image.
-    base::flat_set<raw_ptr<AnimationDriver, CtnExperimental>> drivers_;
+    bool has_drivers_ = false;
 
     // The index being used on the active tree, if a recording with this image
     // is still present.
@@ -326,9 +296,6 @@ class CC_EXPORT ImageAnimationController {
   // necessary to resume the animation.
   // TODO(khushalsagar): Implement clearing of state on navigations.
   AnimationStateMap animation_state_map_;
-
-  // The set of animations with registered drivers.
-  PaintImageIdFlatSet registered_animations_;
 
   // The set of images that were animated and invalidated on the last sync tree.
   PaintImageIdFlatSet images_animated_on_sync_tree_;

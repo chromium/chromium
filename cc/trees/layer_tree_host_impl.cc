@@ -932,8 +932,8 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
 
   CHECK(!settings_.trees_in_viz_in_viz_process);
   CHECK(image_animation_controller_);
-  const auto& animated_images =
-      image_animation_controller_->AnimateForSyncTree(CurrentBeginFrameArgs());
+  const auto& animated_images = image_animation_controller_->AnimateForSyncTree(
+      CurrentBeginFrameArgs(), GatherImageAnimationState());
   images_to_invalidate.insert(animated_images.begin(), animated_images.end());
 
   // Invalidate cached PaintRecords for worklets whose input properties were
@@ -994,6 +994,19 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
       &LayerTreeHostImpl::OnPaintWorkletResultsReady, base::Unretained(this));
   paint_worklet_painter_->DispatchWorklets(std::move(dirty_paint_worklets),
                                            std::move(done_callback));
+}
+
+base::flat_map<PaintImage::Id, bool>
+LayerTreeHostImpl::GatherImageAnimationState() const {
+  base::flat_map<PaintImage::Id, bool> animation_state;
+  active_tree()->AnnotateAnimatedImages(animation_state);
+  if (pending_tree()) {
+    pending_tree()->AnnotateAnimatedImages(animation_state);
+  }
+  if (recycle_tree()) {
+    recycle_tree()->AnnotateAnimatedImages(animation_state);
+  }
+  return animation_state;
 }
 
 PaintWorkletJobMap LayerTreeHostImpl::GatherDirtyPaintWorklets(

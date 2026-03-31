@@ -40,8 +40,7 @@ class Tile;
 
 class CC_EXPORT PictureLayerImpl
     : public TileBasedLayerImpl<PictureLayerTiling>,
-      public PictureLayerTilingClient,
-      public ImageAnimationController::AnimationDriver {
+      public PictureLayerTilingClient {
  public:
   static std::unique_ptr<PictureLayerImpl> Create(LayerTreeImpl* tree_impl,
                                                   int id) {
@@ -86,8 +85,7 @@ class CC_EXPORT PictureLayerImpl
   ScrollOffsetMap GetRasterInducingScrollOffsets() const override;
   const GlobalStateThatImpactsTilePriority& global_tile_state() const override;
 
-  // ImageAnimationController::AnimationDriver overrides.
-  bool ShouldAnimate(PaintImage::Id paint_image_id) const override;
+  bool ShouldAnimate(PaintImage::Id paint_image_id) const;
 
   void set_gpu_raster_max_texture_size(gfx::Size gpu_raster_max_texture_size) {
     if (gpu_raster_max_texture_size_ == gpu_raster_max_texture_size) {
@@ -110,6 +108,8 @@ class CC_EXPORT PictureLayerImpl
                                  const Region& invalidation = Region());
   void RegenerateDiscardableImageMap();
   bool UpdateTiles();
+  bool HasAnimatedImages() const;
+  void AnnotateAnimatedImages(base::flat_map<PaintImage::Id, bool>&) const;
 
   // Mask-related functions.
 
@@ -264,9 +264,6 @@ class CC_EXPORT PictureLayerImpl
   void UpdateIdealScales();
   float MaximumTilingContentsScale() const;
   std::unique_ptr<PictureLayerTilingSet> CreatePictureLayerTilingSet();
-
-  void RegisterAnimatedImages();
-  void UnregisterAnimatedImages();
 
   // Set the collection of PaintWorkletInput as well as their PaintImageId that
   // are part of this layer.

@@ -17,24 +17,6 @@
 
 namespace cc {
 
-class FakeAnimationDriver : public ImageAnimationController::AnimationDriver {
- public:
-  FakeAnimationDriver() = default;
-  ~FakeAnimationDriver() override = default;
-
-  void set_should_animate(bool should_animate) {
-    should_animate_ = should_animate;
-  }
-
-  // ImageAnimationController::AnimationDriver implementation.
-  bool ShouldAnimate(PaintImage::Id paint_image_id) const override {
-    return should_animate_;
-  }
-
- private:
-  bool should_animate_ = true;
-};
-
 class DelayTrackingTaskRunner : public base::SingleThreadTaskRunner {
  public:
   explicit DelayTrackingTaskRunner(base::SingleThreadTaskRunner* task_runner)
@@ -110,7 +92,8 @@ class ImageAnimationControllerTest : public testing::Test,
       RunFrameRequestAndInvalidation();
 
       // Animate the image on the sync tree.
-      auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+      auto animated_images = controller_->AnimateForSyncTree(
+          BeginFrameArgs(), {{paint_image_id, true}});
 
       // No frames should have been skipped since we add no delay in advancing
       // the animation.
@@ -213,9 +196,7 @@ TEST_F(ImageAnimationControllerTest, AnimationWithDelays) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Display 2 loops in the animation.
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0);
@@ -225,7 +206,8 @@ TEST_F(ImageAnimationControllerTest, AnimationWithDelays) {
   // the third iteration. Add a delay that causes us to skip the first frame.
   base::TimeDelta additional_delay = base::Milliseconds(1);
   AdvanceNow(data.frames[0].duration + additional_delay);
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(animated_images.count(data.paint_image_id), 1u);
   EXPECT_EQ(
@@ -253,7 +235,8 @@ TEST_F(ImageAnimationControllerTest, AnimationWithDelays) {
   AdvanceNow(data.frames[1].duration + data.frames[2].duration +
              data.frames[3].duration);
   RunFrameRequestAndInvalidation();
-  animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(animated_images.count(data.paint_image_id), 1u);
   EXPECT_EQ(
@@ -272,8 +255,6 @@ TEST_F(ImageAnimationControllerTest, AnimationWithDelays) {
   // Invalidation delay is based on the duration of the first frame and the
   // initial additionaly delay.
   task_runner_->VerifyDelay(frames[0].duration - additional_delay);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, DriversControlAnimationTicking) {
@@ -284,9 +265,6 @@ TEST_F(ImageAnimationControllerTest, DriversControlAnimationTicking) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       first_image_frames, kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(first_data);
-  FakeAnimationDriver first_driver;
-  controller_->RegisterAnimationDriver(first_data.paint_image_id,
-                                       &first_driver);
 
   std::vector<FrameMetadata> second_image_frames = {
       FrameMetadata(true, base::Milliseconds(5)),
@@ -295,51 +273,43 @@ TEST_F(ImageAnimationControllerTest, DriversControlAnimationTicking) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       second_image_frames, kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(second_data);
-  FakeAnimationDriver second_driver;
-  controller_->RegisterAnimationDriver(second_data.paint_image_id,
-                                       &second_driver);
 
   // Disable animating from all drivers, no invalidation request should be made.
-  first_driver.set_should_animate(false);
-  second_driver.set_should_animate(false);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{first_data.paint_image_id, false},
+                                       {second_data.paint_image_id, false}});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(begin_frame_count_, 0);
 
   // Enable animating from the first driver, which should schedule an
   // invalidation to advance this animation.
-  first_driver.set_should_animate(true);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers(
+      {{first_data.paint_image_id, true}, {second_data.paint_image_id, false}});
   task_runner_->VerifyDelay(base::TimeDelta());
 
   // Start animating the first image.
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(),
+      {{first_data.paint_image_id, true}, {second_data.paint_image_id, false}});
   EXPECT_EQ(animated_images.size(), 0u);
 
   // Invalidation should be scheduled for this image.
   task_runner_->VerifyDelay(first_image_frames[0].duration);
 
   // Now enable animating the second image instead.
-  second_driver.set_should_animate(true);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers(
+      {{first_data.paint_image_id, true}, {second_data.paint_image_id, true}});
 
   // Invalidation is triggered to start with no delay since the second image has
   // not started animating yet.
   task_runner_->VerifyDelay(base::TimeDelta());
 
   // Disable animating all images.
-  first_driver.set_should_animate(false);
-  second_driver.set_should_animate(false);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{first_data.paint_image_id, false},
+                                       {second_data.paint_image_id, false}});
 
   // Any scheduled invalidation should be cancelled.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(begin_frame_count_, 0);
-
-  controller_->UnregisterAnimationDriver(first_data.paint_image_id,
-                                         &first_driver);
-  controller_->UnregisterAnimationDriver(second_data.paint_image_id,
-                                         &second_driver);
 }
 
 TEST_F(ImageAnimationControllerTest, RepetitionsRequested) {
@@ -352,9 +322,7 @@ TEST_F(ImageAnimationControllerTest, RepetitionsRequested) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Finish a single loop in the animation.
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0);
@@ -364,14 +332,12 @@ TEST_F(ImageAnimationControllerTest, RepetitionsRequested) {
   invalidation_count_ = 0;
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(invalidation_count_, 0);
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 
   // Now with a repetition count of 5.
   data.paint_image_id = PaintImage::GetNextId();
   data.repetition_count = 5;
   controller_->UpdateAnimatedImage(data);
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
   for (int i = 0; i < data.repetition_count; ++i) {
     LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), i);
 
@@ -388,14 +354,12 @@ TEST_F(ImageAnimationControllerTest, RepetitionsRequested) {
   invalidation_count_ = 0;
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(invalidation_count_, 0);
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 
   // Now with kAnimationLoopInfinite.
   data.paint_image_id = PaintImage::GetNextId();
   data.repetition_count = kAnimationLoopInfinite;
   controller_->UpdateAnimatedImage(data);
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
   for (int i = 0; i < 7; ++i) {
     LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), i);
 
@@ -412,7 +376,6 @@ TEST_F(ImageAnimationControllerTest, RepetitionsRequested) {
   begin_frame_count_ = 0;
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(begin_frame_count_, 1);
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 
   // Now try with a kAnimationNone image, which should result in a DCHECK
   // failure.
@@ -431,9 +394,7 @@ TEST_F(ImageAnimationControllerTest, DisplayCompleteFrameOnly) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kPartiallyDone,
       frames, kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance until the second frame.
   LoopOnceNoDelay(data.paint_image_id, frames, 2, 0);
@@ -448,13 +409,11 @@ TEST_F(ImageAnimationControllerTest, DisplayCompleteFrameOnly) {
   // be advanced.
   data.completion_state = PaintImage::CompletionState::kDone;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // No invalidation is scheduled since the last frame is still incomplete.
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(invalidation_count_, 0);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, DontLoopPartiallyLoadedImages) {
@@ -466,9 +425,7 @@ TEST_F(ImageAnimationControllerTest, DontLoopPartiallyLoadedImages) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kPartiallyDone,
       frames, 2, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Finish the first loop.
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0);
@@ -487,13 +444,14 @@ TEST_F(ImageAnimationControllerTest, DontLoopPartiallyLoadedImages) {
   data.completion_state = PaintImage::CompletionState::kDone;
   data.frames = frames;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // The animation advances to the last frame. We don't have a delay since we
   // already advanced to the desired time in the loop above.
   task_runner_->VerifyDelay(base::TimeDelta());
   RunFrameRequestAndInvalidation();
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
             2u);
@@ -512,8 +470,6 @@ TEST_F(ImageAnimationControllerTest, DontLoopPartiallyLoadedImages) {
   begin_frame_count_ = 0;
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(begin_frame_count_, 0);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, DontAdvanceUntilDesiredTime) {
@@ -525,14 +481,13 @@ TEST_F(ImageAnimationControllerTest, DontAdvanceUntilDesiredTime) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance the first frame.
   task_runner_->VerifyDelay(base::TimeDelta());
   RunFrameRequestAndInvalidation();
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
             0u);
@@ -549,7 +504,8 @@ TEST_F(ImageAnimationControllerTest, DontAdvanceUntilDesiredTime) {
   // animation is not advanced.
   base::TimeDelta time_remaining = base::Milliseconds(1);
   AdvanceNow(frames[0].duration - time_remaining);
-  animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
             0u);
@@ -565,7 +521,8 @@ TEST_F(ImageAnimationControllerTest, DontAdvanceUntilDesiredTime) {
 
   // We have a sync tree before the invalidation task could run.
   AdvanceNow(time_remaining);
-  animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(animated_images.count(data.paint_image_id), 1u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
@@ -581,8 +538,6 @@ TEST_F(ImageAnimationControllerTest, DontAdvanceUntilDesiredTime) {
   invalidation_count_ = 0;
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(invalidation_count_, 0);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, RestartAfterSyncCutoff) {
@@ -594,14 +549,13 @@ TEST_F(ImageAnimationControllerTest, RestartAfterSyncCutoff) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance the first frame.
   task_runner_->VerifyDelay(base::TimeDelta());
   RunFrameRequestAndInvalidation();
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 0u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
@@ -620,7 +574,8 @@ TEST_F(ImageAnimationControllerTest, RestartAfterSyncCutoff) {
   // Animate again, it starts from the first frame. We don't see a
   // frame update, because that's the frame we are already displaying.
   controller_->WillBeginImplFrame(BeginFrameArgs());
-  animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 0u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
@@ -632,8 +587,6 @@ TEST_F(ImageAnimationControllerTest, RestartAfterSyncCutoff) {
 
   // New invalidation request since the desired invalidation time changed.
   task_runner_->VerifyDelay(frames[0].duration);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, DontSkipLoopsToCatchUpAfterLoad) {
@@ -647,9 +600,7 @@ TEST_F(ImageAnimationControllerTest, DontSkipLoopsToCatchUpAfterLoad) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kPartiallyDone,
       frames, kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Perform the first loop while the image is partially loaded, until the third
   // frame.
@@ -666,13 +617,14 @@ TEST_F(ImageAnimationControllerTest, DontSkipLoopsToCatchUpAfterLoad) {
   // Finish the image load.
   data.completion_state = PaintImage::CompletionState::kDone;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Invalidation is scheduled immediately because we are way past the desired
   // time. We should start from the first frame after the image is loaded
   // instead of skipping frames.
   task_runner_->VerifyDelay(base::TimeDelta());
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(animated_images.count(data.paint_image_id), 1u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
@@ -681,7 +633,6 @@ TEST_F(ImageAnimationControllerTest, DontSkipLoopsToCatchUpAfterLoad) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             2u);
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, FinishRepetitionsDuringCatchUp) {
@@ -695,9 +646,7 @@ TEST_F(ImageAnimationControllerTest, FinishRepetitionsDuringCatchUp) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames, 3, 0,
       0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Finish 2 loops.
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0);
@@ -710,7 +659,8 @@ TEST_F(ImageAnimationControllerTest, FinishRepetitionsDuringCatchUp) {
   // Advance the animation, we should see the last frame since the desired
   // repetition count will be reached during catch up.
   RunFrameRequestAndInvalidation();
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   // No invalidation since the active tree is already at the last frame.
   EXPECT_EQ(animated_images.size(), 0u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
@@ -719,8 +669,6 @@ TEST_F(ImageAnimationControllerTest, FinishRepetitionsDuringCatchUp) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             frames.size() - 1);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, ResetAnimations) {
@@ -732,9 +680,7 @@ TEST_F(ImageAnimationControllerTest, ResetAnimations) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames, 3,
       0u, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Go uptill the second frame during the second iteration.
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0);
@@ -743,7 +689,7 @@ TEST_F(ImageAnimationControllerTest, ResetAnimations) {
   // Reset the animation.
   data.reset_animation_sequence_id++;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // It should start again from the first frame and do 3 loops.
   for (int i = 0; i < 3; ++i) {
@@ -760,11 +706,9 @@ TEST_F(ImageAnimationControllerTest, ResetAnimations) {
   // Same image used again in a recording. There shouldn't be an invalidation
   // since the reset sequence has already been synchronized.
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(invalidation_count_, 0);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, ResetAnimationStateMapOnNavigation) {
@@ -775,9 +719,6 @@ TEST_F(ImageAnimationControllerTest, ResetAnimationStateMapOnNavigation) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       first_image_frames, kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(first_data);
-  FakeAnimationDriver first_driver;
-  controller_->RegisterAnimationDriver(first_data.paint_image_id,
-                                       &first_driver);
 
   std::vector<FrameMetadata> second_image_frames = {
       FrameMetadata(true, base::Milliseconds(5)),
@@ -786,26 +727,19 @@ TEST_F(ImageAnimationControllerTest, ResetAnimationStateMapOnNavigation) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       second_image_frames, kAnimationLoopOnce, 0, 0, 0);
   controller_->UpdateAnimatedImage(second_data);
-  FakeAnimationDriver second_driver;
-  controller_->RegisterAnimationDriver(second_data.paint_image_id,
-                                       &second_driver);
 
-  controller_->AnimateForSyncTree(BeginFrameArgs());
+  controller_->AnimateForSyncTree(
+      BeginFrameArgs(),
+      {{first_data.paint_image_id, true}, {second_data.paint_image_id, true}});
 
-  controller_->UnregisterAnimationDriver(first_data.paint_image_id,
-                                         &first_driver);
   EXPECT_EQ(controller_->animation_state_map_size_for_testing(), 2u);
 
   // Fake navigation and activation.
   controller_->set_did_navigate();
+  controller_->UpdateStateFromDrivers({{first_data.paint_image_id, true}});
   controller_->DidActivate();
 
   // Animation state map entries without drivers will be purged on navigation.
-  EXPECT_EQ(controller_->animation_state_map_size_for_testing(), 1u);
-
-  controller_->UnregisterAnimationDriver(second_data.paint_image_id,
-                                         &second_driver);
-
   EXPECT_EQ(controller_->animation_state_map_size_for_testing(), 1u);
 }
 
@@ -819,16 +753,12 @@ TEST_F(ImageAnimationControllerTest, ImageWithNonVsyncAlignedDurations) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames, 3,
       0u, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   std::vector<base::TimeDelta> expected_delays = {
       base::Milliseconds(2), base::Milliseconds(4), base::Milliseconds(4)};
   LoopOnceNoDelay(data.paint_image_id, frames, frames.size(), 0,
                   expected_delays);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, ImageWithLessThanIntervalDurations) {
@@ -844,19 +774,16 @@ TEST_F(ImageAnimationControllerTest, ImageWithLessThanIntervalDurations) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopOnce, 0u, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Animation starts at 10s, we jump directly to the third frame.
   task_runner_->VerifyDelay(base::TimeDelta());
-  auto invalidated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto invalidated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
             2u);
   controller_->DidActivate();
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, ImplFramesWhileInvalidationPending) {
@@ -868,9 +795,7 @@ TEST_F(ImageAnimationControllerTest, ImplFramesWhileInvalidationPending) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames, 3,
       0u, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Send the impl frame for invalidating the current image such that an
   // invalidation request is pending.
@@ -880,8 +805,6 @@ TEST_F(ImageAnimationControllerTest, ImplFramesWhileInvalidationPending) {
   // No new task since an invalidation is expected.
   controller_->WillBeginImplFrame(BeginFrameArgs());
   EXPECT_FALSE(task_runner_->has_delay());
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, MissedBeginFrameAfterRequest) {
@@ -893,9 +816,7 @@ TEST_F(ImageAnimationControllerTest, MissedBeginFrameAfterRequest) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames, 3,
       0u, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // There should be a frame request with no delay to start the animation.
   task_runner_->VerifyDelay(base::TimeDelta());
@@ -910,8 +831,6 @@ TEST_F(ImageAnimationControllerTest, MissedBeginFrameAfterRequest) {
 
   // We should get another request for an impl frame.
   EXPECT_EQ(begin_frame_count_, 2);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 class ImageAnimationControllerNoResyncTest
@@ -929,14 +848,13 @@ TEST_F(ImageAnimationControllerNoResyncTest, NoSyncCutoffAfterIdle) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance the first frame.
   task_runner_->VerifyDelay(base::TimeDelta());
   RunFrameRequestAndInvalidation();
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 0u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
@@ -956,7 +874,8 @@ TEST_F(ImageAnimationControllerNoResyncTest, NoSyncCutoffAfterIdle) {
   // Animate again, it should not restart from the start. Should display second
   // animation frame.
   controller_->WillBeginImplFrame(BeginFrameArgs());
-  animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::PENDING_TREE),
@@ -968,8 +887,6 @@ TEST_F(ImageAnimationControllerNoResyncTest, NoSyncCutoffAfterIdle) {
 
   // New invalidation request since the desired invalidation time changed.
   task_runner_->VerifyDelay(frames[1].duration);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerNoResyncTest, SkipsLoopsAfterFirstIteration) {
@@ -983,9 +900,7 @@ TEST_F(ImageAnimationControllerNoResyncTest, SkipsLoopsAfterFirstIteration) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kPartiallyDone,
       frames, kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Perform the first loop while the image is partially loaded, until the third
   // frame.
@@ -1002,12 +917,13 @@ TEST_F(ImageAnimationControllerNoResyncTest, SkipsLoopsAfterFirstIteration) {
   // Finish the image load.
   data.completion_state = PaintImage::CompletionState::kDone;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Invalidation is scheduled immediately because we are way past the desired
   // time. We skip frames even after the image is loaded.
   task_runner_->VerifyDelay(base::TimeDelta());
-  auto animated_images = controller_->AnimateForSyncTree(BeginFrameArgs());
+  auto animated_images = controller_->AnimateForSyncTree(
+      BeginFrameArgs(), {{data.paint_image_id, true}});
   EXPECT_EQ(animated_images.size(), 1u);
   EXPECT_EQ(animated_images.count(data.paint_image_id), 1u);
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
@@ -1016,14 +932,11 @@ TEST_F(ImageAnimationControllerNoResyncTest, SkipsLoopsAfterFirstIteration) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             2u);
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerNoResyncTest,
        ComputeConsistentContentFrameDuration) {
   PaintImage::Id id1 = PaintImage::GetNextId();
-  FakeAnimationDriver driver;
-
   {
     std::vector<FrameMetadata> frames = {
         FrameMetadata(true, base::Milliseconds(2)),
@@ -1035,10 +948,7 @@ TEST_F(ImageAnimationControllerNoResyncTest,
         id1, PaintImage::CompletionState::kPartiallyDone, frames,
         kAnimationLoopInfinite, 0, 0, 0);
     controller_->UpdateAnimatedImage(data);
-
-    controller_->RegisterAnimationDriver(id1, &driver);
-    controller_->UpdateStateFromDrivers();
-
+    controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
     EXPECT_EQ(controller_->GetConsistentContentFrameDuration(), std::nullopt);
   }
 
@@ -1053,7 +963,7 @@ TEST_F(ImageAnimationControllerNoResyncTest,
         kAnimationLoopInfinite, 0, 0, 0);
     controller_->UpdateAnimatedImage(data);
 
-    controller_->UpdateStateFromDrivers();
+    controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
     std::optional<ImageAnimationController::ConsistentFrameDuration>
         consistent_duration = controller_->GetConsistentContentFrameDuration();
@@ -1073,10 +983,7 @@ TEST_F(ImageAnimationControllerNoResyncTest,
         id2, PaintImage::CompletionState::kPartiallyDone, frames,
         kAnimationLoopInfinite, 0, 0, 0);
     controller_->UpdateAnimatedImage(data);
-
-    controller_->RegisterAnimationDriver(id2, &driver);
-    controller_->UpdateStateFromDrivers();
-
+    controller_->UpdateStateFromDrivers({{id1, true}, {id2, true}});
     EXPECT_EQ(controller_->GetConsistentContentFrameDuration(), std::nullopt);
   }
 
@@ -1090,18 +997,13 @@ TEST_F(ImageAnimationControllerNoResyncTest,
         id2, PaintImage::CompletionState::kPartiallyDone, frames,
         kAnimationLoopInfinite, 0, 0, 0);
     controller_->UpdateAnimatedImage(data);
-
-    controller_->UpdateStateFromDrivers();
-
+    controller_->UpdateStateFromDrivers({{id1, true}, {id2, true}});
     std::optional<ImageAnimationController::ConsistentFrameDuration>
         consistent_duration = controller_->GetConsistentContentFrameDuration();
     ASSERT_TRUE(consistent_duration.has_value());
     EXPECT_EQ(consistent_duration->frame_duration, base::Milliseconds(3));
     EXPECT_EQ(consistent_duration->num_images, 2u);
   }
-
-  controller_->UnregisterAnimationDriver(id1, &driver);
-  controller_->UnregisterAnimationDriver(id2, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, PausedAnimationStopsAdvancement) {
@@ -1114,16 +1016,14 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationStopsAdvancement) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone, frames,
       kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance the target to frame 1.
   LoopOnceNoDelay(data.paint_image_id, frames, 2u, 0);
 
   data.repetition_count = kAnimationPaused;
   controller_->UpdateAnimatedImage(data);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // No invalidation should be scheduled since the animation is paused.
   invalidation_count_ = 0;
@@ -1136,8 +1036,6 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationStopsAdvancement) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             1u);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest, PausedAnimationSyncsFrameFromTarget) {
@@ -1149,10 +1047,7 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationSyncsFrameFromTarget) {
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       target_frames, kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(target_data);
-  FakeAnimationDriver target_driver;
-  controller_->RegisterAnimationDriver(target_data.paint_image_id,
-                                       &target_driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{target_data.paint_image_id, true}});
 
   // Advance the target to frame 2.
   LoopOnceNoDelay(target_data.paint_image_id, target_frames,
@@ -1172,9 +1067,8 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationSyncsFrameFromTarget) {
       paused_frames, kAnimationPaused, 0, target_data.paint_image_id,
       1 /* sync_animation_sequence_id */);
   controller_->UpdateAnimatedImage(paused_data);
-  FakeAnimationDriver paused_driver;
-  controller_->RegisterAnimationDriver(paused_data.paint_image_id,
-                                       &paused_driver);
+  controller_->UpdateStateFromDrivers(
+      {{target_data.paint_image_id, true}, {paused_data.paint_image_id, true}});
 
   // The paused animation should have synced to the target's active index 2.
   EXPECT_EQ(controller_->GetFrameIndexForImage(paused_data.paint_image_id,
@@ -1183,11 +1077,6 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationSyncsFrameFromTarget) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(paused_data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             2u);
-
-  controller_->UnregisterAnimationDriver(target_data.paint_image_id,
-                                         &target_driver);
-  controller_->UnregisterAnimationDriver(paused_data.paint_image_id,
-                                         &paused_driver);
 }
 
 TEST_F(ImageAnimationControllerTest,
@@ -1200,10 +1089,7 @@ TEST_F(ImageAnimationControllerTest,
       PaintImage::GetNextId(), PaintImage::CompletionState::kDone,
       target_frames, kAnimationLoopInfinite, 0, 0, 0);
   controller_->UpdateAnimatedImage(target_data);
-  FakeAnimationDriver target_driver;
-  controller_->RegisterAnimationDriver(target_data.paint_image_id,
-                                       &target_driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{target_data.paint_image_id, true}});
 
   // Advance the target to frame 1.
   LoopOnceNoDelay(target_data.paint_image_id, target_frames, 2u, 0);
@@ -1221,9 +1107,8 @@ TEST_F(ImageAnimationControllerTest,
       paused_frames, kAnimationPaused, 0, target_data.paint_image_id,
       1 /* sync_animation_sequence_id */);
   controller_->UpdateAnimatedImage(paused_data);
-  FakeAnimationDriver paused_driver;
-  controller_->RegisterAnimationDriver(paused_data.paint_image_id,
-                                       &paused_driver);
+  controller_->UpdateStateFromDrivers(
+      {{target_data.paint_image_id, true}, {paused_data.paint_image_id, true}});
 
   EXPECT_EQ(controller_->GetFrameIndexForImage(paused_data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
@@ -1233,7 +1118,9 @@ TEST_F(ImageAnimationControllerTest,
   task_runner_->VerifyDelay(target_frames[1].duration);
   AdvanceNow(target_frames[1].duration);
   RunFrameRequestAndInvalidation();
-  controller_->AnimateForSyncTree(BeginFrameArgs());
+  controller_->AnimateForSyncTree(
+      BeginFrameArgs(),
+      {{target_data.paint_image_id, true}, {paused_data.paint_image_id, true}});
   EXPECT_EQ(controller_->GetFrameIndexForImage(target_data.paint_image_id,
                                                WhichTree::PENDING_TREE),
             2u);
@@ -1249,11 +1136,6 @@ TEST_F(ImageAnimationControllerTest,
   EXPECT_EQ(controller_->GetFrameIndexForImage(paused_data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             1u);
-
-  controller_->UnregisterAnimationDriver(target_data.paint_image_id,
-                                         &target_driver);
-  controller_->UnregisterAnimationDriver(paused_data.paint_image_id,
-                                         &paused_driver);
 }
 
 TEST_F(ImageAnimationControllerTest, PausedAnimationNoSyncWhenTargetInvalid) {
@@ -1267,8 +1149,7 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationNoSyncWhenTargetInvalid) {
       PaintImage::kInvalidId /* sync_animation_target_id */,
       1 /* sync_animation_sequence_id */);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // The frame index should remain at the default since the target is
   // invalid id.
@@ -1278,8 +1159,6 @@ TEST_F(ImageAnimationControllerTest, PausedAnimationNoSyncWhenTargetInvalid) {
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             0u);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 TEST_F(ImageAnimationControllerTest,
@@ -1294,9 +1173,7 @@ TEST_F(ImageAnimationControllerTest,
       PaintImage::kInvalidId /* sync_animation_target_id */,
       0 /* sync_animation_sequence_id */);
   controller_->UpdateAnimatedImage(data);
-  FakeAnimationDriver driver;
-  controller_->RegisterAnimationDriver(data.paint_image_id, &driver);
-  controller_->UpdateStateFromDrivers();
+  controller_->UpdateStateFromDrivers({{data.paint_image_id, true}});
 
   // Advance the target to frame 1.
   LoopOnceNoDelay(data.paint_image_id, frames, 2u, 0);
@@ -1317,8 +1194,6 @@ TEST_F(ImageAnimationControllerTest,
   EXPECT_EQ(controller_->GetFrameIndexForImage(data.paint_image_id,
                                                WhichTree::ACTIVE_TREE),
             0u);
-
-  controller_->UnregisterAnimationDriver(data.paint_image_id, &driver);
 }
 
 }  // namespace cc

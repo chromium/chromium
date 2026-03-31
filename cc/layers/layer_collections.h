@@ -174,6 +174,10 @@ class CC_EXPORT OwnedLayerImplList {
 
   Range<PictureLayerImpl> PictureLayers() const;
 
+  Range<PictureLayerImpl> PictureLayersWithAnimatedImages() const;
+  void SetPictureLayerWithAnimatedImages(PictureLayerImpl* layer);
+  void RemovePictureLayerWithAnimatedImages(PictureLayerImpl* layer);
+
   Range<PictureLayerImpl> PictureLayersWithWorklets() const;
   void SetPictureLayerWithWorklet(PictureLayerImpl* layer);
   void RemovePictureLayerWithWorklet(PictureLayerImpl* layer);
@@ -182,6 +186,7 @@ class CC_EXPORT OwnedLayerImplList {
   VectorType layers_;
   SetType layers_that_should_push_properties_;
   SetType picture_layers_;
+  SetType picture_layers_with_animated_images_;
   SetType picture_layers_with_worklets_;
   mutable MapType layer_map_;
   mutable bool layer_map_needs_rebuild_ = false;

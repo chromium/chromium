@@ -1888,7 +1888,8 @@ bool LayerTreeImpl::UpdateDrawProperties(
 
   if (update_image_animation_controller && image_animation_controller()) {
     CHECK(!settings().trees_in_viz_in_viz_process);
-    image_animation_controller()->UpdateStateFromDrivers();
+    image_animation_controller()->UpdateStateFromDrivers(
+        host_impl()->GatherImageAnimationState());
   }
 
   device_viewport_rect_changed_ = false;
@@ -2346,17 +2347,35 @@ void LayerTreeImpl::ProcessUIResourceRequestQueue() {
     host_impl_->SetNeedsCommit();
 }
 
+void LayerTreeImpl::NotifyLayerHasAnimatedImagesChanged(
+    PictureLayerImpl* layer,
+    bool has_animated_images) {
+  if (has_animated_images) {
+    layer_list_.SetPictureLayerWithAnimatedImages(layer);
+  } else {
+    layer_list_.RemovePictureLayerWithAnimatedImages(layer);
+  }
+  DCHECK_EQ(has_animated_images,
+            std::ranges::contains(layer_list_.PictureLayersWithAnimatedImages(),
+                                  layer));
+}
+
+void LayerTreeImpl::AnnotateAnimatedImages(
+    base::flat_map<PaintImage::Id, bool>& image_map) const {
+  for (auto* layer : layer_list_.PictureLayersWithAnimatedImages()) {
+    layer->AnnotateAnimatedImages(image_map);
+  }
+}
+
 void LayerTreeImpl::NotifyLayerHasPaintWorkletsChanged(PictureLayerImpl* layer,
                                                        bool has_worklets) {
   if (has_worklets) {
     layer_list_.SetPictureLayerWithWorklet(layer);
-    DCHECK(
-        std::ranges::contains(layer_list_.PictureLayersWithWorklets(), layer));
   } else {
     layer_list_.RemovePictureLayerWithWorklet(layer);
-    DCHECK(
-        !std::ranges::contains(layer_list_.PictureLayersWithWorklets(), layer));
   }
+  DCHECK_EQ(has_worklets, std::ranges::contains(
+                              layer_list_.PictureLayersWithWorklets(), layer));
 }
 
 void LayerTreeImpl::RegisterScrollbar(ScrollbarLayerImplBase* scrollbar_layer) {

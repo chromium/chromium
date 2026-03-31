@@ -37,6 +37,7 @@ void OwnedLayerImplList::clear() {
   layer_map_.clear();
   layer_map_needs_rebuild_ = false;
   picture_layers_.clear();
+  picture_layers_with_animated_images_.clear();
   picture_layers_with_worklets_.clear();
 }
 
@@ -53,6 +54,9 @@ void OwnedLayerImplList::push_back(std::unique_ptr<LayerImpl>&& value) {
             ->GetPaintWorkletRecordMap()
             .size()) {
       picture_layers_with_worklets_.insert(id);
+    }
+    if (static_cast<PictureLayerImpl*>(back().get())->HasAnimatedImages()) {
+      picture_layers_with_animated_images_.insert(id);
     }
   }
 }
@@ -81,6 +85,22 @@ OwnedLayerImplList::LayersThatShouldPushProperties() const {
 OwnedLayerImplList::Range<PictureLayerImpl> OwnedLayerImplList::PictureLayers()
     const {
   return Range<PictureLayerImpl>(*this, picture_layers_);
+}
+
+void OwnedLayerImplList::SetPictureLayerWithAnimatedImages(
+    PictureLayerImpl* layer) {
+  DCHECK(contains(layer->id()));
+  picture_layers_with_animated_images_.insert(layer->id());
+}
+
+void OwnedLayerImplList::RemovePictureLayerWithAnimatedImages(
+    PictureLayerImpl* layer) {
+  picture_layers_with_animated_images_.erase(layer->id());
+}
+
+OwnedLayerImplList::Range<PictureLayerImpl>
+OwnedLayerImplList::PictureLayersWithAnimatedImages() const {
+  return Range<PictureLayerImpl>(*this, picture_layers_with_animated_images_);
 }
 
 void OwnedLayerImplList::SetPictureLayerWithWorklet(PictureLayerImpl* layer) {
