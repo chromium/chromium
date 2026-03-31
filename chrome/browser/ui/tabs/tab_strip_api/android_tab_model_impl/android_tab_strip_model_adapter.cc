@@ -47,6 +47,11 @@ void AndroidTabStripModelAdapter::CloseTab(size_t tab_index) {
   model_->CloseTab(tabs.at(tab_index));
 }
 
+void AndroidTabStripModelAdapter::CloseTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  NOTREACHED() << "not implemented";
+}
+
 std::optional<int> AndroidTabStripModelAdapter::GetIndexForHandle(
     tabs::TabHandle tab_handle) const {
   for (int i = 0; i < model_->GetTabCount(); ++i) {

@@ -99,6 +99,10 @@ class TabStripServiceImpl : public TabStripService {
   void BroadcastEvents(
       const std::vector<tabs_api::events::Event>& events) const;
 
+  base::expected<void, mojo_base::mojom::ErrorPtr> CloseCollection(
+      const NodeId& id);
+  void CloseTabs(const std::vector<tabs::TabHandle>& tab_targets);
+
   std::unique_ptr<PlatformAdaptersProvider> adapters_provider_;
   std::unique_ptr<events::TabStripEventRecorder> recorder_;
 

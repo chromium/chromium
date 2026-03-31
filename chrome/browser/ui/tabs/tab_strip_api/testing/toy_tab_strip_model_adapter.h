@@ -26,6 +26,7 @@ class ToyTabStripModelAdapter : public TabStripModelAdapter {
   types::TabStates GetTabStates(tabs::TabHandle handle) const override;
   const ui::ColorProvider& GetColorProvider() const override;
   void CloseTab(size_t tab_index) override;
+  void CloseTabGroup(const tab_groups::TabGroupId& group_id) override;
   std::optional<int> GetIndexForHandle(
       tabs::TabHandle tab_handle) const override;
   void ActivateTab(size_t index) override;

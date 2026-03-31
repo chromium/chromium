@@ -53,6 +53,7 @@ class ToyTabStrip {
   void AddTab(ToyTab tab);
   std::vector<tabs::TabHandle> GetTabs();
   void CloseTab(size_t index);
+  void CloseTabGroup(const tab_groups::TabGroupId& group_id);
   std::optional<int> GetIndexForHandle(tabs::TabHandle tab_handle);
   tabs::TabHandle AddTabAt(const GURL& url, std::optional<int> index);
   void ActivateTab(tabs::TabHandle handle);

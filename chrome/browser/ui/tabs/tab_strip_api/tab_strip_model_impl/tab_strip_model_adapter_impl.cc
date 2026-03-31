@@ -14,6 +14,7 @@
 #include "components/tabs/public/split_tab_collection.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
 #include "content/public/browser/web_contents.h"
@@ -75,6 +76,11 @@ void TabStripModelAdapterImpl::CloseTab(size_t tab_index) {
   tab_strip_model_->CloseWebContentsAt(
       tab_index, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB |
                      TabCloseTypes::CLOSE_USER_GESTURE);
+}
+
+void TabStripModelAdapterImpl::CloseTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  tab_strip_model_->CloseAllTabsInGroup(group_id);
 }
 
 std::optional<int> TabStripModelAdapterImpl::GetIndexForHandle(

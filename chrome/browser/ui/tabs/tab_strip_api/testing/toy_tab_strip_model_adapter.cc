@@ -35,6 +35,11 @@ void ToyTabStripModelAdapter::CloseTab(size_t idx) {
   tab_strip_->CloseTab(idx);
 }
 
+void ToyTabStripModelAdapter::CloseTabGroup(
+    const tab_groups::TabGroupId& group_id) {
+  tab_strip_->CloseTabGroup(group_id);
+}
+
 std::optional<int> ToyTabStripModelAdapter::GetIndexForHandle(
     tabs::TabHandle tab_handle) const {
   return tab_strip_->GetIndexForHandle(tab_handle);

@@ -180,22 +180,45 @@ mojom::TabStripService::CloseNodesResult TabStripServiceImpl::CloseNodes(
     const std::vector<tabs_api::NodeId>& ids) {
   auto session = session_controller_->CreateSession();
 
-  std::vector<int32_t> tab_content_targets;
+  std::vector<tabs::TabHandle> tab_targets;
   for (const auto& id : ids) {
-    ASSIGN_OR_RETURN(auto content_id, utils::GetContentNativeTabId(id));
-    tab_content_targets.push_back(content_id);
+    if (id.Type() == NodeId::Type::kCollection) {
+      RETURN_IF_ERROR(CloseCollection(id));
+    } else {
+      ASSIGN_OR_RETURN(auto handle_id, utils::GetContentNativeTabId(id));
+      tab_targets.emplace_back(handle_id);
+    }
   }
 
+  CloseTabs(tab_targets);
+
+  return std::monostate();
+}
+
+base::expected<void, mojo_base::mojom::ErrorPtr>
+TabStripServiceImpl::CloseCollection(const NodeId& id) {
+  ASSIGN_OR_RETURN(auto collection_id, utils::GetCollectionNativeId(id));
+  tabs::TabCollectionHandle collection_handle(collection_id);
+
+  auto group_id = tab_strip_model_adapter().FindGroupIdFor(collection_handle);
+  if (group_id.has_value()) {
+    tab_strip_model_adapter().CloseTabGroup(group_id.value());
+  }
+
+  return base::ok();
+}
+
+void TabStripServiceImpl::CloseTabs(
+    const std::vector<tabs::TabHandle>& tab_targets) {
   std::vector<size_t> tab_strip_indices;
-  // Transform targets from ids to indices in the tabstrip.
-  for (auto target : tab_content_targets) {
-    auto target_idx =
-        tab_strip_model_adapter().GetIndexForHandle(tabs::TabHandle(target));
-    if (!target_idx.has_value()) {
-      return base::unexpected(mojo_base::mojom::Error::New(
-          mojo_base::mojom::Code::kNotFound, "could not find the a tab"));
+  // Transform targets from handles to indices in the tabstrip. Handles that
+  // are no longer in the strip (because they were part of a closed group) are
+  // ignored.
+  for (auto handle : tab_targets) {
+    auto target_idx = tab_strip_model_adapter().GetIndexForHandle(handle);
+    if (target_idx.has_value()) {
+      tab_strip_indices.push_back(target_idx.value());
     }
-    tab_strip_indices.push_back(target_idx.value());
   }
 
   // Close from last to first, that way the removals won't change the index of
@@ -204,8 +227,6 @@ mojom::TabStripService::CloseNodesResult TabStripServiceImpl::CloseNodes(
   for (auto idx : tab_strip_indices) {
     tab_strip_model_adapter().CloseTab(idx);
   }
-
-  return std::monostate();
 }
 
 mojom::TabStripService::ActivateTabResult TabStripServiceImpl::ActivateTab(

@@ -33,6 +33,7 @@ class TabStripModelAdapter {
   virtual types::TabStates GetTabStates(tabs::TabHandle) const = 0;
   virtual const ui::ColorProvider& GetColorProvider() const = 0;
   virtual void CloseTab(size_t tab_index) = 0;
+  virtual void CloseTabGroup(const tab_groups::TabGroupId& group_id) = 0;
   virtual std::optional<int> GetIndexForHandle(
       tabs::TabHandle tab_handle) const = 0;
   virtual void ActivateTab(size_t index) = 0;

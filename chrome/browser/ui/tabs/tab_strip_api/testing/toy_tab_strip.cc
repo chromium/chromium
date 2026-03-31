@@ -37,11 +37,17 @@ std::vector<tabs::TabHandle> ToyTabStrip::GetTabs() {
 }
 
 void ToyTabStrip::CloseTab(size_t index) {
-  if (index < 0 || index >= root_.tabs.size()) {
+  if (index >= root_.tabs.size()) {
     LOG(FATAL) << "invalid idx passed in: " << index
                << ", tab size is: " << root_.tabs.size();
   }
   root_.tabs.erase(root_.tabs.begin() + index);
+}
+
+void ToyTabStrip::CloseTabGroup(const tab_groups::TabGroupId& group_id) {
+  std::erase_if(root_.tabs, [&group_id](const ToyTab& tab) {
+    return tab.group_id == group_id;
+  });
 }
 
 std::optional<int> ToyTabStrip::GetIndexForHandle(tabs::TabHandle tab_handle) {

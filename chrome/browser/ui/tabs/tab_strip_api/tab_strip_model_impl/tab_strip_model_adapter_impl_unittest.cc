@@ -216,4 +216,13 @@ TEST_F(TabStripModelAdapterImplTest, GetCollectionHandleForTabGroupId) {
             group_id);
 }
 
+TEST_F(TabStripModelAdapterImplTest, CloseTabGroup) {
+  AddTabs(3);
+  tab_groups::TabGroupId group_id = model_->AddToNewGroup({0, 1});
+  EXPECT_EQ(model_->count(), 3);
+
+  adapter_->CloseTabGroup(group_id);
+  EXPECT_EQ(model_->count(), 1);
+}
+
 }  // namespace tabs_api
