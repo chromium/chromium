@@ -12,9 +12,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/assert_prefetch_container_observer.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_cookie_listener.h"
@@ -226,14 +224,6 @@ bool CalculateIsLikelyAheadOfPrerender(
     case PreloadingType::kLinkPreview:
       NOTREACHED();
   }
-}
-
-bool IsFirstPartyContext(const network::ResourceRequest& resource_request) {
-  // TODO(crbug.com/40135370): Consider passing the Owner if we can get it.
-  // However, we really only care about having the owner for requests initiated
-  // on the renderer side.
-  return variations::IsFirstPartyContext(variations::Owner::kUnknown,
-                                         resource_request);
 }
 
 PrefetchContainer::PrefetchResponseCompletedCallbackForTesting&
@@ -787,28 +777,7 @@ void PrefetchContainer::UpdateResourceRequest(
   }
 
   resource_request_->UpdateOnRedirect(redirect_info);
-
-  // Remove `variations::kClientDataHeader` from `resource_request_->headers`,
-  // to keep the existing behavior. While `AddVariationsHeaderForPrefetch()`
-  // adds `variations::kClientDataHeader` to
-  // `resource_request->cors_exempt_headers`, it's also possible that
-  // `variations::kClientDataHeader` is added to `resource_request_->headers`
-  // via `request().additional_headers()`.
-  //
-  // TODO(crbug.com/467177773): The processing of
-  // `variations::kClientDataHeader` is separated from other headers, to keep
-  // the behavior of `variations::kClientDataHeader` during the main fixes for
-  // crbug.com/467177773. The behavior of `variations::kClientDataHeader` should
-  // be fixed together with other related bugs, by e.g. restructuring
-  // `variations::AppendVariationsHeader()` and plumbing the
-  // `variations::kClientDataHeader` removal and modification to
-  // `FollowRedirect()`.
-  // TODO(crbug.com/454082776): Remove `variations::kClientDataHeader` from
-  // `resource_request->cors_exempt_headers`.
-  resource_request_->headers.RemoveHeader(variations::kClientDataHeader);
-  AddVariationsHeaderForPrefetch(resource_request_->cors_exempt_headers,
-                                 resource_request_->url, request(),
-                                 IsFirstPartyContext(*resource_request_));
+  UpdateVariationsHeaderForPrefetch(*resource_request_, request());
 }
 
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
@@ -1355,117 +1324,8 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
 }
 
 void PrefetchContainer::MakeInitialResourceRequest() {
-  const GURL& url = request().key().url();
-  url::Origin origin = url::Origin::Create(url);
-  net::IsolationInfo isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kMainFrame, origin, origin,
-      net::SiteForCookies::FromOrigin(origin));
-
-  auto priority = [&] {
-    if (request().priority().has_value()) {
-      switch (request().priority().value()) {
-        case PrefetchPriority::kLow:
-          return net::RequestPriority::IDLE;
-        case PrefetchPriority::kMedium:
-          return net::RequestPriority::LOW;
-        case PrefetchPriority::kHigh:
-          return net::RequestPriority::MEDIUM;
-        case PrefetchPriority::kHighest:
-          return net::RequestPriority::HIGHEST;
-      }
-    }
-
-    // TODO(crbug.com/426404355): Migrate to use `PrefetchPriority`.
-    if (IsSpeculationRuleType(request().prefetch_type().trigger_type())) {
-      // This may seem inverted (surely immediate prefetches would be higher
-      // priority), but the fact that we're doing this at all for more
-      // conservative candidates suggests a strong engagement signal.
-      //
-      // TODO(crbug.com/40276985): Ideally, we would actually use a combination
-      // of the actual engagement seen (rather than the minimum required to
-      // trigger the candidate) and the declared eagerness, and update them as
-      // the prefetch becomes increasingly likely.
-      blink::mojom::SpeculationEagerness eagerness =
-          request().prefetch_type().GetEagerness();
-      switch (eagerness) {
-        case blink::mojom::SpeculationEagerness::kConservative:
-          return net::RequestPriority::MEDIUM;
-        case blink::mojom::SpeculationEagerness::kModerate:
-          return net::RequestPriority::LOW;
-        // TODO(crbug.com/40287486, crbug.com/406927300): Set appropriate value
-        // after changing the behavior for `kEager`
-        case blink::mojom::SpeculationEagerness::kEager:
-        case blink::mojom::SpeculationEagerness::kImmediate:
-          return net::RequestPriority::IDLE;
-      }
-    } else {
-      if (base::FeatureList::IsEnabled(
-              features::kPrefetchNetworkPriorityForEmbedders)) {
-        return net::RequestPriority::MEDIUM;
-      } else {
-        return net::RequestPriority::IDLE;
-      }
-    }
-  }();
-
-  mojo::PendingRemote<network::mojom::DevToolsObserver>
-      devtools_observer_remote;
-  if (!IsDecoy()) {
-    devtools_observer_remote =
-        MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(request());
-  }
-
-  // If we ever implement prefetching for subframes, this value should be
-  // reconsidered, as this causes us to reset the site for cookies on cross-site
-  // redirect.
-  const bool is_main_frame = true;
-
-  auto resource_request = CreateResourceRequestForNavigation(
-      net::HttpRequestHeaders::kGetMethod, url,
-      network::mojom::RequestDestination::kDocument,
-      request().initial_referrer(), isolation_info,
-      std::move(devtools_observer_remote), priority, is_main_frame);
-
-  // Note: Even without LOAD_DISABLE_CACHE, a cross-site prefetch uses a
-  // separate network context, which means responses cached before the prefetch
-  // are not visible to the prefetch, and anything cached by this request will
-  // not be visible outside of the network context.
-  resource_request->load_flags = net::LOAD_PREFETCH;
-
-  // TODO(crbug.com/455296998): Remove this code for M145.
-  if (request().should_bypass_http_cache()) {
-    resource_request->load_flags |= net::LOAD_DISABLE_CACHE;
-  }
-
-  PrefetchUpdateHeadersParams params = PrepareInitialHeadersForPrefetch(
-      url, request(), IsFirstPartyContext(*resource_request));
-  CHECK(params.removed_headers.empty());
-  resource_request->headers.MergeFrom(params.modified_headers);
-  resource_request->cors_exempt_headers.MergeFrom(
-      params.modified_cors_exempt_headers);
-
-  // ------------------------------------------------------------------------
-  // There are sometimes other headers that are set during navigation.  These
-  // aren't yet supported for prefetch, including browsing topics.
-
-  resource_request->devtools_request_id =
-      base::UnguessableToken::Create().ToString();
-
-  // `URLLoaderNetworkServiceObserver`
-  // (`resource_request->trusted_params->url_loader_network_observer`) is NOT
-  // set here, because for prefetching request we don't want to ask users e.g.
-  // for authentication/cert errors, and instead make the prefetch fail. Because
-  // of this, `ServiceWorkerClient::GetOngoingNavigationRequestBeforeCommit()`
-  // is never called. `NavPrefetchBrowserTest` has the corresponding test
-  // coverage.
-
-  // Prefetches with `skip_service_worker` == `true` shouldn't serve navigation
-  // with `skip_service_worker` == `false`, but right now we don't support such
-  // prefetches.
-  // TODO(https://crbug.com/438478667): Revisit this.
-  CHECK(!resource_request->skip_service_worker);
-
-  resource_request_ = std::move(resource_request);
+  resource_request_ =
+      MakeInitialResourceRequestForPrefetch(request(), IsDecoy());
 }
 
 const std::string& PrefetchContainer::GetDevtoolsRequestId() const {

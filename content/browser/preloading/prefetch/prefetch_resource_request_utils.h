@@ -54,17 +54,29 @@ std::tuple<PrefetchUpdateHeadersParams, PrefetchUpdateHeadersParams>
 PrepareRedirectHeadersForPrefetch(const GURL& request_url,
                                   const PrefetchRequest& prefetch_request);
 
-// Adds "X-Client-Data" header for a prefetch request to `request_url`.
-// `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
-void AddVariationsHeaderForPrefetch(
-    net::HttpRequestHeaders& cors_exempt_headers,
-    const GURL& request_url,
-    const PrefetchRequest& prefetch_request,
-    bool is_first_party_context_for_variations);
-
-mojo::PendingRemote<network::mojom::DevToolsObserver>
-MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(
+// Modifies "X-Client-Data" headers of `resource_request` upon redirect. Must be
+// called after `resource_request.url` is updated.
+void UpdateVariationsHeaderForPrefetch(
+    network::ResourceRequest& resource_request,
     const PrefetchRequest& prefetch_request);
+
+// ------------------------------------------------------------------------
+// Utilities for constructing `network::ResourceRequest`.
+
+// Constructs a `ResourceRequest` without headers.
+// Headers should be added using `PrepareInitialHeadersForPrefetch()`, in
+// `MakeInitialResourceRequestForPrefetch()` or separately for OMT prefetch.
+std::unique_ptr<network::ResourceRequest>
+MakeInitialResourceRequestWithoutHeadersForPrefetch(
+    const PrefetchRequest& prefetch_request,
+    bool is_decoy);
+
+// Constructs a full `ResourceRequest`, based on
+// `MakeInitialResourceRequestWithoutHeadersForPrefetch()` and
+// `PrepareInitialHeadersForPrefetch()`.
+std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
+    const PrefetchRequest& prefetch_request,
+    bool is_decoy);
 
 }  // namespace content
 
