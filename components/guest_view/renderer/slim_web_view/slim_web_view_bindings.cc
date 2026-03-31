@@ -148,6 +148,14 @@ void AttachIframeGuest(v8::Isolate* isolate,
   content::RenderFrame* embedder_parent_frame =
       content::RenderFrame::FromWebFrame(parent_frame->ToWebLocalFrame());
 
+  // We track the status of the RenderFrame via an observer in case it is
+  // deleted during user code execution while getting the params.
+  RenderFrameStatus render_frame_status(render_frame);
+  auto params_value =
+      content::V8ValueConverter::Create()->FromV8Value(params, context);
+  CHECK(render_frame_status.is_ok());
+  CHECK(params_value->is_dict());
+
   auto* guest_view_container =
       guest_view::GuestViewContainer::FromID(container_id);
   // This is the first time we hear about the |element_instance_id|.
@@ -156,13 +164,7 @@ void AttachIframeGuest(v8::Isolate* isolate,
   // in the client code.
   guest_view_container =
       new guest_view::GuestViewContainer(embedder_parent_frame, container_id);
-  // We track the status of the RenderFrame via an observer in case it is
-  // deleted during user code execution while getting the params.
-  RenderFrameStatus render_frame_status(render_frame);
-  auto params_value =
-      content::V8ValueConverter::Create()->FromV8Value(params, context);
-  CHECK(render_frame_status.is_ok());
-  CHECK(params_value->is_dict());
+
   auto request = std::make_unique<guest_view::GuestViewAttachRequest>(
       guest_view_container, render_frame, guest_instance_id,
       std::move(params_value->GetDict()), callback, isolate);
