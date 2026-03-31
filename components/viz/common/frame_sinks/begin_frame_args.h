@@ -202,12 +202,6 @@ struct VIZ_COMMON_EXPORT BeginFrameArgs {
   // The time at which the frame started. Used, for example, by animations to
   // decide to slow down or skip ahead.
   base::TimeTicks frame_time;
-
-  // For excluding the time spent between swap throttled and the next
-  // ScheduleBeginFrameDeadline in ADPF frame duration reports.
-  bool is_throttled = false;
-  base::TimeTicks throttled_adjusted_frame_time;
-
   // The time by which the receiving pipeline stage should do its work.
   base::TimeTicks deadline;
   // The inverse of the desired frame rate.

@@ -255,8 +255,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
                 int64_t choreographer_vsync_id,
                 int64_t swap_trace_id,
                 std::optional<PossibleDeadline> deadline,
-                std::optional<PossibleDeadline> preferred,
-                base::TimeTicks throttled_adjusted_frame_time);
+                std::optional<PossibleDeadline> preferred);
     void OnSwap(gfx::SwapTimings timings, DisplaySchedulerBase* scheduler);
     bool HasSwapped() const { return !swap_timings_.is_null(); }
     void OnPresent(const gfx::PresentationFeedback& feedback);
@@ -290,7 +289,6 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
     int64_t swap_trace_id_ = 0;
     std::optional<PossibleDeadline> deadline_;
     std::optional<PossibleDeadline> preferred_;
-    base::TimeTicks throttled_adjusted_frame_time_;
   };
 
   void InitializeRenderer();
