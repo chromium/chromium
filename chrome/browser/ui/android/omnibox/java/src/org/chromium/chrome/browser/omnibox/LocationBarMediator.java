@@ -643,6 +643,13 @@ class LocationBarMediator
     /* package */ void onUrlTextChanged(String text) {
         updateButtonVisibility();
         if (mCurrentInput != null) {
+            if (!TextUtils.equals(text, mCurrentInput.getUserText())) {
+                // Clear the suppression flag before the source of truth (AutocompleteInput) is
+                // updated with the new text. This prevents timing issues where observers like
+                // AutocompleteMediator receive the text change event after the input is already
+                // identical to the new text, failing to detect the change.
+                mCurrentInput.setSuppressAutomaticSuggestionsUntilUserStartsTyping(false);
+            }
             mCurrentInput.setUserText(text);
         }
     }
