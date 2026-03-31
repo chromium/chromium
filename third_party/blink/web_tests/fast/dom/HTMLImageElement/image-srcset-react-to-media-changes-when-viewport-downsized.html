@@ -5,15 +5,15 @@
 <iframe style="width: 120px;"></iframe>
 <script>
 async_test(function(t) {
-    var iframe = document.querySelector('iframe');
-    var iframeDoc = iframe.contentWindow.document;
+    const iframe = document.querySelector('iframe');
+    const iframeDoc = iframe.contentWindow.document;
 
     document.body.offsetTop;
     iframeDoc.body.innerHTML = '<img id="srcset" srcset="resources/blue_rect.jpg 90w, resources/image-set-4x.png 120w">';
 
-    img = iframeDoc.getElementById('srcset');
+    const img = iframeDoc.getElementById('srcset');
 
-    var first = true;
+    let first = true;
     img.onload = t.step_func(function() {
         assert_true(first);
         first = false;

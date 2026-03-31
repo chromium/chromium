@@ -3238,6 +3238,14 @@
       status: "stable",
     },
     {
+      // Srcset images respond to viewport/zoom changes by
+      // re-selecting the best candidate, including for
+      // x-descriptors.
+      // https://crbug.com/41385706
+      name: "ImageSrcsetReselection",
+      status: "stable",
+    },
+    {
       name: "ImplicitRootScroller",
       public: true,
       settable_from_internals: true,

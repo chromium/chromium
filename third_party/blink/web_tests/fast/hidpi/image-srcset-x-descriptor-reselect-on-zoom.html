@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<title>Test that srcset x-descriptor images re-select when zoom changes</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<img id="testImg">
+
+<script>
+// Verifies that an image with x-descriptor srcset re-selects the appropriate
+// candidate when the page zoom level changes.
+async_test(function(t) {
+    const img = document.getElementById('testImg');
+    img.srcset = 'resources/blue-100-px-square.png 1x, resources/green-400-px-square.png 2x';
+
+    img.onload = t.step_func(function firstLoad() {
+        // At 1x DPR with no zoom, the 1x candidate should be selected.
+        assert_true(img.currentSrc.indexOf('blue-100-px-square.png') !== -1,
+            'Should initially load the 1x image');
+
+        img.onload = t.step_func(function secondLoad() {
+            // After zooming to 2x, the 2x candidate should be selected.
+            assert_true(img.currentSrc.indexOf('green-400-px-square.png') !== -1,
+                'Should switch to 2x image after zoom');
+            t.done();
+        });
+
+        // Zoom in until effective DPR reaches 2x.
+        assert_true(!!window.testRunner, 'This test requires testRunner');
+        while (!matchMedia('screen and (min-resolution: 2dppx)').matches) {
+            testRunner.zoomPageIn();
+        }
+    });
+});
+</script>
