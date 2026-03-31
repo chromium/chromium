@@ -1764,19 +1764,42 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 // Handles uploading the context after the snapshot is generated.
 - (void)didRetrieveColorSnapshot:(UIImage*)image
-                       inputData:(std::unique_ptr<lens::ContextualInputData>)
-                                     input_data
+                       inputData:
+                           (std::unique_ptr<lens::ContextualInputData>)inputData
                       identifier:(base::UnguessableToken)identifier {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (image) {
-    NSData* data = UIImagePNGRepresentation(image);
-    std::vector<uint8_t> image_vector_data([data length]);
-    [data getBytes:image_vector_data.data() length:[data length]];
-    input_data->viewport_screenshot_bytes = std::move(image_vector_data);
-  }
   [self didLoadPreviewImage:image forItemWithIdentifier:identifier];
 
-  [self uploadTabForIdentifier:identifier inputData:std::move(input_data)];
+  if (!image) {
+    [self uploadTabForIdentifier:identifier inputData:std::move(inputData)];
+    return;
+  }
+
+  __block std::unique_ptr<lens::ContextualInputData> blockInputData =
+      std::move(inputData);
+  __weak __typeof(self) weakSelf = self;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&UIImagePNGRepresentation, image),
+      base::BindOnce(^(NSData* data) {
+        [weakSelf handleTabUploadWithPNGData:data
+                                   inputData:std::move(blockInputData)
+                                  identifier:identifier];
+      }));
+}
+
+// Handles the tab data after it has been converted, and uploads it.
+- (void)handleTabUploadWithPNGData:(NSData*)data
+                         inputData:(std::unique_ptr<lens::ContextualInputData>)
+                                       inputData
+                        identifier:(base::UnguessableToken)identifier {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (data) {
+    std::vector<uint8_t> image_vector_data([data length]);
+    [data getBytes:image_vector_data.data() length:[data length]];
+    inputData->viewport_screenshot_bytes = std::move(image_vector_data);
+  }
+  [self uploadTabForIdentifier:identifier inputData:std::move(inputData)];
 }
 
 // Handles the read `data` from the given `url` for the item with the given
