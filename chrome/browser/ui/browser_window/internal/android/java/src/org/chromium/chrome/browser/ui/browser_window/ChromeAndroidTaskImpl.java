@@ -231,6 +231,7 @@ final class ChromeAndroidTaskImpl
         final Activity mActivity;
         final ActivityWindowAndroid mActivityWindowAndroid;
         final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+        final @BrowserWindowType int mBrowserWindowType;
 
         static @Nullable TopActivityScopedObjects obtain(ChromeAndroidTaskImpl chromeAndroidTask) {
             var internalActivityScopedObjects =
@@ -239,31 +240,28 @@ final class ChromeAndroidTaskImpl
                     internalActivityScopedObjects == null
                             ? null
                             : internalActivityScopedObjects.mActivityScopedObjects;
-            var desktopWindowStateManager =
-                    activityScopedObjects == null
-                            ? null
-                            : activityScopedObjects.mDesktopWindowStateManager;
-            var activityWindowAndroid =
-                    activityScopedObjects == null
-                            ? null
-                            : activityScopedObjects.mActivityWindowAndroid;
             var activity =
-                    activityWindowAndroid == null
+                    activityScopedObjects == null
                             ? null
-                            : activityWindowAndroid.getActivity().get();
-            return activityWindowAndroid == null || activity == null
+                            : activityScopedObjects.mActivityWindowAndroid.getActivity().get();
+            return activityScopedObjects == null || activity == null
                     ? null
                     : new TopActivityScopedObjects(
-                            activity, activityWindowAndroid, desktopWindowStateManager);
+                            activity,
+                            activityScopedObjects.mActivityWindowAndroid,
+                            activityScopedObjects.mDesktopWindowStateManager,
+                            activityScopedObjects.mBrowserWindowType);
         }
 
         private TopActivityScopedObjects(
                 Activity activity,
                 ActivityWindowAndroid activityWindowAndroid,
-                @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+                @Nullable DesktopWindowStateManager desktopWindowStateManager,
+                @BrowserWindowType int browserWindowType) {
             mActivity = activity;
             mActivityWindowAndroid = activityWindowAndroid;
             mDesktopWindowStateManager = desktopWindowStateManager;
+            mBrowserWindowType = browserWindowType;
         }
     }
 
@@ -529,8 +527,22 @@ final class ChromeAndroidTaskImpl
         }
 
         // Only free-form windows can change bounds.
-        if (!AppHeaderUtils.isAppInDesktopWindow(
-                topActivityScopedObjects.mDesktopWindowStateManager)) {
+        boolean isFreeformWindow;
+        if (topActivityScopedObjects.mBrowserWindowType == BrowserWindowType.NORMAL) {
+            isFreeformWindow =
+                    AppHeaderUtils.isAppInDesktopWindow(
+                            topActivityScopedObjects.mDesktopWindowStateManager);
+        } else {
+            // For CCT/TWA/PWA, check if the window height matches the screen height
+            var activity = topActivityScopedObjects.mActivity;
+            var windowManager = activity.getWindowManager();
+            int windowHeight = windowManager.getCurrentWindowMetrics().getBounds().height();
+            int screenHeight =
+                    topActivityScopedObjects.mActivityWindowAndroid.getDisplay().getDisplayHeight();
+            isFreeformWindow = windowHeight != screenHeight;
+        }
+
+        if (!isFreeformWindow) {
             Log.w(TAG, "Unable to set bounds: the app isn't in desktop windowing mode");
             return WindowResizePrecheckResult.NOT_A_FREEFORM_WINDOW;
         }
