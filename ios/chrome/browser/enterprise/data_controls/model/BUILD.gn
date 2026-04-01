@@ -47,6 +47,8 @@ source_set("ios_rules_service") {
     "ios_rules_service.mm",
     "ios_rules_service_factory.h",
     "ios_rules_service_factory.mm",
+    "rules_service_observer_bridge.h",
+    "rules_service_observer_bridge.mm",
   ]
 
   public_deps = [ "//components/enterprise/data_controls/core/browser" ]
@@ -83,6 +85,7 @@ source_set("unit_tests") {
     "data_controls_pasteboard_manager_unittest.mm",
     "data_controls_tab_helper_unittest.mm",
     "ios_rules_service_unittest.mm",
+    "rules_service_observer_bridge_unittest.mm",
   ]
   deps = [
     ":ios_rules_service",
