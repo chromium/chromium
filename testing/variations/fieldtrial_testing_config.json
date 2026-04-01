@@ -3017,24 +3017,6 @@
             ]
         }
     ],
-    "AutofillReintroduceHybridPasskeyDropdownItem": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillReintroduceHybridPasskeyDropdownItem"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillServerExperimentalSignatures": [
         {
             "platforms": [

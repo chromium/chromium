@@ -1736,7 +1736,12 @@ TEST_F(PasswordSuggestionGeneratorTest,
   EXPECT_THAT(*suggestion,
               EqualsSuggestion(
                   SuggestionType::kWebauthnSignInWithAnotherDevice,
+#if BUILDFLAG(IS_IOS)
                   l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY),
+#else
+                  l10n_util::GetStringUTF16(
+                      IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE),
+#endif  // BUILDFLAG(IS_IOS)
                   Suggestion::Icon::kDevice));
 }
 
@@ -1757,11 +1762,15 @@ TEST_F(PasswordSuggestionGeneratorTest,
   std::optional<Suggestion> suggestion =
       generator().GetWebauthnSignInWithAnotherDeviceSuggestion();
   ASSERT_TRUE(suggestion.has_value());
+  auto expected_message =
+#if BUILDFLAG(IS_IOS)
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY);
+#else
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_PASSKEY_OTHER_DEVICE);
+#endif  // BUILDFLAG(IS_IOS)
   EXPECT_THAT(*suggestion,
               EqualsSuggestion(SuggestionType::kWebauthnSignInWithAnotherDevice,
-                               l10n_util::GetStringUTF16(
-                                   IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
-                               Suggestion::Icon::kDevice));
+                               expected_message, Suggestion::Icon::kDevice));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
@@ -1822,8 +1831,9 @@ TEST_F(PasswordSuggestionGeneratorTest,
 TEST_F(PasswordSuggestionGeneratorTest,
        NoWebauthnSignInWithAnotherDeviceSuggestionWhenHybridIsOff) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+  feature_list.InitWithFeatures(
+      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu},
+      {features::kAutofillReintroduceHybridPasskeyDropdownItem});
   const std::vector<PasskeyCredential> passkeys;
   ON_CALL(credentials_delegate(), GetPasskeys)
       .WillByDefault(Return(base::ok(&passkeys)));

@@ -51,8 +51,9 @@ BASE_FEATURE(kAutofillPasswordUserPerceptionSurvey,
 BASE_FEATURE(kAwaitPageStabilityForPasswordChange,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO: crbug.com/399124614 - Clean up in M151.
 BASE_FEATURE(kAutofillReintroduceHybridPasskeyDropdownItem,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 BASE_FEATURE(kBiometricTouchToFill, base::FEATURE_DISABLED_BY_DEFAULT);
