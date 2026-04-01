@@ -573,10 +573,23 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
     // Note this ignores |default_text_style_|, in favor of `style::STYLE_LINK`.
     auto link = std::make_unique<LinkFragment>(
         text, text_context_, *style_info.text_style, *previous_link_fragment);
+    const bool is_first_fragment = (*previous_link_fragment == nullptr);
     *previous_link_fragment = link.get();
     link->SetCallback(style_info.callback);
-    if (!style_info.accessible_name.empty()) {
-      link->GetViewAccessibility().SetName(style_info.accessible_name);
+
+    // For multi-line links, only the first fragment is focusable and has the
+    // full accessible name. Subsequent fragments are ignored to avoid redundant
+    // announcements and extra tab stops.
+    if (is_first_fragment) {
+      if (!style_info.accessible_name.empty()) {
+        link->GetViewAccessibility().SetName(style_info.accessible_name);
+      } else {
+        link->GetViewAccessibility().SetName(
+            text_.substr(range.start(), range.length()));
+      }
+    } else {
+      link->GetViewAccessibility().SetIsIgnored(true);
+      link->SetFocusBehavior(View::FocusBehavior::NEVER);
     }
 
     result = std::move(link);
@@ -599,7 +612,8 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
   if (!style_info.tooltip.empty()) {
     result->SetCustomTooltipText(style_info.tooltip);
   }
-  if (!style_info.accessible_name.empty()) {
+  if (!style_info.accessible_name.empty() &&
+      !IsViewClass<LinkFragment>(result.get())) {
     result->GetViewAccessibility().SetName(style_info.accessible_name);
   }
   if (displayed_on_background_color_) {

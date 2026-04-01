@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/base_i18n_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -951,6 +952,37 @@ TEST_F(StyledLabelTest, OldChildViewsAreAliveAfterLayout) {
   test::RunScheduledLayout(styled);
 
   link->RemoveObserver(&view_destroy_observer);
+}
+
+TEST_F(StyledLabelTest, WrappedLinkAccessibilityAndFocus) {
+  const std::u16string text = u"This is a long link that should wrap";
+  StyledLabel* styled = InitStyledLabel(base::UTF16ToUTF8(text));
+  styled->AddStyleRange(
+      gfx::Range(0, text.size()),
+      StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating([]() {})));
+
+  // Force wrapping by setting a small width.
+  styled->SetBounds(0, 0, 50, 1000);
+  test::RunScheduledLayout(styled);
+
+  // Verify that we have multiple children and they are LinkFragments.
+  ASSERT_GT(styled->children().size(), 1u);
+  for (views::View* child : styled->children()) {
+    EXPECT_EQ(LinkFragment::kViewClassName, child->GetClassName());
+  }
+
+  // Only the first fragment should be focusable and have the full name.
+  for (size_t i = 0; i < styled->children().size(); ++i) {
+    views::View* child = styled->children()[i];
+    if (i == 0) {
+      EXPECT_NE(views::View::FocusBehavior::NEVER, child->GetFocusBehavior());
+      EXPECT_FALSE(child->GetViewAccessibility().GetIsIgnored());
+      EXPECT_EQ(text, child->GetViewAccessibility().GetCachedName());
+    } else {
+      EXPECT_EQ(views::View::FocusBehavior::NEVER, child->GetFocusBehavior());
+      EXPECT_TRUE(child->GetViewAccessibility().GetIsIgnored());
+    }
+  }
 }
 
 }  // namespace views
