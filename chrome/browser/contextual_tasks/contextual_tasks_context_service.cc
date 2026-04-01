@@ -18,12 +18,13 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
-#include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
@@ -679,7 +680,24 @@ bool ContextualTasksContextService::IsValidTab(
     return false;
   }
 
-  return !search::IsNTPOrRelatedURL(url, profile_);
+  if (search::IsNTPOrRelatedURL(url, profile_)) {
+    return false;
+  }
+
+  if (profile_) {
+    // Since site exclusions are expected to be rare, it is generally faster
+    // and simpler to use list-like key processing instead of allocating with
+    // `url.GetHost()` and then having to check the dictionary for various
+    // domain substrings. Using `DomainIs` means sites like `en.wikipedia.org`
+    // will be filtered if the site exclusions contain `wikipedia.org`.
+    for (auto it : ReadSiteExclusionsFromPrefs(profile_->GetPrefs())) {
+      if (url.DomainIs(it.first)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 bool ContextualTasksContextService::ShouldAddTabToSelection(

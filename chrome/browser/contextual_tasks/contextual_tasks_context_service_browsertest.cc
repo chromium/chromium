@@ -24,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/optimization_guide/core/model_quality/test_model_quality_logs_uploader_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_embeddings_service.h"
@@ -43,6 +44,8 @@ namespace contextual_tasks {
 
 using ::testing::_;
 using ::testing::Return;
+
+constexpr char kValidUrlDomain[] = "a.test";
 
 class FakeEmbedderMetadataProvider
     : public passage_embeddings::EmbedderMetadataProvider {
@@ -323,7 +326,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
   GURL valid_url() {
     return GURL(embedded_test_server()->GetURL(
-        "a.test", "/optimization_guide/hello.html"));
+        kValidUrlDomain, "/optimization_guide/hello.html"));
   }
 
  protected:
@@ -1173,6 +1176,72 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTitlesOnlyTest, Success) {
       /*options=*/{}, "some text", /*explicit_urls=*/{}, future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
   EXPECT_TRUE(logs_uploader()->uploaded_logs().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       SiteExclusionsFilterTabSelection) {
+  test_clock_.SetNowTicks(base::TimeTicks::Now());
+
+  // Navigates to a.test
+  NavigateToValidURL();
+
+  // Tab 2 (will become the active foreground tab)
+  // Notice the case difference won't matter when filtering because domains
+  // canonicalize to lowercase and the exclusions in prefs are kept lowercase.
+  GURL url2 = embedded_test_server()->GetURL("B.test",
+                                             "/optimization_guide/hello.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  GURL url3 = embedded_test_server()->GetURL("c.test",
+                                             "/optimization_guide/hello.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url3, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  GURL url4 = embedded_test_server()->GetURL("en.c.test",
+                                             "/optimization_guide/hello.html");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url4, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  NotifyEmbedderMetadata();
+
+  // Initial prefs default site exclusions are empty so all tabs are eligible.
+  {
+    base::test::TestFuture<std::vector<content::WebContents*>> future;
+    service()->GetRelevantTabsForQuery(
+        {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+        "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+
+    auto tabs = future.Get();
+    EXPECT_EQ(4u, tabs.size());
+  }
+
+  // Add a couple of exclusions and save to prefs.
+  base::Time now = base::Time::Now();
+  base::DictValue site_exclusions;
+  site_exclusions.Set("b.test",
+                      static_cast<double>(now.InMillisecondsSinceUnixEpoch()));
+  site_exclusions.Set("c.test",
+                      static_cast<double>(now.InMillisecondsSinceUnixEpoch()));
+  site_exclusions.Set("some.overly.specific.subdomain.a.test",
+                      static_cast<double>(now.InMillisecondsSinceUnixEpoch()));
+  SaveSiteExclusionsToPrefs(GetProfile()->GetPrefs(), site_exclusions);
+
+  // Now only the initial navigation (a.test) remains since b.test, c.test,
+  // and en.c.test get filtered by the above exclusions.
+  {
+    base::test::TestFuture<std::vector<content::WebContents*>> future;
+    service()->GetRelevantTabsForQuery(
+        {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
+        "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+
+    auto tabs = future.Get();
+    EXPECT_EQ(1u, tabs.size());
+    EXPECT_EQ(tabs[0]->GetLastCommittedURL().GetHost(), kValidUrlDomain);
+  }
 }
 
 }  // namespace contextual_tasks
