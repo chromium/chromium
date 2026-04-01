@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
+
 #include <memory>
 #include <string>
 
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/icon_transcoder/svg_icon_transcoder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -34,9 +35,9 @@ class SvgIconTranscoderTest : public InProcessBrowserTest {
     png_path_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("icon.png"));
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
+  void TearDownOnMainThread() override {
     svg_icon_transcoder_.reset();
-    InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   apps::SvgIconTranscoder* svg_icon_transcoder() {
