@@ -13,6 +13,7 @@
 #include "ui/actions/actions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace page_actions {
 namespace {
@@ -383,14 +384,26 @@ TEST_F(PageActionModelTest, AnchoredMessageText) {
   EXPECT_EQ(model_.GetAnchoredMessageText(), std::u16string());
 }
 
-TEST_F(PageActionModelTest, AnchoredMessageCloseIcon) {
-  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
+TEST_F(PageActionModelTest, AnchoredMessageActionChange) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(3);
 
-  model_.SetAnchoredMessageCloseIcon(PassKey(), true);
-  EXPECT_EQ(model_.GetAnchoredMessageCloseIcon(), true);
+  model_.SetAnchoredMessageAction(
+      PassKey(), AnchoredMessageActionIconType::kMenu,
+      std::make_unique<ui::SimpleMenuModel>(nullptr));
+  EXPECT_EQ(model_.GetAnchoredMessageActionIconType(),
+            AnchoredMessageActionIconType::kMenu);
+  EXPECT_NE(model_.GetAnchoredMessageMenuModel(), nullptr);
 
-  model_.SetAnchoredMessageCloseIcon(PassKey(), false);
-  EXPECT_EQ(model_.GetAnchoredMessageCloseIcon(), false);
+  model_.SetAnchoredMessageAction(
+      PassKey(), AnchoredMessageActionIconType::kClose, nullptr);
+  EXPECT_EQ(model_.GetAnchoredMessageMenuModel(), nullptr);
+  EXPECT_EQ(model_.GetAnchoredMessageActionIconType(),
+            AnchoredMessageActionIconType::kClose);
+
+  model_.SetAnchoredMessageAction(
+      PassKey(), AnchoredMessageActionIconType::kNone, nullptr);
+  EXPECT_EQ(model_.GetAnchoredMessageActionIconType(),
+            AnchoredMessageActionIconType::kNone);
 }
 
 }  // namespace

@@ -12,9 +12,16 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "ui/base/models/image_model.h"
+
+namespace ui {
+class SimpleMenuModel;
+}
 
 namespace actions {
 class ActionItem;
@@ -23,9 +30,9 @@ class ActionItem;
 namespace page_actions {
 
 struct SuggestionChipConfig;
-class PageActionController;
 class PageActionModelObserver;
 enum class PageActionColorSource;
+enum class AnchoredMessageActionIconType;
 
 // Interface to PageActionModel, used for either the concrete implementation
 // or a mock for testing.
@@ -70,9 +77,10 @@ class PageActionModelInterface {
   virtual void SetAnchoredMessageText(
       base::PassKey<PageActionController>,
       const std::u16string& anchored_message) = 0;
-  virtual void SetAnchoredMessageCloseIcon(
+  virtual void SetAnchoredMessageAction(
       base::PassKey<PageActionController>,
-      const bool anchored_message_show_close_icon) = 0;
+      const AnchoredMessageActionIconType action_icon_type,
+      std::unique_ptr<ui::SimpleMenuModel> model) = 0;
   virtual void SetAnchoredMessageIcon(
       base::PassKey<PageActionController>,
       const std::optional<ui::ImageModel>& icon) = 0;
@@ -104,7 +112,9 @@ class PageActionModelInterface {
   virtual const std::u16string& GetAnchoredMessageText() const = 0;
   virtual const std::optional<ui::ImageModel>& GetAnchoredMessageIcon()
       const = 0;
-  virtual bool GetAnchoredMessageCloseIcon() const = 0;
+  virtual AnchoredMessageActionIconType GetAnchoredMessageActionIconType()
+      const = 0;
+  virtual ui::SimpleMenuModel* GetAnchoredMessageMenuModel() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
   virtual bool GetActionActive() const = 0;
   virtual PageActionColorSource GetColorSource() const = 0;
@@ -159,9 +169,10 @@ class PageActionModel : public PageActionModelInterface {
   void SetAnchoredMessageText(base::PassKey<PageActionController>,
                               const std::u16string& anchored_message) override;
 
-  void SetAnchoredMessageCloseIcon(
+  void SetAnchoredMessageAction(
       base::PassKey<PageActionController>,
-      const bool anchored_message_show_close_icon) override;
+      const AnchoredMessageActionIconType action_icon_type,
+      std::unique_ptr<ui::SimpleMenuModel> model) override;
 
   void SetAnchoredMessageIcon(
       base::PassKey<PageActionController>,
@@ -196,7 +207,9 @@ class PageActionModel : public PageActionModelInterface {
   const std::u16string& GetText() const override;
   const std::u16string& GetAccessibleName() const override;
   const std::u16string& GetAnchoredMessageText() const override;
-  bool GetAnchoredMessageCloseIcon() const override;
+  AnchoredMessageActionIconType GetAnchoredMessageActionIconType()
+      const override;
+  ui::SimpleMenuModel* GetAnchoredMessageMenuModel() const override;
   const std::optional<ui::ImageModel>& GetAnchoredMessageIcon() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
@@ -225,7 +238,7 @@ class PageActionModel : public PageActionModelInterface {
     kActionActive,
     kShouldShowAnchoredMessage,
     kAnchoredMessageText,
-    kAnchoredMessageCloseIcon,
+    kAnchoredMessageActionIcon,
     kIsAnchoredMessageShowing,
     kAnchoredMessageIcon,
     kMaxValue = kAnchoredMessageIcon,
@@ -294,8 +307,6 @@ class PageActionModel : public PageActionModelInterface {
 
   // The text to be shown on anchored messages.
   std::u16string anchored_message_text_;
-  // Whether the anchored message should have a close icon.
-  bool anchored_message_show_close_icon_ = false;
   // Special anchored message icon. If set, the normal page action icon will not
   // show on the anchored message.
   std::optional<ui::ImageModel> anchored_message_icon_ = std::nullopt;
@@ -317,6 +328,10 @@ class PageActionModel : public PageActionModelInterface {
 
   // Flag used while notifying observers.
   bool is_notifying_observers_ = false;
+
+  std::unique_ptr<ui::SimpleMenuModel> anchored_message_menu_model_;
+  AnchoredMessageActionIconType anchored_message_action_icon_type_ =
+      AnchoredMessageActionIconType::kNone;
 
   // Tracks which properties have been modified during the current notification
   // cycle. Used to detect infinite loops: if the same property is modified

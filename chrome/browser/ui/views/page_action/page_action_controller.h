@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/views/page_action/chip_selector.h"
 #include "chrome/browser/ui/views/page_action/page_action_metrics_recorder_interface.h"
-#include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "components/tabs/public/tab_interface.h"
@@ -39,6 +38,7 @@ class CallbackListSubscription;
 
 namespace ui {
 class ImageModel;
+class SimpleMenuModel;
 }
 
 namespace page_actions {
@@ -50,6 +50,7 @@ class PageActionModelObserver;
 class PageActionMetricsRecorderFactory;
 class PageActionMetricsRecorderInterface;
 class ChipSelector;
+class PageActionController;
 
 // Indicates the source used to color the page action icon.
 enum class PageActionColorSource {
@@ -69,6 +70,17 @@ enum class PageActionPriorityCategory {
   kContextualCue,
   kPrivacySecurity,
   kMaxValue = kPrivacySecurity,
+};
+
+// Indicates possible anchored message action icons (right side of anchored
+// message).
+enum class AnchoredMessageActionIconType {
+  // No action icon.
+  kNone,
+  // Close icon.
+  kClose,
+  // 3-dot menu icon (will be treated as kNone if no actions specified).
+  kMenu,
 };
 
 // Configuration for a page action's suggestion chip.
@@ -195,6 +207,13 @@ class PageActionController {
       const std::u16string& anchored_message_text) = 0;
   virtual void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
                                                   bool show) = 0;
+  // Sets the anchored message action icon type and menu model. If action icon
+  // type is kNone or kClose, the menu model must be null, and if action icon
+  // type is kMenu, the model must be non-null.
+  virtual void SetAnchoredMessageAction(
+      actions::ActionId action_id,
+      AnchoredMessageActionIconType action_icon_type,
+      std::unique_ptr<ui::SimpleMenuModel> model) = 0;
   virtual void SetAnchoredMessageIcon(actions::ActionId action_id,
                                       const ui::ImageModel& icon) = 0;
   virtual void ClearAnchoredMessageIcon(actions::ActionId action_id) = 0;
@@ -304,6 +323,10 @@ class PageActionControllerImpl : public PageActionController,
       const std::u16string& anchored_message_text) override;
   void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
                                           bool show) override;
+  void SetAnchoredMessageAction(
+      actions::ActionId action_id,
+      AnchoredMessageActionIconType action_icon_type,
+      std::unique_ptr<ui::SimpleMenuModel> model) override;
   void SetAnchoredMessageIcon(actions::ActionId action_id,
                               const ui::ImageModel& icon) override;
   void ClearAnchoredMessageIcon(actions::ActionId action_id) override;

@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
     tabs::TabInterface& tab_interface)

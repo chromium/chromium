@@ -22,6 +22,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace page_actions {
 
@@ -349,7 +350,22 @@ void PageActionControllerImpl::ClearAnchoredMessageIcon(
 void PageActionControllerImpl::ShouldShowAnchoredMessageCloseIcon(
     actions::ActionId action_id,
     bool show) {
-  FindPageActionModel(action_id).SetAnchoredMessageCloseIcon(PassKey(), show);
+  FindPageActionModel(action_id).SetAnchoredMessageAction(
+      PassKey(), AnchoredMessageActionIconType::kClose, nullptr);
+}
+
+void PageActionControllerImpl::SetAnchoredMessageAction(
+    actions::ActionId action_id,
+    AnchoredMessageActionIconType action_icon_type,
+    std::unique_ptr<ui::SimpleMenuModel> model) {
+  if (action_icon_type == AnchoredMessageActionIconType::kMenu) {
+    CHECK(model);
+  } else {
+    CHECK(!model);
+  }
+
+  FindPageActionModel(action_id).SetAnchoredMessageAction(
+      PassKey(), action_icon_type, std::move(model));
 }
 
 void PageActionControllerImpl::AddObserver(

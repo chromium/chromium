@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_METRICS_RECORDER_INTERFACE_H_
 
 #include "base/functional/callback_forward.h"
-#include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 
 namespace tabs {
@@ -15,6 +14,7 @@ class TabInterface;
 
 namespace page_actions {
 
+class PageActionModelInterface;
 struct PageActionProperties;
 
 // Metrics may need to know the number of visible ephemeral page actions.

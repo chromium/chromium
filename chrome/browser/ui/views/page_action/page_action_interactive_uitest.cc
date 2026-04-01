@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -13,8 +16,10 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_container_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_enums.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -22,9 +27,12 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
@@ -43,11 +51,6 @@ bool IsLabelVisible(PageActionView* page_action) {
 
 bool IsAtMinimumSize(PageActionView* page_action) {
   return page_action->size() == page_action->GetMinimumSize();
-}
-
-bool IsAnchoredMessageVisible(PageActionView* page_action) {
-  auto* anchored_message = page_action->GetAnchoredMessageForTesting();
-  return anchored_message != nullptr && anchored_message->GetVisible();
 }
 
 bool IsIconCentered(PageActionView* page_action) {
@@ -193,11 +196,19 @@ class PageActionUiTestBase {
 
   void ShowAnchoredMessage(actions::ActionId action_id,
                            std::u16string text,
-                           bool close_icon) const {
+                           AnchoredMessageActionIconType icon_type,
+                           std::optional<ui::ImageModel> anchored_message_icon,
+                           std::unique_ptr<ui::SimpleMenuModel> menu) const {
     EnsurePageActionEnabled(action_id);
     page_action_controller()->SetAnchoredMessageText(action_id, text);
-    page_action_controller()->ShouldShowAnchoredMessageCloseIcon(action_id,
-                                                                 close_icon);
+    page_action_controller()->SetAnchoredMessageAction(action_id, icon_type,
+                                                       std::move(menu));
+    if (anchored_message_icon == std::nullopt) {
+      page_action_controller()->ClearAnchoredMessageIcon(action_id);
+    } else {
+      page_action_controller()->SetAnchoredMessageIcon(
+          action_id, anchored_message_icon.value());
+    }
     page_action_controller()->ShowAnchoredMessage(action_id);
   }
 
@@ -230,9 +241,14 @@ class PageActionUiTestBase {
     ShowSuggestionChip(kActionShowTranslate);
   }
 
-  void ShowTestAnchoredMessage(std::u16string text, bool close_icon) const {
+  void ShowTestAnchoredMessage(
+      std::u16string text,
+      AnchoredMessageActionIconType icon_type,
+      std::optional<ui::ImageModel> anchored_message_icon,
+      std::unique_ptr<ui::SimpleMenuModel> menu) const {
     ShowPageAction(kActionShowTranslate);
-    ShowAnchoredMessage(kActionShowTranslate, text, close_icon);
+    ShowAnchoredMessage(kActionShowTranslate, text, icon_type,
+                        anchored_message_icon, std::move(menu));
   }
 
   void ShowTranslatePageActionIcon() const {
@@ -1021,52 +1037,102 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelReorderTest, InvokeUi_Default) {
   ShowAndVerifyUi();
 }
 
-class PageActionPixelShowAnchoredMessageTest : public PageActionPixelTestBase {
+class PageActionPixelShowAnchoredMessageTest : public InteractiveBrowserTest,
+                                               public PageActionUiTestBase {
  public:
   PageActionPixelShowAnchoredMessageTest() = default;
-  PageActionPixelShowAnchoredMessageTest(
-      const PageActionPixelShowAnchoredMessageTest&) = delete;
-  PageActionPixelShowAnchoredMessageTest& operator=(
-      const PageActionPixelShowAnchoredMessageTest&) = delete;
   ~PageActionPixelShowAnchoredMessageTest() override = default;
 
-  // UiBrowserTest:
-  void ShowUi(const std::string& name) override {
-    ShowTestAnchoredMessage(anchored_message_text_, close_icon_);
-    PageActionPixelTestBase::ShowUi(name);
-  }
-
-  bool VerifyUi() override {
-    PageActionView* test_view = GetTestPageActionView();
-    EXPECT_TRUE(test_view->GetVisible());
-    EXPECT_TRUE(IsAnchoredMessageVisible(test_view));
-    return true;
-  }
-
-  void Configure(std::u16string anchored_message_text, bool close_icon) {
-    anchored_message_text_ = anchored_message_text;
-    close_icon_ = close_icon;
-  }
-
- private:
-  std::u16string anchored_message_text_ = u"";
-  bool close_icon_ = false;
+  // PageActionUiTestBase:
+  Browser* GetBrowser() const override { return browser(); }
 };
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
                        InvokeUi_Default) {
-  ShowAndVerifyUi();
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshot can only run in pixel_tests."),
+      Do([this]() {
+        ShowTestAnchoredMessage(u"", AnchoredMessageActionIconType::kNone,
+                                std::nullopt, nullptr);
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "default",
+                 "20260324"));
 }
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
                        InvokeUi_CloseIcon) {
-  Configure(u"", true);
-  ShowAndVerifyUi();
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshot can only run in pixel_tests."),
+      Do([this]() {
+        ShowTestAnchoredMessage(u"", AnchoredMessageActionIconType::kClose,
+                                std::nullopt, nullptr);
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId,
+                 "close_icon", "20260324"),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageCloseIconId),
+      WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
+}
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
+                       InvokeUi_NoChip) {
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshot can only run in pixel_tests."),
+      Do([this]() {
+        ShowTestAnchoredMessage(
+            u"", AnchoredMessageActionIconType::kNone,
+            ui::ImageModel::FromVectorIcon(vector_icons::kEditIcon), nullptr);
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "no_chip",
+                 "20260324"));
+}
+
+IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Menu) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kMenuItemId);
+
+  auto menu_model = std::make_unique<ui::SimpleMenuModel>(nullptr);
+  menu_model->AddItem(0, u"Menu Item 1");
+  menu_model->SetElementIdentifierAt(0, kMenuItemId);
+  menu_model->AddItem(1, u"Menu Item 2");
+
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshot can only run in pixel_tests."),
+      Do([this, &menu_model]() {
+        ShowTestAnchoredMessage(u"Menu Test",
+                                AnchoredMessageActionIconType::kMenu,
+                                std::nullopt, std::move(menu_model));
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "menu",
+                 "20260324"),
+      PressButton(AnchoredMessageBubbleView::kAnchoredMessageMenuIconId),
+      WaitForShow(kMenuItemId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId,
+                 "menu_clicked", "20260324"),
+      Do([this]() { HideAnchoredMessage(kActionShowTranslate); }),
+      WaitForHide(kMenuItemId));
 }
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Text) {
-  Configure(u"Anchored Message Text", false);
-  ShowAndVerifyUi();
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Screenshot can only run in pixel_tests."),
+      Do([this]() {
+        ShowTestAnchoredMessage(u"Anchored Message Text",
+                                AnchoredMessageActionIconType::kNone,
+                                std::nullopt, nullptr);
+      }),
+      WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
+      Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId, "text",
+                 "20260324"),
+      Do([this]() -> void { HideAnchoredMessage(kActionShowTranslate); }),
+      WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
 }
 
 }  // namespace

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace page_actions {
 
@@ -34,7 +35,14 @@ class MockPageActionModel : public PageActionModelInterface {
               GetAnchoredMessageText,
               (),
               (const, override));
-  MOCK_METHOD(bool, GetAnchoredMessageCloseIcon, (), (const, override));
+  MOCK_METHOD(AnchoredMessageActionIconType,
+              GetAnchoredMessageActionIconType,
+              (),
+              (const, override));
+  MOCK_METHOD(ui::SimpleMenuModel*,
+              GetAnchoredMessageMenuModel,
+              (),
+              (const, override));
   MOCK_METHOD(const std::optional<ui::ImageModel>&,
               GetAnchoredMessageIcon,
               (),
@@ -80,9 +88,10 @@ class MockPageActionModel : public PageActionModelInterface {
                const std::u16string& anchored_message),
               (override));
   MOCK_METHOD(void,
-              SetAnchoredMessageCloseIcon,
+              SetAnchoredMessageAction,
               (base::PassKey<PageActionController>,
-               const bool anchored_message_show_close_icon),
+               const AnchoredMessageActionIconType action_icon_type,
+               std::unique_ptr<ui::SimpleMenuModel> model),
               (override));
   MOCK_METHOD(void,
               SetAnchoredMessageIcon,

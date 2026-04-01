@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace page_actions {
 
@@ -303,14 +304,15 @@ void PageActionModel::SetAnchoredMessageText(
   NotifyChange(Property::kAnchoredMessageText);
 }
 
-void PageActionModel::SetAnchoredMessageCloseIcon(
+void PageActionModel::SetAnchoredMessageAction(
     base::PassKey<PageActionController>,
-    const bool anchored_message_show_close_icon) {
-  if (anchored_message_show_close_icon_ == anchored_message_show_close_icon) {
-    return;
-  }
-  anchored_message_show_close_icon_ = anchored_message_show_close_icon;
-  NotifyChange(Property::kAnchoredMessageCloseIcon);
+    const AnchoredMessageActionIconType action_icon_type,
+    std::unique_ptr<ui::SimpleMenuModel> model) {
+  anchored_message_action_icon_type_ = action_icon_type;
+  std::unique_ptr<ui::SimpleMenuModel> old_model =
+      std::move(anchored_message_menu_model_);
+  anchored_message_menu_model_ = std::move(model);
+  NotifyChange(Property::kAnchoredMessageActionIcon);
 }
 
 void PageActionModel::SetAnchoredMessageIcon(
@@ -342,8 +344,13 @@ const std::u16string& PageActionModel::GetAnchoredMessageText() const {
   return anchored_message_text_;
 }
 
-bool PageActionModel::GetAnchoredMessageCloseIcon() const {
-  return anchored_message_show_close_icon_;
+AnchoredMessageActionIconType
+PageActionModel::GetAnchoredMessageActionIconType() const {
+  return anchored_message_action_icon_type_;
+}
+
+ui::SimpleMenuModel* PageActionModel::GetAnchoredMessageMenuModel() const {
+  return anchored_message_menu_model_.get();
 }
 
 const std::optional<ui::ImageModel>& PageActionModel::GetAnchoredMessageIcon()
