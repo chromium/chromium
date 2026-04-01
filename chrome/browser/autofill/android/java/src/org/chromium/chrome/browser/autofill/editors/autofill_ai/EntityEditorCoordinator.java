@@ -42,6 +42,14 @@ public class EntityEditorCoordinator {
         default void onDelete(EntityInstance entityInstance) {}
     }
 
+    /**
+     * Creates a new {@link EntityEditorCoordinator}.
+     *
+     * @param activity The activity for this component.
+     * @param delegate The delegate to be notified of editor events.
+     * @param profile The user's profile.
+     * @param entityInstance The entity instance to be edited.
+     */
     public EntityEditorCoordinator(
             Activity activity, Delegate delegate, Profile profile, EntityInstance entityInstance) {
         mMediator =
@@ -55,6 +63,12 @@ public class EntityEditorCoordinator {
         mEditorView = new EntityEditorView(activity);
     }
 
+    /** Notifies underlying view that device configuration has changed. */
+    public void onConfigurationChanged() {
+        mEditorView.onConfigurationChanged();
+    }
+
+    /** Initializes the editor's MCP and shows the dialog. */
     public void showEditorDialog() {
         mEditorModel = mMediator.getEditorModel();
         PropertyModelChangeProcessor.create(

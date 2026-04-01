@@ -217,6 +217,9 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (mAddressEditor != null) {
             mAddressEditor.onConfigurationChanged();
         }
+        if (mEntityEditor != null) {
+            mEntityEditor.onConfigurationChanged();
+        }
     }
 
     @Override
