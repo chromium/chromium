@@ -112,8 +112,8 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   void SetObjectProxy(AudioWorkletObjectProxy&);
 
  private:
-  typedef HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>
-      ProcessorDefinitionMap;
+  using ProcessorDefinitionMap =
+      HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>;
 
   network::mojom::RequestDestination GetDestination() const override {
     return network::mojom::RequestDestination::kAudioWorklet;

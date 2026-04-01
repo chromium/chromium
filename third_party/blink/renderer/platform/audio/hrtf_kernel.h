@@ -80,7 +80,7 @@ class HRTFKernel final {
   const float sample_rate_;
 };
 
-typedef Vector<std::unique_ptr<HRTFKernel>> HRTFKernelList;
+using HRTFKernelList = Vector<std::unique_ptr<HRTFKernel>>;
 
 }  // namespace blink
 

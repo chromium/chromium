@@ -117,7 +117,7 @@ constexpr auto kMaxElevations = std::to_array<int>({
 // local hash table to ensure quick efficient future retrievals.
 scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
     int subject_resource_id) {
-  typedef HashMap<int, scoped_refptr<AudioBus>> AudioBusMap;
+  using AudioBusMap = HashMap<int, scoped_refptr<AudioBus>>;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioBusMap, audio_bus_map, ());
   DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
 

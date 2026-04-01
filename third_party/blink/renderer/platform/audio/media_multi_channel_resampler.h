@@ -29,8 +29,8 @@ class PLATFORM_EXPORT MediaMultiChannelResampler final {
   // to be completely filled with data upon return; zero padded if not enough
   // frames are available to satisfy the request.  |frame_delay| is the number
   // of output frames already processed and can be used to estimate delay.
-  typedef CrossThreadRepeatingFunction<void(int frame_delay, blink::AudioBus*)>
-      ReadCB;
+  using ReadCB =
+      CrossThreadRepeatingFunction<void(int frame_delay, blink::AudioBus*)>;
 
  public:
   // Constructs a MultiChannelResampler with the specified |read_cb|, which is

@@ -152,8 +152,8 @@ class AudioArray final {
   PartitionHeapArray allocation_;
 };
 
-typedef AudioArray<float> AudioFloatArray;
-typedef AudioArray<double> AudioDoubleArray;
+using AudioFloatArray = AudioArray<float>;
+using AudioDoubleArray = AudioArray<double>;
 
 }  // namespace blink
 
