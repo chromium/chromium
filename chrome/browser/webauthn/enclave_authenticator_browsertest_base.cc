@@ -228,8 +228,14 @@ void EnclaveAuthenticatorTestBase::EnableUVKeySupport(
       fake_hardware_backing);
 }
 
-void EnclaveAuthenticatorTestBase::DisableUVKeySupport() {
-  fake_uv_provider_.emplace<crypto::ScopedNullUserVerifyingKeyProvider>();
+void EnclaveAuthenticatorTestBase::OverrideUVKeyAvailability(bool available) {
+  uvkey_override_ =
+      std::make_unique<crypto::ScopedUserVerifyingKeysSupportedOverride>(
+          base::BindLambdaForTesting(
+              [available](
+                  crypto::UserVerifyingKeysSupportedCallback uv_callback) {
+                std::move(uv_callback).Run(available);
+              }));
 }
 
 bool EnclaveAuthenticatorTestBase::IsUVPAA() {
