@@ -114,6 +114,7 @@ build_webui_tests("build") {
   ]
 
   ts_definitions = [
+    "//chrome/browser/resources/glic/url_pattern.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",

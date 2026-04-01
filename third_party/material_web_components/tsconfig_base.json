@@ -1,6 +1,5 @@
 {
  "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "baseUrl": "../../../third_party/material_web_components/components-chromium/node_modules/",
     "module": "ESNext",
     "target": "ES2021",

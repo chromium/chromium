@@ -13,7 +13,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 
 // The implementation of the cr module is located in
 // //components/translate/core/browser/resources/translate.js
-declare namespace cr {
+declare module cr {
   let googleTranslate: any;
 }
 

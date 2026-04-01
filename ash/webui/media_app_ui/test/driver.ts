@@ -220,8 +220,8 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
   }
 
   async *
-      entries(): FileSystemDirectoryHandleAsyncIterator<
-          [string, FileSystemFileHandle]> {
+      entries():
+          FileSystemDirectoryHandleAsyncIterator<[string, FileSystemHandle]> {
     for (const file of this.files) {
       yield [file.name, file];
     }
@@ -231,8 +231,7 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
       yield file.name;
     }
   }
-  async *
-      values(): FileSystemDirectoryHandleAsyncIterator<FileSystemFileHandle> {
+  async * values(): FileSystemDirectoryHandleAsyncIterator<FileSystemHandle> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;
@@ -242,9 +241,9 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
       yield file;
     }
   }
-  async * [
-    Symbol.asyncIterator
-  ](): FileSystemDirectoryHandleAsyncIterator<[string, FileSystemFileHandle]> {
+  async *
+      [Symbol.asyncIterator]():
+          FileSystemDirectoryHandleAsyncIterator<[string, FileSystemHandle]> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;
