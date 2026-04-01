@@ -51,7 +51,7 @@ PlatformAuthPolicyObserver::~PlatformAuthPolicyObserver() = default;
 // static
 void PlatformAuthPolicyObserver::RegisterPrefs(
     PrefRegistrySimple* pref_registry) {
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   pref_registry->RegisterIntegerPref(GetPrefName(), 0);
 #elif BUILDFLAG(IS_MAC)
   pref_registry->RegisterIntegerPref(GetPrefName(), 1);
@@ -61,9 +61,6 @@ void PlatformAuthPolicyObserver::RegisterPrefs(
           GetSupportedIdentityProvidersList());
   enterprise_auth::ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
       pref_registry);
-#elif BUILDFLAG(IS_ANDROID)
-  // TODO: b/484014627 - change the default value to 0 once policy is in place.
-  pref_registry->RegisterIntegerPref(GetPrefName(), 1);
 #else
 #error Unsupported platform
 #endif

@@ -236,6 +236,9 @@ avoid validation errors.
 * Internet Explorer: `<ph name="IE_PRODUCT_NAME">Internet® Explorer®</ph>`
 * Microsoft Active Directory: `<ph name="MS_AD_NAME">Microsoft® Active Directory®</ph>`
 * Microsoft Azure Active Directory `<ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph>`
+* Microsoft Authenticator: `<ph name="MS_AUTH_APP_NAME">Microsoft® Authenticator®</ph>`
+* Microsoft Intune Company portal: `<ph name="MS_ICP_NAME">Microsoft® Intune Company Portal®</ph>`
+* Microsoft Link to Windows: `<ph name="MS_LTW_NAME">Microsoft® Link to Windows®</ph>`
 
 Using placeholders means the text won’t be translated. Please update the list
 above if a new placeholder is introduced.

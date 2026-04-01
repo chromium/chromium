@@ -252,3 +252,5 @@ IN_PROC_BROWSER_TEST_F(PlatformAuthPolicyObserverTest, UnmanagedDevice) {
   platform_auth_policy_observer_.reset();
 }
 #endif  //  BUILDFLAG(IS_WIN)
+
+// TODO: b/484014627 - Add tests for Android.

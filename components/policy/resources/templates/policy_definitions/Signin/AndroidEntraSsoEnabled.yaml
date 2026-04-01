@@ -1,0 +1,34 @@
+caption: Allow automatic sign-in to Microsoft® cloud identity providers on <ph name="ANDROID_NAME">Android</ph>
+default: 0
+desc: |-
+  Configures automatic user sign-in for accounts backed by a Microsoft® cloud identity provider on <ph name="ANDROID_NAME">Android</ph>.
+
+  By setting this policy to 1 (<ph name="POLICY_VALUE_ENABLED">Enabled</ph>), users who have signed into a Microsoft® productivity application on their device can be automatically signed into Microsoft® web properties within <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. This functionality requires the presence of a Microsoft® authentication broker app, such as <ph name="MS_AUTH_APP_NAME">Microsoft® Authenticator®</ph>, <ph name="MS_ICP_NAME">Microsoft® Intune Company Portal®</ph>, or <ph name="MS_LTW_NAME">Microsoft® Link to Windows®</ph>. To facilitate the single sign-on, necessary authentication data is shared with the Microsoft® cloud identity provider.
+
+  By setting this policy to 0 (<ph name="POLICY_VALUE_DISABLED">Disabled</ph>) or leaving it unset, automatic sign-in as described above is disabled, and users must manually provide credentials for Microsoft® web properties.
+
+  Note: This policy does not apply to Incognito or Guest modes.
+
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+  - android
+items:
+- caption: Disable Microsoft® cloud authentication
+  name: Disabled
+  value: 0
+- caption: Enable Microsoft® cloud authentication
+  name: Enabled
+  value: 1
+owners:
+- ssolarewicz@google.com
+- file://chrome/browser/enterprise/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+tags: []
+type: int-enum

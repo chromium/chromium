@@ -17,6 +17,9 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -86,6 +89,16 @@ class EntraSsoAndroidBrowsertest : public PlatformBrowserTest {
   EntraSsoAndroidBrowsertest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
+  void SetUp() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    SetAndroidEntraSsoEnabledPolicy(1);
+    PlatformBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.SetCertHostnames({kInterceptedOrigin});
@@ -146,12 +159,22 @@ class EntraSsoAndroidBrowsertest : public PlatformBrowserTest {
     }
   }
 
+  void SetAndroidEntraSsoEnabledPolicy(int policy_value) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kAndroidEntraSsoEnabled,
+                 policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
+                 policy::POLICY_SOURCE_PLATFORM, base::Value(policy_value),
+                 nullptr);
+    policy_provider_.UpdateChromePolicy(policies);
+  }
+
   base::test::ScopedFeatureList feature_list_{
       enterprise_auth::kAndroidEntraSSO};
 
   std::vector<HeaderMap> collected_headers_;
   base::OnceClosure redirect_callback_;
   std::optional<JavaTokensReaderResultScopedOverride> results_override_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
@@ -247,5 +270,18 @@ IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest,
   ExpectTokensAttached(kAuthTokens, headers, false);
 
   headers = collected_headers_.at(1);
+  ExpectTokensAttached(kAuthTokens, headers, false);
+}
+
+IN_PROC_BROWSER_TEST_F(EntraSsoAndroidBrowsertest, PolicyDisabled) {
+  SetAndroidEntraSsoEnabledPolicy(0);
+
+  results_override_.emplace(
+      enterprise_auth::EntraProviderAndroid::TokenReadResult::kOk,
+      MakeJsonFromTokens(kAuthTokens));
+
+  ASSERT_TRUE(NavigateTo(kInterceptedOrigin));
+  ASSERT_EQ(collected_headers_.size(), 1u);
+  const auto& headers = collected_headers_.at(0);
   ExpectTokensAttached(kAuthTokens, headers, false);
 }
