@@ -25,6 +25,15 @@ namespace network::orb {
 
 namespace {
 
+void AdvancePastUtf8Bom(std::string_view* data) {
+  // https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8
+  const std::string_view kUtf8Bom("\xEF\xBB\xBF");
+
+  if (data->starts_with(kUtf8Bom)) {
+    data->remove_prefix(kUtf8Bom.size());
+  }
+}
+
 void AdvancePastWhitespace(std::string_view* data) {
   size_t offset = data->find_first_not_of(" \t\r\n");
   if (offset == std::string_view::npos) {
@@ -169,6 +178,7 @@ SniffingResult SniffForHTML(std::string_view data) {
       std::string_view("<p")   // Mozilla
   };
 
+  AdvancePastUtf8Bom(&data);
   while (data.length() > 0) {
     AdvancePastWhitespace(&data);
 
@@ -192,6 +202,7 @@ SniffingResult SniffForXML(std::string_view data) {
   // TODO(dsjang): Once CrossOriginReadBlocking is moved into the browser
   // process, we should do single-thread checking here for the static
   // initializer.
+  AdvancePastUtf8Bom(&data);
   AdvancePastWhitespace(&data);
   static constexpr std::string_view kXmlSignatures[] = {
       std::string_view("<?xml")};
@@ -216,6 +227,7 @@ SniffingResult SniffForJSON(std::string_view data) {
     kRightQuoteState,
   } state = kStartState;
 
+  AdvancePastUtf8Bom(&data);
   for (size_t i = 0; i < data.length(); ++i) {
     const char c = data[i];
     if (state != kLeftQuoteState && state != kEscapeState) {
@@ -297,6 +309,7 @@ SniffingResult SniffForFetchOnlyResource(std::string_view data) {
       std::string_view("for (;;);"),
       std::string_view("while (1);"),
   };
+  AdvancePastUtf8Bom(&data);
   SniffingResult has_parser_breaker = MatchesSignature(
       &data, kScriptBreakingPrefixes, base::CompareCase::SENSITIVE);
   if (has_parser_breaker != kNo) {

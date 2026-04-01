@@ -108,6 +108,10 @@ TEST(OrbSnifferTest, SniffForHTML) {
   EXPECT_EQ(SniffingResult::kMaybe, SniffForHTML("<!-- unterminated..."));
   EXPECT_EQ(SniffingResult::kMaybe,
             SniffForHTML("<!-- blah --> <html> no newline yet"));
+
+  // UTF-8 BOM (https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8) followed by
+  // valid HTML tags.
+  EXPECT_EQ(SniffingResult::kYes, SniffForHTML("\xEF\xBB\xBF<html><body>"));
 }
 
 TEST(OrbSnifferTest, SniffForXML) {
@@ -121,6 +125,11 @@ TEST(OrbSnifferTest, SniffForXML) {
 
   // Empty string should be indeterminate.
   EXPECT_EQ(SniffingResult::kMaybe, SniffForXML(empty_data));
+
+  // UTF-8 BOM (https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8) followed by
+  // valid XML tags.
+  EXPECT_EQ(SniffingResult::kYes,
+            SniffForXML("\xEF\xBB\xBF<?xml version=\"1.0\"?>\n <catalog"));
 }
 
 TEST(OrbSnifferTest, SniffForJSON) {
@@ -169,6 +178,11 @@ TEST(OrbSnifferTest, SniffForJSON) {
       << "Lists dictionary are not recognized (since they're valid JS too)";
   EXPECT_EQ(SniffingResult::kNo, SniffForJSON(R"({":"})"))
       << "A colon character inside a string does not trigger a match";
+
+  // UTF-8 BOM (https://en.wikipedia.org/wiki/Byte_order_mark#UTF-8) followed by
+  // valid JSON.
+  EXPECT_EQ(SniffingResult::kYes,
+            SniffForJSON("\xEF\xBB\xBF   { \"name\" : \"chrome\", "));
 }
 
 }  // namespace network::orb
