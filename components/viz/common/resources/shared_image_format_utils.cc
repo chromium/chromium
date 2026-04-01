@@ -15,6 +15,10 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/skia/include/core/SkColorType.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <CoreVideo/CVPixelBuffer.h>
+#endif  // BUILDFLAG(IS_MAC)
+
 namespace viz {
 namespace {
 
@@ -372,5 +376,56 @@ bool IsOddSizeMultiPlanarBuffersAllowed() {
 base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting() {
   return kMappableSharedImageFormats;
 }
+
+#if BUILDFLAG(IS_MAC)
+
+bool MatchesSharedImageFormatWithIOSurfacePixelFormat(
+    const SharedImageFormat& format,
+    OSType io_surface_format,
+    bool override_rgba_to_brga) {
+  switch (io_surface_format) {
+    case kCVPixelFormatType_OneComponent8:
+      return format == SinglePlaneFormat::kR_8;
+    case kCVPixelFormatType_TwoComponent8:
+      return format == SinglePlaneFormat::kRG_88;
+    case kCVPixelFormatType_OneComponent16:
+      return format == SinglePlaneFormat::kR_16;
+    case kCVPixelFormatType_TwoComponent16:
+      return format == SinglePlaneFormat::kRG_1616;
+    case kCVPixelFormatType_ARGB2101010LEPacked:
+      return format == SinglePlaneFormat::kBGRA_1010102;
+    case kCVPixelFormatType_32BGRA:
+      return format == SinglePlaneFormat::kBGRA_8888 ||
+             format == SinglePlaneFormat::kBGRX_8888 ||
+             (override_rgba_to_brga &&
+              (format == SinglePlaneFormat::kRGBA_8888 ||
+               format == SinglePlaneFormat::kRGBX_8888));
+    case kCVPixelFormatType_32RGBA:
+      return format == SinglePlaneFormat::kRGBA_8888 ||
+             format == SinglePlaneFormat::kRGBX_8888;
+    case kCVPixelFormatType_64RGBAHalf:
+      return format == SinglePlaneFormat::kRGBA_F16;
+
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kNV12;
+    case kCVPixelFormatType_422YpCbCr8BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kNV16;
+    case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kNV24;
+    case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
+      return format == MultiPlaneFormat::kNV12A;
+    case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kP010;
+    case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kP210;
+    case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
+      return format == MultiPlaneFormat::kP410;
+    case kCVPixelFormatType_420YpCbCr8Planar:
+      return format == MultiPlaneFormat::kI420;
+  }
+  return false;
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace viz

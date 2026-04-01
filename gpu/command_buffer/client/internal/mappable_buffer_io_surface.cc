@@ -132,6 +132,15 @@ MappableBufferIOSurface::CreateFromHandleImpl(
     return nullptr;
   }
 
+  // TODO(crbug.com/497531791): Check whether IOSurface pixel format matches
+  // the given SharedImageFormat: `format` or not.
+  // Since there is no information about whether `gr_context_type_ ==
+  // GrContextType::kGL` or not, we will treat `override_rgba_to_brga` as always
+  // true. c.f. IOSurfaceImageBackingFactory::CreateSharedImageGMBs().
+  CHECK(viz::MatchesSharedImageFormatWithIOSurfacePixelFormat(
+      format, IOSurfaceGetPixelFormat(handle.io_surface().get()),
+      true /*override_rgba_to_brga*/));
+
   int64_t io_surface_width = IOSurfaceGetWidth(handle.io_surface().get());
   int64_t io_surface_height = IOSurfaceGetHeight(handle.io_surface().get());
   if (io_surface_width < size.width() || io_surface_height < size.height()) {

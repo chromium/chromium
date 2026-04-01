@@ -6,7 +6,13 @@
 #define COMPONENTS_VIZ_COMMON_RESOURCES_SHARED_IMAGE_FORMAT_UTILS_H_
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
+
+#if BUILDFLAG(IS_MAC)
+// Includes `MacTypes.h` for an io surface pixel format, i.e. `OSType`.
+#include <MacTypes.h>
+#endif  // BUILDFLAG(IS_MAC)
 
 enum SkColorType : int;
 
@@ -129,6 +135,17 @@ bool IsOddSizeMultiPlanarBuffersAllowed();
 // Returns a span containing all mappable SharedImageFormats.
 COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
 base::span<const SharedImageFormat> GetMappableSharedImageFormatForTesting();
+
+#if BUILDFLAG(IS_MAC)
+// Returns whether the given shared image format matches io surface pixel
+// format or not.
+COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT)
+bool MatchesSharedImageFormatWithIOSurfacePixelFormat(
+    const SharedImageFormat& format,
+    OSType io_surface_format,
+    bool override_rgba_to_brga);
+#endif  // BUILDFLAG(IS_MAC)
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_RESOURCES_SHARED_IMAGE_FORMAT_UTILS_H_
