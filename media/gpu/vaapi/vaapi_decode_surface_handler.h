@@ -8,6 +8,10 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace gfx {
+struct HDRMetadata;
+}  // namespace gfx
+
 namespace media {
 
 class VASurface;
@@ -41,7 +45,8 @@ class VaapiDecodeSurfaceHandler {
   virtual void SurfaceReady(VASurfaceID va_surface_id,
                             int32_t bitstream_id,
                             const gfx::Rect& visible_rect,
-                            const VideoColorSpace& color_space) = 0;
+                            const VideoColorSpace& color_space,
+                            const gfx::HDRMetadata& dynamic_hdr_metadata) = 0;
 };
 
 }  // namespace media

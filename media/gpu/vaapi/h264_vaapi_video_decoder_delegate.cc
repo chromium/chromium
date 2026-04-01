@@ -627,7 +627,8 @@ bool H264VaapiVideoDecoderDelegate::OutputPicture(
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();
   vaapi_dec_->SurfaceReady(vaapi_pic->va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
-                           vaapi_pic->get_colorspace());
+                           vaapi_pic->get_colorspace(),
+                           vaapi_pic->dynamic_hdr_metadata());
   return true;
 }
 

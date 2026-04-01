@@ -792,7 +792,8 @@ bool AV1VaapiVideoDecoderDelegate::OutputPicture(const AV1Picture& pic) {
   const auto* vaapi_pic = static_cast<const VaapiAV1Picture*>(&pic);
   vaapi_dec_->SurfaceReady(vaapi_pic->display_va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
-                           vaapi_pic->get_colorspace());
+                           vaapi_pic->get_colorspace(),
+                           vaapi_pic->dynamic_hdr_metadata());
   return true;
 }
 

@@ -290,7 +290,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   profile_ = profile;
   color_space_ = config.color_space_info();
-  hdr_metadata_ = config.hdr_metadata();
+  static_hdr_metadata_ = config.hdr_metadata();
   encryption_scheme_ = transcryption_ ? EncryptionScheme::kUnencrypted
                                       : config.encryption_scheme();
 
@@ -541,10 +541,12 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
                                            std::move(release_frame_cb));
 }
 
-void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
-                                     int32_t buffer_id,
-                                     const gfx::Rect& visible_rect,
-                                     const VideoColorSpace& color_space) {
+void VaapiVideoDecoder::SurfaceReady(
+    VASurfaceID va_surface_id,
+    int32_t buffer_id,
+    const gfx::Rect& visible_rect,
+    const VideoColorSpace& color_space,
+    const gfx::HDRMetadata& dynamic_hdr_metadata) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kDecoding);
@@ -607,9 +609,12 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
-  if (gfx_color_space.IsValid())
+  if (gfx_color_space.IsValid()) {
     frame->set_color_space(gfx_color_space);
-  frame->set_hdr_metadata(hdr_metadata_);
+  }
+  gfx::HDRMetadata hdr_metadata = static_hdr_metadata_;
+  hdr_metadata.MergeMetadataFrom(dynamic_hdr_metadata);
+  frame->set_hdr_metadata(hdr_metadata);
   output_cb_.Run(std::move(frame));
 }
 

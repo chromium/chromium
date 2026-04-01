@@ -82,7 +82,8 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void SurfaceReady(VASurfaceID va_surface_id,
                     int32_t buffer_id,
                     const gfx::Rect& visible_rect,
-                    const VideoColorSpace& color_space) override;
+                    const VideoColorSpace& color_space,
+                    const gfx::HDRMetadata& dynamic_hdr_metadata) override;
 
   // Must be called before Initialize().
   void set_ignore_resolution_changes_to_smaller_vp9_for_testing(bool value);
@@ -221,7 +222,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   VideoCodecProfile profile_ GUARDED_BY_CONTEXT(sequence_checker_) =
       VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoColorSpace color_space_ GUARDED_BY_CONTEXT(sequence_checker_);
-  gfx::HDRMetadata hdr_metadata_ GUARDED_BY_CONTEXT(sequence_checker_);
+  gfx::HDRMetadata static_hdr_metadata_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Aspect ratio from the config.
   VideoAspectRatio aspect_ratio_ GUARDED_BY_CONTEXT(sequence_checker_);

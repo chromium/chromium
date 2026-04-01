@@ -112,7 +112,8 @@ bool VP8VaapiVideoDecoderDelegate::OutputPicture(
   const VaapiVP8Picture* vaapi_pic = pic->AsVaapiVP8Picture();
   vaapi_dec_->SurfaceReady(vaapi_pic->va_surface_id(),
                            vaapi_pic->bitstream_id(), vaapi_pic->visible_rect(),
-                           vaapi_pic->get_colorspace());
+                           vaapi_pic->get_colorspace(),
+                           vaapi_pic->dynamic_hdr_metadata());
   return true;
 }
 
