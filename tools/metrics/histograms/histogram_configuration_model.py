@@ -45,7 +45,7 @@ _INT_TYPE = models.ObjectNodeType(
         ('label', str, None),
     ],
     required_attributes=['value'],
-    text_attribute=True,
+    keep_inner_text=True,
     single_line=True,
 )
 
@@ -100,7 +100,7 @@ _IMPROVEMENT_TYPE = models.ObjectNodeType(
         ),
     ],
     required_attributes=['direction'],
-    text_attribute=False,
+    keep_inner_text=False,
     single_line=True,
 )
 

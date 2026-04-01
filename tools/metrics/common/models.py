@@ -358,7 +358,7 @@ class ObjectNodeType(NodeType):
         r'^\w+$')].  The order of the attributes determines the ordering of
         attributes, when serializing objects to XML. The "regex" can be None
         to do no validation, otherwise the attribute must match that pattern.
-    text_attribute: An attribute stored in the text content of the node.
+    keep_inner_text: Whether to store the text content of the node.
     children: A list of ChildTypes describing the objects' children.
 
   Raises:
@@ -371,13 +371,13 @@ class ObjectNodeType(NodeType):
                                                Optional[str]]]] = None,
                required_attributes: Optional[List[str]] = None,
                children: Optional[List[ChildType]] = None,
-               text_attribute: Optional[str] = None,
+               keep_inner_text: bool = False,
                **kwargs):
     NodeType.__init__(self, tag, **kwargs)
     self.attributes = attributes or []
     self.required_attributes = required_attributes or []
     self.children = children or []
-    self.text_attribute = text_attribute
+    self.keep_inner_text = keep_inner_text
     if len(self.attributes) != len(set(a for a, _, _ in self.attributes)):
       raise ValueError('Duplicate attribute definition.')
 
@@ -410,19 +410,18 @@ class ObjectNodeType(NodeType):
           raise ValueError('%s "%s" does not match regex "%s"' %
                            (attr, attr_val, attr_re))
 
-    # We need to iterate through all the children and get their nodeValue,
-    # to account for the cases where other children node precedes the text
-    # attribute.
-    obj[self.text_attribute] = ''
-    child_node: Optional[minidom.Node] = node.firstChild
-    while child_node:
-      obj[self.text_attribute] += (child_node.nodeValue.strip()
-                                   if child_node.nodeValue else '')
-      child_node = child_node.nextSibling
+    if self.keep_inner_text:
+      # Iterate through all the children and get their nodeValue, to account for
+      # the cases where other children node precedes the text attribute.
+      text_value = ''
+      child_node: Optional[minidom.Node] = node.firstChild
+      while child_node:
+        text_value += (child_node.nodeValue.strip()
+                       if child_node.nodeValue else '')
+        child_node = child_node.nextSibling
 
-    # This prevents setting a None key with empty string value.
-    if not obj[self.text_attribute]:
-      del obj[self.text_attribute]
+      if text_value:
+        obj[TEXT_KEY] = text_value
 
     for child in self.children:
       assert child
@@ -456,8 +455,8 @@ class ObjectNodeType(NodeType):
       if attr in obj:
         node.setAttribute(attr, str(obj[attr]))
 
-    if self.text_attribute and self.text_attribute in obj:
-      node.appendChild(doc.createTextNode(obj[self.text_attribute]))
+    if self.keep_inner_text and TEXT_KEY in obj:
+      node.appendChild(doc.createTextNode(obj[TEXT_KEY]))
 
     for child in self.children:
       if child.multiple:
