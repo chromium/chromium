@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 if (is_android) {
   import("//build/config/android/rules.gni")
@@ -210,6 +211,9 @@ source_set("sync_integration_tests_impl") {
         "single_client_dictionary_sync_test.cc",
         "two_client_dictionary_sync_test.cc",
       ]
+      if (enable_spellcheck) {
+        deps += [ "//chrome/browser/spellchecker" ]
+      }
     }
     if (is_win || is_mac || is_linux) {
       sources +=
@@ -596,6 +600,9 @@ source_set("sync_integration_test_support") {
         "dictionary_load_observer.cc",
         "dictionary_load_observer.h",
       ]
+      if (enable_spellcheck) {
+        deps += [ "//chrome/browser/spellchecker" ]
+      }
     }
   }
 

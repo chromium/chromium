@@ -6122,6 +6122,7 @@ if (!is_android) {
     if (enable_spellcheck) {
       sources +=
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
+      deps += [ "//chrome/browser/spellchecker" ]
     }
 
     sources +=
@@ -9451,6 +9452,8 @@ test("unit_tests") {
   }
 
   if (enable_spellcheck) {
+    deps += [ "//chrome/browser/spellchecker" ]
+
     sources +=
         [ "../browser/spellchecker/spellcheck_custom_dictionary_unittest.cc" ]
 

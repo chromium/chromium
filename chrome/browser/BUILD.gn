@@ -1382,8 +1382,6 @@ static_library("browser") {
     # c/b/sharing/click_to_call/click_to_call_context_menu_observer.h
     # c/b/sharing/click_to_call/click_to_call_metrics.h
     # c/b/sharing/click_to_call/click_to_call_utils.h
-    # c/b/spellchecker/spellcheck_factory.h
-    # c/b/spellchecker/spellcheck_service.h
     # c/b/supervised_user/supervised_user_url_filtering_service_factory.h
     # c/b/translate/translate_service.h
     "//chrome/browser/renderer_context_menu:impl",
@@ -7852,52 +7850,11 @@ static_library("browser") {
   }
 
   if (enable_spellcheck) {
-    sources += [
-      "spellchecker/spell_check_host_chrome_impl.cc",
-      "spellchecker/spell_check_host_chrome_impl.h",
-      "spellchecker/spell_check_initialization_host_impl.cc",
-      "spellchecker/spell_check_initialization_host_impl.h",
-      "spellchecker/spellcheck_custom_dictionary.cc",
-      "spellchecker/spellcheck_custom_dictionary.h",
-      "spellchecker/spellcheck_factory.cc",
-      "spellchecker/spellcheck_factory.h",
-      "spellchecker/spellcheck_hunspell_dictionary.cc",
-      "spellchecker/spellcheck_hunspell_dictionary.h",
-      "spellchecker/spellcheck_service.cc",
-      "spellchecker/spellcheck_service.h",
-    ]
-
-    if (use_browser_spellchecker && enable_spelling_service) {
-      sources += [
-        "spellchecker/spelling_request.cc",
-        "spellchecker/spelling_request.h",
-      ]
-    }
-
-    if (is_win || is_linux || is_chromeos) {
-      sources += [
-        "spellchecker/spellcheck_language_blocklist_policy_handler.cc",
-        "spellchecker/spellcheck_language_blocklist_policy_handler.h",
-        "spellchecker/spellcheck_language_policy_handler.cc",
-        "spellchecker/spellcheck_language_policy_handler.h",
-      ]
-    }
-
-    if (has_spellcheck_panel) {
-      sources += [
-        "spellchecker/spell_check_panel_host_impl.cc",
-        "spellchecker/spell_check_panel_host_impl.h",
-      ]
-    }
-
     deps += [
-      "//components/spellcheck/browser",
-      "//components/spellcheck/common",
+      "//chrome/browser/spellchecker",
+      "//chrome/browser/spellchecker:impl",
     ]
-
-    if (!is_android) {
-      deps += [ "//third_party/hunspell" ]
-    }
+    allow_circular_includes_from += [ "//chrome/browser/spellchecker:impl" ]
   }
 
   if (enable_vr) {
@@ -8852,7 +8809,10 @@ static_library("test_support") {
       "spellchecker/test/spellcheck_panel_browsertest_helper.cc",
       "spellchecker/test/spellcheck_panel_browsertest_helper.h",
     ]
-    deps += [ "//components/spellcheck/common" ]
+    deps += [
+      "//chrome/browser/spellchecker",
+      "//components/spellcheck/common",
+    ]
   }
   if (enable_bound_session_credentials) {
     sources += [

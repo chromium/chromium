@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 source_set("renderer_context_menu") {
@@ -105,6 +106,7 @@ source_set("impl") {
       "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/sharing_hub",
+      "//chrome/browser/spellchecker",
       "//chrome/browser/sync",
       "//chrome/browser/translate",
       "//chrome/browser/ui",
@@ -322,6 +324,7 @@ if (!is_android) {
       "//chrome/browser/devtools",
       "//chrome/browser/pdf:pdf_extension_test_utils",
       "//chrome/browser/search_engines",
+      "//chrome/browser/spellchecker",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/side_panel",

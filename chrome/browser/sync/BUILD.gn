@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//components/spellcheck/spellcheck_build_features.gni")
 import("//components/supervised_user/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
@@ -169,6 +170,10 @@ source_set("sync") {
   ]
 
   allow_circular_includes_from = []
+
+  if (enable_spellcheck) {
+    deps += [ "//chrome/browser/spellchecker" ]
+  }
 
   if (enable_extensions) {
     deps += [ "//chrome/browser/web_applications" ]
