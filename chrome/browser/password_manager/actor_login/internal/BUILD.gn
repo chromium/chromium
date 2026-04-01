@@ -7,17 +7,10 @@ source_set("internal") {
   sources = [
     "actor_login_delegate_impl.cc",
     "actor_login_delegate_impl.h",
-    "actor_login_duplicate_permission_cleaner.cc",
-    "actor_login_duplicate_permission_cleaner.h",
     "actor_login_federated_credentials_fetcher.cc",
     "actor_login_federated_credentials_fetcher.h",
     "actor_login_metrics_helper.cc",
     "actor_login_metrics_helper.h",
-    "actor_login_permission_cleaning_service.h",
-    "actor_login_permission_cleaning_service_factory.cc",
-    "actor_login_permission_cleaning_service_factory.h",
-    "actor_login_permission_cleaning_service_impl.cc",
-    "actor_login_permission_cleaning_service_impl.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
     "siwg_button_finder.cc",
@@ -30,10 +23,11 @@ source_set("internal") {
   ]
 
   deps = [
+    ":permission_cleaner",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/glic",
-    "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
+    "//chrome/browser/password_manager/actor_login:factories",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/translate",
     "//chrome/browser/ui/browser_window",
@@ -54,6 +48,25 @@ source_set("internal") {
   ]
 }
 
+source_set("permission_cleaner") {
+  sources = [
+    "actor_login_duplicate_permission_cleaner.cc",
+    "actor_login_duplicate_permission_cleaner.h",
+    "actor_login_permission_cleaning_service.h",
+    "actor_login_permission_cleaning_service_impl.cc",
+    "actor_login_permission_cleaning_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/features:password_features",
+    "//content/public/browser",
+  ]
+}
+
 if (!skip_android_unmigrated_actor_files) {
   source_set("unit_tests") {
     testonly = true
@@ -67,9 +80,10 @@ if (!skip_android_unmigrated_actor_files) {
 
     deps = [
       ":internal",
+      ":permission_cleaner",
       "//base/test:test_support",
       "//chrome/browser/actor:test_support",
-      "//chrome/browser/password_manager/actor_login:actor_login_permission_service_factory",
+      "//chrome/browser/password_manager/actor_login:factories",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/webid",
       "//chrome/common:mojo_bindings",
