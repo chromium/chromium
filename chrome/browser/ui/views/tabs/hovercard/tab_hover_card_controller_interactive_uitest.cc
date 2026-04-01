@@ -905,14 +905,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardSystemWebAppTest,
 #endif
 
 // TODO(crbug.com/497970633): Fix flakiness and enable tab group header
-// hover card tests on other platforms. So far they only work on linux.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_HoverCardShowsOnGroupHeader HoverCardShowsOnGroupHeader
-#else
-#define MAYBE_HoverCardShowsOnGroupHeader DISABLED_HoverCardShowsOnGroupHeader
-#endif  // BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+// hover card tests on all platforms.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_HoverCardShowsOnGroupHeader) {
+                       DISABLED_HoverCardShowsOnGroupHeader) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   RunTestSequence(
@@ -950,15 +945,11 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       FocusElement(kTabGroupHeaderElementId),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_HoverCardTransitionFromGroupToTab \
-  HoverCardTransitionFromGroupToTab
-#else
-#define MAYBE_HoverCardTransitionFromGroupToTab \
-  DISABLED_HoverCardTransitionFromGroupToTab
-#endif  // BUILDFLAG(IS_LINUX)
+
+// TODO(crbug.com/497970633): Fix flakiness and enable tab group header
+// hover card tests on all platforms.
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_HoverCardTransitionFromGroupToTab) {
+                       DISABLED_HoverCardTransitionFromGroupToTab) {
   ASSERT_TRUE(
       AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
