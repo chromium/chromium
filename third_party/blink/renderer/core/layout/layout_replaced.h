@@ -61,7 +61,6 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // or underflow the final content box by 1px.
   static PhysicalRect PreSnappedRectForPersistentSizing(const PhysicalRect&);
 
-  void AddVisualEffectOverflow();
   void RecalcVisualOverflow() override;
 
   // These values are specified to be 300 and 150 pixels in the CSS 2.1 spec.
@@ -180,6 +179,9 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   gfx::Size ComputeSpeculativeDecodeSize() const override;
 
  private:
+  void AddVisualEffectOverflow();
+  PhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
+
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
   // value is used as the input for object-fit/object-position during painting.

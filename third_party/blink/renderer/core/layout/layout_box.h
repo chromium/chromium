@@ -374,8 +374,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void AddContentsVisualOverflow(const PhysicalRect& r);
   void UpdateHasSubpixelVisualEffectOutsets(const PhysicalBoxStrut&);
 
-  PhysicalBoxStrut ComputeVisualEffectOverflowOutsets();
-
   void ClearVisualOverflow();
 
   bool CanUseFragmentsForVisualOverflow() const;

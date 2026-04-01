@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/paint/border_shape_painter.h"
 #include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
@@ -246,6 +247,78 @@ bool LayoutReplaced::HitTestChildren(HitTestResult& result,
 void LayoutReplaced::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
   ReplacedPainter(*this).Paint(paint_info);
+}
+
+PhysicalBoxStrut LayoutReplaced::ComputeVisualEffectOverflowOutsets() {
+  NOT_DESTROYED();
+  const ComputedStyle& style = StyleRef();
+  DCHECK(style.HasVisualOverflowingEffect());
+
+  PhysicalBoxStrut outsets = style.BoxDecorationOutsets();
+
+  PhysicalRect border_rect(PhysicalOffset(), StitchedSize());
+  std::optional<BorderShapeReferenceRects> border_shape_rects;
+
+  if (style.HasBorderShape()) {
+    border_shape_rects =
+        ComputeBorderShapeReferenceRects(border_rect, style, *this);
+    const PhysicalRect outer_reference_rect =
+        border_shape_rects ? border_shape_rects->outer : border_rect;
+    const PhysicalRect inner_reference_rect =
+        border_shape_rects ? border_shape_rects->inner : border_rect;
+    // VisualOutsets() returns the complete border-shape overflow: both the
+    // border path's visual extent and the precise box-shadow extent.
+    outsets.Unite(BorderShapePainter::VisualOutsets(
+        style, border_rect, outer_reference_rect, inner_reference_rect));
+  }
+
+  if (style.HasOutline()) {
+    OutlineInfo info;
+    Vector<PhysicalRect> outline_rects =
+        OutlineRects(&info, PhysicalOffset(),
+                     style.OutlineRectsShouldIncludeBlockInkOverflow());
+    PhysicalRect rect = UnionRect(outline_rects);
+    PhysicalSize size = StitchedSize();
+    bool outline_affected = rect.size != size;
+    SetOutlineMayBeAffectedByDescendants(outline_affected);
+
+    // For border-shape, compute the outline bounds from the offset path.
+    if (style.HasBorderShape()) {
+      const PhysicalRect outer_reference_rect =
+          border_shape_rects ? border_shape_rects->outer : border_rect;
+      // When border-shape uses a single shape, the border is stroked centered
+      // on the path, so the outer edge is at border_width/2 from the path.
+      float border_stroke_offset = 0;
+      const StyleBorderShape* border_shape = style.BorderShape();
+      if (border_shape && !border_shape->HasSeparateInnerShape()) {
+        DerivedStroke derived_stroke = RelevantSideForBorderShape(style);
+        border_stroke_offset = derived_stroke.thickness / 2.0f;
+      }
+      const float outline_offset = border_stroke_offset +
+                                   static_cast<float>(info.offset) +
+                                   static_cast<float>(info.width);
+      Path outline_path = BorderShapePainter::OuterPathWithOffset(
+          style, outer_reference_rect, outline_offset);
+      gfx::RectF outline_bounds = outline_path.BoundingRect();
+      const float top_outset =
+          std::max(0.0f, border_rect.Y() - outline_bounds.y());
+      const float left_outset =
+          std::max(0.0f, border_rect.X() - outline_bounds.x());
+      const float right_outset =
+          std::max(0.0f, outline_bounds.right() - border_rect.Right());
+      const float bottom_outset =
+          std::max(0.0f, outline_bounds.bottom() - border_rect.Bottom());
+      outsets.Unite(PhysicalBoxStrut::Enclosing(gfx::OutsetsF::TLBR(
+          top_outset, left_outset, bottom_outset, right_outset)));
+    } else {
+      rect.Inflate(
+          LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
+      outsets.Unite(PhysicalBoxStrut(-rect.Y(), rect.Right() - size.width,
+                                     rect.Bottom() - size.height, -rect.X()));
+    }
+  }
+
+  return outsets;
 }
 
 void LayoutReplaced::AddVisualEffectOverflow() {
