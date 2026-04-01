@@ -6,6 +6,9 @@
 <script src="resources/mail-client-write-setup.js"></script>
 <script>
   deleteThenOpen(databaseName, populateFakeMailClientDatabase, () => {
+    window.dbConnection.onversionchange = () => {
+      window.dbConnection.close();
+    };
     var test = {
       description: 'Benchmark for database version upgrade by adding/removing indexes and object stores.',
       unit: 'ms',

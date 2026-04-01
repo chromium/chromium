@@ -7,7 +7,12 @@ function deleteThenOpen(dbName, upgradeFunc, bodyFunc) {
       upgradeFunc(openRequest.result, openRequest);
     }
     openRequest.onsuccess = () => {
-      bodyFunc(openRequest.result, openRequest);
+      // Hold onto the connection. This ensures that tests will measure warm-open performance.
+      // Without this step, tests may racily measure cold- or warm-open.
+      // TODO(crbug.com/496947065): Make it possible to test cold opens, and refactor tests
+      // to explicitly choose one or the other.
+      window.dbConnection = openRequest.result;
+      bodyFunc();
     }
     openRequest.onerror = (e) => {
       window.PerfTestRunner.logFatalError("Error setting up database " + dbName + ". Error: " + e.type);

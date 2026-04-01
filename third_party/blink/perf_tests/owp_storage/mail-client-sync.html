@@ -6,7 +6,7 @@
 <script src="resources/mail-client-sync-setup.js"></script>
 <script src="resources/mail-client-write-setup.js"></script>
 <script>
-    deleteThenOpen(databaseName, populateFakeMailClientSyncDatabase, function () {
+    deleteThenOpen(databaseName, populateFakeMailClientSyncDatabase, () => {
         var test = {
             description: 'Benchmark modeling the IndexedDB activity for a Mail Client Sync Scenario.',
             unit: 'ms',
