@@ -173,14 +173,14 @@ device::mojom::blink::NDEFMessagePtr ParseRawNDEFMessage(
         break;
       case device::mojom::blink::NSRawTypeNameFormat::kMedia:
         mojo_record =
-            CreateMediaRecord(String::FromUTF8(record->type), record->payload);
+            CreateMediaRecord(String::FromUtf8(record->type), record->payload);
         break;
       case device::mojom::blink::NSRawTypeNameFormat::kExternal:
-        mojo_record = CreateExternalRecord(String::FromUTF8(record->type),
+        mojo_record = CreateExternalRecord(String::FromUtf8(record->type),
                                            record->payload);
         break;
       case device::mojom::blink::NSRawTypeNameFormat::kWellKnown:
-        mojo_record = CreateWellKnownRecord(String::FromUTF8(record->type),
+        mojo_record = CreateWellKnownRecord(String::FromUtf8(record->type),
                                             record->payload);
         break;
       case device::mojom::blink::NSRawTypeNameFormat::kUnknown:
@@ -191,7 +191,7 @@ device::mojom::blink::NDEFMessagePtr ParseRawNDEFMessage(
         return nullptr;
     }
     if (mojo_record) {
-      mojo_record->id = String::FromUTF8(record->identifier);
+      mojo_record->id = String::FromUtf8(record->identifier);
       records.push_back(std::move(mojo_record));
     }
   }
