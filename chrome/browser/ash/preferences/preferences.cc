@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -50,7 +51,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 #include "chrome/common/pref_names.h"
@@ -118,11 +118,18 @@ const char* const kCopyToKnownUserPrefs[] = {
 
 }  // namespace
 
-Preferences::Preferences()
-    : Preferences(input_method::InputMethodManager::Get()) {}
+Preferences::Preferences(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_storage)
+    : Preferences(local_state,
+                  application_locale_storage,
+                  input_method::InputMethodManager::Get()) {}
 
-Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
-    : prefs_(nullptr),
+Preferences::Preferences(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_storage,
+                         input_method::InputMethodManager* input_method_manager)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      prefs_(nullptr),
       input_method_manager_(input_method_manager),
       user_(nullptr),
       user_is_primary_(false) {}
@@ -174,6 +181,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
 
 // static
 void Preferences::RegisterProfilePrefs(
+    PrefService& local_state,
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
@@ -182,11 +190,8 @@ void Preferences::RegisterProfilePrefs(
   std::string hardware_keyboard_id;
   // TODO(yusukes): Remove the runtime hack.
   if (base::SysInfo::IsRunningOnChromeOS()) {
-    DCHECK(g_browser_process);
-    PrefService* local_state = g_browser_process->local_state();
-    DCHECK(local_state);
     hardware_keyboard_id =
-        local_state->GetString(::prefs::kHardwareKeyboardLayout);
+        local_state.GetString(::prefs::kHardwareKeyboardLayout);
   } else {
     hardware_keyboard_id = "xkb:us::eng";  // only for testing.
   }
@@ -414,10 +419,7 @@ void Preferences::RegisterProfilePrefs(
   bool allow_time_zone_resolve_by_default = true;
   // CfM devices default to static timezone unless time zone resolving is
   // explicitly enabled for the signin screen (usually by policy).
-  // We need local_state fully initialized, which does not happen in tests.
-  if (!g_browser_process->local_state() ||
-      g_browser_process->local_state()
-              ->GetAllPrefStoresInitializationStatus() ==
+  if (local_state.GetAllPrefStoresInitializationStatus() ==
           PrefService::INITIALIZATION_STATUS_WAITING ||
       system::InputDeviceSettings::Get()->ForceKeyboardDrivenUINavigation()) {
     allow_time_zone_resolve_by_default = false;
@@ -761,12 +763,11 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   xkb_auto_repeat_interval_pref_.Init(prefs::kXkbAutoRepeatInterval, prefs,
                                       callback);
   pci_data_access_enabled_pref_.Init(
-      prefs::kLocalStateDevicePeripheralDataAccessEnabled,
-      g_browser_process->local_state(), callback);
+      prefs::kLocalStateDevicePeripheralDataAccessEnabled, &local_state_.get(),
+      callback);
 
   consumer_auto_update_toggle_pref_.Init(::prefs::kConsumerAutoUpdateToggle,
-                                         g_browser_process->local_state(),
-                                         callback);
+                                         &local_state_.get(), callback);
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(ash::prefs::kUserGeolocationAccessLevel, callback);
   pref_change_registrar_.Add(ash::prefs::kUserPreviousGeolocationAccessLevel,
@@ -839,11 +840,8 @@ void Preferences::Init(Profile* profile, const user_manager::User* user) {
     input_method_manager_->SetState(ime_state_);
   }
 
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-
   input_method_syncer_ = std::make_unique<input_method::InputMethodSyncer>(
-      application_locale_storage, prefs, ime_state_);
+      &application_locale_storage_.get(), prefs, ime_state_);
   input_method_syncer_->Initialize();
 
   // If a guest is logged in, initialize the prefs as if this is the first
@@ -870,11 +868,8 @@ void Preferences::InitUserPrefsForTesting(
 
   UpdateEngineClient::Get()->AddObserver(this);
 
-  ApplicationLocaleStorage* application_locale_storage =
-      g_browser_process->GetFeatures()->application_locale_storage();
-
   input_method_syncer_ = std::make_unique<input_method::InputMethodSyncer>(
-      application_locale_storage, prefs, ime_state_);
+      &application_locale_storage_.get(), prefs, ime_state_);
   input_method_syncer_->Initialize();
 }
 
@@ -935,7 +930,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   system::TouchpadSettings touchpad_settings;
   system::MouseSettings mouse_settings;
   system::PointingStickSettings pointing_stick_settings;
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
 
   if (user_is_primary_ && (reason == REASON_INITIALIZATION ||
                            pref_name == ::prefs::kPerformanceTracingEnabled)) {
@@ -957,9 +952,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
-      PrefService* prefs = g_browser_process->local_state();
-      if (prefs->GetBoolean(prefs::kOwnerTapToClickEnabled) != enabled) {
-        prefs->SetBoolean(prefs::kOwnerTapToClickEnabled, enabled);
+      if (local_state_->GetBoolean(prefs::kOwnerTapToClickEnabled) != enabled) {
+        local_state_->SetBoolean(prefs::kOwnerTapToClickEnabled, enabled);
       }
     }
   }
@@ -1057,9 +1051,9 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                                  "Mouse.PrimaryButtonRight.Started", right);
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
-      PrefService* prefs = g_browser_process->local_state();
-      if (prefs->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight) != right) {
-        prefs->SetBoolean(prefs::kOwnerPrimaryMouseButtonRight, right);
+      if (local_state_->GetBoolean(prefs::kOwnerPrimaryMouseButtonRight) !=
+          right) {
+        local_state_->SetBoolean(prefs::kOwnerPrimaryMouseButtonRight, right);
       }
     }
   }
@@ -1071,10 +1065,10 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
     // Save owner preference in local state to use on login screen.
     if (user_is_owner) {
-      PrefService* prefs = g_browser_process->local_state();
-      if (prefs->GetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight) !=
-          right) {
-        prefs->SetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight, right);
+      if (local_state_->GetBoolean(
+              prefs::kOwnerPrimaryPointingStickButtonRight) != right) {
+        local_state_->SetBoolean(prefs::kOwnerPrimaryPointingStickButtonRight,
+                                 right);
       }
     }
   }
@@ -1292,9 +1286,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       } else {
         login_geo_access_level = GeolocationAccessLevel::kDisallowed;
       }
-      g_browser_process->local_state()->SetInteger(
-          ash::prefs::kDeviceGeolocationAllowed,
-          static_cast<int>(login_geo_access_level));
+      local_state_->SetInteger(ash::prefs::kDeviceGeolocationAllowed,
+                               static_cast<int>(login_geo_access_level));
     }
   }
 
@@ -1314,7 +1307,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
     if (user_is_owner) {
       // Policy check is false here, because there is no owner for enterprise.
-      g_browser_process->local_state()->SetInteger(
+      local_state_->SetInteger(
           ash::prefs::kResolveDeviceTimezoneByGeolocationMethod,
           static_cast<int>(system::TimeZoneResolverManager::
                                GetEffectiveUserTimeZoneResolveMethod(
@@ -1331,8 +1324,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
                   DISABLED &&
           reason == REASON_PREF_CHANGED) {
         // Allow immediate timezone update on Stop + Start.
-        g_browser_process->local_state()->ClearPref(
-            TimeZoneResolver::kLastTimeZoneRefreshTime);
+        local_state_->ClearPref(TimeZoneResolver::kLastTimeZoneRefreshTime);
       }
     }
   }
@@ -1361,7 +1353,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
   if (pref_name == prefs::kLocalStateDevicePeripheralDataAccessEnabled &&
       reason == REASON_PREF_CHANGED) {
-    const bool value = g_browser_process->local_state()->GetBoolean(
+    const bool value = local_state_->GetBoolean(
         prefs::kLocalStateDevicePeripheralDataAccessEnabled);
     if (PeripheralNotificationManager::IsInitialized()) {
       PeripheralNotificationManager::Get()->SetPcieTunnelingAllowedState(value);
@@ -1453,7 +1445,7 @@ void Preferences::UpdateAutoRepeatRate() {
   input_method::InputMethodManager::Get()->GetImeKeyboard()->SetAutoRepeatRate(
       rate);
 
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetIntegerPref(user_->GetAccountId(), prefs::kXkbAutoRepeatDelay,
                             rate.initial_delay.InMilliseconds());
   known_user.SetIntegerPref(user_->GetAccountId(),

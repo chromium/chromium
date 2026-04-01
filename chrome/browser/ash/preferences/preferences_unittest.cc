@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -182,7 +183,12 @@ class PreferencesTest : public testing::Test {
 
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
-    prefs_ = std::make_unique<Preferences>(mock_manager_);
+    prefs_ = std::make_unique<Preferences>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        mock_manager_);
   }
 
   void TearDown() override {

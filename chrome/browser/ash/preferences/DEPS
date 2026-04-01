@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/browser_process.h",
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/download",
-  "+chrome/browser/global_features.h",
   "+chrome/browser/prefs",
   "+chrome/browser/ash/policy/skyvault",
   # We don't want more dependencies on c/b/ui/ash.
@@ -25,3 +24,9 @@ include_rules = [
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "preferences_unittest\\.cc": [
+    "+chrome/browser/global_features.h"
+  ]
+}

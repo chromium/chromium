@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
@@ -17,8 +18,10 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+class ApplicationLocaleStorage;
 class ContentTracingManager;
 class PrefRegistrySimple;
+class PrefService;
 
 namespace chromeos {
 class User;
@@ -46,9 +49,14 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
                     public UpdateEngineClient::Observer {
  public:
-  Preferences();
-  explicit Preferences(
-      input_method::InputMethodManager* input_method_manager);  // for testing
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  Preferences(PrefService* local_state,
+              ApplicationLocaleStorage* application_locale_storage);
+  // for testing
+  Preferences(PrefService* local_state,
+              ApplicationLocaleStorage* application_locale_storage,
+              input_method::InputMethodManager* input_method_manager);
 
   Preferences(const Preferences&) = delete;
   Preferences& operator=(const Preferences&) = delete;
@@ -57,7 +65,8 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
 
   // These method will register the prefs associated with Chrome OS settings.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(PrefService& local_state,
+                                   user_prefs::PrefRegistrySyncable* registry);
 
   // This method will initialize Chrome OS settings to values in user prefs.
   // |user| is the user owning this preferences.
@@ -137,6 +146,9 @@ class Preferences : public sync_preferences::PrefServiceSyncableObserver,
   // UpdateEngineClient::Observer implementation.
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
   void OnIsConsumerAutoUpdateEnabled(std::optional<bool> enabled);
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   raw_ptr<sync_preferences::PrefServiceSyncable> prefs_;
 

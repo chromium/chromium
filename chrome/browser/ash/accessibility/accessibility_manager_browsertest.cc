@@ -30,6 +30,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 #include "chrome/browser/extensions/component_loader.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -2034,7 +2035,9 @@ IN_PROC_BROWSER_TEST_P(AccessibilityManagerUserTypeTest, BrailleWhenLoggedIn) {
 
   // This object watches for IME preference changes and reflects those in
   // the IME framework state.
-  Preferences prefs;
+  Preferences prefs(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
   prefs.InitUserPrefsForTesting(
       PrefServiceSyncableFromProfile(GetActiveUserProfile()),
       user_manager::UserManager::Get()->GetActiveUser(),
