@@ -50,6 +50,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const std::optional<ExecutionContextToken>& parent_context_token,
     bool cross_origin_isolated_capability,
     bool parent_is_isolated_context,
+    bool direct_sockets_force_enabled_in_parent,
     InterfaceRegistry* interface_registry,
     scoped_refptr<base::SingleThreadTaskRunner>
         agent_group_scheduler_compositor_task_runner,
@@ -105,6 +106,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_context_token(parent_context_token),
       cross_origin_isolated_capability(cross_origin_isolated_capability),
       parent_is_isolated_context(parent_is_isolated_context),
+      direct_sockets_force_enabled_in_parent(
+          direct_sockets_force_enabled_in_parent),
       interface_registry(interface_registry),
       agent_group_scheduler_compositor_task_runner(
           std::move(agent_group_scheduler_compositor_task_runner)),

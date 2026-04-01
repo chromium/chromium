@@ -12,8 +12,7 @@
       ServiceWorker DirectSocketsInServiceWorkers
     ),
     ActiveScriptWrappable,
-    SecureContext,
-    IsolatedContext
+    SecureContext
 ] interface UDPSocket {
   [CallWith=ScriptState, RaisesException, MeasureAs=UDPSocketConstructor]
   constructor(UDPSocketOptions options);

@@ -1551,9 +1551,6 @@ class FeaturePolicyVisibilityTest
 INSTANTIATE_TEST_SUITE_P(All, FeaturePolicyVisibilityTest, testing::Bool());
 
 TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
-  EXPECT_TRUE(RuntimeEnabledFeatures::ControlledFrameEnabled());
-  EXPECT_TRUE(RuntimeEnabledFeatures::DirectSocketsEnabled());
-
   auto dummy_page_holder = std::make_unique<DummyPageHolder>();
   ExecutionContext* execution_context =
       dummy_page_holder->GetFrame().DomWindow();

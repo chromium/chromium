@@ -96,8 +96,9 @@ WebSharedWorkerImpl::~WebSharedWorkerImpl() {
 
 void WebSharedWorkerImpl::TerminateWorkerThread() {
   DCHECK(IsMainThread());
-  if (asked_to_terminate_)
+  if (asked_to_terminate_) {
     return;
+  }
   asked_to_terminate_ = true;
   pending_channels_.clear();
   worker_thread_->Terminate();
@@ -163,8 +164,9 @@ void WebSharedWorkerImpl::DidTerminateWorkerThread() {
 void WebSharedWorkerImpl::Connect(int connection_request_id,
                                   MessagePortDescriptor port) {
   DCHECK(IsMainThread());
-  if (asked_to_terminate_)
+  if (asked_to_terminate_) {
     return;
+  }
 
   blink::MessagePortChannel channel(std::move(port));
   if (running_) {
@@ -190,8 +192,9 @@ void WebSharedWorkerImpl::ConnectToChannel(int connection_request_id,
 
 void WebSharedWorkerImpl::DispatchPendingConnections() {
   DCHECK(IsMainThread());
-  for (auto& item : pending_channels_)
+  for (auto& item : pending_channels_) {
     ConnectToChannel(item.first, std::move(item.second));
+  }
   pending_channels_.clear();
 }
 
@@ -288,6 +291,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
       ukm_source_id,
       /*parent_context_token=*/std::nullopt, is_cross_origin_isolated,
       /*parent_is_isolated_context=*/false,
+      /*direct_sockets_force_enabled_in_parent=*/false,
       /*interface_registry=*/nullptr,
       /*agent_group_scheduler_compositor_task_runner=*/nullptr,
       /*top_level_frame_security_origin=*/nullptr,

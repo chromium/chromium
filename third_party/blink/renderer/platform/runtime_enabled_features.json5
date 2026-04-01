@@ -2110,22 +2110,19 @@
     },
     {
       name: "DirectSockets",
-      public: true,
-      status: "stable",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
+      browser_process_read_write_access: true,
     },
     {
       // Experimental support for the Direct Sockets API in Service Workers.
       // https://github.com/WICG/direct-sockets
       name: "DirectSocketsInServiceWorkers",
-      status: "test",
-      depends_on: ["DirectSockets"],
     },
     {
       // Experimental support for the Direct Sockets API in Shared Workers.
       // https://github.com/WICG/direct-sockets
       name: "DirectSocketsInSharedWorkers",
-      status: "test",
-      depends_on: ["DirectSockets"],
     },
     {
       name: "DisableDifferentOriginSubframeDialogSuppression",

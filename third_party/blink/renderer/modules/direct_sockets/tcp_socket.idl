@@ -12,8 +12,7 @@
       ServiceWorker DirectSocketsInServiceWorkers
     ),
     ActiveScriptWrappable,
-    SecureContext,
-    IsolatedContext
+    SecureContext
 ] interface TCPSocket {
   [CallWith=ScriptState, RaisesException, MeasureAs=TCPSocketConstructor]
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});

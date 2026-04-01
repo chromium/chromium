@@ -125,6 +125,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "content/public/browser/network_service_instance.h"
@@ -9135,6 +9136,13 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 #endif
     GetDelegate()->ReadyToCommitNavigation(this);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsIsolatedContext(GetRenderFrameHost()->GetProcess())) {
+    GetMutableRuntimeFeatureStateContext().SetDirectSocketsEnabled(
+        base::FeatureList::IsEnabled(blink::features::kDirectSockets));
+  }
+#endif
 
   // View-source URLs can't be prerendered or loaded in a fenced frame.
   if (IsInPrimaryMainFrame()) {

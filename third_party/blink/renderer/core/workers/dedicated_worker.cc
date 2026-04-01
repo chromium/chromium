@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -93,8 +94,9 @@ DedicatedWorker* DedicatedWorker::Create(
     return nullptr;
   }
 
-  if (context->IsWorkerGlobalScope())
+  if (context->IsWorkerGlobalScope()) {
     UseCounter::Count(context, WebFeature::kNestedDedicatedWorker);
+  }
 
   DedicatedWorker* worker = MakeGarbageCollected<DedicatedWorker>(
       context, script_request_url, options);
@@ -152,8 +154,9 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
                                   HeapVector<ScriptObject> transfer,
                                   ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
-  if (!transfer.empty())
+  if (!transfer.empty()) {
     options->setTransfer(std::move(transfer));
+  }
   postMessage(script_state, message, options, exception_state);
 }
 
@@ -162,8 +165,9 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
                                   const PostMessageOptions* options,
                                   ExceptionState& exception_state) {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
-  if (!GetExecutionContext())
+  if (!GetExecutionContext()) {
     return;
+  }
 
   BlinkTransferableMessage transferable_message;
   Transferables transferables;
@@ -171,8 +175,9 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
                                                 message, options, transferables,
                                                 exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   DCHECK(serialized_message);
   transferable_message.message = serialized_message;
   transferable_message.sender_origin =
@@ -182,8 +187,9 @@ void DedicatedWorker::postMessage(ScriptState* script_state,
   transferable_message.ports = MessagePort::DisentanglePorts(
       ExecutionContext::From(script_state), transferables.message_ports,
       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   transferable_message.user_activation =
       PostMessageHelper::CreateUserActivationSnapshot(GetExecutionContext(),
                                                       options);
@@ -318,8 +324,9 @@ void DedicatedWorker::terminate() {
 
 void DedicatedWorker::ContextDestroyed() {
   DCHECK(GetExecutionContext()->IsContextThread());
-  if (classic_script_loader_)
+  if (classic_script_loader_) {
     classic_script_loader_->Cancel();
+  }
   factory_client_.reset();
   terminate();
 }
@@ -389,8 +396,9 @@ DedicatedWorker::CreateWebContentSettingsClient() {
   } else if (GetExecutionContext()->IsWorkerGlobalScope()) {
     WebContentSettingsClient* web_worker_content_settings_client =
         To<WorkerGlobalScope>(GetExecutionContext())->ContentSettingsClient();
-    if (web_worker_content_settings_client)
+    if (web_worker_content_settings_client) {
       return web_worker_content_settings_client->Clone();
+    }
   }
   return nullptr;
 }
@@ -613,6 +621,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetExecutionContextToken(),
       execution_context->CrossOriginIsolatedCapability(),
       execution_context->IsIsolatedContext(),
+      /*direct_sockets_force_enabled_in_parent=*/
+      execution_context->GetRuntimeFeatureStateOverrideContext()
+          ->IsDirectSocketsForceEnabled(),
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner),
       top_level_frame_security_origin,

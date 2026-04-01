@@ -84,6 +84,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
           std::nullopt,
       bool cross_origin_isolated_capability = false,
       bool parent_is_isolated_context = false,
+      bool direct_sockets_force_enabled_in_parent = false,
       InterfaceRegistry* interface_registry = nullptr,
       scoped_refptr<base::SingleThreadTaskRunner>
           agent_group_scheduler_compositor_task_runner = nullptr,
@@ -225,11 +226,14 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Whether the execution context has access to cross-origin isolated APIs.
   const bool cross_origin_isolated_capability;
 
-  // Governs whether Direct Sockets are available in a worker context, false
-  // when no parent exists.
-  //
-  // TODO(crbug.com/1206150): We need a specification for this capability.
+  // Governs whether Isolated Context APIs are available in a worker context,
+  // false when no parent exists.
+  // https://wicg.github.io/isolated-web-apps/isolated-contexts.html
   const bool parent_is_isolated_context;
+
+  // Direct Sockets might be enabled outside of Isolated Context in selected
+  // scenarios.
+  const bool direct_sockets_force_enabled_in_parent;
 
   InterfaceRegistry* const interface_registry;
 

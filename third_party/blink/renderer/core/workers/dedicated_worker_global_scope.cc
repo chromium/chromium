@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -95,8 +96,6 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
       creation_params->referrer_policy;
   DocumentPolicy::DocumentPolicyBundle response_document_policy =
       std::move(creation_params->document_policy);
-  const bool parent_is_isolated_context =
-      creation_params->parent_is_isolated_context;
   base::TimeTicks start_time;
   if (creation_params->dedicated_worker_start_time.has_value()) {
     start_time = *creation_params->dedicated_worker_start_time;
@@ -112,8 +111,7 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
   auto* global_scope = MakeGarbageCollected<DedicatedWorkerGlobalScope>(
       base::PassKey<DedicatedWorkerGlobalScope>(), std::move(creation_params),
       thread, time_origin, std::move(inherited_trial_features),
-      begin_frame_provider_params, parent_is_isolated_context,
-      std::move(dedicated_worker_host),
+      begin_frame_provider_params, std::move(dedicated_worker_host),
       std::move(back_forward_cache_controller_host), start_time);
 
   if (global_scope->IsOffMainThreadScriptFetchDisabled()) {
@@ -144,6 +142,10 @@ DedicatedWorkerGlobalScope::ParseCreationParams(
       creation_params->parent_context_token.value();
   parsed_creation_params.parent_storage_access_api_status =
       creation_params->parent_storage_access_api_status;
+  parsed_creation_params.parent_is_isolated_context =
+      creation_params->parent_is_isolated_context;
+  parsed_creation_params.direct_sockets_force_enabled_in_parent =
+      creation_params->direct_sockets_force_enabled_in_parent;
 
   parsed_creation_params.creation_params = std::move(creation_params);
   return parsed_creation_params;
@@ -157,7 +159,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
         inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -169,7 +170,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           time_origin,
           std::move(inherited_trial_features),
           begin_frame_provider_params,
-          parent_is_isolated_context,
           std::move(dedicated_worker_host),
           std::move(back_forward_cache_controller_host),
           dedicated_worker_start_time) {}
@@ -181,7 +181,6 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
     std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
         inherited_trial_features,
     const BeginFrameProviderParams& begin_frame_provider_params,
-    bool parent_is_isolated_context,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
     mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -203,8 +202,12 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
           parsed_creation_params.parent_storage_access_api_status),
       dedicated_worker_start_time_(dedicated_worker_start_time) {
   // TODO(mkwst): This needs a specification.
-  if (!parent_is_isolated_context) {
+  if (!parsed_creation_params.parent_is_isolated_context) {
     is_isolated_context_ = false;
+  }
+
+  if (parsed_creation_params.direct_sockets_force_enabled_in_parent) {
+    GetRuntimeFeatureStateOverrideContext()->SetDirectSocketsForceEnabled();
   }
 
   // Dedicated workers don't need to pause after script fetch.
@@ -303,6 +306,8 @@ void DedicatedWorkerGlobalScope::Initialize(
 
     // TODO(mkwst): This needs a spec.
     is_isolated_context_ = false;
+
+    GetRuntimeFeatureStateOverrideContext()->SetDirectSocketsForceDisabled();
   }
 }
 
@@ -407,8 +412,9 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              HeapVector<ScriptObject> transfer,
                                              ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
-  if (!transfer.empty())
+  if (!transfer.empty()) {
     options->setTransfer(std::move(transfer));
+  }
   postMessage(script_state, message, options, exception_state);
 }
 
@@ -422,8 +428,9 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
       PostMessageHelper::SerializeMessageByMove(script_state->GetIsolate(),
                                                 message, options, transferables,
                                                 exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   DCHECK(serialized_message);
   BlinkTransferableMessage transferable_message;
   transferable_message.message = serialized_message;
@@ -433,8 +440,9 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
   transferable_message.ports = MessagePort::DisentanglePorts(
       ExecutionContext::From(script_state), transferables.message_ports,
       exception_state);
-  if (exception_state.HadException())
+  if (exception_state.HadException()) {
     return;
+  }
   uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
   transferable_message.trace_id = trace_id;
   WorkerThreadDebugger* debugger =

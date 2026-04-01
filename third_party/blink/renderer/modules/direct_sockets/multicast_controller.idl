@@ -5,8 +5,7 @@
       SharedWorker DirectSocketsInSharedWorkers,
       ServiceWorker DirectSocketsInServiceWorkers
     ),
-    SecureContext,
-    IsolatedContext
+    SecureContext
 ]
 interface MulticastController {
   [CallWith=ScriptState, RaisesException, MeasureAs=MulticastControllerJoinGroupFunction]

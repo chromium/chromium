@@ -82,7 +82,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
           inherited_trial_features,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      bool direct_socket_isolated_capability,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
@@ -186,6 +185,8 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
     std::unique_ptr<GlobalScopeCreationParams> creation_params;
     ExecutionContextToken parent_context_token;
     net::StorageAccessApiStatus parent_storage_access_api_status;
+    bool parent_is_isolated_context = false;
+    bool direct_sockets_force_enabled_in_parent = false;
   };
 
   static ParsedCreationParams ParseCreationParams(
@@ -203,7 +204,6 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
       std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
           inherited_trial_features,
       const BeginFrameProviderParams& begin_frame_provider_params,
-      bool is_isolated_context,
       mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
           dedicated_worker_host,
       mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>

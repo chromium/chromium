@@ -325,13 +325,11 @@
     {
       name: "DirectSockets",
       permissions_policy_name: "direct-sockets",
-      depends_on: ["DirectSockets"],
       visibility: "IsolatedContext",
     },
     {
       name: "DirectSocketsPrivate",
       permissions_policy_name: "direct-sockets-private",
-      depends_on: ["DirectSockets"],
       visibility: "IsolatedContext",
     },
     {
@@ -485,7 +483,6 @@
     {
       name: "MulticastInDirectSockets",
       permissions_policy_name: "direct-sockets-multicast",
-      depends_on: ["DirectSockets"],
       visibility: "IsolatedContext",
     },
     {

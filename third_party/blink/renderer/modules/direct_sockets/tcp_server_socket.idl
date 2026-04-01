@@ -9,8 +9,7 @@
       SharedWorker DirectSocketsInSharedWorkers,
       ServiceWorker DirectSocketsInServiceWorkers
     ),
-    SecureContext,
-    IsolatedContext
+    SecureContext
 ] interface TCPServerSocket {
   [CallWith=ScriptState, RaisesException, MeasureAs=TCPServerSocketConstructor]
   constructor(DOMString localAddress, optional TCPServerSocketOptions options = {});
