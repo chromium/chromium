@@ -2310,7 +2310,7 @@ select::-internal-select-autofill-preview-text {
   select:not(:-internal-list-box):not([multiple]) optgroup::-internal-optgroup-label {
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block: -internal-auto-base(0 1px, 0);
-    min-height: -internal-auto-base(1.2em, 0);
+    min-height: -internal-auto-base(1.2em, auto);
   }
   select:not(:-internal-list-box):not([multiple]) optgroup legend {
     padding-inline: -internal-auto-base(2px, 0.5em);
@@ -2325,7 +2325,7 @@ select::-internal-select-autofill-preview-text {
   select optgroup::-internal-optgroup-label {
     padding-inline: -internal-auto-base(2px, 0.5em);
     padding-block: -internal-auto-base(0 1px, 0);
-    min-height: -internal-auto-base(1.2em, 0);
+    min-height: -internal-auto-base(1.2em, auto);
   }
   select optgroup legend {
     padding-inline: -internal-auto-base(2px, 0.5em);
