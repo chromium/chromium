@@ -9,6 +9,14 @@ export function expectCounters(local, remote, plugin, context) {
   );
 }
 
+export function expectIframeCounters(message, local, remote, plugin, context) {
+  assert_equals(
+    printCounters(message.local, message.remote, message.plugin),
+    printCounters(local, remote, plugin),
+    context
+  );
+}
+
 export function getCounters() {
   return {
     local: internals.isUseCounted(document, WebFeature.kSvgFilterPaintedOnLocalFrame),
@@ -17,11 +25,18 @@ export function getCounters() {
   };
 }
 
-export async function getIframeResults(id, url) {
-  document.getElementById(id).setAttribute('src', url);
-  return await new Promise(resolve => window.addEventListener('message', (e) => {
-    resolve(e.data);
-  }, {once: true}));
+export async function getIframeResults(id, url=undefined) {
+  if (url != undefined) {
+    document.getElementById(id).setAttribute('src', url);
+  }
+  return await new Promise(resolve => {
+    window.addEventListener('message', (e) => {
+      resolve(e.data);
+    }, {once: true});
+    if (url == undefined) {
+      document.getElementById(id).contentWindow.postMessage({}, '*');
+    }
+  });
 }
 
 export function printCounters(local, remote, plugin) {

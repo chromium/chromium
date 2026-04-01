@@ -710,6 +710,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   bool ComputeHasFilterThatMovesPixels() const;
 
+  bool ComputeHasReferenceFilter() const;
+
   // Self-painting layer is an optimization where we avoid the heavy Layer
   // painting machinery for a Layer allocated only to handle the overflow clip
   // case.
@@ -767,6 +769,9 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // Caches |ComputeHasFilterThatMovesPixels()|, updated on style changes.
   unsigned has_filter_that_moves_pixels_ : 1;
+
+  // Caches `ComputeHasReferenceFilter()`, updated on style changes.
+  unsigned has_reference_filter_ : 1 = false;
 
   // True if the current subtree is underneath a LayoutSVGHiddenContainer
   // ancestor.

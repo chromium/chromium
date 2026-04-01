@@ -8,6 +8,7 @@
 <script type=module>
   import {
     expectCounters,
+    expectIframeCounters,
     getIframeResults,
     printCounters,
     resetCounters,
@@ -18,14 +19,6 @@
   function reset() {
     document.getElementById('nested_iframe').className = '';
     resetCounters();
-  }
-
-  function expectIframeCounters(message, local, remote, plugin, context) {
-    assert_equals(
-      printCounters(message.local, message.remote, message.plugin),
-      printCounters(local, remote, plugin),
-      context
-    );
   }
 
   promise_test(async (t) => {

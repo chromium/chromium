@@ -29,5 +29,10 @@
     await waitForRender();
 
     window.parent.postMessage(getCounters(), '*');
+    resetCounters();
+    window.addEventListener('message', (e) => {
+      window.parent.postMessage(getCounters(), '*');
+      resetCounters();
+    });
   })();
 </script>`

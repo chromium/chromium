@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<link rel="stylesheet" href="/wpt_internal/svg/resources/util.css">
+
+<div id="outer_div">
+  <div style="will-change: transform; width: 100px; height: 100px;">
+    <iframe id="local_iframe"></iframe>
+  </div>
+</div>
+
+<script type=module>
+  import {
+    expectCounters,
+    expectIframeCounters,
+    getIframeResults,
+    resetCounters,
+    waitForLoad,
+    waitForRender,
+  } from '/wpt_internal/svg/resources/util.js';
+
+  promise_test(async (t) => {
+    document.getElementById('outer_div').className = '';
+    await waitForLoad();
+    await getIframeResults('local_iframe', 'resources/empty.html');
+
+    resetCounters();
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'First CSS.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'First SVG.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'css-blur';
+    await waitForRender();
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Second CSS.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'svg-blur';
+    await waitForRender();
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'Second SVG.');
+  }, 'CSS & SVG filter applied back and forth to an empty iframe with a outer will-change hint');
+
+  promise_test(async (t) => {
+    document.getElementById('outer_div').className = '';
+    await waitForLoad();
+
+    resetCounters();
+    await waitForRender();
+    let message = await getIframeResults('local_iframe', 'resources/nested.sub.html');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load iframe.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Initial load.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'css-blur';
+    await waitForRender();
+    message = await getIframeResults('local_iframe');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'First CSS iframe.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'First CSS.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'svg-blur';
+    await waitForRender();
+    message = await getIframeResults('local_iframe');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'First SVG iframe.');
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'First SVG.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'css-blur';
+    await waitForRender();
+    message = await getIframeResults('local_iframe');
+    expectIframeCounters(message, /*local=*/false, /*remote=*/false, /*plugin=*/false, 'Second CSS iframe.');
+    expectCounters(/*local=*/false, /*remote=*/false, /*plugin=*/false, 'Second CSS.');
+
+    resetCounters();
+    document.getElementById('outer_div').className = 'svg-blur';
+    await waitForRender();
+    message = await getIframeResults('local_iframe');
+    expectIframeCounters(message, /*local=*/true, /*remote=*/true, /*plugin=*/true, 'Second SVG iframe.');
+    expectCounters(/*local=*/true, /*remote=*/false, /*plugin=*/false, 'Second SVG.');
+  }, 'CSS & SVG filter applied back and forth to a nested iframe with an outer will-change hint');
+</script>
