@@ -30,6 +30,7 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.chrome.browser.ui.messages.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -462,7 +463,7 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    public void testPushParentViewToOverrideStack_BeforeShowing() {
+    public void testPushParentViewOverride_BeforeShowing() {
         final Snackbar snackbar =
                 Snackbar.make(
                         "stack",
@@ -472,8 +473,10 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(
-                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.HUB,
+                            sAlternateParent1,
+                            mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -486,7 +489,7 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    public void testPushParentViewToOverrideStack_AfterShowing() {
+    public void testPushParentViewOverride_AfterShowing() {
         final Snackbar snackbar =
                 Snackbar.make(
                         "stack",
@@ -497,8 +500,10 @@ public class SnackbarTest {
                 TaskTraits.UI_DEFAULT,
                 () -> {
                     mManager.showSnackbar(snackbar);
-                    mManager.pushParentViewToOverrideStack(
-                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.HUB,
+                            sAlternateParent1,
+                            mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden, but wasn't.",
@@ -510,7 +515,7 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    public void testPushParentViewToOverrideStack_StackedParentOverrides() {
+    public void testPushParentViewOverride_StackedParentOverrides() {
         final Snackbar snackbar =
                 Snackbar.make(
                         "stack",
@@ -520,8 +525,10 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(
-                            sAlternateParent1, mAdditionalBottomMarginPxSupplier);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.HUB,
+                            sAlternateParent1,
+                            mAdditionalBottomMarginPxSupplier);
                     mManager.showSnackbar(snackbar);
                 });
         pollSnackbarCondition(
@@ -534,11 +541,13 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.pushParentViewToOverrideStack(
-                            sAlternateParent2, mAdditionalBottomMarginPxSupplier);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.TAB_LIST_EDITOR,
+                            sAlternateParent2,
+                            mAdditionalBottomMarginPxSupplier);
                 });
         pollSnackbarCondition(
-                "Snackbar's parent should have been overridden by the next stack item, but wasn't.",
+                "Snackbar's parent should have been overridden by the next slot item, but wasn't.",
                 () ->
                         mManager.isShowing()
                                 && mManager.getCurrentSnackbarViewForTesting().mParent
@@ -546,10 +555,10 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.popParentViewFromOverrideStack(1);
+                    mManager.popParentViewOverride(ParentOverrideSlot.TAB_LIST_EDITOR);
                 });
         pollSnackbarCondition(
-                "Snackbar's parent should have been overridden by the previous stacked parent"
+                "Snackbar's parent should have been overridden by the previous slot"
                         + " override, but wasn't.",
                 () ->
                         mManager.isShowing()
@@ -559,7 +568,7 @@ public class SnackbarTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    mManager.popParentViewFromOverrideStack(0);
+                    mManager.popParentViewOverride(ParentOverrideSlot.HUB);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden by the original parent, but wasn't.",
@@ -571,7 +580,7 @@ public class SnackbarTest {
 
     @Test
     @SmallTest
-    public void testPushParentViewToOverrideStack_UpdateBottomMargin() {
+    public void testPushParentViewOverride_UpdateBottomMargin() {
         var marginSupplier =
                 ThreadUtils.runOnUiThreadBlocking(() -> ObservableSuppliers.createNonNull(100));
         final Snackbar snackbar =
@@ -599,7 +608,8 @@ public class SnackbarTest {
                                                     .getContainerViewForTesting()
                                                     .getLayoutParams())
                                     .bottomMargin;
-                    mManager.pushParentViewToOverrideStack(sAlternateParent1, marginSupplier);
+                    mManager.pushParentViewOverride(
+                            ParentOverrideSlot.HUB, sAlternateParent1, marginSupplier);
                 });
         pollSnackbarCondition(
                 "Snackbar's parent should have been overridden, and margin applied.",

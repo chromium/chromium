@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -48,7 +49,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -93,7 +93,7 @@ class TabListEditorMediator
     private @Nullable NavigationProvider mNavigationProvider;
     private @TabActionState int mTabActionState;
     private @Nullable LifecycleObserver mLifecycleObserver;
-    private int mSnackbarOverrideToken;
+    private boolean mHasSnackbarOverride;
 
     private final View.OnClickListener mNavigationClickListener =
             new View.OnClickListener() {
@@ -316,9 +316,11 @@ class TabListEditorMediator
             @Nullable RecyclerViewPosition recyclerViewPosition) {
         assert mNavigationProvider != null : "NavigationProvider must be set before calling #show";
         // Reparent the snackbarManager to use the selection editor layout to avoid layering issues.
-        mSnackbarOverrideToken =
-                mSnackbarManager.pushParentViewToOverrideStack(
-                        mTabListEditorLayout, /* additionalBottomMarginPxSupplier= */ null);
+        mHasSnackbarOverride = true;
+        mSnackbarManager.pushParentViewOverride(
+                ParentOverrideSlot.TAB_LIST_EDITOR,
+                mTabListEditorLayout,
+                /* additionalBottomMarginPxSupplier= */ null);
         // Records to a histogram the time since an instance of TabListEditor was last opened
         // within an activity lifespan.
         TabUiMetricsHelper.recordEditorTimeSinceLastShownHistogram();
@@ -416,8 +418,10 @@ class TabListEditorMediator
     private void hideInternal(boolean hiddenByAction) {
         if (!isEditorVisible()) return;
         if (mLifecycleObserver != null) mLifecycleObserver.willHide();
-        mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
-        mSnackbarOverrideToken = TokenHolder.INVALID_TOKEN;
+        if (mHasSnackbarOverride) {
+            mSnackbarManager.popParentViewOverride(ParentOverrideSlot.TAB_LIST_EDITOR);
+            mHasSnackbarOverride = false;
+        }
         TabUiMetricsHelper.recordSelectionEditorExitMetrics(
                 TabListEditorExitMetricGroups.CLOSED, mContext);
 

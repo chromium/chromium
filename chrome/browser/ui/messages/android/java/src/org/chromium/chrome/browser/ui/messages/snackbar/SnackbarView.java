@@ -283,10 +283,15 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
      * @see SnackbarManager#overrideParent(ViewGroup, NonNullObservableSupplier)
      */
     void overrideParent(
-            @Nullable ViewGroup overridingParent,
+            ViewGroup overridingParent,
             NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
+        if (mParent == overridingParent
+                && mAdditionalBottomMarginPxSupplier == additionalBottomMarginPxSupplier) {
+            return;
+        }
+
         mRootContentView.removeOnLayoutChangeListener(mLayoutListener);
-        mParent = overridingParent == null ? mOriginalParent : overridingParent;
+        mParent = overridingParent;
         if (mContainerView.getParent() != null) {
             ((ViewGroup) mContainerView.getParent()).removeView(mContainerView);
         }

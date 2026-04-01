@@ -16,10 +16,10 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.util.TokenHolder;
 
 /**
  * Helper class to manage the preferences UI when selecting an app language from LanguageSettings.
@@ -34,7 +34,7 @@ public class AppLanguagePreferenceDelegate {
         void restart();
     }
 
-    private int mSnackbarToken = TokenHolder.INVALID_TOKEN;
+    private boolean mHasSnackbarOverride;
     private SnackbarManager mSnackbarManager;
     private @Nullable Snackbar mSnackbar;
     private SnackbarController mSnackbarController;
@@ -92,13 +92,14 @@ public class AppLanguagePreferenceDelegate {
     /** Show the {@link Snackbar} if one can be shown and there is a saved Snackbar to show. */
     public void maybeShowSnackbar() {
         if (mSnackbar != null && mSnackbarManager.canShowSnackbar()) {
-            if (mSnackbarToken == TokenHolder.INVALID_TOKEN) {
+            if (!mHasSnackbarOverride) {
                 // SnackbarManager is created/owned by this class, so the override doesn't need to
                 // be popped.
-                mSnackbarToken =
-                        mSnackbarManager.pushParentViewToOverrideStack(
-                                mActivity.findViewById(android.R.id.content),
-                                /* additionalBottomMarginPxSupplier= */ null);
+                mHasSnackbarOverride = true;
+                mSnackbarManager.pushParentViewOverride(
+                        ParentOverrideSlot.ONE_OFF,
+                        mActivity.findViewById(android.R.id.content),
+                        /* additionalBottomMarginPxSupplier= */ null);
             }
             mSnackbarManager.showSnackbar(mSnackbar);
             mSnackbar = null;

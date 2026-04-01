@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
@@ -100,7 +101,6 @@ public class HubManagerImplUnitTest {
             new OneshotSupplierImpl<>();
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.alwaysNull();
-    private static final int SNACKBAR_OVERRIDE_TOKEN = 1;
 
     private Activity mActivity;
     private FrameLayout mRootView;
@@ -143,9 +143,6 @@ public class HubManagerImplUnitTest {
 
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
-
-        when(mSnackbarManager.pushParentViewToOverrideStack(any(), any()))
-                .thenReturn(SNACKBAR_OVERRIDE_TOKEN);
 
         mActivityScenarioRule
                 .getScenario()
@@ -277,7 +274,7 @@ public class HubManagerImplUnitTest {
 
         FrameLayout containerView = hubController.getContainerView();
         assertNotNull(containerView);
-        verify(mSnackbarManager).pushParentViewToOverrideStack(any(), any());
+        verify(mSnackbarManager).pushParentViewOverride(eq(ParentOverrideSlot.HUB), any(), any());
 
         // Attach the container to the parent view.
         mRootView.addView(containerView);
@@ -285,11 +282,12 @@ public class HubManagerImplUnitTest {
 
         hubManager.getPaneManager().focusPane(PaneId.INCOGNITO_TAB_SWITCHER);
         verify(mTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
+        verify(mSnackbarManager).popParentViewOverride(ParentOverrideSlot.HUB);
         verify(mMenuOrKeyboardActionController)
                 .unregisterMenuOrKeyboardActionHandler(mTabSwitcherMenuOrKeyboardActionHandler);
         verify(mIncognitoTabSwitcherPane).setPaneHubController(coordinator);
-        verify(mSnackbarManager, times(2)).pushParentViewToOverrideStack(any(), any());
+        verify(mSnackbarManager, times(2))
+                .pushParentViewOverride(eq(ParentOverrideSlot.HUB), any(), any());
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(
                         mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
@@ -298,10 +296,7 @@ public class HubManagerImplUnitTest {
         assertNull(hubManager.getHubCoordinatorForTesting());
         verify(mBackPressManager).removeHandler(eq(coordinator));
         verify(mIncognitoTabSwitcherPane).setPaneHubController(null);
-        verify(mSnackbarManager, times(2)).popParentViewFromOverrideStack(SNACKBAR_OVERRIDE_TOKEN);
-        verify(mMenuOrKeyboardActionController)
-                .unregisterMenuOrKeyboardActionHandler(
-                        mIncognitoTabSwitcherMenuOrKeyboardActionHandler);
+        verify(mSnackbarManager, times(2)).popParentViewOverride(ParentOverrideSlot.HUB);
 
         // Container is still attached and will be removed separately.
         assertEquals(mRootView, containerView.getParent());

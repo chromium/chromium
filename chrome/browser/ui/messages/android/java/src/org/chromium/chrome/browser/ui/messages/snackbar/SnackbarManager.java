@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.util.Pair;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -32,12 +31,11 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
-import org.chromium.ui.util.TokenHolder;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.lang.annotation.Target;
 
 /**
  * Manager for the snackbar showing at the bottom of activity. There should be only one
@@ -77,6 +75,29 @@ public class SnackbarManager
         int REPLACED_BY_ACTION_SNACKBAR = 5;
         int OTHERS = 6;
         int NUM_ENTRIES = 7;
+    }
+
+    // The slot to push parent view overrides to. An entry with a larger number will take
+    // precedence. For example, if HUB and ONE_OFF are both present, ONE_OFF will be used. However,
+    // if ONE_OFF is then removed, HUB will be used.
+    //
+    // Note: ONE_OFF can be used for one off overrides that are known to be atop other overrides or
+    // are a set once and never removed case.
+    @IntDef({
+        ParentOverrideSlot.HUB,
+        ParentOverrideSlot.TAB_LIST_EDITOR,
+        ParentOverrideSlot.ARCHIVED_TABS_DIALOG,
+        ParentOverrideSlot.ONE_OFF,
+        ParentOverrideSlot.NUM_ENTRIES
+    })
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ParentOverrideSlot {
+        int HUB = 0;
+        int TAB_LIST_EDITOR = 1;
+        int ARCHIVED_TABS_DIALOG = 2;
+        int ONE_OFF = 3; // LAST
+        int NUM_ENTRIES = 4;
     }
 
     /** Interface that shows the ability to provide a snackbar manager. */
@@ -145,8 +166,8 @@ public class SnackbarManager
             };
     private final SettableNonNullObservableSupplier<Boolean> mIsShowingSupplier;
     private final ViewGroup mOriginalParentView;
-    private final Deque<Pair<Integer, OverridingContext>> mParentOverrideStack = new ArrayDeque<>();
-    private final TokenHolder mTokenHolder = new TokenHolder(this::onTokenHolderChanged);
+    private final @Nullable OverridingContext[] mParentOverrideSlots =
+            new OverridingContext[ParentOverrideSlot.NUM_ENTRIES];
     private final SnackbarCollection mSnackbars = new SnackbarCollection();
     private final NonNullObservableSupplier<Integer> mAdditionalBottomMarginPxSupplier;
     private final @Nullable ModalDialogManager mModalDialogManager;
@@ -339,54 +360,57 @@ public class SnackbarManager
     }
 
     /**
-     * Pushes the given {@link ViewGroup} onto the override stack, this given parent will be used
-     * for all {@link SnackbarView}s until #popParentViewFromOverrideStack is called.
+     * Pushes the given {@link ViewGroup} onto the override slots. The highest priority slot will be
+     * used for the current snackbar.
      *
+     * @param slot The slot to push the override to.
      * @param parentView The new parent for snackbars, must be non-null.
      * @param additionalBottomMarginPxSupplier The supplier publishes the changes of the additional
      *     bottom margin in pixels. Passing null will use the default behavior of the root parent.
-     * @return A token to be used when calling a corresponding pop.
      */
-    public int pushParentViewToOverrideStack(
+    public void pushParentViewOverride(
+            @ParentOverrideSlot int slot,
             ViewGroup parentView,
             @Nullable NonNullObservableSupplier<Integer> additionalBottomMarginPxSupplier) {
         assert parentView != null;
-        int overrideToken = mTokenHolder.acquireToken();
+        assert slot < mParentOverrideSlots.length;
+        // Allow ONE_OFF to be reused for several cases where we just override and forget in
+        // SnackbarActivity, etc.
+        assert slot == ParentOverrideSlot.ONE_OFF || mParentOverrideSlots[slot] == null
+                : "Slot " + slot + " is already in use.";
+
         var nonNullAdditionalBottomMarginPxSupplier =
                 additionalBottomMarginPxSupplier == null
                         ? mAdditionalBottomMarginPxSupplier
                         : additionalBottomMarginPxSupplier;
-        mParentOverrideStack.addFirst(
-                new Pair<>(
-                        overrideToken,
-                        new OverridingContext(
-                                parentView, nonNullAdditionalBottomMarginPxSupplier)));
-        overrideParent(parentView, nonNullAdditionalBottomMarginPxSupplier);
-        return overrideToken;
+        mParentOverrideSlots[slot] =
+                new OverridingContext(parentView, nonNullAdditionalBottomMarginPxSupplier);
+        updateParentViewOverride();
     }
 
     /**
-     * Pops the the last {@link ViewGroup} that was pushed onto the stack by the
-     * #pushParentViewToOverrideStack method. The last used parent override will be used, and in if
-     * the stack is empty then the original parent will be used. This function is a no-op if the
-     * stack is already empty.
+     * Pops the {@link ViewGroup} corresponding to the given slot from the override slots. Updates
+     * any visible snackbars to a new parent if necessary.
      *
-     * @param token The token passed from #pushParentViewToOverrideStack. This is used to ensure
-     *     that the push/pop methods are matching.
+     * @param slot The slot to pop the override from.
      */
-    public void popParentViewFromOverrideStack(int token) {
-        assert token != TokenHolder.INVALID_TOKEN;
-        Pair<Integer, OverridingContext> parentPair = mParentOverrideStack.removeFirst();
-        assert parentPair.first.equals(token);
-        mTokenHolder.releaseToken(token);
-        if (mParentOverrideStack.isEmpty()) {
-            overrideParent(mOriginalParentView, mAdditionalBottomMarginPxSupplier);
-        } else {
-            OverridingContext nextOverridingContext = mParentOverrideStack.peekFirst().second;
-            overrideParent(
-                    nextOverridingContext.parentView,
-                    nextOverridingContext.additionalBottomMarginPxSupplier);
+    public void popParentViewOverride(@ParentOverrideSlot int slot) {
+        assert mParentOverrideSlots[slot] != null : "Slot " + slot + " was not in use.";
+        mParentOverrideSlots[slot] = null;
+        updateParentViewOverride();
+    }
+
+    private void updateParentViewOverride() {
+        for (int i = ParentOverrideSlot.NUM_ENTRIES - 1; i >= 0; i--) {
+            var overridingContext = mParentOverrideSlots[i];
+            if (overridingContext != null) {
+                overrideParent(
+                        overridingContext.parentView,
+                        overridingContext.additionalBottomMarginPxSupplier);
+                return;
+            }
         }
+        overrideParent(mOriginalParentView, mAdditionalBottomMarginPxSupplier);
     }
 
     /**
@@ -447,13 +471,7 @@ public class SnackbarManager
                 // If there is a temporary parent set, reparent accordingly. We override here
                 // instead of instantiating the new SnackbarView with the temporary parent, so
                 // that overriding with <code>null</code> will reparent to mSnackbarParentView.
-                if (!mParentOverrideStack.isEmpty()) {
-                    OverridingContext nextOverridingContext =
-                            mParentOverrideStack.peekFirst().second;
-                    mView.overrideParent(
-                            nextOverridingContext.parentView,
-                            nextOverridingContext.additionalBottomMarginPxSupplier);
-                }
+                updateParentViewOverride();
             } else {
                 viewChanged = mView.update(currentSnackbar);
             }
@@ -469,10 +487,6 @@ public class SnackbarManager
         }
 
         mIsShowingSupplier.set(isShowing());
-    }
-
-    private void onTokenHolderChanged() {
-        // Intentional no-op.
     }
 
     // ============================================================================================
