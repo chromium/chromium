@@ -3973,8 +3973,9 @@ public class AwContents implements SmartClipProvider {
     private void onReceivedIcon(@JniType("SkBitmap") @Nullable Bitmap bitmap) {
         mContentsClient.onReceivedIcon(bitmap);
         int bitmapAllocatedKB = bitmap.getAllocationByteCount() / 1024;
-        RecordHistogram.recordMemoryKBHistogram(
-                "Android.WebView.Memory.FaviconJavaAllocatedMemory", bitmapAllocatedKB);
+        // Any icon above 100MB can go into the overflow bucket.
+        RecordHistogram.recordCount100000Histogram(
+                "Android.WebView.Memory.FaviconJavaAllocatedMemory2", bitmapAllocatedKB);
         mFavicon = bitmap;
     }
 

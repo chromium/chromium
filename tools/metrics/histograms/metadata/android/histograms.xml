@@ -8102,8 +8102,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Memory.FaviconJavaAllocatedMemory" units="KB"
-    expires_after="2026-05-17">
+<histogram name="Android.WebView.Memory.FaviconJavaAllocatedMemory2" units="KB"
+    expires_after="2027-03-01">
   <owner>isaacmadgwick@chromium.org</owner>
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -8112,6 +8112,10 @@ chromium-metrics-reviews@google.com.
     to determine how much memory is being used by favicons in Java.
 
     This histogram is logged everytime onReceivedIcon is called.
+
+    This histogram replaces Android.WebView.Memory.FaviconJavaAllocatedMemory,
+    which was configured with a min-value of 1000, and thus put most values in
+    the 0 bucket.
   </summary>
 </histogram>
 
