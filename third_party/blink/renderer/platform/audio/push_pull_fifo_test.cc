@@ -29,7 +29,7 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
   // the test execution time, but this specific test is very short and simple.
   GTEST_FLAG_SET(death_test_style, "threadsafe");
 
-  const unsigned kRenderQuantumFrames = 128;
+  constexpr unsigned kRenderQuantumFrames = 128;
 
   std::unique_ptr<PushPullFIFO> test_fifo =
       std::make_unique<PushPullFIFO>(2, 1024, kRenderQuantumFrames);

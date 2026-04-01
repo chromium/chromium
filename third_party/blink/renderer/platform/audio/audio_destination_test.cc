@@ -238,7 +238,7 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   // Desktop platforms bypass the priming delay in the output buffer.
-  const int priming_frames = 0;
+  constexpr int priming_frames = 0;
 #else
   // When creating the AudioDestination, some silence is added to the fifo to
   // prevent an underrun on the first callback. This contributes a constant

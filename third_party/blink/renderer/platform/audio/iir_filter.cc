@@ -21,7 +21,7 @@ namespace {
 
 // The length of the memory buffers for the IIR filter.  This MUST be a power of
 // two and must be greater than the possible length of the filter coefficients.
-const int kBufferLength = 32;
+constexpr int kBufferLength = 32;
 static_assert(kBufferLength >= IIRFilter::kMaxOrder + 1,
               "Internal IIR buffer length must be greater than maximum IIR "
               "Filter order.");
@@ -169,12 +169,12 @@ double IIRFilter::TailTime(double sample_rate,
   // The maximum tail time.  This is somewhat arbitrary, but we're assuming that
   // no one is going to expect the IIRFilter to produce an output after this
   // much time after the inputs have stopped.
-  const double kMaxTailTime = 10;
+  constexpr double kMaxTailTime = 10;
 
   // If the maximum amplitude of the impulse response is less than this, we
   // assume that we've reached the tail of the response.  Currently, this means
   // that the impulse is less than 1 bit of a 16-bit PCM value.
-  const float kMaxTailAmplitude = 1 / 32768.0;
+  constexpr float kMaxTailAmplitude = 1 / 32768.0;
 
   // If filter is not stable, just return max tail.  Since the filter is not
   // stable, the impulse response won't converge to zero, so we don't need to

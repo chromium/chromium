@@ -91,7 +91,7 @@ class AudioArray final {
 #if defined(ARCH_CPU_X86_FAMILY)
     const unsigned kAlignment = 32;
 #else
-    const unsigned kAlignment = 16;
+    constexpr unsigned kAlignment = 16;
 #endif
 
     allocation_ = {};

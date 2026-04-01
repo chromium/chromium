@@ -47,7 +47,7 @@
 namespace blink {
 
 #if BUILDFLAG(IS_MAC)
-const size_t kBiquadBufferSize = 1024;
+constexpr size_t kBiquadBufferSize = 1024;
 #endif
 
 // Compute 10^x = exp(x*log(10))
@@ -627,10 +627,10 @@ static double RootFinder(double low,
   // Desired accuray of the root (in frames).  This doesn't need to be
   // super-accurate, so half frame is good enough, and should be less
   // than 1 because the algorithm may prematurely terminate.
-  const double kAccuracyThreshold = 0.5;
+  constexpr double kAccuracyThreshold = 0.5;
   // Max number of iterations to do.  If we haven't converged by now,
   // just return whatever we've found.
-  const int kMaxIterations = 10;
+  constexpr int kMaxIterations = 10;
 
   int side = 0;
   double root = 0;

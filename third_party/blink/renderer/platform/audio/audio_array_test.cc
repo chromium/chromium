@@ -18,7 +18,7 @@ TEST(AudioArrayTest, HandleOOM) {
 }
 
 TEST(AudioArrayTest, AlignmentAndFunctionality) {
-  const size_t kSize = 128;
+  constexpr size_t kSize = 128;
   AudioFloatArray array(kSize);
 
   // Verify allocation success.

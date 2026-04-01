@@ -50,7 +50,7 @@ const float kGainCalibrationSampleRate = 44100;
 
 // A minimum power value to when normalizing a silent (or very quiet) impulse
 // response
-const float kMinPower = 0.000125f;
+constexpr float kMinPower = 0.000125f;
 
 static float CalculateNormalizationScale(AudioBus* response) {
   // Normalize by RMS power

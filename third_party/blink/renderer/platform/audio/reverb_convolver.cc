@@ -39,7 +39,7 @@
 
 namespace blink {
 
-const int kInputBufferSize = 8 * 16384;
+constexpr int kInputBufferSize = 8 * 16384;
 
 // We only process the leading portion of the impulse response in the real-time
 // thread.  We don't exceed this length.  It turns out then, that the
@@ -51,10 +51,10 @@ const int kInputBufferSize = 8 * 16384;
 // scheduling latencies are similar on these time-scales.  Of course, this code
 // may need to be tuned for individual platforms if this assumption is found to
 // be incorrect.
-const size_t kRealtimeFrameLimit = 8192 + 4096;  // ~278msec @ 44.1KHz
+constexpr size_t kRealtimeFrameLimit = 8192 + 4096;  // ~278msec @ 44.1KHz
 
-const unsigned kMinFFTSize = 128;
-const unsigned kMaxRealtimeFFTSize = 2048;
+constexpr unsigned kMinFFTSize = 128;
+constexpr unsigned kMaxRealtimeFFTSize = 2048;
 
 ReverbConvolver::ReverbConvolver(AudioChannel* impulse_response,
                                  unsigned render_slice_size,

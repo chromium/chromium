@@ -50,7 +50,7 @@ namespace blink {
 using vector_math::Vadd;
 using vector_math::Vsma;
 
-const unsigned kMaxBusChannels = 32;
+constexpr unsigned kMaxBusChannels = 32;
 
 scoped_refptr<AudioBus> AudioBus::Create(unsigned number_of_channels,
                                          uint32_t length,

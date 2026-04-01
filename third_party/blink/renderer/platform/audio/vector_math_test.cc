@@ -535,9 +535,9 @@ TEST_F(VectorMathTest, Zvmul) {
       // expect only mostly equal floats.
 #if BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_ARM64)
-      const float threshold = 1.900e-5;
+      constexpr float threshold = 1.900e-5;
 #else
-      const float threshold = 1.5e-5;
+      constexpr float threshold = 1.5e-5;
 #endif
 #endif
       for (size_t i = 0u; i < real1.size(); ++i) {

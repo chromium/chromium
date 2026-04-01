@@ -69,7 +69,7 @@ TEST(AudioFrameStatsAccumulatorTest, AbsorbEmtpy) {
 TEST(AudioFrameStatsAccumulatorTest, Update) {
   AudioFrameStatsAccumulator accumulator;
 
-  const int sample_rate = 48000;
+  constexpr int sample_rate = 48000;
   uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
@@ -145,7 +145,7 @@ TEST(AudioFrameStatsAccumulatorTest, Absorb) {
   AudioFrameStatsAccumulator accumulator;
   AudioFrameStatsAccumulator absorbing_accumulator;
 
-  const int sample_rate = 48000;
+  constexpr int sample_rate = 48000;
   uint64_t total_frames = 0u;
   media::AudioGlitchInfo total_glitch_info;
 
