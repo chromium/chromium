@@ -5,8 +5,10 @@
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -34,13 +36,6 @@ const char kTestURL[] = "http://example.com/hello.mhtml";
 const char kNonExistentURL[] = "http://example.com/non_existent.mhtml";
 // Size of chrome/test/data/offline_pages/hello.mhtml
 const int64_t kTestFileSize = 471LL;
-const std::u16string kTestTitle = u"a title";
-// SHA256 Hash of chrome/test/data/offline_pages/hello.mhtml
-const std::string kTestDigest(
-    "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
-    "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
-    32);
-
 constexpr base::TimeDelta kTimeToSaveMhtml = base::Milliseconds(1000);
 constexpr base::TimeDelta kTimeToComputeDigest = base::Milliseconds(10);
 
@@ -99,7 +94,7 @@ void TestMHTMLArchiver::GenerateMHTML(
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&TestMHTMLArchiver::OnGenerateMHTMLDone,
                                 base::Unretained(this), url_, archive_file_path,
-                                kTestTitle, create_archive_params.name_space,
+                                u"a title", create_archive_params.name_space,
                                 OfflineTimeNow(), kTestFileSize));
 
   clock_->Advance(kTimeToSaveMhtml);
@@ -268,6 +263,12 @@ TEST_F(OfflinePageMHTMLArchiverTest, SuccessfullyCreateOfflineArchive) {
             last_result());
   EXPECT_EQ(GetTestFilePath(page_url), last_file_path());
   EXPECT_EQ(kTestFileSize, last_file_size());
+
+  // SHA256 Hash of chrome/test/data/offline_pages/hello.mhtml
+  constexpr std::string_view kTestDigest(
+      "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
+      "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
+      32);
   EXPECT_EQ(kTestDigest, last_digest());
 }
 

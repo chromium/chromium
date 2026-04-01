@@ -18,7 +18,6 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/mojom/loader/mhtml_load_result.mojom-forward.h"
 #include "url/gurl.h"
 

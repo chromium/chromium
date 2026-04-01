@@ -106,10 +106,6 @@ void DoCalculateSizeBetween(
 }  // namespace
 
 // static
-const base::FilePath::CharType OfflinePageUtils::kMHTMLExtension[] =
-    FILE_PATH_LITERAL("mhtml");
-
-// static
 void OfflinePageUtils::SelectPagesForURL(
     SimpleFactoryKey* key,
     const GURL& url,

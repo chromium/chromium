@@ -730,6 +730,10 @@ static_library("ui") {
     deps += [ "//chrome/browser/captive_portal" ]
   }
 
+  if (enable_offline_pages) {
+    deps += [ "//chrome/browser/offline_pages" ]
+  }
+
   if (enable_compose) {
     deps += [ "//chrome/browser/compose" ]
   }

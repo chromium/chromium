@@ -67,24 +67,14 @@ namespace {
 constexpr char kPrivateOfflineFileDir[] = "offline_pages";
 constexpr char kPublicOfflineFileDir[] = "public_offline_pages";
 
-const base::FilePath kFilename1(FILE_PATH_LITERAL("hello.mhtml"));
-const base::FilePath kFilename2(FILE_PATH_LITERAL("welcome.mhtml"));
-const base::FilePath kNonexistentFilename(
-    FILE_PATH_LITERAL("nonexistent.mhtml"));
+constexpr base::FilePath::CharType kFilename1[] =
+    FILE_PATH_LITERAL("hello.mhtml");
+
+constexpr base::FilePath::CharType kFilename2[] =
+    FILE_PATH_LITERAL("welcome.mhtml");
+
 constexpr int kFileSize1 = 471;  // Real size of hello.mhtml.
 constexpr int kFileSize2 = 461;  // Real size of welcome.mhtml.
-const std::string kDigest1(
-    "\x43\x60\x62\x02\x06\x15\x0f\x3e\x77\x99\x3d\xed\xdc\xd4\xe2\x0d\xbe\xbd"
-    "\x77\x1a\xfb\x32\x00\x51\x7e\x63\x7d\x3b\x2e\x46\x63\xf6",
-    32);  // SHA256 Hash of hello.mhtml.
-const std::string kDigest2(
-    "\xBD\xD3\x37\x79\xDA\x7F\x4E\x6A\x16\x66\xED\x49\x67\x18\x54\x48\xC6\x8E"
-    "\xA1\x47\x16\xA5\x44\x45\x43\xD0\x0E\x04\x9F\x4C\x45\xDC",
-    32);  // SHA256 Hash of welcome.mhtml.
-const std::string kMismatchedDigest(
-    "\xff\x64\xF9\x7C\x94\xE5\x9E\x91\x83\x3D\x41\xB0\x36\x90\x0A\xDF\xB3\xB1"
-    "\x5C\x13\xBE\xB8\x35\x8C\xF6\x5B\xC4\xB5\x5A\xFC\x3A\xCC",
-    32);  // Wrong SHA256 Hash.
 
 constexpr int kTabId = 1;
 
@@ -373,8 +363,8 @@ class OfflinePageRequestHandlerTest : public testing::Test {
   // TODO(crbug.com/40561648): The static members below will be removed
   // once the reference to BuildTestOfflinePageModel in SetUp is converted to a
   // base::OnceCallback.
-  static base::FilePath private_archives_dir_;
-  static base::FilePath public_archives_dir_;
+  static base::NoDestructor<base::FilePath> private_archives_dir_;
+  static base::NoDestructor<base::FilePath> public_archives_dir_;
 
   void OnSavePageDone(SavePageResult result, int64_t offline_id);
   void OnGetPageByOfflineIdDone(const OfflinePageItem* pages);
@@ -451,10 +441,11 @@ void OfflinePageRequestHandlerTest::SetUp() {
   // TODO(romax): add the more recent "temporary" dir here instead of reusing
   // the private one.
   ASSERT_TRUE(private_archives_temp_base_dir_.CreateUniqueTempDir());
-  private_archives_dir_ = private_archives_temp_base_dir_.GetPath().AppendASCII(
-      kPrivateOfflineFileDir);
+  *private_archives_dir_ =
+      private_archives_temp_base_dir_.GetPath().AppendASCII(
+          kPrivateOfflineFileDir);
   ASSERT_TRUE(public_archives_temp_base_dir_.CreateUniqueTempDir());
-  public_archives_dir_ = public_archives_temp_base_dir_.GetPath().AppendASCII(
+  *public_archives_dir_ = public_archives_temp_base_dir_.GetPath().AppendASCII(
       kPublicOfflineFileDir);
   OfflinePageModelFactory::GetInstance()->SetTestingFactoryAndUse(
       profile()->GetProfileKey(),
@@ -482,11 +473,11 @@ void OfflinePageRequestHandlerTest::SetUp() {
   base::FilePath test_data_private_archives_dir =
       test_data_dir_path.AppendASCII(kPrivateOfflineFileDir);
   ASSERT_TRUE(base::CopyDirectory(test_data_private_archives_dir,
-                                  private_archives_dir_.DirName(), true));
+                                  private_archives_dir_->DirName(), true));
   base::FilePath test_data_public_archives_dir =
       test_data_dir_path.AppendASCII(kPublicOfflineFileDir);
   ASSERT_TRUE(base::CopyDirectory(test_data_public_archives_dir,
-                                  public_archives_dir_.DirName(), true));
+                                  public_archives_dir_->DirName(), true));
 
   histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
@@ -574,7 +565,7 @@ void OfflinePageRequestHandlerTest::ExpectOfflinePageServed(
   EXPECT_EQ(expected_offline_id,
             offline_page_tab_helper()->GetOfflinePageForTest()->offline_id);
   OfflinePageTrustedState expected_trusted_state =
-      private_archives_dir_.IsParent(
+      private_archives_dir_->IsParent(
           offline_page_tab_helper()->GetOfflinePageForTest()->file_path)
           ? OfflinePageTrustedState::TRUSTED_AS_IN_INTERNAL_DIR
           : OfflinePageTrustedState::TRUSTED_AS_UNMODIFIED_AND_IN_PUBLIC_DIR;
@@ -615,7 +606,7 @@ int64_t OfflinePageRequestHandlerTest::SavePublicPage(
   if (file_path.IsAbsolute()) {
     final_path = file_path;
   } else {
-    final_path = public_archives_dir_.Append(file_path);
+    final_path = public_archives_dir_->Append(file_path);
   }
 
   return SavePage(url, original_url, final_path, file_size, digest);
@@ -631,7 +622,7 @@ int64_t OfflinePageRequestHandlerTest::SaveInternalPage(
   if (file_path.IsAbsolute()) {
     final_path = file_path;
   } else {
-    final_path = private_archives_dir_.Append(file_path);
+    final_path = private_archives_dir_->Append(file_path);
   }
 
   return SavePage(url, original_url, final_path, file_size, digest);
@@ -682,7 +673,7 @@ OfflinePageRequestHandlerTest::BuildTestOfflinePageModel(
   // Since we're not saving page into temporary dir, it's set the same as the
   // private dir.
   auto archive_manager = std::make_unique<ArchiveManager>(
-      private_archives_dir_, private_archives_dir_, public_archives_dir_,
+      *private_archives_dir_, *private_archives_dir_, *public_archives_dir_,
       task_runner);
 
   auto archive_publisher = std::make_unique<OfflinePageTestArchivePublisher>(
@@ -696,8 +687,10 @@ OfflinePageRequestHandlerTest::BuildTestOfflinePageModel(
 }
 
 // static
-base::FilePath OfflinePageRequestHandlerTest::private_archives_dir_;
-base::FilePath OfflinePageRequestHandlerTest::public_archives_dir_;
+base::NoDestructor<base::FilePath>
+    OfflinePageRequestHandlerTest::private_archives_dir_;
+base::NoDestructor<base::FilePath>
+    OfflinePageRequestHandlerTest::public_archives_dir_;
 
 void OfflinePageRequestHandlerTest::OnSavePageDone(SavePageResult result,
                                                    int64_t offline_id) {
@@ -937,8 +930,8 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnDisconnectedNetwork) {
   SimulateHasNetworkConnectivity(false);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   LoadPage(test_url);
 
@@ -954,8 +947,8 @@ TEST_F(OfflinePageRequestHandlerTest,
   this->SimulateHasNetworkConnectivity(false);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id = this->SaveInternalPage(test_url, GURL(), kFilename1,
-                                              kFileSize1, std::string());
+  int64_t offline_id = this->SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   this->LoadPage(test_url);
 
@@ -969,8 +962,9 @@ TEST_F(OfflinePageRequestHandlerTest,
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnDisconnectedNetwork) {
   SimulateHasNetworkConnectivity(false);
 
-  int64_t offline_id = SaveInternalPage(GURL(kTestUrl), GURL(), kFilename1,
-                                        kFileSize1, std::string());
+  int64_t offline_id =
+      SaveInternalPage(GURL(kTestUrl), GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
 
   LoadPage(GURL(kTestUrl2));
 
@@ -982,8 +976,8 @@ TEST_F(OfflinePageRequestHandlerTest,
   SimulateHasNetworkConnectivity(false);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   net::HttpRequestHeaders extra_headers;
   extra_headers.AddHeaderFromString(
@@ -997,8 +991,8 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnFlakyNetwork) {
   SimulateHasNetworkConnectivity(true);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   // When custom offline header exists and contains "reason=error", it means
   // that net error is hit in last request due to flaky network.
@@ -1013,8 +1007,9 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageOnFlakyNetwork) {
 TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnFlakyNetwork) {
   SimulateHasNetworkConnectivity(true);
 
-  int64_t offline_id = SaveInternalPage(GURL(kTestUrl), GURL(), kFilename1,
-                                        kFileSize1, std::string());
+  int64_t offline_id =
+      SaveInternalPage(GURL(kTestUrl), GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
 
   // When custom offline header exists and contains "reason=error", it means
   // that net error is hit in last request due to flaky network.
@@ -1030,8 +1025,8 @@ TEST_F(OfflinePageRequestHandlerTest, ForceLoadOfflinePageOnConnectedNetwork) {
   SimulateHasNetworkConnectivity(true);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   // When custom offline header exists and contains value other than
   // "reason=error", it means that offline page is forced to load.
@@ -1047,8 +1042,9 @@ TEST_F(OfflinePageRequestHandlerTest, PageNotFoundOnConnectedNetwork) {
   SimulateHasNetworkConnectivity(true);
 
   // Save an offline page.
-  int64_t offline_id = SaveInternalPage(GURL(kTestUrl), GURL(), kFilename1,
-                                        kFileSize1, std::string());
+  int64_t offline_id =
+      SaveInternalPage(GURL(kTestUrl), GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
 
   // When custom offline header exists and contains value other than
   // "reason=error", it means that offline page is forced to load.
@@ -1064,8 +1060,8 @@ TEST_F(OfflinePageRequestHandlerTest, DoNotLoadOfflinePageOnConnectedNetwork) {
   SimulateHasNetworkConnectivity(true);
 
   const GURL test_url(kTestUrl);
-  int64_t offline_id =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   LoadPage(test_url);
 
@@ -1082,8 +1078,8 @@ TEST_F(OfflinePageRequestHandlerTest, LoadMostRecentlyCreatedOfflinePage) {
   // Save 2 offline pages associated with same online URL, but pointing to
   // different archive file.
   const GURL test_url(kTestUrl);
-  int64_t offline_id2 =
-      SaveInternalPage(test_url, GURL(), kFilename2, kFileSize2, std::string());
+  int64_t offline_id2 = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename2), kFileSize2, std::string());
 
   // Load an URL that matches multiple offline pages. Expect that the most
   // recently created offline page is fetched.
@@ -1098,8 +1094,8 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageByOfflineID) {
   // Save 2 offline pages associated with same online URL, but pointing to
   // different archive file.
   const GURL test_url(kTestUrl);
-  int64_t offline_id1 =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id1 = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   // Load an URL with a specific offline ID designated in the custom header.
   // Expect the offline page matching the offline id is fetched.
@@ -1114,8 +1110,9 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageByOfflineID) {
 TEST_F(OfflinePageRequestHandlerTest, FailToLoadByOfflineIDOnUrlMismatch) {
   SimulateHasNetworkConnectivity(true);
 
-  int64_t offline_id = SaveInternalPage(GURL(kTestUrl), GURL(), kFilename1,
-                                        kFileSize1, std::string());
+  int64_t offline_id =
+      SaveInternalPage(GURL(kTestUrl), GURL(), base::FilePath(kFilename1),
+                       kFileSize1, std::string());
 
   // The offline page found with specific offline ID does not match the passed
   // online URL. Should fall back to find the offline page based on the online
@@ -1133,14 +1130,15 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOfflinePageForUrlWithFragment) {
 
   // Save an offline page associated with online URL without fragment.
   const GURL test_url(kTestUrl);
-  int64_t offline_id1 =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id1 = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   // Save another offline page associated with online URL that has a fragment.
   const GURL test_url2(kTestUrl2);
   GURL url2_with_fragment(test_url2.spec() + "#ref");
-  int64_t offline_id2 = SaveInternalPage(url2_with_fragment, GURL(), kFilename2,
-                                         kFileSize2, std::string());
+  int64_t offline_id2 =
+      SaveInternalPage(url2_with_fragment, GURL(), base::FilePath(kFilename2),
+                       kFileSize2, std::string());
 
   // Loads an url with fragment, that will match the offline URL without the
   // fragment.
@@ -1175,8 +1173,8 @@ TEST_F(OfflinePageRequestHandlerTest, LoadOtherPageOnDigestMismatch) {
   // Save 2 offline pages associated with same online URL, one in internal
   // location, while another in public location with mismatched digest.
   const GURL test_url(kTestUrl);
-  int64_t offline_id1 =
-      SaveInternalPage(test_url, GURL(), kFilename1, kFileSize1, std::string());
+  int64_t offline_id1 = SaveInternalPage(
+      test_url, GURL(), base::FilePath(kFilename1), kFileSize1, std::string());
 
   // There are 2 offline pages matching |test_url|. The most recently created
   // one should fail on mistmatched digest. The second most recently created

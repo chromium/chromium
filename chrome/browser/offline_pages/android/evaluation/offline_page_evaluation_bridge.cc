@@ -55,7 +55,7 @@ namespace android {
 
 namespace {
 const char kNativeTag[] = "OPNative";
-const base::FilePath::CharType kTestRequestQueueDirname[] =
+constexpr base::FilePath::CharType kTestRequestQueueDirname[] =
     FILE_PATH_LITERAL("Offline Pages/test_request_queue");
 
 static void JNI_OfflinePageEvaluationBridge_ToJavaOfflinePageList(

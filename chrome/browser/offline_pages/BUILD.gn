@@ -1,0 +1,183 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/offline_pages/buildflags/features.gni")
+
+assert(enable_offline_pages)
+
+source_set("offline_pages") {
+  public = [
+    "android/auto_fetch_page_load_watcher.h",
+    "android/offline_page_auto_fetcher_service_factory.h",
+    "background_loader_offliner.h",
+    "download_archive_manager.h",
+    "offline_page_bookmark_observer.h",
+    "offline_page_info_handler.h",
+    "offline_page_mhtml_archiver.h",
+    "offline_page_model_factory.h",
+    "offline_page_navigation_throttle.h",
+    "offline_page_origin_utils.h",
+    "offline_page_request_handler.h",
+    "offline_page_tab_helper.h",
+    "offline_page_url_loader.h",
+    "offline_page_url_loader_request_interceptor.h",
+    "offline_page_utils.h",
+    "offliner_helper.h",
+    "offliner_user_data.h",
+    "recent_tab_helper.h",
+    "request_coordinator_factory.h",
+    "resource_loading_observer.h",
+    "visuals_decoder_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:mojo_bindings",
+    "//components/bookmarks/browser",
+    "//components/keyed_service/core",
+    "//components/offline_pages/content/background_loader",
+    "//components/offline_pages/core",
+    "//components/offline_pages/core/background:background_offliner",
+    "//components/offline_pages/core/request_header",
+    "//components/sessions",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "background_loader_offliner.cc",
+    "download_archive_manager.cc",
+    "offline_page_bookmark_observer.cc",
+    "offline_page_info_handler.cc",
+    "offline_page_mhtml_archiver.cc",
+    "offline_page_navigation_throttle.cc",
+    "offline_page_request_handler.cc",
+    "offline_page_tab_helper.cc",
+    "offline_page_url_loader.cc",
+    "offline_page_url_loader_request_interceptor.cc",
+    "offline_page_utils.cc",
+    "offliner_helper.cc",
+    "offliner_user_data.cc",
+    "recent_tab_helper.cc",
+    "visuals_decoder_impl.cc",
+  ]
+
+  public_deps = [ ":offline_pages" ]
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/renderer_host",
+    "//chrome/common:offline_page_auto_fetcher_mojom",
+    "//components/back_forward_cache",
+    "//components/offline_pages/content/background_loader",
+    "//components/offline_pages/core/downloads:offline_pages_ui_adapter",
+    "//components/offline_pages/core/request_header",
+    "//services/service_manager/public/cpp",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/auto_fetch_notifier.cc",
+      "android/auto_fetch_notifier.h",
+      "android/auto_fetch_page_load_watcher.cc",
+      "android/background_scheduler_bridge.cc",
+      "android/background_scheduler_bridge.h",
+      "android/downloads/offline_page_download_bridge.cc",
+      "android/downloads/offline_page_download_bridge.h",
+      "android/downloads/offline_page_share_helper.cc",
+      "android/downloads/offline_page_share_helper.h",
+      "android/load_termination_listener_impl.cc",
+      "android/load_termination_listener_impl.h",
+      "android/offline_page_archive_publisher_impl.cc",
+      "android/offline_page_archive_publisher_impl.h",
+      "android/offline_page_auto_fetcher.cc",
+      "android/offline_page_auto_fetcher.h",
+      "android/offline_page_auto_fetcher_service.cc",
+      "android/offline_page_auto_fetcher_service.h",
+      "android/offline_page_auto_fetcher_service_factory.cc",
+      "android/offline_page_bridge.cc",
+      "android/offline_page_bridge.h",
+      "android/offline_page_model_factory.cc",
+      "android/offline_page_origin_utils_android.cc",
+      "android/offline_page_utils_android.cc",
+      "android/request_coordinator_bridge.cc",
+      "android/request_coordinator_bridge.h",
+      "android/request_coordinator_factory.cc",
+    ]
+
+    deps += [
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/android/locale",
+      "//chrome/browser/image_fetcher",
+      "//chrome/browser/offline_items_collection",
+      "//chrome/browser/profiles",
+      "//chrome/browser/transition_manager",
+      "//chrome/browser/ui/android/tab_model",
+      "//components/image_fetcher/core",
+      "//components/offline_items_collection/core",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_offline_page_model_builder.cc",
+    "test_offline_page_model_builder.h",
+    "test_request_coordinator_builder.cc",
+    "test_request_coordinator_builder.h",
+  ]
+  deps = [
+    ":offline_pages",
+    "//chrome/browser:browser_process",
+    "//chrome/common:non_code_constants",
+    "//components/offline_pages/core:test_support",
+    "//components/offline_pages/core/background:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "background_loader_offliner_unittest.cc",
+    "download_archive_manager_unittest.cc",
+    "offline_page_mhtml_archiver_unittest.cc",
+    "offline_page_navigation_throttle_unittest.cc",
+    "offline_page_request_handler_unittest.cc",
+    "offline_page_tab_helper_unittest.cc",
+    "offline_page_utils_unittest.cc",
+    "recent_tab_helper_unittest.cc",
+    "visuals_decoder_impl_unittest.cc",
+  ]
+  public_deps = [ ":offline_pages" ]
+  deps = [
+    ":impl",
+    ":test_support",
+    "//base",
+    "//chrome/browser/image_fetcher",
+    "//chrome/browser/preloading:prefs",
+    "//chrome/browser/renderer_host",
+    "//chrome/test:test_support",
+    "//components/back_forward_cache",
+    "//components/image_fetcher/core:test_support",
+    "//components/offline_pages/content/background_loader:test_support",
+    "//components/offline_pages/core:test_support",
+    "//components/offline_pages/core/background:test_support",
+  ]
+  if (is_android) {
+    sources += [
+      "android/auto_fetch_page_load_watcher_unittest.cc",
+      "android/offline_page_archive_publisher_impl_unittest.cc",
+      "android/offline_page_auto_fetcher_service_unittest.cc",
+    ]
+  }
+}

@@ -6,6 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/offline_pages/buildflags/features.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
@@ -653,6 +654,10 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/password_manager/factories:startup_import_factory",
       "//chrome/browser/ui/tabs:glic",
     ]
+  }
+
+  if (enable_offline_pages) {
+    deps += [ "//chrome/browser/offline_pages" ]
   }
 }
 

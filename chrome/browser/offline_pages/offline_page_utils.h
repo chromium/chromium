@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_types.h"
 #include "url/gurl.h"
 
@@ -58,7 +57,8 @@ class OfflinePageUtils {
     ALL = 0xFFFF
   };
 
-  static const base::FilePath::CharType kMHTMLExtension[];
+  static constexpr base::FilePath::CharType kMHTMLExtension[] =
+      FILE_PATH_LITERAL("mhtml");
 
   // Callback to inform the duplicate checking result.
   using DuplicateCheckCallback = base::OnceCallback<void(DuplicateCheckResult)>;

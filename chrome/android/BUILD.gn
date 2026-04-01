@@ -2011,6 +2011,8 @@ if (_is_default_toolchain) {
       "//chrome/browser:browser_process",
       "//chrome/browser/autofill/test:test_support",
       "//chrome/browser/gesturenav/android:test_support",
+      "//chrome/browser/offline_pages",
+      "//chrome/browser/offline_pages:impl",
       "//chrome/browser/picture_in_picture/test:test_support",
       "//chrome/browser/renderer_host/android:test_support",
       "//chrome/browser/sync",

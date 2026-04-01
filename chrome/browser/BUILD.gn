@@ -7460,81 +7460,16 @@ static_library("browser") {
   }
 
   if (enable_offline_pages) {
-    sources += [
-      "offline_pages/background_loader_offliner.cc",
-      "offline_pages/background_loader_offliner.h",
-      "offline_pages/download_archive_manager.cc",
-      "offline_pages/download_archive_manager.h",
-      "offline_pages/offline_page_bookmark_observer.cc",
-      "offline_pages/offline_page_bookmark_observer.h",
-      "offline_pages/offline_page_info_handler.cc",
-      "offline_pages/offline_page_info_handler.h",
-      "offline_pages/offline_page_mhtml_archiver.cc",
-      "offline_pages/offline_page_mhtml_archiver.h",
-      "offline_pages/offline_page_model_factory.h",
-      "offline_pages/offline_page_navigation_throttle.cc",
-      "offline_pages/offline_page_navigation_throttle.h",
-      "offline_pages/offline_page_origin_utils.h",
-      "offline_pages/offline_page_request_handler.cc",
-      "offline_pages/offline_page_request_handler.h",
-      "offline_pages/offline_page_tab_helper.cc",
-      "offline_pages/offline_page_tab_helper.h",
-      "offline_pages/offline_page_url_loader.cc",
-      "offline_pages/offline_page_url_loader.h",
-      "offline_pages/offline_page_url_loader_request_interceptor.cc",
-      "offline_pages/offline_page_url_loader_request_interceptor.h",
-      "offline_pages/offline_page_utils.cc",
-      "offline_pages/offline_page_utils.h",
-      "offline_pages/offliner_helper.cc",
-      "offline_pages/offliner_helper.h",
-      "offline_pages/offliner_user_data.cc",
-      "offline_pages/offliner_user_data.h",
-      "offline_pages/recent_tab_helper.cc",
-      "offline_pages/recent_tab_helper.h",
-      "offline_pages/request_coordinator_factory.h",
-      "offline_pages/resource_loading_observer.h",
-      "offline_pages/visuals_decoder_impl.cc",
-      "offline_pages/visuals_decoder_impl.h",
-    ]
-    if (is_android) {
-      sources += [
-        "offline_pages/android/auto_fetch_notifier.cc",
-        "offline_pages/android/auto_fetch_notifier.h",
-        "offline_pages/android/auto_fetch_page_load_watcher.cc",
-        "offline_pages/android/auto_fetch_page_load_watcher.h",
-        "offline_pages/android/background_scheduler_bridge.cc",
-        "offline_pages/android/background_scheduler_bridge.h",
-        "offline_pages/android/downloads/offline_page_download_bridge.cc",
-        "offline_pages/android/downloads/offline_page_download_bridge.h",
-        "offline_pages/android/downloads/offline_page_share_helper.cc",
-        "offline_pages/android/downloads/offline_page_share_helper.h",
-        "offline_pages/android/load_termination_listener_impl.cc",
-        "offline_pages/android/load_termination_listener_impl.h",
-        "offline_pages/android/offline_page_archive_publisher_impl.cc",
-        "offline_pages/android/offline_page_archive_publisher_impl.h",
-        "offline_pages/android/offline_page_auto_fetcher.cc",
-        "offline_pages/android/offline_page_auto_fetcher.h",
-        "offline_pages/android/offline_page_auto_fetcher_service.cc",
-        "offline_pages/android/offline_page_auto_fetcher_service.h",
-        "offline_pages/android/offline_page_auto_fetcher_service_factory.cc",
-        "offline_pages/android/offline_page_auto_fetcher_service_factory.h",
-        "offline_pages/android/offline_page_bridge.cc",
-        "offline_pages/android/offline_page_bridge.h",
-        "offline_pages/android/offline_page_model_factory.cc",
-        "offline_pages/android/offline_page_origin_utils_android.cc",
-        "offline_pages/android/offline_page_utils_android.cc",
-        "offline_pages/android/request_coordinator_bridge.cc",
-        "offline_pages/android/request_coordinator_bridge.h",
-        "offline_pages/android/request_coordinator_factory.cc",
-      ]
-    }
-
     deps += [
-      "//chrome/common:offline_page_auto_fetcher_mojom",
-      "//components/offline_pages/content/background_loader",
-      "//components/offline_pages/core/downloads:offline_pages_ui_adapter",
-      "//components/offline_pages/core/request_header",
+      "//chrome/browser/offline_pages",
+      "//chrome/browser/offline_pages:impl",
     ]
+
+    # TODO(crbug.com/497946889): Remove this circular dependency once the
+    # following headers get componentized:
+    # //chrome/browser/net/net_error_tab_helper.h
+    # //chrome/browser/ssl/chrome_security_state_tab_helper.h
+    allow_circular_includes_from += [ "//chrome/browser/offline_pages:impl" ]
 
     # Used to build test harness locally.The harness is used manually to
     # produce multiple offline pages to evaluate quality of the snapshots.
