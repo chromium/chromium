@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
 #include "content/public/common/web_identity.h"
@@ -464,6 +465,14 @@ bool DidNavigationHandleHaveActivation(NavigationHandle* handle) {
 perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer) {
   return perfetto::NamedTrack::ThreadScoped(
       "FedCM", reinterpret_cast<uintptr_t>(class_pointer));
+}
+
+bool HasEmbedderLoginRequest(RenderFrameHost* rfh) {
+  if (!rfh) {
+    return false;
+  }
+  return !!FederatedEmbedderLoginRequest::Get(
+      WebContents::FromRenderFrameHost(rfh));
 }
 
 }  // namespace content::webid

@@ -347,14 +347,10 @@ void RequestService::RequestToken(
     return;
   }
 
-  bool has_embedder_login_request =
-      FederatedEmbedderLoginRequest::Get(
-          WebContents::FromRenderFrameHost(&render_frame_host())) != nullptr;
-
-  can_accept_redirect_to_ =
-      force_allow_redirect_to_for_testing_ ||
-      ((IsNavigationInterceptionEnabled() || has_embedder_login_request) &&
-       navigation_handle != nullptr);
+  can_accept_redirect_to_ = force_allow_redirect_to_for_testing_ ||
+                            ((IsNavigationInterceptionEnabled() ||
+                              HasEmbedderLoginRequest(&render_frame_host())) &&
+                             navigation_handle != nullptr);
 
   had_transient_user_activation_ =
       (navigation_handle &&

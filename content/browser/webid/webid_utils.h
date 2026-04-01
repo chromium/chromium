@@ -121,6 +121,7 @@ bool DidNavigationHandleHaveActivation(NavigationHandle* handle);
 // Creates a Perfetto track for the class pointed to by `class_pointer`.
 perfetto::NamedTrack CreatePerfettoTrackForFedCM(void* class_pointer);
 
+bool HasEmbedderLoginRequest(RenderFrameHost* rfh);
 }  // namespace webid
 
 }  // namespace content

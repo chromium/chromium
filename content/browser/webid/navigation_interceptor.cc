@@ -36,8 +36,13 @@ namespace content::webid {
 // static
 void NavigationInterceptor::MaybeCreateAndAdd(
     NavigationThrottleRegistry& registry) {
+  RenderFrameHost* rfh = RenderFrameHost::FromID(
+      registry.GetNavigationHandle().GetPreviousRenderFrameHostId());
+  // We add the throttle when either is true:
+  //   1. the interception flag is enabled
+  //   2. the embedder login feature is enabled and there's an active request
   if (!IsNavigationInterceptionEnabled() &&
-      !IsEmbedderInitiatedLoginEnabled()) {
+      !(IsEmbedderInitiatedLoginEnabled() && HasEmbedderLoginRequest(rfh))) {
     return;
   }
   registry.AddThrottle(std::make_unique<NavigationInterceptor>(registry));
@@ -131,9 +136,8 @@ NavigationInterceptor::ProcessRequest() {
 
   // We intercept if the user explicitly enabled interception, or if there is
   // an active embedder login request.
-  if (!IsNavigationInterceptionEnabled() &&
-      !FederatedEmbedderLoginRequest::Get(
-          WebContents::FromRenderFrameHost(rfh))) {
+  bool has_embedder_login_request = HasEmbedderLoginRequest(rfh);
+  if (!IsNavigationInterceptionEnabled() && !has_embedder_login_request) {
     return PROCEED;
   }
 
@@ -160,10 +164,16 @@ NavigationInterceptor::ProcessRequest() {
   }
 
   if (connection_status_header) {
-    data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
-        *connection_status_header,
-        base::BindOnce(&NavigationInterceptor::OnConnectionStatusHeaderParsed,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // It's possible that both headers are present. In that case, if there's no
+    // embedder login request, we should just proceed.
+    if (has_embedder_login_request) {
+      data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
+          *connection_status_header,
+          base::BindOnce(&NavigationInterceptor::OnConnectionStatusHeaderParsed,
+                         weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      return PROCEED;
+    }
   } else if (intercept_header) {
     data_decoder::DataDecoder::ParseStructuredHeaderDictionaryIsolated(
         *intercept_header,
@@ -192,6 +202,13 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
     return;
   }
 
+  FederatedEmbedderLoginRequest* embedder_login_request =
+      FederatedEmbedderLoginRequest::Get(WebContents::FromRenderFrameHost(rfh));
+  if (!embedder_login_request) {
+    Resume();
+    return;
+  }
+
   if (!result.has_value()) {
     // The header was available, but malformed.
     // Cancel the navigation because it is a developer error.
@@ -211,12 +228,8 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
       account_id = account_id_it->second.member[0].item.GetString();
     }
 
-    FederatedEmbedderLoginRequest* embedder_login_request =
-        FederatedEmbedderLoginRequest::Get(
-            WebContents::FromRenderFrameHost(rfh));
     // The server can send this header without embedder login request.
-    if (embedder_login_request &&
-        net::SchemefulSite::IsSameSite(
+    if (net::SchemefulSite::IsSameSite(
             embedder_login_request->idp_origin(),
             url::Origin::Create(navigation_handle()->GetURL()))) {
       if (account_id == embedder_login_request->account_id()) {

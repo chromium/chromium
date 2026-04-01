@@ -1054,4 +1054,88 @@ TEST_F(NavigationInterceptorTest,
   EXPECT_TRUE(was_resumed);
 }
 
+class EmbedderLoginNavigationInterceptorTest
+    : public RenderViewHostTestHarness {
+ public:
+  EmbedderLoginNavigationInterceptorTest() {
+    features_.InitWithFeatures({features::kFedCmEmbedderInitiatedLogin},
+                               {features::kFedCmNavigationInterception});
+  }
+  ~EmbedderLoginNavigationInterceptorTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList features_;
+  GURL base_url_{"https://idp.example/"};
+};
+
+TEST_F(EmbedderLoginNavigationInterceptorTest,
+       MaybeCreateAndAddWithoutEmbedderLoginRequest) {
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+
+  content::MockNavigationThrottleRegistry registry(
+      &mock_navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  webid::NavigationInterceptor::MaybeCreateAndAdd(registry);
+  EXPECT_TRUE(registry.throttles().empty());
+}
+
+TEST_F(EmbedderLoginNavigationInterceptorTest,
+       MaybeCreateAndAddWithEmbedderLoginRequest) {
+  FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(GURL("https://idp.example/")), "1234",
+      base::BindLambdaForTesting([&](FederatedLoginResult result) {}));
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+
+  content::MockNavigationThrottleRegistry registry(
+      &mock_navigation_handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  webid::NavigationInterceptor::MaybeCreateAndAdd(registry);
+  EXPECT_FALSE(registry.throttles().empty());
+}
+
+TEST_F(EmbedderLoginNavigationInterceptorTest,
+       IgnoreConnectionStatusWithoutEmbedderLoginRequest) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-RP-Connection-Status",
+                     "status=\"connected\", account_id=\"1234\"");
+  mock_navigation_handle.set_response_headers(headers);
+
+  content::MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  webid::NavigationInterceptor interceptor(
+      registry,
+      base::BindLambdaForTesting(
+          [](RenderFrameHost* rfh) -> RequestService* { return nullptr; }));
+
+  interceptor.WillStartRequest();
+  auto result = interceptor.WillProcessResponse();
+  EXPECT_EQ(result, content::NavigationThrottle::PROCEED);
+}
+
 }  // namespace content::webid
