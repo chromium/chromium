@@ -642,6 +642,8 @@ result.links = linksArray;
   _rootAPCNode->mutable_root_node()
       ->mutable_content_attributes()
       ->set_attribute_type(optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
+  CHECK(_webState);
+  _rootAPCNode->set_tab_id(_webState->GetUniqueIdentifier().identifier());
 
   // Create the aggregated innerText string.
   _innerText = std::make_unique<std::string>();
@@ -670,7 +672,6 @@ result.links = linksArray;
       optimization_guide::proto::AutofillInformation* autofillInformation =
           _rootAPCNode->mutable_profile_information()
               ->mutable_autofill_information();
-      CHECK(_webState);
       PopulateAutofillInformation(_webState.get(), autofillInformation);
     }
 

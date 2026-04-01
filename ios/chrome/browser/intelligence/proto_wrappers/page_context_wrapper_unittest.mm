@@ -67,6 +67,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -355,6 +356,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContext) {
   const auto& annotated_page_content = page_context->annotated_page_content();
   EXPECT_EQ(annotated_page_content.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+  EXPECT_EQ(annotated_page_content.tab_id(),
+            web_state()->GetUniqueIdentifier().identifier());
 
   const auto& root_node = annotated_page_content.root_node();
   EXPECT_EQ(root_node.content_attributes().attribute_type(),
@@ -871,6 +874,8 @@ TEST_P(PageContextWrapperTest, PopulatePageContextWithCrossOriginFrame) {
   EXPECT_THAT(inner_text, testing::HasSubstr("Child frame cross-origin text"));
 
   const auto& annotated_page_content = page_context->annotated_page_content();
+  EXPECT_EQ(annotated_page_content.tab_id(),
+            web_state()->GetUniqueIdentifier().identifier());
   const auto& root_node = annotated_page_content.root_node();
   // There should be one text node and one iframe node.
   ASSERT_EQ(root_node.children_nodes_size(), 2);
@@ -1940,6 +1945,9 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
 
   EXPECT_EQ(actual_apc.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
+
+  EXPECT_EQ(actual_apc.tab_id(),
+            web_state()->GetUniqueIdentifier().identifier());
 
   // Main frame data
   const auto& main_frame = actual_apc.main_frame_data();
