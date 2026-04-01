@@ -6453,7 +6453,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
         return;
       }
 
-      if (video_renderer->CopyVideoFrameTexturesToGLTexture(
+      if (video_renderer->CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
               raster_context_provider, gl, media_video_frame, params.target,
               texture->Object(), adjusted_internalformat, params.format,
               params.type, params.level, dst_alpha_type,

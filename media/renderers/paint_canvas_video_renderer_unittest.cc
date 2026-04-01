@@ -1170,8 +1170,9 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
-  // Uses CopyVideoFrameTexturesToGLTexture to copy |frame| into a GL texture,
-  // reads back its contents, and runs |check_pixels| to validate it.
+  // Copies |frame| into a GL texture, reads back its contents, and runs
+  // |check_pixels| to validate it. The copy is performed either directly (if
+  // supported) or via CopyVideoFrameTexturesToGLTextureViaIntermediateSI.
   template <class CheckPixels>
   void CopyVideoFrameTexturesAndCheckPixels(scoped_refptr<VideoFrame> frame,
                                             CheckPixels check_pixels) {
@@ -1200,7 +1201,7 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
           destination_context_->ContextSupport(),
           std::move(destination_access));
     } else {
-      renderer_.CopyVideoFrameTexturesToGLTexture(
+      renderer_.CopyVideoFrameTexturesToGLTextureViaIntermediateSI(
           media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
           GL_RGBA, GL_UNSIGNED_BYTE, 0, kUnpremul_SkAlphaType,
           kTopLeft_GrSurfaceOrigin);
