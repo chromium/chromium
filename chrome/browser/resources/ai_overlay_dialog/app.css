@@ -41,7 +41,18 @@
   height: 100px;
 }
 
-#stateButton {
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+video[hidden],
+#initializerState[hidden] {
+  display: none;
+}
+
+#initializerState {
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -52,40 +63,18 @@
   background-color: var(--color-ref-neutral50);
 }
 
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-video[hidden],
-#stateButton[hidden] {
-  display: none;
-}
-
-#stateButton.inert {
+#initializerState.uninitialized {
   background-color: var(--color-ref-neutral50);
   transform: scale(0.7);
 }
 
-#stateButton.connecting {
+#initializerState.connecting {
   background-color: var(--color-ref-primary90);
   transform: scale(0.80);
   animation: connecting-pulse 1.5s infinite ease-in-out;
 }
 
-#stateButton.idle {
-  background-color: var(--color-ref-primary70);
-  animation: pulse 2s infinite ease-in-out;
-}
-
-#stateButton.speaking {
-  background-color: var(--color-sys-tertiary);
-  border-color: var(--color-sys-positive-container);
-  animation: talking-pulse 0.85s infinite linear;
-}
-
-#stateButton.error {
+#initializerState.error {
   background-color: var(--color-ref-error50);
 }
 
@@ -99,32 +88,6 @@ video[hidden],
   100% {
     transform: scale(0.80);
   }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes talking-pulse {
-  0% { transform: scale(1); }
-  5% { transform: scale(1.05); }
-  10% { transform: scale(1); }
-  15% { transform: scale(1.07); }
-  25% { transform: scale(1); }
-  60% { transform: scale(1.05); }
-  65% { transform: scale(1.1); }
-  70% { transform: scale(1); }
-  80% { transform: scale(1.1); }
-  88% { transform: scale(1.02); }
-  100% { transform: scale(1); }
 }
 
 #transcription {

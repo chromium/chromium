@@ -16,21 +16,17 @@
       <span id="transcription-text">${this.transcription}</span>
     </div>
     <div id="persona-container">
-      <!--
-        TODO(bokan) settle on either "talking" or "speaking", "listening" or
-        "idle"
-      -->
-      ${this.useStateButton
+      ${this.initializationState !== 'initialized'
       ? html`
-        <button id="stateButton" .className=${this.uiState}>
-        </button>`
+        <div id="initializerState" .className=${this.initializationState}>
+        </div >`
       : html`
-        <video id="talking" .src="${this.talkingBlobUrl}"
+        <video id="talking" .src="${this.speakingBlobUrl}"
             ?hidden="${this.uiState !== 'speaking'}"
             autoplay loop muted playsinline>
         </video>
         <video id="listening" .src="${this.listeningBlobUrl}"
-            ?hidden="${this.uiState !== 'idle'}"
+            ?hidden="${this.uiState !== 'listening'}"
             autoplay loop muted playsinline>
         </video>
       `}

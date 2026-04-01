@@ -163,7 +163,7 @@ export class Conversation implements ApiSessionDelegate {
     const {toolDefinitionsJson} = await this.pageHandler.getToolDefinitions();
     this.toolDefinitions = JSON.parse(toolDefinitionsJson);
 
-    this.createNewApiSession();
+    await this.createNewApiSession();
   }
 
   async onToolCall(toolCall: ToolCall) {
@@ -235,7 +235,7 @@ export class Conversation implements ApiSessionDelegate {
     this.uiDelegate.onStateChange(state, oldState);
   }
 
-  private createNewApiSession() {
+  private async createNewApiSession() {
     assert(!this.session);
 
     const context = this.pageContextManager.pageContext;
@@ -247,7 +247,7 @@ export class Conversation implements ApiSessionDelegate {
 
     this.session = new ApiSession(
         systemInstruction, this.config.api_config, this.toolDefinitions, this);
-    this.session.connect();
+    await this.session.connect();
   }
 
   private didUpdatePageContent() {

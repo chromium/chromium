@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from '//resources/js/assert.js';
 import {debugLog, DebugLogTag, errorLog, log, warnLog} from './logging.js';
 
 const FILE = 'ApiSession';
@@ -123,6 +124,8 @@ export class ApiSession {
 
   private delegate: ApiSessionDelegate;
 
+  private setupCompletedCallback: (() => void)|null = null;
+
   constructor(
       systemInstruction: string, config: ApiConfig, toolDefinitions: Tool[],
       delegate: ApiSessionDelegate) {
@@ -132,9 +135,14 @@ export class ApiSession {
     this.delegate = delegate;
   }
 
-  connect() {
+  // Setsup the WebSocket connection. Returns once the setup message has been
+  // responded to and the connection is ready for input.
+  async connect() {
     const url = `${this.config.endpointUrl}?key=${this.config.apiKey}`;
     this.ws = new WebSocket(url);
+
+    const setupCompletedPromise =
+        new Promise<void>(resolve => this.setupCompletedCallback = resolve);
 
     this.ws.onopen = () => {
       log(FILE, 'WebSocket Opened');
@@ -189,6 +197,8 @@ export class ApiSession {
       this.delegate.onConnectionChanged(false);
       this.stop();
     };
+
+    await setupCompletedPromise;
   }
 
   stop() {
@@ -264,6 +274,8 @@ export class ApiSession {
     // only contain exactly one of setupComplete, toolCall, or serverContent.
     if (msg.setupComplete) {
       log(FILE, 'SetupComplete received from server.');
+      assert(this.setupCompletedCallback);
+      this.setupCompletedCallback();
       this.delegate.onConnectionChanged(true);
       return;
     }

@@ -22,12 +22,23 @@ import type {PageContext} from './page_context_manager.js';
 
 const FILE = 'App';
 
-enum UiState {
-  INERT = 'inert',
+/**
+ * Used to describe the phase of the app during startup.
+ */
+enum InitializationState {
+  UNINITIALIZED = 'uninitialized',
   CONNECTING = 'connecting',
-  SPEAKING = 'speaking',
-  IDLE = 'idle',
   ERROR = 'error',
+  INITIALIZED = 'initialized',
+}
+
+/**
+ * Used to describe the state of the app after InitializationState reaches
+ * INITIALIZED.
+ */
+enum UiState {
+  LISTENING = 'listening',
+  SPEAKING = 'speaking',
 }
 
 interface MockAudioButton {
@@ -42,7 +53,7 @@ interface PersonaConfig {
 interface ResourceBundle {
   persona: Persona;
   apiConfig: ApiConfig;
-  talkingBlob: Blob;
+  speakingBlob: Blob;
   listeningBlob: Blob;
   instruction: string;
 }
@@ -67,37 +78,30 @@ export class AppElement extends CrLitElement {
       mockButtons: {
         type: Array,
       },
-      isSpeaking: {
-        type: Boolean,
-      },
-      isListening: {
-        type: Boolean,
-      },
-      isConnecting: {
-        type: Boolean,
-      },
       transcription: {
         type: String,
       },
-      talkingBlobUrl: {
+      speakingBlobUrl: {
         type: String,
       },
       listeningBlobUrl: {
         type: String,
       },
-      connectionFailed: {
-        type: Boolean,
+      initializationState: {
+        type: String,
+      },
+      uiState: {
+        type: String,
       },
     };
   }
 
+  protected accessor initializationState = InitializationState.UNINITIALIZED;
+  protected accessor uiState = UiState.LISTENING;
   protected accessor mockButtons: MockAudioButton[] = [];
-  protected accessor isSpeaking: boolean = false;
-  protected accessor isConnecting: boolean = false;
   protected accessor transcription: string = '';
-  protected accessor talkingBlobUrl: string = '';
+  protected accessor speakingBlobUrl: string = '';
   protected accessor listeningBlobUrl: string = '';
-  protected accessor connectionFailed = false;
 
   private pageHandler: PageHandlerRemote;
   private pageCallbackRouter: PageCallbackRouter;
@@ -112,39 +116,6 @@ export class AppElement extends CrLitElement {
   private unregisterPageContextListeners: (() => void)|null;
   private transcriptionTimeout: number = 0;
   private energyAnimationId: number|null = null;
-
-  protected get uiState(): UiState {
-    if (this.connectionFailed) {
-      return UiState.ERROR;
-    }
-
-    if (this.isConnecting) {
-      return UiState.CONNECTING;
-    }
-
-    if (!this.conversation?.connected) {
-      return UiState.INERT;
-    }
-
-    if (this.isSpeaking) {
-      return UiState.SPEAKING;
-    }
-
-    return UiState.IDLE;
-  }
-
-  protected get hasResourceBundle(): boolean {
-    return !!this.talkingBlobUrl && !!this.listeningBlobUrl;
-  }
-
-  protected get useStateButton(): boolean {
-    if (!this.hasResourceBundle) {
-      return true;
-    }
-
-    return this.uiState === UiState.CONNECTING ||
-        this.uiState === UiState.INERT;
-  }
 
   constructor() {
     super();
@@ -192,8 +163,8 @@ export class AppElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('visibilitychange', this.onVisibilityChange);
-    if (this.talkingBlobUrl) {
-      URL.revokeObjectURL(this.talkingBlobUrl);
+    if (this.speakingBlobUrl) {
+      URL.revokeObjectURL(this.speakingBlobUrl);
     }
     if (this.listeningBlobUrl) {
       URL.revokeObjectURL(this.listeningBlobUrl);
@@ -214,9 +185,9 @@ export class AppElement extends CrLitElement {
     }
 
     let energy = 0;
-    if (this.isSpeaking && this.audioPlayer) {
+    if (this.uiState === UiState.SPEAKING && this.audioPlayer) {
       energy = this.audioPlayer.getEnergy();
-    } else if (this.audioCapturer) {
+    } else if (this.uiState === UiState.LISTENING && this.audioCapturer) {
       energy = this.audioCapturer.getEnergy();
     }
 
@@ -277,11 +248,11 @@ export class AppElement extends CrLitElement {
   private createAudioPlayer(): AudioPlayer {
     return new AudioPlayer(/*onStart=*/
                            () => {
-                             this.isSpeaking = true;
+                             this.uiState = UiState.SPEAKING;
                            },
                            /*onDone=*/
                            () => {
-                             this.isSpeaking = false;
+                             this.uiState = UiState.LISTENING;
                            });
   }
 
@@ -314,19 +285,19 @@ export class AppElement extends CrLitElement {
   }
 
   private async startConversation() {
-    if (this.isConnecting || this.conversation?.connected) {
+    if (this.initializationState === InitializationState.CONNECTING ||
+        this.initializationState === InitializationState.INITIALIZED) {
       return;
     }
 
-    this.isConnecting = true;
-    this.connectionFailed = false;
+    this.initializationState = InitializationState.CONNECTING;
 
     try {
       const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
       const bundle = await this.initializeResourceBundle(ttcBundleUrl);
 
       log(FILE, 'Bundle initialized');
-      this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
+      this.speakingBlobUrl = URL.createObjectURL(bundle.speakingBlob);
       this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
 
       // Locally specified key overrides the fetched one.
@@ -347,11 +318,19 @@ export class AppElement extends CrLitElement {
 
       log(FILE, 'Attempting to connect. conversation state is not connected.');
       await this.conversation.start();
+
+      this.audioPlayer = this.createAudioPlayer();
+      this.audioCapturer = await this.createAudioCapturer();
+      if (this.audioCapturer) {
+        this.audioCapturer.start(
+            this.onAudioInput.bind(this, this.audioCapturer.getSampleRate()));
+      }
+      this.startEnergyAnimation();
+
+      this.initializationState = InitializationState.INITIALIZED;
     } catch (e) {
-      this.connectionFailed = true;
+      this.initializationState = InitializationState.ERROR;
       errorLog(FILE, 'startConversation failed: ', e);
-    } finally {
-      this.isConnecting = false;
     }
   }
 
@@ -362,29 +341,19 @@ export class AppElement extends CrLitElement {
     }
   }
 
-  private async onConversationStateChanged(state: State, oldState: State) {
+  private onConversationStateChanged(state: State, oldState: State) {
     log(FILE, `onConversationStateChanged: from ${oldState} to ${state}`);
-
-    if (oldState === State.STOPPED && state !== State.STOPPED) {
-      this.isConnecting = false;
-      this.audioPlayer = this.createAudioPlayer();
-      this.audioCapturer = await this.createAudioCapturer();
-      if (this.audioCapturer) {
-        this.audioCapturer.start(
-            this.onAudioInput.bind(this, this.audioCapturer.getSampleRate()));
-      }
-      this.startEnergyAnimation();
-    }
 
     if (state === State.STOPPED) {
       this.stopEnergyAnimation();
-      this.isConnecting = false;
       this.mockButtons = [];
       this.blobCapturer = null;
       this.audioCapturer?.stop();
       this.audioPlayer?.stop();
       this.audioCapturer = null;
       this.audioPlayer = null;
+
+      this.initializationState = InitializationState.UNINITIALIZED;
     } else if (state === State.LISTENING) {
       this.audioPlayer?.stop();
     }
@@ -429,7 +398,7 @@ export class AppElement extends CrLitElement {
 
     const personaConfig: PersonaConfig = await personaResponse.json();
     const apiConfig: ApiConfig = await apiConfigResponse.json();
-    const talkingBlob = await talkingResponse.blob();
+    const speakingBlob = await talkingResponse.blob();
     const listeningBlob = await listeningResponse.blob();
     const instruction = await instructionResponse.text();
 
@@ -441,7 +410,7 @@ export class AppElement extends CrLitElement {
     return {
       persona: personaConfig.personas[0],
       apiConfig,
-      talkingBlob,
+      speakingBlob,
       listeningBlob,
       instruction,
     };
