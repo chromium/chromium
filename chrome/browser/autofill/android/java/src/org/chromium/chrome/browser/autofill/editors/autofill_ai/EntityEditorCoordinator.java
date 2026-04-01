@@ -48,6 +48,7 @@ public class EntityEditorCoordinator {
                 new EntityEditorMediator(
                         activity,
                         delegate,
+                        profile,
                         assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile)),
                         PersonalDataManagerFactory.getForProfile(profile),
                         entityInstance);

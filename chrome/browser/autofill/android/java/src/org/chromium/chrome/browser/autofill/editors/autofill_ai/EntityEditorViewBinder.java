@@ -13,6 +13,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VISIBLE;
 
@@ -58,6 +59,8 @@ public class EntityEditorViewBinder {
             view.setEditorFields(model.get(EDITOR_FIELDS));
         } else if (propertyKey == VALIDATE_ON_SHOW) {
             view.setValidateOnShow(model.get(VALIDATE_ON_SHOW));
+        } else if (propertyKey == OPEN_HELP_CALLBACK) {
+            view.setOpenHelpCallback(model.get(OPEN_HELP_CALLBACK));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }

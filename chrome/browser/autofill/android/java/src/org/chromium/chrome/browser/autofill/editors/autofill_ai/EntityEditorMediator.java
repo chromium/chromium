@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.OPEN_HELP_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
@@ -35,6 +36,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldProperties.TEXT_FIELD_TYPE;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -50,6 +52,8 @@ import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoor
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
 import org.chromium.chrome.browser.autofill.editors.common.date_field.DateFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
 import org.chromium.components.autofill.autofill_ai.AttributeType;
 import org.chromium.components.autofill.autofill_ai.DataType;
@@ -75,6 +79,7 @@ class EntityEditorMediator {
 
     private final Context mContext;
     private final Delegate mDelegate;
+    private final Profile mProfile;
     private final IdentityManager mIdentityManager;
     private final PersonalDataManager mPersonalDataManager;
     private final EntityInstance mEntityInstance;
@@ -84,11 +89,13 @@ class EntityEditorMediator {
     EntityEditorMediator(
             Context context,
             Delegate delegate,
+            Profile profile,
             IdentityManager identityManager,
             PersonalDataManager personalDataManager,
             EntityInstance entityInstance) {
         mContext = context;
         mDelegate = delegate;
+        mProfile = profile;
         mIdentityManager = identityManager;
         mPersonalDataManager = personalDataManager;
         mEntityInstance = entityInstance;
@@ -122,6 +129,7 @@ class EntityEditorMediator {
                 .with(ALLOW_DELETE, mEntityInstance.getRecordType() == RecordType.LOCAL)
                 .with(VALIDATE_ON_SHOW, false)
                 .with(EDITOR_FIELDS, getEditorFields())
+                .with(OPEN_HELP_CALLBACK, this::onOpenHelpAndFeedback)
                 .build();
     }
 
@@ -338,5 +346,10 @@ class EntityEditorMediator {
     private @Nullable String getUserEmail() {
         CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         return CoreAccountInfo.getEmailFrom(accountInfo);
+    }
+
+    private void onOpenHelpAndFeedback(Activity activity) {
+        HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+                .show(activity, activity.getString(R.string.help_context_autofill), null);
     }
 }

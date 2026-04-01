@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.editors.autofill_ai;
 
+import android.app.Activity;
+
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.EditorItem;
@@ -44,6 +46,9 @@ public class EntityEditorProperties {
     public static final ReadableObjectPropertyKey<ListModel<EditorItem>> EDITOR_FIELDS =
             new ReadableObjectPropertyKey<>("editor_fields");
 
+    public static final ReadableObjectPropertyKey<Callback<Activity>> OPEN_HELP_CALLBACK =
+            new ReadableObjectPropertyKey<>("open_help_callback");
+
     public static final PropertyKey[] ALL_KEYS = {
         EDITOR_TITLE,
         VISIBLE,
@@ -56,6 +61,7 @@ public class EntityEditorProperties {
         DELETE_CALLBACK,
         VALIDATE_ON_SHOW,
         EDITOR_FIELDS,
+        OPEN_HELP_CALLBACK,
     };
 
     private EntityEditorProperties() {}
