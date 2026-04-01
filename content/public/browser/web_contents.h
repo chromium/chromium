@@ -1857,6 +1857,9 @@ inline content::WebContents* FromJniType<content::WebContents*>(
 template <>
 inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
                                              content::WebContents* obj) {
+  if (!obj) {
+    return nullptr;
+  }
   return obj->GetJavaWebContents();
 }
 
