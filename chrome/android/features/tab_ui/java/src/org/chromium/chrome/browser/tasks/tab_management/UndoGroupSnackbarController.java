@@ -68,8 +68,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
                     }
                 };
 
-        getFilter(/* isIncognito= */ false).addTabGroupObserver(mTabGroupModelFilterObserver);
-        getFilter(/* isIncognito= */ true).addTabGroupObserver(mTabGroupModelFilterObserver);
+        getTabModel(/* isIncognito= */ false).addTabGroupObserver(mTabGroupModelFilterObserver);
+        getTabModel(/* isIncognito= */ true).addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mCurrentTabModelObserver = (tabModel) -> dismissSnackbars();
 
@@ -109,9 +109,10 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     public void destroy() {
         if (mTabModelSelector != null) {
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
-            getFilter(/* isIncognito= */ false)
+            getTabModel(/* isIncognito= */ false)
                     .removeTabGroupObserver(mTabGroupModelFilterObserver);
-            getFilter(/* isIncognito= */ true).removeTabGroupObserver(mTabGroupModelFilterObserver);
+            getTabModel(/* isIncognito= */ true)
+                    .removeTabGroupObserver(mTabGroupModelFilterObserver);
         }
         mTabModelSelectorTabModelObserver.destroy();
     }
@@ -121,8 +122,8 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     }
 
     private void showUndoGroupSnackbarInternal(UndoGroupMetadata undoGroupMetadata) {
-        TabGroupModelFilter filter = getFilter(undoGroupMetadata.isIncognito());
-        int mergedGroupSize = filter.getTabCountForGroup(undoGroupMetadata.getTabGroupId());
+        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
+        int mergedGroupSize = tabModel.getTabCountForGroup(undoGroupMetadata.getTabGroupId());
 
         String content = String.format(Locale.getDefault(), "%d", mergedGroupSize);
         String templateText;
@@ -145,19 +146,19 @@ public class UndoGroupSnackbarController implements SnackbarManager.SnackbarCont
     public void onAction(@Nullable Object actionData) {
         assumeNonNull(actionData);
         UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
-        TabGroupModelFilter filter = getFilter(undoGroupMetadata.isIncognito());
-        filter.performUndoGroupOperation(undoGroupMetadata);
+        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
+        tabModel.performUndoGroupOperation(undoGroupMetadata);
     }
 
     @Override
     public void onDismissNoAction(@Nullable Object actionData) {
         assumeNonNull(actionData);
         UndoGroupMetadata undoGroupMetadata = (UndoGroupMetadata) actionData;
-        TabGroupModelFilter filter = getFilter(undoGroupMetadata.isIncognito());
-        filter.undoGroupOperationExpired(undoGroupMetadata);
+        TabModel tabModel = getTabModel(undoGroupMetadata.isIncognito());
+        tabModel.undoGroupOperationExpired(undoGroupMetadata);
     }
 
-    private TabGroupModelFilter getFilter(boolean isIncognito) {
-        return assumeNonNull(mTabModelSelector.getTabGroupModelFilter(isIncognito));
+    private TabModel getTabModel(boolean isIncognito) {
+        return mTabModelSelector.getModel(isIncognito);
     }
 }

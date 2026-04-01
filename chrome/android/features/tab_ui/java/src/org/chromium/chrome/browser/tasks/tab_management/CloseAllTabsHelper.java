@@ -106,10 +106,9 @@ public class CloseAllTabsHelper {
                                 .getTabCreatorManager()
                                 .getTabCreator(/* incognito= */ false));
         return () -> {
-            TabGroupModelFilter filter =
-                    assumeNonNull(
-                            tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
-            archiveTabsAfterTabClosureUndo(archivedOrchestrator, filter, previouslyArchivedTabIds);
+            TabModel tabModel = tabModelSelector.getModel(/* incognito= */ false);
+            archiveTabsAfterTabClosureUndo(
+                    archivedOrchestrator, tabModel, previouslyArchivedTabIds);
         };
     }
 

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.view.ViewGroup;
 
@@ -32,7 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarThrottle;
@@ -101,10 +99,8 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
 
             if (tab == null || tab.isClosing() || tab.isDestroyed()) return;
 
-            TabGroupModelFilter filter =
-                    mTabModelSelector.getTabGroupModelFilter(tab.isIncognito());
-            assumeNonNull(filter);
-            if (!filter.isTabInTabGroup(tab)) return;
+            TabModel tabModel = mTabModelSelector.getModel(tab.isIncognito());
+            if (!tabModel.isTabInTabGroup(tab)) return;
 
             mSetter.run();
             mSetter = null;

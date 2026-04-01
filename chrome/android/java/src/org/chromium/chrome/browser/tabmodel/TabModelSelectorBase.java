@@ -237,7 +237,7 @@ public abstract class TabModelSelectorBase
 
     @Override
     public TabGroupModelFilter getFilter(boolean incognito) {
-        return assumeNonNull(getTabGroupModelFilter(incognito));
+        return getModel(incognito);
     }
 
     private int getModelIndex(boolean incognito) {

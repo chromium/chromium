@@ -4,14 +4,12 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import org.chromium.base.CallbackController;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.prefs.PrefService;
@@ -72,7 +70,7 @@ public final class TabGroupSyncControllerImpl
     private final TabGroupSyncService mTabGroupSyncService;
     private final PrefService mPrefService;
     private final Supplier<Boolean> mIsActiveWindowSupplier;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final NavigationTracker mNavigationTracker;
     private final TabCreationDelegate mTabCreationDelegate;
     private final LocalTabGroupMutationHelper mLocalMutationHelper;
@@ -121,18 +119,16 @@ public final class TabGroupSyncControllerImpl
         mIsActiveWindowSupplier = isActiveWindowSupplier;
 
         mNavigationTracker = new NavigationTracker();
-        mTabGroupModelFilter =
-                assertNonNull(tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
+        mTabModel = tabModelSelector.getModel(/* incognito= */ false);
 
         mTabCreationDelegate =
-                new TabCreationDelegateImpl(
-                        mTabGroupModelFilter.getTabModel().getTabCreator(), mNavigationTracker);
+                new TabCreationDelegateImpl(mTabModel.getTabCreator(), mNavigationTracker);
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(
-                        mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
+                        mTabModel, mTabGroupSyncService, mTabCreationDelegate);
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(
-                        mTabGroupModelFilter, mTabGroupSyncService, mLocalMutationHelper);
+                        mTabModel, mTabGroupSyncService, mLocalMutationHelper);
 
         TabModelUtils.runOnTabStateInitialized(
                 tabModelSelector,
@@ -175,7 +171,7 @@ public final class TabGroupSyncControllerImpl
     private void initializeTabGroupSyncComponents() {
         mStartupHelper =
                 new StartupHelper(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         mRemoteMutationHelper,
@@ -183,13 +179,13 @@ public final class TabGroupSyncControllerImpl
         mLocalObserver =
                 new TabGroupSyncLocalObserver(
                         mTabModelSelector,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSyncService,
                         mRemoteMutationHelper,
                         mNavigationTracker);
         mRemoteObserver =
                 new TabGroupSyncRemoteObserver(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         enable -> mLocalObserver.enableObservers(enable),

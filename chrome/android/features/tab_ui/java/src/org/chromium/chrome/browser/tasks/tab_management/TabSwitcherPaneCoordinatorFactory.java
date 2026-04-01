@@ -245,21 +245,15 @@ public class TabSwitcherPaneCoordinatorFactory {
         // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
         TabModelSelector selector = mTabModelSelector;
         if (!selector.getModels().isEmpty()) {
-            TabGroupModelFilter filter = selector.getTabGroupModelFilter(isIncognito);
-            if (filter != null) {
-                tabGroupModelFilterSupplier.set(filter);
-            }
+            tabGroupModelFilterSupplier.set(selector.getModel(isIncognito));
         } else {
             selector.addObserver(
                     new TabModelSelectorObserver() {
                         @Override
                         public void onChange() {
                             assert !selector.getModels().isEmpty();
-                            TabGroupModelFilter filter =
-                                    selector.getTabGroupModelFilter(isIncognito);
-                            assert filter != null;
                             selector.removeObserver(this);
-                            tabGroupModelFilterSupplier.set(filter);
+                            tabGroupModelFilterSupplier.set(selector.getModel(isIncognito));
                         }
                     });
         }

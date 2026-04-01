@@ -173,7 +173,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
+        when(mTabModel.getTabModel()).thenReturn(mTabModel);
 
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         mTabBookmarkerSupplier.set(mTabBookmarker);
@@ -339,6 +339,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
         var supplier = mFactory.createTabGroupModelFilterSupplier(false);
-        assertEquals(mTabGroupModelFilter, supplier.get());
+        assertEquals(mTabModel, supplier.get());
     }
 }

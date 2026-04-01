@@ -77,10 +77,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         TabRemover tabRemover =
                 new PassthroughTabRemover(
                         () -> {
-                            TabGroupModelFilter regularFilter =
-                                    getTabGroupModelFilter(/* isIncognito= */ false);
-                            assumeNonNull(regularFilter);
-                            return regularFilter;
+                            TabModel regularTabModel = getModel(/* incognito= */ false);
+                            return regularTabModel;
                         });
 
         TabModelHolder normalModelHolder =

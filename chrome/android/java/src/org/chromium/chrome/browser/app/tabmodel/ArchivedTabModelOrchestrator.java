@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.RecordingTabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -451,10 +450,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
         mArchivedTabCountTracker.setupInternalObservers(model, mTabGroupSyncService);
 
-        TabGroupModelFilter regularFilter =
-                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
-        assumeNonNull(regularFilter);
-        mHistoricalTabModelObserver = new HistoricalTabModelObserver(regularFilter);
+        TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        mHistoricalTabModelObserver = new HistoricalTabModelObserver(regularTabModel);
     }
 
     private void doDeclutterPassAndScheduleNext(
@@ -595,12 +592,11 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mTabArchiveSettings = new TabArchiveSettings(ChromeSharedPreferences.getInstance());
         mTabArchiveSettings.addObserver(mTabArchiveSettingsObserver);
         mTabGroupSyncService = assertNonNull(TabGroupSyncServiceFactory.getForProfile(mProfile));
-        TabGroupModelFilter regularFilter =
-                mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
+        TabModel regularTabModel = mTabModelSelector.getModel(/* incognito= */ false);
 
         mTabArchiver =
                 new TabArchiverImpl(
-                        assumeNonNull(regularFilter),
+                        regularTabModel,
                         mArchivedTabCreator,
                         mTabArchiveSettings,
                         System::currentTimeMillis,

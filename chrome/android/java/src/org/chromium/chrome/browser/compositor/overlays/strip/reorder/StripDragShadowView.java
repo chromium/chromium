@@ -45,8 +45,8 @@ import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -277,13 +277,12 @@ public class StripDragShadowView extends FrameLayout {
     public void prepareForGroupDrag(Tab tab, int sourceWidthPx) {
         Context context = getContext();
         boolean isIncognito = tab.isIncognitoBranded();
-        TabGroupModelFilter modelFilter = mTabModelSelector.getTabGroupModelFilter(isIncognito);
-        assumeNonNull(modelFilter);
+        TabModel tabModel = mTabModelSelector.getModel(isIncognito);
 
         // Background color
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null : "The tab group ID should be non-null";
-        @TabGroupColorId int colorId = modelFilter.getTabGroupColorWithFallback(tabGroupId);
+        @TabGroupColorId int colorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
 
         @ColorInt
         int groupColor =
@@ -300,7 +299,7 @@ public class StripDragShadowView extends FrameLayout {
         String titleText =
                 layerTitleCache.getUpdatedGroupTitle(
                         tabGroupId,
-                        TabGroupTitleUtils.getDisplayableTitle(context, modelFilter, tabGroupId),
+                        TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId),
                         isIncognito);
         mTitleView.setText(titleText);
         mTitleView.setTextColor(

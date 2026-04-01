@@ -461,9 +461,7 @@ public class DataSharingTabManager {
     }
 
     private TabGroupModelFilter getTabGroupModelFilter() {
-        return assumeNonNull(
-                assumeNonNull(mTabModelSelectorSupplier.get())
-                        .getTabGroupModelFilter(/* isIncognito= */ false));
+        return assumeNonNull(mTabModelSelectorSupplier.get()).getModel(/* incognito= */ false);
     }
 
     /**

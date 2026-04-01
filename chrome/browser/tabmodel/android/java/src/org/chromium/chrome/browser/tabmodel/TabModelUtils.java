@@ -260,7 +260,7 @@ public class TabModelUtils {
                 ArchivedTabModelSelectorHolder.getInstance(tab.getProfile());
         if (archivedTabModelSelector != null
                 && archivedTabModelSelector.getTabById(tab.getId()) != null) {
-            return archivedTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false);
+            return archivedTabModelSelector.getModel(/* incognito= */ false);
         }
 
         final MonotonicObservableSupplier<TabModelSelector> supplier =
@@ -270,7 +270,7 @@ public class TabModelUtils {
         final TabModelSelector selector = supplier.get();
         if (selector == null) return null;
 
-        return selector.getTabGroupModelFilter(tab.isIncognito());
+        return selector.getModel(tab.isIncognito());
     }
 
     /** Converts a {@link TabList} to a {@link List<Tab>}. */

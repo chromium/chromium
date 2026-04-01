@@ -149,7 +149,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
         Supplier<TabGroupModelFilter> regularTabGroupModelFilterSupplier =
-                () -> assumeNonNull(getTabGroupModelFilter(/* isIncognito= */ false));
+                () -> getModel(/* incognito= */ false);
         TabRemover regularTabRemover =
                 mModalDialogManager != null
                         ? new TabRemoverImpl(
@@ -187,8 +187,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         }
 
         TabRemover incognitoTabRemover =
-                new PassthroughTabRemover(
-                        () -> assumeNonNull(getTabGroupModelFilter(/* isIncognito= */ true)));
+                new PassthroughTabRemover(() -> getModel(/* incognito= */ true));
         IncognitoTabModelHolder incognitoModelHolder =
                 TabModelHolderFactory.createIncognitoTabModelHolder(
                         profileProvider,
@@ -263,10 +262,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                             TabModel tabModel = getModel(tab.isIncognito());
 
                             // Do not currently support moving grouped tabs.
-                            TabGroupModelFilter filter = getTabGroupModelFilter(tab.isIncognito());
-                            assumeNonNull(filter);
-                            if (filter.isTabInTabGroup(tab)) {
-                                filter.getTabUngrouper()
+                            if (tabModel.isTabInTabGroup(tab)) {
+                                tabModel.getTabUngrouper()
                                         .ungroupTabs(
                                                 Collections.singletonList(tab),
                                                 /* trailing= */ true,
@@ -368,11 +365,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     @Override
     public void moveTabGroupToWindow(
             Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
-        TabGroupModelFilter tabGroupModelFilter = getTabGroupModelFilter(isIncognito);
-        assumeNonNull(tabGroupModelFilter);
-        if (!tabGroupModelFilter.tabGroupExists(tabGroupId)) return;
+        TabModel tabModel = getModel(isIncognito);
+        if (!tabModel.tabGroupExists(tabGroupId)) return;
 
-        TabModel tabModel = tabGroupModelFilter.getTabModel();
         Tab currentTab = tabModel.getCurrentTabSupplier().get();
         assert currentTab != null;
         Activity currentActivity = ContextUtils.activityFromContext(currentTab.getContext());
@@ -387,8 +382,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         }
         TabGroupMetadata tabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        tabGroupModelFilter,
-                        tabGroupModelFilter.getTabsInGroup(tabGroupId),
+                        tabModel,
+                        tabModel.getTabsInGroup(tabGroupId),
                         TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
                         currentTab.getId(),
                         TabShareUtils.isCollaborationIdValid(collaborationId));

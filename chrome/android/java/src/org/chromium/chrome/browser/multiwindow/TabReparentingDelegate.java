@@ -28,8 +28,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -225,10 +225,10 @@ import java.util.List;
 
     private static @Nullable TabGroupSyncService getTabGroupSyncService(
             int windowId, boolean isIncognito) {
-        TabGroupModelFilter filter = getTabGroupModelFilterByWindowId(windowId, isIncognito);
-        if (filter == null) return null;
+        TabModel tabModel = getTabModelByWindowId(windowId, isIncognito);
+        if (tabModel == null) return null;
 
-        @Nullable Profile profile = filter.getTabModel().getProfile();
+        @Nullable Profile profile = tabModel.getProfile();
         if (profile == null
                 || profile.isOffTheRecord()
                 || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return null;
@@ -236,13 +236,12 @@ import java.util.List;
         return TabGroupSyncServiceFactory.getForProfile(profile);
     }
 
-    private static @Nullable TabGroupModelFilter getTabGroupModelFilterByWindowId(
-            int windowId, boolean isIncognito) {
+    private static @Nullable TabModel getTabModelByWindowId(int windowId, boolean isIncognito) {
         TabModelSelector selector =
                 TabWindowManagerSingleton.getInstance().getTabModelSelectorById(windowId);
         if (selector == null) return null;
 
-        return selector.getTabGroupModelFilter(isIncognito);
+        return selector.getModel(isIncognito);
     }
 
     private static void setSyncServiceLocalObservationMode(

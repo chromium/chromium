@@ -17,6 +17,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -127,12 +128,12 @@ public class TabModelSelectorImplTest {
                         /* startIncognito= */ false);
 
         TabRemover regularTabRemover =
-                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(false));
+                new PassthroughTabRemover(() -> mTabModelSelector.getModel(false));
         mRegularTabModel = new MockTabModel(mProfile, null);
         mRegularTabModel.setActive(true);
         mRegularTabModel.setTabRemoverForTesting(regularTabRemover);
         TabRemover incognitoTabRemover =
-                new PassthroughTabRemover(() -> mTabModelSelector.getTabGroupModelFilter(true));
+                new PassthroughTabRemover(() -> mTabModelSelector.getModel(true));
         mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         mIncognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
 
@@ -427,20 +428,20 @@ public class TabModelSelectorImplTest {
                         /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         /* startIncognito= */ false);
-        MockTabModel regularTabModel = new MockTabModel(mProfile, null);
+        MockTabModel regularTabModel = spy(new MockTabModel(mProfile, null));
         TabGroupModelFilterInternal filter = mock(TabGroupModelFilterInternal.class);
         when(filter.getTabModel()).thenReturn(regularTabModel);
         TabRemover regularTabRemover = new PassthroughTabRemover(() -> filter);
         regularTabModel.setActive(true);
         regularTabModel.setTabRemoverForTesting(regularTabRemover);
         TabUngrouper tabUngrouper = mock(TabUngrouper.class);
-        when(filter.getTabUngrouper()).thenReturn(tabUngrouper);
+        when(regularTabModel.getTabUngrouper()).thenReturn(tabUngrouper);
         doAnswer(
                         invocation -> {
                             List<Tab> tabs = (List<Tab>) invocation.getArguments()[0];
                             for (Tab tab : tabs) {
                                 tab.setTabGroupId(null);
-                                when(filter.isTabInTabGroup(tab)).thenReturn(false);
+                                when(regularTabModel.isTabInTabGroup(tab)).thenReturn(false);
                             }
                             return null;
                         })
@@ -467,7 +468,7 @@ public class TabModelSelectorImplTest {
 
         // Simulate the tab being ungrouped.
         tab0.setTabGroupId(new Token(1, 1));
-        when(filter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(regularTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         for (TabObserver observer : tab0.getObservers()) {
             observer.onActivityAttachmentChanged(tab0, /* window= */ null);

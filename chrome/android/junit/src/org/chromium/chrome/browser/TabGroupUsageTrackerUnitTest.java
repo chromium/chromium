@@ -23,7 +23,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -37,18 +37,16 @@ public class TabGroupUsageTrackerUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
-    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
+    @Mock private TabModel mRegularTabModel;
+    @Mock private TabModel mIncognitoTabModel;
 
     private TabGroupUsageTracker mUsageTracker;
     private boolean mIsWarmOnResume;
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getTabGroupModelFilter(false))
-                .thenReturn(mRegularTabGroupModelFilter);
-        when(mTabModelSelector.getTabGroupModelFilter(true))
-                .thenReturn(mIncognitoTabGroupModelFilter);
+        when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
     }
 
     @After
@@ -67,8 +65,8 @@ public class TabGroupUsageTrackerUnitTest {
                         })
                 .when(mActivityLifecycleDispatcher)
                 .register(any());
-        when(mRegularTabGroupModelFilter.getTabGroupCount()).thenReturn(regularGroups);
-        when(mIncognitoTabGroupModelFilter.getTabGroupCount()).thenReturn(incognitoGroups);
+        when(mRegularTabModel.getTabGroupCount()).thenReturn(regularGroups);
+        when(mIncognitoTabModel.getTabGroupCount()).thenReturn(incognitoGroups);
         TabGroupUsageTracker.initialize(
                 mActivityLifecycleDispatcher, mTabModelSelector, () -> mIsWarmOnResume);
     }

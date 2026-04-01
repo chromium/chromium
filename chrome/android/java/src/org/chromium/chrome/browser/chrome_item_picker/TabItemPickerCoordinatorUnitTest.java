@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -54,7 +53,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -98,7 +96,6 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
     @Mock private WebContents mWebContents;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
@@ -136,10 +133,6 @@ public class TabItemPickerCoordinatorUnitTest {
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mRegularTabModel.index()).thenReturn(0);
         when(mRegularTabModel.getProfile()).thenReturn(mProfile);
-
-        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mRegularTabModel);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
@@ -432,6 +425,7 @@ public class TabItemPickerCoordinatorUnitTest {
         when(mProfile.isIncognitoBranded()).thenReturn(true);
         IncognitoTabModel incognitoTabModel = Mockito.mock(IncognitoTabModel.class);
         when(mTabModelSelector.getModel(true)).thenReturn(incognitoTabModel);
+        when(incognitoTabModel.getProfile()).thenReturn(mProfile);
         when(incognitoTabModel.iterator()).thenReturn(Collections.emptyIterator());
 
         when(TabWindowManagerSingleton.getInstance()

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,7 +16,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -82,20 +79,17 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         if (tabIds.length == 0) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
-        TabGroupModelFilter filter =
-                mTabModelSelector.getTabGroupModelFilter(tabModel.isIncognito());
-        assumeNonNull(filter);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
         int destinationId = tabIds[0];
         if (tabIds.length == 1) {
-            filter.createSingleTabGroup(destinationId);
+            tabModel.createSingleTabGroup(destinationId);
         } else {
             for (int id : tabIds) {
                 if (id == destinationId) continue;
 
-                filter.mergeTabsToGroup(id, destinationId);
+                tabModel.mergeTabsToGroup(id, destinationId);
             }
         }
 
@@ -103,11 +97,11 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
         assert tab != null;
         Token tabGroupId = tab.getTabGroupId();
         assert tabGroupId != null;
-        filter.setTabGroupColor(tabGroupId, color);
+        tabModel.setTabGroupColor(tabGroupId, color);
 
         if (title == null || title.isEmpty()) return;
 
-        filter.setTabGroupTitle(tabGroupId, title);
+        tabModel.setTabGroupTitle(tabGroupId, title);
     }
 
     /**

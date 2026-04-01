@@ -24,12 +24,12 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.messaging.MessageUtils;
@@ -125,7 +125,7 @@ public class TabModelNotificationDotManager implements Destroyable {
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private @Nullable MessagingBackendService mMessagingBackendService;
-    private @MonotonicNonNull TabGroupModelFilter mTabGroupModelFilter;
+    private @MonotonicNonNull TabModel mTabModel;
     private boolean mTabModelSelectorInitialized;
     private boolean mMessagingBackendServiceInitialized;
 
@@ -143,11 +143,11 @@ public class TabModelNotificationDotManager implements Destroyable {
      *     observed. However, the selector is needed to know when the tab model is initialized.
      */
     public void initWithNative(TabModelSelector tabModelSelector) {
-        mTabGroupModelFilter =
-                assumeNonNull(tabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
-        assert mTabGroupModelFilter != null : "TabModel & native should be initialized.";
+        mTabModel = tabModelSelector.getModel(/* incognito= */ false);
+        assert mTabModel.getTabModelType() != TabModelType.EMPTY
+                : "TabModel & native should be initialized.";
 
-        Profile profile = assumeNonNull(mTabGroupModelFilter.getTabModel().getProfile());
+        Profile profile = assumeNonNull(mTabModel.getProfile());
         CollaborationService collaborationService =
                 CollaborationServiceFactory.getForProfile(profile);
         if (!collaborationService.getServiceStatus().isAllowedToJoin()) return;
@@ -159,8 +159,8 @@ public class TabModelNotificationDotManager implements Destroyable {
                 mCallbackController.makeCancelable(
                         unused -> {
                             mTabModelSelectorInitialized = true;
-                            mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
-                            mTabGroupModelFilter.getTabModel().addObserver(mTabModelObserver);
+                            mTabModel.addTabGroupObserver(mTabGroupModelFilterObserver);
+                            mTabModel.addObserver(mTabModelObserver);
 
                             computeUpdate();
                         }));
@@ -180,9 +180,9 @@ public class TabModelNotificationDotManager implements Destroyable {
         if (mMessagingBackendService != null) {
             mMessagingBackendService.removePersistentMessageObserver(mPersistentMessageObserver);
         }
-        if (mTabGroupModelFilter != null) {
-            mTabGroupModelFilter.removeTabGroupObserver(mTabGroupModelFilterObserver);
-            mTabGroupModelFilter.getTabModel().removeObserver(mTabModelObserver);
+        if (mTabModel != null) {
+            mTabModel.removeTabGroupObserver(mTabGroupModelFilterObserver);
+            mTabModel.removeObserver(mTabModelObserver);
         }
     }
 
@@ -201,9 +201,9 @@ public class TabModelNotificationDotManager implements Destroyable {
     }
 
     private TabModelDotInfo computeTabModelDotInfo() {
-        assert mTabGroupModelFilter != null && mMessagingBackendService != null;
-
-        TabModel tabModel = mTabGroupModelFilter.getTabModel();
+        assert mTabModel != null
+                && mTabModel.getTabModelType() != TabModelType.EMPTY
+                && mMessagingBackendService != null;
 
         List<PersistentMessage> messages =
                 mMessagingBackendService.getMessages(PersistentNotificationType.DIRTY_TAB);
@@ -211,11 +211,11 @@ public class TabModelNotificationDotManager implements Destroyable {
             int tabId = MessageUtils.extractTabId(message);
             if (tabId == Tab.INVALID_TAB_ID) continue;
 
-            Tab tab = tabModel.getTabById(tabId);
+            Tab tab = mTabModel.getTabById(tabId);
             if (tab != null && !tab.isClosing()) {
                 String title =
                         TabGroupTitleUtils.getDisplayableTitle(
-                                mContext, mTabGroupModelFilter, tab.getTabGroupId());
+                                mContext, mTabModel, tab.getTabGroupId());
                 return new TabModelDotInfo(true, title);
             }
         }

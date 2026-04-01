@@ -186,7 +186,7 @@ import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -1801,13 +1801,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         selector -> {
                             mInstantMessageDelegateImpl =
                                     InstantMessageDelegateFactory.getForProfile(originalProfile);
-                            TabGroupModelFilter tabGroupModelFilter =
-                                    selector.getTabGroupModelFilter(/* isIncognito= */ false);
+                            TabModel tabModel = selector.getModel(/* incognito= */ false);
                             DataSharingNotificationManager dataSharingNotificationManager =
                                     new DataSharingNotificationManager(mActivity);
                             mInstantMessageDelegateImpl.attachWindow(
                                     mWindowAndroid,
-                                    tabGroupModelFilter,
+                                    tabModel,
                                     dataSharingNotificationManager,
                                     mDataSharingTabManager,
                                     () -> {
@@ -1824,9 +1823,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         return new DataSharingTabGroupsDelegate() {
             @Override
             public void openTabGroup(@Nullable Token tabGroupId) {
-                TabGroupModelFilter filter =
-                        mTabModelSelectorSupplier.get().getTabGroupModelFilter(false);
-                if (!filter.tabGroupExists(tabGroupId)) {
+                TabModel tabModel = mTabModelSelectorSupplier.get().getModel(false);
+                if (!tabModel.tabGroupExists(tabGroupId)) {
                     // This method is only supposed to be called when the tab group is in the local
                     // model. However it's possible that something has recently changed. In which
                     // case just be defensive and give up.
@@ -1838,7 +1836,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 // remain as a safegaurd against bugs as internally it will noop if the tab switcher
                 // is already opened. It could be removed in the future with some care taken to add
                 // an assert and verify no callers are using it in an unexpected flow.
-                int tabId = filter.getGroupLastShownTabId(tabGroupId);
+                int tabId = tabModel.getGroupLastShownTabId(tabGroupId);
                 TabSwitcherUtils.navigateToTabSwitcher(
                         mLayoutManager,
                         /* animate= */ false,

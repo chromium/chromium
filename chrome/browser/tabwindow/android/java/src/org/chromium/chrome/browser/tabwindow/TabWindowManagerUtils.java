@@ -9,7 +9,6 @@ import android.content.Context;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -38,10 +37,8 @@ public class TabWindowManagerUtils {
         }
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
-        TabGroupModelFilter tabGroupModelFilter =
-                tabModelSelector.getTabGroupModelFilter(isIncognito);
-        if (tabGroupModelFilter == null) return null;
-        return TabGroupTitleUtils.getDisplayableTitle(context, tabGroupModelFilter, tabGroupId);
+        return TabGroupTitleUtils.getDisplayableTitle(
+                context, tabModelSelector.getModel(isIncognito), tabGroupId);
     }
 
     /**
@@ -58,9 +55,6 @@ public class TabWindowManagerUtils {
         if (windowId == TabWindowManager.INVALID_WINDOW_ID) return TabGroupColorId.GREY;
         TabModelSelector tabModelSelector = tabWindowManager.getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return TabGroupColorId.GREY;
-        TabGroupModelFilter tabGroupModelFilter =
-                tabModelSelector.getTabGroupModelFilter(isIncognito);
-        if (tabGroupModelFilter == null) return TabGroupColorId.GREY;
-        return tabGroupModelFilter.getTabGroupColorWithFallback(tabGroupId);
+        return tabModelSelector.getModel(isIncognito).getTabGroupColorWithFallback(tabGroupId);
     }
 }

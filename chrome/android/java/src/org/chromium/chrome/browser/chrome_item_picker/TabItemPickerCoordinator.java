@@ -187,8 +187,8 @@ public class TabItemPickerCoordinator {
         }
 
         boolean isIncognito = profile.isIncognitoBranded();
-        TabGroupModelFilter filter = mTabModelSelector.getTabGroupModelFilter(isIncognito);
-        if (filter == null || filter.getTabModel().getProfile() == null) {
+        TabModel tabModel = mTabModelSelector.getModel(isIncognito);
+        if (tabModel == null || tabModel.getProfile() == null) {
             // TODO(crbug.com/490050233): Investigate why profile is becoming null in incognito
             // mode during split screen.
             runSuccessCallbackIfSame(false, successCallback);
@@ -565,10 +565,10 @@ public class TabItemPickerCoordinator {
     private NullableObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(
             TabModelSelector tabModelSelector) {
         boolean isIncognito = assumeNonNull(mProfileSupplier.get()).isIncognitoBranded();
-        TabGroupModelFilter curFilter = tabModelSelector.getTabGroupModelFilter(isIncognito);
-        return curFilter == null
+        TabModel curTabModel = tabModelSelector.getModel(isIncognito);
+        return curTabModel == null
                 ? ObservableSuppliers.alwaysNull()
-                : ObservableSuppliers.createNonNull(curFilter);
+                : ObservableSuppliers.createNonNull(curTabModel);
     }
 
     /** Creates a TabContentManager instance required by the TabListEditorCoordinator. */

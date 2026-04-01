@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -116,7 +116,7 @@ public class DataSharingTabManagerUnitTest {
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private Callback<Boolean> mCreateGroupFinishedCallback;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private TabModel mTabModel;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
     @Mock private FaviconHelper mFaviconHelper;
     @Mock private Tab mTab;
@@ -249,7 +249,7 @@ public class DataSharingTabManagerUnitTest {
                 .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(anyBoolean());
+        doReturn(mTabModel).when(mTabModelSelector).getModel(anyBoolean());
         when(mTab.getTabGroupId()).thenReturn(null).thenReturn(LOCAL_ID.tabGroupId);
 
         mSavedTabGroup.collaborationId = null;
@@ -261,7 +261,7 @@ public class DataSharingTabManagerUnitTest {
                 CollaborationServiceShareOrManageEntryPoint.UNKNOWN,
                 mCreateGroupFinishedCallback);
 
-        verify(mTabGroupModelFilter).createSingleTabGroup(eq(mTab));
+        verify(mTabModel).createSingleTabGroup(eq(mTab));
         verify(mCollaborationService)
                 .startShareOrManageFlow(any(), eq(EitherGroupId.createLocalId(LOCAL_ID)), anyInt());
     }
@@ -273,7 +273,7 @@ public class DataSharingTabManagerUnitTest {
                 .setFaviconHelperForTesting(mFaviconHelper);
         doReturn(mProfile).when(mProfile).getOriginalProfile();
 
-        doReturn(mTabGroupModelFilter).when(mTabModelSelector).getTabGroupModelFilter(anyBoolean());
+        doReturn(mTabModel).when(mTabModelSelector).getModel(anyBoolean());
         doReturn(LOCAL_ID.tabGroupId).when(mTab).getTabGroupId();
 
         mSavedTabGroup.collaborationId = null;
@@ -301,11 +301,10 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testDisplayTabGroupAnywhere_local() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_GROUP_ROOT_ID);
-        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(GROUP_ID)).thenReturn(TAB_GROUP_ROOT_ID);
+        when(mTabModel.tabGroupExists(GROUP_ID)).thenReturn(true);
 
         mDataSharingTabManager.displayTabGroupAnywhere(
                 COLLABORATION_ID1, /* isFromInviteFlow= */ true);
@@ -316,8 +315,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testDisplayTabGroupAnywhere_hidden() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         mSavedTabGroup.localId = null;
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
         doAnswer(
@@ -338,8 +336,7 @@ public class DataSharingTabManagerUnitTest {
     @Test
     public void testDisplayTabGroupAnywhere_otherWindow() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         mSavedTabGroup.localId = LOCAL_ID;
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(mSavedTabGroup);
 

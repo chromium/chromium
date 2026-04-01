@@ -66,8 +66,7 @@ public class GroupSuggestionsButtonDataProvider extends BaseButtonDataProvider {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
 
-        groupController.onButtonClicked(
-                activeTab, selector.getTabGroupModelFilter(/* isIncognito= */ false));
+        groupController.onButtonClicked(activeTab, selector.getModel(/* incognito= */ false));
         notifyObservers(false);
     }
 }

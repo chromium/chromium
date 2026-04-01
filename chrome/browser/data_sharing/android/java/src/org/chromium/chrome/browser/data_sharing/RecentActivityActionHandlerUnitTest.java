@@ -24,7 +24,6 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -51,7 +50,6 @@ public class RecentActivityActionHandlerUnitTest {
     @Mock private DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     @Mock private Runnable mManageSharingCallback;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabCreator mTabCreator;
     @Mock private Tab mTab1;
     private RecentActivityActionHandlerImpl mRecentActivityActionHandler;
@@ -65,12 +63,11 @@ public class RecentActivityActionHandlerUnitTest {
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
+        when(mTabModel.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
         List<Tab> relatedTabs = new ArrayList<>();
         relatedTabs.add(mTab1);
-        when(mTabGroupModelFilter.getRelatedTabList(TAB_ID_1)).thenReturn(relatedTabs);
+        when(mTabModel.getRelatedTabList(TAB_ID_1)).thenReturn(relatedTabs);
         when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
 
         // Setup saved tab group with a single tab.

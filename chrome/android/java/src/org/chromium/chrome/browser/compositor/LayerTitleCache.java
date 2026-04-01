@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.compositor;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -29,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -234,11 +233,10 @@ public class LayerTitleCache {
 
     @CalledByNative
     private void buildUpdatedGroupTitle(Token groupId, boolean incognito) {
-        TabGroupModelFilter filter = mTabModelSelector.getTabGroupModelFilter(incognito);
-        assumeNonNull(filter);
-        if (!filter.tabGroupExists(groupId)) return;
+        TabModel tabModel = mTabModelSelector.getModel(incognito);
+        if (!tabModel.tabGroupExists(groupId)) return;
 
-        String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, groupId);
+        String titleString = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, groupId);
         getUpdatedGroupTitle(groupId, titleString, incognito);
     }
 

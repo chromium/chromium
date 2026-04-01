@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -68,7 +67,6 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
     @Mock private MessagingBackendService mMessagingBackendService;
@@ -96,11 +94,10 @@ public class TabModelNotificationDotManagerUnitTest {
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
-        when(mTabModelSelector.getTabGroupModelFilter(false)).thenReturn(mTabGroupModelFilter);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
-        when(mTabGroupModelFilter.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(List.of(mTab));
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(TITLE);
+        when(mTabModel.tabGroupExists(TAB_GROUP_ID)).thenReturn(true);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModel.getTabById(EXISTING_TAB_ID)).thenReturn(mTab);
         when(mTab.getTabGroupId()).thenReturn(TAB_GROUP_ID);
@@ -137,8 +134,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabGroupModelFilter)
-                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
         verifyHidden();
 
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
@@ -154,8 +150,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabGroupModelFilter)
-                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
         verifyShown();
     }
 
@@ -277,7 +272,7 @@ public class TabModelNotificationDotManagerUnitTest {
 
     @Test
     public void testFallbackTitle() {
-        when(mTabGroupModelFilter.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
+        when(mTabModel.getTabGroupTitle(TAB_GROUP_ID)).thenReturn(UNSET_TAB_GROUP_TITLE);
         initializeBothBackends();
         createDirtyTabMessageForIds(List.of(EXISTING_TAB_ID));
 
@@ -292,8 +287,7 @@ public class TabModelNotificationDotManagerUnitTest {
         mPersistentMessageObserverCaptor.getValue().onMessagingBackendServiceInitialized();
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
         verify(mTabModel).addObserver(mTabModelObserverCaptor.capture());
-        verify(mTabGroupModelFilter)
-                .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
+        verify(mTabModel).addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
     }
 
     private void createDirtyTabMessageForIds(List<Integer> ids) {

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
@@ -83,7 +83,7 @@ public class StripDragShadowViewUnitTest {
 
     @Mock private TabContentManager mMockTabContentManager;
     @Mock private LayerTitleCache mMockLayerTitleCache;
-    @Mock private TabGroupModelFilter mMockTabGroupModelFilter;
+    @Mock private TabModel mMockTabModel;
     @Mock private Tab mMockTab;
     @Mock private TabFavicon mMockTabFavicon;
     @Mock private Bitmap mMockThumbnailBitmap;
@@ -110,8 +110,7 @@ public class StripDragShadowViewUnitTest {
                             mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
                         });
 
-        when(mMockTabModelSelector.getTabGroupModelFilter(anyBoolean()))
-                .thenReturn(mMockTabGroupModelFilter);
+        when(mMockTabModelSelector.getModel(anyBoolean())).thenReturn(mMockTabModel);
 
         when(mMockTab.getId()).thenReturn(TAB_ID);
         when(mMockTab.getTabGroupId()).thenReturn(Token.createRandom());
@@ -360,8 +359,7 @@ public class StripDragShadowViewUnitTest {
     private void testUpdate_GroupTinting(boolean incognito) {
         @TabGroupColorId int colorId = TabGroupColorId.GREY;
         when(mMockTab.isIncognitoBranded()).thenReturn(incognito);
-        when(mMockTabGroupModelFilter.getTabGroupColorWithFallback(any(Token.class)))
-                .thenReturn(colorId);
+        when(mMockTabModel.getTabGroupColorWithFallback(any(Token.class))).thenReturn(colorId);
         mStripDragShadowView.prepareForGroupDrag(mMockTab, 0);
 
         // Verify card color

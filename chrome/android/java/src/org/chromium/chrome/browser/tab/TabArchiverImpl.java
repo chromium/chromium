@@ -121,10 +121,7 @@ public class TabArchiverImpl implements TabArchiver {
                     }
                 });
 
-        TabGroupModelFilter regularTabGroupModelFilter =
-                selectorToArchive.getTabGroupModelFilter(/* isIncognito= */ false);
-        assert regularTabGroupModelFilter != null;
-        TabModel model = regularTabGroupModelFilter.getTabModel();
+        TabModel model = selectorToArchive.getModel(/* incognito= */ false);
 
         // Skip archiving if the declutter pass arises from a UI theme change or user is inactive.
         if (!isUserActive(model) || wasUiThemeChanged()) {
@@ -133,12 +130,12 @@ public class TabArchiverImpl implements TabArchiver {
         }
 
         // Get the tabs to archive, which moves them to the archived TabModel.
-        List<Tab> tabsToArchive = getTabsToArchive(regularTabGroupModelFilter);
+        List<Tab> tabsToArchive = getTabsToArchive(model);
         // Get the tabs which exist in both the regular & archived TabModel.
-        List<Tab> tabsToClose = getTabsWithExistingArchivedTabs(regularTabGroupModelFilter);
+        List<Tab> tabsToClose = getTabsWithExistingArchivedTabs(model);
 
         if (tabsToArchive.size() > 0) {
-            archiveAndRemoveTabs(regularTabGroupModelFilter, tabsToArchive);
+            archiveAndRemoveTabs(model, tabsToArchive);
         }
 
         if (tabsToClose.size() > 0) {

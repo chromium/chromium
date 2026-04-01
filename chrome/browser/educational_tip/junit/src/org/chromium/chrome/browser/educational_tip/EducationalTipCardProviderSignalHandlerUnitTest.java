@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
@@ -61,8 +60,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     @Mock private DefaultBrowserPromoUtils mMockDefaultBrowserPromoUtils;
     @Mock private Tracker mTracker;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabGroupModelFilter mNormalFilter;
-    @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private TabModel mNormalModel;
     @Mock private TabModel mIncognitoModel;
     @Mock private Profile mProfile;
@@ -80,10 +77,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         when(mActionDelegate.getContext()).thenReturn(mContext);
         when(mActionDelegate.getTabModelSelector()).thenReturn(mTabModelSelector);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false))
-                .thenReturn(mNormalFilter);
-        when(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ true))
-                .thenReturn(mIncognitoFilter);
         when(mTabModelSelector.getModel(/* incognito= */ false)).thenReturn(mNormalModel);
         when(mTabModelSelector.getModel(/* incognito= */ true)).thenReturn(mIncognitoModel);
         DefaultBrowserPromoUtils.setInstanceForTesting(mMockDefaultBrowserPromoUtils);
@@ -207,15 +200,15 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(3, inputContext.getSizeForTesting());
 
-        when(mNormalFilter.getTabGroupCount()).thenReturn(0);
-        when(mIncognitoFilter.getTabGroupCount()).thenReturn(0);
+        when(mNormalModel.getTabGroupCount()).thenReturn(0);
+        when(mIncognitoModel.getTabGroupCount()).thenReturn(0);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(0, inputContext.getEntryValue("tab_group_exists").floatValue, 0.01);
 
-        when(mNormalFilter.getTabGroupCount()).thenReturn(5);
-        when(mIncognitoFilter.getTabGroupCount()).thenReturn(6);
+        when(mNormalModel.getTabGroupCount()).thenReturn(5);
+        when(mIncognitoModel.getTabGroupCount()).thenReturn(6);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);

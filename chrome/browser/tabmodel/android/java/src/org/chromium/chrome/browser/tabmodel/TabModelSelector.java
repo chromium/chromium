@@ -220,7 +220,9 @@ public interface TabModelSelector {
      * @param isIncognito Use to indicate which {@link TabGroupModelFilter} to return.
      * @return A {@link TabGroupModelFilter}. This returns null, if this called before native
      *     library is initialized.
+     * @deprecated Use {@link #getModel(boolean)} instead. TabModel now extends TabGroupModelFilter.
      */
+    @Deprecated
     @Nullable TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito);
 
     /**

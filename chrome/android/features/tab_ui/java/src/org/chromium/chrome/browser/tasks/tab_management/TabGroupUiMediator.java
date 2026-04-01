@@ -336,10 +336,8 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
                 };
 
-        assumeNonNull(tabModelSelector.getTabGroupModelFilter(false))
-                .addTabGroupObserver(mTabGroupModelFilterObserver);
-        assumeNonNull(tabModelSelector.getTabGroupModelFilter(true))
-                .addTabGroupObserver(mTabGroupModelFilterObserver);
+        tabModelSelector.getModel(false).addTabGroupObserver(mTabGroupModelFilterObserver);
+        tabModelSelector.getModel(true).addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mOmniboxFocusObserver = isFocus -> resetTabStrip();
         mOmniboxFocusStateSupplier.addSyncObserverAndPostIfNonNull(mOmniboxFocusObserver);
@@ -572,9 +570,11 @@ public class TabGroupUiMediator implements BackPressHandler {
             mTabModelSelector.removeTabGroupModelFilterObserver(mTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             if (mTabGroupModelFilterObserver != null) {
-                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(false))
+                mTabModelSelector
+                        .getModel(false)
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
-                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(true))
+                mTabModelSelector
+                        .getModel(true)
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
             }
         }

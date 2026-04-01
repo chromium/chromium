@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
@@ -22,7 +20,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -179,9 +176,8 @@ public class TabUndoBarController extends UndoBarController {
 
         assert !closedTabs.get(0).isIncognito();
 
-        TabGroupModelFilter filter =
-                assumeNonNull(mTabModelSelector.getTabGroupModelFilter(/* isIncognito= */ false));
-        Profile profile = filter.getTabModel().getProfile();
+        TabModel tabModel = mTabModelSelector.getModel(/* incognito= */ false);
+        Profile profile = tabModel.getProfile();
         boolean tabGroupSyncEnabled =
                 profile != null
                         && profile.isNativeInitialized()
@@ -191,7 +187,7 @@ public class TabUndoBarController extends UndoBarController {
         Set<Token> fullyClosingTabGroupIds = new HashSet<>();
         int ungroupedOrPartialGroupTabs = 0;
         LazyOneshotSupplier<Set<Token>> tabGroupIdsInComprehensiveModel =
-                filter.getLazyAllTabGroupIds(closedTabs, /* includePendingClosures= */ true);
+                tabModel.getLazyAllTabGroupIds(closedTabs, /* includePendingClosures= */ true);
         for (Tab tab : closedTabs) {
             // We are not deleting a tab group if:
             // 1. Any of the tabs are in a group that is hiding.
@@ -200,7 +196,7 @@ public class TabUndoBarController extends UndoBarController {
             @Nullable Token tabGroupId = tab.getTabGroupId();
             if (tabGroupId == null) {
                 ungroupedOrPartialGroupTabs++;
-            } else if (tabGroupSyncEnabled && filter.isTabGroupHiding(tabGroupId)) {
+            } else if (tabGroupSyncEnabled && tabModel.isTabGroupHiding(tabGroupId)) {
                 fullyClosingTabGroupIds.add(tabGroupId);
                 isDeletingTabGroups = false;
             } else if (tabGroupIdsInComprehensiveModel.get() != null
@@ -253,9 +249,8 @@ public class TabUndoBarController extends UndoBarController {
                     }
                 }
                 assert groupedTab != null;
-                TabGroupModelFilter filter =
-                        assumeNonNull(mTabModelSelector.getTabGroupModelFilter(false));
-                @Nullable String tabGroupTitle = filter.getTabGroupTitle(groupedTab);
+                TabModel tabModel = mTabModelSelector.getModel(false);
+                @Nullable String tabGroupTitle = tabModel.getTabGroupTitle(groupedTab);
                 if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =
                             mContext.getResources()
