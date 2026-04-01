@@ -236,4 +236,38 @@ TEST_F(PermissionServiceImplTest, RevokePermission) {
                 blink::mojom::PermissionStatus::ASK, nullptr));
 }
 
+TEST_F(PermissionServiceImplTest, RequestPermissions) {
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kDenied});
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  auto descriptor1 = blink::mojom::PermissionDescriptor::New();
+  descriptor1->name = blink::mojom::PermissionName::GEOLOCATION;
+
+  auto descriptor2 = blink::mojom::PermissionDescriptor::New();
+  descriptor2->name = blink::mojom::PermissionName::AUDIO_CAPTURE;
+
+  std::vector<blink::mojom::PermissionDescriptorPtr> permissions;
+  permissions.push_back(std::move(descriptor1));
+  permissions.push_back(std::move(descriptor2));
+
+  base::test::TestFuture<
+      std::vector<blink::mojom::PermissionStatusWithDetailsPtr>>
+      future;
+  remote()->RequestPermissions(std::move(permissions), future.GetCallback());
+  auto results = future.Take();
+  std::vector<blink::mojom::PermissionStatusWithDetailsPtr> expected_results;
+  expected_results.push_back(blink::mojom::PermissionStatusWithDetails::New(
+      blink::mojom::PermissionStatus::GRANTED,
+      blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+          blink::mojom::GeolocationAccuracy::kApproximate)));
+  expected_results.push_back(blink::mojom::PermissionStatusWithDetails::New(
+      blink::mojom::PermissionStatus::GRANTED, nullptr));
+  EXPECT_EQ(results, expected_results);
+}
+
 }  // namespace content

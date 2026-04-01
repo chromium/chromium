@@ -196,7 +196,7 @@ interface PermissionService {
   RequestPermission(PermissionDescriptor permission)
       => (PermissionStatusWithDetails status);
   RequestPermissions(array<PermissionDescriptor> permission)
-      => (array<PermissionStatus> statuses);
+      => (array<PermissionStatusWithDetails> statuses);
   RevokePermission(PermissionDescriptor permission)
       => (PermissionStatusWithDetails status);
   // Subscribes |observer| to updates about changes to the current origin's

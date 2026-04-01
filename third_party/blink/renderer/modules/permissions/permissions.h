@@ -80,13 +80,13 @@ class Permissions final : public ScriptWrappable,
       Vector<int> caller_index_to_internal_index,
       int last_verified_permission_index,
       bool is_bulk_request,
-      const Vector<mojom::blink::PermissionStatus>& results);
+      Vector<mojom::blink::PermissionStatusWithDetailsPtr> results);
 
   void PermissionVerificationComplete(
       ScriptPromiseResolverBase* resolver,
       Vector<mojom::blink::PermissionDescriptorPtr> descriptors,
       Vector<int> caller_index_to_internal_index,
-      const Vector<mojom::blink::PermissionStatus>& results,
+      Vector<mojom::blink::PermissionStatusWithDetailsPtr> results,
       mojom::blink::PermissionDescriptorPtr verification_descriptor,
       int internal_index_to_verify,
       bool is_bulk_request,
