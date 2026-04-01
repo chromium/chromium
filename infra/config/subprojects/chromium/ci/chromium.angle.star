@@ -520,8 +520,8 @@ gpu.ci.mac_builder(
     ),
     targets = targets.bundle(),
     cores = None,
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
+    os = os.MAC_15,
+    cpu = cpu.X86_64,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",

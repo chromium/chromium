@@ -60,5 +60,7 @@ angle_ios_builder(
         ],
     ),
     pool = "luci.chromium.gpu.try",
+    os = os.MAC_15,
+    cpu = cpu.X86_64,
     max_concurrent_builds = 1,
 )
