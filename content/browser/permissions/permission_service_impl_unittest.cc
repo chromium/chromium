@@ -204,4 +204,36 @@ TEST_F(PermissionServiceImplTest, AddPermissionObserver) {
   run_loop.Run();
 }
 
+TEST_F(PermissionServiceImplTest, RevokePermission) {
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kAllowed});
+
+  auto descriptor = blink::mojom::PermissionDescriptor::New();
+  descriptor->name = blink::mojom::PermissionName::GEOLOCATION;
+
+  base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr> future;
+  remote()->HasPermission(descriptor.Clone(), future.GetCallback());
+  EXPECT_EQ(future.Take(),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::GRANTED,
+                blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+                    blink::mojom::GeolocationAccuracy::kPrecise)));
+
+  base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr>
+      revoke_future;
+  remote()->RevokePermission(descriptor.Clone(), revoke_future.GetCallback());
+  EXPECT_EQ(revoke_future.Take(),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::ASK, nullptr));
+
+  base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr>
+      has_future;
+  remote()->HasPermission(descriptor.Clone(), has_future.GetCallback());
+  EXPECT_EQ(has_future.Take(),
+            blink::mojom::PermissionStatusWithDetails::New(
+                blink::mojom::PermissionStatus::ASK, nullptr));
+}
+
 }  // namespace content

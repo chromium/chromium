@@ -186,8 +186,19 @@ ScriptPromise<PermissionStatus> Permissions::revoke(
   GetService(ExecutionContext::From(script_state))
       ->RevokePermission(
           std::move(descriptor),
-          BindOnce(&Permissions::TaskComplete, WrapPersistent(this),
-                   WrapPersistent(resolver), std::move(descriptor_copy)));
+          // TODO(crbug.com/494089503): Simplify this once all mojo permission
+          // methods return a PermissionStatusWithDetails and let TaskComplete
+          // take a PermissionStatusWithDetails directly.
+          blink::BindOnce(
+              [](Permissions* permissions,
+                 ScriptPromiseResolver<PermissionStatus>* resolver,
+                 mojom::blink::PermissionDescriptorPtr descriptor,
+                 mojom::blink::PermissionStatusWithDetailsPtr result) {
+                permissions->TaskComplete(resolver, std::move(descriptor),
+                                          result->status);
+              },
+              WrapPersistent(this), WrapPersistent(resolver),
+              std::move(descriptor_copy)));
   return promise;
 }
 

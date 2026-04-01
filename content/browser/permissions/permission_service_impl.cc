@@ -463,14 +463,15 @@ void PermissionServiceImpl::RevokePermission(
   // Resetting the permission should only be possible if the permission is
   // already granted.
   if (result.status != PermissionStatus::GRANTED) {
-    std::move(callback).Run(result.status);
+    std::move(callback).Run(
+        PermissionUtil::ToPermissionStatusWithDetails(result));
     return;
   }
 
   ResetPermissionStatus(*permission_type);
 
-  std::move(callback).Run(
-      GetPermissionResultForCurrentContext(permission).status);
+  std::move(callback).Run(PermissionUtil::ToPermissionStatusWithDetails(
+      GetPermissionResultForCurrentContext(permission)));
 }
 
 void PermissionServiceImpl::AddPermissionObserver(
