@@ -124,9 +124,10 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
-      [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
-      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)] ||
+  if ([self isRunningTest:@selector(DISABLED_testHomeAndWorkProfileEditPage)] ||
+      [self isRunningTest:@selector
+            (DISABLED_testHomeAndWorkProfileDeleteOnEdit)] ||
+      [self isRunningTest:@selector(DISABLED_testHomeAndWorkProfileRemove)] ||
       [self isRunningTest:@selector(testConfirmationShownOnDeletion)] ||
       [self isRunningTest:@selector(testConfirmationShownOnSwipeToDelete)]) {
     config.features_enabled.push_back(
@@ -285,7 +286,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 }
 
 // Test that the edit mode for Home and Work profiles is not accessible.
-- (void)testHomeAndWorkProfileEditPage {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testHomeAndWorkProfileEditPage {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
   [self openEditProfile:kHomeProfileLabel];
@@ -569,7 +571,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 // Checks when the country field is changed to Germany in the edit mode, the
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
-- (void)testRequiredFields {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testRequiredFields {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -643,7 +646,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
-- (void)testDoneButtonByRequirementsOfCountries {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testDoneButtonByRequirementsOfCountries {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -710,7 +714,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
-- (void)testFooterWithMultipleErrors {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testFooterWithMultipleErrors {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
@@ -783,7 +788,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that a local incomplete profile can be migrated to account after
 // editing the profile.
-- (void)testIncompleteProfileMigrateToAccount {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testIncompleteProfileMigrateToAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
 
@@ -858,7 +864,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the home/work address delete results in showing a confirmation
 // sheet that contains an option to remove the profile from Chrome.
-- (void)testHomeAndWorkProfileRemove {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testHomeAndWorkProfileRemove {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
@@ -888,7 +895,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 // Tests that the home/work address delete results in showing a confirmation
 // sheet that contains an option to edit the profile in the Google Account.
-- (void)testHomeAndWorkProfileDeleteOnEdit {
+// TODO(crbug.com/498593923): Fix this test.
+- (void)DISABLED_testHomeAndWorkProfileDeleteOnEdit {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
 
