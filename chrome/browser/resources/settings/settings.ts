@@ -136,6 +136,7 @@ export {buildRouter, resetRouterForTesting, routes} from './route.js';
 export {Route, Router} from './router.js';
 export type {SettingsRoutes} from './router.js';
 export {ScrollableMixin} from './scrollable_mixin.js';
+export {FeatureShortcutsPageElement} from './search_page/feature_shortcuts_page.js';
 export {SettingsSearchEngineListDialogElement} from './search_page/search_engine_list_dialog.js';
 export {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl, SearchEnginesInteractions} from './search_page/search_engines_browser_proxy.js';
 export type {CategorizedTemplateUrls, SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo} from './search_page/search_engines_browser_proxy.js';

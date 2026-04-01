@@ -3,6 +3,12 @@
   cr-view-manager[show-all] [slot=view][data-parent-view-id] {
     display: none;
   }
+
+  /* Necessary to display multiple cr-view-manager views (in this case "cards")
+     at the same time. */
+  cr-view-manager [slot=view]:not(.closing) {
+    position: initial;
+  }
 </style>
 
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
@@ -10,6 +16,11 @@
   <settings-search-page slot="view" id="parent" prefs="{{prefs}}"
       route-path$="[[routes_.SEARCH.path]]">
   </settings-search-page>
+
+  <template is="dom-if" if="[[searchSettingsUpdateEnabled_]]" restamp>
+    <settings-feature-shortcuts-page slot="view" id="featureShortcuts">
+    </settings-feature-shortcuts-page>
+  </template>
 
   <template is="dom-if" if="[[!searchSettingsUpdateEnabled_]]" restamp>
     <settings-search-engines-page slot="view" id="searchEngines"

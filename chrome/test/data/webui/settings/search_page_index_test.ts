@@ -6,10 +6,10 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsSearchPageIndexElement} from 'chrome://settings/settings.js';
-import {Router, routes, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, routes, SearchEnginesBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
@@ -18,6 +18,10 @@ suite('SearchPageIndex', function() {
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: false,
+    });
+
     const browserProxy = new TestSearchEnginesBrowserProxy();
     SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
     index = document.createElement('settings-search-page-index');
@@ -28,6 +32,10 @@ suite('SearchPageIndex', function() {
     };
     document.body.appendChild(index);
     return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('Routing', async function() {
@@ -62,5 +70,62 @@ suite('SearchPageIndex', function() {
     assertFalse(result.canceled);
     assertEquals(2, result.matchCount);
     assertFalse(result.wasClearSearch);
+  });
+});
+
+suite('SearchPageIndexWithSearchSettingsUpdate', function() {
+  let index: SettingsSearchPageIndexElement;
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      searchSettingsUpdate: true,
+    });
+
+    index = document.createElement('settings-search-page-index');
+    document.body.appendChild(index);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    Router.getInstance().resetRouteForTesting();
+  });
+
+  test('Routing', async function() {
+    function assertActiveViews(ids: string[]) {
+      for (const id of ids) {
+        assertTrue(
+            !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
+      }
+    }
+
+    assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
+    assertActiveViews(['parent', 'featureShortcuts']);
+
+    Router.getInstance().navigateTo(routes.SEARCH);
+    await microtasksFinished();
+    assertActiveViews(['parent', 'featureShortcuts']);
+  });
+
+  // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
+  // inherited correctly.
+  test('Search', async function() {
+    function assertVisibleViews(visible: string[], hidden: string[]) {
+      for (const id of visible) {
+        assertTrue(isVisible(index.$.viewManager.querySelector(`#${id}`)), id);
+      }
+
+      for (const id of hidden) {
+        assertFalse(isVisible(index.$.viewManager.querySelector(`#${id}`)), id);
+      }
+    }
+
+    // Results only in feature shortcuts
+    const result =
+        await index.searchContents('feature and extension shortcuts');
+    assertFalse(result.canceled);
+    assertEquals(2, result.matchCount);
+    assertFalse(result.wasClearSearch);
+    assertVisibleViews(/*visible=*/['featureShortcuts'], /*hidden=*/['parent']);
   });
 });

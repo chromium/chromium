@@ -2852,6 +2852,17 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"searchEnginesConfirmationToastLabel",
        IDS_SEARCH_ENGINE_CHOICE_SETTINGS_CONFIRMATION_TOAST_LABEL},
       {"defaultSearch", IDS_SETTINGS_DEFAULT_SEARCH},
+      {"searchFeatureShortcuts", IDS_SETTINGS_SEARCH_EXTENSION_ENGINES},
+      {"searchFeatureShortcutsActiveShortcuts",
+       IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_ACTIVE_SHORTCUTS},
+      {"searchFeatureShortcutsActiveShortcutsExplanation",
+       IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_ACTIVE_SHORTCUTS_EXPLANATION},
+      {"searchFeatureShortcutsInactiveShortcuts",
+       IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_INACTIVE_SHORTCUTS},
+      {"searchFeatureShortcutsInactiveShortcutsExplanation",
+       IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_INACTIVE_SHORTCUTS_EXPLANATION},
+      {"searchNoFeatureShortcutsFound",
+       IDS_SETTINGS_SEARCH_NO_FEATURE_SHORTCUTS},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddString("searchExplanationLearnMoreURL",
