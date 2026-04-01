@@ -142,8 +142,9 @@ ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
 
   // Finally, update internal state for the next iteration.
   prev_frame_data_ = {
-      .has_inertial_input =
-          updates.real().has_value() && updates.real()->has_inertial_input,
+      .has_inertial_input = updates.real().has_value()
+                                ? updates.real()->has_inertial_input
+                                : updates.synthetic()->has_inertial_input,
       .is_most_recent_real_frame_fast_scroll =
           [&]() {
             if (updates.real().has_value()) {
@@ -337,7 +338,9 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
 
   // Rules 2 & 3: Fast scroll and fling continuity.
   bool cur_is_sufficiently_fast_fling =
-      updates.real().has_value() && IsSufficientlyFastFling(*updates.real());
+      updates.real().has_value()
+          ? IsSufficientlyFastFling(*updates.real())
+          : (updates.synthetic()->has_inertial_input && treat_as_fast_scroll);
   if (cur_is_sufficiently_fast_fling) {
     if (prev_frame_data.has_inertial_input) {
       // Chrome missed one or more VSyncs in the middle of a fling.
