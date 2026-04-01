@@ -893,7 +893,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutoSignin" enum="BooleanEnabled"
-    expires_after="2026-05-08">
+    expires_after="2026-09-08">
   <owner>vasilii@chromium.org</owner>
   <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
