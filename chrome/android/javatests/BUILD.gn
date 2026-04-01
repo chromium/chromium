@@ -1851,6 +1851,7 @@ android_library(
     "src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelBaseTest.java",
     "src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelEventFilterTest.java",
     "src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelManagerTest.java",
+    "src/org/chromium/chrome/browser/compositor/overlay_panel/OverlayPanelTest.java",
   ]
 
   deps = [ ":common_unit_test_deps_java" ]
