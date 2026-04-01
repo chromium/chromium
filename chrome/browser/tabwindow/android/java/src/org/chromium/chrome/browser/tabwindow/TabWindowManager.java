@@ -102,7 +102,6 @@ public interface TabWindowManager {
      * @param profileProviderSupplier The provider of the Profiles used in the selector.
      * @param tabCreatorManager An instance of {@link TabCreatorManager}.
      * @param nextTabPolicySupplier An instance of {@link NextTabPolicySupplier}.
-     * @param multiInstanceManager An instance of {@link MultiInstanceManager}.
      * @param mismatchedIndicesHandler An instance of {@link MismatchedIndicesHandler}.
      * @param windowId The suggested id of the window that the selector should correspond to. Not
      *     guaranteed to be the index of the {@link TabModelSelector} returned.
@@ -115,7 +114,6 @@ public interface TabWindowManager {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
-            MultiInstanceManager multiInstanceManager,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId);
 

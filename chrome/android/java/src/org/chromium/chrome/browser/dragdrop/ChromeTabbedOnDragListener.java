@@ -244,11 +244,12 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                         mContext, draggedTabGroupIncognito, mTabModelSelector);
 
         // Reparent the dragged tab group to destination window.
-        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                mMultiInstanceManager.getCurrentInstanceId(),
-                tabGroupMetadata,
-                destIndex,
-                /* bringToFront= */ true);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabGroupToWindowByIdChecked(
+                        mMultiInstanceManager.getCurrentInstanceId(),
+                        tabGroupMetadata,
+                        destIndex,
+                        /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 DragDropType.TAB_STRIP_TO_CONTENT, /* isTabGroup= */ true, /* isMultiTab= */ false);
         return true;

@@ -1408,7 +1408,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 mOnItemClickedCallback,
                 new AnchorInfo(TAB_OUTSIDE_OF_GROUP_ID, List.of(TAB_OUTSIDE_OF_GROUP_ID)),
                 COLLABORATION_ID);
-        verify(mMultiInstanceManager)
+        verify(mMultiInstanceOrchestrator)
                 .moveTabsToOtherWindow(
                         Collections.singletonList(mTabOutsideOfGroup), NewWindowAppSource.MENU);
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);

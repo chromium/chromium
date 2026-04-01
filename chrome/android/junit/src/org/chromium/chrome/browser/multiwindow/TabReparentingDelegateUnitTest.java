@@ -102,7 +102,6 @@ public class TabReparentingDelegateUnitTest {
                         /* profileProviderSupplier= */ null,
                         /* tabCreatorManager= */ null,
                         /* nextTabPolicySupplier= */ null,
-                        /* multiInstanceManager= */ null,
                         mMismatchedIndicesHandler,
                         SOURCE_WINDOW_ID);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
@@ -112,7 +111,7 @@ public class TabReparentingDelegateUnitTest {
         ReparentingTabGroupTask.setReparentingTabGroupTaskForTesting(mReparentingTabGroupTask);
         doNothing().when(mReparentingTabGroupTask).begin(any(), any());
 
-        MultiWindowUtils.setActivitySupplierForTesting(() -> mCurrentActivity);
+        MultiWindowUtils.setActivityByWindowIdForTesting(SOURCE_WINDOW_ID, mCurrentActivity);
         when(mTab1.getContext()).thenReturn(mCurrentActivity);
         when(mTab2.getContext()).thenReturn(mCurrentActivity);
     }
@@ -272,7 +271,8 @@ public class TabReparentingDelegateUnitTest {
         TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ false);
         boolean openAdjacently = true;
         if (!pauseResumeTabGroupSyncService) {
-            MultiWindowUtils.setActivitySupplierForTesting(() -> null);
+            MultiWindowUtils.setActivityByWindowIdForTesting(
+                    SOURCE_WINDOW_ID, /* activity= */ null);
         }
 
         // Act.
@@ -346,7 +346,8 @@ public class TabReparentingDelegateUnitTest {
         // Setup.
         TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(isGroupShared);
         if (!pauseResumeTabGroupSyncService) {
-            MultiWindowUtils.setActivitySupplierForTesting(() -> null);
+            MultiWindowUtils.setActivityByWindowIdForTesting(
+                    SOURCE_WINDOW_ID, /* activity= */ null);
         }
 
         // Act.

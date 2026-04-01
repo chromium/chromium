@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,6 +58,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -194,6 +195,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private BiConsumer<Token, Boolean> mReorderFunction;
     private Activity mActivity;
 
@@ -204,6 +206,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
 
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity = activity;
@@ -616,7 +619,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 /* listViewTouchTracker= */ null);
 
         // Verify.
-        verify(mMultiInstanceManager)
+        verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToOtherWindow(
                         any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
@@ -674,7 +677,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToNewWindow(
                 modelList, 5, mOnItemClickedCallback, TAB_GROUP_ID, COLLABORATION_ID);
 
-        verify(mMultiInstanceManager, times(1))
+        verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToOtherWindow(
                         any(TabGroupMetadata.class), eq(NewWindowAppSource.MENU));
         verify(mMultiInstanceManager).closeChromeWindowIfEmpty(INSTANCE_ID_1);
@@ -694,7 +697,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.clickMoveToWindowRow(
                 modelList, 5, WINDOW_TITLE_2, mMenuView);
 
-        verify(mMultiInstanceManager)
+        verify(mMultiInstanceOrchestrator)
                 .moveTabGroupToWindowByIdChecked(
                         eq(INSTANCE_ID_2),
                         any(TabGroupMetadata.class),

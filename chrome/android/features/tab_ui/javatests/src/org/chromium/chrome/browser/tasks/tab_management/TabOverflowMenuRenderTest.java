@@ -32,6 +32,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -77,6 +79,7 @@ public class TabOverflowMenuRenderTest {
     @Mock private Supplier<TabModel> mTabModelSupplier;
     @Mock private TabModel mTabModel;
     @Mock private MultiInstanceManager mMultiInstanceManager;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
@@ -123,6 +126,8 @@ public class TabOverflowMenuRenderTest {
     private void showMenu() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    MultiInstanceOrchestratorFactory.setInstanceForTesting(
+                            mMultiInstanceOrchestrator);
                     mCoordinator =
                             new TabOverflowMenuCoordinator<>(
                                     R.layout.tab_switcher_action_menu_layout,

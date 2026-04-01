@@ -565,7 +565,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             // Reject cross-model drops if incognito is opened as a new window.
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) return false;
 
-            mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabGroupToWindowByIdChecked(
                     windowId,
                     tabGroupMetadata,
                     getTabModelSelector().getModel(tabGroupMetadata.isIncognito).getCount(),
@@ -575,7 +575,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             // Reparent tab group at drop index.
             int tabIndex =
                     helper.getTabIndexForTabDrop(dropEvent.getX() * mPxToDp, /* isPinned= */ false);
-            mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+            mMultiInstanceOrchestrator.moveTabGroupToWindowByIdChecked(
                     windowId, tabGroupMetadata, tabIndex, /* bringToFront= */ true);
         }
         DragDropMetricUtils.recordDragDropType(

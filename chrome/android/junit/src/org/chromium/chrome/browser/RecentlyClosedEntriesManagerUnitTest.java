@@ -1073,8 +1073,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            MultiInstanceManager multiInstanceManager) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return mTabModelSelector;
                     }
 
@@ -1130,8 +1129,7 @@ public class RecentlyClosedEntriesManagerUnitTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            MultiInstanceManager multiInstanceManager) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return mTabModelSelector;
                     }
 

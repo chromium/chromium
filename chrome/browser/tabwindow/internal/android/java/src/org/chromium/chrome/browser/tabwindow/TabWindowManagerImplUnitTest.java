@@ -48,7 +48,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -98,7 +97,6 @@ public class TabWindowManagerImplUnitTest {
     @Mock private Profile mIncognitoProfile;
     @Mock private TabModelSelector mArchivedTabModelSelector;
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private MultiInstanceManager mMultiInstanceManager;
     @Mock private TabModelSelectorFactory mTabModelSelectorFactory;
     @Mock private Destroyable mDestroyable;
     @Mock private TabModelSelector mTabModelSelector;
@@ -124,8 +122,7 @@ public class TabWindowManagerImplUnitTest {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            MultiInstanceManager multiInstanceManager) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(
                                 mProfile,
                                 mIncognitoProfile,
@@ -189,7 +186,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -218,7 +214,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -228,7 +223,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
 
@@ -262,7 +256,6 @@ public class TabWindowManagerImplUnitTest {
                             mProfileProviderSupplier,
                             mTabCreatorManager,
                             mNextTabPolicySupplier,
-                            mMultiInstanceManager,
                             mMismatchedIndicesHandler0,
                             0));
         }
@@ -277,7 +270,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0));
 
@@ -306,7 +298,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         // Request 0 again, but should get 1 instead.
@@ -317,7 +308,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         0);
 
@@ -352,7 +342,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         2);
         // Request 2 again, but should get 0 instead.
@@ -363,7 +352,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         2);
 
@@ -394,7 +382,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -423,7 +410,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -444,7 +430,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         0);
 
@@ -476,7 +461,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -486,7 +470,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
 
@@ -511,7 +494,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         handler,
                         1);
 
@@ -539,7 +521,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -549,7 +530,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -593,7 +573,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -603,7 +582,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -689,7 +667,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -699,7 +676,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -730,7 +706,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -752,7 +727,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
         TabModelSelector selector1 = assignment1.second;
@@ -778,7 +752,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 0);
 
@@ -795,7 +768,6 @@ public class TabWindowManagerImplUnitTest {
                     mProfileProviderSupplier,
                     mTabCreatorManager,
                     mNextTabPolicySupplier,
-                    mMultiInstanceManager,
                     mMismatchedIndicesHandler1,
                     0);
         } finally {
@@ -821,7 +793,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 0);
 
@@ -841,7 +812,6 @@ public class TabWindowManagerImplUnitTest {
                             mProfileProviderSupplier,
                             mTabCreatorManager,
                             mNextTabPolicySupplier,
-                            mMultiInstanceManager,
                             mMismatchedIndicesHandler1,
                             0);
             assertEquals(
@@ -881,7 +851,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 0);
 
@@ -896,7 +865,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         0);
         assertEquals(
@@ -921,7 +889,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -986,7 +953,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -1062,7 +1028,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
         TabModelSelector selector4 = assignment0.second;
@@ -1099,7 +1064,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 0);
 
@@ -1116,7 +1080,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 1);
 
@@ -1168,7 +1131,6 @@ public class TabWindowManagerImplUnitTest {
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
-                mMultiInstanceManager,
                 mMismatchedIndicesHandler0,
                 0);
         assertEquals(1, mSubject.getAllTabModelSelectors().size());
@@ -1212,7 +1174,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         window0);
         Pair<@WindowId Integer, TabModelSelector> assignment1 =
@@ -1222,7 +1183,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         window1);
         MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
@@ -1260,7 +1220,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -1294,7 +1253,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler0,
                         0);
 
@@ -1309,7 +1267,6 @@ public class TabWindowManagerImplUnitTest {
                         mProfileProviderSupplier,
                         mTabCreatorManager,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler1,
                         1);
 

@@ -84,9 +84,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -117,9 +119,9 @@ public class MultiWindowUtils implements ActivityStateListener {
     static @Nullable Integer sMaxInstancesForTesting;
 
     private static MultiWindowUtils sInstance = new MultiWindowUtils();
-    protected static @Nullable Supplier<Activity> sActivitySupplierForTesting;
+    private static @Nullable Supplier<Activity> sActivitySupplierForTesting;
+    private static @Nullable Map<Integer, Activity> sActivityByWindowIdForTesting;
 
-    private static @Nullable Integer sIncognitoInstanceCountForTesting;
     private static @Nullable Integer sInstanceCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
     private static @Nullable Boolean sIsMultiInstanceApi31Enabled;
@@ -1423,8 +1425,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @return The {@link Activity} associated with the given window id.
      */
     public static @Nullable Activity getActivityById(int windowId) {
-        if (sActivitySupplierForTesting != null) {
-            return sActivitySupplierForTesting.get();
+        if (sActivityByWindowIdForTesting != null
+                && sActivityByWindowIdForTesting.containsKey(windowId)) {
+            return sActivityByWindowIdForTesting.get(windowId);
         }
 
         TabWindowManager windowManager = TabWindowManagerSingleton.getInstance();
@@ -1478,11 +1481,6 @@ public class MultiWindowUtils implements ActivityStateListener {
         ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
-    public static void setIncognitoInstanceCountForTesting(int instanceCount) {
-        sIncognitoInstanceCountForTesting = instanceCount;
-        ResettersForTesting.register(() -> sIncognitoInstanceCountForTesting = null);
-    }
-
     public static void setInstanceCountForTesting(int instanceCount) {
         sInstanceCountForTesting = instanceCount;
         ResettersForTesting.register(() -> sInstanceCountForTesting = null);
@@ -1501,5 +1499,13 @@ public class MultiWindowUtils implements ActivityStateListener {
     public static void setActivitySupplierForTesting(Supplier<Activity> supplier) {
         sActivitySupplierForTesting = supplier;
         ResettersForTesting.register(() -> sActivitySupplierForTesting = null);
+    }
+
+    public static void setActivityByWindowIdForTesting(int windowId, Activity activity) {
+        if (sActivityByWindowIdForTesting == null) {
+            sActivityByWindowIdForTesting = new HashMap<>();
+        }
+        sActivityByWindowIdForTesting.put(windowId, activity);
+        ResettersForTesting.register(() -> sActivityByWindowIdForTesting = null);
     }
 }

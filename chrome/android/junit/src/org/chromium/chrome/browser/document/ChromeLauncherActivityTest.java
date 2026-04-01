@@ -124,7 +124,7 @@ public class ChromeLauncherActivityTest {
         mTabbedActivity.mTabModelSelector = mTabModelSelector;
 
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
-        MultiWindowUtils.setActivitySupplierForTesting(() -> mTabbedActivity);
+        MultiWindowUtils.setActivityByWindowIdForTesting(TEST_WINDOW_ID, mTabbedActivity);
         MultiWindowTestUtils.enableMultiInstance();
     }
 
@@ -134,7 +134,6 @@ public class ChromeLauncherActivityTest {
             mTabbedActivity.finish();
         }
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
-        MultiWindowUtils.setActivitySupplierForTesting(null);
     }
 
     @Test

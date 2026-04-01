@@ -72,6 +72,8 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.SingleChildViewManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -154,6 +156,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
     @Mock private TabListGroupMenuCoordinator mTabListGroupMenuCoordinator;
     @Mock private PriceWelcomeMessageController mPriceWelcomeMessageController;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private final SettableNonNullObservableSupplier<Boolean> mHubSearchBoxVisibilitySupplier =
             ObservableSuppliers.createNonNull(false);
@@ -189,6 +192,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(mProfile)).thenReturn(true);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         MessagingBackendServiceFactory.setForTesting(mMessagingBackendService);

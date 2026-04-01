@@ -91,6 +91,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -219,6 +221,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private View mCardView;
     @Mock private TabGridContextMenuCoordinator mTabGridContextMenuCoordinator;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor private ArgumentCaptor<TabGroupModelFilterObserver> mTabGroupModelFilterObserverCaptor;
@@ -250,6 +253,7 @@ public class TabGridDialogMediatorUnitTest {
     public void setUp() {
         mActionTester = new UserActionTester();
 
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);

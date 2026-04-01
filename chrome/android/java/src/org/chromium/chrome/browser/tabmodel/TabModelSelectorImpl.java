@@ -22,7 +22,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -70,7 +69,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     private final @Nullable ModalDialogManager mModalDialogManager;
     private final boolean mIsUndoSupported;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
-    private final @Nullable MultiInstanceManager mMultiInstanceManager;
 
     private @MonotonicNonNull TabContentManager mTabContentManager;
     private @MonotonicNonNull RecentlyClosedBridge mRecentlyClosedBridge;
@@ -97,7 +95,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
-            @Nullable MultiInstanceManager multiInstanceManager,
             AsyncTabParamsManager asyncTabParamsManager,
             boolean supportUndo,
             @ActivityType int activityType,
@@ -111,7 +108,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         mIsUndoSupported = supportUndo;
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;
-        mMultiInstanceManager = multiInstanceManager;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mActivityType = activityType;
         mCustomTabProfileType = customTabProfileType;
@@ -389,10 +385,10 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         TabShareUtils.isCollaborationIdValid(collaborationId));
         if (tabGroupMetadata == null) return;
 
-        assert mMultiInstanceManager != null;
         int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
-        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                destWindowId, tabGroupMetadata, newIndex, /* bringToFront= */ false);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabGroupToWindowByIdChecked(
+                        destWindowId, tabGroupMetadata, newIndex, /* bringToFront= */ false);
     }
 
     /**

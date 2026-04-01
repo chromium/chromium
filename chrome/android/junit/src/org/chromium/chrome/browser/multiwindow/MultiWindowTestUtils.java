@@ -108,8 +108,7 @@ public class MultiWindowTestUtils {
                             ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
-                            NextTabPolicySupplier nextTabPolicySupplier,
-                            MultiInstanceManager multiInstanceManager) {
+                            NextTabPolicySupplier nextTabPolicySupplier) {
                         return new MockTabModelSelector(
                                 regularProfile, incognitoProfile, 0, 0, null);
                     }

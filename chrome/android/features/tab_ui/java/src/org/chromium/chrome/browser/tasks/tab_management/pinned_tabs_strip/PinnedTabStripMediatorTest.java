@@ -40,6 +40,8 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -94,6 +96,7 @@ public class PinnedTabStripMediatorTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
     @Mock private View mMockView;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -115,6 +118,7 @@ public class PinnedTabStripMediatorTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         mActivityScenarioRule.getScenario().onActivity(this::onActivity);
     }
 

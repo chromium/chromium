@@ -29,6 +29,8 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
@@ -74,6 +76,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private BookmarkModel mBookmarkModel;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     private PinnedTabStripItemContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
@@ -93,6 +96,7 @@ public class PinnedTabStripItemContextMenuCoordinatorTest {
         when(mTab.getTabGroupId()).thenReturn(mTabGroupId);
 
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);

@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -270,8 +271,9 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                     moveAndCleanupSource(
                             multiInstanceManager,
                             () ->
-                                    multiInstanceManager.moveTabGroupToOtherWindow(
-                                            tabGroupMetadata, NewWindowAppSource.MENU));
+                                    MultiInstanceOrchestratorFactory.getInstance()
+                                            .moveTabGroupToOtherWindow(
+                                                    tabGroupMetadata, NewWindowAppSource.MENU));
                 }
             } else if (menuId == R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
@@ -541,7 +543,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
-                        mMultiInstanceManager.moveTabGroupToNewWindow(
+                        mMultiInstanceOrchestrator.moveTabGroupToNewWindow(
                                 tabGroupMetadata, NewWindowAppSource.MENU));
     }
 
@@ -554,7 +556,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
         moveAndCleanupSource(
                 mMultiInstanceManager,
                 () ->
-                        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
+                        mMultiInstanceOrchestrator.moveTabGroupToWindowByIdChecked(
                                 instanceInfo.instanceId,
                                 tabGroupMetadata,
                                 TabList.INVALID_TAB_INDEX,

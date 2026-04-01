@@ -118,6 +118,8 @@ import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
@@ -378,6 +380,7 @@ public class TabListMediatorUnitTest {
     @Mock ActorOverlayState mActorOverlayState;
     @Mock HandoffButtonState mHandoffButtonState;
     @Mock UndoBarExplicitTrigger mUndoBarExplicitTrigger;
+    @Mock MultiInstanceOrchestrator mMultiInstanceOrchestrator;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -428,6 +431,7 @@ public class TabListMediatorUnitTest {
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);

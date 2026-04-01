@@ -16,9 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
-import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
@@ -220,60 +218,6 @@ public abstract class MultiInstanceManager {
      */
     @VisibleForTesting
     public abstract void maybeMergeTabs();
-
-    /**
-     * Moves the specified tabs to a selected ChromeTabbedActivity instance. If there is only one
-     * eligible window currently, tabs will be moved to a new window. Otherwise, the user will be
-     * presented with a UI to select a window to move the tabs to.
-     *
-     * @param tabs The list of tabs to move.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
-     * Moves the specified tab group to a new ChromeTabbedActivity instance.
-     *
-     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabGroupToNewWindow(
-            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        // Not implemented
-    }
-
-    /**
-     * Moves a tab group to the specified position in the specified ChromeTabbedActivity instance.
-     * The operation will fail if the instance is not found.
-     *
-     * @param destWindowId The id of the destination window.
-     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
-     * @param destTabIndex The tab index in the destination window where the tab group will be
-     *     positioned. To use the default tab index, set this to {@code TabList.INVALID_TAB_INDEX}.
-     * @param bringToFront Whether the destination window should be brought to the front.
-     */
-    public void moveTabGroupToWindowByIdChecked(
-            int destWindowId,
-            TabGroupMetadata tabGroupMetadata,
-            int destTabIndex,
-            boolean bringToFront) {
-        // Not implemented
-    }
-
-    /**
-     * Moves the specified tab group to a selected ChromeTabbedActivity instance. If there is only
-     * one eligible window currently, the tab group will be moved to a new window. Otherwise, the
-     * user will be presented with a UI to select a window to move the tab group to.
-     *
-     * @param tabGroupMetadata The {@link TabGroupMetadata} describing the tab group being moved.
-     * @param source The new window creation source used for metrics.
-     */
-    public void moveTabGroupToOtherWindow(
-            TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        // Not implemented
-    }
 
     /**
      * @return A list of {@link InstanceInfo} structs for the specified {@link

@@ -30,7 +30,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -145,7 +144,6 @@ public class TabWindowManagerImpl implements TabWindowManager {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier,
-            MultiInstanceManager multiInstanceManager,
             MismatchedIndicesHandler mismatchedIndicesHandler,
             @WindowId int windowId) {
         if (windowId == INVALID_WINDOW_ID) return null;
@@ -211,8 +209,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
                         modalDialogManager,
                         profileProviderSupplier,
                         tabCreatorManager,
-                        nextTabPolicySupplier,
-                        multiInstanceManager);
+                        nextTabPolicySupplier);
 
         mWindowIdToSelectors.put(assignedWindowId, selector);
         mSelectorsToWindowId.put(selector, assignedWindowId);

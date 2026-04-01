@@ -3044,8 +3044,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         // The metadata was attached as part of a drag and drop operation, so detach the target
         // group and reparent them to this instance now.
-        mMultiInstanceManager.moveTabGroupToWindowByIdChecked(
-                mWindowId, tabGroupMetadata, /* destTabIndex= */ 0, /* bringToFront= */ true);
+        MultiInstanceOrchestratorFactory.getInstance()
+                .moveTabGroupToWindowByIdChecked(
+                        mWindowId,
+                        tabGroupMetadata,
+                        /* destTabIndex= */ 0,
+                        /* bringToFront= */ true);
         DragDropMetricUtils.recordDragDropType(
                 ChromeDragDropUtils.getDragDropTypeFromIntent(intent),
                 /* isTabGroup= */ true,
@@ -3581,7 +3585,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         getProfileProviderSupplier(),
                         this,
                         mNextTabPolicySupplier,
-                        mMultiInstanceManager,
                         mMismatchedIndicesHandler,
                         mWindowId);
         if (!tabModelWasCreated) {

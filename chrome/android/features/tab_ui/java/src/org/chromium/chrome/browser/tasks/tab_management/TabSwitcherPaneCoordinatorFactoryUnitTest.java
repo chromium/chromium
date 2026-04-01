@@ -52,6 +52,8 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -107,6 +109,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private ScrimManager mScrimManager;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
@@ -155,6 +158,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(false);
 
         TrackerFactory.setTrackerForTests(mTracker);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         DataSharingServiceFactory.setForTesting(new TestDataSharingService());
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);

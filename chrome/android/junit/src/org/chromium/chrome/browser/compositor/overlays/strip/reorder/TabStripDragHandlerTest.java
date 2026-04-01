@@ -1717,7 +1717,7 @@ public class TabStripDragHandlerTest {
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
-            verify(mDestMultiInstanceManager, never())
+            verify(mMultiInstanceOrchestrator, never())
                     .moveTabGroupToWindowByIdChecked(anyInt(), any(), anyInt(), anyBoolean());
         } else {
             event =
@@ -2138,7 +2138,7 @@ public class TabStripDragHandlerTest {
     private void verifyViewNotMovedToWindow(boolean isGroupDrag) {
         if (isGroupDrag) {
             // Verify tab group is not moved.
-            verify(mDestMultiInstanceManager, never())
+            verify(mMultiInstanceOrchestrator, never())
                     .moveTabGroupToWindowByIdChecked(anyInt(), any(), anyInt(), anyBoolean());
         } else {
             // Verify tab is not moved.
@@ -2150,7 +2150,7 @@ public class TabStripDragHandlerTest {
     private void verifyViewMovedToWindow(boolean isGroupDrag, int index) {
         if (isGroupDrag) {
             // Verify tab group is moved.
-            verify(mDestMultiInstanceManager)
+            verify(mMultiInstanceOrchestrator)
                     .moveTabGroupToWindowByIdChecked(
                             eq(ANOTHER_INSTANCE_ID), eq(mTabGroupMetadata), eq(index), eq(true));
         } else {

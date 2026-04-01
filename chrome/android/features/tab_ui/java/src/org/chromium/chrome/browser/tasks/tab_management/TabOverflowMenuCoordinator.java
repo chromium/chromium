@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -87,6 +89,7 @@ public abstract class TabOverflowMenuCoordinator<T>
     protected final CollaborationService mCollaborationService;
     protected final Supplier<TabModel> mTabModelSupplier;
     protected final @Nullable MultiInstanceManager mMultiInstanceManager;
+    protected final MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     protected @Nullable TabGroupSyncService mTabGroupSyncService;
 
     private final Activity mActivity;
@@ -123,6 +126,7 @@ public abstract class TabOverflowMenuCoordinator<T>
         mOnItemClickedCallback = onItemClickedCallback;
         mTabModelSupplier = tabModelSupplier;
         mMultiInstanceManager = multiInstanceManager;
+        mMultiInstanceOrchestrator = MultiInstanceOrchestratorFactory.getInstance();
         mTabGroupSyncService = tabGroupSyncService;
         assert collaborationService != null;
         mCollaborationService = collaborationService;

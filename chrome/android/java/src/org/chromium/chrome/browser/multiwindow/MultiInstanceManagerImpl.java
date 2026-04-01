@@ -31,7 +31,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -353,7 +352,8 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
             Tab currentTab = tabModelSelector.getCurrentTab();
             if (currentTab != null) {
-                moveTabsToOtherWindow(Collections.singletonList(currentTab), appSource);
+                MultiInstanceOrchestratorFactory.getInstance()
+                        .moveTabsToOtherWindow(Collections.singletonList(currentTab), appSource);
             }
             return true;
         } else if (id == R.id.new_window_menu_id) {
@@ -456,21 +456,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             if (info.id == sMergedInstanceTaskId) return true;
         }
         return false;
-    }
-
-    @Override
-    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
-        if (intent == null) return;
-
-        onMultiInstanceModeStarted();
-        ReparentingTabsTask.from(tabs)
-                .begin(
-                        mActivity,
-                        intent,
-                        /* startActivityOptions= */ null,
-                        /* finalizeCallback= */ null);
-        RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
     @Override

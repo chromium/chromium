@@ -10,7 +10,6 @@ import android.util.Pair;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -29,7 +28,6 @@ public interface TabModelSelectorFactory {
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
      * @param nextTabPolicySupplier A {@link NextTabPolicySupplier} instance.
-     * @param multiInstanceManager A {@link MultiInstanceManager} instance.
      * @return A new {@link TabModelSelector} instance.
      */
     TabModelSelector buildTabbedSelector(
@@ -37,8 +35,7 @@ public interface TabModelSelectorFactory {
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            NextTabPolicySupplier nextTabPolicySupplier,
-            MultiInstanceManager multiInstanceManager);
+            NextTabPolicySupplier nextTabPolicySupplier);
 
     /**
      * Builds and initializes the tab model. Outside infra should ensure that this is the exclusive
