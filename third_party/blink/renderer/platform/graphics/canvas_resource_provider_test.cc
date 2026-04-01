@@ -678,15 +678,16 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
                                    CanvasPixelFormat::kUint8,
                                    /*has_alpha=*/true);
-  auto src_provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto src_provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      gpu::SharedImageUsageSet());
+      RasterMode::kGPU, gpu::SharedImageUsageSet());
 
-  auto dst_provider = CanvasNon2DResourceProviderSharedImage::Create(
+  auto dst_provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
       gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      gpu::SharedImageUsageSet());
+      RasterMode::kGPU, gpu::SharedImageUsageSet());
 
-  MemoryManagedPaintCanvas& dst_canvas = dst_provider->GetCanvasDeprecated();
+  MemoryManagedPaintCanvas& dst_canvas =
+      dst_provider->GetCanvasForCanvas2DForTesting();
 
   PaintImage paint_image =
       src_provider->Snapshot()->PaintImageForCurrentFrame();
@@ -699,13 +700,13 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   EXPECT_TRUE(dst_canvas.IsCachingImage(src_content_id));
 
   // Modify the canvas to trigger OnFlushForImage
-  src_provider->GetCanvasDeprecated().clear(SkColors::kWhite);
+  src_provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kWhite);
   // So that all the cached draws are executed
-  src_provider->ProduceCanvasResource();
+  src_provider->ProduceCanvasResource(FlushReason::kOther);
 
   // The paint canvas may have moved
   MemoryManagedPaintCanvas& new_dst_canvas =
-      dst_provider->GetCanvasDeprecated();
+      dst_provider->GetCanvasForCanvas2DForTesting();
 
   // TODO(aaronhk): The resource on the src_provider should be the same before
   // and after the draw. Something about the program flow within
