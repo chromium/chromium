@@ -24,6 +24,7 @@ import random
 import re
 import sys
 
+import builder_utils
 import builders
 import cipd
 import recipe
@@ -84,8 +85,9 @@ def add_common_args(parser):
                       'in those files.')
   parser.add_argument('--builder',
                       '-b',
-                      required=True,
-                      help='Name of the builder we want to replicate.')
+                      help='Name of the builder we want to replicate. '
+                      'If omitted, will attempt to infer it from the gn '
+                      'args in the build directory or host machine dimensions.')
   parser.add_argument(
       '--project',
       '-p',
@@ -272,14 +274,32 @@ def _main_impl():
   if not recipe.check_luci_context_auth():
     return 1
 
+  builder_name = args.builder
+  bucket_name = args.bucket
+  if not builder_name:
+    if args.build_dir:
+      bucket_name, builder_name = builder_utils.guess_builder(args.build_dir)
+      if bucket_name and builder_name:
+        logging.info('Inferred builder: %s (bucket: %s)', builder_name,
+                     bucket_name)
+      else:
+        logging.error(
+            'Could not infer builder from GN args in %s. '
+            'Please specify a builder via -b/--builder.', args.build_dir)
+        return 1
+    else:
+      logging.error('Please specify a builder via -b/--builder'
+                    ' or provide a build dir via -o/--build-dir to infer one.')
+      return 1
+
   builder_props, project = builders.find_builder_props(
-      args.builder, bucket_name=args.bucket, project_name=args.project)
+      builder_name, bucket_name=bucket_name, project_name=args.project)
   if not builder_props:
     return 1
 
   build_dir = args.build_dir
   if not args.build_dir:
-    build_dir = _SRC_DIR.joinpath('out', 'UTR' + '_'.join(args.builder.split()))
+    build_dir = _SRC_DIR.joinpath('out', 'UTR' + '_'.join(builder_name.split()))
     logging.info('[cyan]Using the following build dir:[/]')
     logging.getLogger('basic_logger').info(build_dir)
     logging.info('')
@@ -296,8 +316,8 @@ def _main_impl():
         recipes_path,
         builder_props,
         project,
-        args.bucket,
-        args.builder,
+        bucket_name,
+        builder_name,
         args.tests,
         skip_compile,
         skip_test,
