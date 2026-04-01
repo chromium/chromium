@@ -212,8 +212,17 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                                     kKeygenAlgorithmRsa, kKeygenAlgorithmRsa);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
-                       RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa) {
+// TODO(crbug.com/462962569): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa \
+  DISABLED_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa
+#else
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa \
+  RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebRtcBrowserTest,
+    MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerEcdsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(
       WebRtcTestBase::kUseDefaultVideoCodec, false /* prefer_hw_video_codec */,
       kKeygenAlgorithmEcdsa, kKeygenAlgorithmEcdsa);
@@ -246,8 +255,17 @@ IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
                                     kKeygenAlgorithmRsa, kKeygenAlgorithmEcdsa);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcBrowserTest,
-                       RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa) {
+// TODO(crbug.com/462962569): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa \
+  DISABLED_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa
+#else
+#define MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa \
+  RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebRtcBrowserTest,
+    MAYBE_RunsAudioVideoWebRTCCallInTwoTabsOfferEcdsaAnswerRsa) {
   RunsAudioVideoWebRTCCallInTwoTabs(WebRtcTestBase::kUseDefaultVideoCodec,
                                     false /* prefer_hw_video_codec */,
                                     kKeygenAlgorithmEcdsa, kKeygenAlgorithmRsa);
