@@ -98,6 +98,15 @@ import org.chromium.ui.modelutil.PropertyModel;
         } else if (AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION == propertyKey) {
             view.mLoadingViewContainer.setContentDescription(
                     model.get(AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION));
+        } else if (AutofillSaveCardBottomSheetProperties.GOOGLE_PAY_PILL_LOGO == propertyKey) {
+            @DrawableRes
+            int iconID = model.get(AutofillSaveCardBottomSheetProperties.GOOGLE_PAY_PILL_LOGO);
+            if (iconID == 0) {
+                view.mGooglePayPillLogo.setVisibility(View.GONE);
+                return;
+            }
+            view.mGooglePayPillLogo.setImageResource(iconID);
+            view.mGooglePayPillLogo.setVisibility(View.VISIBLE);
         }
     }
 

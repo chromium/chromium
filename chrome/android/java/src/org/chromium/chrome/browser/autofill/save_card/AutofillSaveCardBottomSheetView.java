@@ -64,6 +64,9 @@ import org.chromium.ui.widget.LoadingView;
     /** The view shown while the card is being uploaded. */
     final LoadingView mLoadingView;
 
+    /** The Google Pay pill logo. */
+    final ImageView mGooglePayPillLogo;
+
     AutofillSaveCardBottomSheetView(Context context) {
         mContentView =
                 (ViewGroup)
@@ -84,5 +87,7 @@ import org.chromium.ui.widget.LoadingView;
         mLoadingViewContainer =
                 mContentView.findViewById(R.id.autofill_save_card_loading_view_container);
         mLoadingView = mContentView.findViewById(R.id.autofill_save_card_loading_view);
+        mGooglePayPillLogo =
+                mContentView.findViewById(R.id.autofill_save_card_google_pay_pill_logo);
     }
 }

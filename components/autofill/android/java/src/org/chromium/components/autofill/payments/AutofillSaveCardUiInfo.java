@@ -42,6 +42,7 @@ public class AutofillSaveCardUiInfo {
     private final String mDescriptionText;
     private final String mLoadingDescription;
     private final boolean mIsChromeBrandingEnabled;
+    private final @DrawableRes int mGooglePayPillLogo;
 
     public boolean isForUpload() {
         return mIsForUpload;
@@ -99,6 +100,11 @@ public class AutofillSaveCardUiInfo {
         return mIsChromeBrandingEnabled;
     }
 
+    @DrawableRes
+    public int getGooglePayPillLogoId() {
+        return mGooglePayPillLogo;
+    }
+
     // LINT.IfChange
     /**
      * Construct the {@link AutofillSaveCardUiInfo} given all the members. This constructor is used
@@ -127,6 +133,8 @@ public class AutofillSaveCardUiInfo {
      * @param loadingDescription An accessibility strings for the loading view. Must not be {@code
      *     null}.
      * @param isChromeBrandingEnabled Whether Google Chrome branding is enabled for the build.
+     * @param googlePayPillLogo The Google Pay pill icon id displayed right-most of the card chip on
+     *     the bottom sheet. This value is {@code 0} for local credit card save.
      */
     @CalledByNative
     @VisibleForTesting
@@ -144,7 +152,8 @@ public class AutofillSaveCardUiInfo {
             String cancelText,
             String descriptionText,
             String loadingDescription,
-            boolean isChromeBrandingEnabled) {
+            boolean isChromeBrandingEnabled,
+            @DrawableRes int googlePayPillLogo) {
         mIsForUpload = isForUpload;
         mLogoIcon = logoIcon;
         mLogoIconDescription = logoIconDescription;
@@ -165,6 +174,7 @@ public class AutofillSaveCardUiInfo {
         mLoadingDescription =
                 Objects.requireNonNull(loadingDescription, "Loading description can't be null");
         mIsChromeBrandingEnabled = isChromeBrandingEnabled;
+        mGooglePayPillLogo = googlePayPillLogo;
     }
 
     // LINT.ThenChange(//chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.cc)
@@ -184,6 +194,7 @@ public class AutofillSaveCardUiInfo {
         private @Nullable String mDescriptionText;
         private @Nullable String mLoadingDescription;
         private boolean mIsChromeBrandingEnabled;
+        @DrawableRes private int mGooglePayPillLogo;
 
         public Builder withIsForUpload(boolean isForUpload) {
             mIsForUpload = isForUpload;
@@ -245,6 +256,11 @@ public class AutofillSaveCardUiInfo {
             return this;
         }
 
+        public Builder withGooglePayPillLogo(@DrawableRes int googlePayPillLogo) {
+            mGooglePayPillLogo = googlePayPillLogo;
+            return this;
+        }
+
         /** Create the {@link AutofillSaveCardUiInfo} object. */
         public AutofillSaveCardUiInfo build() {
             return new AutofillSaveCardUiInfo(
@@ -261,7 +277,8 @@ public class AutofillSaveCardUiInfo {
                     assumeNonNull(mCancelText),
                     assumeNonNull(mDescriptionText),
                     assumeNonNull(mLoadingDescription),
-                    mIsChromeBrandingEnabled);
+                    mIsChromeBrandingEnabled,
+                    mGooglePayPillLogo);
         }
     }
 }

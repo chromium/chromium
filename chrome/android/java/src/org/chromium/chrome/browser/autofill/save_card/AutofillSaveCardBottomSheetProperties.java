@@ -84,6 +84,9 @@ import java.util.function.Consumer;
     static final ReadableObjectPropertyKey<String> LOADING_DESCRIPTION =
             new ReadableObjectPropertyKey<>();
 
+    /** The Google Pay pill logo. */
+    static final ReadableIntPropertyKey GOOGLE_PAY_PILL_LOGO = new ReadableIntPropertyKey();
+
     static final PropertyKey[] ALL_KEYS = {
         TITLE,
         DESCRIPTION,
@@ -97,7 +100,8 @@ import java.util.function.Consumer;
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
         SHOW_LOADING_STATE,
-        LOADING_DESCRIPTION
+        LOADING_DESCRIPTION,
+        GOOGLE_PAY_PILL_LOGO,
     };
 
     /** Do not instantiate. */

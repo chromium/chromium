@@ -119,6 +119,11 @@ public class AutofillSaveCardBottomSheetCoordinator {
                         .with(
                                 AutofillSaveCardBottomSheetProperties.LOADING_DESCRIPTION,
                                 uiInfo.getLoadingDescription())
+                        .with(
+                                AutofillSaveCardBottomSheetProperties.GOOGLE_PAY_PILL_LOGO,
+                                uiInfo.isForUpload() && uiInfo.isChromeBrandingEnabled()
+                                        ? uiInfo.getGooglePayPillLogoId()
+                                        : 0)
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, mView, AutofillSaveCardBottomSheetViewBinder::bind);

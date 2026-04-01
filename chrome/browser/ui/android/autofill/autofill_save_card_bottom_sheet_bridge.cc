@@ -47,7 +47,8 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
       base::android::ConvertUTF16ToJavaString(env, ui_info.cancel_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.description_text),
       base::android::ConvertUTF16ToJavaString(env, ui_info.loading_description),
-      ui_info.is_chrome_branding_enabled);
+      ui_info.is_chrome_branding_enabled,
+      ResourceMapper::MapToJavaDrawableId(ui_info.google_pay_pill_logo_id));
   // LINT.ThenChange(//components/autofill/android/java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java)
 }
 

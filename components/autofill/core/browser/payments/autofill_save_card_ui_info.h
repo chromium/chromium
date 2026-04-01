@@ -51,6 +51,8 @@ struct AutofillSaveCardUiInfo {
   bool is_chrome_branding_enabled;
   // True if this UI info is for a bottom sheet on IOS.
   bool is_for_bottom_sheet = false;
+  // The resource ID for the Google Pay pill icon.
+  int google_pay_pill_logo_id;
 
   AutofillSaveCardUiInfo();
   ~AutofillSaveCardUiInfo();

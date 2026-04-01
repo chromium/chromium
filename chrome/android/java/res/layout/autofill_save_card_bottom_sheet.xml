@@ -95,6 +95,14 @@ found in the LICENSE file.
             android:layout_marginStart="@dimen/autofill_bottom_sheet_credit_card_spacing"
             android:layout_toEndOf="@id/autofill_save_card_credit_card_icon"
             tools:text="08 / 29" />
+        <ImageView
+            android:id="@+id/autofill_save_card_google_pay_pill_logo"
+            android:layout_width="@dimen/autofill_bottom_sheet_google_pay_pill_width"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:adjustViewBounds="true"
+            android:importantForAccessibility="no" />
       </RelativeLayout>
 
       <org.chromium.ui.widget.TextViewWithClickableSpans
