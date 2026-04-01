@@ -222,7 +222,10 @@ class DlpContentManagerAsh : public DlpContentManager,
   // Map to save all windows of a receiver with pending restrictions.
   std::map<mojo::ReceiverId, std::set<std::string>> pending_restrictions_owner_;
 
-  base::ScopedObservation<::wm::ActivationClient, wm::ActivationChangeObserver>
+  // TODO(crbug.com/498093686): remove when the DlpContentManagerAsh is no
+  // longer outliving the ActivationClient it observes.
+  base::ScopedObservation<::wm::ActivationClient,
+                          wm::ActivationChangeObserver>::LeakedDanglingUntriaged
       window_activation_observation_{this};
 };
 
