@@ -338,10 +338,12 @@ enum class AccessPoint : int {
   kSearchAIModeBubble = 98,
   // Sign in from IOS app bar.
   kIosAppBar = 99,
+  // Sign in from the Page Action Menu.
+  kIosPageActionMenu = 100,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kIosAppBar,  // This must be last.
+  kMaxValue = kIosPageActionMenu,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

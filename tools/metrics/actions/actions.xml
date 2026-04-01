@@ -46354,6 +46354,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromPageActionMenu">
+  <owner>kanouche@google.com</owner>
+  <owner>bling-alchemy-eng@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kIosPageActionMenu.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromPasswordBubble">
   <owner>gogerald@chromium.org</owner>
   <description>

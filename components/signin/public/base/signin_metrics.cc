@@ -143,6 +143,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kAvatarPillExpandPromo:
     case AccessPoint::kSearchAIModeBubble:
     case AccessPoint::kIosAppBar:
+    case AccessPoint::kIosPageActionMenu:
       return access_point;
   }
 
@@ -729,6 +730,10 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromIOSAppBar"));
       break;
+    case AccessPoint::kIosPageActionMenu:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromPageActionMenu"));
+      break;
   }
 }
 
@@ -907,6 +912,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAshUserSessionManager:
     case AccessPoint::kAshChromeSessionManager:
     case AccessPoint::kAvatarPillExpandPromo:
+    case AccessPoint::kIosPageActionMenu:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

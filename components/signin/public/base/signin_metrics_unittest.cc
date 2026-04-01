@@ -50,6 +50,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kUserManagerWithPrefilledEmail,
     AccessPoint::kEnterpriseDialogAfterSigninInterception,
     AccessPoint::kCredentialExchangeImport,
+    AccessPoint::kIosPageActionMenu,
 };
 
 const AccessPoint kAccessPointsThatSupportImpression[] = {
@@ -240,6 +241,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SearchAIModeBubble";
       case AccessPoint::kIosAppBar:
         return "IOSAppBar";
+      case AccessPoint::kIosPageActionMenu:
+        return "PageActionMenu";
     }
   }
 };
