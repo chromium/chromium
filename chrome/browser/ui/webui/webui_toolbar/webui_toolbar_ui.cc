@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -157,6 +158,13 @@ void WebUIToolbarUI::OnNavigationControlsStateChanged(
 
 void WebUIToolbarUI::Init(DependencyProvider* dependency_provider) {
   CHECK(dependency_provider);
+
+  if (!dependency_provider->GetCommandUpdater()) {
+    // If the command updater is null, the browser is likely shutting down,
+    // or tearing down this specific browser window.
+    // We cannot properly initialize the WebUI Toolbar without it.
+    return;
+  }
 
   InitBrowserControlsService(*dependency_provider);
   InitToolbarUIService(*dependency_provider);

@@ -168,6 +168,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
                        AddAllSelectedTabsToAnotherWindow) {
   Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  new_browser->window()->Show();
 
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
                    /*foreground=*/true);
@@ -237,6 +238,7 @@ IN_PROC_BROWSER_TEST_F(ExistingTabGroupSubMenuModelTest,
                        ShouldShowExistingTabGroups) {
   Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, browser()->profile(), true));
+  new_browser->window()->Show();
 
   chrome::AddTabAt(browser(), GURL("chrome://newtab"), /*index=*/-1,
                    /*foreground=*/true);

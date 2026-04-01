@@ -112,6 +112,8 @@ class ExistingWindowSubMenuModelTest : public InProcessBrowserTest {
   // instead convert this to an interactive browser test and directly activate
   // the browser's backing ui::BaseWindow.
   void ActivateBrowser(BrowserWindowInterface* browser) {
+    browser->GetBrowserForMigrationOnly()->window()->ShowInactive();
+
     // We must fake deactivation the previously activated browser first.
     GetLastActiveBrowserWindowInterfaceWithAnyProfile()
         ->GetBrowserForMigrationOnly()
