@@ -4,7 +4,7 @@
 use rust_gtest_interop::prelude::*;
 
 chromium::import! {
-    "//mojo/public/rust/system:ffi_bindings" as mojo_ffi;
+    "//mojo/public/rust/c_mojo_api" as mojo_ffi;
     "//mojo/public/rust/system/test_util";
 }
 

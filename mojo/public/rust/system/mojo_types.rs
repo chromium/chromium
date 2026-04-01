@@ -6,7 +6,7 @@
 //! from multiple other modules.
 
 chromium::import! {
-  "//mojo/public/rust/system:ffi_bindings" as mojo_ffi;
+  "//mojo/public/rust/c_mojo_api" as mojo_ffi;
 }
 
 pub use mojo_ffi::{MojoError, MojoResult, UntypedHandle};

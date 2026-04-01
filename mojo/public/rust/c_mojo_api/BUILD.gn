@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("c_mojo_api") {
+  crate_root = "lib.rs"
+  sources = [
+    "data_pipe.rs",
+    "functions.rs",
+    "handles.rs",
+    "internal_options.rs",
+    "lib.rs",
+    "message.rs",
+    "message_pipe.rs",
+    "result.rs",
+    "trap.rs",
+  ]
+  deps = [
+    ":mojo_c_system_bindings",
+    "//third_party/rust/bitflags/v2:lib",
+    "//third_party/rust/static_assertions/v1:lib",
+    "//third_party/rust/strum/v0_28:lib",
+  ]
+  allow_unsafe = true
+}
+
+rust_bindgen("mojo_c_system_bindings") {
+  header = "//mojo/public/c/system/thunks.h"
+  deps = [ "//mojo/public/c/system" ]
+  visibility = [ ":*" ]
+}
+
+rust_static_library("c_mojo_api_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "test/pure_c_api_unittests.rs"
+  sources = [ "test/pure_c_api_unittests.rs" ]
+
+  allow_unsafe = true
+  deps = [
+    ":c_mojo_api",
+    "//mojo/public/rust/system/test_util",
+    "//testing/rust_gtest_interop",
+  ]
+}

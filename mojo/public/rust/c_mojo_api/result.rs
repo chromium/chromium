@@ -10,7 +10,7 @@
 //!   results.
 
 chromium::import! {
-  "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
+  "//mojo/public/rust/c_mojo_api:mojo_c_system_bindings" as raw_ffi;
 }
 
 use raw_ffi::MojoResult as MojoResultCode;

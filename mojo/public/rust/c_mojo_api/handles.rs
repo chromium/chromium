@@ -34,7 +34,7 @@
 //! possible to close a handle which still exists elsewhere in the program.
 
 chromium::import! {
-  "//mojo/public/rust/system:mojo_c_system_bindings" as raw_ffi;
+  "//mojo/public/rust/c_mojo_api:mojo_c_system_bindings" as raw_ffi;
 }
 
 use crate::result::*;

@@ -8,7 +8,7 @@ FOR_RELEASE: Fill this out more!
 # Layers
 FOR_RELEASE: Actually explain what this means
 Unlike C++, we've got three layers on top of the C bindings:
-1. (mostly) Safe, idiomatic, but still low-level FFI bindings (system/ffi)
+1. (mostly) Safe, idiomatic, but still low-level FFI bindings (c_mojo_api)
 2. Ergonomic, mid-level bindings (system)
 3. High-level, often Mojom-specific code (bindings)
 

@@ -10,6 +10,7 @@ group("all") {
   deps = [
     ":tests",
     "bindings",
+    "c_mojo_api",
     "mojom_value_parser",
     "system",
   ]
@@ -21,8 +22,8 @@ group("tests") {
 
   deps = [
     "bindings/test:bindings_unittests",
+    "c_mojo_api:c_mojo_api_unittests",
     "mojom_value_parser:mojom_value_parser_unittests",
-    "system:ffi_unittests",
     "system:system_bindings_unittests",
     "tests:testing_mojom_rust",
   ]
