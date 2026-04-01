@@ -5,6 +5,7 @@
 #ifndef CHROME_TEST_BASE_CHROME_TEST_SUITE_H_
 #define CHROME_TEST_BASE_CHROME_TEST_SUITE_H_
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "content/public/test/content_test_suite_base.h"
@@ -33,6 +34,8 @@ class ChromeTestSuite : public content::ContentTestSuiteBase {
 
   // Alternative path to browser binaries.
   base::FilePath browser_dir_;
+
+  std::optional<base::AutoReset<bool>> ignore_non_official_keys_reset_;
 
 #if BUILDFLAG(IS_ANDROID)
   // InstanceID can make network requests which will time out and make tests

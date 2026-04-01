@@ -479,10 +479,12 @@ std::string MutableProfileOAuth2TokenServiceDelegate::GetRefreshTokenForTest(
   return GetRefreshToken(account_id);
 }
 
-void MutableProfileOAuth2TokenServiceDelegate::
-    SetIgnoreNonOfficialApiKeysForTesting() {
+base::AutoReset<bool>
+MutableProfileOAuth2TokenServiceDelegate::SetIgnoreNonOfficialApiKeysForTesting(
+    bool ignore) {
   CHECK_IS_TEST();
-  g_ignore_non_official_api_keys_for_testing = true;
+  return base::AutoReset<bool>(&g_ignore_non_official_api_keys_for_testing,
+                               ignore);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(

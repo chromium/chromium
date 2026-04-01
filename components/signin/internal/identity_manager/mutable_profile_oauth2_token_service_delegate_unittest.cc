@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -400,6 +401,9 @@ class MutableProfileOAuth2TokenServiceDelegateTest
       std::make_unique<base::RunLoop>()};
   std::string source_for_refresh_token_available_;
   std::string source_for_refresh_token_revoked_;
+  base::AutoReset<bool> ignore_non_official_api_keys_override_{
+      MutableProfileOAuth2TokenServiceDelegate::
+          SetIgnoreNonOfficialApiKeysForTesting(true)};
 };
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
@@ -1209,6 +1213,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GetAccounts) {
 // Tests the access token fetcher choice without any test overrides. The choice
 // depends on whether the build uses official Google Chrome API keys or not.
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, AccessTokenFetchSuccess) {
+  // Disable the test override at the test suite level.
+  base::AutoReset<bool> scoped_override =
+      MutableProfileOAuth2TokenServiceDelegate::
+          SetIgnoreNonOfficialApiKeysForTesting(false);
   InitializeOAuth2ServiceDelegate();
 
   const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
@@ -1238,57 +1246,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, AccessTokenFetchSuccess) {
   EXPECT_EQ(0, access_token_failure_count_);
 }
 
-class MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest
-    : public MutableProfileOAuth2TokenServiceDelegateTest,
-      public testing::WithParamInterface<bool> {
- public:
-  MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest() {
-    // Use `GaiaConfig` to force the choice of the access token endpoint.
-    auto config_dict = base::DictValue().SetByDottedPath(
-        "flags.enable_issue_token_fetch", ShouldUseIssueToken());
-    scoped_config_override_ = GaiaConfig::SetScopedConfigForTesting(
-        std::make_unique<GaiaConfig>(std::move(config_dict)));
-  }
-
-  void AddSuccessfulAccessTokenResponse() {
-    if (ShouldUseIssueToken()) {
-      AddSuccessfulIssueTokenResponse();
-    } else {
-      AddSuccessfulOAuthTokenResponse();
-    }
-  }
-
-  bool ShouldUseIssueToken() { return GetParam(); }
-
- private:
-  base::ScopedClosureRunner scoped_config_override_;
-};
-
-TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-       FetchSuccess) {
-  InitializeOAuth2ServiceDelegate();
-  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
-      GaiaId("account_id"), "test@google.com");
-  oauth2_service_delegate_->UpdateCredentials(
-      account_id, "refresh_token",
-      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-
-  AddSuccessfulAccessTokenResponse();
-
-  EXPECT_EQ(0, access_token_success_count_);
-  EXPECT_EQ(0, access_token_failure_count_);
-  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
-      oauth2_service_delegate_->CreateAccessTokenFetcher(
-          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
-          kNoBindingChallenge);
-  fetcher->Start("foo", "bar", {"scope"});
-  WaitForGetTokenCompleted();
-  EXPECT_EQ(1, access_token_success_count_);
-  EXPECT_EQ(0, access_token_failure_count_);
-}
-
-TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-       FetchPersistentError) {
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchPersistentError) {
   InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1303,7 +1261,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called.
-  AddSuccessfulAccessTokenResponse();
+  AddSuccessfulIssueTokenResponse();
 
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);
@@ -1319,8 +1277,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
   EXPECT_EQ(1, access_token_failure_count_);
 }
 
-TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-       RetryBackoff) {
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
   InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1334,7 +1291,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called just yet.
-  AddSuccessfulAccessTokenResponse();
+  AddSuccessfulIssueTokenResponse();
 
   // Transient error will repeat until backoff period expires.
   EXPECT_EQ(0, access_token_success_count_);
@@ -1366,8 +1323,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
   EXPECT_EQ(1, access_token_failure_count_);
 }
 
-TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-       ResetBackoff) {
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
   InitializeOAuth2ServiceDelegate();
   const CoreAccountId account_id =
       CoreAccountId::FromGaiaId(GaiaId("account_id"));
@@ -1381,7 +1337,7 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called just yet.
-  AddSuccessfulAccessTokenResponse();
+  AddSuccessfulIssueTokenResponse();
 
   // Transient error will repeat until backoff period expires.
   EXPECT_EQ(0, access_token_success_count_);
@@ -1409,14 +1365,6 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
   EXPECT_EQ(1, access_token_success_count_);
   EXPECT_EQ(1, access_token_failure_count_);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-    testing::Bool(),
-    [](const auto& info) { return info.param ? "IssueToken" : "GetToken"; });
-
-
 
 // Regression test for https://crbug.com/823707
 // Checks that OnAuthErrorChanged() is called during UpdateCredentials(), and
@@ -2249,9 +2197,6 @@ TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
 
 TEST_P(MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest,
        FetchWithUnboundToken) {
-  MutableProfileOAuth2TokenServiceDelegate::
-      SetIgnoreNonOfficialApiKeysForTesting();
-
   // Initialize the delegate without the token binding support.
   InitializeOAuth2ServiceDelegate();
 

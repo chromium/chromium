@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "components/signin/public/base/consent_level.h"
@@ -398,7 +399,8 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
 
 // Allows testing some features gated by the official Chrome API keys and OAuth
 // client IDs in builds lacking those keys.
-void SetIgnoreNonOfficialApiKeys();
+[[nodiscard]] std::optional<base::AutoReset<bool>>
+SetIgnoreNonOfficialApiKeysForTesting();
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_IDENTITY_TEST_UTILS_H_

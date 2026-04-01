@@ -116,7 +116,8 @@ void ChromeTestSuite::Initialize() {
   AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting();
   // Some features in //components/signin only work in builds with official
   // Chrome API keys. Ignore this requirement to get a better test coverage.
-  signin::SetIgnoreNonOfficialApiKeys();
+  ignore_non_official_keys_reset_ =
+      signin::SetIgnoreNonOfficialApiKeysForTesting();
 
 #if BUILDFLAG(IS_MAC)
   // Look in the framework bundle for resources.

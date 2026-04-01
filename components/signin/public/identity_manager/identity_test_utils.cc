@@ -734,10 +734,12 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
 }
 #endif
 
-void SetIgnoreNonOfficialApiKeys() {
+std::optional<base::AutoReset<bool>> SetIgnoreNonOfficialApiKeysForTesting() {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MutableProfileOAuth2TokenServiceDelegate::
+  return MutableProfileOAuth2TokenServiceDelegate::
       SetIgnoreNonOfficialApiKeysForTesting();
+#else
+  return std::nullopt;
 #endif
 }
 

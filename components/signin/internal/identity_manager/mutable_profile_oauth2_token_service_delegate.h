@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -155,7 +156,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   // The use of the IssueToken endpoint for fetching access tokens is gated by
   // the presence of official Google Chrome API keys.
   // This function removes the official API keys check for testing.
-  static void SetIgnoreNonOfficialApiKeysForTesting();
+  [[nodiscard]] static base::AutoReset<bool>
+  SetIgnoreNonOfficialApiKeysForTesting(bool ignore = true);
 
  private:
   class RevokeServerRefreshToken;

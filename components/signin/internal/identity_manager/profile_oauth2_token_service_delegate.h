@@ -338,9 +338,8 @@ class ProfileOAuth2TokenServiceDelegate {
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
                            FireRefreshTokenRevoked);
-  FRIEND_TEST_ALL_PREFIXES(
-      MutableProfileOAuth2TokenServiceDelegateAccessTokenFetchTest,
-      RetryBackoff);
+  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
+                           RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateChromeOSTest,
                            BackOffIsTriggerredForTransientErrors);
   FRIEND_TEST_ALL_PREFIXES(ProfileOAuth2TokenServiceDelegateTest,
