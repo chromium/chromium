@@ -14,20 +14,19 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/side_panel_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/shadow_frame_view.h"
 #include "chrome/browser/ui/views/frame/themed_background.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/proposed_layout.h"
 #include "ui/views/view.h"
-#include "ui/views/view_shadow.h"
 
 // Implements the opaque corners that overlay the main area of the browser and
 // sync with the shadow box.
@@ -147,96 +146,6 @@ using CornerView = ShadowOverlayView::CornerView;
 BEGIN_METADATA(CornerView)
 END_METADATA
 
-// Implements the shadow box that surrounds the main area of the browser.
-class ShadowOverlayView::ShadowBox : public views::View {
-  METADATA_HEADER(ShadowBox, views::View)
-
- public:
-  static constexpr int kShadowElevation = 4;
-
-  ShadowBox() { SetCanProcessEventsWithinSubtree(false); }
-  ~ShadowBox() override = default;
-
-  void SetShadowVisible(bool visible) {
-    // No-op if visible set is the same as current state.
-    if ((visible && layer()) || (!visible && !layer())) {
-      return;
-    }
-
-    if (visible) {
-      const int rounded_corner_radius =
-          GetLayoutProvider()->GetCornerRadiusMetric(views::Emphasis::kHigh);
-
-      view_shadow_ =
-          std::make_unique<views::ViewShadow>(this, kShadowElevation);
-      view_shadow_->SetRoundedCornerRadius(rounded_corner_radius);
-      UpdateShadowColors();
-    } else {
-      view_shadow_.reset();
-      DestroyLayer();
-      was_dark_ = std::nullopt;
-    }
-  }
-
-  void SetShadowOpacity(double opacity) {
-    if (!view_shadow_) {
-      return;
-    }
-
-    view_shadow_->shadow()->shadow_layer()->SetOpacity(opacity);
-  }
-
-  // views::View:
-  void OnThemeChanged() override {
-    views::View::OnThemeChanged();
-    if (view_shadow_) {
-      UpdateShadowColors();
-    }
-  }
-
- private:
-  void UpdateShadowColors() {
-    // These are the UX targets:
-    // light: 0 0 4px 0 rgba(0, 0, 0, 0.10),
-    //        0 2px 6px 0 rgba(0, 0, 0, 0.17)
-    // dark:  0 0 4px 0 rgba(0, 0, 0, 0.20),
-    //        0 2px 6px 0 rgba(0, 0, 0, 0.40)
-
-    // These are the defaults for the MD shadow at 4 height.
-    // box-shadow: 0 0 4px rgba(0, 0, 0, .12),
-    //             0 4px 8px rgba(0, 0, 0, .24)
-
-    // This is an attempt to approximate the target values with only color.
-    static constexpr std::array<std::pair<SkColor, SkColor>, 2> kShadowColors{
-        std::make_pair(SkColorSetARGB(26, 0, 0, 0),
-                       SkColorSetARGB(43, 0, 0, 0)),
-        std::make_pair(SkColorSetARGB(51, 0, 0, 0),
-                       SkColorSetARGB(102, 0, 0, 0))};
-
-    const bool is_dark =
-        color_utils::IsDark(GetColorProvider()->GetColor(kColorToolbar));
-    if (was_dark_ == is_dark) {
-      return;
-    }
-    was_dark_ = is_dark;
-    ui::Shadow::ElevationToColorsMap map;
-    map.emplace(kShadowElevation, kShadowColors[is_dark ? 1 : 0]);
-    view_shadow_->shadow()->SetElevationToColorsMap(map);
-    SchedulePaint();
-  }
-
-  // The shadow and elevation around main_container to visually separate the
-  // container from MainRegionBackground when the toolbar_height_side_panel is
-  // visible.
-  std::unique_ptr<views::ViewShadow> view_shadow_;
-  std::optional<bool> was_dark_;
-};
-
-using ShadowBox = ShadowOverlayView::ShadowBox;
-
-BEGIN_METADATA(ShadowBox)
-END_METADATA
-
 ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view)
     : browser_view_(browser_view) {
   SetCanProcessEventsWithinSubtree(false);
@@ -248,7 +157,27 @@ ShadowOverlayView::ShadowOverlayView(BrowserView& browser_view)
       CornerView::Corner::kBottomLeading, browser_view));
   bottom_trailing_corner_ = AddChildView(std::make_unique<CornerView>(
       CornerView::Corner::kBottomTrailing, browser_view));
-  shadow_box_ = AddChildView(std::make_unique<ShadowBox>());
+
+  // These are the UX targets:
+  // light: 0 0 4px 0 rgba(0, 0, 0, 0.10),
+  //        0 2px 6px 0 rgba(0, 0, 0, 0.17)
+  // dark:  0 0 4px 0 rgba(0, 0, 0, 0.20),
+  //        0 2px 6px 0 rgba(0, 0, 0, 0.40)
+  //
+  // These are the defaults for the MD shadow at 4 height. The directionality of
+  // the shadow cannot be changed, only the color.
+  // box-shadow: 0 0 4px rgba(0, 0, 0, .12),
+  //             0 4px 8px rgba(0, 0, 0, .24)
+  //
+  // This is an attempt to approximate the target values with only color.
+  static constexpr ShadowFrameView::ShadowAlpha kShadowAlpha{
+      .light_key = 0.10,
+      .light_ambient = 0.17,
+      .dark_key = 0.20,
+      .dark_ambient = 0.40};
+
+  shadow_box_ =
+      AddChildView(std::make_unique<ShadowFrameView>(4, kShadowAlpha));
 
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
@@ -277,6 +206,11 @@ void ShadowOverlayView::VisibilityChanged(View* starting_from, bool visible) {
     // panel should not animate but is open such as swapping between tabs.
     shadow_box_->SetShadowOpacity(GetShadowValue());
   }
+}
+
+void ShadowOverlayView::AddedToWidget() {
+  shadow_box_->SetShadowCornerRadius(
+      GetLayoutProvider()->GetCornerRadiusMetric(views::Emphasis::kHigh));
 }
 
 views::ProposedLayout ShadowOverlayView::CalculateProposedLayout(

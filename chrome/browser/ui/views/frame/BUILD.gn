@@ -4,6 +4,21 @@
 
 assert(!is_android)
 
+source_set("shadow") {
+  public = [ "shadow_frame_view.h" ]
+
+  sources = [ "shadow_frame_view.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui/animation",
+    "//chrome/browser/ui/color:color_headers",
+    "//ui/compositor_extra",
+    "//ui/gfx:color_utils",
+    "//ui/views",
+  ]
+}
+
 source_set("immersive_mode_controller") {
   sources = [ "immersive_mode_controller.h" ]
 

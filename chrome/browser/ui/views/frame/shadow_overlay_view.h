@@ -14,6 +14,7 @@
 #include "ui/views/view.h"
 
 class BrowserView;
+class ShadowFrameView;
 
 // This view is responsible for framing the primary elements of the UI when
 // toolbar height side panel is showing, providing a nice drop shadow.
@@ -24,12 +25,12 @@ class ShadowOverlayView : public views::View, public views::LayoutDelegate {
   explicit ShadowOverlayView(BrowserView& browser_view);
   ~ShadowOverlayView() override;
 
-  class ShadowBox;
   class CornerView;
 
  private:
   // views::View:
   void VisibilityChanged(View* starting_from, bool visible) override;
+  void AddedToWidget() override;
 
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -41,7 +42,7 @@ class ShadowOverlayView : public views::View, public views::LayoutDelegate {
   double GetShadowValue() const;
 
   raw_ref<BrowserView> browser_view_;
-  raw_ptr<ShadowBox> shadow_box_ = nullptr;
+  raw_ptr<ShadowFrameView> shadow_box_ = nullptr;
   raw_ptr<CornerView> top_leading_corner_ = nullptr;
   raw_ptr<CornerView> top_trailing_corner_ = nullptr;
   raw_ptr<CornerView> bottom_leading_corner_ = nullptr;
