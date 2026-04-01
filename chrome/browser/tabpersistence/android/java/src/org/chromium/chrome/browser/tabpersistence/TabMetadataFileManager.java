@@ -232,6 +232,19 @@ public class TabMetadataFileManager {
     }
 
     /**
+     * Deletes the given metadata file with thread safety.
+     *
+     * @param file File to be deleted.
+     */
+    public static void deleteMetadataFile(File file) {
+        if (!isMetadataFile(file.getName())) return;
+
+        synchronized (SAVE_LIST_LOCK) {
+            new AtomicFile(file).delete();
+        }
+    }
+
+    /**
      * @param uniqueTag The tag that uniquely identifies this state file. Typically this is an index
      *     or ID.
      * @return The name of the state file.
