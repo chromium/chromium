@@ -184,11 +184,18 @@ void HomeButton::UpdateHomePage(
   const std::vector<ui::ClipboardUrlInfo> url_infos =
       event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   if (!url_infos.empty() && prefs_) {
+    GURL new_homepage = url_infos.front().url;
+    CHECK(new_homepage.is_valid());
+
+    // Disallow javascript: URLs to prevent self-XSS.
+    if (new_homepage.SchemeIs(url::kJavaScriptScheme)) {
+      return;
+    }
+
     GURL old_homepage(prefs_->GetString(prefs::kHomePage));
     bool old_is_ntp = prefs_->GetBoolean(prefs::kHomePageIsNewTabPage);
 
-    CHECK(url_infos.front().url.is_valid());
-    prefs_->SetString(prefs::kHomePage, url_infos.front().url.spec());
+    prefs_->SetString(prefs::kHomePage, new_homepage.spec());
     prefs_->SetBoolean(prefs::kHomePageIsNewTabPage, false);
 
     coordinator_.Show(old_homepage, old_is_ntp);
