@@ -88,6 +88,7 @@ bool HTMLUserMediaElement::IsLegacyMode() const {
   return FastHasAttribute(html_names::kTypeAttr);
 }
 void HTMLUserMediaElement::OnConstraintsSet(bool has_video, bool has_audio) {
+  has_constraints_ = true;
   // If permission descriptors are already set, we do not need to update them.
   // This would be the case for legacy mode when the 'type' attribute is set.
   // We do not want to update the permission descriptors in this case as type
@@ -152,17 +153,21 @@ void HTMLUserMediaElement::OnPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   HTMLCapabilityElementBase::OnPermissionStatusChange(permission_name, status);
 
-  if (PermissionsGranted() && HasPendingPermissionRequest()) {
+  if (PermissionsGranted() && HasPendingPermissionRequest() &&
+      has_constraints_) {
     StartMediaStreamRequest();
   }
 }
 
 void HTMLUserMediaElement::DefaultEventHandler(Event& event) {
   HTMLCapabilityElementBase::DefaultEventHandler(event);
-  // TODO: b/494481589: Revise legacy behaviour of <usermedia> element
   // HTMLCapabilityElementBase::HandleActivation checks that the event is
   // trusted before proceeding with the permission request.
-  if (event.type() == event_type_names::kDOMActivate && PermissionsGranted()) {
+  // If the element only has type attribute and no constraints, we do not want
+  // to start a getUserMedia request, the usermedia will keep functioning in the
+  // legacy mode.
+  if (event.type() == event_type_names::kDOMActivate && PermissionsGranted() &&
+      has_constraints_) {
     StartMediaStreamRequest();
   }
 }
@@ -182,6 +187,12 @@ Vector<PermissionDescriptorPtr> HTMLUserMediaElement::ParseType(
 }
 
 void HTMLUserMediaElement::StartMediaStreamRequest() {
+  // We should start a getUserMedia request only when the element has
+  // constraints and the required permissions.
+  CHECK_GT(permission_descriptors_.size(), 0U);
+  CHECK_LE(permission_descriptors_.size(), 2U);
+  CHECK(has_constraints_);
+  CHECK(PermissionsGranted());
   if (GetDocument().domWindow()) {
     if (auto* provider =
             UserMediaRequestProvider::From(*GetDocument().domWindow())) {

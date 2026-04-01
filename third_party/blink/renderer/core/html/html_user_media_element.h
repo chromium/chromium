@@ -58,6 +58,7 @@ class CORE_EXPORT HTMLUserMediaElement
 
  private:
   void StartMediaStreamRequest();
+  bool has_constraints_ = false;
 };
 
 // The custom type casting is required for the UserMediaElement OT because the

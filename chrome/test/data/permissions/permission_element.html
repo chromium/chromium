@@ -20,6 +20,10 @@
     <usermedia id="camera-microphone" type="camera microphone"></usermedia>
   </div>
   <script>
+    document.querySelectorAll('usermedia').forEach((el) => {
+      el.setConstraints({video: true, audio: true});
+    });
+
     document.getElementById('parent').addEventListener('promptaction', (event) => {
       console.log(event.target.id + '-promptaction');
     });
