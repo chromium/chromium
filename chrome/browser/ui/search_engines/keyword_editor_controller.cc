@@ -11,12 +11,21 @@
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/ui_utils.h"
 
 using base::UserMetricsAction;
+
+namespace {
+
+bool IsPrepopulatedEngine(const TemplateURL* url) {
+  return url->prepopulate_id() > 0;
+}
+
+}  // namespace
 
 KeywordEditorController::KeywordEditorController(Profile* profile)
     : url_model_(TemplateURLServiceFactory::GetForProfile(profile)) {
@@ -84,6 +93,13 @@ bool KeywordEditorController::CanMakeDefault(const TemplateURL* url) const {
 }
 
 bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(switches::kSearchSettingsUpdate) &&
+      IsPrepopulatedEngine(url)) {
+    return false;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   return (url->type() == TemplateURL::NORMAL) &&
          (url != url_model_->GetDefaultSearchProvider()) &&
          (url->starter_pack_id() ==
@@ -94,13 +110,13 @@ bool KeywordEditorController::CanRemove(const TemplateURL* url) const {
 
 bool KeywordEditorController::CanActivate(const TemplateURL* url) const {
   return (url->is_active() != TemplateURLData::ActiveStatus::kTrue) &&
-         (url->prepopulate_id() == 0);
+         !IsPrepopulatedEngine(url);
 }
 
 bool KeywordEditorController::CanDeactivate(const TemplateURL* url) const {
   return url->is_active() == TemplateURLData::ActiveStatus::kTrue &&
          url != url_model_->GetDefaultSearchProvider() &&
-         url->prepopulate_id() == 0 &&
+         !IsPrepopulatedEngine(url) &&
          (!url->CreatedByNonDefaultSearchProviderPolicy() ||
           url->CanPolicyBeOverridden());
 }

@@ -148,7 +148,8 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
       override || {});
 }
 
-export function createSampleOmniboxExtension(): SearchEngine {
+export function createSampleOmniboxExtension(canBeDisabled: boolean = false):
+    SearchEngine {
   return {
     canBeDefault: false,
     canBeEdited: false,
@@ -162,7 +163,7 @@ export function createSampleOmniboxExtension(): SearchEngine {
       icon: 'chrome://extension-icon/some-extension-icon',
       id: 'dummyextensionid',
       name: 'Omnibox extension',
-      canBeDisabled: false,
+      canBeDisabled: canBeDisabled,
     },
     id: 0,
     isManaged: false,
