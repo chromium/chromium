@@ -40,8 +40,9 @@ class MODULES_EXPORT UserMediaRequestProviderImpl final
 
   explicit UserMediaRequestProviderImpl(LocalDOMWindow&);
 
-  void StartRequest(HTMLUserMediaElement*, const AtomicString& type) override;
-};
+  void StartRequest(HTMLUserMediaElement*,
+                    const Vector<mojom::blink::PermissionDescriptorPtr>&) override;
+  };
 
 }  // namespace blink
 

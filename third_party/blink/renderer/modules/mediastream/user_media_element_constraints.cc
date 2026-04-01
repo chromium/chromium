@@ -17,6 +17,22 @@
 
 namespace blink {
 
+namespace {
+bool IsConstraintEnabled(
+    const V8UnionBooleanOrMediaTrackConstraints* constraint) {
+  if (!constraint) {
+    return false;
+  }
+  if (constraint->IsBoolean()) {
+    return constraint->GetAsBoolean();
+  }
+  if (constraint->IsMediaTrackConstraints()) {
+    return true;
+  }
+  return false;
+}
+}  // namespace
+
 const char UserMediaElementConstraints::kSupplementName[] =
     "UserMediaElementConstraints";
 
@@ -161,6 +177,8 @@ void UserMediaElementConstraints::setConstraints(
 
   self.SetConstraints(sanitized_constraints);
   self.did_set_constraints_ = true;
+  element.OnConstraintsSet(IsConstraintEnabled(sanitized_constraints->video()),
+                           IsConstraintEnabled(sanitized_constraints->audio()));
 }
 
 }  // namespace blink

@@ -87,6 +87,33 @@ bool HTMLUserMediaElement::IsLegacyMode() const {
   // behavior.
   return FastHasAttribute(html_names::kTypeAttr);
 }
+void HTMLUserMediaElement::OnConstraintsSet(bool has_video, bool has_audio) {
+  // If permission descriptors are already set, we do not need to update them.
+  // This would be the case for legacy mode when the 'type' attribute is set.
+  // We do not want to update the permission descriptors in this case as type
+  // attribute is supposed to take precedence.
+  if (!permission_descriptors_.empty()) {
+    return;
+  }
+  if (has_video) {
+    permission_descriptors_.push_back(
+        CreatePermissionDescriptor(PermissionName::VIDEO_CAPTURE));
+  }
+  if (has_audio) {
+    permission_descriptors_.push_back(
+        CreatePermissionDescriptor(PermissionName::AUDIO_CAPTURE));
+  }
+
+  // Logic to handle registration when descriptors are set after insertion.
+  if (!permission_descriptors_.empty()) {
+    // Register with the cache to start receiving status updates
+    MaybeRegisterCacheClient();
+    // Register with the browser process (PEPC) to bind Mojo interfaces.
+    MaybeRegisterPageEmbeddedPermissionControl();
+    // Update the element's appearance based on initial cached statuses.
+    UpdatePermissionStatusAndAppearance();
+  }
+}
 
 void HTMLUserMediaElement::AttributeChanged(
     const AttributeModificationParams& params) {
@@ -158,7 +185,7 @@ void HTMLUserMediaElement::StartMediaStreamRequest() {
   if (GetDocument().domWindow()) {
     if (auto* provider =
             UserMediaRequestProvider::From(*GetDocument().domWindow())) {
-      provider->StartRequest(this, type_);
+      provider->StartRequest(this, permission_descriptors_);
     }
   }
 }

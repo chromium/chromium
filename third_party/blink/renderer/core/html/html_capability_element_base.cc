@@ -345,13 +345,17 @@ void HTMLCapabilityElementBase::OnPermissionStatusInitialized(
 Node::InsertionNotificationRequest HTMLCapabilityElementBase::InsertedInto(
     ContainerNode& insertion_point) {
   HTMLElement::InsertedInto(insertion_point);
+  MaybeRegisterCacheClient();
+  return kInsertionDone;
+}
+
+void HTMLCapabilityElementBase::MaybeRegisterCacheClient() {
   if (!is_cache_registered_ && !permission_descriptors_.empty() &&
       GetExecutionContext()) {
     CachedPermissionStatus::From(GetExecutionContext())
         ->RegisterClient(this, permission_descriptors_);
     is_cache_registered_ = true;
   }
-  return kInsertionDone;
 }
 
 void HTMLCapabilityElementBase::AttachLayoutTree(AttachContext& context) {

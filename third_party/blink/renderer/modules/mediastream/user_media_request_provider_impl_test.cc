@@ -25,7 +25,8 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestEarlyExitNoClient) {
   auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
-  provider->StartRequest(element, AtomicString("camera"));
+  element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
+  provider->StartRequest(element, element->GetPermissionDescriptors());
   // Test passes if it doesn't crash.
 }
 
@@ -36,11 +37,12 @@ TEST_F(UserMediaRequestProviderImplTest, StartRequestActiveStreamExists) {
   auto* provider = UserMediaRequestProvider::From(*GetDocument().domWindow());
 
   auto* element = MakeGarbageCollected<HTMLUserMediaElement>(GetDocument());
+  element->setAttribute(html_names::kTypeAttr, AtomicString("camera"));
 
   auto* stream = MediaStream::Create(GetDocument().GetExecutionContext());
   HTMLUserMediaElementMediaStream::From(*element).SetMediaStream(stream);
 
-  provider->StartRequest(element, AtomicString("camera"));
+  provider->StartRequest(element, element->GetPermissionDescriptors());
   // Test passes if it doesn't crash and does not change the stream.
   EXPECT_EQ(HTMLUserMediaElementMediaStream::stream(*element), stream);
 }

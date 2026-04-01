@@ -376,6 +376,8 @@ class CORE_EXPORT HTMLCapabilityElementBase
  protected:
   bool MaybeRegisterPageEmbeddedPermissionControl();
 
+  void MaybeRegisterCacheClient();
+
   // Ensure we reset the PEPC IPC endpoint.
   void EnsureUnregisterPageEmbeddedPermissionControl();
 
