@@ -55,11 +55,12 @@ export function getHtml(this: TopToolbarElement) {
         @click="${this.onOpenInNewTabClick_}"
         ?disabled="${!this.enableOpenInNewTabButton}">
       </cr-icon-button>
-    ` :html`
+    ` : html`
       <cr-icon-button id="more" iron-icon="cr:more-vert"
         class="no-overlap" title="$i18n{moreOptionsTooltip}"
         aria-label="$i18n{moreOptionsTooltip}"
-        @click="${this.onMoreClick_}">
+        @click="${this.onMoreClick_}"
+        ?hidden="${this.hideMenuButton_}">
       </cr-icon-button>
     `}
     <cr-icon-button id="closeButton"

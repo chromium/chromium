@@ -17,6 +17,7 @@ import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ContextInfo} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
@@ -67,6 +68,7 @@ export class TopToolbarElement extends CrLitElement {
       },
       logoImageUrl_: {type: String},
       title: {type: String},
+      hideMenuButton_: {type: Boolean},
       showReopenTabs_: {type: Boolean},
     };
   }
@@ -81,6 +83,9 @@ export class TopToolbarElement extends CrLitElement {
   private listenerIds_: number[] = [];
   protected isExpandButtonEnabled: boolean =
       loadTimeData.getBoolean('expandButtonEnabled');
+  private hideMenuOnAiPageEnabled_: boolean =
+      loadTimeData.getBoolean('hideMenuOnAiPageEnabled');
+  accessor hideMenuButton_: boolean = this.hideMenuOnAiPageEnabled_;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -101,6 +106,14 @@ export class TopToolbarElement extends CrLitElement {
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
     this.listenerIds_ = [];
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('isAiPage')) {
+      this.hideMenuButton_ = this.isAiPage && this.hideMenuOnAiPageEnabled_;
+    }
   }
 
   protected shouldShowSourcesMenuButton_(): boolean {

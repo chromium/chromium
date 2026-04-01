@@ -393,8 +393,11 @@ INSTANTIATE_TEST_SUITE_P(
         {.dark_mode = true, .title_type = TitleType::kLong, .rtl = true},
 
         // Open menu.
-        {.menu_open = true},
-        {.dark_mode = true, .menu_open = true},
+        {
+            .menu_open = true,
+            .is_ai_page = true,
+        },
+        {.dark_mode = true, .menu_open = true, .is_ai_page = true},
     }),
     [](const testing::TestParamInfo<ToolbarPixelTestParams>& info) {
       return info.param.ToString();
