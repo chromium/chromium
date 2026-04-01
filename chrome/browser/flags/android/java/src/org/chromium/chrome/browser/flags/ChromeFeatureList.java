@@ -752,7 +752,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sAndroidAppIntegrationMultiDataSource =
             newCachedFlag(ANDROID_APP_INTEGRATION_MULTI_DATA_SOURCE, true);
     public static final CachedFlag sAndroidAppRatingPrompt =
-            newCachedFlag(ANDROID_APP_RATING_PROMPT, false);
+            newCachedFlag(
+                    ANDROID_APP_RATING_PROMPT,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidAutoMintedTwa =
             newCachedFlag(ANDROID_AUTO_MINTED_TWA, false);
     public static final CachedFlag sAndroidBottomBar =

@@ -788,6 +788,21 @@
             ]
         }
     ],
+    "AndroidAppRatingPrompt": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidAppRatingPrompt"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidBookmarkHistoryPane": [
         {
             "platforms": [
