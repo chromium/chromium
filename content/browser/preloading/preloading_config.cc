@@ -32,31 +32,43 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 [{
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.005689
+  "sampling_likelihood": 0.004488
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000100
+  "sampling_likelihood": 0.000079
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.005785
+  "sampling_likelihood": 0.004766
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "EagerViewportHeuristic",
+  "sampling_likelihood": 0.694040
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "MouseHoverOnNewTabPage",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prefetch",
+  "preloading_predictor": "MouseHoverOrMouseDownOnBookmarkBar",
+  "sampling_likelihood": 0.060283
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxMousePredictor",
-  "sampling_likelihood": 0.357184
+  "sampling_likelihood": 0.199292
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxSearchPredictor",
-  "sampling_likelihood": 0.670228
+  "sampling_likelihood": 0.393545
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "OmniboxTouchDownPredirector",
-  "sampling_likelihood": 0.010079
+  "sampling_likelihood": 0.007095
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.000892
+  "sampling_likelihood": 0.000496
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
@@ -64,47 +76,55 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "UrlPointerDownOnAnchor",
-  "sampling_likelihood": 0.002821
+  "sampling_likelihood": 0.001239
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "UrlPointerHoverOnAnchor",
-  "sampling_likelihood": 0.033897
+  "sampling_likelihood": 0.022203
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "ViewportHeuristic",
-  "sampling_likelihood": 1.000000
+  "sampling_likelihood": 0.147695
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "PrewarmDefaultSearchEngine",
+  "sampling_likelihood": 0.002293
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": 0.006551
+  "sampling_likelihood": 0.004640
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": 0.209279
+  "sampling_likelihood": 0.094236
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.005771
+  "sampling_likelihood": 0.004665
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "EagerViewportHeuristic",
+  "sampling_likelihood": 0.544737
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": 0.070962
+  "sampling_likelihood": 0.054798
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOrMouseDownOnBookmarkBar",
-  "sampling_likelihood": 0.022187
+  "sampling_likelihood": 0.016420
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOrMouseDownOnNewTabPage",
-  "sampling_likelihood": 0.030196
+  "sampling_likelihood": 0.023500
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 0.005348
+  "sampling_likelihood": 0.005976
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.046348
+  "sampling_likelihood": 0.022402
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
@@ -112,19 +132,39 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "TouchOnNewTabPage",
-  "sampling_likelihood": 0.028625
+  "sampling_likelihood": 0.018563
+}, {
+  "preloading_type": "PrerenderUntilScript",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": 0.228063
+}, {
+  "preloading_type": "PrerenderUntilScript",
+  "preloading_predictor": "SpeculationRulesFromIsolatedWorld",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "PrerenderUntilScript",
+  "preloading_predictor": "UrlPointerDownOnAnchor",
+  "sampling_likelihood": 0.510323
+}, {
+  "preloading_type": "PrerenderUntilScript",
+  "preloading_predictor": "UrlPointerHoverOnAnchor",
+  "sampling_likelihood": 0.996708
+}, {
+  "preloading_type": "PrerenderUntilScript",
+  "preloading_predictor": "ViewportHeuristic",
+  "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "UrlPointerDownOnAnchor",
-  "sampling_likelihood": 0.132505
+  "sampling_likelihood": 0.082085
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "UrlPointerHoverOnAnchor",
-  "sampling_likelihood": 0.525988
+  "sampling_likelihood": 0.233435
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "ViewportHeuristic",
-  "sampling_likelihood": 1.000000
+  "sampling_likelihood": 0.306197
 }]
 )"};
 
