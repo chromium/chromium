@@ -3651,7 +3651,7 @@ enum WebFeature {
   kEligibleForImageLoadingPrioritizationFix = 4376,
   kExecutedNonTrivialJavaScriptURL = 4377,
   kStorageBucketsOpen = 4378,
-  kPerformanceEntryBufferSwaps = 4379,
+  kOBSOLETE_PerformanceEntryBufferSwaps = 4379,
   kClearPerformanceEntries = 4380,
   kViewportDependentLazyLoadedImageWithoutSizesAttribute = 4381,
   kV8MediaStreamTrack_ApplyConstraints_Method = 4382,

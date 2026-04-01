@@ -256,8 +256,7 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
       AtomicString("event"), info, false, window, performance->NavigationId());
 
-  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
-                                     Performance::kDoNotRecordSwaps);
+  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry);
 
   PerformanceEntryVector sorted_buffer_;
   sorted_buffer_.push_back(*test_entry);
@@ -301,8 +300,7 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
 
-  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
-                                     Performance::kDoNotRecordSwaps);
+  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry);
 
   sorted_buffer_.push_back(*test_entry);
   std::sort(sorted_buffer_.begin(), sorted_buffer_.end(),
@@ -348,8 +346,7 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
   // Create copy of the test_buffer_.
   PerformanceEntryVector sorted_buffer_ = test_buffer_;
 
-  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry,
-                                     Performance::kDoNotRecordSwaps);
+  base_->InsertEntryIntoSortedBuffer(test_buffer_, *test_entry);
 
   sorted_buffer_.push_back(*test_entry);
   std::sort(sorted_buffer_.begin(), sorted_buffer_.end(),

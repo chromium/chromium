@@ -312,13 +312,9 @@ class CORE_EXPORT Performance : public EventTarget {
 
   ScriptObject toJSONForBinding(ScriptState*) const;
 
-  enum Metrics { kRecordSwaps = 0, kDoNotRecordSwaps = 1 };
-
-  // Insert a PerformanceEntry into a Vector sorted by StartTime. By Default,
-  // record the number of 'swaps' per function call in a histogram.
+  // Insert a PerformanceEntry into a Vector sorted by StartTime.
   void InsertEntryIntoSortedBuffer(PerformanceEntryVector& vector,
-                                   PerformanceEntry& entry,
-                                   Metrics record);
+                                   PerformanceEntry& entry);
 
   void Trace(Visitor*) const override;
 

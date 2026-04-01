@@ -110,9 +110,6 @@ namespace {
 // level before reporting to UKM to smooth out recorded events over all pages.
 constexpr size_t kLongTaskUkmSampleInterval = 100;
 
-const char kSwapsPerInsertionHistogram[] =
-    "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
-
 const char kParserPausingCalledAfterResumimg[] =
     "Blink.HTMLParsing.IsParserPausingCalledAfterResuming";
 
@@ -358,14 +355,12 @@ PerformanceEntryVector Performance::GetEntriesForCurrentFrame(
   entries = MergePerformanceEntryVectors(entries, resource_timing_buffer_,
                                          maybe_name);
   if (first_input_timing_ && CheckName(first_input_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *first_input_timing_,
-                                kDoNotRecordSwaps);
+    InsertEntryIntoSortedBuffer(entries, *first_input_timing_);
   }
   // This extra checking is needed when WorkerPerformance
   // calls this method.
   if (navigation_timing_ && CheckName(navigation_timing_, maybe_name)) {
-    InsertEntryIntoSortedBuffer(entries, *navigation_timing_,
-                                kDoNotRecordSwaps);
+    InsertEntryIntoSortedBuffer(entries, *navigation_timing_);
   }
 
   if (paint_entries_timing_.size()) {
@@ -628,7 +623,7 @@ void Performance::AddResourceTiming(mojom::blink::ResourceTimingInfoPtr info,
   // https://w3c.github.io/resource-timing/#dfn-add-a-performanceresourcetiming-entry
   if (CanAddResourceTimingEntry() &&
       !resource_timing_buffer_full_event_pending_) {
-    InsertEntryIntoSortedBuffer(resource_timing_buffer_, *entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(resource_timing_buffer_, *entry);
     return;
   }
 
@@ -701,7 +696,7 @@ void Performance::FireResourceTimingBufferFull(TimerBase*) {
 void Performance::AddToContainerTimingBuffer(
     PerformanceContainerTiming& entry) {
   if (!IsContainerTimingBufferFull()) {
-    InsertEntryIntoSortedBuffer(container_timing_buffer_, entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(container_timing_buffer_, entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kContainer)->value);
   }
@@ -709,7 +704,7 @@ void Performance::AddToContainerTimingBuffer(
 
 void Performance::AddToElementTimingBuffer(PerformanceElementTiming& entry) {
   if (!IsElementTimingBufferFull()) {
-    InsertEntryIntoSortedBuffer(element_timing_buffer_, entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(element_timing_buffer_, entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kElement)->value);
   }
@@ -717,7 +712,7 @@ void Performance::AddToElementTimingBuffer(PerformanceElementTiming& entry) {
 
 void Performance::AddToEventTimingBuffer(PerformanceEventTiming& entry) {
   if (!IsEventTimingBufferFull()) {
-    InsertEntryIntoSortedBuffer(event_timing_buffer_, entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(event_timing_buffer_, entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kEvent)->value);
   }
@@ -726,7 +721,7 @@ void Performance::AddToEventTimingBuffer(PerformanceEventTiming& entry) {
 void Performance::AddToLayoutShiftBuffer(LayoutShift& entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), &entry);
   if (layout_shift_buffer_.size() < kDefaultLayoutShiftBufferSize) {
-    InsertEntryIntoSortedBuffer(layout_shift_buffer_, entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(layout_shift_buffer_, entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kLayoutShift)->value);
   }
@@ -736,8 +731,7 @@ void Performance::AddLargestContentfulPaint(LargestContentfulPaint* entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (largest_contentful_paint_buffer_.size() <
       kDefaultLargestContenfulPaintSize) {
-    InsertEntryIntoSortedBuffer(largest_contentful_paint_buffer_, *entry,
-                                kRecordSwaps);
+    InsertEntryIntoSortedBuffer(largest_contentful_paint_buffer_, *entry);
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kLargestContentfulPaint)
@@ -750,8 +744,7 @@ void Performance::AddInteractionContentfulPaint(
   probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (interaction_contentful_paint_buffer_.size() <
       kDefaultInteractionContenfulPaintSize) {
-    InsertEntryIntoSortedBuffer(interaction_contentful_paint_buffer_, *entry,
-                                kRecordSwaps);
+    InsertEntryIntoSortedBuffer(interaction_contentful_paint_buffer_, *entry);
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kInteractionContentfulPaint)
@@ -763,7 +756,7 @@ void Performance::AddSoftNavigationToPerformanceTimeline(
     SoftNavigationEntry* entry) {
   probe::PerformanceEntryAdded(GetExecutionContext(), entry);
   if (soft_navigation_buffer_.size() < kDefaultSoftNavigationBufferSize) {
-    InsertEntryIntoSortedBuffer(soft_navigation_buffer_, *entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(soft_navigation_buffer_, *entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kSoftNavigation)
            ->value);
@@ -795,7 +788,7 @@ void Performance::AddLongTaskTiming(base::TimeTicks start_time,
       name, container_type, container_src, container_id, container_name,
       DynamicTo<LocalDOMWindow>(execution_context), NavigationId());
   if (longtask_buffer_.size() < kDefaultLongTaskBufferSize) {
-    InsertEntryIntoSortedBuffer(longtask_buffer_, *entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(longtask_buffer_, *entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kLongTask)->value);
     UseCounter::Count(execution_context, WebFeature::kLongTaskBufferFull);
@@ -819,8 +812,7 @@ void Performance::AddBackForwardCacheRestoration(
       DynamicTo<LocalDOMWindow>(GetExecutionContext()), NavigationId());
   if (back_forward_cache_restoration_buffer_.size() <
       back_forward_cache_restoration_buffer_size_limit_) {
-    InsertEntryIntoSortedBuffer(back_forward_cache_restoration_buffer_, *entry,
-                                kRecordSwaps);
+    InsertEntryIntoSortedBuffer(back_forward_cache_restoration_buffer_, *entry);
   } else {
     ++(dropped_entries_count_map_
            .find(PerformanceEntry::kBackForwardCacheRestoration)
@@ -1301,7 +1293,7 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
 
   if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
-    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry, kRecordSwaps);
+    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry);
   } else {
     ++(dropped_entries_count_map_.find(PerformanceEntry::kPaint)->value);
   }
@@ -1323,28 +1315,18 @@ void Performance::BuildJSONValue(V8ObjectBuilder& builder) const {
 // Bubble Sort). We assume that the order of insertion roughly corresponds to
 // the order of the StartTime, hence the sort beginning from the tail-end.
 void Performance::InsertEntryIntoSortedBuffer(PerformanceEntryVector& entries,
-                                              PerformanceEntry& entry,
-                                              Metrics record) {
+                                              PerformanceEntry& entry) {
   entries.push_back(&entry);
-
-  int number_of_swaps = 0;
 
   if (entries.size() > 1) {
     // Bubble Sort from tail.
     int left = entries.size() - 2;
     while (left >= 0 &&
            entries[left]->startTime() > entries[left + 1]->startTime()) {
-      if (record == kRecordSwaps) {
-        UseCounter::Count(GetExecutionContext(),
-                          WebFeature::kPerformanceEntryBufferSwaps);
-      }
-      number_of_swaps++;
       SwapEntries(entries, left, left + 1);
       left--;
     }
   }
-
-  UMA_HISTOGRAM_COUNTS_1000(kSwapsPerInsertionHistogram, number_of_swaps);
 
   return;
 }

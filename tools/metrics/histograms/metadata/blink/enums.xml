@@ -4847,7 +4847,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4376" label="EligibleForImageLoadingPrioritizationFix"/>
   <int value="4377" label="ExecutedNonTrivialJavaScriptURL"/>
   <int value="4378" label="StorageBucketsOpen"/>
-  <int value="4379" label="PerformanceEntryBufferSwaps"/>
+  <int value="4379" label="OBSOLETE_PerformanceEntryBufferSwaps"/>
   <int value="4380" label="ClearPerformanceEntries"/>
   <int value="4381"
       label="ViewportDependentLazyLoadedImageWithoutSizesAttribute"/>
