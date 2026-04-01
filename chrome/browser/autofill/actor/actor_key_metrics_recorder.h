@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
@@ -77,19 +79,27 @@ class ActorKeyMetricsRecorder : public AutofillManager::Observer {
         actor_filled_fields;
   };
 
-  // Records the "FillingAssistance" metric for a `form_structure`.
-  void RecordFillingAssistance(const FormStructure& form_structure,
-                               const ProductState& state,
-                               std::string_view product_str);
-  void RecordFillingCorrectness(const FormStructure& form_structure,
+  // Records the "FillingAssistance" metric for a `form`.
+  void RecordFillingAssistance(const FormStructure& form,
+                               FillingProduct product);
+  void RecordFillingCorrectness(const FormStructure& form,
                                 const ProductState& state,
-                                std::string_view product_str);
-  void RecordFillingReadiness(const FormStructure& form_structure,
+                                FillingProduct product);
+  void RecordFillingReadiness(const FormStructure& form,
                               const ProductState& state,
-                              std::string_view product_str);
-  void RecordPerfectFillingMetric(const FormStructure& form_structure,
-                                  const ProductState& state,
-                                  std::string_view product_str);
+                              FillingProduct product);
+  void RecordPerfectFillingMetric(const FormStructure& form,
+                                  FillingProduct product);
+
+  bool HasFilledFieldOfProduct(const FormStructure& form,
+                               FillingProduct product) const;
+
+  // Returns true if the field with `field_id` in `form` was filled by
+  // actor. If `product` is provided, restricts the check to that product.
+  bool WasFieldFilledByActor(
+      const FormStructure& form,
+      FieldGlobalId field_id,
+      std::optional<FillingProduct> product = std::nullopt) const;
 
   std::array<ProductState, std::to_underlying(FillingProduct::kMaxValue) + 1>
       states_;
