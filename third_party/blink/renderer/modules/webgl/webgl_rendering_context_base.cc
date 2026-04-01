@@ -1640,12 +1640,10 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
 
   // Note: we push a frame only if (a) there is fresh content to produce and
   // (b) we successfully produced that content.
-  auto* resource_provider =
-      PaintRenderingResultsToResourceProvider(kBackBuffer,
-                                              /*only_if_fresh_content=*/true);
-  if (resource_provider) {
-    submitted_frame =
-        Host()->PushFrame(resource_provider->ProduceCanvasResource());
+  if (scoped_refptr<CanvasResource> resource =
+          CopyRenderingResultsFromDrawingBufferToResource(
+              kBackBuffer, /*only_if_fresh_content=*/true)) {
+    submitted_frame = Host()->PushFrame(std::move(resource));
     resource_provider_has_content_for_frame_push_ = false;
   }
   MarkLayerComposited();
@@ -1941,10 +1939,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
     return ExportLowLatencyCanvasResource(source_buffer);
   }
 
-  auto* resource_provider =
-      PaintRenderingResultsToResourceProvider(source_buffer);
-  return resource_provider ? resource_provider->ProduceCanvasResource()
-                           : nullptr;
+  return CopyRenderingResultsFromDrawingBufferToResource(source_buffer);
 }
 
 CanvasNon2DResourceProviderSharedImage*
@@ -2012,13 +2007,13 @@ WebGLRenderingContextBase::GetSharedImageResourceProvider() {
   return resource_provider_.get();
 }
 
-CanvasNon2DResourceProviderSharedImage*
-WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
+scoped_refptr<CanvasResource>
+WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBufferToResource(
     SourceDrawingBuffer source_buffer,
     bool only_if_fresh_content) {
-  TRACE_EVENT0(
-      "blink",
-      "WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider");
+  TRACE_EVENT0("blink",
+               "WebGLRenderingContextBase::"
+               "CopyRenderingResultsFromDrawingBufferToResource");
 
   if (isContextLost() || !GetDrawingBuffer()) {
     return nullptr;
@@ -2042,13 +2037,14 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     }
     // `resource_provider_` already has the current contents, so it can can be
     // used by the caller as-is.
-    return resource_provider_.get();
+    return resource_provider_->ProduceCanvasResource();
   }
 
   CanvasNon2DResourceProviderSharedImage* resource_provider =
       GetSharedImageResourceProvider();
-  if (!resource_provider)
+  if (!resource_provider) {
     return nullptr;
+  }
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
   // TODO(sunnyps): Why is a texture restorer needed? See if it can be removed.
@@ -2058,8 +2054,9 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // In rare situations on macOS the drawing buffer can be destroyed
   // during the resolve process, specifically during automatic
   // graphics switching. Guard against this.
-  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
     return nullptr;
+  }
 
   bool copy_succeeded =
       resource_provider->IsAccelerated()
@@ -2074,7 +2071,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   // We successfully painted the contents to the resource provider.
   must_paint_to_canvas_ = false;
   resource_provider_has_content_for_frame_push_ = true;
-  return resource_provider;
+  return resource_provider->ProduceCanvasResource();
 }
 
 bool WebGLRenderingContextBase::
