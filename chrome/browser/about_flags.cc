@@ -10723,12 +10723,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicDisableActorSafetyChecksDescription, kOsDesktop,
      SINGLE_VALUE_TYPE(actor::switches::kDisableActorSafetyChecks)},
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
-     flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kGlicUseNonClient)},
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
     {"glic-horizontal-tab-toolbar-button",
      flag_descriptions::kGlicHorizontalTabToolbarButtonName,
      flag_descriptions::kGlicHorizontalTabToolbarButtonDescription, kOsDesktop,

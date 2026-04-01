@@ -1521,10 +1521,6 @@ inline constexpr char kGlicUseToolbarHeightSidePanelName[] =
 inline constexpr char kGlicUseToolbarHeightSidePanelDescription[] =
     "Enables Glic to use the toolbar height side panel instead of content "
     "height side panel when enabled to use side panel";
-inline constexpr char kGlicUseNonClientName[] = "Glic Use NonClientView";
-inline constexpr char kGlicUseNonClientDescription[] =
-    "Renders the window using NonClientView/FrameView which grants the window "
-    "access to standard window management features on ChromeOS.";
 inline constexpr char kGlicGuestUrlPresetsName[] = "Glic guest URL presets";
 inline constexpr char kGlicGuestUrlPresetsDescription[] =
     "Overrides the Bluebird environment URL used for Glic with user-configured "

@@ -735,7 +735,6 @@ BASE_FEATURE(kGlicScrollTo, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicCaptureRegion, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicUseNonClient, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether we enforce that documentId (an optional parameter) is set
 // when trying to scroll all documents except PDFs (and fail the request if
@@ -869,8 +868,6 @@ BASE_FEATURE(kGlicIgnoreOfflineState, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExtensions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicMultitabUnderlines, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kGlicHandleDraggingNatively, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the X-Glic headers will be attached to requests as specified by
 // the kGlicHeaderRequestTypes param.

@@ -11068,7 +11068,6 @@
                     "enable_features": [
                         "Glic",
                         "GlicRollout",
-                        "GlicUseNonClient",
                         "GlicUserStatusCheck",
                         "GlicZeroStateSuggestions"
                     ]
