@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
@@ -179,97 +179,6 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActionItemUnderlineIndicatorKey, false)
 
 namespace {
 
-// Intermediate data for determining whether a point should be considered in the
-// caption are when the toolbar is the top element in the browser.
-struct CaptionHitTestData {
-  raw_ptr<const views::View> at = nullptr;
-  bool is_direct_hit = false;
-  raw_ptr<const views::View> before = nullptr;
-  int before_dist = 0;
-  raw_ptr<const views::View> after = nullptr;
-  int after_dist = 0;
-};
-
-// Calculates the `CaptionHitTestData` (`data`) starting at `view` for `point`,
-// which should be in `view`'s local coordinates. Bails out immediately if a
-// View is hit; may traverse into icon containers.
-void CalculateIsPositionInWindowCaption(CaptionHitTestData& data,
-                                        const views::View* view,
-                                        const gfx::Point& point) {
-  for (auto& child : view->children()) {
-    if (!child->GetVisible()) {
-      continue;
-    }
-    const gfx::Rect bounds = child->bounds();
-
-    if (views::IsViewClass<ToolbarIconContainerView>(child) ||
-        views::IsViewClass<page_actions::PageActionContainerView>(child)) {
-      // Traverse into known icon containers.
-      const auto in_child =
-          views::View::ConvertPointToTarget(view, child, point);
-      CalculateIsPositionInWindowCaption(data, child, in_child);
-    } else if (bounds.x() <= point.x() && bounds.right() >= point.x()) {
-      // This point is in/above/below the child.
-      data.at = child;
-      data.is_direct_hit = bounds.Contains(point);
-    } else {
-      // See if the view is the closest before or after the target point in the
-      // layout.
-      if (bounds.right() < point.x()) {
-        const int dist = point.x() - bounds.right();
-        if (!data.before || data.before_dist > dist) {
-          data.before = child;
-          data.before_dist = dist;
-        }
-      } else if (bounds.x() > point.x()) {
-        const int dist = bounds.x() - point.x();
-        if (!data.after || data.after_dist > dist) {
-          data.after = child;
-          data.after_dist = dist;
-        }
-      }
-    }
-
-    // If a view was hit at any level, stop processing.
-    if (data.at) {
-      break;
-    }
-  }
-}
-
-// Returns whether `point` should be treated as part of the caption area in
-// `view`, which should be the topmost view in the browser.
-bool IsPositionInWindowCaption(const views::View* view,
-                               const gfx::Point& point) {
-  CaptionHitTestData data;
-  CalculateIsPositionInWindowCaption(data, view, point);
-
-  const bool is_above_centerline =
-      point.y() <= view->GetLocalBounds().CenterPoint().y();
-  const auto is_separator = [](const views::View* view) {
-    return views::IsViewClass<views::Separator>(view) ||
-           views::IsViewClass<ToolbarDivider>(view);
-  };
-
-  // If the point is in a view, then it's not in the caption unless the view is
-  // a separator. If the point is at a view but not in it, then it is caption if
-  // the point is centerline; otherwise it's not.
-  if (data.at) {
-    return is_separator(data.at) ||
-           (!data.is_direct_hit && is_above_centerline);
-  }
-
-  // If the point is not in a view but it is next to a separator or the edge of
-  // the toolbar, it is caption.
-  if (!data.before || is_separator(data.before) || !data.after ||
-      is_separator(data.after)) {
-    return true;
-  }
-
-  // All remaining points (between non-separator views) are caption if they are
-  // above centerline.
-  return is_above_centerline;
-}
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
   // Checked in this order because even tabbed PWAs use the CUSTOM_TAB
@@ -301,6 +210,38 @@ constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 constexpr int kLargeSpaceBetweenButtons = 6;
 constexpr int kInsideBorderAroundGlicButtons = 2;
 constexpr int kOutsideBorderAroundGlicButtons = 11;
+
+// Returns whether `point` should be treated as part of the caption area in
+// `view`. Recursively traverses into icon containers to correctly handle
+// padding between buttons.
+bool IsPositionInWindowCaptionForView(const views::View* view,
+                                      const gfx::Point& point) {
+  for (const views::View* child : view->children()) {
+    if (!child->GetVisible() || !child->bounds().Contains(point)) {
+      continue;
+    }
+    // Recurse into known icon container types to check their children.
+    if (views::IsViewClass<ToolbarIconContainerView>(child) ||
+        views::IsViewClass<page_actions::PageActionContainerView>(child)) {
+      const gfx::Point point_in_child =
+          views::View::ConvertPointToTarget(view, child, point);
+      return IsPositionInWindowCaptionForView(child, point_in_child);
+    }
+    // Separators and dividers are non-interactive and should be treated
+    // as caption area.
+    if (views::IsViewClass<views::Separator>(child) ||
+        views::IsViewClass<ToolbarDivider>(child)) {
+      return true;
+    }
+    // The point hit an interactive control (button, location bar, etc.).
+    return false;
+  }
+  // The point is not in any child's bounds — it's in empty space between
+  // children, padding, or above/below a child. In VTS mode the toolbar is
+  // at the very top of the window, so all non-interactive areas should be
+  // draggable regardless of vertical position.
+  return true;
+}
 
 }  // namespace
 
@@ -1310,7 +1251,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 
 bool ToolbarView::IsPositionInWindowCaption(
     const gfx::Point& test_point) const {
-  return ::IsPositionInWindowCaption(this, test_point);
+  return IsPositionInWindowCaptionForView(this, test_point);
 }
 
 views::Button* ToolbarView::GetChromeLabsButton() const {
