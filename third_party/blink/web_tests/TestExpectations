@@ -3007,8 +3007,6 @@ crbug.com/489875800 external/wpt/css/css-text/hanging-punctuation/hanging-punctu
 crbug.com/489875800 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-last-whitespace.html [ Failure ]
 crbug.com/489875800 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-last.html [ Failure ]
 crbug.com/489875800 external/wpt/css/css-text/hanging-punctuation/hanging-punctuation-variable-font-size.html [ Failure ]
-crbug.com/489882869 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/checkmark-animation-002.html [ Failure ]
-crbug.com/489882869 [ Mac ] external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-icon-animation-002.html [ Failure ]
 crbug.com/489882869 external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-after-select.html [ Failure ]
 crbug.com/489882869 external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree.html [ Failure ]
 crbug.com/489882869 external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html [ Failure ]
