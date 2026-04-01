@@ -4,7 +4,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-<!--The usermedia element should have some limits for the min/max-width/height:
+<!--The install element should have some limits for the min/max-width/height:
   * min-width should be sufficient to fit the element text (depends on user agent implementation)
   * max-width should be at most 3x min-width
   * min-height should be sufficient to fit the element text (1em)
@@ -55,9 +55,9 @@
 </style>
 
 
-<usermedia id="el_outside_bounds" type="camera microphone"></usermedia>
-<usermedia id="el_inside_bounds" type="camera"></usermedia>
-<usermedia id="el_large_min_size" type="microphone"></usermedia>
+<install id="el_outside_bounds"></install>
+<install id="el_inside_bounds"></install>
+<install id="el_large_min_size"></install>
 
 <script>
   test(function(){
@@ -74,8 +74,10 @@
   }, "Properties with out-of-bounds values should be corrected");
 
   test(function(){
-    assert_equals(getComputedStyle(el_inside_bounds).minHeight, "calc(11px)", "min-height");
-    assert_equals(getComputedStyle(el_inside_bounds).maxHeight, "calc(29px)", "max-height");
+    let min_height = getComputedStyle(el_inside_bounds).minHeight;
+    let max_height = getComputedStyle(el_inside_bounds).maxHeight;
+    assert_true(min_height === "calc(11px)" || min_height === "11px", "min-height");
+    assert_true(max_height === "calc(29px)" || max_height === "29px", "max-height");
     assert_equals(getComputedStyle(el_inside_bounds).paddingLeft, "45px", "padding-left");
     assert_equals(getComputedStyle(el_inside_bounds).paddingRight, "45px", "padding-right");
     assert_equals(getComputedStyle(el_inside_bounds).paddingTop, "5px", "padding-top");

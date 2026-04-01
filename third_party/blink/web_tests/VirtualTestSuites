@@ -2519,7 +2519,7 @@
       "external/wpt/html/semantics/permission-element"
     ],
     "args": [
-      "--enable-blink-features=UserMediaElement"
+      "--enable-blink-features=UserMediaElement,InstallElement"
     ],
     "owners": [
       "permissions-core@google.com"
