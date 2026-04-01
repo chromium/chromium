@@ -168,7 +168,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // Returns the index of the group.
   std::optional<size_t> GetIndexOfGroup(const base::Uuid& guid) const;
 
-
   // Creates the overflow button that houses saved tab groups that are not
   // visible in the SavedTabGroupBar.
   std::unique_ptr<SavedTabGroupOverflowButton> CreateOverflowButton();
@@ -183,8 +182,7 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // the maximum visible.
   bool ShouldShowOverflowButtonForWidth(int max_width) const;
 
-  // Updates `resumption_iph_dismissed_` based on Projects Panel feature state
-  // and user education grace periods.
+  // Updates `resumption_iph_dismissed_` based on Projects Panel feature state.
   void UpdateResumptionRailIPHDismissedState();
 
   // Returns whether the overflow button is explicitly hidden by logic (e.g. for
@@ -221,9 +219,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // we should not show an indicator anywhere at all.
   std::optional<int> CalculateDropIndicatorIndexInCombinedSpace() const;
 
-  // Provides a callback that returns the page navigator
-  base::RepeatingCallback<content::PageNavigator*()> GetPageNavigatorGetter();
-
   // animations have been noted to cause issues with tests in the bookmarks bar.
   // this boolean lets the SavedTabGroupButton choose whether they want to
   // animate or not.
@@ -252,14 +247,11 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   base::ScopedObservation<views::Widget, SavedTabGroupBar> widget_observation_{
       this};
 
-
-  // Returns WeakPtrs used in GetPageNavigatorGetter(). Used to ensure
-  // safety if BookmarkBarView is deleted after getting the callback.
-  // Factory for creating WeakPtrs to this class. This is used to ensure that
-  // callbacks to this class are not run after the class is destroyed.
-
+  // True if the IPH has been dismissed by the user.
   bool resumption_iph_dismissed_ = false;
 
+  // Factory for creating WeakPtrs to this class. This is used to ensure that
+  // callbacks to this class are not run after the class is destroyed.
   base::WeakPtrFactory<SavedTabGroupBar> weak_ptr_factory_{this};
 };
 

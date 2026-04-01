@@ -129,6 +129,11 @@ class ResumptionRailPromoTest
     }
     ASSERT_TRUE(tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
         browser()->profile()));
+
+    // Simulate an old profile so the button shows by default without
+    // interference from the new profile grace period. Tests that need to test
+    // a new profile will override this.
+    SetProfileCreationTime(base::Time::Now() - base::Days(30));
   }
 
   auto AddTabGroupsToForceOverflow() {
@@ -152,6 +157,16 @@ class ResumptionRailPromoTest
   }
 
  protected:
+  void SetProfileCreationTime(base::Time time) {
+    Profile* profile = browser()->profile();
+    profile->SetCreationTimeForTesting(time);
+    auto* service = UserEducationServiceFactory::GetForBrowserContext(profile);
+    if (service) {
+      service->user_education_storage_service()
+          .set_profile_creation_time_for_testing(time);
+    }
+  }
+
   bool can_show_aim_ = false;
   bool can_show_gemini_ = false;
 
@@ -311,20 +326,10 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest, QueuePromoIfAnotherActive) {
       WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }
 
-// TODO(crbug.com/497983821): Flaky on ChromeOS and Linux
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile \
-  DISABLED_HideOverflowButtonWithinGracePeriodIfNewProfile
-#else
-#define MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile \
-  HideOverflowButtonWithinGracePeriodIfNewProfile
-#endif
 IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
-                       MAYBE_HideOverflowButtonWithinGracePeriodIfNewProfile) {
-  auto* service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
-  service->user_education_storage_service()
-      .set_profile_creation_time_for_testing(base::Time::Now());
+                       ShowOverflowButtonWithinGracePeriodForNewProfile) {
+  // Set the profile creation time to be now, within the grace period.
+  SetProfileCreationTime(base::Time::Now());
 
   RunTestSequence(
       WaitForShow(kBookmarkBarElementId),
@@ -332,56 +337,40 @@ IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
       WaitForShow(kVerticalTabStripProjectsButtonElementId),
       // Add enough groups to force the overflow button to appear.
       AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
-      // The overflow button should be hidden because the profile is new.
-      WaitForHide(kSavedTabGroupOverflowButtonElementId),
-      // Advance time to pass the grace period for the promo.
-      AdvanceTime(user_education::features::GetNewProfileGracePeriod() +
-                  base::Days(1)),
-      // Still should be hidden.
-      WaitForHide(kSavedTabGroupOverflowButtonElementId));
+      // The overflow button should be shown even if the profile is new.
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
+      // Verify the button is functional by pressing it.
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      // The overflow menu should be visible after pressing the button.
+      WaitForShow(tab_groups::STGEverythingMenu::kCreateNewTabGroup));
 }
 
 IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
-                       HideOverflowButtonAfterGracePeriodIfNewProfile) {
-  auto* service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
-  service->user_education_storage_service()
-      .set_profile_creation_time_for_testing(base::Time::Now());
+                       TriggerPromoAfterGracePeriodForNewProfile) {
+  // Override the fixture's legacy profile simulation. Make it a new profile.
+  SetProfileCreationTime(base::Time::Now());
 
   RunTestSequence(
+      WaitForShow(kBookmarkBarElementId),
+      Do([this]() { RunScheduledLayouts(); }),
+      WaitForShow(kVerticalTabStripProjectsButtonElementId),
+      // Add enough groups to force the overflow button to appear.
+      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
+      // The overflow button should be shown even if the profile is new.
+      WaitForShow(kSavedTabGroupOverflowButtonElementId),
       // Advance time to pass the grace period for the promo.
       AdvanceTime(user_education::features::GetNewProfileGracePeriod() +
                   base::Days(1)),
-      WaitForShow(kBookmarkBarElementId),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kVerticalTabStripProjectsButtonElementId),
-      // Add enough groups to force the overflow button to appear.
-      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
-      // Everything button should be hidden.
-      WaitForHide(kSavedTabGroupOverflowButtonElementId));
-}
-
-IN_PROC_BROWSER_TEST_F(ResumptionRailPromoTest,
-                       ShowOverflowButtonIfLegacyProfile) {
-  auto* service =
-      UserEducationServiceFactory::GetForBrowserContext(browser()->profile());
-  service->user_education_storage_service()
-      .set_profile_creation_time_for_testing(
-          base::Time::Now() -
-          user_education::features::GetNewProfileGracePeriod() - base::Days(1));
-
-  RunTestSequence(
-      WaitForShow(kBookmarkBarElementId),
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kVerticalTabStripProjectsButtonElementId),
-      // Add enough groups to force the overflow button to appear.
-      AddTabGroupsToForceOverflow(), WaitForShow(kSavedTabGroupBarElementId),
-      // The overflow button should be visible because the profile is legacy.
+      // Verify the button is still visible.
       CheckView(kSavedTabGroupOverflowButtonElementId,
                 [](views::View* view) { return view->GetVisible(); }),
+      // Click the button, triggering the promo now that the grace period is
+      // over.
       PressButton(kSavedTabGroupOverflowButtonElementId),
       // The IPH should trigger.
       WaitForPromo(feature_engagement::kIPHResumptionRailFeature),
-      // Should hide the Everything button.
+      // Click the new Projects button to dismiss the promo.
+      PressButton(kVerticalTabStripProjectsButtonElementId),
+      // Should hide the Everything menu button.
       WaitForHide(kSavedTabGroupOverflowButtonElementId));
 }

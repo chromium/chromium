@@ -292,37 +292,6 @@ void SavedTabGroupBar::UpdateResumptionRailIPHDismissedState() {
 
   resumption_iph_dismissed_ = interface->HasFeaturePromoBeenDismissed(
       feature_engagement::kIPHResumptionRailFeature);
-
-  if (resumption_iph_dismissed_) {
-    return;
-  }
-
-  // New profiles within their grace period should be treated as having
-  // the IPH dismissed so that the Everything button remains hidden. We
-  // silently save the dismissed state in storage to satisfy UserEducation
-  // visibility checks without triggering a visual promo.
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(browser_->GetProfile());
-  if (!service) {
-    return;
-  }
-
-  auto& storage = service->user_education_storage_service();
-  const base::Time creation_time = storage.profile_creation_time();
-  const base::TimeDelta grace_period =
-      user_education::features::GetNewProfileGracePeriod();
-
-  if (!creation_time.is_null() &&
-      base::Time::Now() < creation_time + grace_period) {
-    user_education::FeaturePromoData data;
-    if (const auto existing = storage.ReadPromoData(
-            feature_engagement::kIPHResumptionRailFeature)) {
-      data = *existing;
-    }
-    data.is_dismissed = true;
-    storage.SavePromoData(feature_engagement::kIPHResumptionRailFeature, data);
-    resumption_iph_dismissed_ = true;
-  }
 }
 
 void SavedTabGroupBar::OnInitialized() {
@@ -502,13 +471,13 @@ void SavedTabGroupBar::ShowEverythingMenu() {
       params.close_callback =
           base::BindOnce(&SavedTabGroupBar::OnResumptionRailPromoClosed,
                          weak_ptr_factory_.GetWeakPtr());
-      interface->MaybeShowFeaturePromo(std::move(params));
+      // If the IPH isn't able to be shown (e.g., because the profile creation
+      // time is within the new user grace period), the button should fallback
+      // to showing the everything menu.
+      if (interface->MaybeShowFeaturePromo(std::move(params))) {
+        return;
+      }
     }
-  }
-
-  // if other feature overrides the everything menu do nothing.
-  if (tab_groups::IsProjectsPanelFeatureEnabled()) {
-    return;
   }
 
   ShowEverythingMenuInternal();
