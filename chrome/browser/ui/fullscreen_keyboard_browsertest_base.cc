@@ -104,10 +104,10 @@ BrowserWindowInterface* FullscreenKeyboardBrowserTestBase::GetActiveBrowser()
 BrowserWindowInterface*
 FullscreenKeyboardBrowserTestBase::CreateNewBrowserInstance() {
   BrowserWindowInterface* const first_instance = GetActiveBrowser();
-  const size_t initial_browser_count = GetBrowserCount();
+  ui_test_utils::BrowserCreatedObserver creation_observer;
   EXPECT_NO_FATAL_FAILURE(SendShortcut(ui::VKEY_N));
-  WaitForBrowserCount(initial_browser_count + 1);
-  BrowserWindowInterface* const second_instance = GetActiveBrowser();
+  BrowserWindowInterface* const second_instance = creation_observer.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(second_instance);
   EXPECT_NE(first_instance, second_instance);
 
   return second_instance;
@@ -418,9 +418,11 @@ void FullscreenKeyboardBrowserTestBase::VerifyShortcutsAreNotPrevented() {
   WaitForTabCount(initial_tab_count);
   ASSERT_EQ(initial_active_index, GetActiveTabIndex());
 
+  ui_test_utils::BrowserCreatedObserver creation_observer;
   // A new window should be created and focused.
   ASSERT_NO_FATAL_FAILURE(SendShortcut(ui::VKEY_N));
-  WaitForBrowserCount(initial_browser_count + 1);
+  Browser* new_browser = creation_observer.Wait();
+  ui_test_utils::WaitForBrowserSetLastActive(new_browser);
   ASSERT_EQ(initial_browser_count + 1, GetBrowserCount());
 
   // The newly created window should be closed.
