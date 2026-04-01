@@ -5,6 +5,7 @@
 import("//tools/typescript/ts_library.gni")
 
 ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   in_files = [
     "eslint_ts.config_base.js",
     "inline_event_handler.js",
@@ -16,8 +17,17 @@ ts_library("build_ts") {
     "no_mixed_type_and_value_imports.js",
     "polymer_property_class_member.js",
     "polymer_property_declare.js",
-    "query_utils.js",
+    "query_utils.ts",
     "web_component_missing_deps.js",
     "webui_eslint_plugin.js",
+  ]
+
+  path_mappings = [
+    "/third_party/node/node_modules/@typescript-eslint/*|" +
+        rebase_path("//third_party/node/node_modules/@typescript-eslint/*",
+                    target_gen_dir),
+    "/third_party/node/node_modules/esquery/dist/esquery.esm.min.js|" +
+        rebase_path("//third_party/node/node_modules/@types/esquery/index.d.ts",
+                    target_gen_dir),
   ]
 }

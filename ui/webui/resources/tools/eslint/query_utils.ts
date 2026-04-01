@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {TSESTree} from '/third_party/node/node_modules/@typescript-eslint/types/dist/index.js';
+import {AST_NODE_TYPES} from '/third_party/node/node_modules/@typescript-eslint/utils/dist/index.js';
 import esquery from '/third_party/node/node_modules/esquery/dist/esquery.esm.min.js';
 import assert from 'node:assert';
 import path from 'node:path';
@@ -10,6 +12,7 @@ import path from 'node:path';
 // https://github.com/eslint/eslint/issues/16555,
 // https://eslint.org/docs/latest/extend/selectors#known-issues
 // where forward slashes are not properly escaped in regular expressions
+// appearing in AST selectors.
 export const LIT_IMPORT_REGEX =
     ['resources', 'lit', 'v3_0', 'lit.rollup.js$'].join('\\u002F');
 
@@ -19,14 +22,15 @@ export const CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR =
 export const POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR =
     'CallExpression[callee.name=/Mixin(Polymer)?$/][arguments.0.name="PolymerElement"]';
 
-export function isCrLitElementSubclass(node, programNode) {
-  assert.ok(node.type === 'ClassDeclaration');
+export function isCrLitElementSubclass(
+    node: TSESTree.ClassDeclaration, programNode: TSESTree.Program): boolean {
+  assert.ok(node.type === AST_NODE_TYPES.ClassDeclaration);
 
   if (!node.superClass) {
     return false;
   }
 
-  if (node.superClass.type === 'Identifier') {
+  if (node.superClass.type === AST_NODE_TYPES.Identifier) {
     if (node.superClass.name === 'CrLitElement') {
       // Case1: 'MyElement extends CrLitElement {...}'
       return true;
@@ -42,7 +46,7 @@ export function isCrLitElementSubclass(node, programNode) {
     return matchingNodes.length > 0;
   }
 
-  if (node.superClass.type === 'CallExpression') {
+  if (node.superClass.type === AST_NODE_TYPES.CallExpression) {
     // Case3: 'MyElement extends SomeMixin(SomeOtherMixin(CrLitElement)) {...}'
     const selector = esquery.parse(CR_LIT_ELEMENT_EXTENDS_MIXIN_SELECTOR);
     const matchingNodes = esquery.match(node.superClass, selector);
@@ -52,14 +56,15 @@ export function isCrLitElementSubclass(node, programNode) {
   return false;
 }
 
-export function isPolymerElementSubclass(node, programNode) {
-  assert.ok(node.type === 'ClassDeclaration');
+export function isPolymerElementSubclass(
+    node: TSESTree.ClassDeclaration, programNode: TSESTree.Program): boolean {
+  assert.ok(node.type === AST_NODE_TYPES.ClassDeclaration);
 
   if (!node.superClass) {
     return false;
   }
 
-  if (node.superClass.type === 'Identifier') {
+  if (node.superClass.type === AST_NODE_TYPES.Identifier) {
     if (node.superClass.name === 'PolymerElement') {
       // Case1: 'MyElement extends PolymerElement {...}'
       return true;
@@ -75,7 +80,7 @@ export function isPolymerElementSubclass(node, programNode) {
     return matchingNodes.length > 0;
   }
 
-  if (node.superClass.type === 'CallExpression') {
+  if (node.superClass.type === AST_NODE_TYPES.CallExpression) {
     // Case3: 'MyElement extends
     // SomeMixin(SomeOtherMixin(PolymerElement)) {...}'
     const selector = esquery.parse(POLYMER_ELEMENT_EXTENDS_MIXIN_SELECTOR);
@@ -86,18 +91,28 @@ export function isPolymerElementSubclass(node, programNode) {
   return false;
 }
 
-export function dashCaseToCamelCase(string) {
-  return string.replace(/-([a-z])/g, group => group[1].toUpperCase());
+export function dashCaseToCamelCase(string: string): string {
+  return string.replace(/-([a-z])/g, group => group[1]!.toUpperCase());
+}
+
+interface ClassImportInfo {
+  // The type of the "this" parameter in the getHtml() method.
+  type: string;
+  // The name of the file the class type is imported from.
+  fileName: string;
 }
 
 // Extracts information about the imported element class from a Lit element
-// template file. Returns an object containing 2 properties:
-// type: The type of the "this" parameter in the getHtml() method.
-// fileName: The name of the file the class type is imported from.
-export function extractClassImport(node, programNode) {
-  assert.ok(node.type === 'FunctionDeclaration' && node.id.name === 'getHtml');
+// template file.
+export function extractClassImport(
+    node: TSESTree.FunctionDeclaration,
+    programNode: TSESTree.Program): ClassImportInfo {
+  assert.ok(
+      node.type === AST_NODE_TYPES.FunctionDeclaration &&
+      node.id!.name === 'getHtml');
   const paramSelector = esquery.parse('Identifier[name="this"]');
-  const matchingNodes = esquery.match(node, paramSelector);
+  const matchingNodes =
+      esquery.match(node, paramSelector) as TSESTree.Identifier[];
   if (matchingNodes.length === 0) {
     // Case where there is no "this" parameter for the getHtml() method
     return {
@@ -106,20 +121,24 @@ export function extractClassImport(node, programNode) {
     };
   }
 
-  const type = matchingNodes[0].typeAnnotation.typeAnnotation.typeName.name;
+  const typeReference = matchingNodes[0]!.typeAnnotation!.typeAnnotation as
+      TSESTree.TSTypeReference;
+  const type = (typeReference.typeName as TSESTree.Identifier).name;
+
   // Find the URL of the import that imports the class.
   const importNodeQuery = esquery.parse('ImportDeclaration');
-  const importNodes = esquery.match(programNode, importNodeQuery);
+  const importNodes = esquery.match(programNode, importNodeQuery) as
+      TSESTree.ImportDeclaration[];
 
-  const classImport = importNodes
-                          .find(importNode => {
-                            return importNode.specifiers.some(specifier => {
-                              return specifier.local.name === type;
-                            });
-                          })
-                          .source.value;
+  const classImportNode = importNodes.find(importNode => {
+    return importNode.specifiers.some(specifier => {
+      return specifier.local.name === type;
+    });
+  });
+  assert.ok(!!classImportNode);
+
   return {
     type: type,
-    fileName: path.basename(classImport).replace('.js', '.ts'),
+    fileName: path.basename(classImportNode.source.value).replace('.js', '.ts'),
   };
 }
