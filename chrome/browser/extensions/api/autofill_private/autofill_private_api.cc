@@ -1164,8 +1164,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
                                entity_instance->record_type())) {
     // If the request is successfully started, the callback will handle the
     // response.
-    if (TrySavePrivatePassWithWalletAPI(*entity_instance,
-                                        parameters->ui_context)) {
+    if (TrySavePrivatePassWithWalletAPI(*entity_instance)) {
       return RespondLater();
     }
 
@@ -1186,9 +1185,7 @@ AutofillPrivateAddOrUpdateEntityInstanceFunction::Run() {
 }
 
 bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
-    TrySavePrivatePassWithWalletAPI(
-        const EntityInstance& entity_instance,
-        const api::autofill_private::EntityUiContext& ui_context) {
+    TrySavePrivatePassWithWalletAPI(const EntityInstance& entity_instance) {
   if (!base::FeatureList::IsEnabled(
           autofill::features::kAutofillAiWalletPrivatePasses)) {
     return false;
@@ -1200,17 +1197,14 @@ bool AutofillPrivateAddOrUpdateEntityInstanceFunction::
 
   if (autofill::WalletPassAccessManager* pass_manager =
           autofill_client()->GetWalletPassAccessManager()) {
-    consent_auditor::ConsentAuditor::SessionId session_id;
-    // When the feature flag is disabled, `SaveWalletEntityInstance()`
-    // doesn't require a valid `session_id`.
-    if (base::FeatureList::IsEnabled(
-            wallet::features::kWalletApiPrivatePassesConsent)) {
-      session_id = RecordWalletPrivatePassConsent(
-          ui_context.ui_string_ids, ui_context.clicked_button_string_id,
-          *autofill_client());
-    }
+    // When WalletApiPrivatePassesConsent is disabled,
+    // `SaveWalletEntityInstance()` doesn't require a valid `session_id`.
+    // TODO(crbug.com/489354073): Log consent by calling
+    // `RecordWalletPrivatePassConsent()` using the strings that are displayed
+    // in the UI. Sadly, the string IDs will need to be hardcoded here,
+    // since only the strings themselves are available in TypeScript code.
     pass_manager->SaveWalletEntityInstance(
-        entity_instance, session_id,
+        entity_instance, consent_auditor::ConsentAuditor::GenerateSessionId(),
         base::BindOnce(&AutofillPrivateAddOrUpdateEntityInstanceFunction::
                            OnSavePrivatePassToWalletFinished,
                        base::RetainedRef(this), entity_instance));

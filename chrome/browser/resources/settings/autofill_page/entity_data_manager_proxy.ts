@@ -4,7 +4,6 @@
 
 type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
-type EntityUiContext = chrome.autofillPrivate.EntityUiContext;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
 
@@ -20,9 +19,7 @@ export interface EntityDataManagerProxy {
    * Adds a new entity instance if it doesn't exist yet. Otherwise, it updates
    * the entity instance.
    */
-  addOrUpdateEntityInstance(
-      entityInstance: EntityInstance,
-      uiContext: EntityUiContext): Promise<void>;
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void>;
 
   /**
    * Remove the entity instance by its id.
@@ -108,11 +105,8 @@ export interface EntityDataManagerProxy {
 }
 
 export class EntityDataManagerProxyImpl implements EntityDataManagerProxy {
-  addOrUpdateEntityInstance(
-      entityInstance: EntityInstance,
-      uiContext: EntityUiContext): Promise<void> {
-    return chrome.autofillPrivate.addOrUpdateEntityInstance(
-        entityInstance, uiContext);
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {
+    return chrome.autofillPrivate.addOrUpdateEntityInstance(entityInstance);
   }
 
   removeEntityInstance(guid: string) {

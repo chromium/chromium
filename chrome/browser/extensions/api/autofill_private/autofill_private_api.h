@@ -23,10 +23,6 @@ class DeviceAuthenticator;
 
 namespace extensions {
 
-namespace api::autofill_private {
-struct EntityUiContext;
-}  // namespace api::autofill_private
-
 // A small helper class that exposes getters for Autofill's data managers.
 class AutofillPrivateExtensionFunction : public ExtensionFunction {
  public:
@@ -474,8 +470,7 @@ class AutofillPrivateAddOrUpdateEntityInstanceFunction
   // `entity_instance` through the Wallet API. Returns true if the async request
   // was started, false otherwise.
   bool TrySavePrivatePassWithWalletAPI(
-      const autofill::EntityInstance& entity_instance,
-      const api::autofill_private::EntityUiContext& ui_context);
+      const autofill::EntityInstance& entity_instance);
 
   // Callback for the WalletPassAccessManager::SaveWalletEntityInstance request
   // for private passes.

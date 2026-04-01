@@ -9,7 +9,6 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 type AttributeType = chrome.autofillPrivate.AttributeType;
 type EntityInstance = chrome.autofillPrivate.EntityInstance;
-type EntityUiContext = chrome.autofillPrivate.EntityUiContext;
 type EntityInstanceWithLabels = chrome.autofillPrivate.EntityInstanceWithLabels;
 type EntityType = chrome.autofillPrivate.EntityType;
 
@@ -112,12 +111,9 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     this.autoResolveSave_ = autoResolve;
   }
 
-  addOrUpdateEntityInstance(
-      entityInstance: EntityInstance,
-      uiContext: EntityUiContext): Promise<void> {
+  addOrUpdateEntityInstance(entityInstance: EntityInstance): Promise<void> {
     this.methodCalled(
-        'addOrUpdateEntityInstance', structuredClone(entityInstance),
-        structuredClone(uiContext));
+        'addOrUpdateEntityInstance', structuredClone(entityInstance));
     if (this.autoResolveSave_) {
       return Promise.resolve();
     }
