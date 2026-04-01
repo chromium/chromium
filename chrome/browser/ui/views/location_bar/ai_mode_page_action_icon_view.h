@@ -43,6 +43,8 @@ class AiModePageActionIconView : public PageActionIconView {
 
   // views::View:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   void ExecuteWithKeyboardSourceForTesting();
 
