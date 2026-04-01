@@ -1034,12 +1034,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Tests the deletion of all read entries.
 - (void)testDeleteAllReadEntries {
-  // TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
 
   TapToolbarButtonWithID(kReadingListToolbarDeleteAllReadButtonID);
@@ -1104,12 +1098,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Marks all read entries as unread.
 - (void)testMarkAllUnread {
-  // TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -1131,12 +1119,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Marks all read entries as unread, when there is a lot of entries. This is to
 // prevent crbug.com/1013708 and crbug.com/1246283 from regressing.
 - (void)testMarkAllUnreadLotOfEntry {
-  // TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddLotOfEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -1151,12 +1133,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Selects an unread entry and mark it as read.
 - (void)testMarkEntriesRead {
-  // TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
   TapEntry(kUnreadTitle);
 
@@ -1174,12 +1150,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 
 // Selects an read entry and mark it as unread.
 - (void)testMarkEntriesUnread {
-  // TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   AddEntriesAndEnterEdit();
   TapEntry(kReadTitle);
 
@@ -1248,12 +1218,6 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 // Tests that you can delete multiple read items in the Reading List without
 // creating a crash (crbug.com/701956).
 - (void)testDeleteMultipleItems {
-// TODO(crbug.com/429610821): Re-enable the test on iOS26.
-
-  if (iOS26_OR_ABOVE()) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
-  }
-
   // Add entries.
   for (int i = 0; i < 11; i++) {
     NSURL* url =
