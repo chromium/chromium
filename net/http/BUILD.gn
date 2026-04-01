@@ -30,7 +30,7 @@ compiled_action("transport_security_state_unittest_data_default") {
     "transport_security_state_static_unittest_default.json",
     "transport_security_state_static_unittest_default_pins.json",
     "transport_security_state_static_unittest_default.pins",
-    "transport_security_state_static_unittest.template",
+    "transport_security_state_static.template",
   ]
   outputs =
       [ "$target_gen_dir/transport_security_state_static_unittest_default.h" ]
@@ -51,7 +51,7 @@ compiled_action_foreach("transport_security_state_unittest_data") {
   # Inputs in order expected by the command line of the tool.
   source_independent_inputs = [
     "transport_security_state_static_unittest.pins",
-    "transport_security_state_static_unittest.template",
+    "transport_security_state_static.template",
   ]
 
   # All possible inputs to ensure correctness when files change.

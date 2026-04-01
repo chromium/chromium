@@ -5,10 +5,15 @@
 #ifndef NET_HTTP_TRANSPORT_SECURITY_STATE_SOURCE_H_
 #define NET_HTTP_TRANSPORT_SECURITY_STATE_SOURCE_H_
 
+// Note that this include list also includes all the headers for types used
+// in the generated output of transport_security_state_static.template.
+
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/time/time.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 
