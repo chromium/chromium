@@ -1178,6 +1178,7 @@
 <translation id="2837891525090413132">আপনার কীবোর্ড লক এবং ব্যবহার করার কথা বলতে পারবেন</translation>
 <translation id="2839032553903800133">বিজ্ঞপ্তি ব্লক করা হয়েছে</translation>
 <translation id="2839501879576190149">আপনি যে সাইটটি ভিজিট করতে চলেছেন সেটি ভুয়ো</translation>
+<translation id="2840680829170913626">এইসব বিকল্প অফার করতে, চেক-আউট করার পৃষ্ঠায় থাকা কন্টেন্ট Google-এর সাথে শেয়ার করা হয়। পেমেন্ট প্ল্যান উপযুক্ততার উপর নির্ভর করে। অটোফিল থেকে পরে পেমেন্ট করার বিকল্প লুকাতে, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />-এ যান।</translation>
 <translation id="2843623755398178332">আপনার শেয়ার করা ট্যাব স্ক্রল ও জুম করবেন?</translation>
 <translation id="2851291081585704741">আপনি অফলাইন আছেন</translation>
 <translation id="2854163610915391726">আপনার Google অ্যাকাউন্টে Chrome-এর কোন তথ্য সেভ করবেন তা ম্যানেজ করুন</translation>
@@ -1389,6 +1390,7 @@
 <translation id="3162070126914310576">এই ডিভাইসটি এখন এনরোল করা যাবে না কারণ আপনার সংস্থার ইউনিট এনরোল করার প্রথমিক সীমায় পৌঁছে গেছে। সাহায্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="3162559335345991374">আপনি যে ওয়াই-ফাইটি ব্যবহার করছেন সেটির জন্য অপনাকে এটির লগ-ইন পৃষ্ঠাতে যেতে হতে পরে৷</translation>
 <translation id="316638481603975524">ওয়েব অ্যাপ ইনস্টল করার অনুমতি চাওয়া হতে পারে</translation>
+<translation id="3166788340998560642">পরেরবার ব্যবহার করার সময় Chrome এটি <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-এ সেভ করার সুযোগ দেবে</translation>
 <translation id="3168744840365648658">রেডিওর সরঞ্জাম</translation>
 <translation id="3168938241115725594">ক্লাসিক যানবাহন</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
@@ -2417,6 +2419,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ ব্লক করা হয়েছে}one{#টি পপ-আপ ব্লক করা হয়েছে}other{#টি পপ-আপ ব্লক করা হয়েছে}}</translation>
 <translation id="4780320432697076749">ফটো সফ্টওয়্যার</translation>
 <translation id="4780366598804516005">মেলবক্স ১</translation>
+<translation id="4785273477715803444">লগ ফিল্টার করুন</translation>
 <translation id="4785376858512657294">Google অ্যাকাউন্ট ম্যানেজ করুন</translation>
 <translation id="4785689107224900852">এই ট্যাবে পরিবর্তন করুন</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" সার্চ করা হচ্ছে</translation>
@@ -3059,6 +3062,7 @@
 <translation id="5759751709240058861">আপনার ক্যামেরা ব্যবহার করুন এবং সরান</translation>
 <translation id="5762131895127128324">ড্রাইভিং লাইসেন্স · আইডি কার্ড · পাসপোর্ট</translation>
 <translation id="5763042198335101085">একটি সঠিক ইমেল আইডি লিখুন</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{আজ ব্যবহার করা হয়েছে}=1{১ দিন আগে ব্যবহার করা হয়েছে}one{# দিন আগে ব্যবহার করা হয়েছে}other{# দিন আগে ব্যবহার করা হয়েছে}}</translation>
 <translation id="5764725887548570807">অরিজিন ফর্ম্যাটটি সঠিক নয়।</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />-এ পাঠান</translation>
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>

@@ -1772,6 +1772,7 @@
 <translation id="3744899669254331632"><ph name="SITE" /> から送信された暗号化済みの認証情報を Chromium で処理できないため、現在このウェブサイトにアクセスできません。通常、ネットワーク エラーやネットワークへの攻撃は一時的なものです。しばらくするとページにアクセスできるようになります。</translation>
 <translation id="3745599309295009257">入力したテキストとページのコンテンツおよび URL が Google に送信され、人間による確認が行われ、この機能の改善に使用されます。個人情報（医療や財務情報など）を入力したり、個人情報や機密情報を含むサイトでこのツールを使用したりしないでください。</translation>
 <translation id="3748009735914587286">金属（高光沢）</translation>
+<translation id="3748647055058832337">この販売者ではご利用いただけません</translation>
 <translation id="3749600200023337912">保存した自動支払い方法をこの支払いで使用できます。Chrome で電子ウォレットまたは決済アプリをオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="3752181611900535304">アカウントに住所を保存しますか？</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> が設定されていないため無視されました。</translation>
@@ -2418,6 +2419,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ポップアップがブロックされました}other{# 件のポップアップがブロックされました}}</translation>
 <translation id="4780320432697076749">写真編集ソフトウェア</translation>
 <translation id="4780366598804516005">用紙受け 1</translation>
+<translation id="4785273477715803444">ログのフィルタ</translation>
 <translation id="4785376858512657294">Google アカウントを管理</translation>
 <translation id="4785689107224900852">このタブに切り替え</translation>
 <translation id="4785998536350006000">「<ph name="SEARCH_QUERY" />」を検索しています</translation>
@@ -3060,6 +3062,7 @@
 <translation id="5759751709240058861">カメラの使用と移動</translation>
 <translation id="5762131895127128324">運転免許証 · ID カード · パスポート</translation>
 <translation id="5763042198335101085">有効なメールアドレスを入力してください</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{アクティブ: 今日}=1{アクティブ: 1 日前}other{アクティブ: # 日前}}</translation>
 <translation id="5764725887548570807">オリジンの形式が無効です。</translation>
 <translation id="5764920692828389743">送信先: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
@@ -3890,6 +3893,7 @@
 <translation id="7057567173736333354">画像の説明を入力</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> で、このウェブサイトの証明書が <ph name="ISSUER" /> 発行のものであると確認されました。</translation>
 <translation id="7058774143982824355">CSV パスワード パーサー サービス</translation>
+<translation id="7059913660448028407">現在、ご利用いただけません</translation>
 <translation id="7062344833049251424">カードと請求先住所を Google ウォレットに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="706295145388601875">Chrome の設定で住所を追加、管理する</translation>
 <translation id="7063157783216323487">緑 2</translation>
@@ -4171,6 +4175,7 @@
 <translation id="7471007961486718967">転送する理由をお知らせください（必須）</translation>
 <translation id="7473033553872550521">サイトの所有者に連絡して、HTTPS へのアップグレードを提案することもできます。<ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">スキップ</translation>
+<translation id="7475618719385705713">このページはブロックされています</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481603210197454575">イタリア封筒</translation>
 <translation id="7482823403440483089">高精度の自動入力</translation>
@@ -4192,6 +4197,7 @@
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508577201115425418">コピー、印刷サービス</translation>
 <translation id="7510269639068718544">猫</translation>
+<translation id="7511707705708508147">サポートされていない通貨です</translation>
 <translation id="7511955381719512146">ご利用の Wi-Fi では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
 <translation id="7512685745044087310">このポリシーは「True」に設定して必須にすることはできません。このため、推奨値に変更されました。</translation>
 <translation id="7514365320538308">ダウンロード</translation>
@@ -4691,6 +4697,7 @@
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8282292167096638950">運転免許証の削除</translation>
 <translation id="8282409409360764263">庭のメンテナンス</translation>
+<translation id="828282277746732142">IBAN を Google ウォレットに保存</translation>
 <translation id="8282947398454257691">デバイス固有の ID の認識</translation>
 <translation id="8284769179630993263">Chrome の設定でセーフ ブラウジングなどを管理します</translation>
 <translation id="828558778104922222">不明なエラーが発生したため写真が失われました</translation>

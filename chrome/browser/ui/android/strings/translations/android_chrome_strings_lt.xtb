@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Siekiant apsaugoti jus, leidimai buvo pašalinti iš kai kurių svetainių</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1384704387250346179">Versti vaizdą su „Google Lens“ <ph name="BEGIN_NEW" />Nauja<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktyvus prieš <ph name="LAST_UPDATED" /> d.</translation>
 <translation id="1390418506739274310">Galite matyti kitų programų, kurios atidaro nuorodas naršyklėje „Chrome“, istoriją. „Google“ paskyroje gali būti kito tipo naršymo istorijos, kuri pasiekiama adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Kainų įžvalgų apatinis lapas atidarytas per visą ekrano aukštį</translation>
 <translation id="1397811292916898096">Paieška su „<ph name="PRODUCT_NAME" />“</translation>
@@ -136,7 +135,6 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1513352483775369820">Žymių ir žiniatinklio istorija</translation>
 <translation id="1515901671075971249">Skirtukų naršymo spartieji klavišai</translation>
 <translation id="1516966594427080024">Atidaryti naują langą inkognito režimu</translation>
-<translation id="1521774566618522728">Aktyvus šiandien</translation>
 <translation id="153446405401665083">Yra nauja „Chrome“ versija</translation>
 <translation id="1540012742443808215">Adreso juosta šiuo metu yra viršuje</translation>
 <translation id="1544084554881119930">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
@@ -222,6 +220,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="1925021887439448749">Įveskite tinkintą žiniatinklio adresą</translation>
 <translation id="1928618076168182477">Rodomas vaizdinis rodinys</translation>
 <translation id="1928696683969751773">Atnaujinimas</translation>
+<translation id="1934545916152269346">Neseniai naudota</translation>
 <translation id="1943398124995840148">XR atnaujintas atidarytų skirtukų dizainas</translation>
 <translation id="1944535645109964458">Nėra jokių slaptažodžių</translation>
 <translation id="1957557050935255529">Įkeliamas PDF…</translation>
@@ -1727,7 +1726,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7968014550143838305">Pridėta prie skaitymo sąrašo</translation>
 <translation id="7968982339740310781">Žiūrėti išsamią informaciją</translation>
 <translation id="7969391000881506217">Galiojimo laiko pabaigos data*</translation>
-<translation id="7971136598759319605">Aktyvus prieš 1 d.</translation>
 <translation id="7975379999046275268">Peržiūrėti puslapį <ph name="BEGIN_NEW" />Naujas<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Įspėjama, jei naudojate slaptažodį, kuris pažeistas dėl duomenų saugos pažeidimo.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> „Chrome“ pašalino šiuos leidimus, nes pastaruoju metu nesilankėte</translation>

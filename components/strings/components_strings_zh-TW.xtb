@@ -2416,6 +2416,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{已封鎖彈出式視窗}other{已封鎖 # 個彈出式視窗}}</translation>
 <translation id="4780320432697076749">相片軟體</translation>
 <translation id="4780366598804516005">出紙槽 1</translation>
+<translation id="4785273477715803444">篩選記錄</translation>
 <translation id="4785376858512657294">管理 Google 帳戶</translation>
 <translation id="4785689107224900852">切換至這個分頁</translation>
 <translation id="4785998536350006000">正在搜尋「<ph name="SEARCH_QUERY" />」</translation>
@@ -3058,6 +3059,7 @@
 <translation id="5759751709240058861">使用及調整攝影機</translation>
 <translation id="5762131895127128324">駕照 · 身分證 · 護照</translation>
 <translation id="5763042198335101085">請輸入有效的電子郵件地址</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{上次使用時間：今天}=1{上次使用時間：1 天前}other{上次使用時間：# 天前}}</translation>
 <translation id="5764725887548570807">來源格式無效。</translation>
 <translation id="5764920692828389743">傳送到 <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">如要查看快遞方式和相關規定，請選取一個地址</translation>

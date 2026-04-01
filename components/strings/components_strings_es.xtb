@@ -1177,6 +1177,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2837891525090413132">Puede solicitar permiso para bloquear y usar tu teclado</translation>
 <translation id="2839032553903800133">Notificaciones bloqueadas</translation>
 <translation id="2839501879576190149">Sitio web falso</translation>
+<translation id="2840680829170913626">El contenido de la página de tramitación de la compra se comparte con Google para ofrecer estas opciones. Los planes de pago están sujetos a requisitos. Si quieres ocultar las opciones de pago aplazado en Autocompletar, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">¿Desplazarte por la pestaña compartida y ampliarla?</translation>
 <translation id="2851291081585704741">No tienes conexión</translation>
 <translation id="2854163610915391726">Gestiona qué información de Chrome guardas en tu cuenta de Google</translation>
@@ -1388,6 +1389,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3162070126914310576">Este dispositivo no se puede registrar ahora mismo porque tu unidad organizativa ha alcanzado su límite de registro inicial. Ponte en contacto con tu administrador para obtener ayuda.</translation>
 <translation id="3162559335345991374">La red Wi-Fi que estás utilizando puede requerir que accedas a su página de inicio de sesión.</translation>
 <translation id="316638481603975524">Puede solicitar permiso para instalar aplicaciones web</translation>
+<translation id="3166788340998560642">Chrome te ofrecerá guardarla en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> la próxima vez que la uses</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
 <translation id="3168938241115725594">Vehículos clásicos</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2952,7 +2954,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5580958916614886209">Consulta el mes de vencimiento y vuelve a intentarlo</translation>
 <translation id="5583442610070676234">Más acciones para la tabla comparativa <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">No se ha podido guardar este IBAN en Google Wallet. Se ha guardado en Chrome en este dispositivo.</translation>
-<translation id="558420943003240152">Gestionar contraseñas y claves de acceso…</translation>
+<translation id="558420943003240152">Gestionar contraseñas y llaves de acceso…</translation>
 <translation id="5586446728396275693">Ninguna dirección guardada</translation>
 <translation id="5586831831248371458">Buscar en <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Usuario de la plataforma</translation>
@@ -3059,6 +3061,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5759751709240058861">Usar y mover tu cámara</translation>
 <translation id="5762131895127128324">Carnés de conducir · Documentos de identidad · Pasaportes</translation>
 <translation id="5763042198335101085">Introduce una dirección de correo electrónico válida</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Activo hoy}=1{Activo hace 1 día}other{Activo hace # días}}</translation>
 <translation id="5764725887548570807">Formato de origen no válido.</translation>
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Selecciona una dirección para ver los métodos de entrega y los requisitos</translation>
@@ -5292,7 +5295,7 @@ Más información:
 <translation id="962484866189421427">Este contenido podría intentar instalar aplicaciones engañosas que se hagan pasar por otra persona o recojan datos que podrían usarse para realizar un seguimiento de tu actividad. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="963734905955638680">De acuerdo con una ley de tu zona, Chromium te pide que elijas tu buscador predeterminado. Los buscadores que aparecen en la lista son populares en tu zona y se muestran en orden aleatorio.</translation>
 <translation id="963837307749850257">Todos los usuarios</translation>
-<translation id="964050462028070434">Gestionar contraseñas y claves de acceso…</translation>
+<translation id="964050462028070434">Gestionar contraseñas y llaves de acceso…</translation>
 <translation id="964681140808832181">Sí, quiero cancelarlo</translation>
 <translation id="969892804517981540">Build oficial</translation>
 <translation id="97054401902912338">Más información sobre los filtros de contenido</translation>

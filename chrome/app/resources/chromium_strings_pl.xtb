@@ -56,6 +56,7 @@
 <translation id="1639380494700489405">Aby zapytać w Trybie AI o daną kartę bez opuszczania strony, zaloguj się w Chromium. Będziesz też mieć dostęp do haseł i innych danych na wszystkich swoich urządzeniach.</translation>
 <translation id="1640672724030957280">Pobieram...</translation>
 <translation id="1680687534629375545">Zapytaj o tę stronę w usłudze wyszukiwania obrazów</translation>
+<translation id="1708414395296835197">Możesz używać Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i innych aplikacjach. Przeglądarka zostanie też przypięta do paska zadań.</translation>
 <translation id="1709772298389099340">Przyznaje podwyższone uprawnienia <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Aby pomóc w ulepszaniu tych funkcji, Chromium wysyła informacje o Twoich interakcjach z nimi do Google. Weryfikatorzy mogą odczytywać i przetwarzać te dane oraz dodawać do nich adnotacje.</translation>
 <translation id="1722488837206509557">Umożliwi Ci to wybranie dostępnych urządzeń i wyświetlanie na nich treści.</translation>
@@ -435,6 +436,7 @@
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – logowanie do sieci</translation>
 <translation id="5924017743176219022">Łączę z internetem…</translation>
+<translation id="5939553720811388432">Przygotujmy Chromium</translation>
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5949225980829865667">Aby mieć dostęp do tej zakładki i innych funkcji na wszystkich swoich urządzeniach, zaloguj się w Chromium</translation>
 <translation id="5953657885167112863">Dostosuj Chromium do swoich potrzeb</translation>

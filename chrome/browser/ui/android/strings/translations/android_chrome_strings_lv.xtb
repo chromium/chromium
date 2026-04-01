@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Lai saglabātu jūsu drošību, dažām vietnēm tika noņemtas atļaujas.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1384704387250346179">Tulkot attēlu ar Google Lens <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktīvs pirms <ph name="LAST_UPDATED" /> dienām</translation>
 <translation id="1390418506739274310">Var būt redzama vēsture no citām lietotnēm, kuru saites tiek atvērtas pārlūkā Chrome. Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Cenu ieskatu ekrāna apakšdaļas lapa ir atvērta pilnā augstumā</translation>
 <translation id="1397811292916898096">Meklēt, izmantojot meklētājprogramu <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="1513352483775369820">Grāmatzīmes un tīmekļa vēsture</translation>
 <translation id="1515901671075971249">Ciļņu navigācijas īsinājumtaustiņi</translation>
 <translation id="1516966594427080024">Atvērt jaunu logu inkognito režīmā</translation>
-<translation id="1521774566618522728">Aktīvs šodien</translation>
 <translation id="153446405401665083">Ir pieejama jauna pārlūka Chrome versija.</translation>
 <translation id="1540012742443808215">Adreses josla pašlaik atrodas augšdaļā</translation>
 <translation id="1544084554881119930">Maksājumu veidi un adreses netiks šifrēti. Pārlūkā Chrome saglabātā pārlūkošanas vēsture netiks sinhronizēta.
@@ -222,6 +220,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="1925021887439448749">Ievadiet pielāgotu tīmekļa adresi</translation>
 <translation id="1928618076168182477">Tiek rādīts vizuālais skats</translation>
 <translation id="1928696683969751773">Atjaunināšana</translation>
+<translation id="1934545916152269346">Nesenie meklēšanas vaicājumi</translation>
 <translation id="1943398124995840148">Jūsu atvērtajām cilnēm tagad ir atjaunināts izskats XR ierīcē</translation>
 <translation id="1944535645109964458">Nav pieejama neviena piekļuves atslēga</translation>
 <translation id="1957557050935255529">Notiek PDF faila ielāde…</translation>
@@ -1727,7 +1726,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="7968014550143838305">Pievienota lasīšanas sarakstam</translation>
 <translation id="7968982339740310781">Skatīt detalizētu informāciju</translation>
 <translation id="7969391000881506217">Derīguma termiņš*</translation>
-<translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Tiek rādīts brīdinājums, ja izmantojat paroli, kas ir uzlauzta datu aizsardzības pārkāpuma dēļ.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Pārlūkā Chrome tika noņemtas šīs atļaujas, jo pēdējā laikā neesat apmeklējis vietni</translation>

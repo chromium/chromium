@@ -2418,6 +2418,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Đã chặn cửa sổ bật lên}other{Đã chặn # cửa sổ bật lên}}</translation>
 <translation id="4780320432697076749">Phần mềm ảnh</translation>
 <translation id="4780366598804516005">Hộp thư 1</translation>
+<translation id="4785273477715803444">Lọc nhật ký</translation>
 <translation id="4785376858512657294">Quản lý Tài khoản Google</translation>
 <translation id="4785689107224900852">Chuyển sang thẻ này</translation>
 <translation id="4785998536350006000">Đang tìm "<ph name="SEARCH_QUERY" />"</translation>
@@ -3060,6 +3061,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5759751709240058861">Sử dụng và di chuyển máy ảnh</translation>
 <translation id="5762131895127128324">Giấy phép lái xe · Thẻ căn cước · Hộ chiếu</translation>
 <translation id="5763042198335101085">Nhập địa chỉ email hợp lệ</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Hoạt động hôm nay}=1{Hoạt động 1 ngày trước}other{Hoạt động # ngày trước}}</translation>
 <translation id="5764725887548570807">Định dạng nguồn gốc không hợp lệ.</translation>
 <translation id="5764920692828389743">Gửi tới <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Để xem các yêu cầu và phương thức phân phối, hãy chọn một địa chỉ</translation>

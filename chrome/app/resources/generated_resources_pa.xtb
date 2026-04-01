@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">ਮੁੱਖ ਨੋਡ ਐਨੋਟੇਸ਼ਨ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> ਦਾ ਹਮੇਸ਼ਾਂ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="1104098698795583187">ਤੁਸੀਂ ਤੁਰੰਤ ਇਸ ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੋਗੇ ਅਤੇ ਇਸਨੂੰ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
-<translation id="1105934302947321130">Zoom ਨਾਲ Google Beam</translation>
 <translation id="1106270460549661906">Gemini ਨਾਲ ਸਾਂਝਾ ਨਾ ਕਰੋ</translation>
 <translation id="1106350001632362876">ਨਿਊਨਤਮ ਸੀਮਾ ਨੂੰ ਵਧਾਓ</translation>
 <translation id="110850812463801904">OneDrive ਨਾਲ ਹੱਥੀਂ ਕਨੈਕਟ ਕਰੋ</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">ਤੁਹਾਡੇ ਬੱਚੇ ਦਾ ਪਿੰਨ ਅੱਪਡੇਟ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="1133418583142946603">ਮੋਜੂਦਾ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1133751489735776037">ਮਾਊਸ 'ਤੇ ਤਿੰਨ ਵਾਰ ਕਲਿੱਕ ਕਰੋ</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" /> ਵਿੱਚੋਂ <ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਲਾਕ ਹੋ ਗਈ ਹੈ ਕਿਉਂਕਿ ਗਲਤ ਪਿੰਨ ਬਹੁਤ ਵਾਰ ਦਾਖਲ ਕੀਤਾ ਗਿਆ। ਇਸਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ, ਕੱਢ ਕੇ ਮੁੜ-ਪਾਓ।</translation>
 <translation id="1137589305610962734">ਅਸਥਾਈ ਡਾਟਾ</translation>
 <translation id="1137673463384776352"><ph name="APP" /> ਵਿੱਚ ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">ਤੁਹਾਡੇ ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="1157952955648710254">Google Search ਸਾਈਡ ਪੈਨਲ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1158080958325422608">ਵੱਡੇ ਅੱਖਰਾਂ ਵਿੱਚ ਬਦਲੋ</translation>
+<translation id="1158134713295836892">Chrome ਵਿੱਚ Gemini</translation>
 <translation id="1159879754517035595">ਐਕਸਟੈਂਸ਼ਨ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1160800016654917722">ਵਿੰਡੋ ਨੂੰ ਹੇਠਾਂ ਅਤੇ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="1161190590171867633">ਤੁਲਨਾ ਸਾਰਨੀਆਂ ਨੂੰ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
@@ -765,7 +764,6 @@
 <translation id="1517467582299994451">ਕੋਡ ਨਾਲ ਕਾਸਟ ਕਰਨ ਲਈ, Chrome ਬ੍ਰਾਊਜ਼ਰ ਸਿੰਕ ਸੈਟਿੰਗਾਂ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="1521442365706402292">ਸਰਟੀਫਿਕੇਟ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="1521933835545997395">Android ਫ਼ੋਨ ਨਾਲ ਕਨੈਕਟ ਹੈ</translation>
 <translation id="1523279371236772909">ਪਿਛਲੇ ਮਹੀਨੇ ਦੇਖੀ ਗਈ</translation>
 <translation id="1523486680453956384">ਕਾਰਜ ਦੇਖੋ</translation>
@@ -3602,7 +3600,6 @@
 <translation id="3473241910002674503">ਟੈਬਲੈੱਟ ਮੋਡ ਵਿੱਚ ਬਟਨਾਂ ਨਾਲ ਹੋਮ 'ਤੇ ਜਾਓ, ਵਾਪਸ ਜਾਓ ਅਤੇ ਐਪਾਂ ਬਦਲੋ।</translation>
 <translation id="3473479545200714844">ਸਕ੍ਰੀਨ ਵਿਸਤਾਰਕ</translation>
 <translation id="3474218480460386727">ਨਵੇਂ ਸ਼ਬਦਾਂ ਲਈ 99 ਜਾਂ ਘੱਟ ਅੱਖਰ ਵਰਤੋ</translation>
-<translation id="3474330892505468100">Meet ਨਾਲ Google Beam</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> ਵਜੋਂ ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="3477772589943384839">ਔਸਤ ਮੈਮੋਰੀ ਬਚਤ ਪਾਓ। ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਲੰਬੇ ਸਮੇਂ ਤੋਂ ਬਾਅਦ ਅਕਿਰਿਆਸ਼ੀਲ ਹੋ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="347785443197175480"><ph name="HOST" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਅਤੇ ਮਾਈਕ੍ਰੋਫੋਨ ਤੇ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦੇਣਾ ਜਾਰੀ ਰੱਖੋ</translation>
@@ -4179,7 +4176,6 @@
 <translation id="3841964634449506551">ਅਵੈਧ ਪਾਸਵਰਡ</translation>
 <translation id="3842552989725514455">Serif ਫੌਂਟ</translation>
 <translation id="3843464315703645664">ਅੰਦਰੂਨੀ ਤੌਰ 'ਤੇ ਪ੍ਰਵਾਨਗੀ ਲਈ ਸੂਚੀਬੱਧ</translation>
-<translation id="3844888638014364087">ਇਮੋਜੀ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="3846116211488856547">ਵੈੱਬਸਾਈਟਾਂ, Android ਐਪਾਂ ਦਾ ਵਿਕਾਸ ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਕਰਨ ਲਈ ਟੂਲ ਪ੍ਰਾਪਤ ਕਰੋ। Linux ਸਥਾਪਤ ਕਰਨ ਲਈ <ph name="DOWNLOAD_SIZE" /> ਡਾਟਾ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3847319713229060696">ਵੈੱਬ 'ਤੇ ਸੁਰੱਖਿਆ ਨੂੰ ਹਰੇਕ ਲਈ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -5045,7 +5041,6 @@
 <translation id="4453430595102511050">ਆਪਣੇ ਕੀ-ਬੋਰਡ ਦੇ ਸਿਖਰਲੇ ਸੱਜੇ ਕੋਨੇ 'ਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸੈਂਸਰ 'ਤੇ ਸਪਰਸ਼ ਕਰੋ। ਤੁਹਾਡਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਤਰੀਕੇ ਨਾਲ ਸਟੋਰ ਕੀਤਾ ਜਾਂਦਾ ਹੈ ਅਤੇ ਕਦੇ ਵੀ ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਂਦਾ।</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> ਖੋਜੋ ਜਾਂ ਇੱਕ URL ਟਾਈਪ ਕਰੋ</translation>
 <translation id="4457472090507035117">ਵਰਤਮਾਨ ਅਵਾਜ਼ ਨੂੰ ਚੁਣੋ:</translation>
-<translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="4460014764210899310">ਗਰੁੱਪ ਹਟਾਓ</translation>
 <translation id="4461483878391246134">ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਦੀ ਪੇਸ਼ਕਸ਼ ਨਾ ਕਰਨ ਲਈ ਭਾਸ਼ਾਵਾਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="4462159676511157176">ਨਾਮ ਸਰਵਰ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
@@ -5799,6 +5794,7 @@
 <translation id="4990673372047946816">ਕੋਈ ਕੈਮਰਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="4991420928586866460">ਉੱਪਰਲੀ-ਕਤਾਰ ਦੀਆਂ ਕੁੰਜੀਆਂ ਨਾਲ ਫੰਕਸ਼ਨ ਕੁੰਜੀਆਂ ਦੇ ਤੌਰ ਤੇ ਵਿਵਹਾਰ ਕਰੋ</translation>
 <translation id="4991873517942703737">ਇਸ ਦਸਤਾਵੇਜ਼ ਬਾਰੇ ਪੁੱਛੋ</translation>
+<translation id="4992066212339426712">ਅਨਮਿਊਟ ਕਰੋ</translation>
 <translation id="4992443049233195791">Microsoft 365 ਫ਼ਾਈਲ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="4992458225095111526">ਪਾਵਰਵਾਸ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4992473555164495036">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਉਪਲਬਧ ਇਨਪੁੱਟ ਵਿਧੀਆਂ ਨੂੰ ਸੀਮਤ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
@@ -6779,7 +6775,6 @@
 <translation id="5701212929149679556">ਸੈਲਿਊਲਰ ਰੋਮਿੰਗ</translation>
 <translation id="5701786609538182967">ਹੋਰ ਐਪਾਂ <ph name="APP_NAME" /> ਵਾਂਗ ਉਹੀ ਲਿੰਕ ਖੋਲ੍ਹਣ ਲਈ ਤਿਆਰ ਹਨ। ਇਹ <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ਅਤੇ 1 ਹੋਰ ਐਪ ਨੂੰ ਸਹਾਇਤਾ ਲਈ ਲਿੰਕ ਖੋਲ੍ਹਣ ਤੋਂ ਰੋਕ ਦੇਵੇਗਾ।</translation>
 <translation id="5702161882524398150">ਪਿਛਲੀ ਟੈਬ ਬਾਰੇ ਪੁੱਛੋ</translation>
-<translation id="5702749864074810610">ਸੁਝਾਅ ਖਾਰਜ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5703716265115423771">ਵੌਲਿਊਮ ਘਟਾਓ</translation>
 <translation id="5703998022096520811">Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਜ਼ਿਆਦਾ ਜਾਣਕਾਰੀ ਭੇਜ ਕੇ ਅਸਲ-ਸਮੇਂ ਦੀ, ਚੁਸਤ ਸੁਰੱਖਿਆ</translation>
 <translation id="5704875434923668958">ਇਸ ਨਾਲ ਸਿੰਕ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -7583,7 +7578,6 @@
 <translation id="6270309713620950855">ਮਿਊਟ ਰਿਮਾਈਂਡਰ</translation>
 <translation id="6270391203985052864">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />ਸਿਸਟਮ ਅਤੇ ਐਪ ਜਾਣਕਾਰੀ<ph name="END_LINK1" />, ਅਤੇ <ph name="BEGIN_LINK2" />ਮਾਪਕ<ph name="END_LINK2" /> ਭੇਜੋ</translation>
-<translation id="6271348838875430303">ਸੁਧਾਈ ਨੂੰ ਅਣਕੀਤਾ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6271824294945464304">ਪਾਸਵਰਡ ਨੂੰ ਸਾਂਝਾ ਕਰਨਾ</translation>
 <translation id="6273677812470008672">ਕੁਆਲਿਟੀ</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> ਨਾਲ ਕਨੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -10554,7 +10548,6 @@
 <translation id="8339288417038613756">ਡਿਸਪਲੇ ਅਤੇ ਲਿਖਤ ਦਾ ਆਕਾਰ</translation>
 <translation id="833986336429795709">ਇਸ ਲਿੰਕ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ, ਕੋਈ ਐਪ ਚੁਣੋ</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
-<translation id="8341693734243413517">Chrome ਅੱਪਡੇਟਰ</translation>
 <translation id="8341804784147620576">ਖੋਜ ਸੰਬੰਧੀ ਸ਼ਾਰਟਕੱਟ ਦਿਖਾਓ</translation>
 <translation id="8342221978608739536">ਕੋਸ਼ਿਸ਼ ਨਹੀਂ ਕੀਤੀ</translation>
 <translation id="8342387517402567689">ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਵਿੱਚ ਵੈੱਬ ਐਪ ਸਥਾਪਨਾਵਾਂ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
@@ -10800,6 +10793,7 @@
 <translation id="8518809011298357036">ਉੱਪਰਲੇ ਦ੍ਰਿਸ਼ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="8518942514525208851">ਅਪਮਾਨਜਨਕ ਸ਼ਬਦ ਲੁਕਾਓ</translation>
 <translation id="8520238089740349550">ਅਸਫਲ ਰਿਹਾ - ਸਥਾਨਕ ਡਾਊਨਲੋਡ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8520408093016204772">ਆਪਣੇ ਪਾਸਵਰਡ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਸੈਟਿੰਗਾਂ ਸਟੋਰ ਕਰੋ</translation>
 <translation id="8523493869875972733">ਤਬਦੀਲੀਆਂ ਰੱਖੋ</translation>
 <translation id="8523849605371521713">ਨੀਤੀ ਵੱਲੋਂ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ</translation>
 <translation id="8524594273111932386">ਖੋਜ + ਹੇਠਾਂ ਤੀਰ</translation>
@@ -10985,6 +10979,7 @@
 <translation id="8651585100578802546">ਇਸ ਪੰਨੇ ਨੂੰ ਜ਼ੋਰ ਨਾਲ ਰੀਲੋਡ ਕਰੋ</translation>
 <translation id="8651806635673244884">ਤੁਸੀਂ ਕਿਸੇ ਵੀ ਟੈਬ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ ਅਤੇ “ਟੈਬਾਂ ਨੂੰ ਲੇਟਵੇਂ ਤੌਰ 'ਤੇ ਦਿਖਾਓ” ਨੂੰ ਚੁਣ ਕੇ ਆਪਣੀਆਂ ਟੈਬਾਂ ਨੂੰ ਵਾਪਸ ਸਿਖਰ 'ਤੇ ਲਿਜਾ ਸਕਦੇ ਹੋ</translation>
 <translation id="8652400352452647993">ਪੈਕ ਐਕਸਟੈਂਸ਼ਨ ਗੜਬੜ</translation>
+<translation id="8652412805227733853">ਈਮੇਲ ਦੀ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪੁਸ਼ਟੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="8654151524613148204">ਫ਼ਾਈਲ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ ਵੱਲੋਂ ਹੈਂਡਲ ਕਰਨ ਲਈ ਬਹੁਤ ਜ਼ਿਆਦਾ ਵੱਡੀ ਹੈ। ਮਾਫ਼ ਕਰਨਾ।</translation>
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8655972064210167941">ਸਾਈਨ-ਇਨ ਅਸਫਲ ਹੋ ਗਿਆ ਕਿਉਂਕਿ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਦੀ ਪੁਸ਼ਟੀ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਸ਼ਾਸਕ ਨੂੰ ਸੰਪਰਕ ਕਰੋ ਜਾਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
@@ -11494,7 +11489,6 @@
 <translation id="8983018820925880511">ਇਸ ਨਵੇਂ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਵੇਗਾ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> ਸਾਈਟ <ph name="FILENAME" /> ਦਾ ਸੰਪਾਦਨ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="8984694057134206124">ਤੁਸੀਂ <ph name="MINUTES" /> ਮਿੰਟ ਲਈ ਹਰ ਕਿਸੇ ਨੂੰ ਦਿਸੋਗੇ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="8985561265504464578">ਪਤਾ ਲਗਾਉਣ ਦੀ ਨਿਊਨਤਮ ਸੀਮਾ</translation>
 <translation id="8985661493893822002">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਇੰਟਰਨੈੱਟ ਨਾਲ ਕਨੈਕਟ ਕਰੋ।</translation>
 <translation id="8985661571449404298">ਅਸੁਰੱਖਿਅਤ ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਹੋ ਗਈ</translation>

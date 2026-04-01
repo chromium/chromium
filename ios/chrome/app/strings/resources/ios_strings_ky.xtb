@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"Бул өтмөк менен улантуу" параметрин жашырыңыз</translation>
 <translation id="1520027731907768768">Көз салынган товарлардын баасынын төмөндөшү тууралуу билип турасыз.</translation>
 <translation id="1521366073263497277">Өтмөктөрдүн торчосуна өтүү</translation>
-<translation id="1521774566618522728">Соңку аракеттер: бүгүн</translation>
 <translation id="1523567067736644845">Сырсөздү көрүү үчүн кулпусун ачыңыз</translation>
 <translation id="1524563461097350801">Жок, рахмат</translation>
 <translation id="1531038290222364269">Өтмөктөрдү көрсөтүү</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Google Сырсөздөрдү башкаргычка сакталганга чейин сырсөздөрүңүз түзмөгүңүздө шифрленет.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> чоо-жайын көрсөтүү</translation>
 <translation id="2309265394777270359">Өтмөктү жабуу</translation>
+<translation id="2310789833878085574">Сактоо жана автотолтуруу</translation>
 <translation id="2311077293164383652">Кадалган өтмөктү жабуу</translation>
 <translation id="2316129865977710310">Жок, рахмат</translation>
 <translation id="2320166752086256636">Баскычтопту жашыруу</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Окулду деп белгилөө</translation>
 <translation id="428768789042547925">Эмне жаңылык</translation>
 <translation id="429074084062258019">{count,plural, =1{Өтмөктү топто кошуу}other{Өтмөктөрдү топто кошуу}}</translation>
+<translation id="4300830875340617674">Картаны скандоо жана автотолтуруу</translation>
 <translation id="4302061870579014542">Тандоо</translation>
 <translation id="4304713468139749426">Сырсөздөрдү башкаргыч</translation>
 <translation id="4306349443295056740">OCSP'ге кол коюу</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Товарга көз салуу үчүн Көз салуу параметрин таптаңыз</translation>
 <translation id="5121618895923301719">Бул товарга көз салып жатасыз. Бул барак <ph name="BEGIN_LINK" />Мобилдик түзмөктүн кыстармаларына<ph name="END_LINK" /> сакталды.</translation>
 <translation id="512533434554095351">Бир нече сырсөз көйгөйлөрүңүз бар.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> күн мурун жигердүү болгон</translation>
 <translation id="5128788795241319992">Жаңы менюну карап көрүңүз</translation>
 <translation id="5132942445612118989">Бардык түзмөктөрдөгү сырсөздөрдү, таржымалды жана башкаларды шайкештирүү</translation>
 <translation id="5141363746588976328">"Өтмөктөрүңүздөгү баанын төмөндөшү" картасын жашыруу</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Камераны күйгүзүү</translation>
 <translation id="5229315183665181733">Сайтты түзөтүү</translation>
+<translation id="5233111790346066304">Файлдарды Google Drive'га сактап, каалаган убакта колдонуңуз.</translation>
 <translation id="5233638681132016545">Жаңы өтмөк</translation>
 <translation id="5234094073825090254">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды.}other{Кыстармалар Google аккаунтуңузга ({email}) сакталды.}}</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -1649,6 +1650,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6806550742467879742">Беттин куралдары</translation>
 <translation id="6807287147325542056">Башка колдонмолордогу сырсөздөр</translation>
 <translation id="681368974849482173">Нерсе түзүлдү</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Кыстарма Google аккаунтуңузга ({email}) сакталды}other{{count} кыстарма Google аккаунтуңузга ({email}) сакталды}}</translation>
 <translation id="6826004672264649705">Учурда бул товарга көз салынууда. Баалардын таржымалын көрүү үчүн ачыңыз</translation>
 <translation id="6830728435402077660">Коопсуз эмес</translation>
@@ -1962,7 +1964,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7952670906562503188">{passkey_count} киргизүүчү ачкычты жана кирүү маалыматы эч качан сакталбай турган сайттардын жана колдонмолордун тизмесин өчүргөнү турасыз. Сайттарда же колдонмолордо түзүлгөн аккаунт өчүрүлбөйт.</translation>
 <translation id="7958575506592576831">Баракчанын коопсуздук маалыматы</translation>
 <translation id="7961015016161918242">Эч качан</translation>
-<translation id="7971136598759319605">Соңку аракеттер: 1 күн мурун</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Байкап көрүү</translation>
 <translation id="797588153137233716">Меню → Таржымал → Серептөө дайындарын өчүрүү</translation>

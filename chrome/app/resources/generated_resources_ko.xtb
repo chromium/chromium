@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">기본 노드 사이트설정 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> 항상 번역</translation>
 <translation id="1104098698795583187">이 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
-<translation id="1105934302947321130">Google Beam with Zoom</translation>
 <translation id="1106270460549661906">Gemini와 공유 해제</translation>
 <translation id="1106350001632362876">기준 높이기</translation>
 <translation id="110850812463801904">수동으로 OneDrive에 연결</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">자녀의 PIN이 업데이트됨</translation>
 <translation id="1133418583142946603">현재 탭 추가</translation>
 <translation id="1133751489735776037">마우스 세 번 클릭</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />개 중 <ph name="EMOJI_INDEX" />번째.</translation>
 <translation id="1136712381129578788">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 잠금 해제하려면 분리한 후 다시 삽입하세요.</translation>
 <translation id="1137589305610962734">임시 데이터</translation>
 <translation id="1137673463384776352"><ph name="APP" />에서 링크 열기</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">휴대전화에 연결하는 중</translation>
 <translation id="1157952955648710254">Google 검색 측면 패널 닫기</translation>
 <translation id="1158080958325422608">Make Uppercase(대문자로 표시)</translation>
+<translation id="1158134713295836892">Chrome의 Gemini</translation>
 <translation id="1159879754517035595">확장 프로그램 설정 관리</translation>
 <translation id="1160800016654917722">창을 왼쪽 아래로 이동함</translation>
 <translation id="1161190590171867633">비교표가 Google 계정에 저장됩니다.</translation>
@@ -764,7 +763,6 @@
 <translation id="1517467582299994451">코드로 전송하려면 Chrome 브라우저 동기화 설정을 사용 설정하세요.</translation>
 <translation id="1521442365706402292">인증서 관리</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">오늘 사용</translation>
 <translation id="1521933835545997395">Android 휴대전화에 연결됨</translation>
 <translation id="1523279371236772909">지난달에 확인함</translation>
 <translation id="1523486680453956384">할 일 보기</translation>
@@ -3602,7 +3600,6 @@
 <translation id="3473241910002674503">태블릿 모드에서 버튼을 사용하여 홈이나 뒤로 이동하고 앱 간에 전환합니다.</translation>
 <translation id="3473479545200714844">화면 돋보기</translation>
 <translation id="3474218480460386727">새 단어는 99자 이하(영문 기준)여야 합니다.</translation>
-<translation id="3474330892505468100">Google Beam with Meet</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> 계정으로 계속</translation>
 <translation id="3477772589943384839">메모리를 적당히 절약할 수 있습니다. 좀 더 긴 시간이 지나면 탭이 비활성화됩니다.</translation>
 <translation id="347785443197175480"><ph name="HOST" />에서 카메라와 마이크에 액세스하도록 계속 허용</translation>
@@ -4179,7 +4176,6 @@
 <translation id="3841964634449506551">잘못된 비밀번호입니다.</translation>
 <translation id="3842552989725514455">Serif</translation>
 <translation id="3843464315703645664">내부적으로 허용됨</translation>
-<translation id="3844888638014364087">그림 이모티콘 삽입됨</translation>
 <translation id="3846116211488856547">웹사이트, Android 앱 등을 개발할 수 있는 도구를 이용해 보세요. Linux를 설치하면 <ph name="DOWNLOAD_SIZE" />의 데이터가 다운로드됩니다.</translation>
 <translation id="3847319713229060696">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -5043,7 +5039,6 @@
 <translation id="4453430595102511050">키보드 오른쪽 상단에 있는 지문 센서를 터치하세요. 지문 데이터는 안전하게 저장되며 절대 <ph name="DEVICE_TYPE" /> 외부로 유출되지 않습니다.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />에서 검색하거나 URL을 입력하세요.</translation>
 <translation id="4457472090507035117">현재 음성 선택:</translation>
-<translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
 <translation id="4461483878391246134">번역을 제공하지 않을 언어 추가</translation>
 <translation id="4462159676511157176">사용자 지정 네임서버</translation>
@@ -5798,6 +5793,7 @@
 <translation id="4990673372047946816">사용 가능한 카메라 없음</translation>
 <translation id="4991420928586866460">맨 위 키를 기능 키로 사용</translation>
 <translation id="4991873517942703737">이 문서에 관해 질문하기</translation>
+<translation id="4992066212339426712">음소거 해제</translation>
 <translation id="4992443049233195791">Microsoft 365 파일 설정</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
 <translation id="4992473555164495036">관리자가 사용 가능한 입력 방법을 제한했습니다.</translation>
@@ -6778,7 +6774,6 @@
 <translation id="5701212929149679556">셀룰러 로밍</translation>
 <translation id="5701786609538182967">다른 앱이 <ph name="APP_NAME" /> 앱과 같은 링크를 열도록 설정되었습니다. <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> 외 앱 1개는 지원되는 링크를 열지 못하게 됩니다.</translation>
 <translation id="5702161882524398150">이전 탭에 관해 물어보기</translation>
-<translation id="5702749864074810610">추천 닫힘</translation>
 <translation id="5703716265115423771">볼륨 작게</translation>
 <translation id="5703998022096520811">Google 세이프 브라우징에 더 많은 정보를 전송하여 실시간으로 선제적 보호를 제공합니다</translation>
 <translation id="5704875434923668958">다음에 동기화</translation>
@@ -7582,7 +7577,6 @@
 <translation id="6270309713620950855">알림 음소거</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />시스템 및 앱 정보<ph name="END_LINK1" />와 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
-<translation id="6271348838875430303">수정 취소됨</translation>
 <translation id="6271824294945464304">비밀번호 공유</translation>
 <translation id="6273677812470008672">품질</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />에 연결 중</translation>
@@ -10551,7 +10545,6 @@
 <translation id="8339288417038613756">디스플레이 및 텍스트 크기</translation>
 <translation id="833986336429795709">이 링크를 열려면 앱을 선택하세요.</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />의 작업 메뉴 더보기</translation>
-<translation id="8341693734243413517">Chrome 업데이터</translation>
 <translation id="8341804784147620576">검색 바로가기 표시</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342387517402567689">시크릿 모드에서는 웹 앱 설치가 지원되지 않습니다</translation>
@@ -10797,6 +10790,7 @@
 <translation id="8518809011298357036">상단 뷰 닫기</translation>
 <translation id="8518942514525208851">욕설 숨기기</translation>
 <translation id="8520238089740349550">실패 - 로컬 다운로드 차단됨</translation>
+<translation id="8520408093016204772">비밀번호, 북마크, 설정을 저장하세요.</translation>
 <translation id="8523493869875972733">변경사항 유지</translation>
 <translation id="8523849605371521713">정책에 의해 추가</translation>
 <translation id="8524594273111932386">검색 + 아래쪽 화살표</translation>
@@ -10982,6 +10976,7 @@
 <translation id="8651585100578802546">캐시를 무시하고 페이지 새로고침</translation>
 <translation id="8651806635673244884">탭을 마우스 오른쪽 버튼으로 클릭하고 '가로로 탭 표시'를 선택하여 탭을 다시 상단으로 이동할 수 있습니다.</translation>
 <translation id="8652400352452647993">확장 프로그램 패키지 오류</translation>
+<translation id="8652412805227733853">이메일 자동 인증됨</translation>
 <translation id="8654151524613148204">파일이 너무 커서 컴퓨터에서 처리할 수 없습니다.</translation>
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655972064210167941">비밀번호를 확인할 수 없어 로그인할 수 없습니다. 관리자에게 문의하거나 다시 시도해 주세요.</translation>
@@ -11490,7 +11485,6 @@
 <translation id="8983018820925880511">이 새 프로필은 <ph name="DOMAIN" />에서 관리합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="8985561265504464578">감지 기준</translation>
 <translation id="8985661493893822002"><ph name="DEVICE_TYPE" /> 기기에 로그인하려면 인터넷에 연결하세요</translation>
 <translation id="8985661571449404298">안전하지 않은 파일이 다운로드됨</translation>

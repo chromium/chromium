@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">মূল নোড অ্যানোটেশন ফাইল ডাউনলোড করা যাচ্ছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1103523840287552314">সর্বদা অনুবাদ করুন <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">আপনি অবিলম্বে এই ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং আপনার সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>
-<translation id="1105934302947321130">Zoom-সহ Google Beam</translation>
 <translation id="1106270460549661906">Gemini-র সাথে শেয়ার করা বন্ধ করুন</translation>
 <translation id="1106350001632362876">থ্রেশহোল্ড বাড়ান</translation>
 <translation id="110850812463801904">OneDrive-এ ম্যানুয়ালি কানেক্ট করা আছে</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">আপনার সন্তানের পিন আপডেট করা হয়েছে</translation>
 <translation id="1133418583142946603">বর্তমান ট্যাব যোগ করুন</translation>
 <translation id="1133751489735776037">মাউস দিয়ে ট্রিপল-ক্লিক করুন</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />। <ph name="EMOJI_COUNT" />টির মধ্যে <ph name="EMOJI_INDEX" /> নম্বর।</translation>
 <translation id="1136712381129578788">অনেক বার ভুল পিন দেওয়ার জন্য নিরাপত্তা কী লক হয়ে গেছে। আনলক করতে এটিকে খুলে নিয়ে আবার লাগান।</translation>
 <translation id="1137589305610962734">অস্থায়ী ডেটা</translation>
 <translation id="1137673463384776352"><ph name="APP" />-এ লিঙ্ক খুলুন</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে</translation>
 <translation id="1157952955648710254">Google Search সাইড প্যানেল বন্ধ করুন</translation>
 <translation id="1158080958325422608">বড় হাতের অক্ষরে লিখুন</translation>
+<translation id="1158134713295836892">Chrome-এ Gemini</translation>
 <translation id="1159879754517035595">এক্সটেনশন সেটিংস ম্যানেজ করুন</translation>
 <translation id="1160800016654917722">উইন্ডো নিচে বাঁদিকে সরানো হয়েছে</translation>
 <translation id="1161190590171867633">আপনার Google অ্যাকাউন্টে তুলনার সারণী সেভ করা থাকে</translation>
@@ -765,7 +764,6 @@
 <translation id="1517467582299994451">কোডের সাহায্যে কাস্ট করতে, Chrome ব্রাউজারের 'সিঙ্ক' সেটিংস চালু করুন</translation>
 <translation id="1521442365706402292">শংসাপত্রগুলি পরিচালনা করুন</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="1521933835545997395">Android ফোনে কানেক্ট করা আছে</translation>
 <translation id="1523279371236772909">গত মাসে দেখা হয়েছে</translation>
 <translation id="1523486680453956384">টাস্ক দেখুন</translation>
@@ -2253,6 +2251,7 @@
 <translation id="2518024842978892609">আপনার ক্লায়েন্ট শংসাপত্র ব্যবহার করুন</translation>
 <translation id="2518620532958109495">অটোমেটিক ফুল-স্ক্রিন মোডে যাওয়ার অনুমতি আছে</translation>
 <translation id="2519250377986324805">কীভাবে করবেন দেখুন</translation>
+<translation id="2519448661890412804"><ph name="TASK_TITLE" />\nআপনার টাস্কে কাজ করা চালিয়ে যেতে, Gemini-র আপনার সাহায্য প্রয়োজন।</translation>
 <translation id="2519517390894391510">সার্টিফিকেট প্রোফাইলের নাম</translation>
 <translation id="2520644704042891903">উপলব্ধ সকেটের জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="2521427645491031107">অ্যাপ সিঙ্ক ডিভাইস সেটিংসে সেট করা হয়েছে</translation>
@@ -3600,7 +3599,6 @@
 <translation id="3473241910002674503">ট্যাবলেট মোডে বোতাম ব্যবহার করে হোম পেজে যান, ফিরে আসুন এবং একটি অ্যাপ থেকে আরেকটি অ্যাপে যান।</translation>
 <translation id="3473479545200714844">স্ক্রিন ম্যাগনিফায়ার</translation>
 <translation id="3474218480460386727">নতুন শব্দের জন্য ৯৯টি অথবা তার চেয়ে কম বর্ণ ব্যবহার করুন</translation>
-<translation id="3474330892505468100">Meet-সহ Google Beam</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> হিসাবে চালিয়ে যান</translation>
 <translation id="3477772589943384839">মডারেট মেমরি সেভ করার সুবিধা পান। দীর্ঘ সময় ব্যবহার না করলে, আপনার ট্যাব অ্যাক্টিভ থাকবে না।</translation>
 <translation id="347785443197175480">আপনার ক্যামেরা এবং মাইক্রোফোন অ্যাক্সেস করতে <ph name="HOST" /> এর মঞ্জুরি অবিরত রাখুন</translation>
@@ -4177,7 +4175,6 @@
 <translation id="3841964634449506551">ভুল পাসওয়ার্ড লেখা হয়েছে</translation>
 <translation id="3842552989725514455">Serif হরফ</translation>
 <translation id="3843464315703645664">অভ্যন্তরীণভাবে সাদাতালিকাভুক্ত</translation>
-<translation id="3844888638014364087">ইমোজি যোগ করা হয়েছে</translation>
 <translation id="3846116211488856547">ওয়েবসাইট, Android অ্যাপ সহ অনেক কিছু ডেভেলপ করতে টুলগুলি পান। Linux ইনস্টল করলে <ph name="DOWNLOAD_SIZE" /> ডেটা ডাউনলোড হবে।</translation>
 <translation id="3847319713229060696">সকলের জন্য ওয়েবে নিরাপত্তা উন্নত করতে সাহায্য করে</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -4655,6 +4652,7 @@
 <translation id="4190492351494485814">প্রাথমিক সেট-আপের জন্য, আপনাকে ইন্টারনেটের সাথে কানেক্ট করতে হবে যাতে Chromebook-এ ফাইল সিঙ্ক করা যেতে পারে</translation>
 <translation id="4190828427319282529">কীবোর্ডের ফোকাস হাইলাইট করুন</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> কানেক্ট করার অনুরোধ পেয়েছেন?</translation>
+<translation id="4192850526869217634"><ph name="TASK_TITLE" />\nGemini আপনার টাস্ক নিয়ে কাজ করছে এবং আরও কোনও অ্যাকশন নেওয়ার প্রয়োজন হলে আপনাকে তা জানানো হবে।</translation>
 <translation id="4192850928807059784"><ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> ডিভাইসের জন্য এক্সক্লুসিভ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />জেনারেটিভ AI-এর সুবিধা পরীক্ষামূলকভাবে, প্রাথমিক অবস্থায় এবং বর্তমানে সীমিতভাবে উপলভ্য রয়েছে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">বিশ্বস্ত সিএ (CA)</translation>
@@ -5042,7 +5040,6 @@
 <translation id="4453430595102511050">আপনার কীবোর্ডের উপরের ডানদিকের কোণে থাকা ফিঙ্গারপ্রিন্ট সেন্সর টাচ করুন। আপনার ফিঙ্গারপ্রিন্ট ডেটা সুরক্ষিতভাবে স্টোর করে রাখা হয় এবং তা <ph name="DEVICE_TYPE" /> থেকে কখনও শেয়ার করা হয় না।</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" />-এ সার্চ করুন অথবা URL টাইপ করুন</translation>
 <translation id="4457472090507035117">এখনকার ভয়েসটি বেছে নিন:</translation>
-<translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="4460014764210899310">আলাদা করুন</translation>
 <translation id="4461483878391246134">ভাষা যোগ করুন যাতে আর অনুবাদ করার প্রয়োজন না পড়ে</translation>
 <translation id="4462159676511157176">কাস্টম নাম সার্ভার</translation>
@@ -5267,6 +5264,7 @@
 <translation id="4624054169152573743">রঙীন থিম</translation>
 <translation id="4625078469366263107">অ্যাপ্লিকেশান সক্ষম করুন</translation>
 <translation id="4625905218692741757">ডিফল্ট কালার ধূসর</translation>
+<translation id="4626906635466987740"><ph name="TASK_TITLE" />\nGemini আপনার টাস্ক পজ করেছে। এটি পর্যালোচনা করতে Chrome-এ ফিরে যান।</translation>
 <translation id="4627107755957573804">পাসকী ব্যবহার করার জন্য, সাইট ও অ্যাপকে বর্তমানে থাকা অ্যাকাউন্ট আপগ্রেড করার অনুমতি দিন</translation>
 <translation id="4627442949885028695">অন্য ডিভাইস থেকে চালিয়ে যান</translation>
 <translation id="4628762811416793313">Linux কন্টেনার সেট-আপ সম্পূর্ণ করা যায়নি। আবার চেষ্টা করুন।</translation>
@@ -5796,6 +5794,7 @@
 <translation id="4990673372047946816">কোনও ক্যামেরা উপলভ্য নেই</translation>
 <translation id="4991420928586866460">উপরের-সারির কীগুলিকে ফাংশন কী হিসেবে ব্যবহার করুন</translation>
 <translation id="4991873517942703737">এই ডকুমেন্ট সম্পর্কে জিজ্ঞেস করুন</translation>
+<translation id="4992066212339426712">সশব্দ করুন</translation>
 <translation id="4992443049233195791">Microsoft 365 ফাইল সেটিংস</translation>
 <translation id="4992458225095111526">পাওয়ারওয়াশ নিশ্চিত করুন</translation>
 <translation id="4992473555164495036">আপনার অ্যাডমিনিস্ট্রেটর উপলভ্য ইনপুট পদ্ধতিগুলি সীমাবদ্ধ করেছেন।</translation>
@@ -6777,7 +6776,6 @@
 <translation id="5701212929149679556">মোবাইল রোমিং</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" />-এর মতো অন্যান্য অ্যাপ একই লিঙ্ক খোলার জন্য সেট করা আছে। এটি <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> এবং আরও অন্য ১টি অ্যাপের সহায়ক লিঙ্ক খুলতে দেবে না।</translation>
 <translation id="5702161882524398150">আগের ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
-<translation id="5702749864074810610">সাজেশন বাতিল হয়েছে</translation>
 <translation id="5703716265115423771">ভলিউম কমান</translation>
 <translation id="5703998022096520811">Google Safe Browsing-এ আরও তথ্য পাঠিয়ে রিয়েল টাইমে সক্রিয় সুরক্ষা পান</translation>
 <translation id="5704875434923668958">এতে সিঙ্ক হচ্ছে</translation>
@@ -7581,7 +7579,6 @@
 <translation id="6270309713620950855">মিউট নাজ</translation>
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />সিস্টেম ও অ্যাপ্লিকেশান তথ্য<ph name="END_LINK1" />, এবং <ph name="BEGIN_LINK2" />মেট্রিক্স<ph name="END_LINK2" /> পাঠান</translation>
-<translation id="6271348838875430303">সংশোধন করা টেক্সট আগের অবস্থায় ফেরানো হয়েছে</translation>
 <translation id="6271824294945464304">পাসওয়ার্ড শেয়ার করা হচ্ছে</translation>
 <translation id="6273677812470008672">গুণমান</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" />-এর সাথে কানেক্ট করা হচ্ছে</translation>
@@ -8314,6 +8311,7 @@
 <translation id="6798420440063423019">অনেকবার ভুল পিন দেওয়ার জন্য 'নিরাপত্তা কী' লক হয়ে গেছে। আপনাকে 'নিরাপত্তা কী' রিসেট করতে হবে।</translation>
 <translation id="679845623837196966">পড়ার তালিকা দেখান</translation>
 <translation id="6798578729981748444">আমদানি প্রক্রিয়া শেষ করতে, সমস্ত Firefox উইন্ডোগুলি বন্ধ করুন</translation>
+<translation id="6798688411671553980"><ph name="TASK_TITLE" />\nGemini আপনার টাস্ক সম্পূর্ণ করেছে, আপনি এটি Chrome-এ দেখতে পারবেন।</translation>
 <translation id="6798780071646309401">caps lock চালু আছে</translation>
 <translation id="679905836499387150">'টুলবার' বোতাম লুকানো আছে</translation>
 <translation id="6800893479155997609">আপনার <ph name="DEVICE_TYPE" />-এর জন্য সেরা অ্যাপ</translation>
@@ -9917,6 +9915,7 @@
 <translation id="7916364730877325865">আপনার সংস্থা আপনাকে এই অ্যাকাউন্টে সিঙ্ক চালু করার অনুমতি দেয় না</translation>
 <translation id="791698251820376781">আপনার সংস্থা আপনাকে সাইন-ইন করার অনুমতি দেয়নি</translation>
 <translation id="7918257978052780342">নথিভুক্ত করুন</translation>
+<translation id="7918928051723770926">টাস্ক সম্পূর্ণ হয়েছে</translation>
 <translation id="7919123827536834358">এই ভাষাগুলি অটোমেটিক অনুবাদ করা হবে</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> সেকেন্ড</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" />, <ph name="FILENAME" /> নামের ফাইলটি দেখতে পারবে</translation>
@@ -10406,6 +10405,7 @@
 <translation id="8244724656154470844">আপডেট চেক করা যায়নি।</translation>
 <translation id="8246776524656196770">পিনের (পার্সোনাল আইডেন্টিফিকেশন নম্বর) দ্বারা আপনার নিরাপত্তা কী সুরক্ষিত রাখুন</translation>
 <translation id="824713170151383793">DevTools সহ</translation>
+<translation id="8247210755024677100">সাইন ইন করা হচ্ছে ...</translation>
 <translation id="8247795734638043885">অসুরক্ষিত ফাইল ডাউনলোড করুন</translation>
 <translation id="8248050856337841185">&amp;প্রতিলেপন</translation>
 <translation id="8248381369318572865">আপনার মাইক্রোফোন অ্যাক্সেস এবং স্পিচ বিশ্লেষণ করুন</translation>
@@ -10550,7 +10550,6 @@
 <translation id="8339288417038613756">ডিসপ্লে ও টেক্সটের সাইজ</translation>
 <translation id="833986336429795709">এই লিঙ্কটি খুলতে, একটি অ্যাপ বেছে নিন</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" />-এর জন্য আরও অ্যাকশন</translation>
-<translation id="8341693734243413517">Chrome আপডেটার</translation>
 <translation id="8341804784147620576">সার্চ শর্টকাট দেখুন</translation>
 <translation id="8342221978608739536">ব্যবহার করিনি</translation>
 <translation id="8342387517402567689">ছদ্মবেশী মোড ব্যবহার করার সময় ওয়েব অ্যাপ ইনস্টল করার সুবিধা কাজ করে না</translation>
@@ -10849,6 +10848,7 @@
 <translation id="8557022314818157177">আপনার আঙ্গুলের ছাপ ক্যাপচার না করা পর্যন্ত 'নিরাপত্তা কী'-তে টাচ করতে থাকুন</translation>
 <translation id="8557100046150195444">চালিয়ে যেতে টাচ আইডি ব্যবহার করুন</translation>
 <translation id="8557856025359704738">পরবর্তী ডাউনলোড <ph name="NEXT_DATE_DOWNLOAD" />-এ উপলভ্য হবে।</translation>
+<translation id="8558063527625343224">Google Beam সেট-আপ করুন</translation>
 <translation id="8559858985063901027">পাসকী</translation>
 <translation id="8559961053328923750">Chrome বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করার জন্য ব্রাউজারের মাধ্যমে শেয়ার করতে পারে এমন ডেটার পরিমাণ সীমাবদ্ধ করে</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{সবকটি &amp;নতুন উইন্ডোতে খুলুন}=1{&amp;নতুন উইন্ডোতে খুলুন}one{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}other{সবকটি ({COUNT}টি) &amp;নতুন উইন্ডোতে খুলুন}}</translation>
@@ -10980,6 +10980,7 @@
 <translation id="8651585100578802546">এই পৃষ্ঠাটি ফোর্স রিলোড করুন</translation>
 <translation id="8651806635673244884">আপনি যেকোনও ট্যাবে ডানদিকের বোতামে ক্লিক করে এবং “ট্যাবগুলি অনুভূমিকভাবে দেখান” বিকল্প বেছে নিয়ে আপনার ট্যাবগুলিকে আবার উপরে সরাতে পারবেন</translation>
 <translation id="8652400352452647993">প্যাক এক্সটেনশনে সমস্যা হয়েছে</translation>
+<translation id="8652412805227733853">ইমেল অটোমেটিক যাচাই করা হয়েছে</translation>
 <translation id="8654151524613148204">আপনার কম্পিউটারের পক্ষে ফাইলটি পরিচালনা করার জন্য অত্যন্ত বড়৷ দুঃখিত৷</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655972064210167941">আপনার পাসওয়ার্ড যাচাই করতে না পারায় সাইন-ইন করা যায়নি। অনুগ্রহ করে আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন অথবা আবার চেষ্টা করুন।</translation>
@@ -11365,6 +11366,7 @@
 <translation id="8898786835233784856">পরবর্তী ট্যাব বেছে নিন</translation>
 <translation id="8898790559170352647">আপনার Microsoft অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="8898822736010347272">আপনার দেখা কিছু পৃষ্ঠার ইউআরএল, সীমিত সিস্টেম সম্পর্কিত তথ্য এবং কিছু পৃষ্ঠার কন্টেন্ট Google-এর কাছে পাঠান যাতে নতুন ঝুঁকি চিহ্নিত করে ওয়েব ব্যবহারকারীর প্রত্যেককে সুরক্ষিত রাখা যায়।</translation>
+<translation id="8898837844145554490"><ph name="TASK_TITLE" />\nGemini আপনার টাস্কে কাজ করা বন্ধ করে দিয়েছে।</translation>
 <translation id="8899851313684471736">নতুন &amp;উইন্ডোতে লিঙ্ক খুলুন</translation>
 <translation id="8900413463156971200">মোবাইল নেটওয়ার্ক চালু করুন</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> আপনাকে নিজের ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> আজই ফেরত দিতে বলছে।}one{<ph name="MANAGER" /> আপনাকে নিজের ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> নির্ধারিত সময়সীমা শেষ হওয়ার আগেই ফেরত দিতে বলছে।}other{<ph name="MANAGER" /> আপনাকে নিজের ডেটার ব্যাকআপ নিয়ে এই <ph name="DEVICE_TYPE" /> নির্ধারিত সময়সীমা শেষ হওয়ার আগেই ফেরত দিতে বলছে।}}</translation>
@@ -11488,7 +11490,6 @@
 <translation id="8983018820925880511">এই নতুন প্রোফাইলটি <ph name="DOMAIN" /> দ্বারা ম্যানেজ করা হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />-এর কাছে <ph name="FILENAME" /> ফাইল এডিট করার অনুমতি আছে</translation>
 <translation id="8984694057134206124">আপনাকে <ph name="MINUTES" /> মিনিটের জন্য সবাই দেখতে পাবে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="8985561265504464578">শনাক্ত করার জন্য থ্রেশহোল্ড</translation>
 <translation id="8985661493893822002">আপনার <ph name="DEVICE_TYPE" />-এ সাইন-ইন করার জন্য ইন্টারনেটে কানেক্ট করুন।</translation>
 <translation id="8985661571449404298">অসুরক্ষিত ফাইল ডাউনলোড করা হয়েছে</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Təhlükəsizliyi təmin etmək üçün bəzi saytlardan icazələr silindi</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1384704387250346179">Google Linza ilə şəkli tərcümə edin <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün əvvəl aktiv olub</translation>
 <translation id="1390418506739274310">Chrome-da keçidləri açan digər tətbiqlərin tarixçəsinə baxa bilərsiniz. <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ünvanında Google Hesabının başqa brauzer tarixçəsi formaları ola bilər.</translation>
 <translation id="139752016751285248">Qiymət statistikası üzrə aşağı vərəq tam boyda açıldı</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ilə axtarın</translation>
@@ -136,7 +135,6 @@ Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən d
 <translation id="1513352483775369820">Əlfəcin və veb tarixçəsi</translation>
 <translation id="1515901671075971249">Tab naviqasiyası qısayolları</translation>
 <translation id="1516966594427080024">Anonim rejimində yeni pəncərə açın</translation>
-<translation id="1521774566618522728">Bu gün aktivdir</translation>
 <translation id="153446405401665083">Chrome-un yeni versiyası əlçatandır</translation>
 <translation id="1540012742443808215">Ünvan paneli yuxarıdadır</translation>
 <translation id="1544084554881119930">Ödəniş metodu və ünvanlar şifrələnməyəcək. Chrome-dan baxış tarixçəsi sinxronlaşdırılmayacaq.
@@ -1726,7 +1724,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="7968014550143838305">Oxu siyahısına əlavə edildi</translation>
 <translation id="7968982339740310781">Detallara baxın</translation>
 <translation id="7969391000881506217">Bitmə tarixi*</translation>
-<translation id="7971136598759319605">1 gün əvvəl aktiv olub</translation>
 <translation id="7975379999046275268">Önizləmə səhifəsi <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Verilənlərin pozulması nəticəsində ifşa olunan parol istifadə etdikdə xəbərdarlıq edir.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Bu yaxınlarda daxil olmadığınız üçün Chrome bu icazələri sildi</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Amaga l'opció Continua navegant des d'aquesta pestanya</translation>
 <translation id="1520027731907768768">Rep alertes de baixada de preu de productes que segueixes.</translation>
 <translation id="1521366073263497277">Ves a la quadrícula de pestanyes</translation>
-<translation id="1521774566618522728">Actiu avui</translation>
 <translation id="1523567067736644845">Desbloqueja per mostrar la contrasenya</translation>
 <translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1531038290222364269">Mostra les pestanyes</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google.</translation>
 <translation id="2306265833370324042">Mostra els detalls de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tanca la pestanya</translation>
+<translation id="2310789833878085574">Desa i emplena automàticament</translation>
 <translation id="2311077293164383652">Tanca la pestanya fixada</translation>
 <translation id="2316129865977710310">No, gràcies</translation>
 <translation id="2320166752086256636">Amaga el teclat</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Per fer un seguiment del producte, toca Fes un seguiment</translation>
 <translation id="5121618895923301719">Ja estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès per a mòbils<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tens diversos problemes relacionats amb les contrasenyes.</translation>
-<translation id="5127538504377457572">Actiu fa <ph name="DAYS" /> dies</translation>
 <translation id="5128788795241319992">Explora el menú nou</translation>
 <translation id="5132942445612118989">Sincronitza les contrasenyes, l'historial i altres elements en tots els dispositius</translation>
 <translation id="5141363746588976328">Amaga la targeta Baixades de preu a les pestanyes</translation>
@@ -1651,6 +1650,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6806550742467879742">Eines de pàgina</translation>
 <translation id="6807287147325542056">Contrasenyes en altres aplicacions</translation>
 <translation id="681368974849482173">S'ha creat un element.</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{L'adreça d'interès s'ha desat al teu Compte de Google, {email}}other{S'han desat {count} adreces d'interès al teu Compte de Google, {email}}}</translation>
 <translation id="6826004672264649705">Actualment s'està fent un seguiment d'aquest producte. Obre-ho per veure l'historial de preus.</translation>
 <translation id="6830728435402077660">No segura</translation>
@@ -1964,7 +1964,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7952670906562503188">Estàs a punt de suprimir {passkey_count} claus d'accés i la llista de llocs web i aplicacions per als quals has triat que no es desi mai la informació d'inici de sessió. No se suprimiran els comptes que hagis creat per a llocs web i aplicacions.</translation>
 <translation id="7958575506592576831">Informació de seguretat de la pàgina</translation>
 <translation id="7961015016161918242">Mai</translation>
-<translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prova</translation>
 <translation id="797588153137233716">Menú → Historial → Suprimeix les dades de navegació</translation>

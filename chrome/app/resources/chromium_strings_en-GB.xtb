@@ -59,6 +59,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1639380494700489405">To ask AI Mode about your tab without leaving the page, sign in to Chromium. You'll also get your passwords and more on all your devices.</translation>
 <translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1680687534629375545">Ask image search about this page</translation>
+<translation id="1708414395296835197">You can use Chromium any time that you click links in messages, documents and other apps. It will also be pinned to your taskbar.</translation>
 <translation id="1709772298389099340">Provides elevated privileges for <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">To help improve these features, Chromium sends your interactions with them to Google. This data may be read, processed and annotated by human reviewers.</translation>
 <translation id="1722488837206509557">This will allow you to select from available devices and display content on them.</translation>
@@ -440,6 +441,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5924017743176219022">Connecting to the Internet…</translation>
+<translation id="5939553720811388432">Let's get your Chromium ready</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5949225980829865667">To get this bookmark and more on all your devices, sign in to Chromium</translation>
 <translation id="5953657885167112863">Make Chromium yours</translation>

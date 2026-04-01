@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">የእርስዎን ቁልፍ ሰሌዳ ለመቆለፍ ወይም ለመጠቀም መጠየቅ ይችላል</translation>
 <translation id="2839032553903800133">ማሳወቂያዎች ታግደዋል</translation>
 <translation id="2839501879576190149">የውሸት ጣቢያ ከፊት አለ</translation>
+<translation id="2840680829170913626">እነዚህን አማራጮች ለማቅረብ ከክፍያ ማጠናቀቂያ ገጽ ላይ የመጣ ይዘት ከGoogle ጋር ይጋራል። የክፍያ ዕቅዶች ለብቁነት ተገዢ ናቸው። በራስ-ሙላ ውስጥ የበኋላ ላይ መክፈል አማራጮችን ለመደበቅ ወደ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> ይሂዱ።</translation>
 <translation id="2843623755398178332">የተጋራውን ትርዎ ይሸብለል እና ይጉላ?</translation>
 <translation id="2851291081585704741">ከመስመር ውጭ ነዎት</translation>
 <translation id="2854163610915391726">Google መለያዎ ውስጥ ምን የChrome መረጃ እንደሚያስቀምጡ ያስተዳድሩ</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">ድርጅትዎ የመጀመሪያው የምዝገባ ገደብ ላይ ስለደረሰ ይህ መሣሪያ በአሁኑ ጊዜ ሊመዘገብ አይችልም። ለእርዳታ አስተዳዳሪዎን ያነጋግሩ።</translation>
 <translation id="3162559335345991374">እየተጠቀሙ ያሉት Wi-Fi በመለያ መግቢያ ገጹን እንዲጎበኙ ሊጠይቅዎት ይችላል።</translation>
 <translation id="316638481603975524">የድር መተግበሪያዎችን ለመጫን መጠየቅ ይቻላል</translation>
+<translation id="3166788340998560642">በሚቀጥለው ጊዜ ሲጠቀሙት Chrome ወደ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ለማስቀመጥ ይጠይቃል።</translation>
 <translation id="3168744840365648658">የሬዲዮ መሣሪያዎች</translation>
 <translation id="3168938241115725594">የቆዩ ተወዳጅ ተሽከርካሪዎች</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2415,6 +2417,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ብቅ-ባይ ታግዷል}one{# ብቅ-ባዮች ታግዷል}other{# ብቅ-ባዮች ታግዷል}}</translation>
 <translation id="4780320432697076749">የፎቶ ሶፍትዌር</translation>
 <translation id="4780366598804516005">የመልዕክት ሳጥን 1</translation>
+<translation id="4785273477715803444">ምዝግብ ማስታወሻዎችን ያጣሩ</translation>
 <translation id="4785376858512657294">የGoogle መለያን ያቀናብሩ</translation>
 <translation id="4785689107224900852">ወደዚህ ትር ቀይር</translation>
 <translation id="4785998536350006000">«<ph name="SEARCH_QUERY" />» በመፈለግ ላይ</translation>
@@ -3057,6 +3060,7 @@
 <translation id="5759751709240058861">የእርስዎን ካሜራ ይጠቀሙ እና ያንቀሳቅሱ</translation>
 <translation id="5762131895127128324">የመንጃ ፈቃዶች · የመታወቂያ ካርዶች · ፓስፖርቶች</translation>
 <translation id="5763042198335101085">ትክክለኛ የኢሜይል አድራሻ ያስገቡ</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{ዛሬ ንቁ}=1{ከ1 ቀን በፊት ንቁ ነበር}one{ከ# ቀኖች በፊት ንቁ ነበር}other{ከ# ቀኖች በፊት ንቁ ነበር}}</translation>
 <translation id="5764725887548570807">ልክ ያልኾነ የመነሻ ቅርጸት።</translation>
 <translation id="5764920692828389743">ወደ <ph name="EMAIL_ADDRESS" /> ላክ</translation>
 <translation id="5765072501007116331">የማድረሻ ዘዴዎችን እና መስፈርቶችን ለመመልከት አድራሻ ይምረጡ</translation>

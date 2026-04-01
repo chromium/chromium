@@ -405,22 +405,6 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="1317158052518324525">Erweitertes Autofill nicht zulassen.</translation>
 <translation id="1317658068839330898">Verwendung von <ph name="ASSISTANT_PRODUCT_NAME" /> im Web nicht zulassen</translation>
 <translation id="1318233005302276244">Ermöglicht Nutzern, ihre Pakete in Chrome zu verfolgen.</translation>
-<translation id="1321747583289636863">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver für WebSocket-Anfragen festgelegt.
-
-Informationen zum Ändern von Nicht-WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Wird die Richtlinie nicht gesetzt, gilt standardmäßig ein Wert von 32.
-
-Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
-Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
-
-Der Wert sollte mindestens 6 betragen.
-Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
-Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
-
-Der Wert sollte höchstens 256 betragen.
-Wird ein höherer Wert festgelegt, wird stattdessen 256 verwendet.
-Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="1323501563951768821">In den Einstellungen von F12 wird die Tastenkombination verwendet, die den Umschalttaste-Modifikator enthält</translation>
 <translation id="1325547947664414578">Wenn ein Nutzer zwischen <ph name="PRODUCT_OS_NAME" />-Geräten wechselt, werden vom Dienst „<ph name="PRODUCT_NAME" />“ die Browser- und App-Fenster vom vorherigen Gerät auf dem neuen Gerät gestartet.
 Wenn die Richtlinie aktiviert ist, werden Browser- und App-Fenster vom zuletzt verwendeten <ph name="PRODUCT_OS_NAME" />-Gerät des aktuellen Nutzers bei der Anmeldung automatisch geöffnet.
@@ -4891,7 +4875,6 @@ Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, gehen nicht entschlü
 Ist die Richtlinie deaktiviert, bleiben die Daten des Passwortmanagers für Nutzer erhalten, die Passwortmanager-Funktionalität ist jedoch fehlerhaft.
 
 Ist die Richtlinie konfiguriert, können Nutzer sie in <ph name="PRODUCT_NAME" /> nicht ändern.</translation>
-<translation id="4321788213579606602">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver für Nicht-WebSocket-Anfragen</translation>
 <translation id="4322842393287974810">Der automatisch ohne Verzögerung gestarteten Kiosk-App die Steuerung der <ph name="PRODUCT_OS_NAME" />-Version gestatten</translation>
 <translation id="4323412353642577604">Remote-Attestierung zum Schutz von Inhalten aktivieren</translation>
 <translation id="4325690621216251241">Button „Abmelden“ zur Taskleiste hinzufügen</translation>
@@ -7661,7 +7644,6 @@ Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</t
 <translation id="6075316301208933536">Wenn „<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />“ auf „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />“ gesetzt ist, passt die Einstellung „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ basierend auf dem Prozentsatz des Akkustands an, wann der Ladevorgang endet. „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ muss mindestens fünf Prozentpunkte unter „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ liegen.
 
       Wenn die Richtlinie nicht konfiguriert ist, wird der Akkulademodus „<ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />“ verwendet.</translation>
-<translation id="6080808146443476891">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver für WebSocket-Anfragen</translation>
 <translation id="6082161804984853051">Wird die Richtlinie festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das von dir angegebenen Verzeichnis zum Speichern von im Cache gespeicherten Dateien auf dem Laufwerk unabhängig davon, ob der Nutzer das Flag "--disk-cache-dir" angegeben hat.
 
       Wurde die Richtlinie nicht festgelegt, dann verwendet <ph name="PRODUCT_NAME" /> das Cachestandardverzeichnis. Diese Einstellung können Nutzer jedoch mit dem Befehlszeilen-Flag "--disk-cache-dir" ändern.
@@ -11032,22 +11014,6 @@ Die Funktion ist nur in Canary-Versionen verfügbar.
 
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann auf die Seite zugegriffen werden.
 Ist die Richtlinie deaktiviert, wird die Seite blockiert.</translation>
-<translation id="8264002158987842436">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver für Nicht-WebSocket-Anfragen festgelegt.
-
-Informationen zum Ändern von WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Wird die Richtlinie nicht gesetzt, gilt standardmäßig ein Wert von 32.
-
-Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
-Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
-
-Der Wert sollte mindestens 6 betragen.
-Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
-Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
-
-Der Wert sollte höchstens 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) betragen.
-Wird ein höherer Wert festgelegt, wird stattdessen 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) verwendet.
-Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="8266778278542911985">Wenn die Richtlinie auf "3" gesetzt ist, dürfen Websites um Zugriff auf serielle Ports bitten. Ist die Richtlinie auf "2" gesetzt, wird der Zugriff auf serielle Ports blockiert.
 
       Wenn sie nicht konfiguriert ist, können Websites den Zugriff erfragen, aber Nutzer können diese Einstellung ändern.</translation>

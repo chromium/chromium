@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Sakrij stavku Nastavi s ovom karticom</translation>
 <translation id="1520027731907768768">Primajte upozorenja o padu cijena za proizvode koje pratite.</translation>
 <translation id="1521366073263497277">Otvorite rešetku kartica</translation>
-<translation id="1521774566618522728">Aktivan danas</translation>
 <translation id="1523567067736644845">Otključajte za prikaz zaporke</translation>
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531038290222364269">Prikažite kartice</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Vaše se zaporke šifriraju na uređaju prije spremanja na Google upravitelj zaporki.</translation>
 <translation id="2306265833370324042">Prikaži pojedinosti za <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Zatvori karticu</translation>
+<translation id="2310789833878085574">Spremi i automatski popuni</translation>
 <translation id="2311077293164383652">Zatvori prikvačenu karticu</translation>
 <translation id="2316129865977710310">Ne, hvala</translation>
 <translation id="2320166752086256636">Sakrij tipkovnicu</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Označi kao pročitano</translation>
 <translation id="428768789042547925">Što je novo</translation>
 <translation id="429074084062258019">{count,plural, =1{Dodaj karticu grupi}one{Dodaj kartice grupi}few{Dodaj kartice grupi}other{Dodaj kartice grupi}}</translation>
+<translation id="4300830875340617674">Skeniraj karticu i automatski popuni</translation>
 <translation id="4302061870579014542">Postavi položaj</translation>
 <translation id="4304713468139749426">Upravitelj zaporki</translation>
 <translation id="4306349443295056740">Potpisivanje OCSP-a</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Da biste pratili proizvod, dodirnite Prati</translation>
 <translation id="5121618895923301719">Već pratite ovaj proizvod. Ova je stranica spremljena u <ph name="BEGIN_LINK" />Mobilne oznake<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Imate nekoliko problema sa zaporkama.</translation>
-<translation id="5127538504377457572">Aktivan prije <ph name="DAYS" /> dan(a)</translation>
 <translation id="5128788795241319992">Istražite novi izbornik</translation>
 <translation id="5132942445612118989">Sinkronizirajte svoje zaporke, povijest i drugo na svim uređajima</translation>
 <translation id="5141363746588976328">Sakrij karticu Sniženja cijena na karticama</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Uključi fotoaparat</translation>
 <translation id="5229315183665181733">Uredi web-lokaciju</translation>
+<translation id="5233111790346066304">Spremite datoteke na Google disk i pristupite im kad god želite.</translation>
 <translation id="5233638681132016545">Nova kartica</translation>
 <translation id="5234094073825090254">{count,plural, =1{Oznaka je spremljena na vaš Google račun, {email}}one{Oznake su spremljene na vaš Google račun, {email}.}few{Oznake su spremljene na vaš Google račun, {email}.}other{Oznake su spremljene na vaš Google račun, {email}.}}</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1649,6 +1650,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6806550742467879742">Alati za stranicu</translation>
 <translation id="6807287147325542056">Zaporke u drugim aplikacijama</translation>
 <translation id="681368974849482173">Stavka je stvorena</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Oznaka je spremljena na vaš Google račun, {email}}one{{count} oznaka spremljena je na vaš Google račun, {email}}few{{count} oznake spremljene su na vaš Google račun, {email}}other{{count} oznaka spremljeno je na vaš Google račun, {email}}}</translation>
 <translation id="6826004672264649705">Trenutačno pratite ovaj proizvod. Otvorite da biste vidjeli povijest cijena</translation>
 <translation id="6830728435402077660">Nije sigurno</translation>
@@ -1962,7 +1964,6 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7952670906562503188">Spremate se izbrisati pristupne ključeve (njih {passkey_count}) i popis web-lokacija i aplikacija za koje ste odabrali da se podaci za prijavu nikad ne spremaju. Računi koje ste izradili za web-lokacije i aplikacije neće se izbrisati.</translation>
 <translation id="7958575506592576831">Informacije o sigurnosti stranice</translation>
 <translation id="7961015016161918242">Nikad</translation>
-<translation id="7971136598759319605">Aktivan prije jednog dana</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Isprobajte</translation>
 <translation id="797588153137233716">Izbornik → Povijest → Brisanje podataka o pregledavanju</translation>

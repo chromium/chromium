@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Zaradi zagotavljanja vaše varnosti so bila za nekatera spletna mesta odstranjena dovoljenja</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1384704387250346179">Prevedi sliko z Googlom Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktivna pred toliko dnevi: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Morda bo prikazana zgodovina drugih aplikacij, ki odpirajo povezave v Chromu. V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Razdelek na dnu zaslona z vpogledi v cene, odprt v polni višini</translation>
 <translation id="1397811292916898096">Iskanje z iskalnikom <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Zaznamki in spletna zgodovina</translation>
 <translation id="1515901671075971249">Bližnjice za pomikanje po zavihkih</translation>
 <translation id="1516966594427080024">Odpiranje novega okna v anonimnem načinu.</translation>
-<translation id="1521774566618522728">Aktivno danes</translation>
 <translation id="153446405401665083">Na voljo je nova različica Chroma</translation>
 <translation id="1540012742443808215">Naslovna vrstica je trenutno na vrhu</translation>
 <translation id="1544084554881119930">Plačilna sredstva in naslovi ne bodo šifrirani. Zgodovina brskanja v Chromu se ne bo sinhronizirala.
@@ -222,6 +220,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="1925021887439448749">Vnesite spletni naslov po meri</translation>
 <translation id="1928618076168182477">Prikazan je vizualni pogled</translation>
 <translation id="1928696683969751773">Posodobitve</translation>
+<translation id="1934545916152269346">Nedavno uporabljeno</translation>
 <translation id="1943398124995840148">Odprti zavihki imajo zdaj posodobljen videz v RR-ju</translation>
 <translation id="1944535645109964458">Ključi za dostop niso na voljo</translation>
 <translation id="1957557050935255529">Nalaganje PDF-ja …</translation>
@@ -1727,7 +1726,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7968014550143838305">Dodano na bralni seznam</translation>
 <translation id="7968982339740310781">Prikaži podrobnosti</translation>
 <translation id="7969391000881506217">Datum poteka veljavnosti*</translation>
-<translation id="7971136598759319605">Aktivna pred 1 dnevom</translation>
 <translation id="7975379999046275268">Predogled strani <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Opozori vas, če uporabite geslo, ki je ogroženo zaradi podatkovne kršitve.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome je odstranil ta dovoljenja, ker nedavno niste obiskali</translation>

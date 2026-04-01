@@ -763,6 +763,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2188375229972301266">Hainbat zulo behean</translation>
 <translation id="218940509700321686">Komaz bereizitako balioak</translation>
 <translation id="2190094353033916816">Gidalerro honek balio desberdinak ditu makina- eta erabiltzaile-mailetan. Gidalerroak espero bezala funtzionatzen du.</translation>
+<translation id="219061769324072544">Kreditu,Txartela,Zordunketa</translation>
 <translation id="2191980191135734720">Desblokeatu pantaila hurrengo urratsean, normalean hatz-marka erabiliz. Bestela, <ph name="LINK_TEXT" /> dezakezu.</translation>
 <translation id="2194856509914051091">Kontuan hartu beharrekoak</translation>
 <translation id="2195729137168608510">Posta elektronikoaren babesa</translation>
@@ -1176,6 +1177,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2837891525090413132">Teklatua blokeatzeko eta erabiltzeko baimena eska dezake</translation>
 <translation id="2839032553903800133">Jakinarazpenak blokeatuta daude</translation>
 <translation id="2839501879576190149">Faltsua da webgunea</translation>
+<translation id="2840680829170913626">Ordainketa-orriaren edukia Google-rekin partekatzen da aukera horiek eskaintzeko. Ordainketa-planak baldintza batzuk betetzen dituztenentzat daude erabilgarri. Betetze automatikoan geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> atalera.</translation>
 <translation id="2843623755398178332">Fitxa partekatuan gora/behera egin nahi duzu, eta zooma erabili?</translation>
 <translation id="2851291081585704741">Ez zaude konektatuta Internetera</translation>
 <translation id="2854163610915391726">Kudeatu Chrome-ko zein informazio gordetzen duzun Google-ko kontuan</translation>
@@ -1366,6 +1368,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3134859781443140237">Tokiko sarea</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> - Bilatu <ph name="KEYWORD_SHORT_NAME" /></translation>
 <translation id="3137507986424712703">{COUNT,plural, =0{Bat ere ez}=1{kontu bateko saio-hasierari buruzko datuak}other{# kontutako saio-hasierari buruzko datuak}}</translation>
+<translation id="3139503241401248626">Ezarpen hauek gaitu eta Google-ko kontuko informazioa erabiltzeko, joan automatikoki betetzeko zerbitzuen ezarpenetara</translation>
 <translation id="3140646734028448730">Enpresa-zerbitzuak</translation>
 <translation id="3141093262818886744">Ireki halere</translation>
 <translation id="3141337053413339205">Aldatu fitxa honetara.</translation>
@@ -1386,6 +1389,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3162070126914310576">Une honetan ezin da erregistratu gailua, erakundearen unitatea hasierako erregistro-mugara iritsi delako. Laguntza jasotzeko, jarri administratzailearekin harremanetan.</translation>
 <translation id="3162559335345991374">Baliteke darabilzun Wi-Fi konexioaren saio-hasierako orrira joan behar izatea.</translation>
 <translation id="316638481603975524">Sareko aplikazioak instalatzeko baimena eska dezakete</translation>
+<translation id="3166788340998560642">Hura erabiltzen duzun hurrengoan, <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> zerbitzuan gorde nahi duzun galdetuko dizu</translation>
 <translation id="3168744840365648658">Irrati-ekipamendua</translation>
 <translation id="3168938241115725594">Ibilgailu klasikoak</translation>
 <translation id="3169472444629675720">Ezagutu</translation>
@@ -2295,6 +2299,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4594403342090139922">&amp;Desegin ezabatzea</translation>
 <translation id="4598556348158889687">Memoriaren kudeaketa</translation>
 <translation id="459914240367517409">Web-diseinua eta garapena</translation>
+<translation id="4599572944836204718">Ordaindu bizkorrago Google Pay-rekin txartela gordeta edukita. Txartelaren xehetasunak enkriptatuta daude Google Diru-zorroa zerbitzuan.</translation>
 <translation id="4602465984861132303">Bola-jokoa</translation>
 <translation id="4603727370377253901">Hegaldien erreserbak</translation>
 <translation id="4607608436550361748">Ikusi Chrome-ri buruzko aholkuak</translation>
@@ -2409,6 +2414,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Leiho gainerakor bat blokeatu da}other{# leiho gainerakor blokeatu dira}}</translation>
 <translation id="4780320432697076749">Argazki-softwarea</translation>
 <translation id="4780366598804516005">1. postontzia</translation>
+<translation id="4785273477715803444">Iragazi erregistroak</translation>
 <translation id="4785376858512657294">Kudeatu Google-ko kontua</translation>
 <translation id="4785689107224900852">Aldatu fitxa honetara</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" bilatzen</translation>
@@ -2584,6 +2590,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5051254010007014901"><ph name="TOOLBELT_PRECEDING_MATCH_TEXT" />, sakatu tabuladorea bilaketa-iradokizun honen ondoren erabilgarri dauden bilatzeko lasterbide gehiago ikusteko</translation>
 <translation id="5052488928733955073">Ezin da egiaztatu zure informazioa. Egiaztatu konektatuta zaudela.</translation>
 <translation id="5052517576853118371">Gai aktiboak</translation>
+<translation id="5053116470141135293">Txartel honekin ordaintzen duzunean, txartel birtualaren zenbaki bat beteko da, zure benetako xehetasunak babesteko. Kudeatu Google Diru-zorroa zerbitzuan. <ph name="IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL" /></translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Fitxategia Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}other{Fitxategiak Nearby Share bidez bidaltzeko, egin tokia (<ph name="DISK_SPACE_SIZE" />) gailuan}}</translation>
 <translation id="5056587122125565772">Sortu irudi bat</translation>
 <translation id="505757197798929356">Irekitzeko arrazoia (beharrezkoa)</translation>
@@ -3050,6 +3057,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5759751709240058861">Kamera erabili eta mugitu</translation>
 <translation id="5762131895127128324">Gidabaimenak · Nortasun-agiriak · Pasaporteak</translation>
 <translation id="5763042198335101085">Idatzi balio duen helbide elektroniko bat</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktibo gaur}=1{Aktibo duela egun bat}other{Aktibo duela # egun}}</translation>
 <translation id="5764725887548570807">Jatorriaren formatuak ez du balio.</translation>
 <translation id="5764920692828389743">Bidali <ph name="EMAIL_ADDRESS" /> helbidera</translation>
 <translation id="5765072501007116331">Entrega-metodoak eta -eskakizunak ikusteko, hautatu helbide bat</translation>
@@ -3360,6 +3368,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6250932670816326647">Bainugelarako eta gorputzerako produktuak</translation>
 <translation id="6251906504834538140">{0,plural, =1{Fitxategia ezin da mugitu}other{<ph name="FILE_COUNT" /> fitxategi ezin dira mugitu}}</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" Chrome-ren bidez deskargatu dituzun fitxategiak kudeatzeko</translation>
+<translation id="6253380015872250643">Gorde txartela Google Diru-zorroa zerbitzuan</translation>
 <translation id="6254436959401408446">Ez dago fitxategia irekitzeko behar adina memoria</translation>
 <translation id="625463612687472648">Utzi erabiltzeko baimena emateari</translation>
 <translation id="6259156558325130047">&amp;Berregin berrantolatzea</translation>
@@ -4255,6 +4264,7 @@ Xehetasun gehiago:
 <translation id="7615932826417658001">Gehitu nortasun-agiri bat</translation>
 <translation id="7616390733770379387">Bilatzaile hauek ausaz zerrendatzen dira.</translation>
 <translation id="7616645509853975347">Administratzaileak Chrome Enterprise Connectors gaitu du arakatzailean. Konektore horiek zure datu batzuetarako sarbidea dute.</translation>
+<translation id="7616747402308801775">Txartela Google Diru-zorroa zerbitzuan gorde da; beraz, Google-ren zerbitzu guztietan erabil dezakezu</translation>
 <translation id="7617825962482469577">C7/C6 gutun-azala</translation>
 <translation id="7618270539713451657">Arte martzialak</translation>
 <translation id="7619838219691048931">Amaierako orria</translation>
@@ -4577,6 +4587,7 @@ Xehetasun gehiago:
 <translation id="8120720167840853945">Gidalerro honek ez du kontrolatzen inongo gidalerroren portaera lehenetsia.</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" ez dago behar bezala instalatuta ordenagailuan edo sarean. Eskatu arazoa konpontzeko IKT saileko administratzaileari.</translation>
 <translation id="8130113808541743942">Eraman hona…</translation>
+<translation id="813024282736408069">Aktibatu txartel birtual bat betetze automatikorako</translation>
 <translation id="8131740175452115882">Berretsi</translation>
 <translation id="8133495915926741232">Hautatu zein gai-kategoria zabal erabil daitezkeen iragarkiak pertsonalizatzeko. Kategoria zabalago bat desaktibatuz gero, erlazionatutako gaiak ere blokeatuko dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="8134058435519644366">Langileen hautapena eta langilez hornitzea</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Таныг аюулгүй байлгахад туслах зорилгоор зөвшөөрлийг зарим сайтаас хассан</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1384704387250346179">Google Lens-р зураг орчуул <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> өдрийн өмнөөс идэвхтэй</translation>
 <translation id="1390418506739274310">Chrome-р холбоос нээдэг бусад аппын хөтчийн түүх танд харагдаж болно. Таны Google Бүртгэл <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дээр өөр хэлбэрийн хөтчийн түүхтэй байж магадгүй.</translation>
 <translation id="139752016751285248">Үнийн статистикийн доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-р хайх</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Хавчуурга болон веб түүх</translation>
 <translation id="1515901671075971249">Табын навигацын товчлол</translation>
 <translation id="1516966594427080024">Нууцлалтай горимд шинэ цонх нээх</translation>
-<translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="153446405401665083">Chrome-н шинэ хувилбар бэлэн байна</translation>
 <translation id="1540012742443808215">Хаяг оруулах хэсэг одоогоор дээд талд байна</translation>
 <translation id="1544084554881119930">Төлбөрийн хэрэгсэл болон хаягуудыг шифрлэхгүй. Chrome-н хөтчийн түүхийг синк хийхгүй.
@@ -1728,7 +1726,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7968014550143838305">Унших жагсаалтад нэмсэн</translation>
 <translation id="7968982339740310781">Дэлгэрэнгүй мэдээлэл харах</translation>
 <translation id="7969391000881506217">Хүчинтэй хугацаа*</translation>
-<translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7975379999046275268">Хуудсыг урьдчилан үзэх <ph name="BEGIN_NEW" />Шинэ<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Таныг өгөгдлийн зөрчилд алдагдсан нууц үгийг ашигласан тохиолдолд танд сануулна.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Та сүүлийн үед зочлоогүй тул Chrome эдгээр зөвшөөрлийг хассан</translation>

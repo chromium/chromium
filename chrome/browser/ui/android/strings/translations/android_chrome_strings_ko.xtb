@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">안전을 위해 일부 사이트에서 권한이 삭제되었습니다</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1384704387250346179">Google 렌즈로 이미지 번역 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" />일 전 동기화됨</translation>
 <translation id="1390418506739274310">Chrome에서 링크를 열어 다른 앱의 방문 기록을 볼 수 있습니다. Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 방문 기록이 다른 형식으로 남아 있을 수도 있습니다.</translation>
 <translation id="139752016751285248">가격 정보 하단 시트가 전체 높이로 열림</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />에서 검색</translation>
@@ -136,7 +135,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="1513352483775369820">북마크 및 방문 기록</translation>
 <translation id="1515901671075971249">탭 탐색 바로가기</translation>
 <translation id="1516966594427080024">시크릿 모드로 새 창 열기</translation>
-<translation id="1521774566618522728">오늘 사용</translation>
 <translation id="153446405401665083">Chrome의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="1540012742443808215">현재 주소 표시줄이 상단에 있음</translation>
 <translation id="1544084554881119930">결제 수단 및 주소는 암호화되지 않습니다. Chrome 방문 기록은 동기화되지 않습니다.
@@ -1728,7 +1726,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
 <translation id="7968982339740310781">세부정보 보기</translation>
 <translation id="7969391000881506217">만료일*</translation>
-<translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>

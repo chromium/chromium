@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">ඔබව ස්රක්ෂිතව තබා ගැනීමට උදවු කිරීමට, සමහර අඩවි වලින් අවසර ඉවත් කර ඇත</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1384704387250346179">Google Lens සමග රූපය පරිවර්තනය ක. <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">දින <ph name="LAST_UPDATED" /> කට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="1390418506739274310">ඔබ Chrome තුළ සබැඳි විවෘත කරන වෙනත් යෙදුම්වලින් ඉතිහාසය දකීවි. ඔබේ Google ගිණුමට <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> තුළ බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබේවි.</translation>
 <translation id="139752016751285248">මිල ඇතුළාන්ත පහළ පත්‍රය සම්පූර්ණ උසින් විවෘත විය</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> සමඟ සොයන්න</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">පිටුසන් සහ වෙබ් ඉතිහාසය</translation>
 <translation id="1515901671075971249">පටිති සංචාලන කෙටිමං</translation>
 <translation id="1516966594427080024">අප්‍රසිද්ධ ප්‍රකාරයේ නව කවුළුවක් විවෘත කරන්න</translation>
-<translation id="1521774566618522728">අද ක්‍රියාත්මකයි</translation>
 <translation id="153446405401665083">Chrome හි නව අනුවාදය ලබා ගත හැක</translation>
 <translation id="1540012742443808215">ලිපින තීරුව දැනට ඉහළින් ඇත</translation>
 <translation id="1544084554881119930">ගෙවීමේ ක්‍රම සහ ලිපින සංකේතන නොකෙරේ Chrome වෙතින් ලැබෙන බ්‍රවුස් කිරීමේ ඉතිහාසය සමමුහූර්ත නොවේ.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">අභිරුචි වෙබ් ලිපිනය ඇතුළු කරන්න</translation>
 <translation id="1928618076168182477">දෘශ්‍ය දසුන පෙන්වමින්</translation>
 <translation id="1928696683969751773">යාවත්කාලීන</translation>
+<translation id="1934545916152269346">මෑතක දී භාවිත කළ</translation>
 <translation id="1943398124995840148">ඔබේ විවෘත පටිති දැන් XR හි යාවත්කාලීන පෙනුමක් ලබා ඇත</translation>
 <translation id="1944535645109964458">මුරයතුරු කිසිවක් නොලැබේ</translation>
 <translation id="1957557050935255529">PDF පූරණ කිරීම…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">කියවීම් ලැයිස්තුවට එක් කරන ලදී</translation>
 <translation id="7968982339740310781">විස්තර පෙන්වන්න</translation>
 <translation id="7969391000881506217">කල් ඉකුත් වීමේ දිනය*</translation>
-<translation id="7971136598759319605">1 දිනකට පෙර ක්‍රියාත්මකයි</translation>
 <translation id="7975379999046275268">පිටුව පෙරදකින්න <ph name="BEGIN_NEW" />නව<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ඔබ දත්ත කඩකිරීමක අවදානමට ලක් වූ මුරපදයක් භාවිතා කරන්නේ නම් ඔබට අනතුරු අඟවයි.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> ඔබ මෑතක දී නොපැමිණි නිසා Chrome මෙම අවසර ඉවත් කරන ලදි</translation>

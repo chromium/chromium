@@ -2418,6 +2418,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Hüpikaken blokeeriti}other{# hüpikakent blokeeriti}}</translation>
 <translation id="4780320432697076749">Fototarkvara</translation>
 <translation id="4780366598804516005">Postkast 1</translation>
+<translation id="4785273477715803444">Filtreerige logisid</translation>
 <translation id="4785376858512657294">Google'i konto haldamine</translation>
 <translation id="4785689107224900852">Lülitage sellele vahelehele</translation>
 <translation id="4785998536350006000">Päringu „<ph name="SEARCH_QUERY" />” otsing</translation>
@@ -3060,6 +3061,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5759751709240058861">Kaamera kasutamine ja liigutamine</translation>
 <translation id="5762131895127128324">Juhiload · ID-kaardid · Passid</translation>
 <translation id="5763042198335101085">Sisestage kehtiv e-posti aadress</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktiivne täna}=1{Aktiivne 1 päev tagasi}other{Aktiivne # päeva tagasi}}</translation>
 <translation id="5764725887548570807">Vale lähtekoha vorming.</translation>
 <translation id="5764920692828389743">Saada aadressile <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kohaletoimetamisviiside ja nõuete nägemiseks valige aadress</translation>

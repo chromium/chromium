@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Kvůli ochraně vaší bezpečnosti byla některým webům odebrána oprávnění</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384704387250346179">Přeložit obrázek pomocí Google Lens <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktivní před tímto počtem dní: <ph name="LAST_UPDATED" /></translation>
 <translation id="1390418506739274310">Můžete vidět historii z jiných aplikací, které otevírají odkazy v Chromu. Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="139752016751285248">Spodní panel s informacemi o ceně otevřený přes celou výšku obrazovky</translation>
 <translation id="1397811292916898096">Hledat pomocí vyhledávače <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Další nastavení využití dat ke zlepšení prostředí v prohlížeči Chro
 <translation id="1513352483775369820">Záložky a webová historie</translation>
 <translation id="1515901671075971249">Zkratky k přecházení mezi kartami</translation>
 <translation id="1516966594427080024">Otevřít nové okno v anonymním režimu</translation>
-<translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="153446405401665083">K dispozici je nová verze Chromu</translation>
 <translation id="1540012742443808215">Adresní řádek je aktuálně nahoře</translation>
 <translation id="1544084554881119930">Platební metody a adresy nebudou šifrovány. Historie prohlížení v Chromu se nebude synchronizovat.
@@ -222,6 +220,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="1925021887439448749">Zadejte vlastní webovou adresu</translation>
 <translation id="1928618076168182477">Je zobrazeno vizuální zobrazení</translation>
 <translation id="1928696683969751773">Aktualizace</translation>
+<translation id="1934545916152269346">Naposledy použité</translation>
 <translation id="1943398124995840148">Otevřené karty teď mají v rozšířené realitě nový vzhled</translation>
 <translation id="1944535645109964458">Nejsou k dispozici žádné přístupové klíče</translation>
 <translation id="1957557050935255529">Načítání PDF…</translation>
@@ -1727,7 +1726,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7968014550143838305">Přidáno do seznamu četby</translation>
 <translation id="7968982339740310781">Zobrazit podrobnosti</translation>
 <translation id="7969391000881506217">Datum konce platnosti*</translation>
-<translation id="7971136598759319605">Aktivní včera</translation>
 <translation id="7975379999046275268">Zobrazit náhled stránky <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>

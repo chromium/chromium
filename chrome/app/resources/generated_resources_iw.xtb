@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">אי אפשר להוריד את קובצי הרישומים של הצומת הראשי. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="1103523840287552314">ברצוני לקבל תרגום מ<ph name="LANGUAGE" /> תמיד</translation>
 <translation id="1104098698795583187">הגישה שלך לקבוצת הכרטיסיות הזו תאבד באופן מיידי, והיא תימחק מכל המכשירים שלך</translation>
-<translation id="1105934302947321130">‏‫Google Beam עם Zoom</translation>
 <translation id="1106270460549661906">‏ביטול השיתוף עם Gemini</translation>
 <translation id="1106350001632362876">הגדלת הסף</translation>
 <translation id="110850812463801904">‏התחברות ידנית ל-OneDrive</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">קוד האימות של הילד או הילדה עודכן</translation>
 <translation id="1133418583142946603">הוספה של הכרטיסייה הנוכחית</translation>
 <translation id="1133751489735776037">לחיצה משולשת בעכבר</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> מתוך <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">מפתח האבטחה נעול כי הזנת קוד אימות שגוי יותר מדי פעמים. כדי לבטל את הנעילה צריך לנתק ולחבר אותו מחדש.</translation>
 <translation id="1137589305610962734">נתונים זמניים</translation>
 <translation id="1137673463384776352">פתיחת הקישור ב-<ph name="APP" /></translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">מתבצע חיבור לטלפון שלך</translation>
 <translation id="1157952955648710254">‏סגירת החלונית הצדדית של חיפוש Google</translation>
 <translation id="1158080958325422608">שינוי לאותיות גדולות</translation>
+<translation id="1158134713295836892">‏‫Gemini ב-Chrome</translation>
 <translation id="1159879754517035595">ניהול ההגדרות של התוספים</translation>
 <translation id="1160800016654917722">החלון הועבר למטה ושמאלה</translation>
 <translation id="1161190590171867633">‏טבלאות ההשוואה נשמרות בחשבון שלך ב-Google</translation>
@@ -763,7 +762,6 @@
 <translation id="1517467582299994451">‏כדי להתשמש בקוד לצורך הפעלת Cast, צריך להפעיל את הגדרות הסנכרון של דפדפן Chrome</translation>
 <translation id="1521442365706402292">ניהול אישורים</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="1521933835545997395">‏מחובר לטלפון Android</translation>
 <translation id="1523279371236772909">נצפה בחודש האחרון</translation>
 <translation id="1523486680453956384">למשימה</translation>
@@ -2250,6 +2248,7 @@
 <translation id="2518024842978892609">שימוש באישורי הלקוח</translation>
 <translation id="2518620532958109495">יש הרשאה לעבור למסך מלא באופן אוטומטי</translation>
 <translation id="2519250377986324805">איך עושים את זה?</translation>
+<translation id="2519448661890412804">‏‫<ph name="TASK_TITLE" />‏\nכדי להמשיך לעבוד על המשימה, Gemini צריך את העזרה שלך.</translation>
 <translation id="2519517390894391510">שם פרופיל האישור</translation>
 <translation id="2520644704042891903">רגע, אנחנו מחפשים את המקום המתאים…</translation>
 <translation id="2521427645491031107">סנכרון האפליקציות נקבע בהגדרות המכשיר</translation>
@@ -3597,7 +3596,6 @@
 <translation id="3473241910002674503">במצב טאבלט אפשר להשתמש בכפתורים כדי לעבור אל דף הבית, לחזור לדף הקודם ולעבור בין אפליקציות.</translation>
 <translation id="3473479545200714844">מגדיל התצוגה</translation>
 <translation id="3474218480460386727">יש לכתוב מילים חדשות עם 99 אותיות או פחות</translation>
-<translation id="3474330892505468100">‏‫Google Beam עם Meet</translation>
 <translation id="3474624961160222204">המשך כ-<ph name="NAME" /></translation>
 <translation id="3477772589943384839">חיסכון בינוני במשאבי הזיכרון. הכרטיסיות מושבתות אחרי פרק זמן ארוך יותר.</translation>
 <translation id="347785443197175480">אני רוצה להמשיך לאפשר ל-<ph name="HOST" /> לגשת למצלמה ולמיקרופון</translation>
@@ -4174,7 +4172,6 @@
 <translation id="3841964634449506551">הסיסמה לא חוקית</translation>
 <translation id="3842552989725514455">‏גופן Serif</translation>
 <translation id="3843464315703645664">ברשימת ההיתרים הפנימית</translation>
-<translation id="3844888638014364087">האמוג'י נוסף</translation>
 <translation id="3846116211488856547">‏אפשר להוריד כלים לפיתוח אתרים, אפליקציות Android ועוד. התקנת Linux תוריד נתונים בנפח של <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">סיוע לשיפור האבטחה באינטרנט לטובת כולם</translation>
 <translation id="3847734730889093333">‎<ph name="RATE" />x</translation>
@@ -4652,6 +4649,7 @@
 <translation id="4190492351494485814">‏בהגדרה הראשונית, עליך להתחבר לאינטרנט כדי שניתן יהיה לסנכרן קבצים ב-Chromebook.</translation>
 <translation id="4190828427319282529">הדגשת מיקוד המקלדת</translation>
 <translation id="4191892134568599822">לקבל דרך <ph name="FEATURE_NAME" />?</translation>
+<translation id="4192850526869217634">‏‫<ph name="TASK_TITLE" />‏\n‏‫Gemini מטפל במשימה שלך, ויודיע לך אם יהיה צורך בפעולה נוספת.</translation>
 <translation id="4192850928807059784">‏<ph name="BEGIN_PARAGRAPH1" />בלעדי ל-<ph name="DEVICE_TYPE" />.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים וכרגע הזמינות שלה מוגבלת.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">רשות אישורים מהימנה</translation>
@@ -5040,7 +5038,6 @@
 <translation id="4453430595102511050">יש לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת. נתוני טביעות האצבע נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">אפשר לחפש ב-<ph name="SEARCH_ENGINE_NAME" /> או להקליד כתובת אתר</translation>
 <translation id="4457472090507035117">בחירת הקול המוגדר כרגע:</translation>
-<translation id="4459169140545916303">שימוש אחרון: לפני <ph name="DEVICE_LAST_ACTIVATED_TIME" /> ימים</translation>
 <translation id="4460014764210899310">פיזור הקבוצה</translation>
 <translation id="4461483878391246134">הוספת שפות שאף פעם לא יוצגו הצעות לתרגם אותן</translation>
 <translation id="4462159676511157176">שרתי שמות מותאמים אישית</translation>
@@ -5265,6 +5262,7 @@
 <translation id="4624054169152573743">ערכת צבעים</translation>
 <translation id="4625078469366263107">הפעלת האפליקציה</translation>
 <translation id="4625905218692741757">הצבע האפור בברירת המחדל</translation>
+<translation id="4626906635466987740">‏‫<ph name="TASK_TITLE" />‏\n‏Gemini השהה את המשימה שלך. כדי לבדוק אותה, צריך לחזור ל-Chrome.</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
 <translation id="4627442949885028695">המשך במכשיר אחר</translation>
 <translation id="4628762811416793313">‏הגדרת מאגר Linux לא הושלמה. אפשר לנסות שוב.</translation>
@@ -5794,6 +5792,7 @@
 <translation id="4990673372047946816">אין מצלמה זמינה</translation>
 <translation id="4991420928586866460">התייחסות למקשים בשורה העליונה כאל מקשי פונקציה</translation>
 <translation id="4991873517942703737">יש לי שאלה לגבי המסמך הזה</translation>
+<translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="4992443049233195791">‏ההגדרות לקובצי Microsoft 365</translation>
 <translation id="4992458225095111526">‏אישור פעולת Powerwash</translation>
 <translation id="4992473555164495036">מנהל המערכת הגביל את שיטות הקלט הזמינות.</translation>
@@ -6774,7 +6773,6 @@
 <translation id="5701212929149679556">נדידה סלולרית</translation>
 <translation id="5701786609538182967">אפליקציות אחרות מוגדרות לפתוח את אותם קישורים כמו <ph name="APP_NAME" />. כתוצאה מכך, <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> ואפליקציה אחת נוספת לא יפתחו קישורים נתמכים.</translation>
 <translation id="5702161882524398150">יש לך שאלה על הכרטיסייה הקודמת?</translation>
-<translation id="5702749864074810610">ההצעה נדחתה</translation>
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
 <translation id="5703998022096520811">‏הגנה יזומה בזמן אמת על ידי שליחת מידע נוסף לגלישה הבטוחה של Google</translation>
 <translation id="5704875434923668958">מתבצע סנכרון עם</translation>
@@ -7578,7 +7576,6 @@
 <translation id="6270309713620950855">השתקת הנדנוד</translation>
 <translation id="6270391203985052864">אתרים יכולים לבקש לשלוח התראות</translation>
 <translation id="6270770586500173387">שליחת <ph name="BEGIN_LINK1" />פרטי מערכת ויישומים<ph name="END_LINK1" />, כמו גם <ph name="BEGIN_LINK2" />מדדים<ph name="END_LINK2" /></translation>
-<translation id="6271348838875430303">התיקון בוטל</translation>
 <translation id="6271824294945464304">שיתוף הסיסמה</translation>
 <translation id="6273677812470008672">איכות</translation>
 <translation id="6274089201566806618">מתבצע חיבור אל <ph name="HOST_DEVICE_NAME" /></translation>
@@ -8313,6 +8310,7 @@
 <translation id="6798420440063423019">מפתח האבטחה נעול כי הזנת קוד אימות שגוי יותר מדי פעמים. צריך לאפס את מפתח האבטחה.</translation>
 <translation id="679845623837196966">הצגת רשימת הקריאה</translation>
 <translation id="6798578729981748444">‏סגירת כל החלונות של Firefox תשלים את פעולת הייבוא.</translation>
+<translation id="6798688411671553980">‏‫<ph name="TASK_TITLE" />‏\n‏‫Gemini השלים את המשימה. אפשר לראות אותה ב-Chrome.</translation>
 <translation id="6798780071646309401">‏caps lock מופעל</translation>
 <translation id="679905836499387150">הכפתורים המוסתרים בסרגל הכלים</translation>
 <translation id="6800893479155997609">האפליקציות המובילות ב-<ph name="DEVICE_TYPE" /></translation>
@@ -9916,6 +9914,7 @@
 <translation id="7916364730877325865">בהתאם למדיניות הארגון שלך, אי אפשר להפעיל סנכרון עם החשבון הזה</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
 <translation id="7918257978052780342">הרשמה</translation>
+<translation id="7918928051723770926">המשימה הושלמה</translation>
 <translation id="7919123827536834358">תרגום אוטומטי של השפות האלה</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> שנ'</translation>
 <translation id="7920363873148656176">ל-<ph name="ORIGIN" /> יש אפשרות להציג את <ph name="FILENAME" /></translation>
@@ -10405,6 +10404,7 @@
 <translation id="8244724656154470844">בדיקת העדכון נכשלה.</translation>
 <translation id="8246776524656196770">אפשר להגן על מפתח האבטחה באמצעות קוד אימות</translation>
 <translation id="824713170151383793">בכלי הפיתוח</translation>
+<translation id="8247210755024677100">בתהליך כניסה לאתר...</translation>
 <translation id="8247795734638043885">הורדת קובץ לא מאובטח</translation>
 <translation id="8248050856337841185">&amp;הדבקה</translation>
 <translation id="8248381369318572865">גישה למיקרופון וניתוח הדיבור</translation>
@@ -10549,7 +10549,6 @@
 <translation id="8339288417038613756">גודל הטקסט והתצוגה</translation>
 <translation id="833986336429795709">צריך לבחור אפליקציה כדי לפתוח את הקישור הזה</translation>
 <translation id="8340547030807793004">עוד פעולות ב-<ph name="DEVICE" /></translation>
-<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">הצגת קיצורי הדרך לחיפוש</translation>
 <translation id="8342221978608739536">לא ניסיתי</translation>
 <translation id="8342387517402567689">התקנות של אפליקציות אינטרנט לא נתמכות במצב פרטי</translation>
@@ -10795,6 +10794,7 @@
 <translation id="8518809011298357036">סגירת התצוגה העליונה</translation>
 <translation id="8518942514525208851">הסתרה של שפה גסה</translation>
 <translation id="8520238089740349550">הפעולה נכשלה – ההורדה המקומית נחסמה</translation>
+<translation id="8520408093016204772">אפשר לשמור את הסיסמאות, הסימניות וההגדרות</translation>
 <translation id="8523493869875972733">שמירת השינויים</translation>
 <translation id="8523849605371521713">נוסף על-ידי מדיניות</translation>
 <translation id="8524594273111932386">חיפוש + חץ למטה</translation>
@@ -10848,6 +10848,7 @@
 <translation id="8557022314818157177">צריך להמשיך לגעת במפתח האבטחה עד לתיעוד טביעת האצבע</translation>
 <translation id="8557100046150195444">‏צריך לגעת בחיישן Touch ID כדי להמשיך</translation>
 <translation id="8557856025359704738">ההורדה הבאה תהיה בשעה <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
+<translation id="8558063527625343224">‏הגדרת Google Beam</translation>
 <translation id="8559858985063901027">מפתחות הגישה</translation>
 <translation id="8559961053328923750">‏ב-Chrome מוגדרת מגבלה על כמות הנתונים הכוללת שאתרים רשאים לשתף דרך הדפדפן כדי למדוד את ביצועי המודעות</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{פתיחת כל הכתובות בחלון &amp;חדש}=1{פתיחה בחלון &amp;חדש}one{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}two{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}other{פתיחת כל הכתובות ({COUNT}) בחלון &amp;חדש}}</translation>
@@ -10979,6 +10980,7 @@
 <translation id="8651585100578802546">אילוץ טעינה מחדש של דף זה</translation>
 <translation id="8651806635673244884">כדי להחזיר את הכרטיסיות לחלק העליון, אפשר ללחוץ לחיצה ימנית על כרטיסייה כלשהי ולבחור באפשרות "הצגת הכרטיסיות לרוחב"</translation>
 <translation id="8652400352452647993">שגיאת 'ארוז תוסף'</translation>
+<translation id="8652412805227733853">כתובת האימייל אומתה אוטומטית</translation>
 <translation id="8654151524613148204">הקובץ גדול מכדי שהמחשב שלך יוכל לטפל בו. מצטערים.</translation>
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655972064210167941">הכניסה נכשלה מפני שלא ניתן היה לאמת את הסיסמה. יש לפנות למנהל המערכת או לנסות שוב.</translation>
@@ -11365,6 +11367,7 @@
 <translation id="8898786835233784856">בחר את הכרטיסייה הבאה</translation>
 <translation id="8898790559170352647">‏הוספה של חשבון Microsoft</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
+<translation id="8898837844145554490">‏‫<ph name="TASK_TITLE" />‏\n‏‫Gemini הפסיק לעבוד על המשימה שלך.</translation>
 <translation id="8899851313684471736">פתיחת קישור &amp;בחלון חדש</translation>
 <translation id="8900413463156971200">הפעלת רשת סלולרית</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> היום.}one{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון.}two{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון.}other{לפי הדרישה של <ph name="MANAGER" />, עליך לגבות את הנתונים שלך ולהחזיר את מכשיר ה-<ph name="DEVICE_TYPE" /> לפני המועד האחרון.}}</translation>
@@ -11488,7 +11491,6 @@
 <translation id="8983018820925880511">הפרופיל החדש הזה ינוהל על ידי <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688">ל-<ph name="ORIGIN" /> יש הרשאה לערוך את <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">המכשיר יהיה גלוי לכולם למשך <ph name="MINUTES" /> דקות. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">שימוש אחרון: לפני יום אחד (<ph name="DEVICE_LAST_ACTIVATED_TIME" />)</translation>
 <translation id="8985561265504464578">הסף לזיהוי</translation>
 <translation id="8985661493893822002">צריך להתחבר לאינטרנט כדי להיכנס אל <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">בוצעה הורדה של קובץ לא מאובטח</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Er mwyn helpu i'ch cadw'n ddiogel, dilëwyd caniatadau o rai gwefannau</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1384704387250346179">Cyfieithu â Google Lens <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Yma <ph name="LAST_UPDATED" /> o ddiwrnodau yn ôl</translation>
 <translation id="1390418506739274310">Mae'n bosib y byddwch yn gweld yr hanes o apiau eraill sy'n agor dolenni yn Chrome. Mae'n bosib y bydd gan eich Cyfrif Google fathau eraill o hanes pori yn <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Dalen waelod mewnwelediadau pris wedi'i hagor ar uchder llawn</translation>
 <translation id="1397811292916898096">Chwilio gyda <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1513352483775369820">Nodau tudalen a hanes gwe</translation>
 <translation id="1515901671075971249">Llwybrau byr llywio tab</translation>
 <translation id="1516966594427080024">Agor ffenestr newydd yn y modd Anhysbys</translation>
-<translation id="1521774566618522728">Yma heddiw</translation>
 <translation id="153446405401665083">Mae fersiwn newydd o Chrome ar gael</translation>
 <translation id="1540012742443808215">Bar cyfeiriad ar y brig ar hyn o bryd</translation>
 <translation id="1544084554881119930">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
@@ -1729,7 +1727,6 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7968014550143838305">Ychwanegwyd at y rhestr ddarllen</translation>
 <translation id="7968982339740310781">Gweld y manylion</translation>
 <translation id="7969391000881506217">Dyddiad darfod*</translation>
-<translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7975379999046275268">Tudalen rhagolwg <ph name="BEGIN_NEW" />Newydd<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Yn eich rhybuddio os ydych yn defnyddio cyfrinair sydd wedi'i beryglu mewn achos o dor data.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Tynnodd Chrome y caniatadau hyn oherwydd nad ydych chi wedi ymweld â nhw yn ddiweddar</translation>

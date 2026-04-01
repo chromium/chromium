@@ -1177,6 +1177,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2837891525090413132">Pode pedir permiso para bloquear e usar o teclado</translation>
 <translation id="2839032553903800133">As notificacións están bloqueadas</translation>
 <translation id="2839501879576190149">O sitio ao que te dirixes é falso</translation>
+<translation id="2840680829170913626">O contido da páxina de tramitación da compra compártese con Google para poder ofrecer estas opcións. Os plans de pago están suxeitos ao cumprimento de requisitos. Para ocultalas na función de autocompletar, vai a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Queres desprazarte pola pestana compartida e facerlle zoom?</translation>
 <translation id="2851291081585704741">Estás sen conexión</translation>
 <translation id="2854163610915391726">Xestionar a información de Chrome que gardas na túa Conta de Google</translation>
@@ -1388,6 +1389,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3162070126914310576">Non se pode inscribir este dispositivo neste momento porque a unidade da túa organización chegou ao límite de inscrición inicial. Se necesitas axuda, fala coa persoa administradora.</translation>
 <translation id="3162559335345991374">É posible que a rede wifi que utilizas requira o acceso á súa páxina de inicio de sesión.</translation>
 <translation id="316638481603975524">Pode pedir permiso para instalar aplicacións web</translation>
+<translation id="3166788340998560642">Chrome ofrecerache gardala en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> a próxima vez que a uses</translation>
 <translation id="3168744840365648658">Equipos de radio</translation>
 <translation id="3168938241115725594">Vehículos clásicos</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2416,6 +2418,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Bloqueouse a ventá emerxente}other{Bloqueáronse # ventás emerxentes}}</translation>
 <translation id="4780320432697076749">Software de fotografía</translation>
 <translation id="4780366598804516005">Caixa de correo 1</translation>
+<translation id="4785273477715803444">Filtra rexistros</translation>
 <translation id="4785376858512657294">Xestionar Conta de Google</translation>
 <translation id="4785689107224900852">Cambia a esta pestana</translation>
 <translation id="4785998536350006000">Buscando "<ph name="SEARCH_QUERY" />"</translation>
@@ -3058,6 +3061,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5759751709240058861">Utilizar e mover a túa cámara</translation>
 <translation id="5762131895127128324">Permisos de conducir · Documentos de identidade · Pasaportes</translation>
 <translation id="5763042198335101085">Introduce un enderezo de correo electrónico válido</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Dispositivo activo hoxe}=1{Dispositivo activo hai 1 día}other{Dispositivo activo hai # días}}</translation>
 <translation id="5764725887548570807">O formato de orixe non é válido.</translation>
 <translation id="5764920692828389743">Envíanse a: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para consultar os requisitos e métodos de entrega, selecciona un enderezo</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">為保障你的安全，系統已移除部分網站的權限</translation>
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1384704387250346179">使用「Google 智能鏡頭」翻譯圖片 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">曾於 <ph name="LAST_UPDATED" /> 天前在線</translation>
 <translation id="1390418506739274310">你可查看透過其他應用程式在 Chrome 中開啟連結的記錄。你的 Google 帳戶在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的瀏覽記錄。</translation>
 <translation id="139752016751285248">價格分析資料頁底面板宜家顯示喺成個畫面</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 搜尋內容</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">書籤和網頁記錄</translation>
 <translation id="1515901671075971249">分頁導覽快速鍵</translation>
 <translation id="1516966594427080024">在無痕模式中開啟新視窗</translation>
-<translation id="1521774566618522728">今天已使用</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
 <translation id="1540012742443808215">網址列目前在頂部</translation>
 <translation id="1544084554881119930">系統將不會加密你的付款方法和地址，Chrome 上的瀏覽記錄將不會同步。
@@ -1728,7 +1726,6 @@
 <translation id="7968014550143838305">已加入閱讀清單</translation>
 <translation id="7968982339740310781">檢視詳情</translation>
 <translation id="7969391000881506217">到期日*</translation>
-<translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">如果你使用在資料外洩中被盜用的密碼，系統便會向你發出警告。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 由於你最近沒有瀏覽過此網站，因此 Chrome 已移除有關權限</translation>

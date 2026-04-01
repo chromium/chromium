@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">آپ کو محفوظ رکھنے کیلئے، کچھ سائٹس سے اجازتوں کو ہٹا دیا گیا ہے</translation>
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1384704387250346179">‏Google لینز سے تصویر کا ترجمہ کریں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> دن پہلے فعال تھا</translation>
 <translation id="1390418506739274310">‏آپ Chrome میں لنکس کو کھولنے والی دیگر ایپس کی سرگزشت دیکھ سکتے ہیں۔ ممکن ہے کہ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="139752016751285248">قیمت سے متعلق حقائق کی نیچے کی شیٹ پوری کھلی ہے</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> کے ساتھ تلاش کریں</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">بُک مارکس اور ویب سرگزشت</translation>
 <translation id="1515901671075971249">ٹیب نیویگیشن کے شارٹ کٹس</translation>
 <translation id="1516966594427080024">پوشیدگی وضع میں ایک نئی ونڈو کھولیں</translation>
-<translation id="1521774566618522728">آج فعال کیا گیا</translation>
 <translation id="153446405401665083">‏‫Chrome کا نیا ورژن دستیاب ہے</translation>
 <translation id="1540012742443808215">ایڈریس بار فی الحال سب سے اوپر ہے</translation>
 <translation id="1544084554881119930">‏ادائیگی کے طریقے اور پتے مرموز کردہ نہیں ہوں گے۔ ‫Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">حسب ضرورت ویب پتہ درج کریں</translation>
 <translation id="1928618076168182477">ویژوئل منظر دکھایا جا رہا ہے</translation>
 <translation id="1928696683969751773">اپ ڈيٹس</translation>
+<translation id="1934545916152269346">حال ہی میں استعمال کردہ</translation>
 <translation id="1943398124995840148">‏‫XR میں کھلے ہوئے آپ کے ٹیبز اب ایک اپ ڈیٹ کردہ شکل میں دکھائی دیں گے</translation>
 <translation id="1944535645109964458">کوئی پاس کی دستیاب نہیں ہے</translation>
 <translation id="1957557050935255529">‏PDF لوڈ ہو رہا ہے…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">پڑھنے کی فہرست میں شامل کیا گیا</translation>
 <translation id="7968982339740310781">تفصیلات دیکھیں</translation>
 <translation id="7969391000881506217">تاریخ اختتام*</translation>
-<translation id="7971136598759319605">1 دن پہلے فعال تھا</translation>
 <translation id="7975379999046275268">صفحے کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">اگر آپ کوئی ایسا پاس ورڈ استعمال کرتے ہیں جس سے ڈیٹا کی خلاف ورزی میں سمجھوتہ کیا گیا ہو تو آپ کو متنبہ کرتا ہے۔</translation>
 <translation id="7987499071758862048">‏<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome نے یہ اجازتیں ہٹا دی ہیں کیوں کہ آپ نے حال ہی میں انہیں ملاحظہ نہیں کیا ہے</translation>

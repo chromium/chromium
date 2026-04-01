@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">«በዚህ ትር ቀጥል» የሚለውን ደብቅ</translation>
 <translation id="1520027731907768768">ለሚከታተሏቸው ምርቶች የዋጋ ቅናሽ ማንቂያዎችን ይቀበሉ።</translation>
 <translation id="1521366073263497277">ወደ እርስዎ የትር ፍርግርግ ይሂዱ</translation>
-<translation id="1521774566618522728">ገባሪ ዛሬ</translation>
 <translation id="1523567067736644845">የይለፍ ቃል ለማሳየት ይክፈቱ</translation>
 <translation id="1524563461097350801">አይ፣ አመሰግናለሁ</translation>
 <translation id="1531038290222364269">ትሮችን አሳይ</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">የይለፍ ቃላትዎ ወደ Google የይለፍ ቃል አስተዳዳሪ ከመቀመጣቸው በፊት በመሳሪያዎ ላይ ይመሣጠራል።</translation>
 <translation id="2306265833370324042">የ<ph name="SEARCH_ENGINE_NAME" /> ዝርዝሮችን አሳይ</translation>
 <translation id="2309265394777270359">ትርን ዝጋ</translation>
+<translation id="2310789833878085574">አስቀምጥ እና ራስ-ሙላ</translation>
 <translation id="2311077293164383652">የተሰካ ትርን ዝጋ</translation>
 <translation id="2316129865977710310">አይ፣ አመሰግናለሁ</translation>
 <translation id="2320166752086256636">የቁልፍ ሰሌዳን ደብቅ</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">ተነቧል አመልክት</translation>
 <translation id="428768789042547925">ምን አዲስ ነገር አለ</translation>
 <translation id="429074084062258019">{count,plural, =1{ትርን ወደ ቡድን ያክሉ}one{ትርን ወደ ቡድን ያክሉ}other{ትሮችን ወደ ቡድን ያክሉ}}</translation>
+<translation id="4300830875340617674">ካርድን ቃኝ እና በራስ-ሙላ</translation>
 <translation id="4302061870579014542">አቀማመጥ አቀናብር</translation>
 <translation id="4304713468139749426">የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="4306349443295056740">OCSP መፈረም</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">ምርቱን ለመከታተል፣ ተከታተል ላይ መታ ያድርጉ</translation>
 <translation id="5121618895923301719">ይህን ምርት አስቀድመው እየተከታተሉት ነው። ይህ ገፅ በ<ph name="BEGIN_LINK" />ተንቀሳቃሽ እልባቶች<ph name="END_LINK" /> ውስጥ ተቀምጧል።</translation>
 <translation id="512533434554095351">በርካታ የይለፍ ቃል ችግሮች አሉብዎት።</translation>
-<translation id="5127538504377457572">ገቢር ከ<ph name="DAYS" /> ቀናት በፊት</translation>
 <translation id="5128788795241319992">አዲሱን ምናሌ ያስሱ</translation>
 <translation id="5132942445612118989">የእርስዎን የይለፍ ቃላት፣ ታሪክ እና ተጨማሪ ነገሮች በሁሉም መሣሪያዎች ላይ ያስምሩ</translation>
 <translation id="5141363746588976328">በትሮች ካርድዎ ላይ የዋጋ ቅነሳዎችን ደብቅ</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">ካሜራን አብራ</translation>
 <translation id="5229315183665181733">ጣቢያን አርትዕ</translation>
+<translation id="5233111790346066304">ፋይሎችን በእርስዎ Google Drive ውስጥ ያስቀምጡ እና በማንኛውም ጊዜ ያግኟቸው።</translation>
 <translation id="5233638681132016545">አዲስ ትር</translation>
 <translation id="5234094073825090254">{count,plural, =1{ዕልባት በእርስዎ Google መለያ {email} ውስጥ ተቀምጧል።}one{ዕልባት በእርስዎ Google መለያ {email} ውስጥ ተቀምጧል።}other{ዕልባቶች በእርስዎ Google መለያ {email} ውስጥ ተቀምጠዋል።}}</translation>
 <translation id="5234764350956374838">አሰናብት</translation>
@@ -1649,6 +1650,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6806550742467879742">የገፅ መሣሪያዎች</translation>
 <translation id="6807287147325542056">በሌሎች መተግበሪያዎች ውስጥ ያሉ የይለፍ ቃላት</translation>
 <translation id="681368974849482173">ንጥል ተፈጥሯል</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}one{{count} ዕልባት Google መለያዎ፣ {email} ውስጥ ተቀምጧል}other{{count} ዕልባቶች Google መለያዎ፣ {email} ውስጥ ተቀምጧል}}</translation>
 <translation id="6826004672264649705">በአሁኑ ጊዜ ይህን ምርት በመከታተል ላይ። የዋጋ ታሪክን ለማየት ይክፈቱ</translation>
 <translation id="6830728435402077660">ደህንነቱ አልተጠበቀም</translation>
@@ -1962,7 +1964,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7952670906562503188">{passkey_count} የይለፍ ቁልፎችን እና በመለያ መግቢያ መረጃን መቼም ላለማስቀመጥ የመረጡባቸውን የጣቢያዎች እና መተግበሪያዎች ዝርዝር ሊሰርዙ ነው። ለጣቢያዎች ወይም ለመተግበሪያዎች የፈጠሩት ማንኛውም መለያ አይሰረዝም።</translation>
 <translation id="7958575506592576831">የገፅ ደህንነት መረጃ</translation>
 <translation id="7961015016161918242">በፍጹም</translation>
-<translation id="7971136598759319605">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="7972837668077967426">ሸራ</translation>
 <translation id="7975036700432177008">ይሞክሩ</translation>
 <translation id="797588153137233716">ምናሌ → ታሪክ → የአሰሳ ውሂብን ሰርዝ</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Για την ασφάλειά σας, καταργήθηκαν άδειες από ορισμένους ιστοτόπους</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1384704387250346179">Μετάφραση εικόνας με Google Lens <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Ενεργή <ph name="LAST_UPDATED" /> ημέρες πριν</translation>
 <translation id="1390418506739274310">Μπορεί να δείτε το ιστορικό από άλλες εφαρμογές που ανοίγουν συνδέσμους στο Chrome. Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Το φύλλο κάτω μέρους insight τιμών άνοιξε σε πλήρες ύψος</translation>
 <translation id="1397811292916898096">Αναζήτηση με <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Σελιδοδείκτες και ιστορικό ιστού</translation>
 <translation id="1515901671075971249">Συντομεύσεις πλοήγησης σε καρτέλες</translation>
 <translation id="1516966594427080024">Άνοιγμα νέου παραθύρου στην κατάσταση ανώνυμης περιήγησης</translation>
-<translation id="1521774566618522728">Ενεργή σήμερα</translation>
 <translation id="153446405401665083">Μια νέα έκδοση του Chrome είναι διαθέσιμη</translation>
 <translation id="1540012742443808215">Η γραμμή διευθύνσεων βρίσκεται αυτή τη στιγμή στο επάνω μέρος</translation>
 <translation id="1544084554881119930">Οι τρόποι πληρωμής και οι διευθύνσεις δεν θα κρυπτογραφούνται. Το ιστορικό περιήγησης από το Chrome δεν θα συγχρονίζεται.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Εισαγάγετε προσαρμοσμένη διεύθυνση ιστού</translation>
 <translation id="1928618076168182477">Εμφάνιση οπτικής προβολής</translation>
 <translation id="1928696683969751773">Ενημερώσεις</translation>
+<translation id="1934545916152269346">Χρησιμοποιήθηκαν πρόσφατα</translation>
 <translation id="1943398124995840148">Οι ανοιχτές καρτέλες σας έχουν πλέον νέα εμφάνιση στο XR</translation>
 <translation id="1944535645109964458">Δεν υπάρχουν διαθέσιμα κλειδιά πρόσβασης</translation>
 <translation id="1957557050935255529">Φόρτωση PDF…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">Προστέθηκε στη λίστα ανάγνωσης</translation>
 <translation id="7968982339740310781">Προβολή λεπτομερειών</translation>
 <translation id="7969391000881506217">Ημερομηνία λήξης*</translation>
-<translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7975379999046275268">Προεπισκόπηση σελίδας <ph name="BEGIN_NEW" />Νέο<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Σας προειδοποιεί εάν χρησιμοποιήσετε έναν κωδικό πρόσβασης που έχει παραβιαστεί μέσω παραβίασης δεδομένων.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες, επειδή δεν έχετε επισκεφτεί τον ιστότοπο πρόσφατα</translation>

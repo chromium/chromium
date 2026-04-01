@@ -2418,6 +2418,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Finestra emergent bloquejada}other{# finestres emergents bloquejades}}</translation>
 <translation id="4780320432697076749">Programari de fotografia</translation>
 <translation id="4780366598804516005">Bústia de correu 1</translation>
+<translation id="4785273477715803444">Filtra els registres</translation>
 <translation id="4785376858512657294">Gestiona el compte de Google</translation>
 <translation id="4785689107224900852">Canvia a aquesta pestanya</translation>
 <translation id="4785998536350006000">S'està cercant "<ph name="SEARCH_QUERY" />"</translation>
@@ -3060,6 +3061,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5759751709240058861">Utilitzar i moure la càmera</translation>
 <translation id="5762131895127128324">Permisos de conduir · Documents d'identitat · Passaports</translation>
 <translation id="5763042198335101085">Introdueix una adreça electrònica vàlida</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Actiu avui}=1{Actiu fa 1 dia}other{Actiu fa # dies}}</translation>
 <translation id="5764725887548570807">El format de l'origen no és vàlid.</translation>
 <translation id="5764920692828389743">Envia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Per veure els mètodes i els requisits d'entrega, selecciona una adreça</translation>

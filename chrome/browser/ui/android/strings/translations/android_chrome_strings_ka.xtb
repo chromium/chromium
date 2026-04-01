@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">თქვენივე უსაფრთხოების დასაცავად, გარკვეული საიტებიდან ნებართვები გაუქმდა</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1384704387250346179">თარგმნეთ სურათი Google Lens-ით <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">აქტიური იყო <ph name="LAST_UPDATED" /> დღის წინ</translation>
 <translation id="1390418506739274310">ისტორიის ნახვას შეძლებთ ნებისმიერი სხვა აპიდან, რომელიც ბმულებს Chrome-ში ხსნის. თქვენს Google ანგარიშში შეიძლება ინახებოდეს სხვა ტიპის დათვალიერების ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">ფასების ანალიზის ქვედა ფურცელი გაიხსნა სრულ სიმაღლეზე</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />-ით ძიება</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">სანიშნეები და ვებ-ისტორია</translation>
 <translation id="1515901671075971249">ჩანართში ნავიგაციის მალსახმობები</translation>
 <translation id="1516966594427080024">ახალი ფანჯრის გახსნა ინკოგნიტო რეჟიმში</translation>
-<translation id="1521774566618522728">აქტიური იყო დღეს</translation>
 <translation id="153446405401665083">ხელმისაწვდომია Chrome-ის ახალი ვერსია.</translation>
 <translation id="1540012742443808215">მისამართთა ზოლი ამჟამად ზემოთაა</translation>
 <translation id="1544084554881119930">გადახდის მეთოდები და მისამართები არ იქნება დაშიფრული. Chrome-ში არსებული დათვალიერების ისტორია არ სინქრონიზდება.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">შეიყვანეთ მორგებული ვებ-მისამართი</translation>
 <translation id="1928618076168182477">ნაჩვენებია ვიზუალური ხედი</translation>
 <translation id="1928696683969751773">განახლება</translation>
+<translation id="1934545916152269346">ახლახან გამოყენებული</translation>
 <translation id="1943398124995840148">თქვენი გახსნილი ჩანართები ახლა სხვანაირად გამოჩნდება XR-ში</translation>
 <translation id="1944535645109964458">წვდომის გასაღებები მიუწვდომელია</translation>
 <translation id="1957557050935255529">მიმდინარეობს PDF-ის ჩატვირთვა…</translation>
@@ -1259,6 +1258,7 @@
 <translation id="6251449557817521191">იხილეთ Chrome-ის ისტორია აქ</translation>
 <translation id="6254139308321626268">თქვენ ათვალიერებთ PDF ფაილს</translation>
 <translation id="6255809143828972562">Chrome-ში არსებული ხელსაწყოები დაგეხმარებათ, უსაფრთხოდ დაათვალიეროთ ვები და შეინარჩუნოთ კონტროლი</translation>
+<translation id="6260260490042862943">საიტის მართვის საშუალებები</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>
 <translation id="6267106249090587268">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები სპამის ან შეცდომაში შემყვანი კონტენტის გამო</translation>
@@ -1727,7 +1727,6 @@
 <translation id="7968014550143838305">დაემატა საკითხავ სიას</translation>
 <translation id="7968982339740310781">დეტალების დათვალიერება</translation>
 <translation id="7969391000881506217">მოქმედების ვადა*</translation>
-<translation id="7971136598759319605">აქტიური იყო 1 დღის წინ</translation>
 <translation id="7975379999046275268">გვერდის გადახედვა <ph name="BEGIN_NEW" />სიახლე<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">გაგაფრთხილებთ, თუ იყენებთ პაროლს, რომელიც პერსონალურ მონაცემთა გაჟონვისას გამჟღავნდა.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები, რადგან თქვენ ბოლო დროს ეს საიტი არ მოგინახულებიათ</translation>

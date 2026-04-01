@@ -1177,6 +1177,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2837891525090413132">Lahko zahteva zaklepanje in uporabo tipkovnice</translation>
 <translation id="2839032553903800133">Obvestila so blokirana</translation>
 <translation id="2839501879576190149">Lažno spletno mesto</translation>
+<translation id="2840680829170913626">Vsebina s strani za zaključek nakupa se deli z Googlom, da je mogoče ponuditi te možnosti. Plačilni paketi so odvisni od primernosti. Če želite skriti možnosti poznejšega plačila v samodejnem izpolnjevanju, odprite <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Ali se želite pomikati in povečati/pomanjšati deljeni zavihek?</translation>
 <translation id="2851291081585704741">Nimate vzpostavljene povezave</translation>
 <translation id="2854163610915391726">Upravljajte, katere podatke v Chromu shranjujete v računu Google</translation>
@@ -1388,6 +1389,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3162070126914310576">Te naprave trenutno ni mogoče včlaniti, ker je vaša organizacijska enota dosegla začetno omejitev včlanitev. Za pomoč se obrnite na skrbnika.</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="316638481603975524">Lahko zahteva namestitev spletnih aplikacij</translation>
+<translation id="3166788340998560642">Chrome bo ob naslednji uporabi ponudil, da jih shranite tukaj: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3168744840365648658">Radio oprema</translation>
 <translation id="3168938241115725594">Klasična vozila</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2416,6 +2418,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pojavno okno je blokirano}one{# pojavno okno je blokirano}two{# pojavni okni sta blokirani}few{# pojavna okna so blokirana}other{# pojavnih oken je blokiranih}}</translation>
 <translation id="4780320432697076749">Programska oprema za fotografije</translation>
 <translation id="4780366598804516005">Nabiralnik 1</translation>
+<translation id="4785273477715803444">Filtriranje dnevnikov</translation>
 <translation id="4785376858512657294">Upravljanje računa Google</translation>
 <translation id="4785689107224900852">Preklop na ta zavihek</translation>
 <translation id="4785998536350006000">Iskanje »<ph name="SEARCH_QUERY" />«</translation>
@@ -3058,6 +3061,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5759751709240058861">Uporaba in premikanje kamere</translation>
 <translation id="5762131895127128324">Vozniška dovoljenja · Osebne izkaznice · Potni listi</translation>
 <translation id="5763042198335101085">Vnesite veljaven e-poštni naslov</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktivna danes}=1{Aktivna pred 1 dnevom}one{Aktivna pred # dnevom}two{Aktivna pred # dnevoma}few{Aktivna pred # dnevi}other{Aktivna pred # dnevi}}</translation>
 <translation id="5764725887548570807">Neveljavna oblika izhodišča.</translation>
 <translation id="5764920692828389743">Pošiljanje na <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>

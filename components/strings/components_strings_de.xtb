@@ -2416,6 +2416,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up blockiert}other{# Pop-ups blockiert}}</translation>
 <translation id="4780320432697076749">Fotosoftware</translation>
 <translation id="4780366598804516005">Ablage 1</translation>
+<translation id="4785273477715803444">Protokolle filtern</translation>
 <translation id="4785376858512657294">Google-Konto verwalten</translation>
 <translation id="4785689107224900852">Zu diesem Tab wechseln</translation>
 <translation id="4785998536350006000">Es wird nach „<ph name="SEARCH_QUERY" />“ gesucht</translation>
@@ -3058,6 +3059,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5759751709240058861">Kamera verwenden und bewegen</translation>
 <translation id="5762131895127128324">Führerscheine · Personalausweise · Reisepässe</translation>
 <translation id="5763042198335101085">Gib eine gültige E-Mail-Adresse ein</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Heute aktiv}=1{Vor 1 Tag aktiv}other{Vor # Tagen aktiv}}</translation>
 <translation id="5764725887548570807">Ungültiges Quellenformat.</translation>
 <translation id="5764920692828389743">An <ph name="EMAIL_ADDRESS" /> senden</translation>
 <translation id="5765072501007116331">Wähle eine Adresse aus, um Lieferoptionen und -anforderungen zu sehen</translation>

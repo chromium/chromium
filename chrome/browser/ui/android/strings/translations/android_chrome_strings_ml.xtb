@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">നിങ്ങളെ സുരക്ഷിതരായി നിലനിർത്താൻ സഹായിക്കാൻ, ചില സൈറ്റുകളിൽ നിന്ന് അനുമതികൾ നീക്കം ചെയ്തു</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
 <translation id="1384704387250346179">Google Lens-ൽ ചിത്രം വിവർത്തനം ചെയ്യൂ <ph name="BEGIN_NEW" />പുതിയത്<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="1390418506739274310">Chrome-ൽ ലിങ്കുകൾ തുറക്കുന്ന മറ്റ് ആപ്പുകളിൽ നിന്നുള്ള ചരിത്രവും നിങ്ങൾ കണ്ടേക്കാം. നിങ്ങളുടെ Google Account-ന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രം ഉണ്ടായിരിക്കാം.</translation>
 <translation id="139752016751285248">നിരക്ക് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് പൂർണ്ണമായ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ഉപയോഗിച്ച് തിരയുക</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">ബുക്ക്‌മാർക്കുകളും വെബ് ചരിത്രവും</translation>
 <translation id="1515901671075971249">ടാബ് നാവിഗേഷനുള്ള കുറുക്കുവഴികൾ</translation>
 <translation id="1516966594427080024">അദൃശ്യ മോഡിൽ പുതിയൊരു വിൻഡോ തുറക്കുക</translation>
-<translation id="1521774566618522728">ഇന്ന് സജീവമായിരുന്നു</translation>
 <translation id="153446405401665083">Chrome-ന്റെ പുതിയ പതിപ്പ് ലഭ്യമാണ്</translation>
 <translation id="1540012742443808215">വിലാസ ബാർ നിലവിൽ മുകളിലാണ്</translation>
 <translation id="1544084554881119930">പേയ്‌മെന്റ് രീതികളും വിലാസങ്ങളും എൻക്രിപ്റ്റ് ചെയ്യില്ല. Chrome-ൽ നിന്നുള്ള ബ്രൗസിംഗ് ചരിത്രം സമന്വയിപ്പിക്കില്ല.
@@ -1260,6 +1258,7 @@
 <translation id="6251449557817521191">നിങ്ങളുടെ Chrome ചരിത്രം ഇവിടെ കാണുക</translation>
 <translation id="6254139308321626268">ഒരു PDF ഫയൽ ആണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="6255809143828972562">Chrome-ൽ നിന്നുള്ള ടൂളുകൾ ഉപയോഗിച്ച്, നിങ്ങൾക്ക് സുരക്ഷിതമായി ബ്രൗസ് ചെയ്യാനും നിയന്ത്രിക്കാനുമാകും</translation>
+<translation id="6260260490042862943">സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="6264485186158353794">തിരികെ സുരക്ഷയിലേക്ക്</translation>
 <translation id="6267106249090587268">അറിയിപ്പുകൾ <ph name="SEPARATOR" /> സ്‌പാം അല്ലെങ്കിൽ വഞ്ചനാപരമായ ഉള്ളടക്കങ്ങൾ കാരണം Chrome ഈ അനുമതികൾ നീക്കം ചെയ്‌തു</translation>
@@ -1728,7 +1727,6 @@
 <translation id="7968014550143838305">വായനാ ലിസ്റ്റിൽ ചേർത്തു</translation>
 <translation id="7968982339740310781">വിശദാംശങ്ങൾ കാണുക</translation>
 <translation id="7969391000881506217">കാലഹരണപ്പെടുന്ന തീയതി*</translation>
-<translation id="7971136598759319605">ഒരു ദിവസം മുമ്പ് സജീവമായിരുന്നു</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />പുതിയ<ph name="END_NEW" /> പേജ് പ്രിവ്യൂ ചെയ്യുക</translation>
 <translation id="7977451675950311423">ഡാറ്റാ ലംഘനത്തിൽ അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് നിങ്ങൾ ഉപയോഗിക്കുകയാണെങ്കിൽ മുന്നറിയിപ്പ് നൽകുന്നു.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ലാത്തതിനാൽ Chrome ഈ അനുമതികൾ നീക്കം ചെയ്തു</translation>

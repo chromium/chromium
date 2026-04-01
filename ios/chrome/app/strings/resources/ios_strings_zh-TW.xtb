@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">隱藏「繼續使用這個分頁」</translation>
 <translation id="1520027731907768768">接收追蹤產品的降價快訊。</translation>
 <translation id="1521366073263497277">前往分頁方格</translation>
-<translation id="1521774566618522728">上次使用時間：今天</translation>
 <translation id="1523567067736644845">必須解鎖才能查看密碼</translation>
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員。</translation>
 <translation id="2306265833370324042">顯示 <ph name="SEARCH_ENGINE_NAME" /> 的詳細資料</translation>
 <translation id="2309265394777270359">關閉分頁</translation>
+<translation id="2310789833878085574">儲存並自動填入</translation>
 <translation id="2311077293164383652">關閉固定分頁</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2320166752086256636">隱藏鍵盤</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">輕觸「追蹤」即可追蹤商品</translation>
 <translation id="5121618895923301719">你已追蹤這項產品，這個頁面會儲存在<ph name="BEGIN_LINK" />行動裝置的書籤<ph name="END_LINK" />中。</translation>
 <translation id="512533434554095351">發現多個密碼相關問題。</translation>
-<translation id="5127538504377457572">上次使用時間：<ph name="DAYS" /> 天前</translation>
 <translation id="5128788795241319992">瀏覽新選單</translation>
 <translation id="5132942445612118989">同步處理你所有裝置上的密碼、歷史記錄和其他設定</translation>
 <translation id="5141363746588976328">隱藏「分頁中有產品降價」資訊卡</translation>
@@ -1651,6 +1650,7 @@
 <translation id="6806550742467879742">網頁工具</translation>
 <translation id="6807287147325542056">其他應用程式中的密碼</translation>
 <translation id="681368974849482173">項目已建立</translation>
+<translation id="6820686453637990663">信用卡驗證碼</translation>
 <translation id="6825078212112407882">{count,plural, =1{書籤已儲存至 Google 帳戶 ({email})}other{{count} 個書籤已儲存至 Google 帳戶 ({email})}}</translation>
 <translation id="6826004672264649705">正在追蹤這項產品，開啟即可查看價格記錄</translation>
 <translation id="6830728435402077660">不安全</translation>
@@ -1964,7 +1964,6 @@
 <translation id="7952670906562503188">你即將刪除 {passkey_count} 組密碼金鑰，以及你選擇一律不儲存登入資訊的網站和應用程式清單。你為網站和應用程式建立的帳戶不會遭到刪除。</translation>
 <translation id="7958575506592576831">網頁安全性資訊</translation>
 <translation id="7961015016161918242">一律不要</translation>
-<translation id="7971136598759319605">上次使用時間：1 天前</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">試用</translation>
 <translation id="797588153137233716">「選單」→「歷史記錄」→「刪除瀏覽資料」</translation>

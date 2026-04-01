@@ -2418,6 +2418,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Imezuia dirisha ibukizi}other{Imezuia madirisha # ibukizi}}</translation>
 <translation id="4780320432697076749">Programu ya Kuhariri Picha</translation>
 <translation id="4780366598804516005">Kikasha cha barua cha kwanza</translation>
+<translation id="4785273477715803444">Chuja kumbukumbu</translation>
 <translation id="4785376858512657294">Dhibiti Akaunti ya Google</translation>
 <translation id="4785689107224900852">Badili utumie kichupo hiki</translation>
 <translation id="4785998536350006000">Inatafuta "<ph name="SEARCH_QUERY" />"</translation>
@@ -2781,7 +2782,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5344522958567249764">Dhibiti faragha ya matangazo</translation>
 <translation id="5344579389779391559">Ukurasa huu huenda ukajaribu kukutoza pesa</translation>
 <translation id="5345249337934847112">Karatasi (Yenye Mpako Mzito)</translation>
-<translation id="5346059693449184483">Unafikiria nini?</translation>
+<translation id="5346059693449184483">Una wazo gani?</translation>
 <translation id="5348330584842140856">Faili hii haikuhamishwa kwa sababu haipatikani tena</translation>
 <translation id="5349543692327946794">Lebo (Inkijeti)</translation>
 <translation id="5351548097010183514">Vifaa na Nyenzo za Ujenzi</translation>
@@ -3060,6 +3061,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5759751709240058861">Kutumia na kusogeza kamera yako</translation>
 <translation id="5762131895127128324">Leseni za udereva · Vitambulisho · Pasipoti</translation>
 <translation id="5763042198335101085">Andika anwani sahihi ya barua pepe</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Kimetumika leo}=1{Kilitumika siku 1 iliyopita}other{Kilitumika ziku # zilizopita}}</translation>
 <translation id="5764725887548570807">Muundo halisi si sahihi.</translation>
 <translation id="5764920692828389743">Tuma kwa <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Chagua mahali ili uone njia za kusafirisha na mahitaji</translation>
@@ -4641,7 +4643,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8216640997712497593">Inchi 14 x 18</translation>
 <translation id="8218327578424803826">Mahali Palipohawilishwa:</translation>
 <translation id="8220602974062798186">Ungependa kuzuia <ph name="TOPIC" /> na mada zozote zinazohusiana?</translation>
-<translation id="8223142476690844338">Hujambo <ph name="USER_NAME" />, unafikiria nini?</translation>
+<translation id="8223142476690844338">Hujambo <ph name="USER_NAME" />, una wazo gano?</translation>
 <translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Uliza <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Mwonekano wa kurasa mbili</translation>
 <translation id="822925450938886901">Kwa maelezo ya ziada na sera zinazoweza kutumika, fungua chrome://management katika kivinjari chako.</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">আপোনাক সুৰক্ষিত কৰি ৰখাত সহায় হ’বলৈ, কিছুমান ছাইটৰ পৰা অনুমতি আঁতৰোৱা হৈছে</translation>
 <translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1384704387250346179">Google Lensৰে প্ৰতিচ্ছবি অনুবাদ কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" />দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="1390418506739274310">আপুনি Chromeত লিংক খোলা অন্য এপ্‌সমূহৰ পৰা ইতিহাস চাব পাৰে। আপোনাৰ Google একাউণ্টৰ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ত অন্য ধৰণৰ ব্ৰাউজিঙৰ ইতিহাস থাকিব পাৰে।</translation>
 <translation id="139752016751285248">মূল্যৰ অন্তৰ্দৃষ্টি থকা তলৰ শ্বীটখন পূৰ্ণ উচ্চতাত খোলা হৈছে</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" />ৰ জৰিয়তে সন্ধান কৰক</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">বুকমার্কবোৰ আৰু ৱেব ইতিহাস</translation>
 <translation id="1515901671075971249">টেব নেভিগেশ্বনৰ শ্বৰ্টকাটসমূহ</translation>
 <translation id="1516966594427080024">ইনক’গনিট’ ম’ডত এখন নতুন ৱিণ্ড’ খোলক</translation>
-<translation id="1521774566618522728">আজি সক্ৰিয় হৈছে</translation>
 <translation id="153446405401665083">Chromeৰ নতুন সংস্কৰণ উপলব্ধ</translation>
 <translation id="1540012742443808215">বৰ্তমান ঠিকনাৰ বাৰ একেবাৰে ওপৰত আছে</translation>
 <translation id="1544084554881119930">পৰিশোধ পদ্ধতি আৰু ঠিকনা এনক্ৰিপ্ট কৰা নহ’ব। Chromeৰ পৰা ব্ৰাউজিঙৰ ইতিহাস ছিংক কৰা নহ’ব।
@@ -1260,6 +1258,7 @@
 <translation id="6251449557817521191">ইয়াত আপোনাৰ Chromeৰ ইতিহাস চাওক</translation>
 <translation id="6254139308321626268">আপুনি এটা PDF ফাইল চাই আছে</translation>
 <translation id="6255809143828972562">Chromeৰ সঁজুলিৰ জৰিয়তে, আপুনি সুৰক্ষিতভাৱে ব্ৰাউজ কৰি নিয়ন্ত্ৰণত থাকিব পাৰে</translation>
+<translation id="6260260490042862943">ছাইটৰ নিয়ন্ত্ৰণ</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
 <translation id="6264485186158353794">পূৰ্বৱৰ্তী পৃষ্ঠাটোলৈ উভতি যাওক</translation>
 <translation id="6267106249090587268">জাননী <ph name="SEPARATOR" /> স্পাম বা প্ৰৱঞ্চনামূলক সমলৰ বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>
@@ -1728,7 +1727,6 @@
 <translation id="7968014550143838305">পঢ়াৰ তালিকাত যোগ দিয়া হ’ল</translation>
 <translation id="7968982339740310781">সবিশেষ চাওক</translation>
 <translation id="7969391000881506217">ম্যাদ উকলাৰ তাৰিখ*</translation>
-<translation id="7971136598759319605">১দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="7975379999046275268">পৃষ্ঠাটো পূৰ্বদৰ্শন কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">যদি আপুনি কোনো ডেটা উলংঘনত আপোচ কৰা হোৱা এটা পাছৱৰ্ড ব্যৱহাৰ কৰে, তেন্তে আপোনাক সকীয়নি দিয়ে।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> আপুনি শেহতীয়াকৈ চোৱা নাই বাবে Chromeএ এই অনুমতিসমূহ আঁতৰাইছে</translation>

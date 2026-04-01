@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Z dôvodu ochrany vašej bezpečnosti boli z niektorých webov odstránené povolenia</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1384704387250346179">Preklad obrázka funkciou Google Lens <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktívne pred <ph name="LAST_UPDATED" /> dňami</translation>
 <translation id="1390418506739274310">Môžete si zobraziť históriu z iných aplikácií, ktoré otvárajú odkazy v Chrome. Váš účet Google môže mať ďalšie formy histórie prehliadania na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Dolný hárok cenových štatistík je otvorený na celú výšku</translation>
 <translation id="1397811292916898096">Hľadať pomocou vyhľadávača <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Záložky a webová história</translation>
 <translation id="1515901671075971249">Skratky na prechádzanie kartami</translation>
 <translation id="1516966594427080024">Otvorenie nového okna v režime inkognito</translation>
-<translation id="1521774566618522728">Aktívne dnes</translation>
 <translation id="153446405401665083">K dispozícii je nová verzia Chromu</translation>
 <translation id="1540012742443808215">Panel s adresou je momentálne hore</translation>
 <translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Zadajte vlastnú webovú adresu</translation>
 <translation id="1928618076168182477">Používa sa vizuálne zobrazenie</translation>
 <translation id="1928696683969751773">Aktualizácie</translation>
+<translation id="1934545916152269346">Nedávno použité</translation>
 <translation id="1943398124995840148">Vaše otvorené karty majú v zariadení so systémom XR nový vzhľad</translation>
 <translation id="1944535645109964458">Nie sú k dispozícii žiadne prístupové kľúče</translation>
 <translation id="1957557050935255529">Načítava sa PDF…</translation>
@@ -1727,7 +1726,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7968014550143838305">Pridané do čitateľského zoznamu</translation>
 <translation id="7968982339740310781">Zobraziť podrobnosti</translation>
 <translation id="7969391000881506217">Dátum vypršania*</translation>
-<translation id="7971136598759319605">Aktívne včera</translation>
 <translation id="7975379999046275268">Zobraziť ukážku stránky <ph name="BEGIN_NEW" />Novinka<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorní vás, keď použijete heslo, ktoré bolo prezradené v rámci porušenia ochrany údajov.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome odstránil tieto povolenia, pretože ste daný web v poslednom čase nenavštívili</translation>

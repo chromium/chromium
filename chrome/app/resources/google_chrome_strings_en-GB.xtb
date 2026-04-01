@@ -186,6 +186,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">About Chrome</translation>
 <translation id="2915996080311180594">Restart later</translation>
+<translation id="2916983411556218750">Let's get your Chrome ready</translation>
 <translation id="2926676257163822632">Weak passwords are easy to guess. Let Chrome <ph name="BEGIN_LINK" />create and remember strong passwords for you<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
 <translation id="2928420929544864228">Installation complete.</translation>
@@ -607,6 +608,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7161904924553537242">Welcome to Google Chrome</translation>
 <translation id="7193885263065350793">Your organisation closes Chrome when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
+<translation id="7274402351400635015">You can use Chrome any time that you click links in messages, documents and other apps It will also be pinned to your taskbar.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> manages Chrome</translation>
 <translation id="7285990705317078173">Download Chrome on your phone to track prices and get alerts when the price drops on any site</translation>
 <translation id="7288567540154601580">Tabs and extensions</translation>

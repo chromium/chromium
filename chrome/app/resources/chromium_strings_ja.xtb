@@ -56,6 +56,7 @@
 <translation id="1639380494700489405">ページを離れることなく、タブについて AI モードに質問するには、Chromium にログインしてください。これにより、すべてのデバイスでパスワードなどの設定も使用できるようになります。</translation>
 <translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1680687534629375545">画像検索でこのページについて質問する</translation>
+<translation id="1708414395296835197">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chromium で開くことができます。タスクバーにも固定されます。</translation>
 <translation id="1709772298389099340"><ph name="BROWSER_NAME" /> に権限昇格を提供します。</translation>
 <translation id="1715127912119967311">Chromium では、これらの機能を改善するため、ユーザーの操作内容を Google に送信します。このデータは人間のレビュアーによって読み取られ、処理され、注釈が付けられる可能性があります。</translation>
 <translation id="1722488837206509557">これにより、利用可能なデバイスから選択してコンテンツを表示できるようになります。</translation>
@@ -433,6 +434,7 @@
 <translation id="5895138241574237353">再起動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - ネットワークにログイン</translation>
 <translation id="5924017743176219022">インターネットに接続しています…</translation>
+<translation id="5939553720811388432">Chromium の設定を始めましょう</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5949225980829865667">すべてのデバイスでこのブックマークなどを使用するには、Chromium にログインしてください</translation>
 <translation id="5953657885167112863">Chromium を自分好みに</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">إخفاء قائمة "المتابعة باستخدام علامة التبويب هذه"</translation>
 <translation id="1520027731907768768">تلقّي تنبيهات بشأن انخفاض أسعار المنتجات التي تتتبّعها</translation>
 <translation id="1521366073263497277">الانتقال إلى شبكة علامات التبويب</translation>
-<translation id="1521774566618522728">نشط اليوم</translation>
 <translation id="1523567067736644845">يُرجى فتح القفل لعرض كلمة المرور</translation>
 <translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1531038290222364269">إظهار علامات التبويب</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">‏يتم تشفير كلمات المرور على جهازك قبل حفظها في "مدير كلمات المرور" من Google.</translation>
 <translation id="2306265833370324042">عرض تفاصيل <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">إغلاق علامة التبويب</translation>
+<translation id="2310789833878085574">حفظ بيانات البطاقة وملؤها تلقائيًا</translation>
 <translation id="2311077293164383652">إغلاق علامة التبويب المثبَّتة</translation>
 <translation id="2316129865977710310">لا، شكرًا</translation>
 <translation id="2320166752086256636">إخفاء لوحة المفاتيح</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">وضع علامة "مقروءة"</translation>
 <translation id="428768789042547925">الميزات الجديدة</translation>
 <translation id="429074084062258019">{count,plural, =1{إضافة علامة التبويب إلى المجموعة}zero{إضافة علامات التبويب إلى المجموعة}two{إضافة علامتَي التبويب إلى المجموعة}few{إضافة علامات التبويب إلى المجموعة}many{إضافة علامات التبويب إلى المجموعة}other{إضافة علامات التبويب إلى المجموعة}}</translation>
+<translation id="4300830875340617674">مسح البطاقة ضوئيًا وملء البيانات تلقائيًا</translation>
 <translation id="4302061870579014542">ضبط الموضع</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="4306349443295056740">‏توقيع OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">لتتبُّع المنتج، انقر على "تتبُّع"</translation>
 <translation id="5121618895923301719">يتم تتبُّع هذا المنتج حاليًا. تم حفظ هذه الصفحة في قائمة <ph name="BEGIN_LINK" />الإشارات المرجعية على الجوّال<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">لديك عدة مشاكل متعلقة بكلمات المرور.</translation>
-<translation id="5127538504377457572">نشِط قبل <ph name="DAYS" /> يوم</translation>
 <translation id="5128788795241319992">الاطّلاع على القائمة الجديدة</translation>
 <translation id="5132942445612118989">يمكنك مزامنة كلمات المرور والسجلّ وغير ذلك على جميع الأجهزة.</translation>
 <translation id="5141363746588976328">إخفاء بطاقة "عرض الانخفاض في الأسعار ضِمن علامات التبويب"</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">تفعيل الكاميرا</translation>
 <translation id="5229315183665181733">تعديل الموقع الإلكتروني</translation>
+<translation id="5233111790346066304">‏يمكنك حفظ الملفات في Google Drive والوصول إليها في أي وقت.</translation>
 <translation id="5233638681132016545">علامة تبويب جديدة</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏تم حفظ الإشارة المرجعية في حسابك على Google‏ ({email}).}zero{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}two{‏تم حفظ الإشارتَين المرجعيّتَين في حسابك على Google‏ ({email}).}few{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}many{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}other{‏تم حفظ الإشارات المرجعية في حسابك على Google‏ ({email}).}}</translation>
 <translation id="5234764350956374838">إغلاق</translation>
@@ -1647,6 +1648,7 @@
 <translation id="6806550742467879742">أدوات الصفحة</translation>
 <translation id="6807287147325542056">كلمات المرور في التطبيقات الأخرى</translation>
 <translation id="681368974849482173">تم إنشاء العنصر</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏تمّ حفظ إشارة مرجعية واحدة في حسابك على Google‏ ({email})}zero{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}two{‏تمّ حفظ إشارتَين مرجعيتَين ({count}) في حسابك على Google‏ ({email})}few{‏تمّ حفظ {count} إشارات مرجعية في حسابك على Google‏ ({email})}many{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}other{‏تمّ حفظ {count} إشارة مرجعية في حسابك على Google‏ ({email})}}</translation>
 <translation id="6826004672264649705">يتم حاليًا تتبُّع سعر هذا المنتج. ويمكنك فتح الصفحة للاطّلاع على سجلّ الأسعار</translation>
 <translation id="6830728435402077660">غير آمن</translation>
@@ -1960,7 +1962,6 @@
 <translation id="7952670906562503188">‏أنت على وشك حذف {passkey_count} من مفاتيح المرور وقائمة المواقع الإلكترونية والتطبيقات التي اخترت عدم حفظ معلومات تسجيل الدخول إليها، ولن يتم حذف أي حساب أنشأته للمواقع الإلكترونية والتطبيقات.</translation>
 <translation id="7958575506592576831">معلومات أمان الصفحة</translation>
 <translation id="7961015016161918242">مطلقًا</translation>
-<translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">تجربة</translation>
 <translation id="797588153137233716">"القائمة" ← "السجلّ" ← "حذف بيانات التصفّح"</translation>

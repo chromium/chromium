@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">للحفاظ على أمان جهازك، تمت إزالة أذونات من بعض المواقع الإلكترونية</translation>
 <translation id="1383876407941801731">البحث</translation>
 <translation id="1384704387250346179">‏ترجمة الصور مع "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">نشط قبل <ph name="LAST_UPDATED" /> يوم</translation>
 <translation id="1390418506739274310">‏قد يظهر لك السجلّ من خلال التطبيقات الأخرى التي تفتح الروابط في Chrome. قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">البطاقة السفلية للمعلومات المفصّلة عن الأسعار مفتوحة بطول الشاشة</translation>
 <translation id="1397811292916898096">البحث باستخدام <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">الإشارات المرجعية وسجلّ الويب</translation>
 <translation id="1515901671075971249">اختصارات التنقّل بين علامات التبويب</translation>
 <translation id="1516966594427080024">لفتح نافذة جديدة في وضع التصفُّح المتخفي</translation>
-<translation id="1521774566618522728">نشط اليوم</translation>
 <translation id="153446405401665083">‏يتوفّر إصدار جديد من متصفّح Chrome</translation>
 <translation id="1540012742443808215">شريط العناوين حاليًا في أعلى الشاشة</translation>
 <translation id="1544084554881119930">‏لن يتم تشفير طُرق الدفع والعناوين. ولن تتم مزامنة سجلّ التصفّح من Chrome.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">إدخال عنوان الويب المُخصص</translation>
 <translation id="1928618076168182477">يتمّ إظهار العرض الموسَّع</translation>
 <translation id="1928696683969751773">التحديثات</translation>
+<translation id="1934545916152269346">عمليات البحث الأخيرة</translation>
 <translation id="1943398124995840148">‏علامات التبويب المفتوحة في متصفّحك الآن تم تعديل مظهرها في XR</translation>
 <translation id="1944535645109964458">ما مِن مفاتيح مرور متوفّرة</translation>
 <translation id="1957557050935255529">‏جارٍ تحميل ملف PDF…</translation>
@@ -1730,7 +1729,6 @@
 <translation id="7968014550143838305">تمت الإضافة إلى قائمة القراءة.</translation>
 <translation id="7968982339740310781">عرض التفاصيل</translation>
 <translation id="7969391000881506217">تاريخ انتهاء الصلاحية*</translation>
-<translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7975379999046275268">معاينة صفحة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ستتلقّى تحذيرًا إذا كنت تستخدم كلمة مرور تم اختراقها في عملية اختراق للبيانات.</translation>
 <translation id="7987499071758862048">‏<ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنك لم تزُر هذا الموقع الإلكتروني مؤخرًا</translation>

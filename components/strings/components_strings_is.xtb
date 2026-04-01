@@ -1177,6 +1177,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2837891525090413132">Getur beðið um að læsa og nota lyklaborðið</translation>
 <translation id="2839032553903800133">Tilkynningar útilokaðar</translation>
 <translation id="2839501879576190149">Falskt vefsvæði</translation>
+<translation id="2840680829170913626">Efni frá greiðslusíðunni er deilt með Google til að bjóða upp á þessa valkosti. Greiðsluáætlanir eru háðar gjaldgengi. Farðu í <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> til að fela valkosti fyrir greiðslufrest í sjálfvirkri útfyllingu.</translation>
 <translation id="2843623755398178332">Fletta og stækka/minnka samnýtta flipann þinn?</translation>
 <translation id="2851291081585704741">Þú ert ekki á netinu</translation>
 <translation id="2854163610915391726">Stjórnaðu því hvaða Chrome-upplýsingar þú vistar á Google-reikningnum þínum</translation>
@@ -1388,6 +1389,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3162070126914310576">Ekki er hægt að skrá þetta tæki eins og er vegna þess að notendaskipanin þín hefur náð upphaflegu skráningarhámarki. Hafðu samband við kerfisstjórann þinn til að fá aðstoð.</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
 <translation id="316638481603975524">Getur beðið um leyfi til að setja upp vefforrit</translation>
+<translation id="3166788340998560642">Chrome mun bjóðast til að vista það í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> næst þegar þú notar það</translation>
 <translation id="3168744840365648658">Útvarpsbúnaður</translation>
 <translation id="3168938241115725594">Fornbílar</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2416,6 +2418,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Lokað á sprettiglugga}one{Lokað á # sprettiglugga}other{Lokað á # sprettiglugga}}</translation>
 <translation id="4780320432697076749">Myndahugbúnaður</translation>
 <translation id="4780366598804516005">Pósthólf 1</translation>
+<translation id="4785273477715803444">Sía annála</translation>
 <translation id="4785376858512657294">Stjórna Google-reikningi</translation>
 <translation id="4785689107224900852">Skipta yfir í þennan flipa</translation>
 <translation id="4785998536350006000">Leitar að „<ph name="SEARCH_QUERY" />“</translation>
@@ -3058,6 +3061,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5759751709240058861">Nota og hreyfa myndavélina</translation>
 <translation id="5762131895127128324">Ökuskírteini · Nafnskírteini · Vegabréf</translation>
 <translation id="5763042198335101085">Sláðu inn gilt netfang</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Virkt í dag}=1{Virkt fyrir 1 degi}one{Virkt fyrir # degi}other{Virkt fyrir # dögum}}</translation>
 <translation id="5764725887548570807">Ógilt snið upprunastaðar.</translation>
 <translation id="5764920692828389743">Senda á <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Veldu heimilisfang til að sjá sendingarmáta og kröfur</translation>

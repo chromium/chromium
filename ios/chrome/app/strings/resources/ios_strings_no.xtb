@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Skjul «Fortsett med denne fanen»</translation>
 <translation id="1520027731907768768">Få varsler om avslag for produkter du sporer.</translation>
 <translation id="1521366073263497277">Gå til fanerutenettet</translation>
-<translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1523567067736644845">Lås opp for å vise passordet</translation>
 <translation id="1524563461097350801">Nei takk</translation>
 <translation id="1531038290222364269">Vis faner</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Passordene dine krypteres på enheten før de lagres i Google Passordlagring.</translation>
 <translation id="2306265833370324042">Vis <ph name="SEARCH_ENGINE_NAME" />-detaljer</translation>
 <translation id="2309265394777270359">Lukk fane</translation>
+<translation id="2310789833878085574">Lagre og autofyll</translation>
 <translation id="2311077293164383652">Lukk festet fane</translation>
 <translation id="2316129865977710310">Nei takk</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Merk som lest</translation>
 <translation id="428768789042547925">Hva er nytt?</translation>
 <translation id="429074084062258019">{count,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
+<translation id="4300830875340617674">Skann kortet og fyll ut automatisk</translation>
 <translation id="4302061870579014542">Velg posisjon</translation>
 <translation id="4304713468139749426">Passordlagring</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">For å spore produktet, trykk på Spor</translation>
 <translation id="5121618895923301719">Du sporer allerede dette produktet. Denne siden er lagret i <ph name="BEGIN_LINK" />Bokmerker for mobil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Du har flere passordproblemer.</translation>
-<translation id="5127538504377457572">Aktiv for <ph name="DAYS" /> dager siden</translation>
 <translation id="5128788795241319992">Utforsk den nye menyen</translation>
 <translation id="5132942445612118989">Synkroniser passordene dine, loggen din med mer på alle enheter</translation>
 <translation id="5141363746588976328">Skjul «Avslag på faner»-kortet</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Slå på kameraet</translation>
 <translation id="5229315183665181733">Rediger nettstedet</translation>
+<translation id="5233111790346066304">Lagre filer i Google Disk, og få tilgang til dem når som helst.</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bokmerket er lagret i Google-kontoen din ({email}).}other{Bokmerkene er lagret i Google-kontoen din ({email}).}}</translation>
 <translation id="5234764350956374838">Lukk</translation>
@@ -1649,6 +1650,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6806550742467879742">Sideverktøy</translation>
 <translation id="6807287147325542056">Passord i andre apper</translation>
 <translation id="681368974849482173">Elementet er opprettet</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bokmerket er lagret i Google-kontoen din ({email})}other{{count} bokmerker er lagret i Google-kontoen din ({email})}}</translation>
 <translation id="6826004672264649705">Sporer for øyeblikket dette produktet. Åpne for å se prishistorikken</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1962,7 +1964,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7952670906562503188">Du er i ferd med å slette {passkey_count} passnøkler samt listen over nettsteder og apper du har valgt å aldri lagre påloggingsinformasjon for. Eventuelle kontoer du har opprettet for nettsteder og apper, blir ikke slettet.</translation>
 <translation id="7958575506592576831">Sikkerhetsinformasjon for siden</translation>
 <translation id="7961015016161918242">Aldri</translation>
-<translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Meny → Logg → Slett nettlesingsdata</translation>

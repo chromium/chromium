@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">無法下載主節點註釋檔案，請稍後再試。</translation>
 <translation id="1103523840287552314">永遠翻譯<ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">你將立即無法再存取此分頁群組，且該群組會從你的所有裝置中刪除</translation>
-<translation id="1105934302947321130">配合 Zoom 使用 Google Beam</translation>
 <translation id="1106270460549661906">取消與 Gemini 分享</translation>
 <translation id="1106350001632362876">提高門檻</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">子女的 PIN 已更新</translation>
 <translation id="1133418583142946603">新增目前的分頁</translation>
 <translation id="1133751489735776037">連按三下滑鼠</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 個，總共有 <ph name="EMOJI_COUNT" /> 個。</translation>
 <translation id="1136712381129578788">由於您輸入太多次錯誤的 PIN，因此安全密鑰已被鎖定。如要解鎖，請移除安全密鑰後重新插入。</translation>
 <translation id="1137589305610962734">暫存資料</translation>
 <translation id="1137673463384776352">在「<ph name="APP" />」中開啟連結</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">正在連接您的手機</translation>
 <translation id="1157952955648710254">閂 Google 搜尋側面板</translation>
 <translation id="1158080958325422608">設為大寫</translation>
+<translation id="1158134713295836892">Chrome 版 Gemini</translation>
 <translation id="1159879754517035595">管理擴充程式設定</translation>
 <translation id="1160800016654917722">視窗移咗去左下方</translation>
 <translation id="1161190590171867633">比較表格會儲存至 Google 帳戶</translation>
@@ -764,7 +763,6 @@
 <translation id="1517467582299994451">如要透過存取碼投放，請開啟 Chrome 瀏覽器同步設定</translation>
 <translation id="1521442365706402292">管理憑證</translation>
 <translation id="1521655867290435174">Google 試算表</translation>
-<translation id="1521774566618522728">今天已使用</translation>
 <translation id="1521933835545997395">已連線至 Android 手機</translation>
 <translation id="1523279371236772909">上個月看過</translation>
 <translation id="1523486680453956384">查看工作</translation>
@@ -3597,7 +3595,6 @@
 <translation id="3473241910002674503">在平板電腦模式中，使用按鈕前往主畫面、返回及切換應用程式。</translation>
 <translation id="3473479545200714844">放大鏡</translation>
 <translation id="3474218480460386727">新字詞請保持在 99 個字母內</translation>
-<translation id="3474330892505468100">配合 Meet 使用 Google Beam</translation>
 <translation id="3474624961160222204">以「<ph name="NAME" />」的身分繼續</translation>
 <translation id="3477772589943384839">節省中等記憶體。分頁會在較長時段過後進入閒置狀態。</translation>
 <translation id="347785443197175480">繼續允許 <ph name="HOST" /> 存取您的相機和麥克風</translation>
@@ -4174,7 +4171,6 @@
 <translation id="3841964634449506551">密碼無效</translation>
 <translation id="3842552989725514455">Serif 字型</translation>
 <translation id="3843464315703645664">已於內部加入許可名單</translation>
-<translation id="3844888638014364087">插入咗 Emoji</translation>
 <translation id="3846116211488856547">獲取開發網站、Android 應用程式及其他平台的工具。安裝 Linux 時會下載 <ph name="DOWNLOAD_SIZE" /> 數據。</translation>
 <translation id="3847319713229060696">可為所有網絡使用者提供更完善的安全防護</translation>
 <translation id="3847734730889093333"><ph name="RATE" /> 倍</translation>
@@ -5040,7 +5036,6 @@
 <translation id="4453430595102511050">請輕觸位於鍵盤右上角的指紋感應器。系統會妥善地將您的指紋資料儲存在 <ph name="DEVICE_TYPE" /> 上，絕不會外洩。</translation>
 <translation id="4453946976636652378">搜尋 <ph name="SEARCH_ENGINE_NAME" /> 或輸入網址</translation>
 <translation id="4457472090507035117">選取目前的語音：</translation>
-<translation id="4459169140545916303">曾於 <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前在線</translation>
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4461483878391246134">加一律唔翻譯嘅語言</translation>
 <translation id="4462159676511157176">自訂名稱伺服器</translation>
@@ -5794,6 +5789,7 @@
 <translation id="4990673372047946816">沒有可用的攝錄機</translation>
 <translation id="4991420928586866460">使用最上方一排按鍵作為功能鍵</translation>
 <translation id="4991873517942703737">詢問與此文件相關的問題</translation>
+<translation id="4992066212339426712">取消靜音</translation>
 <translation id="4992443049233195791">Microsoft 365 檔案設定</translation>
 <translation id="4992458225095111526">確認執行 Powerwash</translation>
 <translation id="4992473555164495036">您的管理員已限制可用的輸入方法。</translation>
@@ -6771,7 +6767,6 @@
 <translation id="5701212929149679556">流動數據漫遊</translation>
 <translation id="5701786609538182967">其他應用程式所設定會開啟的連結與 <ph name="APP_NAME" /> 的設定相同，這會導致<ph name="APP_NAME_2" />、<ph name="APP_NAME_3" />、<ph name="APP_NAME_4" />和另外 1 個應用程式無法開啟支援的連結。</translation>
 <translation id="5702161882524398150">詢問有關上一個分頁的問題</translation>
-<translation id="5702749864074810610">閂咗建議</translation>
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5703998022096520811">向「Google 安全瀏覽」傳送更多資料，獲取即時主動保護</translation>
 <translation id="5704875434923668958">同步至</translation>
@@ -7574,7 +7569,6 @@
 <translation id="6270309713620950855">靜音自動提醒</translation>
 <translation id="6270391203985052864">網站將可以要求向您傳送通知</translation>
 <translation id="6270770586500173387">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />，以及<ph name="BEGIN_LINK2" />指標數據<ph name="END_LINK2" /></translation>
-<translation id="6271348838875430303">復原咗更正內容</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
 <translation id="6273677812470008672">品質</translation>
 <translation id="6274089201566806618">正在連接「<ph name="HOST_DEVICE_NAME" />」</translation>
@@ -10541,7 +10535,6 @@
 <translation id="8339288417038613756">顯示和文字大小</translation>
 <translation id="833986336429795709">如要開啟此連結，請選擇應用程式</translation>
 <translation id="8340547030807793004">可以對　<ph name="DEVICE" />　執行嘅其他操作</translation>
-<translation id="8341693734243413517">Chrome 更新程式</translation>
 <translation id="8341804784147620576">顯示搜尋捷徑</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342387517402567689">無痕模式不支援安裝網絡應用程式</translation>
@@ -10972,6 +10965,7 @@
 <translation id="8651585100578802546">強制重新載入這個網頁</translation>
 <translation id="8651806635673244884">如要將分頁移回頂部，請在任何分頁按一下右鍵，然後選取 [橫向顯示分頁]</translation>
 <translation id="8652400352452647993">封裝擴充程式錯誤</translation>
+<translation id="8652412805227733853">已自動驗證電郵</translation>
 <translation id="8654151524613148204">抱歉，檔案過大，您的裝置無法處理。</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655972064210167941">系統無法驗證您的密碼，導致登入失敗。請與您的管理員聯絡或再試一次。</translation>
@@ -11476,7 +11470,6 @@
 <translation id="8983018820925880511">此新設定檔將由 <ph name="DOMAIN" /> 管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> 可編輯 <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">您的裝置將會向附近所有人顯示 <ph name="MINUTES" /> 分鐘。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">曾於 <ph name="DEVICE_LAST_ACTIVATED_TIME" /> 天前在線</translation>
 <translation id="8985561265504464578">偵測門檻</translation>
 <translation id="8985661493893822002">請連接互聯網，以便登入 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="8985661571449404298">下載咗唔安全嘅檔案</translation>

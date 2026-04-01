@@ -2415,6 +2415,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{[=1]ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}one{# ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤਾ ਗਿਆ}other{# ਪੌਪ-ਅੱਪ ਬਲਾਕ ਕੀਤੇ ਗਏ}}</translation>
 <translation id="4780320432697076749">ਫ਼ੋਟੋ ਸਾਫ਼ਟਵੇਅਰ</translation>
 <translation id="4780366598804516005">ਮੇਲਬਾਕਸ 1</translation>
+<translation id="4785273477715803444">ਲੌਗ ਫਿਲਟਰ ਕਰੋ</translation>
 <translation id="4785376858512657294">Google ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="4785689107224900852">ਇਸ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" ਨੂੰ ਖੋਜਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
@@ -3057,6 +3058,7 @@
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5762131895127128324">ਡਰਾਈਵਿੰਗ ਲਾਇਸੰਸ · ਪਛਾਣ-ਪੱਤਰ · ਪਾਸਪੋਰਟ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{ਅੱਜ ਕਿਰਿਆਸ਼ੀਲ}=1{1 ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}other{# ਦਿਨ ਪਹਿਲਾਂ ਕਿਰਿਆਸ਼ੀਲ}}</translation>
 <translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> 'ਤੇ ਭੇਜੋ</translation>
 <translation id="5765072501007116331">ਅਦਾਇਗੀ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>

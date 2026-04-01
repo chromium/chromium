@@ -1177,6 +1177,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2837891525090413132">Può chiedere di bloccare e usare la tastiera</translation>
 <translation id="2839032553903800133">Notifiche bloccate</translation>
 <translation id="2839501879576190149">Sito falso</translation>
+<translation id="2840680829170913626">I contenuti della pagina di pagamento vengono condivisi con Google per offrire queste opzioni. I piani di pagamento sono soggetti a idoneità. Per nascondere le opzioni di pagamento posticipato nella compilazione automatica, vai alle <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Consentire scorrimento e zoom della scheda condivisa?</translation>
 <translation id="2851291081585704741">Sei offline</translation>
 <translation id="2854163610915391726">Decidi quali informazioni di Chrome salvare nel tuo Account Google.</translation>
@@ -1388,6 +1389,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3162070126914310576">Al momento non è possibile registrare questo dispositivo perché l'unità organizzativa ha raggiunto il limite di registrazione iniziale. Per ricevere assistenza, contatta l'amministratore.</translation>
 <translation id="3162559335345991374">La rete Wi-Fi in uso potrebbe richiedere la visita della relativa pagina di accesso.</translation>
 <translation id="316638481603975524">Può chiedere di installare le app web</translation>
+<translation id="3166788340998560642">Chrome ti proporrà di salvarle in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> la prossima volta che le utilizzerai</translation>
 <translation id="3168744840365648658">Apparecchiature radio</translation>
 <translation id="3168938241115725594">Veicoli d'epoca</translation>
 <translation id="3169472444629675720">Feed personalizzato</translation>
@@ -2413,6 +2415,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup bloccato}other{# popup bloccati}}</translation>
 <translation id="4780320432697076749">Software per foto</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4785273477715803444">Filtra log</translation>
 <translation id="4785376858512657294">Gestisci l'Account Google</translation>
 <translation id="4785689107224900852">Passa a questa scheda</translation>
 <translation id="4785998536350006000">Ricerca di "<ph name="SEARCH_QUERY" />"</translation>
@@ -3055,6 +3058,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5759751709240058861">Usare e spostare la videocamera</translation>
 <translation id="5762131895127128324">Patenti di guida · Carte d'identità · Passaporti</translation>
 <translation id="5763042198335101085">Inserisci un indirizzo email valido</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Ultima attività: oggi}=1{Ultima attività: 1 giorno fa}other{Ultima attività: # giorni fa}}</translation>
 <translation id="5764725887548570807">Formato di origine non valido.</translation>
 <translation id="5764920692828389743">Invia a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>

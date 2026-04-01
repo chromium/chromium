@@ -2418,6 +2418,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up diblokir}other{# pop-up diblokir}}</translation>
 <translation id="4780320432697076749">Software Foto</translation>
 <translation id="4780366598804516005">Kotak surat 1</translation>
+<translation id="4785273477715803444">Filter log</translation>
 <translation id="4785376858512657294">Kelola Akun Google</translation>
 <translation id="4785689107224900852">Pindah ke tab ini</translation>
 <translation id="4785998536350006000">Menelusuri "<ph name="SEARCH_QUERY" />"</translation>
@@ -3060,6 +3061,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5759751709240058861">Menggunakan &amp; menggerakkan kamera Anda</translation>
 <translation id="5762131895127128324">Surat izin mengemudi · Kartu identitas · Paspor</translation>
 <translation id="5763042198335101085">Masukkan alamat email yang valid</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktif hari ini}=1{Aktif 1 hari yang lalu}other{Aktif # hari yang lalu}}</translation>
 <translation id="5764725887548570807">Format asal tidak valid.</translation>
 <translation id="5764920692828389743">Kirim ke <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>

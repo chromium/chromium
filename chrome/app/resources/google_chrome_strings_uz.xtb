@@ -183,6 +183,7 @@
 <translation id="2885378588091291677">Vazifalar boshqaruvi</translation>
 <translation id="2888126860611144412">Chrome haqida</translation>
 <translation id="2915996080311180594">Keyinroq qayta ishga tushirish</translation>
+<translation id="2916983411556218750">Chromeni moslab olaylik</translation>
 <translation id="2926676257163822632">Kuchsiz parollar oson topiladi. Chrome <ph name="BEGIN_LINK" />siz uchun ishonchli parol yaratsin va eslab qolsin<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome bu saytda kameradan foydalanishiga ruxsat kerak</translation>
 <translation id="2928420929544864228">Oʻrnatildi.</translation>
@@ -603,6 +604,7 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7161904924553537242">Google Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7193885263065350793">Tashkilotingiz Chrome <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
 <translation id="7242029209006116544">Boshqariladigan hisobga kirish bilan siz administratorga Google Chrome profilingiz sozlamalarini boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz (m-n, ilovalar, xatcho‘plar, brauzer tarixi, parollar va boshqa sozlamalar kabi) <ph name="USER_NAME" /> hisobiga butunlay bog‘lanadi. Bu ma’lumotlarni Google shaxsiy kabinetida o‘chirish mumkin, lekin boshqa hisobga bog‘lash imkoniyati yo‘q. Chrome ma’lumotlarini saqlab qolish uchun yangi profil yarating. <ph name="LEARN_MORE" /></translation>
+<translation id="7274402351400635015">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni har doim Chrome orqali ochishingiz mumkin. Uni vazifalar paneliga qadash ham mumkin.</translation>
 <translation id="7285616922384953075">Chrome <ph name="MANAGER" /> boshqaruvida</translation>
 <translation id="7285990705317078173">Narxlarni kuzatish va istalgan saytda narx pasayishi haqida xabar olish uchun telefonga Chrome ilovasini yuklab oling</translation>
 <translation id="7288567540154601580">Varaqlar va kengaytmalar</translation>

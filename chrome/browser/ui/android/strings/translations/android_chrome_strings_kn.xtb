@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">ನಿಮ್ಮನ್ನು ಸುರಕ್ಷಿತವಾಗಿಡಲು ಸಹಾಯ ಮಾಡಲು, ಕೆಲವು ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="1383876407941801731">ಹುಡುಕಿ</translation>
 <translation id="1384704387250346179">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಅನುವಾದಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> ದಿನಗಳ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="1390418506739274310">Chrome ನಲ್ಲಿ ಇತರ ಆ್ಯಪ್‌ಗಳಿಂದ ತೆರೆಯಲಾದ ಲಿಂಕ್‌ಗಳ ಇತಿಹಾಸವನ್ನು ನೀವು ನೋಡಲು ಸಾಧ್ಯವಾಗಬಹುದು. ನಿಮ್ಮ Google ಖಾತೆಯು <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> ನಲ್ಲಿ ಇತರ ವಿಧಗಳ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವನ್ನು ಹೊಂದಿರಬಹುದು.</translation>
 <translation id="139752016751285248">ದರದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ಮೂಲಕ ಹುಡುಕಿ</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ವೆಬ್ ಇತಿಹಾಸ</translation>
 <translation id="1515901671075971249">ಟ್ಯಾಬ್ ನ್ಯಾವಿಗೇಷನ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="1516966594427080024">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
-<translation id="1521774566618522728">ಇಂದು ಸಕ್ರಿಯ</translation>
 <translation id="153446405401665083">Chrome ನ ಹೊಸ ಆವೃತ್ತಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="1540012742443808215">ವಿಳಾಸ ಪಟ್ಟಿಯು ಪ್ರಸ್ತುತ ಮೇಲ್ಭಾಗದಲ್ಲಿದೆ</translation>
 <translation id="1544084554881119930">ಪಾವತಿ ವಿಧಾನಗಳು ಮತ್ತು ವಿಳಾಸಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ನ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸವು ಸಿಂಕ್ ಆಗುವುದಿಲ್ಲ.
@@ -1259,6 +1257,7 @@
 <translation id="6251449557817521191">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ಇಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6254139308321626268">ನೀವು PDF ಫೈಲ್ ಅನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="6255809143828972562">Chrome ನಲ್ಲಿನ ಟೂಲ್‌ಗಳ ಮೂಲಕ ನೀವು ಸುರಕ್ಷಿತವಾಗಿ ಬ್ರೌಸ್ ಮಾಡಬಹುದು ಮತ್ತು ನಿಯಂತ್ರಣದಲ್ಲಿರಬಹುದು</translation>
+<translation id="6260260490042862943">ಸೈಟ್ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
 <translation id="6264376385120300461">ಹೇಗಿದ್ದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="6264485186158353794">ಸುರಕ್ಷತೆಗೆ ಹಿಂದಿರುಗಿ</translation>
 <translation id="6267106249090587268">ನೋಟಿಫಿಕೇಶನ್‌ಗಳು <ph name="SEPARATOR" /> ಸ್ಪ್ಯಾಮ್ ಅಥವಾ ಮೋಸಗೊಳಿಸುವ ಕಂಟೆಂಟ್‌ಗಳ ಕಾರಣದಿಂದಾಗಿ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">ಓದುವ ಪಟ್ಟಿಗೆ ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="7968982339740310781">ವಿವರಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7969391000881506217">ಅವಧಿ ಮುಗಿಯುವ ದಿನಾಂಕ*</translation>
-<translation id="7971136598759319605">1 ದಿನದ ಹಿಂದೆ ಸಕ್ರಿಯ</translation>
 <translation id="7975379999046275268">ಪುಟ ಪೂರ್ವವೀಕ್ಷಿಸಿ <ph name="BEGIN_NEW" />ಹೊಸದು<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯಲ್ಲಿ ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನೀವು ಬಳಸಿದರೆ ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡದ ಕಾರಣ Chrome ಈ ಅನುಮತಿಗಳನ್ನು ತೆಗೆದುಹಾಕಿದೆ</translation>

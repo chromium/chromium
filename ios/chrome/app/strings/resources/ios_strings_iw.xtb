@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">הסתרת האפשרות 'המשך הגלישה בכרטיסייה הזו'</translation>
 <translation id="1520027731907768768">קבלת התראות על ירידות במחיר של המוצרים שבמעקב.</translation>
 <translation id="1521366073263497277">מעבר לתצוגת הכרטיסיות</translation>
-<translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="1523567067736644845">צריך לבטל את הנעילה כדי להציג את הסיסמה</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
 <translation id="1531038290222364269">הצגת כרטיסיות</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google.</translation>
 <translation id="2306265833370324042">הצגת הפרטים של <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">סגירת הכרטיסייה</translation>
+<translation id="2310789833878085574">שמירה ומילוי אוטומטי</translation>
 <translation id="2311077293164383652">סגירת הכרטיסייה המוצמדת</translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2320166752086256636">הסתרת מקלדת</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">סימון כ'נקרא'</translation>
 <translation id="428768789042547925">מה חדש</translation>
 <translation id="429074084062258019">{count,plural, =1{הוספת כרטיסייה לקבוצה}one{הוספת כרטיסיות לקבוצה}two{הוספת כרטיסיות לקבוצה}other{הוספת כרטיסיות לקבוצה}}</translation>
+<translation id="4300830875340617674">סריקת כרטיס ומילוי אוטומטי</translation>
 <translation id="4302061870579014542">הגדרת המיקום</translation>
 <translation id="4304713468139749426">מנהל הסיסמאות</translation>
 <translation id="4306349443295056740">‏חתימת OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">כדי לעקוב אחרי המוצר, לוחצים על "מעקב"</translation>
 <translation id="5121618895923301719">כבר מתבצע מעקב אחר המוצר הזה. הדף הזה שמור ב<ph name="BEGIN_LINK" />סימניות לנייד<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">יש לך כמה בעיות בסיסמאות.</translation>
-<translation id="5127538504377457572">פעילות אחרונה: לפני <ph name="DAYS" /> ימים</translation>
 <translation id="5128788795241319992">האפשרויות בתפריט החדש</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="5141363746588976328">הסתרת הכרטיס "ירידות במחיר"</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">הפעלת המצלמה</translation>
 <translation id="5229315183665181733">עריכת האתר</translation>
+<translation id="5233111790346066304">‏אפשר לשמור קבצים ב-Google Drive ולגשת אליהם בכל שלב.</translation>
 <translation id="5233638681132016545">כרטיסייה חדשה</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏הסימנייה נשמרה בחשבון Google עם הכתובת {email}.}one{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}two{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}other{‏הסימניות נשמרו בחשבון Google עם הכתובת {email}.}}</translation>
 <translation id="5234764350956374838">סגירה</translation>
@@ -1649,6 +1650,7 @@
 <translation id="6806550742467879742">כלים בדף</translation>
 <translation id="6807287147325542056">סיסמאות ששמורות באפליקציות אחרות</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏נשמרה סימנייה בחשבון Google שלך, {email}}one{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}two{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}other{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="6826004672264649705">נכון לעכשיו מתבצע מעקב אחרי המוצר הזה. כדי לראות את היסטוריית המחירים צריך לפתוח את כרטיסיית המעקב</translation>
 <translation id="6830728435402077660">לא מאובטח</translation>
@@ -1962,7 +1964,6 @@
 <translation id="7952670906562503188">‏בחרת למחוק {passkey_count} מפתחות גישה ואת רשימת האתרים והאפליקציות שבחרת לא לשמור בהם אף פעם פרטי כניסה. חשבונות שיצרת לאתרים ולאפליקציות לא יימחקו.</translation>
 <translation id="7958575506592576831">פרטי אבטחת הדף</translation>
 <translation id="7961015016161918242">אף פעם</translation>
-<translation id="7971136598759319605">פעילות אחרונה: לפני יום אחד</translation>
 <translation id="7972837668077967426">לוח הציור</translation>
 <translation id="7975036700432177008">נסה</translation>
 <translation id="797588153137233716">תפריט ← היסטוריה ← מחיקת נתוני הגלישה</translation>

@@ -2419,6 +2419,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Se bloqueó una ventana emergente}other{# pop-ups blocked}}</translation>
 <translation id="4780320432697076749">Software de fotografía</translation>
 <translation id="4780366598804516005">Buzón 1</translation>
+<translation id="4785273477715803444">Filtrar registros</translation>
 <translation id="4785376858512657294">Administrar la Cuenta de Google</translation>
 <translation id="4785689107224900852">Cambiar a esta pestaña</translation>
 <translation id="4785998536350006000">Buscando "<ph name="SEARCH_QUERY" />"</translation>
@@ -3061,6 +3062,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5759751709240058861">Usar y mover la cámara</translation>
 <translation id="5762131895127128324">Licencias de conducir · Documentos de identidad · Pasaportes</translation>
 <translation id="5763042198335101085">Escribe una dirección de correo electrónico válida</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Activo hoy}=1{Activo hace 1 día}other{Activo hace # días}}</translation>
 <translation id="5764725887548570807">El formato de origen no es válido.</translation>
 <translation id="5764920692828389743">Enviar a <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>

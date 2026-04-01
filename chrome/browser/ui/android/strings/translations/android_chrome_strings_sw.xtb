@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Ili kukulinda, ruhusa zimeondolewa kwenye baadhi ya tovuti</translation>
 <translation id="1383876407941801731">Tafuta</translation>
 <translation id="1384704387250346179">Tafsiri picha ukitumia Lenzi ya Google <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Ilitumika siku <ph name="LAST_UPDATED" /> zilizopita</translation>
 <translation id="1390418506739274310">Unaweza kuona historia kutoka kwenye programu zingine zinazofungua viungo kwenye Chrome. Huenda Akaunti yako ya Google ikawa na aina nyingine za historia ya kuvinjari kwenye <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Safu ya chini ya maarifa ya bei imefunguliwa katika skrini nzima</translation>
 <translation id="1397811292916898096">Tafuta kwa <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Kwa mipangilio zaidi inayotumia data ili kuboresha hali yako ya utumiaji wa Chro
 <translation id="1513352483775369820">Alamisho na historia ya wavuti</translation>
 <translation id="1515901671075971249">Njia za mikato za kusogeza katika vichupo</translation>
 <translation id="1516966594427080024">Fungua dirisha jipya katika hali fiche</translation>
-<translation id="1521774566618522728">Ameitumia leo</translation>
 <translation id="153446405401665083">Toleo jipya la Chrome linapatikana</translation>
 <translation id="1540012742443808215">Kwa sasa, sehemu ya anwani inapatikana katika upande wa juu</translation>
 <translation id="1544084554881119930">Njia za kulipa na anwani hazitasimbwa kwa njia fiche. Historia ya kuvinjari kwenye Chrome haitasawazishwa.
@@ -1728,7 +1726,6 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="7968014550143838305">Imewekwa kwenye orodha ya kusoma</translation>
 <translation id="7968982339740310781">Ona maelezo</translation>
 <translation id="7969391000881506217">Tarehe ya mwisho ya matumizi*</translation>
-<translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7975379999046275268">Kagua ukurasa kwanza <ph name="BEGIN_NEW" />Mpya<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Hukutahadharisha iwapo unatumia nenosiri ambalo limeathiriwa na ufichuzi haramu wa data.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome imeondoa ruhusa hizi kwa sababu hujaitembelea hivi majuzi</translation>

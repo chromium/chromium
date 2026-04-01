@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Թաքցնել «Շարունակել այս ներդիրի դիտումը» գործողությունը</translation>
 <translation id="1520027731907768768">Ստանալ այն ապրանքների գների իջեցման մասին ծանուցումները, որոնք հետագծում եք։</translation>
 <translation id="1521366073263497277">Անցեք ներդիրների էջ</translation>
-<translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="1523567067736644845">Ապակողպեք՝ գաղտնաբառը տեսնելու համար</translation>
 <translation id="1524563461097350801">Ոչ</translation>
 <translation id="1531038290222364269">Ցույց տալ ներդիրները</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Գաղտնաբառերը գաղտնագրվում են ձեր սարքում, այնուհետև պահվում Google Գաղտնաբառերի կառավարիչում։</translation>
 <translation id="2306265833370324042">Ցույց տալ տեղեկություններ <ph name="SEARCH_ENGINE_NAME" />-ի մասին</translation>
 <translation id="2309265394777270359">Փակել ներդիրը</translation>
+<translation id="2310789833878085574">Պահել և ավտոմատ լրացնել</translation>
 <translation id="2311077293164383652">Փակել ամրացված ներդիրը</translation>
 <translation id="2316129865977710310">Ոչ</translation>
 <translation id="2320166752086256636">Թաքցնել ստեղնաշարը</translation>
@@ -695,7 +695,7 @@
 <translation id="3530206579861815432">Արագ գտեք բաց և վերջերս փակված ներդիրները ձեր համաժամացված սարքերում։</translation>
 <translation id="3530767473765895035">Կառավարել հաշիվներն այս սարքում…</translation>
 <translation id="3533436815740441613">Նոր ներդիր</translation>
-<translation id="3534738261102690620">Հարցնել Gemini-ին</translation>
+<translation id="3534738261102690620">Հարցնել</translation>
 <translation id="3540141921715814660">Ավելացնել էջանիշներում</translation>
 <translation id="3546122170015471515">Քարտեզների բետա տարբերակը Google.com-ում</translation>
 <translation id="3547356470684043247">Կարդալ հաճախորդների տպավորությունները և նրանց կարծիքները ապրանքների և ծառայությունների մասին՝ օգնելու ձեզ կշռադատված որոշումներ կայացնել</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Նշել որպես կարդացված</translation>
 <translation id="428768789042547925">Ինչ նոր բան կա</translation>
 <translation id="429074084062258019">{count,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիր խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
+<translation id="4300830875340617674">Սկանավորել քարտը և ավտոմատ լրացնել</translation>
 <translation id="4302061870579014542">Ընտրել դիրքը</translation>
 <translation id="4304713468139749426">Գաղտնաբառերի կառավարիչ</translation>
 <translation id="4306349443295056740">OCSP ստորագրում</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Ապրանքին հետևելու համար հպեք «Հետևել»</translation>
 <translation id="5121618895923301719">Դուք արդեն հետագծում եք այս ապրանքը։ Այս էջը պահված է <ph name="BEGIN_LINK" />Mobile Bookmarks<ph name="END_LINK" />-ում։</translation>
 <translation id="512533434554095351">Դուք ունեք մի քանի ոչ հուսալի գաղտնաբառ։</translation>
-<translation id="5127538504377457572">Ակտիվ է եղել <ph name="DAYS" /> օր առաջ</translation>
 <translation id="5128788795241319992">Բացահայտեք նոր ընտրացանկը</translation>
 <translation id="5132942445612118989">Համաժամացրեք ձեր գաղտնաբառերը, պատմությունն ու մյուս կարգավորումները ձեր բոլոր սարքերում</translation>
 <translation id="5141363746588976328">Թաքցնել ձեր ներդիրներում գների իջեցման քարտը</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Միացնել տեսախցիկը</translation>
 <translation id="5229315183665181733">Փոփոխել կայքը</translation>
+<translation id="5233111790346066304">Պահեք ֆայլերը Google Drive-ում և օգտագործեք ցանկացած պահի։</translation>
 <translation id="5233638681132016545">Նոր ներդիր</translation>
 <translation id="5234094073825090254">{count,plural, =1{Էջանիշը պահվել է ձեր Google հաշվում ({email})։}one{Էջանիշը պահվել է ձեր Google հաշվում ({email})։}other{Էջանիշները պահվել են ձեր Google հաշվում ({email})։}}</translation>
 <translation id="5234764350956374838">Փակել</translation>
@@ -1298,7 +1299,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5647702255748985085">Լքե՞լ խումբը</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5652623411397330904">Ապրանքները, որոնց գներին հետևում եք, կցուցադրվեն այստեղ։</translation>
-<translation id="5653100054596780862">Բոլոր ներդիրները</translation>
+<translation id="5653100054596780862">Ներդիրներ</translation>
 <translation id="5656431592348714536">Բարելավված Օրացույց</translation>
 <translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5665739277590037307">Գործում են հետևյալ փաստաթղթերի դրույթները՝ <ph name="GOOGLE_TERMS" /> և <ph name="GEMINI_APPS_PRIVACY" />։ Gemini-ը կարող է սխալներ թույլ տալ, ուստի ստուգեք դրա տրամադրած պատասխանները։</translation>
@@ -1649,6 +1650,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6806550742467879742">Էջի կառավարման գործիքներ</translation>
 <translation id="6807287147325542056">Գաղտնաբառեր այլ հավելվածներում</translation>
 <translation id="681368974849482173">Տարրը ստեղծվեց</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Էջանիշը պահվել է ձեր Google հաշվում ({email})}one{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}other{{count} էջանիշ պահվել է ձեր Google հաշվում ({email})}}</translation>
 <translation id="6826004672264649705">Ներկայումս հետագծում եք այս ապրանքը։ Բացեք՝ գների փոփոխությունների պատմությունը տեսնելու համար</translation>
 <translation id="6830728435402077660">Անվտանգ չէ</translation>
@@ -1962,7 +1964,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7952670906562503188">Դուք պատրաստվում եք ջնջել {passkey_count} մուտքի բանալի և այն կայքերի ու հավելվածների ցանկը, որոնց մուտքի տվյալներն ընտրել եք չպահել։ Հաշիվները, որոնք ստեղծել եք կայքերի կամ հավելվածների համար, չեն ջնջվի։</translation>
 <translation id="7958575506592576831">Տեղեկություններ էջի անվտանգության մասին</translation>
 <translation id="7961015016161918242">Երբեք</translation>
-<translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Փորձել</translation>
 <translation id="797588153137233716">Ընտրացանկ → Պատմություն → Ջնջել այցելությունների պատմությունը</translation>

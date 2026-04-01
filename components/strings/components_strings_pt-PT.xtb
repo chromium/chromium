@@ -1772,6 +1772,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3744899669254331632">Não pode visitar <ph name="SITE" /> neste momento, porque o Website enviou credenciais baralhadas que o Chromium não consegue processar. Os erros de rede e os ataques são geralmente temporários, pelo que esta página deverá funcionar mais tarde.</translation>
 <translation id="3745599309295009257">O seu texto e o conteúdo e o URL da página em que está a escrever vão ser enviados para a Google, revistos por humanos e usados para melhorar esta funcionalidade. Evite introduzir informações pessoais (como detalhes médicos ou financeiros) ou usar esta ferramenta em sites que contenham informações privadas ou confidenciais.</translation>
 <translation id="3748009735914587286">Metal (alto brilho)</translation>
+<translation id="3748647055058832337">Não disponível para este comerciante</translation>
 <translation id="3749600200023337912">O seu método de pagamento automático guardado pode ser usado para este pagamento. Para desativar as carteiras eletrónicas ou a app de pagamentos no Chrome, aceda às <ph name="BEGIN_LINK1" />definições de pagamento<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Guardar morada na conta?</translation>
 <translation id="3752543821772132562">Ignorada porque a política <ph name="POLICY_NAME" /> não está definida.</translation>
@@ -3061,6 +3062,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5759751709240058861">Usar e mover a sua câmara</translation>
 <translation id="5762131895127128324">Cartas de condução · Cartões de identificação · Passaportes</translation>
 <translation id="5763042198335101085">Introduza um endereço de email válido</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Ativo hoje}=1{Ativo há 1 dia}other{Ativo há # dias}}</translation>
 <translation id="5764725887548570807">Formato de origem inválido.</translation>
 <translation id="5764920692828389743">Enviar para <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Para ver os métodos de fornecimento e os requisitos, selecione um endereço</translation>
@@ -3891,6 +3893,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="7057567173736333354">Descreva a imagem</translation>
 <translation id="7058163556978339998">O <ph name="BROWSER" /> confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="7058774143982824355">Serviço do analisador de palavras-passe CSV</translation>
+<translation id="7059913660448028407">Não disponível de momento</translation>
 <translation id="7062344833049251424">Para pagar mais rapidamente da próxima vez, guarde o cartão e a morada de faturação na Carteira do Google</translation>
 <translation id="706295145388601875">Adicione e faça a gestão de endereços nas Definições do Chrome.</translation>
 <translation id="7063157783216323487">Verde 2</translation>
@@ -4171,6 +4174,7 @@ Detalhes adicionais:
 <translation id="7471007961486718967">Indique o motivo da transferência (obrigatório)</translation>
 <translation id="7473033553872550521">Também pode contactar o proprietário do site e sugerir que atualize para HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Não</translation>
+<translation id="7475618719385705713">Esta página está bloqueada</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7482823403440483089">Preenchimento automático melhorado</translation>
@@ -4192,6 +4196,7 @@ Detalhes adicionais:
 <translation id="7508255263130623398">O ID do dispositivo da política devolvido está vazio ou não corresponde ao ID do dispositivo atual</translation>
 <translation id="7508577201115425418">Serviços de documentação e impressão</translation>
 <translation id="7510269639068718544">Gatos</translation>
+<translation id="7511707705708508147">Moeda não compatível</translation>
 <translation id="7511955381719512146">A rede Wi-Fi que está a utilizar pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Não é possível definir esta política como "True" e obrigatória, por isso, foi alterada para recomendada.</translation>
 <translation id="7514365320538308">Transferir</translation>
@@ -4691,6 +4696,7 @@ Detalhes adicionais:
 <translation id="8281886186245836920">Ignorar</translation>
 <translation id="8282292167096638950">Elimine a carta de condução</translation>
 <translation id="8282409409360764263">Manutenção de jardins</translation>
+<translation id="828282277746732142">Guarde o IBAN na Carteira do Google</translation>
 <translation id="8282947398454257691">Saber o identificador único do seu dispositivo</translation>
 <translation id="8284769179630993263">Faça a gestão da Navegação segura e muito mais nas Definições do Chrome.</translation>
 <translation id="828558778104922222">A foto foi perdida devido a um erro desconhecido</translation>

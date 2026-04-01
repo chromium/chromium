@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">ເພື່ອຊ່ວຍໃຫ້ທ່ານປອດໄພ, ລະບົບໄດ້ລຶບການອະນຸຍາດອອກຈາກບາງເວັບໄຊ</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1384704387250346179">ແປພາສາໃນຮູບກັບ Google Lens <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">ເປີດໃຊ້ເມື່ອ <ph name="LAST_UPDATED" /> ມື້ກ່ອນ</translation>
 <translation id="1390418506739274310">ທ່ານອາດເຫັນປະຫວັດຈາກແອັບອື່ນໆທີ່ເປີດລິ້ງໃນ Chrome. ບັນຊີ Google ຂອງທ່ານອາດມີປະຫວັດການທ່ອງເວັບຮູບແບບອື່ນໆຢູ່ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">ຊີດລຸ່ມສຸດຂໍ້ມູນເຈາະເລິກດ້ານລາຄາເປີດຢູ່ແບບເຕັມໜ້າ</translation>
 <translation id="1397811292916898096">ຊອກຫາດ້ວຍ <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">ບຸກມາກສ໌ ​ແລະ​ປະ​ຫວັດ​ເວັບ​</translation>
 <translation id="1515901671075971249">ທາງລັດໃນການນຳທາງແຖບ</translation>
 <translation id="1516966594427080024">ເປີດໜ້າຈໍໃໝ່ໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
-<translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
 <translation id="153446405401665083">Chrome ເວີຊັນໃໝ່ພ້ອມໃຫ້ບໍລິການແລ້ວ</translation>
 <translation id="1540012742443808215">ແຖບທີ່ຢູ່ປັດຈຸບັນຢູ່ເທິງສຸດ</translation>
 <translation id="1544084554881119930">ວິທີການຈ່າຍເງິນ ແລະ ທີ່ຢູ່ຈະບໍ່ໄດ້ຖືກເຂົ້າລະຫັດໄວ້. ປະຫວັດການທ່ອງເວັບຈາກ Chrome ຈະບໍ່ຊິ້ງຂໍ້ມູນ.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">ປ້ອນທີ່ຢູ່ເວັບແບບກຳນົດເອງ</translation>
 <translation id="1928618076168182477">ການສະແດງມຸມມອງພາບ</translation>
 <translation id="1928696683969751773">ອັບເດດ</translation>
+<translation id="1934545916152269346">ໃຊ້ຫຼ້າສຸດ</translation>
 <translation id="1943398124995840148">ຕອນນີ້ແຖບທີ່ເປີດຢູ່ຂອງທ່ານມີຮູບລັກທີ່ອັບເດດໃນ XR ແລ້ວ</translation>
 <translation id="1944535645109964458">ກະແຈຜ່ານໃຊ້ບໍ່ໄດ້</translation>
 <translation id="1957557050935255529">ກຳລັງໂຫຼດ PDF…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">ເພີ່ມໃສ່ລາຍການທີ່ຈະອ່ານແລ້ວ</translation>
 <translation id="7968982339740310781">ເບິ່ງລາຍ​ລະ​ອຽດ​</translation>
 <translation id="7969391000881506217">ວັນທີໝົດອາຍຸ*</translation>
-<translation id="7971136598759319605">ນຳໃຊ້ເມື່ອ 1 ມື້ກ່ອນ</translation>
 <translation id="7975379999046275268">ສະແດງຕົວຢ່າງໜ້າ <ph name="BEGIN_NEW" />ໃໝ່<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">ເຕືອນທ່ານຫາກທ່ານໃຊ້ລະຫັດຜ່ານທີ່ຖືກລະເມີດໃນການລະເມີດຂໍ້ມູນ.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເວັບໄຊເມື່ອບໍ່ດົນມານີ້</translation>

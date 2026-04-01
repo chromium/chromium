@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">För att skydda dig har behörigheter tagits bort från vissa webbplatser</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1384704387250346179">Översätta bild med Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktiv för <ph name="LAST_UPDATED" /> dagar sedan</translation>
 <translation id="1390418506739274310">Historiken från andra appar som öppnar länkar kan visas i Chrome. Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Ark för prisinsikter på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="1397811292916898096">Sök med <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1513352483775369820">Bokmärken och webbhistorik</translation>
 <translation id="1515901671075971249">Kortkommandon för flikar</translation>
 <translation id="1516966594427080024">Öppna ett nytt fönster i inkognitoläge</translation>
-<translation id="1521774566618522728">Aktiv idag</translation>
 <translation id="153446405401665083">En ny version av Chrome är tillgänglig</translation>
 <translation id="1540012742443808215">Adressfältet är för närvarande högst upp</translation>
 <translation id="1544084554881119930">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
@@ -1729,7 +1727,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7968014550143838305">Har lagts till i läslistan</translation>
 <translation id="7968982339740310781">Visa information</translation>
 <translation id="7969391000881506217">Sista giltighetsdatum*</translation>
-<translation id="7971136598759319605">Aktiv för 1 dag sedan</translation>
 <translation id="7975379999046275268">Förhandsgranska sida <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varnar dig om du använder ett lösenord som har läckt ut i samband med ett dataintrång.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter eftersom du inte har besökt webbplatsen nyligen</translation>

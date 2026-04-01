@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Hide 'Continue with this tab'</translation>
 <translation id="1520027731907768768">Receive price drop alerts for products that you track.</translation>
 <translation id="1521366073263497277">Go to your tab grid</translation>
-<translation id="1521774566618522728">Active today</translation>
 <translation id="1523567067736644845">Unlock to show password</translation>
 <translation id="1524563461097350801">No, thanks</translation>
 <translation id="1531038290222364269">Show tabs</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Your passwords are encrypted on your device before they’re saved to Google Password Manager.</translation>
 <translation id="2306265833370324042">Show <ph name="SEARCH_ENGINE_NAME" /> details</translation>
 <translation id="2309265394777270359">Close tab</translation>
+<translation id="2310789833878085574">Save and autofill</translation>
 <translation id="2311077293164383652">Close pinned tab</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2320166752086256636">Hide keyboard</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">To track the product, tap Track</translation>
 <translation id="5121618895923301719">You're already tracking this product. This page is saved in <ph name="BEGIN_LINK" />Mobile bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">You have several password issues.</translation>
-<translation id="5127538504377457572">Active <ph name="DAYS" /> days ago</translation>
 <translation id="5128788795241319992">Explore the new menu</translation>
 <translation id="5132942445612118989">Sync your passwords, history and more on all devices</translation>
 <translation id="5141363746588976328">Hide price drops on your tabs card</translation>
@@ -1651,6 +1650,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6806550742467879742">Page tools</translation>
 <translation id="6807287147325542056">Passwords in other apps</translation>
 <translation id="681368974849482173">Item created</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark saved in your Google Account, {email}}other{{count} bookmarks saved in your Google Account, {email}}}</translation>
 <translation id="6826004672264649705">Currently tracking this product. Open to see price history</translation>
 <translation id="6830728435402077660">Not secure</translation>
@@ -1964,7 +1964,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7952670906562503188">You are about to delete {passkey_count} passkeys and the list of sites and apps for which you chose to never save sign-in info. Any account that you created for sites and apps won't be deleted.</translation>
 <translation id="7958575506592576831">Page security info</translation>
 <translation id="7961015016161918242">Never</translation>
-<translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Try</translation>
 <translation id="797588153137233716">Menu → History → Delete browsing data</translation>

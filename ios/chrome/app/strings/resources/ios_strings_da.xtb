@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Skjul "Fortsæt med denne fane"</translation>
 <translation id="1520027731907768768">Få notifikationer om prisfald på de produkter, du holder øje med.</translation>
 <translation id="1521366073263497277">Gå til dit fanegitter</translation>
-<translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="1523567067736644845">Lås op for at få vist adgangskoden</translation>
 <translation id="1524563461097350801">Nej tak</translation>
 <translation id="1531038290222364269">Vis faner</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Dine adgangskoder krypteres på din enhed, inden de gemmes i Googles Adgangs­kode­admin­istrator.</translation>
 <translation id="2306265833370324042">Se oplysninger om <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Luk fane</translation>
+<translation id="2310789833878085574">Gem og udfyld automatisk</translation>
 <translation id="2311077293164383652">Luk fastgjort fane</translation>
 <translation id="2316129865977710310">Nej tak</translation>
 <translation id="2320166752086256636">Skjul tastaturet</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Markér som læst</translation>
 <translation id="428768789042547925">Nyheder</translation>
 <translation id="429074084062258019">{count,plural, =1{Føj fane til gruppe}one{Føj fane til gruppe}other{Føj faner til gruppe}}</translation>
+<translation id="4300830875340617674">Scan kort, og udfyld automatisk</translation>
 <translation id="4302061870579014542">Vælg placering</translation>
 <translation id="4304713468139749426">Adgangskode­administrator</translation>
 <translation id="4306349443295056740">OCSP-signering</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Tryk på Overvåg for at overvåge produktet</translation>
 <translation id="5121618895923301719">Du holder allerede øje med dette produkt. Denne side er gemt i <ph name="BEGIN_LINK" />Bogmærker på mobil<ph name="END_LINK" /></translation>
 <translation id="512533434554095351">Du har adskillige problemer med dine adgangskoder.</translation>
-<translation id="5127538504377457572">Aktiv for <ph name="DAYS" /> dage siden</translation>
 <translation id="5128788795241319992">Se den nye menu</translation>
 <translation id="5132942445612118989">Synkroniser dine adgangskoder, din historik og meget mere på alle enheder</translation>
 <translation id="5141363746588976328">Skjul kortet Vis prisfald på dine faner</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Slå kamera til</translation>
 <translation id="5229315183665181733">Rediger website</translation>
+<translation id="5233111790346066304">Gem filer i Google Drev, og tilgå dem når som helst.</translation>
 <translation id="5233638681132016545">Ny fane</translation>
 <translation id="5234094073825090254">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}.}one{Bogmærket er gemt på din Google-konto, {email}.}other{Bogmærkerne er gemt på din Google-konto, {email}.}}</translation>
 <translation id="5234764350956374838">Luk</translation>
@@ -1649,6 +1650,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6806550742467879742">Sideværktøjer</translation>
 <translation id="6807287147325542056">Adgangskoder i andre apps</translation>
 <translation id="681368974849482173">Elementet blev oprettet</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bogmærket er gemt på din Google-konto, {email}}one{{count} bogmærke er gemt på din Google-konto, {email}}other{{count} bogmærker er gemt på din Google-konto, {email}}}</translation>
 <translation id="6826004672264649705">Der holdes øje med dette produkt. Åbn for at se prishistorikken</translation>
 <translation id="6830728435402077660">Ikke sikker</translation>
@@ -1962,7 +1964,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7952670906562503188">Du er ved at slette {passkey_count} adgangsnøgler og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="7958575506592576831">Oplysninger om sidesikkerhed</translation>
 <translation id="7961015016161918242">Aldrig</translation>
-<translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Prøv</translation>
 <translation id="797588153137233716">Menu → Historik → Slet browserdata</translation>

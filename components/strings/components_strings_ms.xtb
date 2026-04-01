@@ -1773,6 +1773,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3744899669254331632">Anda tidak boleh melawat <ph name="SITE" /> sekarang kerana laman web telah menghantar bukti kelayakan hancur yang tidak boleh diproses oleh Chromium. Ralat dan serangan rangkaian biasanya sementara. Oleh itu halaman ini mungkin akan berfungsi kemudian.</translation>
 <translation id="3745599309295009257">Teks dan kandungan anda serta URL halaman yang anda gunakan untuk membuat penulisan akan dihantar kepada Google, disemak oleh manusia dan digunakan untuk meningkatkan ciri ini. Elakkan daripada memasukkan maklumat peribadi (seperti butiran perubatan atau kewangan) atau menggunakan alat ini pada laman yang mengandungi maklumat yang bersifat peribadi atau sensitif.</translation>
 <translation id="3748009735914587286">Logam (Kilat Tinggi)</translation>
+<translation id="3748647055058832337">Tidak tersedia untuk pedagang ini</translation>
 <translation id="3749600200023337912">Kaedah pembayaran automatik yang disimpan boleh digunakan untuk pembayaran ini. Untuk mematikan eWallet atau apl pembayaran dalam Chrome, akses <ph name="BEGIN_LINK1" />tetapan pembayaran<ph name="END_LINK1" /> anda</translation>
 <translation id="3752181611900535304">Simpan alamat dalam akaun?</translation>
 <translation id="3752543821772132562">Diabaikan kerana <ph name="POLICY_NAME" /> tidak ditetapkan.</translation>
@@ -3062,6 +3063,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5759751709240058861">Gunakan &amp; alihkan kamera anda</translation>
 <translation id="5762131895127128324">Lesen memandu · Kad pengenalan · Pasport</translation>
 <translation id="5763042198335101085">Masukkan alamat e-mel yang sah</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktif hari ini}=1{Aktif 1 hari yang lalu}other{Aktif # hari yang lalu}}</translation>
 <translation id="5764725887548570807">Format asalan tidak sah.</translation>
 <translation id="5764920692828389743">Hantar kepada <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pilih alamat untuk melihat kaedah dan syarat penghantaran</translation>
@@ -3892,6 +3894,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="7057567173736333354">Perihalkan imej anda</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil laman web ini.</translation>
 <translation id="7058774143982824355">Perkhidmatan Penghurai Kata Laluan CSV</translation>
+<translation id="7059913660448028407">Tidak tersedia sekarang</translation>
 <translation id="7062344833049251424">Untuk membuat pembayaran yang lebih pantas selepas ini, simpan kad dan alamat pengebilan anda dalam Google Wallet</translation>
 <translation id="706295145388601875">Tambah dan urus alamat dalam tetapan Chrome</translation>
 <translation id="7063157783216323487">Hijau 2</translation>
@@ -4173,6 +4176,7 @@ Butiran tambahan:
 <translation id="7471007961486718967">Berikan sebab untuk memindahkan fail (diperlukan)</translation>
 <translation id="7473033553872550521">Anda juga boleh menghubungi pemilik laman tersebut dan mencadangkan agar mereka meningkatkan protokol komunikasi kepada HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Tidak, Terima Kasih</translation>
+<translation id="7475618719385705713">Halaman ini disekat</translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7481603210197454575">Sampul Itali</translation>
 <translation id="7482823403440483089">Autolengkap yang dipertingkatkan</translation>
@@ -4194,6 +4198,7 @@ Butiran tambahan:
 <translation id="7508255263130623398">Id peranti yang dikembalikan kosong atau tidak sepadan dengan id peranti semasa</translation>
 <translation id="7508577201115425418">Dokumen &amp; Perkhidmatan Percetakan</translation>
 <translation id="7510269639068718544">Kucing</translation>
+<translation id="7511707705708508147">Mata wang tidak disokong</translation>
 <translation id="7511955381719512146">Wi-Fi yang anda gunakan mungkin memerlukan anda untuk melawat <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Dasar ini tidak dapat ditetapkan kepada "Benar" dan mandatori, oleh itu tetapan dasar ini telah ditukar kepada disyorkan.</translation>
 <translation id="7514365320538308">Muat Turun</translation>
@@ -4693,6 +4698,7 @@ Butiran tambahan:
 <translation id="8281886186245836920">Langkau</translation>
 <translation id="8282292167096638950">Padamkan lesen memandu</translation>
 <translation id="8282409409360764263">Penyenggaraan Laman</translation>
+<translation id="828282277746732142">Simpan IBAN dalam Google Wallet</translation>
 <translation id="8282947398454257691">Ketahui pengecam peranti unik anda</translation>
 <translation id="8284769179630993263">Urus Penyemakan Imbas Selamat anda dan pelbagai lagi dalam tetapan Chrome</translation>
 <translation id="828558778104922222">Foto hilang disebabkan oleh ralat yang tidak diketahui</translation>

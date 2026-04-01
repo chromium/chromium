@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Ձեր անվտանգությունն ապահովելու համար կայքերից թույլտվություններ են հեռացվել</translation>
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1384704387250346179">Թարգմանել Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Ակտիվ է եղել <ph name="LAST_UPDATED" /> օր առաջ</translation>
 <translation id="1390418506739274310">Դուք կարող եք տեսնել պատմությունը այլ հավելվածներից, որոնք հղումներ են բացում Chrome-ում։ Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր, որոնք կարող եք գտնել <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> էջում։</translation>
 <translation id="139752016751285248">Գների վիճակագրության ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="1397811292916898096">Որոնում <ph name="PRODUCT_NAME" />-ում</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Էջանիշներ և վեբ պատմություն</translation>
 <translation id="1515901671075971249">Ստեղնային դյուրանցումներ ներդիրների միջև անցնումների համար</translation>
 <translation id="1516966594427080024">Բացել նոր պատուհան ինկոգնիտո ռեժիմում</translation>
-<translation id="1521774566618522728">Այսօր ակտիվ է եղել</translation>
 <translation id="153446405401665083">Chrome-ի նոր տարբերակը հասանելի է</translation>
 <translation id="1540012742443808215">Հասցեագոտին ներկայումս վերևում է</translation>
 <translation id="1544084554881119930">Վճարման եղանակները և հասցեները չեն գաղտնագրվի։ Chrome-ի այցելությունների պատմությունը չի համաժամացվի։
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Մուտքագրեք այլ հասցե</translation>
 <translation id="1928618076168182477">Ցուցադրված է վիզուալ տեսքը</translation>
 <translation id="1928696683969751773">Թարմացումներ</translation>
+<translation id="1934545916152269346">Վերջերս օգտագործված</translation>
 <translation id="1943398124995840148">Ձեր բացված ներդիրներն այժմ նոր տեսք ունեն XR-ում</translation>
 <translation id="1944535645109964458">Հասանելի մուտքի բանալիներ չկան</translation>
 <translation id="1957557050935255529">PDF ֆայլի բեռնում…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">Ավելացվեց ընթերցանության ցանկում</translation>
 <translation id="7968982339740310781">Դիտել մանրամասները</translation>
 <translation id="7969391000881506217">Վավերականության ժամկետը*</translation>
-<translation id="7971136598759319605">Ակտիվ է եղել 1 օր առաջ</translation>
 <translation id="7975379999046275268">Նախադիտել էջը <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Զգուշացնում է ձեզ, երբ տվյալների արտահոսքի հետևանքով կոտրված գաղտնաբառ եք օգտագործում։</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները, քանի որ դուք վերջին ժամանակահատվածում չեք այցելել այս կայք</translation>

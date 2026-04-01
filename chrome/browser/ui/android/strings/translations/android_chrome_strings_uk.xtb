@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Щоб захистити вас, ми скасували дозволи для деяких сайтів</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384704387250346179">Переклад через Об'єктив <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">У мережі <ph name="LAST_UPDATED" /> дн. тому</translation>
 <translation id="1390418506739274310">Ви можете побачити історію інших додатків, які відкривають посилання в Chrome. Історія вебперегляду може також зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Нижній екран із відомостями про ціни відкрито на всю висоту</translation>
 <translation id="1397811292916898096">Шукати в <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Закладки й історія веб-пошуку</translation>
 <translation id="1515901671075971249">Комбінації клавіш для переходу між вкладками</translation>
 <translation id="1516966594427080024">Відкрити нове вікно в режимі анонімного перегляду</translation>
-<translation id="1521774566618522728">У мережі сьогодні</translation>
 <translation id="153446405401665083">Доступна нова версія Chrome</translation>
 <translation id="1540012742443808215">Адресний рядок зараз угорі екрана</translation>
 <translation id="1544084554881119930">Способи оплати й адреси не шифруватимуться. Історія вебперегляду з Chrome не синхронізуватиметься.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Введіть веб-адресу</translation>
 <translation id="1928618076168182477">Показано візуальний перегляд</translation>
 <translation id="1928696683969751773">Оновлення</translation>
+<translation id="1934545916152269346">Нещодавно використані</translation>
 <translation id="1943398124995840148">Відкриті вкладки тепер мають новий вигляд у розширеній реальності</translation>
 <translation id="1944535645109964458">Ключів доступу не знайдено</translation>
 <translation id="1957557050935255529">Завантаження файлу PDF…</translation>
@@ -1259,6 +1258,7 @@
 <translation id="6251449557817521191">Тут можна переглянути історію Chrome</translation>
 <translation id="6254139308321626268">Ви переглядаєте PDF-файл</translation>
 <translation id="6255809143828972562">Безпечно переглядайте вебсторінки й керуйте налаштуваннями завдяки інструментам від Chrome</translation>
+<translation id="6260260490042862943">Налаштування сайтів</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
 <translation id="6264485186158353794">Назад на безпечну сторінку</translation>
 <translation id="6267106249090587268">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи через спам або оманливий контент</translation>
@@ -1727,7 +1727,6 @@
 <translation id="7968014550143838305">Додано в список читання</translation>
 <translation id="7968982339740310781">Переглянути деталі</translation>
 <translation id="7969391000881506217">Термін дії*</translation>
-<translation id="7971136598759319605">У мережі 1 день тому</translation>
 <translation id="7975379999046275268">Переглянути сторінку <ph name="BEGIN_NEW" />Нове<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки останнім часом ви не відвідували сайт</translation>

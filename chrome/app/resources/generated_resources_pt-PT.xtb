@@ -161,7 +161,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1102759278139578486">Não é possível transferir os ficheiros de anotações do nó principal. Tente mais tarde.</translation>
 <translation id="1103523840287552314">Traduzir sempre <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Vai perder imediatamente o acesso a este grupo de separadores, e este vai ser eliminado de todos os seus dispositivos</translation>
-<translation id="1105934302947321130">Google Beam com Zoom</translation>
 <translation id="1106270460549661906">Anular partilha com o Gemini</translation>
 <translation id="1106350001632362876">Aumentar limite</translation>
 <translation id="110850812463801904">Ligar manualmente ao OneDrive</translation>
@@ -207,7 +206,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1131201598497838573">O PIN da criança foi atualizado</translation>
 <translation id="1133418583142946603">Adicionar separador atual</translation>
 <translation id="1133751489735776037">Clique 3 vezes com o rato</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Para a desbloquear, remova-a e volte a inseri-la.</translation>
 <translation id="1137589305610962734">dados temporários</translation>
 <translation id="1137673463384776352">Abrir link na aplicação <ph name="APP" /></translation>
@@ -240,6 +238,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1155816283571436363">A ligar ao seu telemóvel…</translation>
 <translation id="1157952955648710254">Fechar o painel lateral da Pesquisa Google</translation>
 <translation id="1158080958325422608">Colocar em maiúsculas</translation>
+<translation id="1158134713295836892">Gemini no Chrome</translation>
 <translation id="1159879754517035595">Gerir definições das extensões</translation>
 <translation id="1160800016654917722">Janela movida para baixo e para a esquerda</translation>
 <translation id="1161190590171867633">As tabelas de comparação são guardadas na sua Conta Google</translation>
@@ -328,6 +327,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1211769675100312947">Os atalhos são organizados por si</translation>
 <translation id="1215411991991485844">Nova aplicação de segundo plano adicionada</translation>
 <translation id="1216542092748365687">Remover impressão digital</translation>
+<translation id="1216628023580643945">Dê um nome à sua competência</translation>
 <translation id="1216891999012841486">Saiba como corrigir erros de atualização</translation>
 <translation id="1217114730239853757">Quer ativar o ChromeVox, o leitor de ecrã incorporado para o ChromeOS Flex? Em caso afirmativo, prima a barra de espaço.</translation>
 <translation id="1217117837721346030">Transferir ficheiro suspeito</translation>
@@ -441,6 +441,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1285815028662278915">Os dados móveis podem não suportar a zona Wi-Fi. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1286901453440314450">Certificados não fidedignos</translation>
 <translation id="1288037062697528143">A Luz noturna irá ativar-se automaticamente ao pôr-do-sol.</translation>
+<translation id="1288235441231062220">Limite de <ph name="MAX_CHARS" /> carateres atingido</translation>
 <translation id="1288300545283011870">Propriedades de voz</translation>
 <translation id="1289619947962767206">Esta opção já não é suportada. Para apresentar um separador, utilize o <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291057703584594733">Selecionar um gesto já atribuído remove-o da respetiva ação original.</translation>
@@ -763,7 +764,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1517467582299994451">Para transmitir com um código, ative as definições de sincronização do navegador Chrome</translation>
 <translation id="1521442365706402292">Gerir certificados</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1521933835545997395">Ligado ao telemóvel Android</translation>
 <translation id="1523279371236772909">Visto no mês passado</translation>
 <translation id="1523486680453956384">Ver tarefa</translation>
@@ -1517,6 +1517,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="202918510990975568">Introduza a sua palavra-passe para configurar a segurança e o início de sessão.</translation>
 <translation id="2030455719695904263">Trackpad</translation>
 <translation id="2030803782168502207">Remova a subscrição do dispositivo</translation>
+<translation id="2031487800375552010">As competências permitem-lhe reutilizar facilmente comandos para tarefas repetitivas</translation>
 <translation id="2031914984822377766">Adicione os seus <ph name="LINK_BEGIN" />idiomas de Website<ph name="LINK_END" /> preferidos. O idioma principal da lista será utilizado para as traduções.</translation>
 <translation id="2032837042715970520">PUU necessária</translation>
 <translation id="2034346955588403444">Adicionar outra rede Wi-Fi</translation>
@@ -1644,6 +1645,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2120297377148151361">Atividade e interações</translation>
 <translation id="2120639962942052471">Bloqueou <ph name="PERMISSION" /></translation>
 <translation id="2121825465123208577">Redimensionar</translation>
+<translation id="2122446694240899610">As suas competências são guardadas na sua Conta Google,</translation>
 <translation id="2123766928840368256">Selecionar um ficheiro diferente</translation>
 <translation id="2124930039827422115">{1,plural, =1{Classificação de <ph name="AVERAGE_RATING" /> por um utilizador.}other{Classificação de <ph name="AVERAGE_RATING" /> por # utilizadores.}}</translation>
 <translation id="2125715366913703594">Explorar &amp;extensões</translation>
@@ -3286,6 +3288,7 @@ Quer pará-lo?</translation>
 <translation id="3253448572569133955">Conta desconhecida</translation>
 <translation id="3253746622312821295">Auscultadores com fios</translation>
 <translation id="3254451942070605467">A transferir <ph name="FILE_NAME" />, resta(m) <ph name="PERCENT_REMAINING" />%</translation>
+<translation id="3254506277019076812">Adicione uma competência</translation>
 <translation id="3254516606912442756">A deteção automática do fuso horário está desativada.</translation>
 <translation id="3255747772218936245">Instalar atualização</translation>
 <translation id="3257733480216378006">Permitir <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />?</translation>
@@ -3588,7 +3591,6 @@ Quer pará-lo?</translation>
 <translation id="3473241910002674503">Navegue para a página inicial, para trás e mude de apps através de botões no modo de tablet.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Utilize 99 letras ou menos para novas palavras.</translation>
-<translation id="3474330892505468100">Google Beam com Meet</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Poupe uma quantidade moderada de memória. Os separadores ficam inativos após um período mais longo.</translation>
 <translation id="347785443197175480">Continuar a permitir que <ph name="HOST" /> aceda à sua câmara e microfone</translation>
@@ -4165,7 +4167,6 @@ Quer pará-lo?</translation>
 <translation id="3841964634449506551">A palavra-passe é inválida.</translation>
 <translation id="3842552989725514455">Tipo de letra Serif</translation>
 <translation id="3843464315703645664">Na lista de autorizações internamente</translation>
-<translation id="3844888638014364087">Emoji inserido</translation>
 <translation id="3846116211488856547">Obtenha ferramentas para programar Websites, aplicações para Android e muito mais. A instalação do Linux vai transferir <ph name="DOWNLOAD_SIZE" /> de dados.</translation>
 <translation id="3847319713229060696">Ajudar a melhorar a segurança na Web para todos</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -4924,6 +4925,7 @@ Quer pará-lo?</translation>
 <translation id="4385146930797718821">Captura de ecrã copiada para a área de transferência</translation>
 <translation id="4385905942116811558">Pesquisar dispositivos Bluetooth e USB</translation>
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{Esta extensão foi desativada porque já não é suportada}other{Estas extensões foram desativadas porque já não são suportadas}}</translation>
+<translation id="4386435410933281983">Não foi possível guardar. Tente novamente</translation>
 <translation id="4386604394450371010">vista geral</translation>
 <translation id="4387890294700445764">Palavras-passe comprometidas</translation>
 <translation id="4388650384344483842">Use, pelo menos, 8 carateres</translation>
@@ -5031,7 +5033,6 @@ Quer pará-lo?</translation>
 <translation id="4453430595102511050">Toque no sensor de impressões digitais no canto superior direito do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Procurar no <ph name="SEARCH_ENGINE_NAME" /> ou introduzir um URL</translation>
 <translation id="4457472090507035117">Selecionar voz atual:</translation>
-<translation id="4459169140545916303">Ativo há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dias</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Adicionar idiomas à opção Nunca disponibilizar tradução</translation>
 <translation id="4462159676511157176">Servidores de nome personalizado</translation>
@@ -5786,6 +5787,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4990673372047946816">Nenhuma câmara disponível</translation>
 <translation id="4991420928586866460">Tratar as teclas da linha superior como teclas de função</translation>
 <translation id="4991873517942703737">Faça perguntas acerca deste documento</translation>
+<translation id="4992066212339426712">Reativar o som</translation>
 <translation id="4992443049233195791">Definições de ficheiros do Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">O administrador limitou os métodos de introdução disponíveis.</translation>
@@ -5819,6 +5821,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5018207570537526145">Abrir o Website da extensão</translation>
 <translation id="5019487038187875030">Veja os certificados importados do MacOS</translation>
 <translation id="5020008942039547742">Escolher uma janela diferente</translation>
+<translation id="5020146655450187658">Está offline. Verifique a sua ligação à Internet para gerir os sites em que o Gemini pode iniciar sessão por si.</translation>
 <translation id="5020651427400641814">Ativar o registo de voz</translation>
 <translation id="5021500396464456616">Contacte a pessoa que enviou este link</translation>
 <translation id="5021750053540820849">Ainda por atualizar</translation>
@@ -6241,6 +6244,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
 <translation id="5315738755890845852">Chaveta adicional: <ph name="ERROR_LINE" />.</translation>
 <translation id="5317780077021120954">Guardar</translation>
+<translation id="5317781812114905957">Instruções</translation>
 <translation id="5319712128756744240">Sincronizar novo dispositivo</translation>
 <translation id="5320135788267874712">Nome do dispositivo novo</translation>
 <translation id="532247166573571973">O servidor pode estar inacessível. Tente mais tarde.</translation>
@@ -6767,7 +6771,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5701212929149679556">Roaming de rede móvel</translation>
 <translation id="5701786609538182967">Outras apps estão definidas para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que as apps <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> e mais 1 app abram links suportados.</translation>
 <translation id="5702161882524398150">Pergunte sobre o separador anterior</translation>
-<translation id="5702749864074810610">Sugestão ignorada</translation>
 <translation id="5703716265115423771">diminuir o volume</translation>
 <translation id="5703998022096520811">Proteção proativa em tempo real através do envio de mais informações para a Navegação Segura do Google</translation>
 <translation id="5704875434923668958">A sincronizar com…</translation>
@@ -6991,6 +6994,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5862109781435984885">Mostrar ferramentas da caneta stylus na prateleira</translation>
 <translation id="5862319196656206789">Configurar dispositivos ligados</translation>
 <translation id="5862731021271217234">Para obter os separadores dos seus outros dispositivos, ative a sincronização.</translation>
+<translation id="5863169562287940080">Escolha um ícone</translation>
 <translation id="5863195274347579748">Os acessórios externos podem conseguir aceder ou partilhar dados pessoais.</translation>
 <translation id="5863263400083022538">Serviços do sistema</translation>
 <translation id="5863445608433396414">Ativar funcionalidades de depuração</translation>
@@ -7212,6 +7216,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6016972670657536680">Selecione o idioma e o botão do teclado. Atualmente, o idioma selecionado é o <ph name="LANGUAGE" />.</translation>
 <translation id="6017318029492906697">Não autorizado a usar as informações que guardou sobre si</translation>
 <translation id="6017514345406065928">Verde</translation>
+<translation id="6018241313232245125">Melhore com o Gemini</translation>
 <translation id="6019169947004469866">Recortar</translation>
 <translation id="6019851026059441029">Excelente – HD</translation>
 <translation id="6020431688553761150">O servidor não lhe deu autorização para aceder a este recurso.</translation>
@@ -7571,7 +7576,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6270309713620950855">Desativar som da chamada de atenção</translation>
 <translation id="6270391203985052864">Os sites podem pedir para enviar notificações.</translation>
 <translation id="6270770586500173387">Enviar <ph name="BEGIN_LINK1" />informações do sistema e da aplicação<ph name="END_LINK1" />, bem como <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /></translation>
-<translation id="6271348838875430303">correção anulada</translation>
 <translation id="6271824294945464304">A partilhar a palavra-passe</translation>
 <translation id="6273677812470008672">Qualidade</translation>
 <translation id="6274089201566806618">A ligar a <ph name="HOST_DEVICE_NAME" /></translation>
@@ -7671,6 +7675,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6347010704471250799">Mostrar notificação</translation>
 <translation id="634792071306410644">Enquanto não se tornar visível, ninguém pode partilhar consigo</translation>
 <translation id="6348252528297699679">Pode desativar a localização em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6348655410494610085">Use a sua Conta Google ou crie uma nova</translation>
 <translation id="6348805481186204412">Armazenamento offline</translation>
 <translation id="6349101878882523185">Instale a aplicação <ph name="APP_NAME" /></translation>
 <translation id="6350821834561350243">Descreva claramente o problema e os passos para recriá-lo (se possível)</translation>
@@ -9946,6 +9951,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
 <translation id="7942349550061667556">Vermelho</translation>
+<translation id="794250392403348719">Exemplo: simplifica este conceito para uma criança de 8 anos. Usa uma linguagem simples e uma analogia que a criança compreenda. Mantém a explicação total concisa, com menos de 150 palavras.</translation>
 <translation id="7942846369224063421">Renderizador da IU pré-carregado</translation>
 <translation id="7943271960579497371">Aplicações instaladas</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
@@ -10541,7 +10547,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8339288417038613756">Tamanho da visualização e do texto</translation>
 <translation id="833986336429795709">Para abrir este link, escolher uma aplicação</translation>
 <translation id="8340547030807793004">Mais ações para <ph name="DEVICE" /></translation>
-<translation id="8341693734243413517">Atualizador do Chrome</translation>
 <translation id="8341804784147620576">Mostrar atalhos de pesquisa</translation>
 <translation id="8342221978608739536">Não tentei</translation>
 <translation id="8342387517402567689">O Modo de navegação anónima não é compatível com instalações de apps Web</translation>
@@ -10787,6 +10792,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8518809011298357036">Fechar vista superior</translation>
 <translation id="8518942514525208851">Ocultar linguagem obscena</translation>
 <translation id="8520238089740349550">Falha – Transferência local bloqueada</translation>
+<translation id="8520408093016204772">Armazene as suas palavras-passe, marcadores e definições</translation>
 <translation id="8523493869875972733">Manter alterações</translation>
 <translation id="8523849605371521713">Adicionada pela política</translation>
 <translation id="8524594273111932386">pesquisa + seta para baixo</translation>
@@ -11481,7 +11487,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8983018820925880511">Este novo perfil vai ser gerido pelo domínio <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pode editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Estará visível para todos durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">Ativo há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dia</translation>
 <translation id="8985561265504464578">Limite de deteção</translation>
 <translation id="8985661493893822002">Ligue-se à Internet para iniciar sessão no <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">Ficheiro inseguro transferido</translation>
@@ -11520,6 +11525,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9003647077635673607">Permitir em todos os Sites</translation>
 <translation id="9005774573776346118">Para aceder às suas palavras-passe, marcadores e muito mais em todos os seus dispositivos, inicie sessão como <ph name="EMAIL" /></translation>
 <translation id="9006511997799670136">A sua organização</translation>
+<translation id="900733896273558337">Edite a competência</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> quer abrir este link numa app.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9008201858626224558">Botão anterior da página de detalhes <ph name="SUBPAGE_TITLE" /></translation>

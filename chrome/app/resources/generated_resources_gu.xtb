@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">નોડ ટીકાટિપ્પણીની મુખ્ય ફાઇલો ડાઉનલોડ કરી શકતા નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" />નો હંમેશાં અનુવાદ કરો</translation>
 <translation id="1104098698795583187">તમે તરત જ આ ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
-<translation id="1105934302947321130">Zoom સાથે Google Beam</translation>
 <translation id="1106270460549661906">Gemini સાથે શેર કરવાનું રદ કરો</translation>
 <translation id="1106350001632362876">મર્યાદા વધારો</translation>
 <translation id="110850812463801904">OneDrive સાથે મેન્યુઅલી કનેક્ટ કરો</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">તમારા બાળકનો પિન અપડેટ કરવામાં આવ્યો છે</translation>
 <translation id="1133418583142946603">વર્તમાન ટૅબ ઉમેરો</translation>
 <translation id="1133751489735776037">માઉસ પર ત્રણ વાર ક્લિક કરો</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_COUNT" />માંથી <ph name="EMOJI_INDEX" />.</translation>
 <translation id="1136712381129578788">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો હતો એટલા માટે સુરક્ષા કોડ લૉક કરેલો છે. તે અનલૉક કરવા માટે તેને કાઢી નાખો અને ફરી શામેલ કરો.</translation>
 <translation id="1137589305610962734">અસ્થાયી ડેટા</translation>
 <translation id="1137673463384776352"><ph name="APP" />માં લિંક ખોલો</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">તમારા ફોનને કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="1157952955648710254">Google Searchની બાજુની પૅનલ બંધ કરો</translation>
 <translation id="1158080958325422608">અપરકેસ કરો</translation>
+<translation id="1158134713295836892">Gemini in Chrome</translation>
 <translation id="1159879754517035595">એક્સ્ટેન્શનના સેટિંગ મેનેજ કરો</translation>
 <translation id="1160800016654917722">વિન્ડોને નીચેની તરફ અને ડાબી બાજુ ખસેડવામાં આવી</translation>
 <translation id="1161190590171867633">તુલનાના ટેબલ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે</translation>
@@ -329,6 +328,7 @@
 <translation id="1211769675100312947">શૉર્ટકટ તમારા દ્વારા પસંદ કરવામાં આવે છે</translation>
 <translation id="1215411991991485844">નવી બૅકગ્રાઉન્ડ ઍપ ઉમેરી છે</translation>
 <translation id="1216542092748365687">ફિંગરપ્રિન્ટ કાઢી નાખો</translation>
+<translation id="1216628023580643945">તમારા કૌશલ્યને કોઈ નામ આપો</translation>
 <translation id="1216891999012841486">અપડેટ સંબંધિત બધી ભૂલો સુધારવા વિશે વધુ જાણો</translation>
 <translation id="1217114730239853757">શું તમે ChromeOS Flex માટેનું બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો? જો હા હોય, તો સ્પેસ બાર દબાવો.</translation>
 <translation id="1217117837721346030">શંકાસ્પદ ફાઇલ ડાઉનલોડ કરો</translation>
@@ -442,6 +442,7 @@
 <translation id="1285815028662278915">તમારો મોબાઇલ ડેટા કદાચ હૉટસ્પૉટને સપોર્ટ આપી શકશે નહીં. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="1286901453440314450">અવિશ્વસનીય સર્ટિફિકેટ</translation>
 <translation id="1288037062697528143">સૂર્યાસ્ત વખતે રાત્રિ પ્રકાશ ઑટોમૅટિક રીતે ચાલુ થશે</translation>
+<translation id="1288235441231062220"><ph name="MAX_CHARS" /> અક્ષરની મર્યાદાએ પહોંચી ગયા છો</translation>
 <translation id="1288300545283011870">વાણીના ઇનપુટ નિયંત્રણોનું વિવરણ</translation>
 <translation id="1289619947962767206">આ વિકલ્પને હવેથી સપોર્ટ કરવામાં આવતો નથી. કોઈ ટૅબ પ્રસ્તુત કરવા માટે, <ph name="GOOGLE_MEET" />નો ઉપયોગ કરો.</translation>
 <translation id="1291057703584594733">પહેલેથી અસાઇન કરેલો કોઈ સંકેત પસંદ કરવાથી તેને તેની મૂળ ક્રિયામાંથી કાઢી નાખવામાં આવશે.</translation>
@@ -761,7 +762,6 @@
 <translation id="1517467582299994451">કોઈ કોડ વડે કાસ્ટ કરવા માટે, Chrome બ્રાઉઝરના સિંક સેટિંગ ચાલુ કરો</translation>
 <translation id="1521442365706402292">પ્રમાણપત્રો મેનેજ કરો</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="1521933835545997395">Android ફોન સાથે કનેક્ટેડ છે</translation>
 <translation id="1523279371236772909">ગયા મહિને જોઈ હતી</translation>
 <translation id="1523486680453956384">કાર્ય જુઓ</translation>
@@ -1515,6 +1515,7 @@
 <translation id="202918510990975568">સુરક્ષા ગોઠવવા અને સાઇન ઇન કરવા માટે તમારો પાસવર્ડ દાખલ કરો</translation>
 <translation id="2030455719695904263">ટ્રૅકપૅડ</translation>
 <translation id="2030803782168502207">ડિવાઇસમાંથી સબ્સ્ક્રિપ્શન કાઢી નાખો</translation>
+<translation id="2031487800375552010">કૌશલ્યો તમને રિપીટ થતા કાર્યો માટે પ્રૉમ્પ્ટનો સરળતાથી ફરીથી ઉપયોગ કરવાની મંજૂરી આપે છે</translation>
 <translation id="2031914984822377766">તમારી પસંદગીની <ph name="LINK_BEGIN" />વેબસાઇટની ભાષાઓ<ph name="LINK_END" /> ઉમેરો. આ સૂચિમાંની સૌથી ઉપરની ભાષાનો ઉપયોગ અનુવાદ માટે કરવામાં આવશે.</translation>
 <translation id="2032837042715970520">OTP દાખલ કરવો જરૂરી છ</translation>
 <translation id="2034346955588403444">અન્ય WiFi નેટવર્ક ઉમેરો</translation>
@@ -1642,6 +1643,7 @@
 <translation id="2120297377148151361">પ્રવૃત્તિ અને ક્રિયાપ્રતિક્રિયાઓ</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" />ને બ્લૉક કરેલી છે</translation>
 <translation id="2121825465123208577">આકાર બદલો</translation>
+<translation id="2122446694240899610">તમારા કૌશલ્યો તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે,</translation>
 <translation id="2123766928840368256">કોઈ અલગ ફાઇલ પસંદ કરો</translation>
 <translation id="2124930039827422115">{1,plural, =1{એક વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}one{# વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}other{# વપરાશકર્તાએ <ph name="AVERAGE_RATING" /> રેટ કરેલું.}}</translation>
 <translation id="2125715366913703594">&amp;Extensions વિશે શોધખોળ કરો</translation>
@@ -3284,6 +3286,7 @@
 <translation id="3253448572569133955">અજાણ એકાઉન્ટ</translation>
 <translation id="3253746622312821295">વાયર્ડ હૅડફોન</translation>
 <translation id="3254451942070605467"><ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ, <ph name="PERCENT_REMAINING" />% બાકી</translation>
+<translation id="3254506277019076812">કૌશલ્ય ઉમેરો</translation>
 <translation id="3254516606912442756">ઑટોમૅટિક રીતે સમય ઝોન શોધવાનું બંધ છે</translation>
 <translation id="3255747772218936245">અપડેટ ઇન્સ્ટૉલ કરો</translation>
 <translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" />ને મંજૂરી આપીએ?</translation>
@@ -3586,7 +3589,6 @@
 <translation id="3473241910002674503">હોમ અથવા પાછળ જવા નૅવિગેટ કરો તેમજ ટૅબ્લેટ મોડમાં ઍપને બટનથી સ્વિચ કરો.</translation>
 <translation id="3473479545200714844">સ્ક્રીન બૃહદદર્શક</translation>
 <translation id="3474218480460386727">નવા શબ્દો માટે 99 કે તેથી ઓછા અક્ષરોનો ઉપયોગ કરો</translation>
-<translation id="3474330892505468100">Meet સાથે Google Beam</translation>
 <translation id="3474624961160222204"><ph name="NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="3477772589943384839">મધ્યમ પ્રમાણમાં મેમરી બચત મેળવો. વધુ લાંબા સમયગાળા બાદ તમારા ટૅબ નિષ્ક્રિય બની જાય છે.</translation>
 <translation id="347785443197175480">તમારા કૅમેરા અને માઇક્રોફોનને ઍક્સેસ કરવા માટે <ph name="HOST" />ને સતત મંજૂરી આપે છે</translation>
@@ -4163,7 +4165,6 @@
 <translation id="3841964634449506551">પાસવર્ડ અમાન્ય</translation>
 <translation id="3842552989725514455">Serif ફૉન્ટ</translation>
 <translation id="3843464315703645664">આંતરિક રીતે વ્હાઇટલિસ્ટેડ</translation>
-<translation id="3844888638014364087">ઇમોજી ઉમેર્યું</translation>
 <translation id="3846116211488856547">વેબસાઇટ, Android ઍપ અને બીજા ઘણા માટે વિકાસના સાધનો મેળવો. Linux ઇન્સ્ટૉલ કરવાથી <ph name="DOWNLOAD_SIZE" /> ડેટા ડાઉનલોડ થશે.</translation>
 <translation id="3847319713229060696">વેબ પરની દરેક વ્યક્તિ માટે સુરક્ષાને બહેતર બનાવવા સહાય કરો</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -4922,6 +4923,7 @@
 <translation id="4385146930797718821">ક્લિપબોર્ડ પર સ્ક્રીનશૉટ કૉપિ કર્યો</translation>
 <translation id="4385905942116811558">બ્લૂટૂથ અને USB ડિવાઇસ શોધી રહ્યાં છે</translation>
 <translation id="4385985255515673508">{NUM_EXTENSIONS,plural, =1{આ એક્સ્ટેન્શન બંધ કરવામાં આવ્યું હતું કારણ કે તે હવેથી સપોર્ટેડ નથી}one{આ એક્સ્ટેન્શન બંધ કરવામાં આવ્યું હતું કારણ કે તે હવેથી સપોર્ટેડ નથી}other{આ એક્સ્ટેન્શન બંધ કરવામાં આવ્યા હતા કારણ કે તે હવેથી સપોર્ટેડ નથી}}</translation>
+<translation id="4386435410933281983">સાચવી શકતા નથી. ફરી પ્રયાસ કરો</translation>
 <translation id="4386604394450371010">ઓવરવ્યૂ</translation>
 <translation id="4387890294700445764">ચેડાં કરાયેલા પાસવર્ડ</translation>
 <translation id="4388650384344483842">ઓછામાં ઓછા 8 અક્ષરનો ઉપયોગ કરો</translation>
@@ -5029,7 +5031,6 @@
 <translation id="4453430595102511050">તમારા કીબોર્ડના સૌથી ઉપરના જમણા ખૂણાના ફિંગરપ્રિન્ટ સેન્સરને ટચ કરો. તમારી ફિંગરપ્રિન્ટનો ડેટા સુરક્ષિત રીતે સ્ટોર કરવામાં આવે છે અને હંમેશાં તમારા <ph name="DEVICE_TYPE" />માં જ રહે છે.</translation>
 <translation id="4453946976636652378"><ph name="SEARCH_ENGINE_NAME" /> શોધો અથવા URL ટાઇપ કરો</translation>
 <translation id="4457472090507035117">વર્તમાન વૉઇસ પસંદ કરો:</translation>
-<translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> દિવસ પહેલાં સક્રિય</translation>
 <translation id="4460014764210899310">અલગ થયેલું ગ્રૂપ</translation>
 <translation id="4461483878391246134">ક્યારેય અનુવાદ ઑફર ન કરવા માટેની ભાષાઓ ઉમેરો</translation>
 <translation id="4462159676511157176">કસ્ટમ નામ સર્વર્સ</translation>
@@ -5784,6 +5785,7 @@
 <translation id="4990673372047946816">કોઈ કૅમેરા ઉપલબ્ધ નથી</translation>
 <translation id="4991420928586866460">શીર્ષ-પંક્તિની કીઝને ફંક્શન કીઝ તરીકે ધ્યાનમાં લો</translation>
 <translation id="4991873517942703737">આ દસ્તાવેજ વિશે પૂછો</translation>
+<translation id="4992066212339426712">અનમ્યૂટ કરો</translation>
 <translation id="4992443049233195791">Microsoft 365 ફાઇલ સેટિંગ</translation>
 <translation id="4992458225095111526">Powerwash ની પુષ્ટિ કરો</translation>
 <translation id="4992473555164495036">તમારા વ્યવસ્થાપકે ઉપલબ્ધ ઇનપુટ પદ્ધતિઓને મર્યાદિત કરેલ છે.</translation>
@@ -5817,6 +5819,7 @@
 <translation id="5018207570537526145">એક્સ્ટેંશન વેબસાઇટ ખોલો</translation>
 <translation id="5019487038187875030">MacOSમાંથી આયાત કરેલા સર્ટિફિકેટ જુઓ</translation>
 <translation id="5020008942039547742">કોઈ અન્ય વિન્ડો પસંદ કરો</translation>
+<translation id="5020146655450187658">તમે ઑફલાઇન છો. Gemini તમને સાઇન ઇન કરાવી શકે તેવી સાઇટ મેનેજ કરવા માટે તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો.</translation>
 <translation id="5020651427400641814">સ્પીચ લૉગ ઇન ચાલુ કરો</translation>
 <translation id="5021500396464456616">આ લિંક મોકલનારી વ્યક્તિનો સંપર્ક કરો</translation>
 <translation id="5021750053540820849">હજુ સુધી અપડેટ થયું નથી</translation>
@@ -6239,6 +6242,7 @@
 <translation id="5313967007315987356">સાઈટ ઉમેરો</translation>
 <translation id="5315738755890845852">અતિરિક્ત વાંકળિયો કૌંસ: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">સાચવો</translation>
+<translation id="5317781812114905957">સૂચનાઓ</translation>
 <translation id="5319712128756744240">નવા ડિવાઇસ સાથે જોડાણ કરો</translation>
 <translation id="5320135788267874712">ડિવાઇસનું નવું નામ</translation>
 <translation id="532247166573571973">સર્વર પહોંચની બહાર હોઇ શકે છે. પછીથી ફરી પ્રયાસ કરો.</translation>
@@ -6765,7 +6769,6 @@
 <translation id="5701212929149679556">સેલ્યુલર રોમિંગ</translation>
 <translation id="5701786609538182967"><ph name="APP_NAME" />ની જેમજ અન્ય ઍપ પણ આ બધી લિંક ખોલવા માટે સેટ કરવામાં આવી છે. આમ કરવાથી <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> અને 1 અન્ય ઍપ સપોર્ટેડ લિંક ખોલી શકશે નહીં.</translation>
 <translation id="5702161882524398150">પાછલા ટૅબ વિશે પૂછો</translation>
-<translation id="5702749864074810610">સૂચન છોડી દીધું</translation>
 <translation id="5703716265115423771">વૉલ્યૂમ ઘટાડો</translation>
 <translation id="5703998022096520811">Google Safe Browsingને વધુ માહિતી મોકલીને રિઅલ-ટાઇમ, પ્રોઍક્ટિવ સંરક્ષણ</translation>
 <translation id="5704875434923668958">આની સાથે સિંક કરી રહ્યાં છીએ</translation>
@@ -6989,6 +6992,7 @@
 <translation id="5862109781435984885">શેલ્ફમાં સ્ટાઇલસનાં સાધનો બતાવો</translation>
 <translation id="5862319196656206789">કનેક્ટ કરેલાં ડિવાઇસ સેટઅપ કરો</translation>
 <translation id="5862731021271217234">તમારા અન્ય ઉપકરણો પરથી તમારા ટૅબ મેળવવા માટે, સિંક કરવાનું ચાલુ કરો</translation>
+<translation id="5863169562287940080">આઇકન પસંદ કરો</translation>
 <translation id="5863195274347579748">બાહ્ય ઍક્સેસરી વ્યક્તિગત ડેટાને ઍક્સેસ અથવા શેર કરી શકે એમ બને.</translation>
 <translation id="5863263400083022538">સિસ્ટમ સેવાઓ</translation>
 <translation id="5863445608433396414">ડિબગીંગ સુવિધાઓ ચાલુ કરો</translation>
@@ -7211,6 +7215,7 @@ USB ડિવાઇસ</translation>
 <translation id="6016972670657536680">ભાષા અને કીબોર્ડ બટન પસંદ કરો. હાલમાં પસંદ કરેલ ભાષા <ph name="LANGUAGE" /> છે.</translation>
 <translation id="6017318029492906697">તેમણે તમારા વિશે સાચવેલી માહિતીનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="6017514345406065928">લીલો</translation>
+<translation id="6018241313232245125">Gemini વડે બહેતર બનાવો</translation>
 <translation id="6019169947004469866">ક્રોપ</translation>
 <translation id="6019851026059441029">શ્રેષ્ઠ - HD</translation>
 <translation id="6020431688553761150">સર્વરે આ સાધનને ઍક્સેસ કરવા માટે તમને અધિકૃત કર્યા નથી.</translation>
@@ -7570,7 +7575,6 @@ USB ડિવાઇસ</translation>
 <translation id="6270309713620950855">સંકેત મ્યૂટ કરો</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />સિસ્ટમ અને ઍપ્લિકેશન માહિતી<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />મેટ્રિક્સ<ph name="END_LINK2" /> મોકલો</translation>
-<translation id="6271348838875430303">સુધારાનો છેલ્લો ફેરફાર રદ કર્યો</translation>
 <translation id="6271824294945464304">પાસવર્ડ શેર કરી રહ્યાં છીએ</translation>
 <translation id="6273677812470008672">ગુણવત્તા</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
@@ -7670,6 +7674,7 @@ USB ડિવાઇસ</translation>
 <translation id="6347010704471250799">નોટિફિકેશન બતાવો</translation>
 <translation id="634792071306410644">તમે પોતાને દૃશ્યમાન ન કરો, ત્યાં સુધી કોઈ પણ તમારી સાથે શેર કરી શકશે નહીં</translation>
 <translation id="6348252528297699679">તમે સેટિંગ &gt; પ્રાઇવસી અને સુરક્ષા &gt; પ્રાઇવસીને લગતા નિયંત્રણો &gt; લોકેશન ઍક્સેસમાં જઈને લોકેશન બંધ કરી શકો છો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
+<translation id="6348655410494610085">તમારા Google એકાઉન્ટનો ઉપયોગ કરો અથવા કોઈ નવું એકાઉન્ટ બનાવો</translation>
 <translation id="6348805481186204412">ઑફલાઇન સ્ટોરેજ</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> ઇન્સ્ટૉલ કરો</translation>
 <translation id="6350821834561350243">(શક્ય હોય તો) સમસ્યાનું સ્પષ્ટ વર્ણન તથા સમસ્યાની પુન:પ્રસ્તુતિ કરવા માટેના પગલાં આપો</translation>
@@ -9947,6 +9952,7 @@ USB ડિવાઇસ</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="7941179291434537290">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા:</translation>
 <translation id="7942349550061667556">લાલ</translation>
+<translation id="794250392403348719">ઉદાહરણ: 8 વર્ષના બાળક માટે આ કલ્પનાને સરળ બનાવો. તેઓ સમજી શકે એવી સરળ ભાષા અને સામ્યતાનો ઉપયોગ કરો. સંપૂર્ણ સ્પષ્ટીકરણ 150થી ઓછા શબ્દોમાં સંક્ષિપ્ત રાખો.</translation>
 <translation id="7942846369224063421">પહેલેથી લોડ કરેલા UI રેન્ડરર</translation>
 <translation id="7943271960579497371">ઇન્સ્ટૉલ કરેલી ઍપ્લિકેશનો</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
@@ -10537,7 +10543,6 @@ USB ડિવાઇસ</translation>
 <translation id="8339288417038613756">ડિસ્પ્લે અને ટેક્સ્ટનું કદ</translation>
 <translation id="833986336429795709">આ લિંક ખોલવા માટે, એક ઍપ પસંદ કરો</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> માટે વધુ ક્રિયાઓ</translation>
-<translation id="8341693734243413517">Chrome અપડેટર</translation>
 <translation id="8341804784147620576">શોધ માટે શૉર્ટકટ બતાવો</translation>
 <translation id="8342221978608739536">પ્રયાસ કર્યો ન હતો</translation>
 <translation id="8342387517402567689">વેબ ઍપ ઇન્સ્ટૉલેશનને છૂપા મોડમાં સપોર્ટ કરવામાં આવતો નથી</translation>
@@ -10783,6 +10788,7 @@ USB ડિવાઇસ</translation>
 <translation id="8518809011298357036">ઉપરની બાજુનો વ્યૂ બંધ કરો</translation>
 <translation id="8518942514525208851">અપશબ્દો છુપાવો</translation>
 <translation id="8520238089740349550">નિષ્ફળ રહ્યાં - સ્થાનિક સૉર્સમાંથી ડાઉનલોડ કરવાનું બ્લૉક કરવામાં આવ્યું</translation>
+<translation id="8520408093016204772">તમારા પાસવર્ડ, બુકમાર્ક અને સેટિંગ સ્ટોર કરો</translation>
 <translation id="8523493869875972733">ફેરફારો રાખો</translation>
 <translation id="8523849605371521713">પૉલિસી દ્વારા ઉમેરાયેલું</translation>
 <translation id="8524594273111932386">search + નીચેની ઍરો કી</translation>
@@ -11478,7 +11484,6 @@ USB ડિવાઇસ</translation>
 <translation id="8983018820925880511">આ નવી પ્રોફાઇલ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવશે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" />માં ફેરફાર કરી શકે છે</translation>
 <translation id="8984694057134206124"><ph name="MINUTES" /> મિનિટ માટે દરેક વ્યક્તિ તમારું ડિવાઇસ જોઈ શકશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> દિવસ પહેલાં સક્રિય</translation>
 <translation id="8985561265504464578">ભાળ મેળવવાની મર્યાદા</translation>
 <translation id="8985661493893822002">તમારી <ph name="DEVICE_TYPE" />માં સાઇન ઇન કરવા માટે, કૃપા કરીને ઇન્ટરનેટથી કનેક્ટ કરો.</translation>
 <translation id="8985661571449404298">અસુરક્ષિત ફાઇલ ડાઉનલોડ કરી</translation>
@@ -11517,6 +11522,7 @@ USB ડિવાઇસ</translation>
 <translation id="9003647077635673607">તમામ વેબસાઇટ્સ પર મંજૂરી આપો</translation>
 <translation id="9005774573776346118">તમારા બધા ડિવાઇસ પર તમારા પાસવર્ડ, બુકમાર્ક અને બીજું ઘણું મેળવવા માટે <ph name="EMAIL" /> તરીકે સાઇન ઇન કરો</translation>
 <translation id="9006511997799670136">તમારી સંસ્થા</translation>
+<translation id="900733896273558337">કૌશલ્યમાં ફેરફાર કરો</translation>
 <translation id="9008133509889712539"><ph name="ORIGIN" /> આ લિંકને કોઈ ઍપમાં ખોલવા માગે છે.</translation>
 <translation id="9008201768610948239">અવગણો</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" />ની વિગતો ધરાવતા પેજનું પાછળ જવા માટેનું બટન</translation>

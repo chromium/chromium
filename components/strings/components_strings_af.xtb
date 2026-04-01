@@ -1177,6 +1177,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2837891525090413132">Kan vra om jou sleutelbord te sluit en te gebruik</translation>
 <translation id="2839032553903800133">Kennisgewings is geblokkeer</translation>
 <translation id="2839501879576190149">Vals werf voor</translation>
+<translation id="2840680829170913626">Inhoud op die betaalpuntbladsy word met Google gedeel om hierdie opsies te bied. Betaalpakkette is onderworpe aan geskiktheid. Gaan na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> toe om opsies om te later te betaal in outovul te versteek.</translation>
 <translation id="2843623755398178332">Wil jy jou gedeelde oortjie rollees en zoem?</translation>
 <translation id="2851291081585704741">Jy is vanlyn</translation>
 <translation id="2854163610915391726">Bestuur watter Chrome-inligting jy in jou Google-rekening stoor</translation>
@@ -1388,6 +1389,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3162070126914310576">Hierdie toestel kan nie op die oomblik ingeskryf word nie omdat jou organisasie-eenheid hul aanvanklike inskrywinglimiet bereik het. Kontak jou administrateur vir bystand.</translation>
 <translation id="3162559335345991374">Die Wi-Fi wat jy gebruik, kan vereis dat jy sy aanmeldbladsy besoek.</translation>
 <translation id="316638481603975524">Kan vra om webapps te installeer</translation>
+<translation id="3166788340998560642">Chrome sal aanbied om dit in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> te stoor die volgende keer wat jy dit gebruik.</translation>
 <translation id="3168744840365648658">Radiotoerusting</translation>
 <translation id="3168938241115725594">Klassieke voertuie</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2416,6 +2418,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Opspringer is geblokkeer}other{# opspringers is geblokkeer}}</translation>
 <translation id="4780320432697076749">Fotosagteware</translation>
 <translation id="4780366598804516005">Posbus 1</translation>
+<translation id="4785273477715803444">Filtreer loglêers</translation>
 <translation id="4785376858512657294">Bestuur Google-rekening</translation>
 <translation id="4785689107224900852">Skakel oor na hierdie oortjie toe</translation>
 <translation id="4785998536350006000">Soek tans na “<ph name="SEARCH_QUERY" />”</translation>
@@ -3058,6 +3061,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5759751709240058861">Gebruik en beweeg jou kamera</translation>
 <translation id="5762131895127128324">Rybewyse · Identiteitskaarte · Paspoorte</translation>
 <translation id="5763042198335101085">Voer 'n geldige e-posadres in</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktief vandag}=1{1 dag gelede aktief}other{# dae gelede aktief}}</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongformaat.</translation>
 <translation id="5764920692828389743">Stuur na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Kies 'n adres om afleweringmetodes en -vereistes te sien</translation>

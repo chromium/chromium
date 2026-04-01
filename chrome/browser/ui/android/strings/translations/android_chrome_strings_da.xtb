@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Tilladelserne er blevet fjernet fra nogle websites for at beskytte dig</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1384704387250346179">Oversæt billedet med Google Lens <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dage siden</translation>
 <translation id="1390418506739274310">Du kan muligvis se historikken fra andre apps, der åbner links i Chrome. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Felt i bunden med prisinfo åbnet i fuld højde</translation>
 <translation id="1397811292916898096">Søg med <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1513352483775369820">Bogmærker og webhistorik</translation>
 <translation id="1515901671075971249">Genveje til fanenavigation</translation>
 <translation id="1516966594427080024">Åbn et nyt vindue i inkognitotilstand</translation>
-<translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny version af Chrome er tilgængelig</translation>
 <translation id="1540012742443808215">Adresselinjen vises i øjeblikket øverst</translation>
 <translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
@@ -222,6 +220,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="1925021887439448749">Angiv tilpasset webadresse</translation>
 <translation id="1928618076168182477">Visuel visning anvendes</translation>
 <translation id="1928696683969751773">Opdateringer</translation>
+<translation id="1934545916152269346">Anvendt for nylig</translation>
 <translation id="1943398124995840148">Dine åbne faner har fået et opdateret design i XR</translation>
 <translation id="1944535645109964458">Ingen tilgængelige adgangsnøgler</translation>
 <translation id="1957557050935255529">Indlæser PDF-fil…</translation>
@@ -1259,6 +1258,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6251449557817521191">Se din Chrome-historik her</translation>
 <translation id="6254139308321626268">Du får vist en PDF-fil</translation>
 <translation id="6255809143828972562">Med værktøjer fra Chrome kan du søge sikkert på nettet og bevare styringen</translation>
+<translation id="6260260490042862943">Websiteindstillinger</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
 <translation id="6264485186158353794">Tilbage i sikkerhed</translation>
 <translation id="6267106249090587268">Notifikationer <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser på grund af spam eller vildledende indhold</translation>
@@ -1727,7 +1727,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7968982339740310781">Se oplysninger</translation>
 <translation id="7969391000881506217">Udløbsdato*</translation>
-<translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Advarer dig, hvis du bruger en adgangskode, der er blevet kompromitteret som følge af et brud på datasikkerheden.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tilladelser, fordi du ikke har besøgt websitet for nylig</translation>

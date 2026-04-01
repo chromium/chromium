@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Para ajudar a manter a sua segurança, foram removidas as autorizações de alguns sites</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
 <translation id="1384704387250346179">Traduzir imagem com Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Ativo há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="1390418506739274310">Pode ver o histórico de outras apps que abrem links no Chrome. A sua Conta Google pode ter outras formas do histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Secção inferior das estatísticas de preços aberta à altura total</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="1513352483775369820">Marcadores e histórico da Web</translation>
 <translation id="1515901671075971249">Atalhos de navegação de separadores</translation>
 <translation id="1516966594427080024">Abra uma nova janela no Modo de navegação anónima</translation>
-<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="153446405401665083">Está disponível uma nova versão do Chrome</translation>
 <translation id="1540012742443808215">A barra de endereço está atualmente na parte superior</translation>
 <translation id="1544084554881119930">Os métodos de pagamento e as moradas não são encriptados. O histórico de navegação do Chrome não é sincronizado.
@@ -1260,6 +1258,7 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="6251449557817521191">Veja o Histórico do Chrome aqui</translation>
 <translation id="6254139308321626268">Está a ver um ficheiro PDF</translation>
 <translation id="6255809143828972562">Com as ferramentas do Chrome, pode navegar em segurança e manter o controlo</translation>
+<translation id="6260260490042862943">Controlos do site</translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
 <translation id="6264485186158353794">Voltar para segurança</translation>
 <translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu estas autorizações devido a spam ou conteúdos enganosos</translation>
@@ -1728,7 +1727,6 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7968982339740310781">Ver detalhes</translation>
 <translation id="7969391000881506217">Data de validade*</translation>
-<translation id="7971136598759319605">Ativo há 1 dia</translation>
 <translation id="7975379999046275268">Pré-visualizar página <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Envia-lhe um aviso se usar uma palavra-passe que tenha sido comprometida numa violação de dados.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> O Chrome removeu estas autorizações porque não visitou recentemente o site</translation>

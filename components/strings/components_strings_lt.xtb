@@ -1177,6 +1177,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2837891525090413132">Gali paprašyti užrakinti ir naudoti klaviatūrą</translation>
 <translation id="2839032553903800133">Pranešimai užblokuoti</translation>
 <translation id="2839501879576190149">Ketinate apsilankyti netikroje svetainėje</translation>
+<translation id="2840680829170913626">Turinys iš atsiskaitymo puslapio bendrinamas su „Google“, kad būtų galima pasiūlyti šias parinktis. Mokėjimo planai priklauso nuo tinkamumo. Jei norite paslėpti mokėjimo vėliau parinktis automatinio pildymo funkcijoje, eikite į <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Slinkti bendrinamu skirtuku ir keisti jo mastelį?</translation>
 <translation id="2851291081585704741">Jūs neprisijungę</translation>
 <translation id="2854163610915391726">Tvarkykite, kokią „Chrome“ informaciją išsaugote „Google“ paskyroje</translation>
@@ -1388,6 +1389,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3162070126914310576">Dabar šio įrenginio negalima užregistruoti, nes jūsų organizacinis vienetas pasiekė pradinį registracijos apribojimą. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
 <translation id="3162559335345991374">Naudojant šį „Wi-Fi“ tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="316638481603975524">Galima prašyti leidimo įdiegti žiniatinklio programas</translation>
+<translation id="3166788340998560642">„Chrome“ pasiūlys išsaugoti ją „<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />“ kitą kartą, kai ją naudosite</translation>
 <translation id="3168744840365648658">Radijo įranga</translation>
 <translation id="3168938241115725594">Klasikinės transporto priemonės</translation>
 <translation id="3169472444629675720">Atradimas</translation>
@@ -3060,6 +3062,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5759751709240058861">Kameros naudojimas ir judinimas</translation>
 <translation id="5762131895127128324">Vairuotojo pažymėjimai · Asmens tapatybės kortelės · Pasai</translation>
 <translation id="5763042198335101085">Įveskite galiojantį el. pašto adresą</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktyvus šiandien}=1{Aktyvus prieš 1 d.}one{Aktyvus prieš # d.}few{Aktyvus prieš # d.}many{Aktyvus prieš # d.}other{Aktyvus prieš # d.}}</translation>
 <translation id="5764725887548570807">Netinkamas šaltinio formatas.</translation>
 <translation id="5764920692828389743">Siųsti: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Jei norite peržiūrėti pristatymo metodus ir reikalavimus, pasirinkite adresą.</translation>

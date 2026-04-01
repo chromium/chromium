@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Zum Schutz deiner Daten wurden einigen Websites Berechtigungen entzogen</translation>
 <translation id="1383876407941801731">Suchen</translation>
 <translation id="1384704387250346179">Bild mit Google Lens übersetzen <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Vor <ph name="LAST_UPDATED" /> Tagen aktiv</translation>
 <translation id="1390418506739274310">Möglicherweise siehst du den Verlauf von anderen Apps, die Links in Chrome öffnen. Unter <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert.</translation>
 <translation id="139752016751285248">Preisinformationen am unteren Rand vollständig geöffnet</translation>
 <translation id="1397811292916898096">Mit <ph name="PRODUCT_NAME" /> suchen</translation>
@@ -136,7 +135,6 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="1513352483775369820">Lesezeichen und Webprotokoll</translation>
 <translation id="1515901671075971249">Tastenkombinationen für die Tab-Navigation</translation>
 <translation id="1516966594427080024">Neues Fenster im Inkognitomodus öffnen</translation>
-<translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="153446405401665083">Neue Chrome-Version verfügbar</translation>
 <translation id="1540012742443808215">Adressleiste derzeit oben</translation>
 <translation id="1544084554881119930">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chrome-Browserverlauf wird nicht synchronisiert.
@@ -1728,7 +1726,6 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7968014550143838305">Zur Leseliste hinzugefügt</translation>
 <translation id="7968982339740310781">Details ansehen</translation>
 <translation id="7969391000881506217">Ablaufdatum*</translation>
-<translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Warnt dich, wenn du ein Passwort verwendest, das bei einer Datenpanne gehackt wurde.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome hat diese Berechtigungen entfernt, weil du die Website in letzter Zeit nicht besucht hast</translation>

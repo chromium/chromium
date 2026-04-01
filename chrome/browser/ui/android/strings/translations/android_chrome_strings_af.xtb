@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Toestemmings is van sommige werwe verwyder om jou veilig te hou</translation>
 <translation id="1383876407941801731">Soek</translation>
 <translation id="1384704387250346179">Vertaal prent met Google Lens <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> dae gelede aktief</translation>
 <translation id="1390418506739274310">Jy kan moontlik die geskiedenis sien van ander apps wat skakels in Chrome oopmaak. Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Prysinsigte se onderste blad het teen volle hoogte oopgemaak</translation>
 <translation id="1397811292916898096">Soek met <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Gaan na <ph name="BEGIN_LINK2" />Google-dienste<ph name="END_LINK2" /> vir meer 
 <translation id="1513352483775369820">Boekmerke en webgeskiedenis</translation>
 <translation id="1515901671075971249">Kortpaaie vir oortjienavigasie</translation>
 <translation id="1516966594427080024">Maak 'n nuwe venster in Incognitomodus oop</translation>
-<translation id="1521774566618522728">Aktief vandag</translation>
 <translation id="153446405401665083">Nuwe weergawe van Chrome is beskikbaar</translation>
 <translation id="1540012742443808215">Adresbalk is tans bo</translation>
 <translation id="1544084554881119930">Betaalmetodes en adresse sal nie geënkripteer word nie. Blaaigeskiedenis van Chrome af sal nie sinkroniseer nie.
@@ -222,6 +220,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="1925021887439448749">Voer gepasmaakte webadres in</translation>
 <translation id="1928618076168182477">Wys tans visuele aansig</translation>
 <translation id="1928696683969751773">Opdaterings</translation>
+<translation id="1934545916152269346">Onlangs gebruik</translation>
 <translation id="1943398124995840148">Jou oop oortjies het nou ’n opgedateerde voorkoms in UR</translation>
 <translation id="1944535645109964458">Geen toegangsleutels beskikbaar nie</translation>
 <translation id="1957557050935255529">Laai tans PDF …</translation>
@@ -1727,7 +1726,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7968014550143838305">By leeslys gevoeg</translation>
 <translation id="7968982339740310781">Bekyk details</translation>
 <translation id="7969391000881506217">Vervaldatum*</translation>
-<translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Waarsku jou as jy ’n wagwoord gebruik wat in ’n dataskending gekompromitteer is.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder, want jy het nie onlangs die werf besoek nie</translation>

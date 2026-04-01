@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Peida valik „Jätka selle vahelehega“</translation>
 <translation id="1520027731907768768">Saate jälgitavate toodete hinnalanguse hoiatusi.</translation>
 <translation id="1521366073263497277">Avage oma vahelehtede ruudustik</translation>
-<translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="1523567067736644845">Avage, et kuvada parool</translation>
 <translation id="1524563461097350801">Ei, tänan</translation>
 <translation id="1531038290222364269">Kuva vahelehed</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse.</translation>
 <translation id="2306265833370324042">Kuva üksuse <ph name="SEARCH_ENGINE_NAME" /> üksikasjad</translation>
 <translation id="2309265394777270359">Sule vaheleht</translation>
+<translation id="2310789833878085574">Salvesta ja täida automaatselt</translation>
 <translation id="2311077293164383652">Sule kinnitatud vaheleht</translation>
 <translation id="2316129865977710310">Ei, aitäh</translation>
 <translation id="2320166752086256636">Peida klaviatuur</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Toote jälgimiseks puudutage valikut Jälgi</translation>
 <translation id="5121618895923301719">Jälgite juba seda toodet. Leht salvestati <ph name="BEGIN_LINK" />mobiili järjehoidjatesse<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Teil on mitmeid parooliprobleeme.</translation>
-<translation id="5127538504377457572">Aktiivne <ph name="DAYS" /> päeva tagasi</translation>
 <translation id="5128788795241319992">Uue menüü avastamine</translation>
 <translation id="5132942445612118989">Teie paroolide, ajaloo ja muude andmete sünkroonimine kõigis seadmetes</translation>
 <translation id="5141363746588976328">Teie vahelehtede hinnalanguste kaardi peitmine</translation>
@@ -1651,6 +1650,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6806550742467879742">Lehe tööriistad</translation>
 <translation id="6807287147325542056">Paroolid muudes rakendustes</translation>
 <translation id="681368974849482173">Üksus on loodud</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Järjehoidja salvestati teie Google'i kontole {email}}other{{count} järjehoidjat salvestati teie Google'i kontole {email}.}}</translation>
 <translation id="6826004672264649705">Jälgite praegu seda toodet. Avage hinnaajaloo vaatamiseks.</translation>
 <translation id="6830728435402077660">Pole turvaline</translation>
@@ -1964,7 +1964,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7952670906562503188">Jätkates kustutate {passkey_count} pääsuvõtit ning loendi saitidest ja rakendustest, mille sisselogimisteabe salvestamise olete keelanud. Saitidel ja rakendustel loodud kontosid ei kustutata.</translation>
 <translation id="7958575506592576831">Lehe turvateave</translation>
 <translation id="7961015016161918242">Mitte kunagi</translation>
-<translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Proovi</translation>
 <translation id="797588153137233716">Menüü → Ajalugu → Sirvimisandmete kustutamine</translation>

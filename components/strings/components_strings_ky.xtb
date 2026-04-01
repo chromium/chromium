@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">Баскычтопту колдонуп жана кулпулоону суранышы мүмкүн</translation>
 <translation id="2839032553903800133">Билдирмелер бөгөттөлдү</translation>
 <translation id="2839501879576190149">Жалган сайтка өткөнү жатасыз</translation>
+<translation id="2840680829170913626">Бул варианттарды сунуштоо үчүн төлөө бетиндеги нерселер Google менен бөлүшүлөт. Төлөм пландары жарамдуулукка жараша жеткиликтүү болот. Автотолтурууда кийинчерээк төлөө варианттарын жашыруу үчүн <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөлүмүнө өтүңүз.</translation>
 <translation id="2843623755398178332">Бөлүшүлгөн өтмөктү сыдырып жана чоңойтуп/кичирейтесизби?</translation>
 <translation id="2851291081585704741">Интернет жок</translation>
 <translation id="2854163610915391726">Chrome кайсы маалыматты Google аккаунтуңузда сактай турганын тескеңиз.</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">Бул түзмөктү азыр каттоого болбойт, анткени уюмуңуз баштапкы каттоо чегине жетти. Жардам алуу үчүн администраторуңузга кайрылыңыз.</translation>
 <translation id="3162559335345991374">Сиз колдонуп жаткан Wi-Fi башкы кирүү барагына өтүшүңүздү талап кылышы мүмкүн.</translation>
 <translation id="316638481603975524">Веб колдонмолорун сиздин уруксатыңыз менен орното алат</translation>
+<translation id="3166788340998560642">Кийинки жолу колдонгонуңузда Chrome аны <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> кызматына сактоону сунуштайт</translation>
 <translation id="3168744840365648658">Радио жабдуулары</translation>
 <translation id="3168938241115725594">Классикалык унаалар</translation>
 <translation id="3169472444629675720">Аныктоо</translation>
@@ -2415,6 +2417,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Калкыма терезе бөгөттөлгөн}other{# калкыма терезе бөгөттөлгөн}}</translation>
 <translation id="4780320432697076749">Фото үчүн программалык камсыздоо</translation>
 <translation id="4780366598804516005">1-электрондук каттар кутусу</translation>
+<translation id="4785273477715803444">Таржымалдарды чыпкалоо</translation>
 <translation id="4785376858512657294">Google аккаунтун башкаруу</translation>
 <translation id="4785689107224900852">Бул өтмөккө которулуу</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" изделип жатат</translation>
@@ -3057,6 +3060,7 @@
 <translation id="5759751709240058861">Камераңызды колдонуп, жылдыруу</translation>
 <translation id="5762131895127128324">Айдоочунун күбөлүктөрү · Өздүгүн тастыктоо карталары · Паспорттор</translation>
 <translation id="5763042198335101085">Жарактуу электрондук почта дарегин киргизиңиз</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Соңку аракеттер: бүгүн}=1{Соңку аракеттер: 1 күн мурун}other{Соңку аракеттер: # күн мурун}}</translation>
 <translation id="5764725887548570807">Түпнуска формат жараксыз.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> дарегине жөнөтүү</translation>
 <translation id="5765072501007116331">Жеткирүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>

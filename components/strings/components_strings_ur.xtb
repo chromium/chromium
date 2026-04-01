@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">آپ کے کی بورڈ کو مقفل کرنے اور استعمال کرنے کے لیے کہہ سکتی ہے</translation>
 <translation id="2839032553903800133">اطلاعات مسدود ہیں</translation>
 <translation id="2839501879576190149">آگے جعلی سائٹ ہے</translation>
+<translation id="2840680829170913626">‏ان اختیارات کی پیشکش کرنے کیلئے، چیک آؤٹ صفحے سے صفحے کے مواد کا اشتراک Google کے ساتھ کیا جاتا ہے۔ ادائیگی کے پلانز اہلیت کے ساتھ مشروط ہیں۔ آٹو فل میں بعد میں ادائیگی کے اختیارات کو چھپانے کیلئے، <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> پر جائیں۔</translation>
 <translation id="2843623755398178332">اپنے مشترکہ ٹیب کو اسکرول اور زوم کریں؟</translation>
 <translation id="2851291081585704741">آپ آف لائن ہیں</translation>
 <translation id="2854163610915391726">‏آپ اپنے Google اکاؤنٹ میں Chrome کی کون سی معلومات محفوظ کرتے ہیں، اس کا نظم کریں</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">اس آلے کو ابھی اندراج نہیں کیا جا سکتا کیونکہ آپ کا تنظیم یونٹ اپنے اندراج کی ابتدائی حد کو پہنچ گیا ہے۔ مدد کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="316638481603975524">ویب ایپس انسٹال کرنے کے لیے پوچھ سکتے ہیں</translation>
+<translation id="3166788340998560642">‏اگلی بار اس کا استعمال کرنے پر، Chrome اسے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں محفوظ کرنے کی پیشکش کرے گا</translation>
 <translation id="3168744840365648658">ریڈیو کے ساز و سامان</translation>
 <translation id="3168938241115725594">کلاسک گاڑیاں</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
@@ -3060,6 +3062,7 @@
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
 <translation id="5762131895127128324">ڈرائیونگ لائسنسز · شناختی کارڈز · پاسپورٹس</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{آج فعال تھا}=1{1 دن پہلے فعال تھا}other{# دن پہلے فعال تھا}}</translation>
 <translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> پر بھیجیں</translation>
 <translation id="5765072501007116331">ڈیلیوری کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>

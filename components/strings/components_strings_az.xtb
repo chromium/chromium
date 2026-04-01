@@ -2414,6 +2414,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popap bloklandı}other{# popap bloklandı}}</translation>
 <translation id="4780320432697076749">Foto Proqramları</translation>
 <translation id="4780366598804516005">Poçt qutusu 1</translation>
+<translation id="4785273477715803444">Loqları filtrləyin</translation>
 <translation id="4785376858512657294">Google Hesabını idarə edin</translation>
 <translation id="4785689107224900852">Bu taba keçin</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" axtarılır</translation>
@@ -3056,6 +3057,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5759751709240058861">Kameranızın istifadəsi və hərəkət etdirilməsi</translation>
 <translation id="5762131895127128324">Sürücülük vəsiqələri · Şəxsiyyət vəsiqələri · Pasportlar</translation>
 <translation id="5763042198335101085">Düzgün e-poçt ünvanı daxil edin</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Bu gün aktivdir}=1{1 gün əvvəl aktiv olub}other{# gün əvvəl aktiv olub}}</translation>
 <translation id="5764725887548570807">Yanlış mənşə formatı.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> ünvanına göndərin</translation>
 <translation id="5765072501007116331">Çatdırılma üsulları və tələblərinə baxın, ünvan seçin</translation>

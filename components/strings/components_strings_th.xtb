@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">ขอล็อกและใช้แป้นพิมพ์ของคุณได้</translation>
 <translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
 <translation id="2839501879576190149">ระวังเว็บไซต์หลอกลวง</translation>
+<translation id="2840680829170913626">ระบบจะแชร์เนื้อหาจากหน้าชำระเงินกับ Google เพื่อเสนอตัวเลือกเหล่านี้ แพ็กเกจการชำระเงินขึ้นอยู่กับสิทธิ์ หากต้องการซ่อนตัวเลือกการชำระเงินภายหลังในการป้อนข้อความอัตโนมัติ ให้ไปที่<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2843623755398178332">เลื่อนและซูมแท็บที่แชร์ไหม</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
 <translation id="2854163610915391726">จัดการข้อมูล Chrome ที่บันทึกไว้ในบัญชี Google</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">ลงทะเบียนอุปกรณ์นี้ไม่ได้ในตอนนี้เนื่องจากหน่วยขององค์กรถึงขีดจำกัดการลงทะเบียนเริ่มต้นแล้ว โปรดติดต่อผู้ดูแลระบบเพื่อขอความช่วยเหลือ</translation>
 <translation id="3162559335345991374">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
 <translation id="316638481603975524">สามารถขอติดตั้งเว็บแอปได้</translation>
+<translation id="3166788340998560642">Chrome จะเสนอให้บันทึกลงใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> เมื่อคุณใช้งานในครั้งถัดไป</translation>
 <translation id="3168744840365648658">อุปกรณ์วิทยุ</translation>
 <translation id="3168938241115725594">ยานยนต์คลาสสิก</translation>
 <translation id="3169472444629675720">สำรวจ</translation>
@@ -1769,6 +1771,7 @@
 <translation id="3744899669254331632">คุณไม่สามารถไปที่ <ph name="SITE" /> ได้ในขณะนี้เนื่องจากเว็บไซต์ได้ส่งข้อมูลรับรองที่มีการแปลงข้อมูลซึ่ง Chromium ไม่สามารถดำเนินการได้ ข้อผิดพลาดของเครือข่ายและการโจมตีมักจะเกิดขึ้นชั่วคราว ดังนั้นหน้านี้อาจจะใช้งานได้ในภายหลัง</translation>
 <translation id="3745599309295009257">ระบบจะส่งข้อความ เนื้อหา และ URL ของหน้าที่คุณเขียนไปยัง Google เพื่อตรวจสอบจากเจ้าหน้าที่ และใช้เพื่อปรับปรุงฟีเจอร์นี้ หลีกเลี่ยงการป้อนข้อมูลส่วนบุคคล (เช่น รายละเอียดทางการแพทย์หรือการเงิน) หรือใช้เครื่องมือนี้กับเว็บไซต์ที่มีข้อมูลส่วนตัวหรือข้อมูลที่ละเอียดอ่อน</translation>
 <translation id="3748009735914587286">โลหะ (เงามาก)</translation>
+<translation id="3748647055058832337">ไม่สามารถใช้ได้กับผู้ขายรายนี้</translation>
 <translation id="3749600200023337912">ระบบอาจใช้วิธีการชำระเงินอัตโนมัติที่บันทึกไว้สำหรับการชำระเงินนี้ หากต้องการปิดอีวอลเล็ตหรือแอปการชำระเงินใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">บันทึกที่อยู่ในบัญชีไหม</translation>
 <translation id="3752543821772132562">ไม่สนใจเนื่องจากไม่ได้ตั้งค่า <ph name="POLICY_NAME" /></translation>
@@ -2415,6 +2418,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{ป๊อปอัปถูกบล็อก}other{# ป๊อปอัปถูกบล็อก}}</translation>
 <translation id="4780320432697076749">ซอฟต์แวร์เกี่ยวกับรูปภาพ</translation>
 <translation id="4780366598804516005">กล่องจดหมาย 1</translation>
+<translation id="4785273477715803444">กรองบันทึก</translation>
 <translation id="4785376858512657294">จัดการบัญชี Google</translation>
 <translation id="4785689107224900852">เปลี่ยนเป็นแท็บนี้</translation>
 <translation id="4785998536350006000">กำลังค้นหา "<ph name="SEARCH_QUERY" />"</translation>
@@ -3057,6 +3061,7 @@
 <translation id="5759751709240058861">ใช้และเคลื่อนย้ายกล้องของคุณ</translation>
 <translation id="5762131895127128324">ใบขับขี่ · บัตรประจำตัว · หนังสือเดินทาง</translation>
 <translation id="5763042198335101085">ป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{ใช้งานวันนี้}=1{ใช้งานเมื่อ 1 วันที่ผ่านมา}other{ใช้งานเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
 <translation id="5764920692828389743">ส่งไปยัง <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">หากต้องการดูวิธีการนำส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
@@ -3887,6 +3892,7 @@
 <translation id="7057567173736333354">อธิบายรูปภาพของคุณ</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> ยืนยันว่า <ph name="ISSUER" /> ได้ออกใบรับรองของเว็บไซต์นี้</translation>
 <translation id="7058774143982824355">บริการโปรแกรมแยกวิเคราะห์รหัสผ่าน CSV</translation>
+<translation id="7059913660448028407">ไม่พร้อมใช้งานในขณะนี้</translation>
 <translation id="7062344833049251424">บันทึกบัตรและที่อยู่สำหรับการเรียกเก็บเงินไว้ใน Google Wallet เพื่อให้ชำระเงินได้เร็วขึ้นในครั้งถัดไป</translation>
 <translation id="706295145388601875">เพิ่มและจัดการที่อยู่ในการตั้งค่า Chrome</translation>
 <translation id="7063157783216323487">เขียว 2</translation>
@@ -4168,6 +4174,7 @@
 <translation id="7471007961486718967">ระบุเหตุผลในการโอน (ต้องระบุ)</translation>
 <translation id="7473033553872550521">คุณอาจติดต่อเจ้าของเว็บไซต์และแนะนำให้อัปเกรดเป็น HTTPS ก็ได้ <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">ไม่เป็นไร</translation>
+<translation id="7475618719385705713">หน้านี้ถูกบล็อก</translation>
 <translation id="7481312909269577407">ส่งต่อ</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7482823403440483089">การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้น</translation>
@@ -4189,6 +4196,7 @@
 <translation id="7508255263130623398">รหัสอุปกรณ์นโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับรหัสอุปกรณ์ปัจจุบัน</translation>
 <translation id="7508577201115425418">บริการด้านเอกสารและการพิมพ์</translation>
 <translation id="7510269639068718544">แมว</translation>
+<translation id="7511707705708508147">ไม่รองรับสกุลเงิน</translation>
 <translation id="7511955381719512146">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
 <translation id="7512685745044087310">นโยบายนี้ตั้งค่าเป็น "จริง" ไม่ได้ และกำหนดเป็นการตั้งค่าแบบบังคับไม่ได้ ดังนั้นจึงมีการเปลี่ยนค่าเป็น "ที่แนะนำ"</translation>
 <translation id="7514365320538308">ดาวน์โหลด</translation>
@@ -4688,6 +4696,7 @@
 <translation id="8281886186245836920">ข้าม</translation>
 <translation id="8282292167096638950">ลบใบขับขี่</translation>
 <translation id="8282409409360764263">การบำรุงรักษาสนาม</translation>
+<translation id="828282277746732142">บันทึก IBAN ใน Google Wallet</translation>
 <translation id="8282947398454257691">ทราบตัวระบุอุปกรณ์ที่ไม่ซ้ำกัน</translation>
 <translation id="8284769179630993263">จัดการ Google Safe Browsing และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="828558778104922222">รูปภาพสูญหายเนื่องจากข้อผิดพลาดที่ไม่รู้จัก</translation>

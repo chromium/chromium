@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">ເຊື່ອງ "ສືບຕໍ່ໃຊ້ແຖບນີ້"</translation>
 <translation id="1520027731907768768">ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຜະລິດຕະພັນທີ່ທ່ານຕິດຕາມຕ່ຳລົງ.</translation>
 <translation id="1521366073263497277">ໄປຫາຕາໜ່າງແຖບຂອງທ່ານ</translation>
-<translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
 <translation id="1523567067736644845">ປົດລັອກເພື່ອສະແດງລະຫັດຜ່ານ</translation>
 <translation id="1524563461097350801">ບໍ່, ຂອບໃຈ</translation>
 <translation id="1531038290222364269">ສະແດງແຖບ</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">ລະຫັດຜ່ານຂອງທ່ານແມ່ນຖືກເຂົ້າລະຫັດໄວ້ຢູ່ອຸປະກອນຂອງທ່ານກ່ອນທີ່ພວກມັນຈະຖືກບັນທຶກໄປໃສ່ຕົວຈັດການລະຫັດຜ່ານ Google.</translation>
 <translation id="2306265833370324042">ສະແດງລາຍລະອຽດ <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">ປິດແຖບ</translation>
+<translation id="2310789833878085574">ບັນທຶກ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="2311077293164383652">ປິດແຖບທີ່ປັກໝຸດແລ້ວ</translation>
 <translation id="2316129865977710310">ບໍ່​, ​ຂອບ​ໃຈ</translation>
 <translation id="2320166752086256636">ເຊື່ອງ​ແປ້ນ​ພິມ</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">ໝາຍວ່າອ່ານແລ້ວ</translation>
 <translation id="428768789042547925">ມີຫຍັງໃໝ່</translation>
 <translation id="429074084062258019">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມ}other{ເພີ່ມແຖບໃສ່ກຸ່ມ}}</translation>
+<translation id="4300830875340617674">ສະແກນບັດ ແລະ ຕື່ມຂໍ້ມູນອັດຕະໂນມັດ</translation>
 <translation id="4302061870579014542">ກຳນົດຕຳແໜ່ງ</translation>
 <translation id="4304713468139749426">ຕົວຈັດການລະຫັດຜ່ານ</translation>
 <translation id="4306349443295056740">ການເຊັນຊື່ OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">ເພື່ອຕິດຕາມຜະລິດຕະພັນ, ໃຫ້ແຕະຕິດຕາມ</translation>
 <translation id="5121618895923301719">ທ່ານກຳລັງຕິດຕາມສິນຄ້ານີ້ຢູ່ກ່ອນແລ້ວ. ໜ້ານີ້ຖືກບັນທຶກໃນ <ph name="BEGIN_LINK" />ບຸກມາກໂທລະສັບມືຖື<ph name="END_LINK" /> ແລ້ວ.</translation>
 <translation id="512533434554095351">ທ່ານມີບັນຫາລະຫັດຜ່ານຫຼາຍລາຍການ.</translation>
-<translation id="5127538504377457572">ໃຊ້ເມື່ອ <ph name="DAYS" /> ມື້ທີ່ຜ່ານມາ</translation>
 <translation id="5128788795241319992">ສຳຫຼວດເມນູໃໝ່</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
 <translation id="5141363746588976328">ເຊື່ອງບັດເບິ່ງລາຄາຫຼຸດລົງໃນແຖບຂອງທ່ານ</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">ເປີດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="5229315183665181733">ແກ້ໄຂເວັບໄຊ</translation>
+<translation id="5233111790346066304">ບັນທຶກໄຟລ໌ໃນ Google Drive ຂອງທ່ານ ແລະ ເຂົ້າເຖິງໄຟລ໌ເຫຼົ່ານັ້ນໄດ້ທຸກເວລາ.</translation>
 <translation id="5233638681132016545">ແຖບ​ໃຫມ່</translation>
 <translation id="5234094073825090254">{count,plural, =1{ບັນທຶກບຸກມາກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ.}other{ບັນທຶກບຸກມາກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ.}}</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -1649,6 +1650,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6806550742467879742">ເຄື່ອງມືໜ້າເວັບ</translation>
 <translation id="6807287147325542056">ລະຫັດຜ່ານໃນແອັບອື່ນໆ</translation>
 <translation id="681368974849482173">ສ້າງ​ລາຍ​ການ​ຂຶ້ນ​ແລ້ວ</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{ບັນທຶກບຸກມາກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}other{ບັນທຶກບຸກມາກ {count} ລາຍການໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, {email} ແລ້ວ}}</translation>
 <translation id="6826004672264649705">ກຳລັງຕິດຕາມຜະລິດຕະພັນນີ້ຢູ່. ເປີດເພື່ອເບິ່ງປະຫວັດລາຄາ</translation>
 <translation id="6830728435402077660">ບໍ່ປອດໄພ</translation>
@@ -1962,7 +1964,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7952670906562503188">ທ່ານກຳລັງຈະລຶບກະແຈຜ່ານ {passkey_count} ລາຍການ ພ້ອມທັງລາຍຊື່ເວັບໄຊ ແລະ ແອັບທີ່ທ່ານເລືອກທີ່ຈະບໍ່ບັນທຶກຂໍ້ມູນການເຂົ້າສູ່ລະບົບ. ລະບົບຈະບໍ່ລຶບບັນຊີໃດກໍຕາມທີ່ທ່ານສ້າງໄວ້ສຳລັບເວັບໄຊ ແລະ ແອັບ.</translation>
 <translation id="7958575506592576831">ຂໍ້ມູນກ່ຽວກັບການຮັກສາຄວາມປອດໄພຂອງໜ້າເວັບ</translation>
 <translation id="7961015016161918242">ບໍ່​ເລີຍ</translation>
-<translation id="7971136598759319605">ນຳໃຊ້ເມື່ອ 1 ມື້ກ່ອນ</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">ລອງ</translation>
 <translation id="797588153137233716">ເມນູ → ປະຫວັດ → ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>

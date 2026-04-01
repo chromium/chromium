@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Pentru a te proteja, au fost eliminate permisiunile pentru unele site-uri</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1384704387250346179">Tradu imaginea cu Google Lens <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Activ acum <ph name="LAST_UPDATED" /> zile</translation>
 <translation id="1390418506739274310">Poți vedea istoricul din alte aplicații care deschid linkuri în Chrome. Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Foaia din partea de jos cu Statistici despre prețuri este deschisă la înălțime completă</translation>
 <translation id="1397811292916898096">Caută folosind <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="1513352483775369820">Marcaje și istoric web</translation>
 <translation id="1515901671075971249">Comenzi rapide pentru navigare în file</translation>
 <translation id="1516966594427080024">Deschide o fereastră nouă în modul incognito</translation>
-<translation id="1521774566618522728">Activ astăzi</translation>
 <translation id="153446405401665083">Este disponibilă o nouă versiune Chrome</translation>
 <translation id="1540012742443808215">Bara de adrese este în partea de sus</translation>
 <translation id="1544084554881119930">Metodele de plată și adresele nu vor fi criptate. Istoricul de navigare din Chrome nu se va sincroniza.
@@ -1728,7 +1726,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7968014550143838305">S-a adăugat în lista de lectură</translation>
 <translation id="7968982339740310781">Afișați detaliile</translation>
 <translation id="7969391000881506217">Data expirării*</translation>
-<translation id="7971136598759319605">Activ acum o zi</translation>
 <translation id="7975379999046275268">Previzualizează pagina <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece nu ai accesat recent site-ul</translation>

@@ -2361,7 +2361,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4698692901173737941">Kampsport</translation>
 <translation id="4701488924964507374"><ph name="SENTENCE1" /> <ph name="SENTENCE2" /></translation>
 <translation id="4702504834785592287">Sida</translation>
-<translation id="4702656508969495934">Live Caption visas. Använd fönsterbyte för att ändra fokus</translation>
+<translation id="4702656508969495934">Livetextning visas. Använd fönsterbyte för att ändra fokus</translation>
 <translation id="4703342001883078444">Familj och relationer</translation>
 <translation id="4704745399240123930">Kort som inte godkänns av den här säljaren, till exempel virtuella kort, inaktiveras.</translation>
 <translation id="4705573018059932476">Du har valt att verifiera dig med <ph name="AUTHENTICATOR" /> på webbplatser där <ph name="PROVIDER_ORIGIN" /> används. Den här leverantören kan ha lagrat uppgifter om hur du betalar som du kan <ph name="LINK_TEXT" />.</translation>
@@ -2418,6 +2418,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Popup-fönster har blockerats}other{# popup-fönster har blockerats}}</translation>
 <translation id="4780320432697076749">Fotoprogram</translation>
 <translation id="4780366598804516005">Postfack 1</translation>
+<translation id="4785273477715803444">Filterloggar</translation>
 <translation id="4785376858512657294">Hantera Google-kontot</translation>
 <translation id="4785689107224900852">Byt till den här fliken</translation>
 <translation id="4785998536350006000">Söker efter <ph name="SEARCH_QUERY" /></translation>
@@ -3060,6 +3061,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5759751709240058861">Använda och röra din kamera</translation>
 <translation id="5762131895127128324">Körkort · Id-kort · Pass</translation>
 <translation id="5763042198335101085">Ange en giltig e-postadress</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv för 1 dag sedan}other{Aktiv för # dagar sedan}}</translation>
 <translation id="5764725887548570807">Ogiltigt ursprungsformat.</translation>
 <translation id="5764920692828389743">Skicka till <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Välj en adress för att visa leveranssätt och krav</translation>
@@ -3170,7 +3172,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5951495562196540101">Det går inte att registrera enheten med ett konsumentkonto (paketerad licens är tillgänglig).</translation>
 <translation id="5952076224478208938">Märke</translation>
 <translation id="5952196777020238475">Licensnummer</translation>
-<translation id="5953516610448771166">Live Caption är inte tillgängligt för den här mediefilen. Blockera <ph name="CONTENT_SETTINGS" /> för den här webbplatsen om du vill använda textning.</translation>
+<translation id="5953516610448771166">Livetextning är inte tillgängligt för den här mediefilen. Blockera <ph name="CONTENT_SETTINGS" /> för den här webbplatsen om du vill använda textning.</translation>
 <translation id="5960795367348889467">Verifiering</translation>
 <translation id="5963413905009737549">Avsnitt</translation>
 <translation id="5964247741333118902">Inbäddat innehåll</translation>

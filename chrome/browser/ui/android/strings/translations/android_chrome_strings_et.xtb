@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Teie turvalisuse tagamiseks eemaldati mõnelt saidilt load</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1384704387250346179">Tõlgi pilt Google Lensiga <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktiivne <ph name="LAST_UPDATED" /> päeva tagasi</translation>
 <translation id="1390418506739274310">Võite näha ajalugu muudest rakendustest, mis avavad linke Chrome'is. Aadressil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="139752016751285248">Hinnastatistika alumine leht on avatud täiskõrguses</translation>
 <translation id="1397811292916898096">Otsi teenusega <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1513352483775369820">Järjehoidjad ja veebiajalugu</translation>
 <translation id="1515901671075971249">Vahelehtedel navigeerimise otseteed</translation>
 <translation id="1516966594427080024">Uue akna avamine inkognito režiimis</translation>
-<translation id="1521774566618522728">Aktiivne täna</translation>
 <translation id="153446405401665083">Saadaval on Chrome'i uus versioon</translation>
 <translation id="1540012742443808215">Aadressiriba hetkel üleval</translation>
 <translation id="1544084554881119930">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.
@@ -1728,7 +1726,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7968014550143838305">Lisati lugemisloendisse</translation>
 <translation id="7968982339740310781">Kuva üksikasjad</translation>
 <translation id="7969391000881506217">Aegumiskuupäev*</translation>
-<translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Hoiatab teid, kui kasutate parooli, mis on andmetega seotud rikkumise tõttu ohtu sattunud.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> – Chrome eemaldas need load, kuna te pole hiljuti külastanud</translation>

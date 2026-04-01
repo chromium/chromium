@@ -1767,6 +1767,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3744899669254331632">Je kunt <ph name="SITE" /> op dit moment niet bezoeken, omdat de website gecodeerde inloggegevens heeft verstuurd die niet door Chromium kunnen worden verwerkt. Aangezien netwerkfouten en aanvallen doorgaans van tijdelijke aard zijn, zal deze pagina later waarschijnlijk wel werken.</translation>
 <translation id="3745599309295009257">Je tekst en de content en URL van de pagina waarop je schrijft, worden naar Google gestuurd, beoordeeld door mensen en gebruikt om deze functie te verbeteren. Voer geen persoonlijke informatie in (zoals medische of financiële gegevens) en gebruik deze tool niet op sites die persoonlijke of gevoelige informatie bevatten.</translation>
 <translation id="3748009735914587286">Metaal (hoogglans)</translation>
+<translation id="3748647055058832337">Niet beschikbaar voor deze verkoper</translation>
 <translation id="3749600200023337912">Je opgeslagen methode voor automatische betalingen kan worden gebruikt voor deze betaling. Als je e-wallets of de betalingsapp in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Adres opslaan in account?</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
@@ -2412,6 +2413,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up geblokkeerd}other{# pop-ups geblokkeerd}}</translation>
 <translation id="4780320432697076749">Fotosoftware</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4785273477715803444">Logboeken filteren</translation>
 <translation id="4785376858512657294">Google-account beheren</translation>
 <translation id="4785689107224900852">Overschakelen naar dit tabblad</translation>
 <translation id="4785998536350006000">Zoeken naar '<ph name="SEARCH_QUERY" />'</translation>
@@ -3054,6 +3056,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5759751709240058861">De camera gebruiken en bewegen</translation>
 <translation id="5762131895127128324">Rijbewijzen · Identiteitskaarten · Paspoorten</translation>
 <translation id="5763042198335101085">Geef een geldig e-mailadres op</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Vandaag actief}=1{1 dag geleden actief}other{# dagen geleden actief}}</translation>
 <translation id="5764725887548570807">Ongeldige oorsprongindeling.</translation>
 <translation id="5764920692828389743">Naar <ph name="EMAIL_ADDRESS" /> sturen</translation>
 <translation id="5765072501007116331">Selecteer een adres om bezorgingsmethoden en vereisten te bekijken</translation>
@@ -3883,6 +3886,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="7057567173736333354">Beschrijf je afbeelding</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" /> heeft geverifieerd dat <ph name="ISSUER" /> het certificaat van deze website heeft uitgegeven.</translation>
 <translation id="7058774143982824355">Parserservice voor csv-bestand met wachtwoorden</translation>
+<translation id="7059913660448028407">Momenteel niet beschikbaar</translation>
 <translation id="7062344833049251424">Sla je kaart en factuuradres op in Google Wallet, zodat je de volgende keer sneller kunt betalen</translation>
 <translation id="706295145388601875">Adressen toevoegen en beheren in de Chrome-instellingen</translation>
 <translation id="7063157783216323487">Groen 2</translation>
@@ -4164,6 +4168,7 @@ Aanvullende informatie:
 <translation id="7471007961486718967">Waarom wil je dit overzetten? (vereist)</translation>
 <translation id="7473033553872550521">Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet naar HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nee, bedankt</translation>
+<translation id="7475618719385705713">Deze pagina is geblokkeerd</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7481603210197454575">Envelop Italiaans</translation>
 <translation id="7482823403440483089">Verbeterd automatisch invullen</translation>
@@ -4185,6 +4190,7 @@ Aanvullende informatie:
 <translation id="7508255263130623398">Geretourneerde apparaat-ID voor beleid is leeg of komt niet overeen met de huidige apparaat-ID</translation>
 <translation id="7508577201115425418">Documentatie- en afdrukservices</translation>
 <translation id="7510269639068718544">Katten</translation>
+<translation id="7511707705708508147">Valuta niet ondersteund</translation>
 <translation id="7511955381719512146">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk dat je gebruikt.</translation>
 <translation id="7512685745044087310">Dit beleid kan niet tegelijkertijd zijn ingesteld op True en verplicht zijn. Daarom is het veranderd naar aanbevolen.</translation>
 <translation id="7514365320538308">Downloaden</translation>
@@ -4684,6 +4690,7 @@ Aanvullende informatie:
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8282292167096638950">Rijbewijs verwijderen</translation>
 <translation id="8282409409360764263">Tuinonderhoud</translation>
+<translation id="828282277746732142">IBAN opslaan in Google Wallet</translation>
 <translation id="8282947398454257691">Je unieke apparaat-ID weten</translation>
 <translation id="8284769179630993263">Safe Browsing en meer beheren in de Chrome-instellingen</translation>
 <translation id="828558778104922222">Foto is verloren gegaan door een onbekende fout</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Коопсуздугуңузду камсыздоо үчүн айрым сайттардан уруксаттар өчүрүлдү</translation>
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1384704387250346179">Google Lens аркылуу которуу <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> күн мурун жигердүү болгон</translation>
 <translation id="1390418506739274310">Chrome'до шилтемелерди ачкан башка колдонмолордун таржымалын көрө аласыз. Google аккаунтуңузда көрүлгөн вебсайттардын башка түрлөрү <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> дарегинде болушу мүмкүн.</translation>
 <translation id="139752016751285248">Баанын статистикасынын ылдыйкы экраны толук экранда ачылды</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> аркылуу издөө</translation>
@@ -136,7 +135,6 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1513352483775369820">Кыстармалар жана издөө таржымалы</translation>
 <translation id="1515901671075971249">Өтмөктөргө өтүү боюнча ыкчам баскычтар</translation>
 <translation id="1516966594427080024">Жаңы терезени жашыруун режимде ачуу</translation>
-<translation id="1521774566618522728">Соңку аракеттер: бүгүн</translation>
 <translation id="153446405401665083">Chrome'дун жаңы версиясы жеткиликтүү</translation>
 <translation id="1540012742443808215">Дарек тилкеси учурда өйдө жакта</translation>
 <translation id="1544084554881119930">Даректер жана төлөм ыкмалары шифрленбейт. Chrome'до көрүлгөн вебсайттар шайкештирилбейт.
@@ -222,6 +220,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="1925021887439448749">Жеке веб дарегин киргизиңиз</translation>
 <translation id="1928618076168182477">Визуалдык көрүнүш</translation>
 <translation id="1928696683969751773">Жаңыртуулар</translation>
+<translation id="1934545916152269346">Акыркы колдонулгандар</translation>
 <translation id="1943398124995840148">Кеңейтилген чындыкта ачык өтмөктөрүңүздүн көрүнүшү жаңырды</translation>
 <translation id="1944535645109964458">Киргизүүчү ачкычтар жок</translation>
 <translation id="1957557050935255529">PDF жүктөлүүдө…</translation>
@@ -1727,7 +1726,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7968014550143838305">Окуу тизмесине кошулду</translation>
 <translation id="7968982339740310781">Чоо-жайын карап көрүү</translation>
 <translation id="7969391000881506217">Мөөнөтү аяктай турган күн*</translation>
-<translation id="7971136598759319605">Соңку аракеттер: 1 күн мурун</translation>
 <translation id="7975379999046275268">Баракты алдын ала көрүү <ph name="BEGIN_NEW" />Жаңы<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>

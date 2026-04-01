@@ -413,22 +413,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: 
 <translation id="1317158052518324525">Non consentire la compilazione automatica avanzata.</translation>
 <translation id="1317658068839330898">Non consentire l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web</translation>
 <translation id="1318233005302276244">Consente agli utenti di tracciare i propri pacchi su Chrome.</translation>
-<translation id="1321747583289636863">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee al server proxy per le richieste WebSocket.
-
-Per modificare i limiti delle richieste non WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
-
-Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
-Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
-
-Il valore deve essere uguale o superiore a 6.
-Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
-È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
-
-Il valore deve essere uguale o inferiore a 256.
-Se imposti un valore superiore a questo limite, verrà utilizzato 256.
-È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="1323501563951768821">Le impostazioni di F12 usano la scorciatoia che contiene il tasto di modifica Maiusc</translation>
 <translation id="1325547947664414578">Quando un utente passa da un dispositivo <ph name="PRODUCT_OS_NAME" /> a un altro dello stesso tipo, il servizio <ph name="PRODUCT_NAME" /> avvia le finestre del browser e delle app del dispositivo precedente su quello nuovo.
 Se la policy viene attivata, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
@@ -4973,7 +4957,6 @@ Se la policy viene attivata o se non viene configurata, gli utenti con password 
 Se la policy viene disattivata, i dati del gestore delle password degli utenti rimangono invariati, ma la funzionalità del gestore delle password non funziona.
 
 Se la policy viene configurata, gli utenti non possono modificarla in <ph name="PRODUCT_NAME" />.</translation>
-<translation id="4321788213579606602">Numero massimo di connessioni contemporanee al server proxy per richieste non WebSocket</translation>
 <translation id="4322842393287974810">Consenti all'app kiosk avviata automaticamente senza ritardo di controllare la versione di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Attiva l'attestazione da remoto per la protezione dei contenuti</translation>
 <translation id="4325690621216251241">Aggiungi un pulsante di disconnessione all'area di notifica</translation>
@@ -7769,7 +7752,6 @@ Se il valore viene impostato su false, non potranno accedere alla funzionalità.
 <translation id="6075316301208933536">Se la policy <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> viene impostata su <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, la configurazione di <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> consente di personalizzare quando viene interrotta la ricarica della batteria, in base alla percentuale di carica. Il valore della policy <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> deve essere inferiore di almeno 5 punti percentuali rispetto a quello della policy <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Se la policy non viene configurata, viene applicata la modalità di ricarica della batteria di <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
-<translation id="6080808146443476891">Numero massimo di connessioni contemporanee al server proxy per le richieste WebSocket</translation>
 <translation id="6082161804984853051">L'impostazione della policy determina l'utilizzo da parte di <ph name="PRODUCT_NAME" /> della directory che fornisci per l'archiviazione dei file memorizzati nella cache sul disco, indipendentemente dalla specificazione del flag --disk-cache-dir da parte degli utenti.
 
       Se la policy non viene impostata, <ph name="PRODUCT_NAME" /> utilizza la directory della cache predefinita, ma gli utenti possono modificare l'impostazione tramite il flag della riga di comando --disk-cache-dir.
@@ -11232,22 +11214,6 @@ La funzionalità sarà disponibile soltanto sul canale Canary.
 
 Se la policy viene attivata o se non viene configurata, la pagina sarà accessibile.
 Se la policy viene disattivata, la pagina verrà bloccata.</translation>
-<translation id="8264002158987842436">La configurazione della policy consente di specificare il numero massimo di connessioni simultanee al server proxy per le richieste non WebSocket.
-
-Per modificare i limiti delle richieste WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
-
-Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
-Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
-
-Il valore deve essere uguale o superiore a 6.
-Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
-È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
-
-Il valore deve essere uguale o inferiore a 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
-Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
-È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="8266778278542911985">Se la policy viene impostata su 3, i siti web possono chiedere l'accesso alle porte seriali. Se la policy viene impostata su 2, l'accesso alle porte seriali viene negato.
 
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>

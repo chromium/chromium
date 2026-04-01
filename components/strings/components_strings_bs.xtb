@@ -1177,6 +1177,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2837891525090413132">Može zatražiti da zaključa i koristi vašu tastaturu</translation>
 <translation id="2839032553903800133">Obavještenja su blokirana</translation>
 <translation id="2839501879576190149">Web lokacija koja slijedi je lažna</translation>
+<translation id="2840680829170913626">Sadržaj stranice za nastavak na plaćanje se dijeli s Googleom da ponudi ove opcije. Planovi plaćanja su podložni ispunjavanju uslova. Da sakrijete opcije kasnijeg plaćanja u automatskom popunjavanju, idite u <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Želite li klizati na dijeljenoj kartici i zumirati je?</translation>
 <translation id="2851291081585704741">Offline ste</translation>
 <translation id="2854163610915391726">Upravljanje time koje se informacije Chromea pohranjuju na Google računu</translation>
@@ -1388,6 +1389,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3162070126914310576">Uređaj se trenutno ne može registrirati jer je vaša organizaciona jedinica dosegnula početno ograničenje broja registracija. Kontaktirajte administratora za pomoć.</translation>
 <translation id="3162559335345991374">WiFi koji koristite može tražiti da posjetite njegovu stranicu za prijavu.</translation>
 <translation id="316638481603975524">Mogu zatražiti da instaliraju web aplikacije</translation>
+<translation id="3166788340998560642">Chrome će vam ponuditi da ih sačuvate u aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> sljedeći put kada ih upotrijebite</translation>
 <translation id="3168744840365648658">Radio oprema</translation>
 <translation id="3168938241115725594">Klasična vozila</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
@@ -2416,6 +2418,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Skočni prozor blokiran}one{# skočni prozor blokiran}few{# skočna prozora blokirana}other{# skočnih prozora blokirano}}</translation>
 <translation id="4780320432697076749">Softver za fotografije</translation>
 <translation id="4780366598804516005">Poštansko sanduče 1</translation>
+<translation id="4785273477715803444">Filtrirajte zapisnike</translation>
 <translation id="4785376858512657294">Upravljajte Google računom</translation>
 <translation id="4785689107224900852">Prebaci na ovu karticu</translation>
 <translation id="4785998536350006000">Pretraživanje "<ph name="SEARCH_QUERY" />"</translation>
@@ -3058,6 +3061,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5759751709240058861">koristi i pomjera kameru</translation>
 <translation id="5762131895127128324">Vozačke dozvole · Lične karte · Pasoši</translation>
 <translation id="5763042198335101085">Upišite važeću adresu e-pošte</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktivan danas}=1{Aktivan prije 1 dan}one{Aktivan prije # dan}few{Aktivan prije # dana}other{Aktivan prije # dana}}</translation>
 <translation id="5764725887548570807">Nevažeći format polazišta.</translation>
 <translation id="5764920692828389743">Pošalji na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Za prikaz načina i uslova isporuke, izaberite adresu</translation>

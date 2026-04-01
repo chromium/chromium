@@ -186,6 +186,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2888126860611144412">Tungkol sa Chrome</translation>
 <translation id="2915996080311180594">I-restart sa Ibang Pagkakataon</translation>
+<translation id="2916983411556218750">Ihanda natin ang iyong Chrome</translation>
 <translation id="2926676257163822632">Madaling hulaan ang mahihinang password. Hayaan ang Chrome na <ph name="BEGIN_LINK" />gumawa ng malalakas na password at tandaan ang mga ito para sa iyo<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Kailangan ng Chrome ng pahintulot sa camera para sa site na ito</translation>
 <translation id="2928420929544864228">Tapos na ang pag-install.</translation>
@@ -607,6 +608,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7161904924553537242">Maligayang pagdating sa Google Chrome</translation>
 <translation id="7193885263065350793">Isinasara ng iyong organisasyon ang Chrome kapag hindi ito ginagamit sa loob ng <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Nagsa-sign in ka gamit ang isang pinamamahalaang account at nagbibigay sa administrator nito ng kontrol sa iyong profile sa Google Chrome. Permanenteng mauugnay ang iyong data sa Chrome, gaya ng iyong apps, mga bookmark, kasaysayan, password, at iba pang setting sa <ph name="USER_NAME" />. Matatanggal mo ang data na ito sa Google Accounts Dashboard, ngunit hindi mo maiuugnay ang data na ito sa isa pang account. Maaari ka ring gumawa ng bagong profile upang ihiwalay ang iyong umiiral na data sa Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7274402351400635015">Magagamit mo ang Chrome sa tuwing magki-click ka ng mga link sa mga mensahe, dokumento, at iba pang app. Mapi-pin din ito sa iyong taskbar.</translation>
 <translation id="7285616922384953075">Pinapamahalaan ni <ph name="MANAGER" /> ang Chrome</translation>
 <translation id="7285990705317078173">I-download ang Chrome sa iyong telepono para i-track ang mga presyo at makatanggap ng mga alerto kapag bumaba ang presyo sa anumang site</translation>
 <translation id="7288567540154601580">Mga tab at extension</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Para protexerte, quitáronse os permisos dalgúns sitios</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Dispositivo activo hai <ph name="LAST_UPDATED" />días</translation>
 <translation id="1390418506739274310">Podes ver o historial doutras aplicacións que abran ligazóns en Chrome. Ademais, a túa Conta de Google pode ter outro contido do historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Pechouse o panel inferior de estatísticas de prezos</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1513352483775369820">Marcadores e historial web</translation>
 <translation id="1515901671075971249">Atallos de navegación polas pestanas</translation>
 <translation id="1516966594427080024">Abre unha nova ventá no modo de incógnito</translation>
-<translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="153446405401665083">Hai unha versión de Chrome máis recente</translation>
 <translation id="1540012742443808215">A barra de enderezos está actualmente na parte superior</translation>
 <translation id="1544084554881119930">Os enderezos e os métodos de pago non se encriptarán. Tampouco se sincronizará o historial de navegación de Chrome.
@@ -222,6 +220,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="1925021887439448749">Introducir enderezo web personalizado</translation>
 <translation id="1928618076168182477">Mostrando vista visual</translation>
 <translation id="1928696683969751773">Actualizacións</translation>
+<translation id="1934545916152269346">Usadas recentemente</translation>
 <translation id="1943398124995840148">As pestanas abertas agora teñen un novo deseño na realidade estendida</translation>
 <translation id="1944535645109964458">Non hai claves de acceso dispoñibles</translation>
 <translation id="1957557050935255529">Cargando PDF…</translation>
@@ -1727,7 +1726,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7968014550143838305">Engadiuse á lista de lectura</translation>
 <translation id="7968982339740310781">Ver detalles</translation>
 <translation id="7969391000881506217">Data de vencemento*</translation>
-<translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Avísate cando usas un contrasinal vulnerado nunha violación da seguranza dos datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome quitou estes permisos porque levas tempo sen acceder</translation>

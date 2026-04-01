@@ -2418,6 +2418,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Rhwystrwyd ffenestr naid}zero{Rhwystrwyd # ffenestr naid}two{Rhwystrwyd # ffenestr naid}few{Rhwystrwyd # ffenestr naid}many{Rhwystrwyd # ffenestr naid}other{Rhwystrwyd # ffenestr naid}}</translation>
 <translation id="4780320432697076749">Meddalwedd Lluniau</translation>
 <translation id="4780366598804516005">Blwch negeseuon 1</translation>
+<translation id="4785273477715803444">Hidlo logiau</translation>
 <translation id="4785376858512657294">Rheoli Cyfrif Google</translation>
 <translation id="4785689107224900852">Newid i'r tab hwn</translation>
 <translation id="4785998536350006000">Wrthi'n chwilio am "<ph name="SEARCH_QUERY" />"</translation>
@@ -3060,6 +3061,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5759751709240058861">Defnyddio a symud eich camera</translation>
 <translation id="5762131895127128324">Trwyddedau gyrru · Cardiau adnabod · Pasbortau</translation>
 <translation id="5763042198335101085">Rhowch gyfeiriad e-bost dilys</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Yma heddiw}=1{Yma 1 diwrnod yn ôl}two{Yma # ddiwrnod yn ôl}few{Yma # diwrnod yn ôl}many{Yma # diwrnod yn ôl}other{Yma # diwrnod yn ôl}}</translation>
 <translation id="5764725887548570807">Fformat tarddiad annilys.</translation>
 <translation id="5764920692828389743">Anfon at <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">I weld dulliau anfon a gofynion, dewiswch gyfeiriad</translation>

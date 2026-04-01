@@ -404,22 +404,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="1317158052518324525">Verbeterd automatisch invullen niet toestaan.</translation>
 <translation id="1317658068839330898">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet niet toestaan</translation>
 <translation id="1318233005302276244">Hiermee kunnen gebruikers hun pakketten volgen in Chrome.</translation>
-<translation id="1321747583289636863">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver voor WebSocket-verzoeken opgeven.
-
-Zie <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> om limieten voor niet-WebSocket-verzoeken aan te passen.
-
-Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
-
-Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
-Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
-
-De waarde moet gelijk zijn aan of hoger zijn dan 6.
-Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
-Het tot onder de standaardwaarde (32) verlagen van deze waarde is daarom op eigen risico.
-
-De waarde moet gelijk zijn aan of lager zijn dan 256.
-Als je een waarde boven die limiet instelt, wordt 256 gebruikt.
-Het tot boven de standaardwaarde (32) verhogen van deze waarde is daarom op eigen risico.</translation>
 <translation id="1323501563951768821">De instellingen voor F12 gebruiken de sneltoets met de functietoets Shift</translation>
 <translation id="1325547947664414578">Als een gebruiker schakelt tussen <ph name="PRODUCT_OS_NAME" />-apparaten, start de <ph name="PRODUCT_NAME" />-service de browser- en app-vensters van het vorige apparaat op het nieuwe apparaat.
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
@@ -4887,7 +4871,6 @@ Als je het beleid aanzet of niet instelt, verliezen gebruikers hun niet-ontsleut
 Als je het beleid uitzet, behouden gebruikers hun gegevens van de wachtwoordmanager, maar werkt de wachtwoordmanager niet.
 
 Als je het beleid instelt, kunnen gebruikers het niet wijzigen in <ph name="PRODUCT_NAME" />.</translation>
-<translation id="4321788213579606602">Maximumaantal gelijktijdige verbindingen met de proxyserver voor niet-WebSocket-verzoeken</translation>
 <translation id="4322842393287974810">Toestaan dat de kiosk-app die automatisch zonder vertraging is gestart, de <ph name="PRODUCT_OS_NAME" />-versie beheert</translation>
 <translation id="4323412353642577604">Extern attest voor contentbescherming aanzetten</translation>
 <translation id="4325690621216251241">Een afmeldknop toevoegen aan de systeembalk</translation>
@@ -6338,6 +6321,7 @@ Dit beleid ondersteunt dynamische vernieuwing.
 Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Rechten voor VM-CLI specificeren</translation>
 <translation id="5213038356678567351">Websites die nooit een schakeling tussen browsers veroorzaken.</translation>
+<translation id="5216710229085956333">Krisp-ruisonderdrukking aanzetten</translation>
 <translation id="5216815237712190041">Configureer een achtergrondafbeelding op apparaatniveau die wordt weergegeven op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Je kunt het beleid instellen door de URL op te geven waar het Chrome OS-apparaat de achtergrondafbeelding kan downloaden, evenals een cryptografische hash waarmee de integriteit van de download kan worden gecheckt. De afbeelding moet een jpeg-indeling hebben en mag niet groter zijn dan 16 MB. De URL moet zonder verificatie toegankelijk zijn. De achtergrondafbeelding wordt gedownload en gecachet. Deze wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
 
       Als het achtergrondbeleid voor het apparaat is ingesteld, downloadt het Chrome OS-apparaat de achtergrondafbeelding en gebruikt deze op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Zodra de gebruiker inlogt, wordt het achtergrondbeleid van de gebruiker toegepast.
@@ -6743,6 +6727,7 @@ Er zijn meerdere beleidsregels met oorsprongen die van invloed zijn op verzoeken
 <translation id="5479841110985196412">Virtueel toetsenbord voor toegankelijkheid aanzetten</translation>
 <translation id="5480380613778757009">Als je dit beleid uitzet of niet instelt, worden alle weergave-instellingen die zijn ingesteld in de beheerde gastsessie, gereset zodra de sessie wordt beëindigd. Als je dit beleid instelt op True, worden de weergave-eigenschappen bewaard nadat de beheerde gastsessie is beëindigd.</translation>
 <translation id="548137908954174608">Live ondertiteling aanzetten</translation>
+<translation id="5481873128882951841">Krisp-ruisonderdrukking uitzetten</translation>
 <translation id="5483012943408894695">Beginpunten of hostnaampatronen waarvoor geen beperkingen voor niet-beveiligde herkomsten zouden moeten gelden.</translation>
 <translation id="5483065054530244863">Door lokale vertrouwensinstanties verstrekte, met SHA-1 ondertekende certificaten toestaan</translation>
 <translation id="5485491014653571963">Met deze instelling worden Gemini-app-integraties toegestaan.
@@ -7631,7 +7616,6 @@ Als je het beleid instelt op Onwaar, hebben ze geen toegang tot de functie.</tra
 <translation id="6075316301208933536">Als <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> is ingesteld op <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, stel je met <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> in wanneer de batterij stopt met opladen, op basis van het percentage van de batterijlading. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> moet ten minste 5 procentpunten lager zijn dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Als je het beleid niet instelt, is de <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> batterijoplaadmodus van toepassing.</translation>
-<translation id="6080808146443476891">Maximumaantal gelijktijdige verbindingen met de proxyserver voor WebSocket-verzoeken</translation>
 <translation id="6082161804984853051">Als je het beleid instelt, kan <ph name="PRODUCT_NAME" /> de door jou opgegeven directory gebruiken voor de opslag van gecachte bestanden op de schrijf, ongeacht of gebruikers de optie '--disk-cache-dir' hebben opgegeven.
 
       Als je dit beleid niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de standaard cachedirectory. Gebruikers kunnen die instelling echter wijzigen met behulp van de opdrachtregel '--disk-cache-dir'.
@@ -10522,6 +10506,12 @@ Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_LOCK_SCREEN_EN
 
       Een extensie of Android-app kan standaard geen sleutel gebruiken die is bedoeld voor zakelijk gebruik. Dit staat gelijk aan het instellen van allowCorporateKeyUsage op False voor die extensie of Android-app. Alleen als allowCorporateKeyUsage voor een extensie of Android-app is ingesteld op True kan deze elke platformsleutel gebruiken die is gemarkeerd voor zakelijk gebruik om willekeurige gegevens te ondertekenen. Geef deze toestemming alleen als je er zeker van bent dat de extensie of de Android-app de toegang tot de sleutel voldoende beveiligt tegen aanvallers.</translation>
 <translation id="7928412788382651939">Groepering van generatieve AI-overzichtsvensters toestaan en AI-modellen verbeteren.</translation>
+<translation id="7929417323335013269">Dit beleid beheert de Krisp AI-technologie voor ruisonderdrukking op het apparaat.
+De bibliotheek is geïntegreerd als een afzonderlijke lokale bibliotheek van derden in <ph name="PRODUCT_OS_NAME" /> en is alleen beschikbaar voor beheerde gebruikers.
+
+Als je het beleid instelt, wordt de audioverwerking voor ruisonderdrukking van Krisp AI aangezet en kunnen gebruikers deze niet uitzetten.
+
+Als je het beleid niet toepast of niet instelt, wordt de audioverwerking voor ruisonderdrukking van Krisp AI uitgezet.</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndAccessibilityHiddenCrossOriginIframes is een Chrome-functie die is ontworpen om cross-origin-iframes in verschillende processen en binnen hetzelfde proces consistent te maken in hun weergavegedrag. Zie https://chromestatus.com/feature/5175574929080320 voor meer informatie over throttling in verschillende processen versus throttling binnen hetzelfde proces.
 
 Met dit bedrijfsbeleid kunnen beheerders bepalen of hun gebruikers de extra throttling wel of niet kunnen aanzetten. Als je het beleid niet toepast, kan de throttling niet worden aangezet. Als het beleid wordt toegepast of niet wordt ingesteld, kan de gebruiker throttling toestaan of kan de functie worden aangezet via Chrome-varianten.</translation>
@@ -11007,22 +10997,6 @@ Deze functie is alleen beschikbaar op het Canary-kanaal.
 
 Als je dit beleid toepast of niet instelt, is de pagina toegankelijk.
 Als je het beleid niet toepast, wordt de pagina geblokkeerd.</translation>
-<translation id="8264002158987842436">Als je het beleid instelt, kun je het maximale aantal gelijktijdige verbindingen met de proxyserver voor niet-WebSocket-verzoeken opgeven.
-
-Zie <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" /> om de limieten voor WebSocket-verzoeken aan te passen.
-
-Als je het beleid niet instelt, wordt de standaardwaarde 32 gebruikt.
-
-Het is bekend dat sommige web-apps veel verbindingen gebruiken voor openstaande GET-verzoeken. Als je een waarde lager dan 32 instelt, lopen netwerkprocessen van de browser daarom mogelijk vast als er te veel web-apps met openstaande verbindingen zijn geopend.
-Bepaalde proxyservers kunnen niet een groot aantal gelijktijdige verbindingen per client verwerken. Dit kan worden opgelost door dit beleid op een lagere waarde in te stellen.
-
-De waarde moet gelijk zijn aan of hoger zijn dan 6.
-Als je een waarde onder die limiet instelt, wordt 6 gebruikt.
-Het tot onder de standaardwaarde (32) verlagen van deze waarde is daarom op eigen risico.
-
-De waarde moet gelijk zijn aan of lager zijn dan 256 (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
-Als je een waarde boven die limiet instelt, wordt 256 gebruikt (99 in <ph name="PRODUCT_NAME" /> 147 en eerdere versies).
-Het tot boven de standaardwaarde (32) verhogen van deze waarde is daarom op eigen risico.</translation>
 <translation id="8266778278542911985">Als je het beleid instelt op 3, kunnen websites toegang vragen tot seriële poorten. Als je het beleid instelt op 2, wordt de toegang tot seriële poorten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>

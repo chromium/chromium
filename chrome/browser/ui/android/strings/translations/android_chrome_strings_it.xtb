@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Per contribuire alla tua sicurezza, sono state rimosse le autorizzazioni di alcuni siti</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384704387250346179">Traduci l'immagine con Google Lens <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Attivo <ph name="LAST_UPDATED" /> giorni fa</translation>
 <translation id="1390418506739274310">Potresti vedere la cronologia di altre app che aprono link in Chrome. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Riquadro inferiore di approfondimenti sul prezzo aperto a schermo intero</translation>
 <translation id="1397811292916898096">Cerca con <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="1513352483775369820">Preferiti e cronologia web</translation>
 <translation id="1515901671075971249">Scorciatoie di navigazione tra le schede</translation>
 <translation id="1516966594427080024">Apri una nuova finestra in modalità Incognito</translation>
-<translation id="1521774566618522728">Attivo oggi</translation>
 <translation id="153446405401665083">È disponibile una nuova versione di Chrome</translation>
 <translation id="1540012742443808215">Al momento la barra degli indirizzi è in alto</translation>
 <translation id="1544084554881119930">I metodi di pagamento e gli indirizzi non verranno criptati. La cronologia di navigazione di Chrome non verrà sincronizzata.
@@ -222,6 +220,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="1925021887439448749">Inserisci un indirizzo web personalizzato</translation>
 <translation id="1928618076168182477">Visualizzazione grafica selezionata</translation>
 <translation id="1928696683969751773">Aggiornamenti</translation>
+<translation id="1934545916152269346">Utilizzate di recente</translation>
 <translation id="1943398124995840148">Le tue schede aperte ora hanno un aspetto aggiornato in XR</translation>
 <translation id="1944535645109964458">Nessuna passkey disponibile</translation>
 <translation id="1957557050935255529">Caricamento PDF in corso…</translation>
@@ -1727,7 +1726,6 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
 <translation id="7968982339740310781">Mostra dettagli</translation>
 <translation id="7969391000881506217">Data di scadenza*</translation>
-<translation id="7971136598759319605">Attivo 1 giorno fa</translation>
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Ricevi un avviso se utilizzi una password che è stata compromessa a causa di una violazione dei dati.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni perché non hai visitato il sito di recente</translation>
@@ -1800,7 +1798,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="82296173028782770">Modifica query di ricerca: <ph name="SEARCH_QUERY" /></translation>
 <translation id="8236097722223016103">Aggiungi ai preferiti</translation>
 <translation id="8243077599929149377">Aggiungi il tuo nome utente</translation>
-<translation id="8244387390464017490">Personal. pag. Nuova scheda</translation>
+<translation id="8244387390464017490">Personalizza Nuova scheda</translation>
 <translation id="8244444485683708655">Allega immagine della fotocamera</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="8257429805444572809">Iscrizione a <ph name="DOMAIN" /> annullata</translation>

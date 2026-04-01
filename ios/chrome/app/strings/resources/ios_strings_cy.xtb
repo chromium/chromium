@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Cuddio "Parhau gyda'r tab hwn"</translation>
 <translation id="1520027731907768768">Derbyn hysbysiadau gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain.</translation>
 <translation id="1521366073263497277">Ewch i'ch grid tabiau</translation>
-<translation id="1521774566618522728">Yma heddiw</translation>
 <translation id="1523567067736644845">Datglowch i ddangos cyfrinair</translation>
 <translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531038290222364269">Dangos tabiau</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Mae eich cyfrineiriau yn cael eu hamgryptio ar eich dyfais cyn iddynt gael eu cadw i Reolwr Cyfrineiriau Google.</translation>
 <translation id="2306265833370324042">Dangos manylion <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Cau'r Tab</translation>
+<translation id="2310789833878085574">Cadw ac awtolenwi</translation>
 <translation id="2311077293164383652">Cau Tab wedi'i Binio</translation>
 <translation id="2316129865977710310">Dim diolch</translation>
 <translation id="2320166752086256636">Cuddio bysellfwrdd</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">I olrhain y cynnyrch, tapiwch Olrhain</translation>
 <translation id="5121618895923301719">Rydych yn olrhain y cynnyrch hwn yn barod. Mae'r dudalen hon wedi'i chadw yn <ph name="BEGIN_LINK" />Nodau Tudalen Dyfais Symudol<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Mae gennych nifer o broblemau cyfrinair.</translation>
-<translation id="5127538504377457572">Yma <ph name="DAYS" /> o ddiwrnodau yn ôl</translation>
 <translation id="5128788795241319992">Archwiliwch y ddewislen newydd</translation>
 <translation id="5132942445612118989">Cysonwch eich cyfrineiriau, hanes a mwy ar bob dyfais</translation>
 <translation id="5141363746588976328">Cuddio cerdyn gostyngiadau pris ar eich tabiau</translation>
@@ -1651,6 +1650,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6806550742467879742">Offer tudalen</translation>
 <translation id="6807287147325542056">Cyfrineiriau mewn apiau eraill</translation>
 <translation id="681368974849482173">Wedi creu'r eitem</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Mae'r nod tudalen wedi'i gadw yn eich Cyfrif Google, {email}}zero{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}two{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}few{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}many{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}other{Mae {count} nod tudalen wedi'u cadw yn eich Cyfrif Google, {email}.}}</translation>
 <translation id="6826004672264649705">Wrthi'n olrhain y cynnyrch hwn ar hyn o bryd. Agorwch i weld hanes prisiau</translation>
 <translation id="6830728435402077660">Ddim yn ddiogel</translation>
@@ -1964,7 +1964,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7952670906562503188">Rydych ar fin dileu {passkey_count} o godau pas a'r rhestr o wefannau ac apiau y gwnaethoch ddewis peidio byth â chadw mewngofnodi. Ni fydd unrhyw gyfrif a grëwyd gennych ar gyfer gwefannau ac apiau yn cael ei ddileu.</translation>
 <translation id="7958575506592576831">Gwybodaeth am ddiogelwch y dudalen</translation>
 <translation id="7961015016161918242">Byth</translation>
-<translation id="7971136598759319605">Yma 1 diwrnod yn ôl</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Rhoi cynnig arni</translation>
 <translation id="797588153137233716">Dewislen → Hanes → Dileu Data Pori</translation>

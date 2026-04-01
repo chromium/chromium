@@ -415,22 +415,6 @@ Untuk informasi selengkapnya tentang konteks aman, lihat Konteks Aman (https://w
 <translation id="1317158052518324525">Jangan izinkan isi otomatis yang ditingkatkan.</translation>
 <translation id="1317658068839330898">Jangan izinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web</translation>
 <translation id="1318233005302276244">Memungkinkan pengguna melacak paket mereka di Chrome.</translation>
-<translation id="1321747583289636863">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy untuk permintaan WebSocket.
-
-Untuk mengubah batas permintaan non-WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
-
-Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka.
-Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah.
-
-Nilai ini harus sama dengan atau lebih tinggi dari 6.
-Jika Anda menetapkan nilai di bawah batas tersebut, nilai 6 akan digunakan.
-Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
-
-Nilai ini harus sama dengan atau lebih rendah dari 256.
-Jika nilai yang disetel melebihi batas tersebut, nilai yang akan digunakan adalah 256.
-Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="1323501563951768821">Setelan F12 menggunakan pintasan yang berisi tombol pengubah shift</translation>
 <translation id="1325547947664414578">Saat pengguna beralih antar-perangkat <ph name="PRODUCT_OS_NAME" />, Layanan <ph name="PRODUCT_NAME" /> akan meluncurkan jendela aplikasi dan browser dari perangkat sebelumnya ke perangkat baru.
 Jika kebijakan disetel ke Aktif, jendela aplikasi dan browser dari perangkat <ph name="PRODUCT_OS_NAME" /> yang terakhir digunakan oleh pengguna saat ini akan otomatis diluncurkan saat login.
@@ -5080,7 +5064,6 @@ Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna dengan sandi ya
 Jika kebijakan ini disetel ke Nonaktif, data pengelola sandi pengguna tidak akan disentuh, tetapi akan mengalami kerusakan pada fungsi pengelola sandi.
 
 Jika kebijakan ini disetel, pengguna tidak dapat mengubahnya di <ph name="PRODUCT_NAME" />.</translation>
-<translation id="4321788213579606602">Jumlah maksimal koneksi serentak ke server proxy untuk permintaan non-WebSocket</translation>
 <translation id="4322842393287974810">Izinkan peluncuran otomatis dengan aplikasi kios tanpa penundaan untuk mengontrol versi <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Aktifkan pengesahan jarak jauh untuk perlindungan konten</translation>
 <translation id="4325690621216251241">Tambahkan tombol logout di area notifikasi</translation>
@@ -7949,7 +7932,6 @@ Jika disetel ke salah (false), pengajar tidak dapat mengakses fitur ini.</transl
 <translation id="6075316301208933536">Jika <ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" /> disetel ke <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />, menyetel <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> akan menyesuaikan waktu berhenti pengisian daya baterai, berdasarkan persentase pengisian daya baterai. <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> harus setidaknya 5 persen di bawah <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.
 
       Tidak menyetel kebijakan akan memberlakukan mode pengisian daya baterai <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" />.</translation>
-<translation id="6080808146443476891">Jumlah maksimal koneksi serentak ke server proxy untuk permintaan WebSocket</translation>
 <translation id="6082161804984853051">Jika kebijakan ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori yang Anda sediakan untuk menyimpan file cache di disk, baik pengguna menentukan tanda --dir-cache-disk maupun tidak.
 
       Jika tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan direktori cache default, tetapi pengguna dapat mengubah setelan tersebut dengan tanda command line --dir-cache-disk.
@@ -11534,22 +11516,6 @@ Fitur ini hanya akan tersedia di saluran Canary.
 
 Jika kebijakan disetel ke Aktif atau tidak disetel, halaman akan dapat diakses.
 Jika kebijakan disetel ke Nonaktif, halaman akan diblokir.</translation>
-<translation id="8264002158987842436">Menyetel kebijakan akan menentukan jumlah maksimal koneksi simultan ke server proxy untuk permintaan non-WebSocket.
-
-Untuk mengubah batas permintaan WebSocket, lihat <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Jika kebijakan ini tidak disetel, nilai default 32 akan digunakan.
-
-Beberapa aplikasi web diketahui memakai banyak koneksi dengan GET yang macet, jadi dengan menyetel nilai lebih rendah dari 32 dapat menyebabkan jaringan browser menjadi macet jika terlalu banyak aplikasi web dengan jaringan macet terbuka.
-Beberapa server proxy tidak dapat menangani koneksi serentak tiap klien dalam jumlah besar, yang dapat diselesaikan dengan menyetel kebijakan ini ke nilai yang lebih rendah.
-
-Nilai ini harus sama dengan atau lebih tinggi dari 6.
-Jika Anda menetapkan nilai di bawah batas tersebut, nilai 6 akan digunakan.
-Jika menurunkan nilai di bawah nilai default (32), Anda harus menanggung sendiri risikonya.
-
-Nilai ini harus sama dengan atau lebih rendah dari 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
-Jika nilai yang disetel melebihi batas tersebut, nilai yang akan digunakan adalah 256 (99 di <ph name="PRODUCT_NAME" /> 147 dan versi sebelumnya).
-Jika menaikkan nilai di atas nilai default (32), Anda harus menanggung sendiri risikonya.</translation>
 <translation id="8266778278542911985">Jika kebijakan disetel ke 3, situs akan dapat meminta akses ke port serial. Jika kebijakan disetel ke 2, akses ke port serial akan ditolak.
 
       Jika tidak disetel, situs akan dapat meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>

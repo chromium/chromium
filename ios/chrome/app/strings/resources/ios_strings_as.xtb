@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"এই টেবটোৰ জৰিয়তে অব্যাহত ৰাখক" সুবিধাটো লুকুৱাওক</translation>
 <translation id="1520027731907768768">আপুনি ট্ৰেক কৰা প্ৰ’ডাক্টসমূহৰ মূল্য কমিলে সতৰ্কবাৰ্তা লাভ কৰক</translation>
 <translation id="1521366073263497277">আপোনাৰ টেবৰ গ্ৰিডলৈ যাওক</translation>
-<translation id="1521774566618522728">আজি সক্ৰিয় হৈছে</translation>
 <translation id="1523567067736644845">পাছৱৰ্ড দেখুৱাবলৈ আনলক কৰক</translation>
 <translation id="1524563461097350801">নালাগে, ধন্যবাদ</translation>
 <translation id="1531038290222364269">টেব দেখুৱাওক</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়।</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />ৰ সবিশেষ দেখুৱাওক</translation>
 <translation id="2309265394777270359">টেব বন্ধ কৰক</translation>
+<translation id="2310789833878085574">ছেভ কৰক আৰু স্বয়ংক্রিয়ভাৱে পূৰ কৰক</translation>
 <translation id="2311077293164383652">পিন কৰি থোৱা টেব বন্ধ কৰক</translation>
 <translation id="2316129865977710310">নালাগে, ধন্যবাদ</translation>
 <translation id="2320166752086256636">কীব'ৰ্ড লুকুৱাওক</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">প্ৰ’ডাক্টটো ট্ৰেক কৰিবলৈ, ট্ৰেক কৰকত টিপক</translation>
 <translation id="5121618895923301719">আপুনি ইতিমধ্যে এই প্ৰ’ডাক্টটো ট্ৰেক কৰি আছে। এই পৃষ্ঠাখন <ph name="BEGIN_LINK" />ম’বাইল বুকমাৰ্ক<ph name="END_LINK" />ত ছেভ কৰা হৈছে।</translation>
 <translation id="512533434554095351">আপোনাৰ কেইবাটাও পাছৱৰ্ড সম্পৰ্কীয় সমস্যা আছে।</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="5128788795241319992">নতুন মেনুখন অন্বেষণ কৰক</translation>
 <translation id="5132942445612118989">আপোনাৰ পাছৱর্ড, ইতিহাস আৰু অধিক সকলো ডিভাইচতে ছিংক কৰক</translation>
 <translation id="5141363746588976328">আপোনাৰ টেবত মূল্য কমাৰ তথ্য লুকুৱাওক সম্পৰ্কীয় কাৰ্ড</translation>
@@ -1651,6 +1650,7 @@
 <translation id="6806550742467879742">পৃষ্ঠা সম্পৰ্কীয় সঁজুলি</translation>
 <translation id="6807287147325542056">অন্য এপ্‌সমূহৰ পাছৱৰ্ড</translation>
 <translation id="681368974849482173">বস্তু সৃষ্টি কৰা হ’ল</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{আপোনাৰ Google একাউণ্ট, {email}ত ছেভ কৰি থোৱা বুকমাৰ্ক}one{আপোনাৰ Google একাউণ্ট, {email}ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}other{আপোনাৰ Google একাউণ্ট, {email}ত {count} টা বুকমাৰ্ক ছেভ কৰা হৈছে}}</translation>
 <translation id="6826004672264649705">বৰ্তমান এই প্ৰ’ডাক্টটো ট্ৰেক কৰি থকা হৈছে। মূল্যৰ ইতিহাস চাবলৈ খোলক</translation>
 <translation id="6830728435402077660">সুৰক্ষিত নহয়</translation>
@@ -1964,7 +1964,6 @@
 <translation id="7952670906562503188">আপুনি {passkey_count} টা পাছকী আৰু আপুনি কেতিয়াও ছাইন-ইনৰ তথ্য ছেভ নকৰিবলৈ বাছনি কৰা ছাইট আৰু এপ্‌সমূহৰ সূচী মচিব ওলাইছে। আপুনি ছাইট বা এপ্‌সমূহৰ বাবে সৃষ্টি কৰা কোনো একাউণ্ট মচি পেলোৱা নহ’ব।</translation>
 <translation id="7958575506592576831">পৃষ্ঠাৰ সুৰক্ষাৰ তথ্য</translation>
 <translation id="7961015016161918242">কেতিয়াও নহয়</translation>
-<translation id="7971136598759319605">১দিনৰ পূৰ্বে সক্ৰিয় আছিল</translation>
 <translation id="7972837668077967426">কেনভাছ</translation>
 <translation id="7975036700432177008">ব্যৱহাৰ কৰি চাওক</translation>
 <translation id="797588153137233716">মেনু → ইতিহাস → ব্ৰাউজিঙৰ ডেটা মচক</translation>

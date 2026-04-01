@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">Пернетақтаны құлыптауға және пайдалануға рұқсат сұрай алады.</translation>
 <translation id="2839032553903800133">Хабарландырулар бөгелді.</translation>
 <translation id="2839501879576190149">Назар аударыңыз: жалған сайт</translation>
+<translation id="2840680829170913626">Бұл опцияларды ұсыну үшін төлеу бетіндегі контент Google-ға жіберіледі. Төлем жоспарлары талаптарға сай болуы керек. Автотолтыруда кейін төлеу опцияларын жасыру үшін <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> бөліміне өтіңіз.</translation>
 <translation id="2843623755398178332">Ортақ қойындыны айналдыру және масштабтау қажет пе?</translation>
 <translation id="2851291081585704741">Офлайн режимдесіз</translation>
 <translation id="2854163610915391726">Google аккаунтында сақталатын Chrome ақпаратын басқару</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
 <translation id="316638481603975524">Веб-қолданбаларды орнатуға рұқсат сұрауы мүмкін</translation>
+<translation id="3166788340998560642">Келесі жолы пайдаланған кезде, Chrome оны <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қызметіне сақтауды ұсынады.</translation>
 <translation id="3168744840365648658">Радиожабдық</translation>
 <translation id="3168938241115725594">Классикалық көліктер</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2415,6 +2417,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Қалқымалы терезе бөгелді}other{# қалқымалы терезе бөгелді}}</translation>
 <translation id="4780320432697076749">Фотосурет өңдеуге арналған бағдарламалық құралдар</translation>
 <translation id="4780366598804516005">1-ші пошта жәшігі</translation>
+<translation id="4785273477715803444">Журналдарды іріктеу</translation>
 <translation id="4785376858512657294">Google аккаунтын басқару</translation>
 <translation id="4785689107224900852">Осы қойындыға ауысу</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" ізделіп жатыр</translation>
@@ -3057,6 +3060,7 @@
 <translation id="5759751709240058861">Камераны пайдалану және жылжыту</translation>
 <translation id="5762131895127128324">Жүргізуші куәліктері · Жеке куәліктер · Паспорттар</translation>
 <translation id="5763042198335101085">Дұрыс электрондық пошта мекенжайын енгізіңіз</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Бүгін қосылды.}=1{1 күн бұрын қосылды.}other{# күн бұрын қосылды.}}</translation>
 <translation id="5764725887548570807">Дереккөз форматы жарамсыз.</translation>
 <translation id="5764920692828389743">Алушы: <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Жеткізу әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>

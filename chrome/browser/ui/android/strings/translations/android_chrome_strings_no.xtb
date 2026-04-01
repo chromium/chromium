@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">For å holde deg trygg har vi fjernet tillatelser fra noen nettsteder</translation>
 <translation id="1383876407941801731">Søk</translation>
 <translation id="1384704387250346179">Oversett bildet med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktiv for <ph name="LAST_UPDATED" /> dager siden</translation>
 <translation id="1390418506739274310">Du kan se loggen fra andre apper som åpner linker i Chrome. Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Bunnark med prisinnsikt er åpnet i full høyde</translation>
 <translation id="1397811292916898096">Søk med <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="1513352483775369820">Bokmerker og nettlogg</translation>
 <translation id="1515901671075971249">Hurtigtaster for fanenavigasjon</translation>
 <translation id="1516966594427080024">Åpne et nytt vindu i Inkognitomodus</translation>
-<translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="153446405401665083">En ny versjon av Chrome er tilgjengelig</translation>
 <translation id="1540012742443808215">Adressefeltet er øverst</translation>
 <translation id="1544084554881119930">Betalingsmåter og adresser krypteres ikke. Nettleserloggen fra Chrome synkroniseres ikke.
@@ -222,6 +220,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="1925021887439448749">Skriv inn en egendefinert nettadresse</translation>
 <translation id="1928618076168182477">Viser visuell visning</translation>
 <translation id="1928696683969751773">Oppdateringer</translation>
+<translation id="1934545916152269346">Nylig brukt</translation>
 <translation id="1943398124995840148">De åpne fanene har nå et oppdatert utseende i XR</translation>
 <translation id="1944535645109964458">Ingen passnøkler er tilgjengelige</translation>
 <translation id="1957557050935255529">Laster inn PDF …</translation>
@@ -1727,7 +1726,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7968014550143838305">Lagt til på leselisten</translation>
 <translation id="7968982339740310781">Se detaljer</translation>
 <translation id="7969391000881506217">Utløpsdato*</translation>
-<translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Advarer deg hvis du bruker passord som er utsatt for databrudd.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene fordi du ikke har besøkt nettstedet i det siste</translation>

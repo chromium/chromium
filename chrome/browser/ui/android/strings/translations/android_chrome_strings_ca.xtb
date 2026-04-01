@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Per ajudar a protegir-te, s'han suprimit els permisos d'alguns llocs web</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1384704387250346179">Tradueix la imatge amb Lens <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Actiu fa <ph name="LAST_UPDATED" /> dies</translation>
 <translation id="1390418506739274310">És possible que vegis l'historial d'altres aplicacions que obren enllaços a Chrome. A <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> trobaràs altres maneres d'explorar l'historial de navegació del teu Compte de Google.</translation>
 <translation id="139752016751285248">Full inferior d'estadístiques de preus obert a alçada completa</translation>
 <translation id="1397811292916898096">Cerca amb <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1513352483775369820">Adreces interès i historial web</translation>
 <translation id="1515901671075971249">Dreceres de navegació per les pestanyes</translation>
 <translation id="1516966594427080024">Obre una finestra nova en mode d'incògnit</translation>
-<translation id="1521774566618522728">Actiu avui</translation>
 <translation id="153446405401665083">Hi ha una versió nova de Chrome disponible</translation>
 <translation id="1540012742443808215">Actualment la barra d'adreces és a la part superior</translation>
 <translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
@@ -1728,7 +1726,6 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7968014550143838305">S'ha afegit a la llista de lectura</translation>
 <translation id="7968982339740310781">Mostra els detalls</translation>
 <translation id="7969391000881506217">Data de caducitat*</translation>
-<translation id="7971136598759319605">Actiu fa 1 dia</translation>
 <translation id="7975379999046275268">Previsualitza la pàgina <ph name="BEGIN_NEW" />Novetat<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">T'avisa si utilitzes una contrasenya que està en perill a causa d'una violació de les dades.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè no has visitat aquest lloc web recentment</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Ocultar "Continuar com esta guia"</translation>
 <translation id="1520027731907768768">Receba alertas de redução no preço dos produtos que você monitora.</translation>
 <translation id="1521366073263497277">Acesse a grade de guias</translation>
-<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1523567067736644845">Desbloqueie para mostrar a senha</translation>
 <translation id="1524563461097350801">Agora não</translation>
 <translation id="1531038290222364269">Mostrar guias</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google.</translation>
 <translation id="2306265833370324042">Mostrar detalhes de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fechar guia</translation>
+<translation id="2310789833878085574">Salvar e preencher automaticamente</translation>
 <translation id="2311077293164383652">Fechar guia fixada</translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Para monitorar o produto, toque em "Monitorar"</translation>
 <translation id="5121618895923301719">Você já está acompanhando este produto. Esta página fica salva nos <ph name="BEGIN_LINK" />Favoritos nos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Você tem vários problemas de senha.</translation>
-<translation id="5127538504377457572">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="5128788795241319992">Conhecer o novo menu</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar o card "Redução dos preços mostrados nas suas guias"</translation>
@@ -1651,6 +1650,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6806550742467879742">Ferramentas da página</translation>
 <translation id="6807287147325542056">Senhas em outros apps</translation>
 <translation id="681368974849482173">Item criado</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Favorito salvo na sua Conta do Google {email}}one{{count} favorito salvo na sua Conta do Google {email}}other{{count} favoritos salvos na sua Conta do Google {email}}}</translation>
 <translation id="6826004672264649705">Este produto está em monitoramento. Abra para mostrar o histórico de preços</translation>
 <translation id="6830728435402077660">Não seguro</translation>
@@ -1964,7 +1964,6 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="7952670906562503188">Você está prestes a excluir {passkey_count} chaves de acesso e a lista de sites e apps em que escolheu nunca salvar informações de login. As contas que você criou em sites e apps não serão excluídas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Testar</translation>
 <translation id="797588153137233716">Menu → Histórico → Excluir dados de navegação</translation>

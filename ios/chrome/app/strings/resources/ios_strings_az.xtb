@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"Bu tab ilə davam edin" seçimini gizlədin</translation>
 <translation id="1520027731907768768">İzlədiyiniz məhsullar ilə bağlı qiymət endirimi xəbərdarlıqları alın.</translation>
 <translation id="1521366073263497277">Tab panelinə keçin</translation>
-<translation id="1521774566618522728">Bu gün aktivdir</translation>
 <translation id="1523567067736644845">Parolu göstərmək üçün kiliddən çıxarın</translation>
 <translation id="1524563461097350801">Xeyr, təşəkkürlər</translation>
 <translation id="1531038290222364269">Tabları göstərin</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> təfərrüatlarını göstərin</translation>
 <translation id="2309265394777270359">Tabı bağlayın</translation>
+<translation id="2310789833878085574">Yadda saxlayın və avtomatik doldurun</translation>
 <translation id="2311077293164383652">Sancılmış tabı bağlayın</translation>
 <translation id="2316129865977710310">Yox, çox sağ olun</translation>
 <translation id="2320166752086256636">Klaviaturanı gizlədin.</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Məhsulu izləmək üçün İzləyin seçiminə toxunun</translation>
 <translation id="5121618895923301719">Artıq bu məhsulu izləyirsiniz. Bu səhifə <ph name="BEGIN_LINK" />Mobil Əlfəcinlərdə<ph name="END_LINK" /> yadda saxlandı.</translation>
 <translation id="512533434554095351">Bir neçə parol problemi var.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> gün əvvəl aktiv olub</translation>
 <translation id="5128788795241319992">Yeni menyunu araşdırın</translation>
 <translation id="5132942445612118989">Bütün cihazlarda parol, tarixçə və s. sinxronizasiya edin</translation>
 <translation id="5141363746588976328">Tablarınızda qiymətin düşməsi kartını gizlədin</translation>
@@ -1651,6 +1650,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6806550742467879742">Səhifə alətləri</translation>
 <translation id="6807287147325542056">Digər tətbiqlərdəki parollar</translation>
 <translation id="681368974849482173">Element yaradılmışdır</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Əlfəcin Google Hesabında ({email}) yadda saxlandı}other{{count} əlfəcin Google Hesabında ({email}) yadda saxlandı.}}</translation>
 <translation id="6826004672264649705">Hazırda bu məhsul izlənilir. Qiymət tarixçəsinə baxmaq üçün açın</translation>
 <translation id="6830728435402077660">Təhlükəsiz deyil</translation>
@@ -1964,7 +1964,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7952670906562503188">{passkey_count} giriş açarını və girişi yadda saxlamamağı seçdiyiniz sayt və tətbiqlərin siyahısını silmək üzrəsiniz. Sayt və tətbiqlər üçün yaratdığınız hər hansı hesab silinməyəcək.</translation>
 <translation id="7958575506592576831">Səhifə güvənliyi məlumatı</translation>
 <translation id="7961015016161918242">Heç vaxt</translation>
-<translation id="7971136598759319605">1 gün əvvəl aktiv olub</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Cəhd edin</translation>
 <translation id="797588153137233716">Menyu → Tarixçə → Baxış datasını silin</translation>

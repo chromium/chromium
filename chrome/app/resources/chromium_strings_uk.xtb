@@ -57,6 +57,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="1639380494700489405">Щоб ставити запитання про вкладку в режимі ШІ, не залишаючи сторінку, увійдіть у Chromium. Крім того, ви отримаєте доступ до паролів і інших даних на всіх своїх пристроях.</translation>
 <translation id="1640672724030957280">Завантаження...</translation>
 <translation id="1680687534629375545">Запитати про цю сторінку в сервісі "Пошук за зображенням"</translation>
+<translation id="1708414395296835197">Ви можете відкривати в Chromium посилання з повідомлень, документів і інших додатків. Вебпереглядач також буде закріплено на панелі завдань.</translation>
 <translation id="1709772298389099340">Надає розширені повноваження для <ph name="BROWSER_NAME" />.</translation>
 <translation id="1715127912119967311">Щоб покращити ці функції, Chromium надсилає дані про вашу взаємодію з ними в Google. Наші спеціалісти можуть читати, обробляти й коментувати ці дані.</translation>
 <translation id="1722488837206509557">Ви зможете вибирати доступні пристрої і показувати на них контент.</translation>
@@ -438,6 +439,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5895138241574237353">Перезапустити</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вхід у мережу</translation>
 <translation id="5924017743176219022">Підключення до Інтернету…</translation>
+<translation id="5939553720811388432">Налаштуйте Chromium</translation>
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5949225980829865667">Щоб отримати доступ до цієї закладки й інших даних на всіх пристроях, увійдіть у Chromium</translation>
 <translation id="5953657885167112863">Персоналізуйте Chromium</translation>

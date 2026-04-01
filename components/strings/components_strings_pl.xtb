@@ -1772,6 +1772,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3744899669254331632">Nie możesz teraz odwiedzić strony <ph name="SITE" />, ponieważ wysłała ona zaszyfrowane dane logowania, których Chromium nie może przetworzyć. Błędy sieciowe i ataki są zazwyczaj tymczasowe, więc prawdopodobnie strona będzie dostępna później.</translation>
 <translation id="3745599309295009257">Twój tekst oraz zawartość i adres URL strony, na której piszesz, zostaną przesłane do Google, sprawdzone przez weryfikatorów i wykorzystane do ulepszenia tej funkcji. Unikaj podawania danych osobowych (takich jak dane medyczne lub finansowe) i nie korzystaj z tego narzędzia na stronach, które zawierają informacje prywatne lub poufne.</translation>
 <translation id="3748009735914587286">Metal (wysoki połysk)</translation>
+<translation id="3748647055058832337">Opcja niedostępna dla tego sprzedawcy</translation>
 <translation id="3749600200023337912">Do tej płatności może zostać użyta zapisana forma płatności automatycznej. Aby wyłączyć e-portfele lub aplikację płatniczą w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Zapisać adres na koncie?</translation>
 <translation id="3752543821772132562">Ignorowana, bo zasada <ph name="POLICY_NAME" /> nie jest skonfigurowana.</translation>
@@ -2418,6 +2419,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokowano wyskakujące okienko}few{Zablokowano # wyskakujące okienka}many{Zablokowano # wyskakujących okienek}other{Zablokowano # wyskakującego okienka}}</translation>
 <translation id="4780320432697076749">Oprogramowanie do zdjęć</translation>
 <translation id="4780366598804516005">Zestaw tac odbiorczych 1</translation>
+<translation id="4785273477715803444">Filtrowanie dzienników</translation>
 <translation id="4785376858512657294">Zarządzaj kontem Google</translation>
 <translation id="4785689107224900852">Przełącz na tę kartę</translation>
 <translation id="4785998536350006000">Wyszukiwanie hasła „<ph name="SEARCH_QUERY" />”</translation>
@@ -3060,6 +3062,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
 <translation id="5762131895127128324">Prawa jazdy · Dowody tożsamości · Paszporty</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktywność dzisiaj}=1{Aktywność 1 dzień temu}few{Aktywność # dni temu}many{Aktywność # dni temu}other{Aktywność # dnia temu}}</translation>
 <translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
 <translation id="5764920692828389743">Wysyłaj na adres <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
@@ -3890,6 +3893,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7057567173736333354">Opisz obraz</translation>
 <translation id="7058163556978339998">W <ph name="BROWSER" /> sprawdzono, że wydawcą certyfikatu tej witryny jest <ph name="ISSUER" />.</translation>
 <translation id="7058774143982824355">Usługa parsera haseł w formacie CSV</translation>
+<translation id="7059913660448028407">Opcja obecnie niedostępna</translation>
 <translation id="7062344833049251424">Aby następnym razem zapłacić szybciej, zapisz kartę i adres rozliczeniowy w Portfelu Google</translation>
 <translation id="706295145388601875">Dodaj adresy i zarządzaj nimi w ustawieniach Chrome</translation>
 <translation id="7063157783216323487">Zielony 2</translation>
@@ -4171,6 +4175,7 @@ Dodatkowe informacje:
 <translation id="7471007961486718967">Podaj powód przeniesienia (wymagane)</translation>
 <translation id="7473033553872550521">Możesz też skontaktować się z właścicielem witryny i poprosić go o przejście na HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Nie, dziękuję</translation>
+<translation id="7475618719385705713">Ta strona jest zablokowana</translation>
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7481603210197454575">Koperta włoska</translation>
 <translation id="7482823403440483089">Ulepszone autouzupełnianie</translation>
@@ -4192,6 +4197,7 @@ Dodatkowe informacje:
 <translation id="7508255263130623398">Zwrócony identyfikator urządzenia dla zasad jest pusty lub nie pasuje do bieżącego identyfikatora urządzenia</translation>
 <translation id="7508577201115425418">Usługi kopiowania i drukowania dokumentów</translation>
 <translation id="7510269639068718544">Koty</translation>
+<translation id="7511707705708508147">Nieobsługiwana waluta</translation>
 <translation id="7511955381719512146">Sieć Wi-Fi, której używasz, może wymagać otwarcia strony <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Te zasady nie mogą mieć wartości „Prawda”, a ich przestrzeganie nie może być obowiązkowe. Zmieniliśmy ich stan na zalecane.</translation>
 <translation id="7514365320538308">Pobierz</translation>
@@ -4691,6 +4697,7 @@ Dodatkowe informacje:
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8282292167096638950">Usuń prawo jazdy</translation>
 <translation id="8282409409360764263">Pielęgnacja ogrodu</translation>
+<translation id="828282277746732142">Zapisz numer IBAN w Portfelu Google</translation>
 <translation id="8282947398454257691">Odczytywanie unikalnego identyfikatora Twojego urządzenia</translation>
 <translation id="8284769179630993263">Zarządzaj Bezpiecznym przeglądaniem i innymi opcjami w ustawieniach Chrome</translation>
 <translation id="828558778104922222">Zdjęcie zostało utracone z powodu nieznanego błędu</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Heimildir tiltekinna vefsvæða voru fjarlægðar til að tryggja öryggi þitt</translation>
 <translation id="1383876407941801731">Leita</translation>
 <translation id="1384704387250346179">Þýða mynd með Google linsu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Virkt fyrir <ph name="LAST_UPDATED" /> dögum</translation>
 <translation id="1390418506739274310">Þú gætir séð feril annarra forrita sem opna tengla í Chrome. Google-reikningurinn þinn kann að vera með annars konar vafraferil á <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Blað neðst með verðinnsýn, opið til hálfs</translation>
 <translation id="1397811292916898096">Leita með <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina
 <translation id="1513352483775369820">Bókamerki og vefferill</translation>
 <translation id="1515901671075971249">Flýtileiðir flipaflettingar</translation>
 <translation id="1516966594427080024">Opna nýjan glugga í huliðsstillingu</translation>
-<translation id="1521774566618522728">Virkt í dag</translation>
 <translation id="153446405401665083">Ný útgáfa af Chrome er í boði</translation>
 <translation id="1540012742443808215">Veffangastika er efst eins og stendur</translation>
 <translation id="1544084554881119930">Greiðslumátar og vefföng eru ekki dulkóðuð. Vafraferill Chrome samstillist ekki.
@@ -222,6 +220,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="1925021887439448749">Færðu inn sérsniðna vefslóð</translation>
 <translation id="1928618076168182477">Sýnir stærra yfirlit</translation>
 <translation id="1928696683969751773">Uppfærslur</translation>
+<translation id="1934545916152269346">Notað nýlega</translation>
 <translation id="1943398124995840148">Opnu fliparnir þínir birtast nú með nýjum hætti í víðveruleika</translation>
 <translation id="1944535645109964458">Engir aðgangslyklar tiltækir</translation>
 <translation id="1957557050935255529">Hleður PDF…</translation>
@@ -1727,7 +1726,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />eyða Chrome-g�
 <translation id="7968014550143838305">Bætt við leslista</translation>
 <translation id="7968982339740310781">Skoða upplýsingar</translation>
 <translation id="7969391000881506217">Lokadagsetning*</translation>
-<translation id="7971136598759319605">Virkt fyrir 1 degi</translation>
 <translation id="7975379999046275268">Forskoða síðu <ph name="BEGIN_NEW" />Nýtt<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Varar þig við ef þú notar aðgangsorð í hættu vegna öryggisbrots.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome fjarlægði þessar heimildir því þú hefur ekki heimsótt nýlega</translation>

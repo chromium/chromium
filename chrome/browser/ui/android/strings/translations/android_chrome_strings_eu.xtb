@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Zu babesten laguntzeko, baimenak kendu zaizkie webgune batzuei</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1384704387250346179">Itzuli irudia Google Lens-ekin <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Aktibo duela <ph name="LAST_UPDATED" /> egun</translation>
 <translation id="1390418506739274310">Chrome-n estekak irekitzen dituzten beste aplikazioen historiak ikusiko dituzu agian. Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero, joan <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webgunera.</translation>
 <translation id="139752016751285248">Pantailaren behealdean ainguratutako orria, prezioaren informazio xehatua duena, altuera osoan irekita dago</translation>
 <translation id="1397811292916898096">Egin bilaketak <ph name="PRODUCT_NAME" /> zerbitzuarekin</translation>
@@ -136,7 +135,6 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="1513352483775369820">Laster-markak eta web-historia</translation>
 <translation id="1515901671075971249">Fitxetan zehar nabigatzeko lasterbideak</translation>
 <translation id="1516966594427080024">Ireki beste leiho bat ezkutuko moduan</translation>
-<translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="153446405401665083">Chrome-ren bertsio berri bat erabilgarri dago</translation>
 <translation id="1540012742443808215">Une honetan, helbide-barra goian dago</translation>
 <translation id="1544084554881119930">Ordainketa-metodoak eta helbideak ez dira enkriptatuko. Chrome-ko arakatze-historia ez da sinkronizatuko.
@@ -222,6 +220,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="1925021887439448749">Idatzi web-helbide pertsonalizatua</translation>
 <translation id="1928618076168182477">Ikuspegi bisuala ikusgai</translation>
 <translation id="1928696683969751773">Eguneratzeak</translation>
+<translation id="1934545916152269346">Azkenaldian erabilitakoak</translation>
 <translation id="1943398124995840148">Orain, irekitako fitxek itxura berria dute errealitate hedatuan</translation>
 <translation id="1944535645109964458">Ez dago sarbide-gakorik erabilgarri</translation>
 <translation id="1957557050935255529">PDFa kargatzen…</translation>
@@ -1727,7 +1726,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7968014550143838305">Gehitu da irakurketa-zerrendan</translation>
 <translation id="7968982339740310781">Ikusi xehetasunak</translation>
 <translation id="7969391000881506217">Iraungitze-data*</translation>
-<translation id="7971136598759319605">Aktibo duela egun bat</translation>
 <translation id="7975379999046275268">Aurreikusi orria <ph name="BEGIN_NEW" />Berria<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Datuen isilpekotasunaren urratze batean arriskuan jarri den pasahitz bat badarabilzu, horren berri emango dizu.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome-k baimen horiek kendu ditu, azkenaldian ez duzulako bisitatu webgune hori</translation>

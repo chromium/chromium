@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Sembunyikan "Teruskan dengan tab ini"</translation>
 <translation id="1520027731907768768">Terima makluman penurunan harga untuk produk yang anda jejaki.</translation>
 <translation id="1521366073263497277">Akses grid tab anda</translation>
-<translation id="1521774566618522728">Aktif hari ini</translation>
 <translation id="1523567067736644845">Buka kunci untuk menunjukkan kata laluan</translation>
 <translation id="1524563461097350801">Tidak Perlu</translation>
 <translation id="1531038290222364269">Paparkan tab</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Kata laluan anda disulitkan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google.</translation>
 <translation id="2306265833370324042">Paparkan butiran <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Tutup Tab</translation>
+<translation id="2310789833878085574">Simpan dan autolengkap</translation>
 <translation id="2311077293164383652">Tutup Tab Tersemat</translation>
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
 <translation id="2320166752086256636">Sembunyikan papan kekunci</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Untuk menjejaki produk, ketik Jejak</translation>
 <translation id="5121618895923301719">Anda telah menjejaki produk ini. Halaman ini disimpan pada <ph name="BEGIN_LINK" />Penanda Halaman Mudah Alih<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Anda mempunyai beberapa masalah kata laluan.</translation>
-<translation id="5127538504377457572">Aktif <ph name="DAYS" /> hari lalu</translation>
 <translation id="5128788795241319992">Terokai menu baharu</translation>
 <translation id="5132942445612118989">Segerakkan kata laluan, sejarah &amp; pelbagai lagi pada semua peranti</translation>
 <translation id="5141363746588976328">Sembunyikan kad penurunan harga pada tab anda</translation>
@@ -1651,6 +1650,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="6806550742467879742">Alatan halaman</translation>
 <translation id="6807287147325542056">Kata laluan dalam apl lain</translation>
 <translation id="681368974849482173">Item dibuat</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Penanda halaman disimpan dalam Google Account anda, {email}}other{{count} penanda halaman disimpan dalam Google Account anda, {email}}}</translation>
 <translation id="6826004672264649705">Sedang menjejaki produk ini. Buka untuk melihat sejarah harga</translation>
 <translation id="6830728435402077660">Tidak selamat</translation>
@@ -1964,7 +1964,6 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7952670906562503188">Anda akan memadamkan {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="7958575506592576831">Maklumat keselamatan halaman</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
-<translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7972837668077967426">Kanvas</translation>
 <translation id="7975036700432177008">Cuba</translation>
 <translation id="797588153137233716">Menu → Sejarah → Padamkan data semakan imbas</translation>

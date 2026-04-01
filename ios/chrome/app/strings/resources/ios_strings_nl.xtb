@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Doorgaan met dit tabblad verbergen</translation>
 <translation id="1520027731907768768">Krijg meldingen over prijsdalingen voor producten die je volgt.</translation>
 <translation id="1521366073263497277">Naar het tabbladraster</translation>
-<translation id="1521774566618522728">Vandaag actief</translation>
 <translation id="1523567067736644845">Ontgrendel om het wachtwoord te tonen</translation>
 <translation id="1524563461097350801">Nee, bedankt</translation>
 <translation id="1531038290222364269">Tabbladen tonen</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2306265833370324042">Details voor <ph name="SEARCH_ENGINE_NAME" /> tonen</translation>
 <translation id="2309265394777270359">Tabblad sluiten</translation>
+<translation id="2310789833878085574">Opslaan en automatisch invullen</translation>
 <translation id="2311077293164383652">Vastgezet tabblad sluiten</translation>
 <translation id="2316129865977710310">Nee, bedankt</translation>
 <translation id="2320166752086256636">Toetsenbord verbergen</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Tik op Volgen om het product te volgen</translation>
 <translation id="5121618895923301719">Je volgt dit product al. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Mobiele bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Je hebt verschillende wachtwoordproblemen.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> dagen geleden actief</translation>
 <translation id="5128788795241319992">Het nieuwe menu ontdekken</translation>
 <translation id="5132942445612118989">Je wachtwoorden, geschiedenis en meer synchroniseren op al je apparaten</translation>
 <translation id="5141363746588976328">Kaart Prijsdalingen op je tabbladen verbergen</translation>
@@ -1651,6 +1650,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6806550742467879742">Paginahulpmiddelen</translation>
 <translation id="6807287147325542056">Wachtwoorden in andere apps</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark opgeslagen in je Google-account {email}}other{{count} bookmarks opgeslagen in je Google-account {email}}}</translation>
 <translation id="6826004672264649705">Dit product wordt op dit moment gevolgd. Openen om de prijsgeschiedenis te bekijken</translation>
 <translation id="6830728435402077660">Niet beveiligd</translation>
@@ -1964,7 +1964,6 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7952670906562503188">Je staat op het punt om {passkey_count} toegangssleutels en de lijst met sites en apps waarvoor je hebt gekozen om nooit inloggegevens op te slaan, te verwijderen. Accounts die je voor sites en apps hebt gemaakt, worden niet verwijderd.</translation>
 <translation id="7958575506592576831">Paginabeveiligingsinfo</translation>
 <translation id="7961015016161918242">Nooit</translation>
-<translation id="7971136598759319605">1 dag geleden actief</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Proberen</translation>
 <translation id="797588153137233716">Menu → Geschiedenis → Browsegegevens verwijderen</translation>

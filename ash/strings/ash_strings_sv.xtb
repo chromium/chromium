@@ -231,7 +231,7 @@
 <translation id="1703117532528082099">Det aktiva fönstret har dockats till vänster.</translation>
 <translation id="1708345662127501511">Skrivbord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Nätverksinställningar</translation>
-<translation id="1719094688023114093">Live Caption är aktiverat.</translation>
+<translation id="1719094688023114093">Livetextning är aktiverat.</translation>
 <translation id="1720011244392820496">Aktivera wifi-synkronisering</translation>
 <translation id="1720230731642245863">Surfzonen är inaktiverad</translation>
 <translation id="1730917990259790240"><ph name="BEGIN_PARAGRAPH1" />Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.<ph name="END_PARAGRAPH1" /></translation>
@@ -1869,7 +1869,7 @@ Nyligen installerad</translation>
 <translation id="662830937908749204">Flytta fokus till nästa ruta</translation>
 <translation id="6635674640674343739">Det gick inte att upprätta en nätverksanslutning. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="6637729079642709226">Ändra tid</translation>
-<translation id="6641720045729354415">Aktivera och inaktivera Live Caption. <ph name="STATE_TEXT" /></translation>
+<translation id="6641720045729354415">Aktivera och inaktivera Livetextning. <ph name="STATE_TEXT" /></translation>
 <translation id="6643169293433369663">Ångra sortering efter namn</translation>
 <translation id="664793810957802384">Objekt i den föreslagna gruppen</translation>
 <translation id="6649018507441623493">Ett ögonblick …</translation>
@@ -2058,7 +2058,7 @@ Nyligen installerad</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" />+ backsteg</translation>
 <translation id="7285232777292757180">Ta skärmbilder med skärmbildsverktyget i snabbinställningarna</translation>
 <translation id="7301826272005790482">Stäng fönsterförslag</translation>
-<translation id="7302889331339392448">Live Caption är inaktiverat.</translation>
+<translation id="7302889331339392448">Livetextning är inaktiverat.</translation>
 <translation id="7305884605064981971">EDGE</translation>
 <translation id="7311244614769792472">Inga resultat hittades</translation>
 <translation id="7312210124139670355">eSIM-kortet återställs av administratören. Det kan ta några minuter.</translation>

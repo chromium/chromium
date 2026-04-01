@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">为保护您的安全，Chrome 已移除某些网站的权限</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1384704387250346179">使用 Google 智能镜头翻译图片<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> 天前曾有活动</translation>
 <translation id="1390418506739274310">您可能会看到在 Chrome 中打开了链接的其他应用的历史记录。您的 Google 账号在 <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="139752016751285248">显示价格分析的底部动作条已全屏打开</translation>
 <translation id="1397811292916898096">使用 <ph name="PRODUCT_NAME" /> 进行搜索</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">书签和网络历史记录</translation>
 <translation id="1515901671075971249">标签页导航快捷键</translation>
 <translation id="1516966594427080024">在无痕模式下打开新窗口</translation>
-<translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="153446405401665083">有新版 Chrome 可用</translation>
 <translation id="1540012742443808215">地址栏目前位于顶部</translation>
 <translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">输入自定义网址</translation>
 <translation id="1928618076168182477">当前显示的是直观视图</translation>
 <translation id="1928696683969751773">更新</translation>
+<translation id="1934545916152269346">最近用过</translation>
 <translation id="1943398124995840148">现在扩展现实设备中打开的标签页外观焕然一新</translation>
 <translation id="1944535645109964458">没有可用的通行密钥</translation>
 <translation id="1957557050935255529">正在加载 PDF…</translation>
@@ -861,7 +860,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4641919525231168205">前往下一页</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
-<translation id="4643661539340338954">Chrome 查找功能通知已开启</translation>
+<translation id="4643661539340338954">Chrome 发现：已开启通知</translation>
 <translation id="4649493483932335039">查看最近打开的标签页</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
@@ -1459,7 +1458,7 @@
 <translation id="6918398787259831832">如果此问题仍然存在，请从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="6922812712751566567"><ph name="PERMISSION" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这一权限</translation>
 <translation id="6927821422725196292">{TABS_COUNT,plural, =1{1 个标签页}other{<ph name="NUMBER_OF_TABS" /> 个标签页}}</translation>
-<translation id="6929224077895306814">您的设备和您的 Google 账号中保存的所有安全码都将被删除</translation>
+<translation id="6929224077895306814">您的设备和 Google 账号中保存的所有安全码都将删除</translation>
 <translation id="6933180670536678127"><ph name="TAB_TITLE" />，已选择的固定标签页，正在播放音频</translation>
 <translation id="6937524809504266803">个性化和关联</translation>
 <translation id="6937876069006524083">昵称（可选）</translation>
@@ -1519,7 +1518,7 @@
 <translation id="71503698506017927">口令加密不涵盖 Google Pay 中的付款方式和地址。如要更改此设置，请<ph name="BEGIN_LINK" />删除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="7165972437814027679">详细了解 Chrome 为何屏蔽某些文件</translation>
 <translation id="7168323970702333693">您已使用<ph name="USER_NAME" />的身份登录。打开设置。</translation>
-<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将被删除</translation>
+<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将删除</translation>
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
 <translation id="7177466738963138057">以后，您可以在“设置”中更改此设置。</translation>
@@ -1654,7 +1653,7 @@
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7692761875510935111">快速在浏览器中打开。若要修改此快捷方式，请轻触并按住这里。</translation>
-<translation id="7695270712963178084">Chrome 查找</translation>
+<translation id="7695270712963178084">Chrome 发现</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
 <translation id="7702420606070050505">显示近期活动的底部动作条已全屏打开</translation>
@@ -1725,7 +1724,6 @@
 <translation id="7968014550143838305">已添加到阅读清单</translation>
 <translation id="7968982339740310781">查看详情</translation>
 <translation id="7969391000881506217">失效日期*</translation>
-<translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">若您使用的密码遭遇了数据泄露，向您发出警告。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这些权限</translation>

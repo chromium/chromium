@@ -1177,6 +1177,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2837891525090413132">Klavyenizi kilitlemek ve kullanmak için izin isteyebilir</translation>
 <translation id="2839032553903800133">Bildirimler engellendi</translation>
 <translation id="2839501879576190149">Sahte bir siteyi ziyaret etmek üzeresiniz</translation>
+<translation id="2840680829170913626">Bu seçenekleri sunmak için ödeme sayfasındaki sayfa içeriği Google ile paylaşılır. Ödeme planları, uygunluk durumuna bağlıdır. Otomatik doldurma özelliğinde sonra ödeme seçeneklerini gizlemek için <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> bölümüne gidin.</translation>
 <translation id="2843623755398178332">Paylaşılan sekmeniz kaydırılıp yakınlaştırılsın mı?</translation>
 <translation id="2851291081585704741">İnternete bağlı değilsiniz</translation>
 <translation id="2854163610915391726">Google Hesabınıza hangi Chrome bilgilerini kaydettiğinizi yönetin</translation>
@@ -1388,6 +1389,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3162070126914310576">Kuruluş biriminiz ilk kayıt sınırına ulaştığı için bu cihaz şu anda kaydedilemiyor. Yardım için yöneticinizle iletişime geçin.</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="316638481603975524">Web uygulamalarını yüklemek için izin isteyebilir</translation>
+<translation id="3166788340998560642">Chrome, bir sonraki kullanımınızda bu bilgileri <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> içine kaydetmeyi önerir.</translation>
 <translation id="3168744840365648658">Radyo Donanımı</translation>
 <translation id="3168938241115725594">Klasik Araçlar</translation>
 <translation id="3169472444629675720">Keşfet</translation>
@@ -2416,6 +2418,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Pop-up engellendi}other{# pop-up engellendi}}</translation>
 <translation id="4780320432697076749">Fotoğraf Yazılımları</translation>
 <translation id="4780366598804516005">Posta kutusu 1</translation>
+<translation id="4785273477715803444">Günlükleri filtreleyin</translation>
 <translation id="4785376858512657294">Google Hesabı'nı yönet</translation>
 <translation id="4785689107224900852">Bu sekmeye geç</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" aranıyor</translation>
@@ -3058,6 +3061,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5759751709240058861">Kameranızı kullanma ve hareket ettirme</translation>
 <translation id="5762131895127128324">Sürücü belgeleri · Kimlik kartları · Pasaportlar</translation>
 <translation id="5763042198335101085">Geçerli bir e-posta adresi girin</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Bugün etkindi}=1{1 gün önce etkindi}other{# gün önce etkindi}}</translation>
 <translation id="5764725887548570807">Geçersiz kaynak biçimi.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> adresine gönder</translation>
 <translation id="5765072501007116331">Teslimat yöntemlerini ve gereksinimleri görmek için bir adres seçin</translation>

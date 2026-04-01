@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">אתרים יכולים לבקש לנעול את המקלדת ולהשתמש בה</translation>
 <translation id="2839032553903800133">ההודעות חסומות</translation>
 <translation id="2839501879576190149">האתר המבוקש נראה מזויף</translation>
+<translation id="2840680829170913626">‏כדי להציע את האפשרויות האלה, התוכן של דף התשלום משותף עם Google. תוכניות התשלומים כפופות לעמידה בדרישות. אם רוצים להסתיר את האפשרויות לתשלום אחר כך במילוי האוטומטי, צריך לעבור אל <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">לגלול את הכרטיסייה המשותפת ולשנות את מרחק התצוגה שלה?</translation>
 <translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
 <translation id="2854163610915391726">‏אפשר לקבוע אילו פריטים מ-Chrome יישמרו בחשבון Google</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">‏אי אפשר לרשום את המכשיר הזה כרגע כי היחידה הארגונית שלך (OU) הגיעה למגבלת הרישום הראשונית. צריך לפנות לאדמין לקבלת עזרה.</translation>
 <translation id="3162559335345991374">‏ייתכן שרשת ה-Wi-Fi דורשת כניסה לדף ההתחברות שלה.</translation>
 <translation id="316638481603975524">אתרים יכולים לבקש הרשאה להתקין אפליקציות אינטרנט</translation>
+<translation id="3166788340998560642">‏בפעם הבאה שייעשה שימוש במידע, Chrome יציע לשמור אותו ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="3168744840365648658">ציוד רדיו</translation>
 <translation id="3168938241115725594">כלי רכב קלאסיים</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2420,6 +2422,7 @@ Del</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{חלון קופץ נחסם}one{# חלונות קופצים נחסמו}two{# חלונות קופצים נחסמו}other{# חלונות קופצים נחסמו}}</translation>
 <translation id="4780320432697076749">תוכנות לעריכת תמונות</translation>
 <translation id="4780366598804516005">תיבת דואר 1</translation>
+<translation id="4785273477715803444">סינון היומנים</translation>
 <translation id="4785376858512657294">‏ניהול חשבון Google</translation>
 <translation id="4785689107224900852">החלפה לכרטיסייה זו</translation>
 <translation id="4785998536350006000">מתבצע חיפוש של '<ph name="SEARCH_QUERY" />'</translation>
@@ -3063,6 +3066,7 @@ Del</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="5762131895127128324">רישיונות נהיגה · תעודות מזהות · דרכונים</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{פעילות אחרונה: היום}=1{פעילות אחרונה: אתמול}one{פעילות אחרונה: אתמול}two{פעילות אחרונה: לפני יומיים}other{פעילות אחרונה: לפני # ימים}}</translation>
 <translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
 <translation id="5764920692828389743">שליחה לכתובת <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>

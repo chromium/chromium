@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"આ ટૅબ સાથે ચાલુ રાખો" છુપાવો</translation>
 <translation id="1520027731907768768">તમે ટ્રૅક કરો છો તે પ્રોડક્ટની કિંમતમાં ઘટાડા વિશેના અલર્ટ મેળવો.</translation>
 <translation id="1521366073263497277">તમારી ટૅબ ગ્રિડ પર જાઓ</translation>
-<translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="1523567067736644845">પાસવર્ડ બતાવવા માટે અનલૉક કરો</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
 <translation id="1531038290222364269">ટૅબ બતાવો</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">તમારા પાસવર્ડને Google પાસવર્ડ મેનેજરમાં સાચવવામાં આવે એ પહેલાં તેમને તમારા ડિવાઇસમાં એન્ક્રિપ્ટ કરવામાં આવે છે.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />ની વિગતો બતાવો</translation>
 <translation id="2309265394777270359">ટૅબ બંધ કરો</translation>
+<translation id="2310789833878085574">સાચવો અને ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="2311077293164383652">પિન કરેલું ટૅબ બંધ કરો</translation>
 <translation id="2316129865977710310">ના, આભાર</translation>
 <translation id="2320166752086256636">કીબોર્ડ છુપાવો</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">પ્રોડક્ટને ટ્રૅક કરવા માટે, 'ટ્રૅક કરો' પર ટૅપ કરો</translation>
 <translation id="5121618895923301719">તમે આ પ્રોડક્ટને પહેલેથી જ ટ્રૅક કરી રહ્યાં છો. આ પેજ <ph name="BEGIN_LINK" />મોબાઇલ બુકમાર્ક<ph name="END_LINK" />માં સાચવવામાં આવ્યું છે.</translation>
 <translation id="512533434554095351">તમારા પાસવર્ડમાં કેટલીક સમસ્યાઓ છે.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> દિવસ પહેલાં સક્રિય</translation>
 <translation id="5128788795241319992">નવા મેનૂ વિશે શોધખોળ કરો</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="5141363746588976328">તમારા ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
@@ -1651,6 +1650,7 @@
 <translation id="6806550742467879742">પેજના ટૂલ</translation>
 <translation id="6807287147325542056">અન્ય ઍપમાંના પાસવર્ડ</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{તમારા Google એકાઉન્ટ, {email}માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા Google એકાઉન્ટ, {email}માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="6826004672264649705">હાલમાં આ પ્રોડક્ટ ટ્રૅક કરી રહ્યાં છીએ. કિંમતનો ઇતિહાસ જોવા માટે ખોલો</translation>
 <translation id="6830728435402077660">સુરક્ષિત નથી</translation>
@@ -1964,7 +1964,6 @@
 <translation id="7952670906562503188">તમે {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="7958575506592576831">પેજની સુરક્ષા સંબંધિત માહિતી</translation>
 <translation id="7961015016161918242">ક્યારેય નહીં</translation>
-<translation id="7971136598759319605">1 દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="7972837668077967426">કૅન્વાસ</translation>
 <translation id="7975036700432177008">પ્રયાસ કરો</translation>
 <translation id="797588153137233716">મેનૂ → ઇતિહાસ → બ્રાઉઝિંગ ડેટા ડિલીટ કરો</translation>

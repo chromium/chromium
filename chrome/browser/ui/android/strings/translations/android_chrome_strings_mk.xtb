@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">За да ви помогнеме да се заштитите, ги отстранивме дозволите за некои сајтови</translation>
 <translation id="1383876407941801731">Барај</translation>
 <translation id="1384704387250346179">Преведете слика со Google Lens <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Активен пред <ph name="LAST_UPDATED" /> дена</translation>
 <translation id="1390418506739274310">Можеби ќе ја гледате историјата од други апликации што отвораат линкови во Chrome. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Долниот лист со увиди во цените е отворен на цел екран</translation>
 <translation id="1397811292916898096">Пребарувајте со <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Обележувачи и веб-историја</translation>
 <translation id="1515901671075971249">Кратенки за навигација низ картичката</translation>
 <translation id="1516966594427080024">Отворете нов прозорец во режим „Инкогнито“</translation>
-<translation id="1521774566618522728">Активен денес</translation>
 <translation id="153446405401665083">Достапна е нова верзија на Chrome</translation>
 <translation id="1540012742443808215">Во моментов, лентата за адреса е најгоре</translation>
 <translation id="1544084554881119930">Начините на плаќање и адресите нема да се шифрираат. Историјата на прелистувањето од Chrome нема да се синхронизира.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Внесете приспособена веб-адреса</translation>
 <translation id="1928618076168182477">Избран е „Визуелен приказ“</translation>
 <translation id="1928696683969751773">Ажурирања</translation>
+<translation id="1934545916152269346">Неодамна користени</translation>
 <translation id="1943398124995840148">Вашите отворени картички отсега се со променет изглед во XR</translation>
 <translation id="1944535645109964458">Нема достапни криптографски клучеви</translation>
 <translation id="1957557050935255529">Се вчитува PDF…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">Додадено во списокот за читање</translation>
 <translation id="7968982339740310781">Погледнете детали</translation>
 <translation id="7969391000881506217">Датум на истекување*</translation>
-<translation id="7971136598759319605">Активен пред 1 ден</translation>
 <translation id="7975379999046275268">Прегледајте ја страницата <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Ве предупредува ако користите лозинка компромитирана во упад во податоци.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве бидејќи не сте го отвориле сајтот неодамна</translation>

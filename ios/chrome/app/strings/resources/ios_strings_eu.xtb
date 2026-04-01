@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Ezkutatu "Egin aurrera fitxa honekin"</translation>
 <translation id="1520027731907768768">Jaso alertak jarraitzen diezun produktuen prezioak jaisten direnean.</translation>
 <translation id="1521366073263497277">Joan fitxen saretara.</translation>
-<translation id="1521774566618522728">Aktibo gaur</translation>
 <translation id="1523567067736644845">Desblokeatu gailua pasahitza ikusteko</translation>
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
 <translation id="1531038290222364269">Erakutsi fitxak</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik.</translation>
 <translation id="2306265833370324042">Erakutsi <ph name="SEARCH_ENGINE_NAME" /> bilatzailearen xehetasunak</translation>
 <translation id="2309265394777270359">Itxi fitxa</translation>
+<translation id="2310789833878085574">Gorde eta bete automatikoki</translation>
 <translation id="2311077293164383652">Itxi fitxa ainguratua</translation>
 <translation id="2316129865977710310">Ez, eskerrik asko</translation>
 <translation id="2320166752086256636">Ezkutatu teklatua</translation>
@@ -827,6 +827,7 @@
 <translation id="3997522473364371632">Administratzaileak desgaitu du pasahitzak partekatzeko aukera.</translation>
 <translation id="4002066346123236978">Izena</translation>
 <translation id="4004204301268239848">Pasahitzak Google-ko kontuan gordetzen dira, gailu guztietan eskura izan ditzazun.</translation>
+<translation id="4007463141047732631">Editatu taldea</translation>
 <translation id="4011489366247192265">Sorburu-hizkuntza</translation>
 <translation id="4017599800655151880">Irudi txikia</translation>
 <translation id="4018440314314549819">Bete gordetako pasahitzak automatikoki</translation>
@@ -905,6 +906,7 @@
 <translation id="4287172530684295552">Markatu irakurritako gisa</translation>
 <translation id="428768789042547925">Berritasunak</translation>
 <translation id="429074084062258019">{count,plural, =1{Gehitu fitxa taldean}other{Gehitu fitxak taldean}}</translation>
+<translation id="4300830875340617674">Eskaneatu txartela eta bete automatikoki</translation>
 <translation id="4302061870579014542">Ezarri posizioa</translation>
 <translation id="4304713468139749426">Pasahitz-kudeatzailea</translation>
 <translation id="4306349443295056740">OCSP sinadura</translation>
@@ -1146,7 +1148,6 @@
 <translation id="5119329531859909472">Produktuaren jarraipena egiteko, sakatu Egin jarraipena</translation>
 <translation id="5121618895923301719">Produktuaren jarraipena egiten ari zara jada. Orri hau <ph name="BEGIN_LINK" />Mugikorreko laster-markak<ph name="END_LINK" /> atalean gorde da.</translation>
 <translation id="512533434554095351">Pasahitzekin lotutako arazo batzuk dauzkazu.</translation>
-<translation id="5127538504377457572">Aktibo duela <ph name="DAYS" /> egun</translation>
 <translation id="5128788795241319992">Arakatu menu berria</translation>
 <translation id="5132942445612118989">Sinkronizatu pasahitzak, historia eta beste gauza asko gailu guztietan</translation>
 <translation id="5141363746588976328">Ezkutatu fitxetako prezio-jaitsieren txartela</translation>
@@ -1181,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Aktibatu kamera</translation>
 <translation id="5229315183665181733">Editatu webgunea</translation>
+<translation id="5233111790346066304">Gorde fitxategiak Google Drive-n eta atzi itzazu nahi duzunean.</translation>
 <translation id="5233638681132016545">Fitxa berria</translation>
 <translation id="5234094073825090254">{count,plural, =1{Gorde da laster-marka Google-ko kontuan ({email}).}other{Gorde dira laster-markak Google-ko kontuan ({email}).}}</translation>
 <translation id="5234764350956374838">Baztertu</translation>
@@ -1648,6 +1650,7 @@
 <translation id="6806550742467879742">Orriaren tresnak</translation>
 <translation id="6807287147325542056">Beste aplikazio batzuetako pasahitzak</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
+<translation id="6820686453637990663">CVCa</translation>
 <translation id="6825078212112407882">{count,plural, =1{Laster-marka gorde da Google-ko kontuan ({email})}other{{count} laster-marka gorde dira Google-ko kontuan ({email})}}</translation>
 <translation id="6826004672264649705">Produktu honen jarraipena egiten ari zara. Prezioen historia ikusteko, ireki hau.</translation>
 <translation id="6830728435402077660">Ez da segurua</translation>
@@ -1961,7 +1964,6 @@
 <translation id="7952670906562503188">{passkey_count} sarbide-gako eta saioa hasteko informazioa inoiz ez gordetzeko aukeratu dituzun webguneen eta aplikazioen zerrenda ezabatuko dituzu. Webgune eta aplikazioetarako sortu dituzun kontuak ez dira ezabatuko.</translation>
 <translation id="7958575506592576831">Orriaren segurtasunaren informazioa</translation>
 <translation id="7961015016161918242">Inoiz ez</translation>
-<translation id="7971136598759319605">Aktibo duela egun bat</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Probatu</translation>
 <translation id="797588153137233716">Menua → Historia → Ezabatu arakatze-datuak</translation>

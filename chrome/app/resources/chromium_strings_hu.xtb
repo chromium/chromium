@@ -57,6 +57,7 @@
 <translation id="1639380494700489405">Ha az oldal elhagyása nélkül szeretne kérdezni az AI-módtól az adott lapról, jelentkezzen be a Chromiumba. Egyebek mellett a jelszavaihoz is hozzáférhet bármely eszközén.</translation>
 <translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1680687534629375545">Kérdés feltevése a Képkeresőnek erről az oldalról</translation>
+<translation id="1708414395296835197">Mostantól bármikor használhatja a Chromiumot, amikor üzenetekben, dokumentumokban és más alkalmazásokban található linkekre kattint. A tálcára is ki lesz tűzve.</translation>
 <translation id="1709772298389099340">Magasabb szintű jogosultságokat biztosít a <ph name="BROWSER_NAME" /> számára.</translation>
 <translation id="1715127912119967311">A funkciók továbbfejlesztése érdekében a Chromium elküldi a velük végzett műveleteket a Google-nak. Ezeket az adatokat ellenőreink elolvashatják, feldolgozhatják és megjegyzésekkel láthatják el.</translation>
 <translation id="1722488837206509557">Ez lehetővé teszi, hogy válasszon a rendelkezésre álló eszközök közül, és tartalmakat jelenítsen meg rajtuk.</translation>
@@ -438,6 +439,7 @@
 <translation id="5895138241574237353">Újraindítás</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Hálózati bejelentkezés</translation>
 <translation id="5924017743176219022">Kapcsolódás az internethez…</translation>
+<translation id="5939553720811388432">A Chromium előkészítése</translation>
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5949225980829865667">Ha az összes eszközén szeretne hozzáférni ehhez a könyvjelzőhöz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="5953657885167112863">Tegye személyessé a Chromiumot</translation>

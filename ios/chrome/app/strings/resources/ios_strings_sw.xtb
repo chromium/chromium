@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Ficha kipengele cha "Endelea ukitumia kichupo hiki"</translation>
 <translation id="1520027731907768768">Pokea arifa za kushuka kwa bei za bidhaa unazofuatilia.</translation>
 <translation id="1521366073263497277">Nenda kwenye gridi ya kichupo chako</translation>
-<translation id="1521774566618522728">Ameitumia leo</translation>
 <translation id="1523567067736644845">Fungua ili uonyeshe nenosiri</translation>
 <translation id="1524563461097350801">Hapana</translation>
 <translation id="1531038290222364269">Onyesha vichupo</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Manenosiri yako husimbwa kwa njia fiche kwenye kifaa chako kabla hayajahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google.</translation>
 <translation id="2306265833370324042">Onyesha maelezo ya <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Funga Kichupo</translation>
+<translation id="2310789833878085574">Hifadhi na ujaze kiotomatiki</translation>
 <translation id="2311077293164383652">Funga Kichupo Kilichobandikwa</translation>
 <translation id="2316129865977710310">Hapana</translation>
 <translation id="2320166752086256636">Ficha kibodi</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Ili ufuatilie bidhaa, gusa Fuatilia</translation>
 <translation id="5121618895923301719">Tayari unafuatilia bidhaa hii. Ukurasa huu umehifadhiwa kwenye <ph name="BEGIN_LINK" />Alamisho za Kifaa cha Mkononi<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Una matatizo kadhaa ya manenosiri.</translation>
-<translation id="5127538504377457572">Ilitumika siku <ph name="DAYS" /> zilizopita</translation>
 <translation id="5128788795241319992">Vinjari menyu mpya</translation>
 <translation id="5132942445612118989">Sawazisha historia, manenosiri na mambo yako mengine kwenye vifaa vyote</translation>
 <translation id="5141363746588976328">Ficha mapunguzo ya bei kwenye kadi ya vichupo vyako</translation>
@@ -1651,6 +1650,7 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="6806550742467879742">Zana za ukurasa</translation>
 <translation id="6807287147325542056">Manenosiri katika programu nyingine</translation>
 <translation id="681368974849482173">Umeunda kipengee</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Alamisho imehifadhiwa kwenye Akaunti yako ya Google, {email}}other{Alamisho {count}zimehifadhiwa kwenye Akaunti yako ya Google, {email}.}}</translation>
 <translation id="6826004672264649705">Unafuatilia bidhaa hii kwa sasa. Fungua ili uone historia ya bei</translation>
 <translation id="6830728435402077660">Si salama</translation>
@@ -1964,7 +1964,6 @@ Lazima Handoff iwashwe pia katika sehemu ya Jumla ya Mipangilio, na lazima vifaa
 <translation id="7952670906562503188">Unakaribia kufuta funguo za siri {passkey_count} pamoja na orodha ya tovuti na programu ulizochagua kutohifadhi kamwe maelezo ya kuingia katika akaunti. Akaunti yoyote uliyofungua kwenye tovuti au programu haitafutwa.</translation>
 <translation id="7958575506592576831">Maelezo ya usalama wa ukurasa</translation>
 <translation id="7961015016161918242">Katu</translation>
-<translation id="7971136598759319605">Ilitumika siku 1 iliyopita</translation>
 <translation id="7972837668077967426">Turubai</translation>
 <translation id="7975036700432177008">Jaribu</translation>
 <translation id="797588153137233716">Menyu → Historia → Futa data ya kuvinjari</translation>

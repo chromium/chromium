@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">У мэтах бяспекі ў некаторых сайтаў былі адкліканы дазволы</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1384704387250346179">Перакласці ў Аб’ектыве <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Апошнія дзеянні: <ph name="LAST_UPDATED" /> сут таму</translation>
 <translation id="1390418506739274310">Вы можаце бачыць гісторыю з іншых праграм, спасылкі з якіх адкрываюцца ў Chrome. На сайце <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="139752016751285248">Ніжні аркуш са статыстыкай цэн адкрыўся на ўсю вышыню</translation>
 <translation id="1397811292916898096">Шукаць з дапамогай <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Закладкі і гісторыя вэб-пошуку</translation>
 <translation id="1515901671075971249">Спалучэнні клавіш для пераходу па ўкладках</translation>
 <translation id="1516966594427080024">Адкрыць новае акно ў рэжыме інкогніта</translation>
-<translation id="1521774566618522728">Апошнія дзеянні адбываліся сёння</translation>
 <translation id="153446405401665083">Выйшла новая версія Chrome</translation>
 <translation id="1540012742443808215">Адрасны радок знаходзіцца ў верхняй частцы экрана</translation>
 <translation id="1544084554881119930">Спосабы аплаты і адрасы не будуць шыфравацца. Гісторыя прагляду сайтаў у Chrome не будзе сінхранізавацца.
@@ -1728,7 +1726,6 @@
 <translation id="7968014550143838305">Дададзена ў спіс чытання</translation>
 <translation id="7968982339740310781">Паказаць падрабязныя звесткі</translation>
 <translation id="7969391000881506217">Тэрмін дзеяння*</translation>
-<translation id="7971136598759319605">Апошнія дзеянні: дзень таму</translation>
 <translation id="7975379999046275268">Перадпрагляд старонкі <ph name="BEGIN_NEW" />Навінка<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Папярэджвае, калі вы выкарыстоўваеце пароль, які быў раскрыты ў выніку ўцечкі даных.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Браўзер Chrome адклікаў гэтыя дазволы, бо вы не наведвалі гэты сайт у апошні час</translation>

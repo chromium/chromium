@@ -2418,6 +2418,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पॉप-अप ब्लॉक किया गया}one{# पॉप-अप ब्लॉक किए गए हैं}other{# पॉप-अप ब्लॉक किए गए हैं}}</translation>
 <translation id="4780320432697076749">फ़ोटो सॉफ़्टवेयर</translation>
 <translation id="4780366598804516005">मेलबॉक्स 1</translation>
+<translation id="4785273477715803444">लॉग फ़िल्टर करें</translation>
 <translation id="4785376858512657294">Google खाता मैनेज करें</translation>
 <translation id="4785689107224900852">इस टैब पर जाएं</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" के लिए खोजा जा रहा है</translation>
@@ -3060,6 +3061,7 @@
 <translation id="5759751709240058861">कैमरे का इस्तेमाल करें और उसे मूव करें</translation>
 <translation id="5762131895127128324">ड्राइविंग लाइसेंस · आईडी कार्ड · पासपोर्ट</translation>
 <translation id="5763042198335101085">मान्य ईमेल पता डालें</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{आज चालू है}=1{1 दिन पहले चालू किया गया}one{# दिन पहले चालू किया गया}other{# दिन पहले चालू किया गया}}</translation>
 <translation id="5764725887548570807">मूल फ़ॉर्मैट अमान्य है.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" /> पर भेजें</translation>
 <translation id="5765072501007116331">वितरण के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>

@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">Не удалось скачать файлы аннотаций основного узла. Повторите попытку позже.</translation>
 <translation id="1103523840287552314">Всегда переводить <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Эта группа сразу станет вам недоступна и будет удалена со всех ваших устройств.</translation>
-<translation id="1105934302947321130">Google Beam с Zoom</translation>
 <translation id="1106270460549661906">Отменить доступ для Gemini</translation>
 <translation id="1106350001632362876">Повысить порог</translation>
 <translation id="110850812463801904">Подключиться к OneDrive вручную</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">PIN-код ребенка изменен</translation>
 <translation id="1133418583142946603">Добавить текущую вкладку</translation>
 <translation id="1133751489735776037">Трижды нажать кнопку мыши</translation>
-<translation id="1136179794690960030">Эмодзи <ph name="EMOJI_NAME" />: <ph name="EMOJI_INDEX" />из <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Слишком много попыток ввода PIN-кода. Электронный ключ заблокирован. Чтобы разблокировать ключ, извлеките его и вставьте снова.</translation>
 <translation id="1137589305610962734">временные данные</translation>
 <translation id="1137673463384776352">Открыть ссылку в приложении "<ph name="APP" />"</translation>
@@ -227,7 +225,7 @@
 <translation id="1148464196693569530">Разрешить пользовательские скрипты</translation>
 <translation id="1148624853678088576">Готово!</translation>
 <translation id="1148669835763563782">После установки защита Chromebook повысится, на нем появятся новые функции и настраивать его станет проще.</translation>
-<translation id="1149401351239820326">Срок действия: месяц</translation>
+<translation id="1149401351239820326">Месяц окончания</translation>
 <translation id="1149483087970735785">Специальные возможности</translation>
 <translation id="1149706845443784281">&amp;Управление поисковыми системами и сочетаниями клавиш</translation>
 <translation id="1149725087019908252">Сканирование файла "<ph name="FILE_NAME" />"</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">Подключение к телефону…</translation>
 <translation id="1157952955648710254">Закрыть боковую панель Google Поиска</translation>
 <translation id="1158080958325422608">Заменить на прописные</translation>
+<translation id="1158134713295836892">Gemini в Chrome</translation>
 <translation id="1159879754517035595">Управлять настройками расширения</translation>
 <translation id="1160800016654917722">Окно перемещено вниз и влево</translation>
 <translation id="1161190590171867633">Таблицы сравнения сохраняются в аккаунте Google.</translation>
@@ -765,7 +764,6 @@
 <translation id="1517467582299994451">Чтобы трансляцию можно было запускать с помощью кода, включите синхронизацию в браузере Chrome.</translation>
 <translation id="1521442365706402292">Настроить сертификаты</translation>
 <translation id="1521655867290435174">Google Таблицы</translation>
-<translation id="1521774566618522728">Последние действия: сегодня</translation>
 <translation id="1521933835545997395">Подключено к телефону Android</translation>
 <translation id="1523279371236772909">Просмотрено в прошлом месяце</translation>
 <translation id="1523486680453956384">Посмотреть задачу</translation>
@@ -3589,7 +3587,6 @@
 <translation id="3473241910002674503">В режиме планшета будут видны кнопки для перехода к панели запуска, возврата на предыдущий экран и переключения между приложениями.</translation>
 <translation id="3473479545200714844">Лупа</translation>
 <translation id="3474218480460386727">В новых словах не должно быть больше 99 букв.</translation>
-<translation id="3474330892505468100">Google Beam с Meet</translation>
 <translation id="3474624961160222204">Продолжить как <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Умеренная экономия памяти. Вкладки становятся неактивными по истечении длительного периода времени.</translation>
 <translation id="347785443197175480">Предоставить сайту <ph name="HOST" /> доступ к камере и микрофону</translation>
@@ -4166,7 +4163,6 @@
 <translation id="3841964634449506551">Недействительный пароль.</translation>
 <translation id="3842552989725514455">Шрифты с засечками</translation>
 <translation id="3843464315703645664">Разрешение дано браузером Chrome</translation>
-<translation id="3844888638014364087">Вставлен символ эмодзи</translation>
 <translation id="3846116211488856547">Разрабатывайте сайты, приложения для Android и другие программы с помощью удобных инструментов. При установке Linux будут скачаны данные объемом <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3847319713229060696">Помочь сделать интернет безопасным для всех</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -5032,7 +5028,6 @@
 <translation id="4453430595102511050">Приложите палец к сканеру отпечатков в правом верхнем углу клавиатуры. Данные отпечатков пальцев надежно защищены и хранятся только на устройстве <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Запрос в <ph name="SEARCH_ENGINE_NAME" /> или URL</translation>
 <translation id="4457472090507035117">Голос:</translation>
-<translation id="4459169140545916303">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
 <translation id="4460014764210899310">Разгруппировать</translation>
 <translation id="4461483878391246134">Добавить языки, для которых никогда не предлагать перевод</translation>
 <translation id="4462159676511157176">Другие серверы имен</translation>
@@ -5786,6 +5781,7 @@
 <translation id="4990673372047946816">Камера не найдена</translation>
 <translation id="4991420928586866460">Использовать клавиши верхнего ряда как функциональные</translation>
 <translation id="4991873517942703737">Спросить об этом документе</translation>
+<translation id="4992066212339426712">Включить звук</translation>
 <translation id="4992443049233195791">Настройки файлов Microsoft 365</translation>
 <translation id="4992458225095111526">Подтверждение Powerwash</translation>
 <translation id="4992473555164495036">Администратор запретил некоторые способы ввода.</translation>
@@ -6766,7 +6762,6 @@
 <translation id="5701212929149679556">Настройки роуминга</translation>
 <translation id="5701786609538182967">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />", "<ph name="APP_NAME_4" />" и ещё одном приложении.</translation>
 <translation id="5702161882524398150">Задать вопрос о предыдущей вкладке</translation>
-<translation id="5702749864074810610">Подсказка закрыта</translation>
 <translation id="5703716265115423771">уменьшить громкость</translation>
 <translation id="5703998022096520811">Эффективная защита в реальном времени, которая отправляет больше информации в сервис "Google Безопасный просмотр"</translation>
 <translation id="5704875434923668958">Синхронизация:</translation>
@@ -7570,7 +7565,6 @@
 <translation id="6270309713620950855">Напоминать включить микрофон</translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6270770586500173387">Отправлять <ph name="BEGIN_LINK1" />информацию о системе и приложениях<ph name="END_LINK1" /> и различные <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
-<translation id="6271348838875430303">Исправление отменено</translation>
 <translation id="6271824294945464304">Общий доступ к паролю</translation>
 <translation id="6273677812470008672">Качество</translation>
 <translation id="6274089201566806618">Подключение к устройству "<ph name="HOST_DEVICE_NAME" />"…</translation>
@@ -10139,7 +10133,7 @@
 <translation id="8054883179223321715">Совместимо только с определенными сайтами</translation>
 <translation id="8054921503121346576">USB-клавиатура подключена</translation>
 <translation id="8055975688427973864">Показать кнопку органайзера</translation>
-<translation id="8058655154417507695">Срок действия: год</translation>
+<translation id="8058655154417507695">Год окончания</translation>
 <translation id="8058986560951482265">Нестабильное</translation>
 <translation id="8059417245945632445">&amp;Проверка устройств</translation>
 <translation id="8059456211585183827">Нет принтеров, доступных для сохранения.</translation>
@@ -10545,7 +10539,6 @@
 <translation id="8339288417038613756">Размер изображения и текста</translation>
 <translation id="833986336429795709">Чтобы открыть ссылку, выберите приложение</translation>
 <translation id="8340547030807793004">Другие действия с устройством "<ph name="DEVICE" />"</translation>
-<translation id="8341693734243413517">Chrome Updater</translation>
 <translation id="8341804784147620576">Показать ярлыки для поиска</translation>
 <translation id="8342221978608739536">Не знаю</translation>
 <translation id="8342387517402567689">Установка веб-приложений в режиме инкогнито не поддерживается</translation>
@@ -10791,6 +10784,7 @@
 <translation id="8518809011298357036">Закрыть верхнюю вкладку</translation>
 <translation id="8518942514525208851">Скрывать непристойную лексику</translation>
 <translation id="8520238089740349550">Ошибка: скачивание на устройство заблокировано</translation>
+<translation id="8520408093016204772">Сохраняйте пароли, закладки и настройки.</translation>
 <translation id="8523493869875972733">Закрыть</translation>
 <translation id="8523849605371521713">Добавлено по правилу</translation>
 <translation id="8524594273111932386">Поиск + Стрелка вниз</translation>
@@ -10976,6 +10970,7 @@
 <translation id="8651585100578802546">Принудительно обновить страницу</translation>
 <translation id="8651806635673244884">Чтобы вернуть вкладки в верхнюю часть экрана, нажмите правой кнопкой мыши на любую из них и выберите "Показать вкладки горизонтально".</translation>
 <translation id="8652400352452647993">Ошибка в упакованном расширении</translation>
+<translation id="8652412805227733853">Адрес электронной почты проверен автоматически.</translation>
 <translation id="8654151524613148204">Недостаточно места для обработки файла.</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655972064210167941">Ошибка входа: не удалось подтвердить пароль. Обратитесь к администратору или повторите попытку.</translation>
@@ -11487,7 +11482,6 @@
 <translation id="8983018820925880511">Новым профилем будет управлять <ph name="DOMAIN" />. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> может изменять файл "<ph name="FILENAME" />".</translation>
 <translation id="8984694057134206124">Ваше устройство будет видно всем пользователям поблизости в течение <ph name="MINUTES" /> мин. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
 <translation id="8985561265504464578">Порог распознавания жеста</translation>
 <translation id="8985661493893822002">Чтобы войти в аккаунт на устройстве <ph name="DEVICE_TYPE" />, подключитесь к интернету.</translation>
 <translation id="8985661571449404298">Скачан небезопасный файл</translation>

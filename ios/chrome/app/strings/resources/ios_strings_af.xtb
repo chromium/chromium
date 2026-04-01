@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Versteek “Gaan voort met hierdie oortjie”</translation>
 <translation id="1520027731907768768">Ontvang opletberigte oor prysverlagings vir produkte wat jy naspoor.</translation>
 <translation id="1521366073263497277">Gaan na jou oortjierooster toe</translation>
-<translation id="1521774566618522728">Aktief vandag</translation>
 <translation id="1523567067736644845">Ontsluit om wagwoord te wys</translation>
 <translation id="1524563461097350801">Nee, dankie</translation>
 <translation id="1531038290222364269">Wys oortjies</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Jou wagwoorde word op jou toestel geënkripteer voordat dit in Google Wagwoordbestuurder gestoor word.</translation>
 <translation id="2306265833370324042">Wys <ph name="SEARCH_ENGINE_NAME" />-besonderhede</translation>
 <translation id="2309265394777270359">Maak oortjie toe</translation>
+<translation id="2310789833878085574">Stoor en outovul</translation>
 <translation id="2311077293164383652">Maak vasgespelde oortjie toe</translation>
 <translation id="2316129865977710310">Nee, dankie</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Merk as gelees</translation>
 <translation id="428768789042547925">Wat’s nuut</translation>
 <translation id="429074084062258019">{count,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
+<translation id="4300830875340617674">Skandeer kaart en outovul</translation>
 <translation id="4302061870579014542">Stel posisie</translation>
 <translation id="4304713468139749426">Wagwoordbestuurder</translation>
 <translation id="4306349443295056740">OCSP-ondertekening</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Tik op Volg om die produk te volg</translation>
 <translation id="5121618895923301719">Jy spoor reeds hierdie produk na. Hierdie bladsy is in <ph name="BEGIN_LINK" />Mobielboekmerke<ph name="END_LINK" /> gestoor.</translation>
 <translation id="512533434554095351">Jy het verskeie wagwoordkwessies.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> dae gelede aktief</translation>
 <translation id="5128788795241319992">Verken die nuwe kieslys</translation>
 <translation id="5132942445612118989">Sinkroniseer jou wagwoorde, geskiedenis en meer op alle toestelle</translation>
 <translation id="5141363746588976328">Versteek prysdalings op jou oortjieskaart</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Skakel kamera aan</translation>
 <translation id="5229315183665181733">Redigeer werf</translation>
+<translation id="5233111790346066304">Stoor lêers in jou Google Drive en kry enige tyd toegang daartoe.</translation>
 <translation id="5233638681132016545">Nuwe oortjie</translation>
 <translation id="5234094073825090254">{count,plural, =1{Boekmerk is in jou Google-rekening, {email}, gestoor.}other{Boekmerke is in jou Google-rekening, {email}, gestoor.}}</translation>
 <translation id="5234764350956374838">Verwerp</translation>
@@ -1649,6 +1650,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6806550742467879742">Bladsynutsgoed</translation>
 <translation id="6807287147325542056">Wagwoorde in ander apps</translation>
 <translation id="681368974849482173">Item is geskep</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Boekmerk is gestoor in jou Google-rekening, {email}}other{{count} boekmerke is gestoor in jou Google-rekening, {email}}}</translation>
 <translation id="6826004672264649705">Spoor tans hierdie produk na. Maak oop om prysgeskiedenis te sien</translation>
 <translation id="6830728435402077660">Nie veilig nie</translation>
@@ -1962,7 +1964,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7952670906562503188">Jy is op die punt om {passkey_count} toegangsleutels en die lys werwe en apps uit te vee wat jy gekies het om nooit aanmeldinligting voor te stoor nie. Enige rekening wat jy vir werwe en apps geskep het, sal nie uitgevee word nie.</translation>
 <translation id="7958575506592576831">Bladsy se sekuriteitsinligting</translation>
 <translation id="7961015016161918242">Nooit</translation>
-<translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7972837668077967426">Skilderdoek</translation>
 <translation id="7975036700432177008">Probeer</translation>
 <translation id="797588153137233716">Kieslys → Geskiedenis → Vee blaaierdata uit</translation>

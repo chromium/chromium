@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Để đảm bảo an toàn cho bạn, chúng tôi đã loại bỏ quyền của một số trang web</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1384704387250346179">Dịch hình ảnh bằng Google Ống kính <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Hoạt động <ph name="LAST_UPDATED" /> ngày trước</translation>
 <translation id="1390418506739274310">Nhật ký có thể bao gồm các đường liên kết được mở trong Chrome từ các ứng dụng khác. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Đã mở bảng thông tin chi tiết về giá ở dưới cùng trên toàn màn hình</translation>
 <translation id="1397811292916898096">Tìm kiếm bằng <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Dấu trang và lịch sử web</translation>
 <translation id="1515901671075971249">Phím tắt điều hướng thẻ</translation>
 <translation id="1516966594427080024">Mở một cửa sổ mới trong chế độ Ẩn danh</translation>
-<translation id="1521774566618522728">Hoạt động hôm nay</translation>
 <translation id="153446405401665083">Đã có phiên bản Chrome mới</translation>
 <translation id="1540012742443808215">Thanh địa chỉ hiện đang ở trên cùng</translation>
 <translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
@@ -1728,7 +1726,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
 <translation id="7968982339740310781">Xem chi tiết</translation>
 <translation id="7969391000881506217">Ngày hết hạn*</translation>
-<translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Cảnh báo bạn nếu bạn sử dụng mật khẩu đã bị lộ trong một sự cố rò rỉ dữ liệu.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì gần đây bạn không truy cập</translation>

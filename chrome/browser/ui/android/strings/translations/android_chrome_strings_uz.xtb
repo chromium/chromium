@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Xavfsizlikni taʼminlash maqsadida ayrim saytlardan ruxsatlar olib tashlandi</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1384704387250346179">Google Lens yordamida tarjima <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> kun oldin onlayn edi</translation>
 <translation id="1390418506739274310">Havolalarni Chrome orqali ochadigan boshqa ilovalar tarixini koʻrish mumkin. Google hisobingiz orqali bajargan internetdagi faoliyatingizni <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> orqali koʻrishingiz mumkin.</translation>
 <translation id="139752016751285248">Quyi ekrandagi narxlar statistikasi toʻliq hajmda ochildi</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> orqali qidirish</translation>
@@ -136,7 +135,6 @@ Chromeni yaxshilashda ishlatiladigan maʼlumotlar qoʻshimcha sozlamalarini <ph 
 <translation id="1513352483775369820">Xatcho‘plar va qidiruv tarixi</translation>
 <translation id="1515901671075971249">Varaqlarni kezish tezkor tugmalari</translation>
 <translation id="1516966594427080024">Yangi varaqni inkognito rejimida ochish</translation>
-<translation id="1521774566618522728">Bugun onlayn edi</translation>
 <translation id="153446405401665083">Chromening yangi versiyasi chiqdi</translation>
 <translation id="1540012742443808215">Manzillar qatorida tepada joylangan</translation>
 <translation id="1544084554881119930">Toʻlov usullari va manzillar shifrlanmaydi. Chrome brauzer tarixi sinxronlanmaydi.
@@ -1260,6 +1258,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6251449557817521191">Chrome tarixi shu yerda chiqadi</translation>
 <translation id="6254139308321626268">Bu — PDF fayl</translation>
 <translation id="6255809143828972562">Chrome vositalari yordamida xavfsiz kezishingiz va nazoratni ushlab turishingiz mumkin</translation>
+<translation id="6260260490042862943">Sayt boshqaruvi</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
 <translation id="6264485186158353794">Xavfsizlik sahifasiga qaytish</translation>
 <translation id="6267106249090587268">Bildirishnomalar <ph name="SEPARATOR" /> Chrome bu ruxsatlarni spam yoki aldovchi kontent sababli olib tashladi</translation>
@@ -1728,7 +1727,6 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="7968014550143838305">Saqlab olindi</translation>
 <translation id="7968982339740310781">Tafsilotlarni ko‘rish</translation>
 <translation id="7969391000881506217">Amal qilish muddati*</translation>
-<translation id="7971136598759319605">1 kun oldin onlayn edi</translation>
 <translation id="7975379999046275268">Sahifaga razm solish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Maʼlumotlar sizishi natijasida oshkor boʻlgan paroldan foydalansangiz, sizni ogohlantiradi.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome bu ruxsatlarni olib tashladi, chunki saytga uzoq vaqt kirmagansiz</translation>

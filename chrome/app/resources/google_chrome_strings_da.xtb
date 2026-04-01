@@ -182,6 +182,7 @@
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2888126860611144412">Om Chrome</translation>
 <translation id="2915996080311180594">Genstart senere</translation>
+<translation id="2916983411556218750">Lad os konfigurere Chrome</translation>
 <translation id="2926676257163822632">Svage adgangskoder er nemme at gætte. Få Chrome <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome skal have kameratilladelse for at bruge dette website</translation>
 <translation id="2928420929544864228">Installationen er fuldført.</translation>
@@ -599,6 +600,7 @@
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>
 <translation id="7193885263065350793">Din organisation lukker Chrome, når browseren ikke har været i brug i <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="7242029209006116544">Du er ved at logge ind med en managerstyret konto og give dens administrator kontrol over din profil i Google Chrome. Dine Chrome-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. Du kan eventuelt oprette en ny profil for at holde dine eksisterende Chrome-data adskilt. <ph name="LEARN_MORE" /></translation>
+<translation id="7274402351400635015">Du kan bruge Chrome, hver gang du klikker på links i beskeder, dokumenter og andre apps. Den fastgøres også til proceslinjen.</translation>
 <translation id="7285616922384953075"><ph name="MANAGER" /> administrerer Chrome</translation>
 <translation id="7285990705317078173">Download Chrome på din telefon for at overvåge priser og få underretninger, når prisen falder på et website</translation>
 <translation id="7288567540154601580">Faner og udvidelser</translation>

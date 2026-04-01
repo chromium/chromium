@@ -161,7 +161,6 @@
 <translation id="1102759278139578486">اصل نوڈ تشریح والی فائلوں کو ڈاؤن لوڈ نہیں کیا جا سکتا۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="1103523840287552314"><ph name="LANGUAGE" /> کو ہمیشہ ترجمہ کریں</translation>
 <translation id="1104098698795583187">آپ فوری طور پر اس ٹیب گروپ تک رسائی سے محروم ہو جائیں گے اور اسے آپ کے تمام آلات سے حذف کر دیا جائے گا</translation>
-<translation id="1105934302947321130">‏‫Zoom کے ساتھ Google Beam</translation>
 <translation id="1106270460549661906">‏‫Gemini کے ساتھ اشتراک ختم کریں</translation>
 <translation id="1106350001632362876">حد بڑھائیں</translation>
 <translation id="110850812463801904">‏دستی طور پر OneDrive سے منسلک کریں</translation>
@@ -207,7 +206,6 @@
 <translation id="1131201598497838573">‏آپ کے بچے کا PIN اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="1133418583142946603">موجودہ ٹیب شامل کریں</translation>
 <translation id="1133751489735776037">ماؤس پر تین بار کلک کریں</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />۔ <ph name="EMOJI_COUNT" /> میں سے <ph name="EMOJI_INDEX" />۔</translation>
 <translation id="1136712381129578788">‏کئی مرتبہ غلط PIN درج کرنے کی وجہ سے سیکیورٹی کلید مقفل ہو گئی ہے۔ اسے غیر مقفل کرنے کیلئے، اسے ہٹا کر دوبارہ داخل کریں۔</translation>
 <translation id="1137589305610962734">عارضی ڈیٹا</translation>
 <translation id="1137673463384776352">لنک کو <ph name="APP" /> میں کھولیں</translation>
@@ -240,6 +238,7 @@
 <translation id="1155816283571436363">آپ کے فون سے رابطہ ہو رہا ہے</translation>
 <translation id="1157952955648710254">‏Google تلاش کے سائیڈ پینل کو بند کریں</translation>
 <translation id="1158080958325422608">بڑے حروف میں تبدیل کریں</translation>
+<translation id="1158134713295836892">‏‫Chrome میں Gemini</translation>
 <translation id="1159879754517035595">ایکسٹینش کی ترتیبات کا نظم کریں</translation>
 <translation id="1160800016654917722">ونڈو نیچے اور بائیں طرف منتقل ہو گئی</translation>
 <translation id="1161190590171867633">‏موازنہ ٹیبلز آپ کے Google اکاؤنٹ میں محفوظ ہیں</translation>
@@ -763,7 +762,6 @@
 <translation id="1517467582299994451">‏کوڈ کا استعمال کر کے کاسٹ کرنے کے لیے، اپنے Chrome براؤزر کی مطابقت پذیری کی ترتیبات کو آن کریں</translation>
 <translation id="1521442365706402292">سرٹیفیکیٹس کا نظم کریں</translation>
 <translation id="1521655867290435174">Google Sheets</translation>
-<translation id="1521774566618522728">آج فعال کیا گیا</translation>
 <translation id="1521933835545997395">‏Android فون سے منسلک ہے</translation>
 <translation id="1523279371236772909">پچھلے مہینے میں دیکھا گیا</translation>
 <translation id="1523486680453956384">ٹاسک دیکھیں</translation>
@@ -2241,6 +2239,7 @@
 <translation id="2518024842978892609">اپنے کلائنٹ سرٹیفکیٹس استعمال کریں</translation>
 <translation id="2518620532958109495">خودکار طور پر مکمل اسکرین میں داخل ہونے کی اجازت ہے</translation>
 <translation id="2519250377986324805">طریقہ دیکھیں</translation>
+<translation id="2519448661890412804">‏<ph name="TASK_TITLE" />‫\nآپ کے ٹاسک پر کام جاری رکھنے کیلئے Gemini کو آپ کی مدد درکار ہے۔</translation>
 <translation id="2519517390894391510">سرٹیفیکیٹ پروفائل کا نام</translation>
 <translation id="2520644704042891903">دستیاب ساکٹ کا منتظر…</translation>
 <translation id="2521427645491031107">ایپس کی مطابقت پذیری آلے کی ترتیبات میں سیٹ ہے</translation>
@@ -3586,7 +3585,6 @@
 <translation id="3473241910002674503">ٹیبلیٹ موڈ میں بٹنز کے ساتھ ہوم پر جائیں، واپس جائیں اور ایپس سوئچ کریں۔</translation>
 <translation id="3473479545200714844">اسکرین میگنیفائر</translation>
 <translation id="3474218480460386727">نئے الفاظ کے لیے 99 حروف یا کم استعمال کریں</translation>
-<translation id="3474330892505468100">‏‫Meet کے ساتھ Google Beam</translation>
 <translation id="3474624961160222204">بطور <ph name="NAME" /> جاری رکھیں</translation>
 <translation id="3477772589943384839">میموری کی معتدل بچتیں حاصل کریں۔ آپ کے ٹیبز لمبے وقفے کے بعد غیر فعال ہو جاتے ہیں۔</translation>
 <translation id="347785443197175480"><ph name="HOST" /> کو اپنے کیمرا اور مائیکروفون تک حاصل کرنے کی اجازت دینا جاری رکھیں</translation>
@@ -4163,7 +4161,6 @@
 <translation id="3841964634449506551">پاس ورڈ غلط ہے</translation>
 <translation id="3842552989725514455">‏Serif فونٹ</translation>
 <translation id="3843464315703645664">اندرونی طور پر اجازت یافتہ</translation>
-<translation id="3844888638014364087">ایموجی داخل کی گئی</translation>
 <translation id="3846116211488856547">‏ویب سائٹس، Android ایپس، اور مزید کو ڈیولپ کرنے والے ٹولز حاصل کریں۔ Linux انسٹال کرنے پر <ph name="DOWNLOAD_SIZE" /> ڈیٹا ڈاؤن لوڈ ہوگا۔</translation>
 <translation id="3847319713229060696">سبھی کے لیے ویب پر سیکیورٹی کو بہتر بنانے میں مدد کریں</translation>
 <translation id="3847734730889093333">x<ph name="RATE" /></translation>
@@ -4641,6 +4638,7 @@
 <translation id="4190492351494485814">‏ابتدائی سیٹ اپ کے لیے، آپ کو انٹرنیٹ سے منسلک ہونے کی ضرورت ہے تاکہ فائلز آپ کے Chromebook سے مطابقت پذیر ہو سکیں</translation>
 <translation id="4190828427319282529">کی بورڈ کے فوکس کو نمایاں کریں</translation>
 <translation id="4191892134568599822"><ph name="FEATURE_NAME" /> کی مدد سے وصول کریں؟</translation>
+<translation id="4192850526869217634">‏<ph name="TASK_TITLE" />‫\n‏Gemini آپ کے ٹاسک پر کام کر رہا ہے اور مزید کارروائی کی ضرورت پڑنے پر آپ کو اطلاع دے گا۔</translation>
 <translation id="4192850928807059784">‏<ph name="BEGIN_PARAGRAPH1" /><ph name="DEVICE_TYPE" /> کے لیے مخصوص۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />تخلیق کر سکنے والا AI تجرباتی ہے، ترقی کے ابتدائی مرحلے میں ہے، ساتھ ہی دستیابی بھی فی الحال محدود ہے۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4193251682249731404">‏معتبر CA</translation>
@@ -5028,7 +5026,6 @@
 <translation id="4453430595102511050">آپ کے کی بورڈ کے اوپر دائیں کونے موجود فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے فنگر پرنٹ ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
 <translation id="4453946976636652378">‏<ph name="SEARCH_ENGINE_NAME" /> پر تلاش کریں یا URL ٹائپ کریں</translation>
 <translation id="4457472090507035117">موجودہ آواز منتخب کریں:</translation>
-<translation id="4459169140545916303"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دنوں قبل فعال کیا گیا</translation>
 <translation id="4460014764210899310">گروپ ختم کریں</translation>
 <translation id="4461483878391246134">کبھی بھی ترجمہ کی پیشکش نہ کرنے کے لیے زبانیں شامل کریں</translation>
 <translation id="4462159676511157176">حسب  ضرورت نام سرورز</translation>
@@ -5253,6 +5250,7 @@
 <translation id="4624054169152573743">رنگ کی تھیم</translation>
 <translation id="4625078469366263107">ایپ فعال کریں</translation>
 <translation id="4625905218692741757">سرمئی ڈیفالٹ رنگ</translation>
+<translation id="4626906635466987740">‏<ph name="TASK_TITLE" />‫\n‏Gemini نے آپ کا ٹاسک موقوف کر دیا۔ اس کا جائزہ لینے کیلئے Chrome پر واپس جائیں۔</translation>
 <translation id="4627107755957573804">سائٹس اور ایپس کو پاس کیز استعمال کرنے کے لیے موجودہ اکاؤنٹس کو اپ گریڈ کرنے کی اجازت دیں</translation>
 <translation id="4627442949885028695">کسی دوسرے آلہ سے جاری رکھیں</translation>
 <translation id="4628762811416793313">‏Linux کنٹینر کا سیٹ اپ مکمل نہیں ہوا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
@@ -5781,6 +5779,7 @@
 <translation id="4990673372047946816">کوئی کیمرا دستیاب نہیں ہے</translation>
 <translation id="4991420928586866460">سر فہرست قطار کی کلیدوں کو فنکشن کلیدوں کے بطور خیال کریں</translation>
 <translation id="4991873517942703737">اس دستاویز کے بارے میں پوچھیں</translation>
+<translation id="4992066212339426712">آواز چلائیں</translation>
 <translation id="4992443049233195791">‏Microsoft 365 کی فائل کی ترتیبات</translation>
 <translation id="4992458225095111526">پاور واش کی توثیق کریں</translation>
 <translation id="4992473555164495036">آپ کے منتظم نے اندراج کے دستیاب طریقوں کو محدود کیا ہوا ہے۔</translation>
@@ -6759,7 +6758,6 @@
 <translation id="5701212929149679556">سیلولر رومنگ</translation>
 <translation id="5701786609538182967">دیگر ایپس کو <ph name="APP_NAME" /> کی طرح لنکس کو کھولنے کے لیے سیٹ کیا گیا ہے۔ یہ <ph name="APP_NAME_2" />، <ph name="APP_NAME_3" />، <ph name="APP_NAME_4" /> اور ایک دوسری ایپ کو تعاون یافتہ لنکس کھولنے سے غیر فعال کر دیں گی۔</translation>
 <translation id="5702161882524398150">گزشتہ ٹیب کے بارے میں پوچھیں</translation>
-<translation id="5702749864074810610">تجویز برخاست ہو گئی</translation>
 <translation id="5703716265115423771">والیوم کم کریں</translation>
 <translation id="5703998022096520811">‏‫Google محفوظ براؤزنگ کو مزید معلومات بھیج کر ریئل ٹائم، فعال تحفظ</translation>
 <translation id="5704875434923668958">یہاں مطابقت پذیری کی جا رہی ہے</translation>
@@ -7563,7 +7561,6 @@
 <translation id="6270309713620950855">یاد دہانی خاموش کریں</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>
 <translation id="6270770586500173387"><ph name="BEGIN_LINK1" />سسٹم اور ایپ کی معلومات<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />میٹرکس<ph name="END_LINK2" /> بھیجیں</translation>
-<translation id="6271348838875430303">اصلاح کو کالعدم کیا گیا ہے</translation>
 <translation id="6271824294945464304">پاس ورڈ کا اشتراک کرنا</translation>
 <translation id="6273677812470008672">معیار</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> سے منسلک ہو رہا ہے</translation>
@@ -8294,6 +8291,7 @@
 <translation id="6798420440063423019">‏کئی مرتبہ غلط PIN درج کرنے کی وجہ سے سیکیورٹی کلید مقفل ہو گئی ہے۔ آپ کو سیکیورٹی کلید ری سیٹ کرنی ہوگی۔</translation>
 <translation id="679845623837196966">پڑھنے کی فہرست دکھائیں</translation>
 <translation id="6798578729981748444">‏درآمد ختم کرنے کے لئے، تمام Firefox ونڈوز کو بند کریں۔</translation>
+<translation id="6798688411671553980">‏<ph name="TASK_TITLE" />‫\n‏Gemini نے آپ کا ٹاسک مکمل کر دیا، آپ اسے Chrome میں دیکھ سکتے ہیں۔</translation>
 <translation id="6798780071646309401">‏caps lock آن ہے</translation>
 <translation id="679905836499387150">پوشیدہ ٹول بار بٹنز</translation>
 <translation id="6800893479155997609">آپ کے <ph name="DEVICE_TYPE" /> کیلئے سرفہرست ایپس</translation>
@@ -9896,6 +9894,7 @@
 <translation id="7916364730877325865">آپ کی تنظیم آپ کو اس اکاؤنٹ سے مطابقت پذیری کو آن کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="791698251820376781">آپ کی تنظیم آپ کو سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
 <translation id="7918257978052780342">اندراج کریں</translation>
+<translation id="7918928051723770926">ٹاسک مکمل ہو گیا</translation>
 <translation id="7919123827536834358">خودکار طور پر ان زبانوں کا ترجمہ کریں</translation>
 <translation id="7919210519031517829"><ph name="DURATION" /> سیکنڈ</translation>
 <translation id="7920363873148656176"><ph name="ORIGIN" /> <ph name="FILENAME" /> دیکھ سکتا ہے</translation>
@@ -10385,6 +10384,7 @@
 <translation id="8244724656154470844">اپ ڈیٹ چیک ناکام ہو گیا۔</translation>
 <translation id="8246776524656196770">‏ایک PIN (ذاتی شناختی نمبر) کی مدد سے اپنی سیکیورٹی کلید کا تحفظ کریں</translation>
 <translation id="824713170151383793">‏‫DevTools کے ساتھ</translation>
+<translation id="8247210755024677100">سائن ان کیا جا رہا ہے ...</translation>
 <translation id="8247795734638043885">غیر محفوظ فائل ڈاؤن لوڈ کریں</translation>
 <translation id="8248050856337841185">&amp;پیسٹ کریں</translation>
 <translation id="8248381369318572865">اپنے مائیکروفون تک رسائی حاصل کریں اور اپنی اسپیچ کا تجزیہ کریں</translation>
@@ -10529,7 +10529,6 @@
 <translation id="8339288417038613756">ڈسپلے اور ٹیکسٹ کا سائز</translation>
 <translation id="833986336429795709">یہ لنک کھولنے کیلئے، ایک ایپ منتخب کریں</translation>
 <translation id="8340547030807793004"><ph name="DEVICE" /> کے لیے مزید کارروائیاں</translation>
-<translation id="8341693734243413517">‏‫Chrome کا اپ ڈیٹ کنندہ</translation>
 <translation id="8341804784147620576">تلاش کے شارٹ کٹس دکھائیں</translation>
 <translation id="8342221978608739536">کوشش نہیں کی</translation>
 <translation id="8342387517402567689">پوشیدگی وضع میں ویب ایپ انسٹالز تعاون یافتہ نہیں ہیں</translation>
@@ -10775,6 +10774,7 @@
 <translation id="8518809011298357036">اوپر کے منظر کو بند کریں</translation>
 <translation id="8518942514525208851">بے حُرمتی چھپائيں</translation>
 <translation id="8520238089740349550">ناکام - مقامی ڈاؤن لوڈ مسدود ہو گیا</translation>
+<translation id="8520408093016204772">اپنے پاس ورڈز، بُک مارکس اور ترتیبات کو اسٹور کریں</translation>
 <translation id="8523493869875972733">تبدیلیاں برقرار رکھیں</translation>
 <translation id="8523849605371521713">پالیسی کے ذریعے شامل کیا گیا</translation>
 <translation id="8524594273111932386">‏search + نیچے تیر کا نشان</translation>
@@ -10828,6 +10828,7 @@
 <translation id="8557022314818157177">آپ کے فنگر پرنٹ کیپچر ہو جانے تک اپنی سیکیورٹی کلید کو ٹچ کرتے رہیں</translation>
 <translation id="8557100046150195444">‏جاری رکھنے کے لیے ٹچ ID</translation>
 <translation id="8557856025359704738">اگلا ڈاؤن لوڈ <ph name="NEXT_DATE_DOWNLOAD" /> کو ہے۔</translation>
+<translation id="8558063527625343224">‏‫Google Beam سیٹ اپ کریں</translation>
 <translation id="8559858985063901027">پاس کیز</translation>
 <translation id="8559961053328923750">‏اشتہار کی کارکردگی کی پیمائش کرنے کے لیے Chrome اس ڈیٹا کی کل مقدار کو محدود کرتا ہے جو ایک سائٹس براؤزر کے ذریعے اشتراک کر سکتی ہیں</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{سبھی کو &amp;نئی ونڈو میں کھولیں}=1{&amp;نئی ونڈو میں کھولیں}other{سبھی ({COUNT}) کو &amp;نئی ونڈو میں کھولیں}}</translation>
@@ -11344,6 +11345,7 @@
 <translation id="8898786835233784856">اگلا ٹیب منتخب کریں</translation>
 <translation id="8898790559170352647">‏اپنا Microsoft اکاؤنٹ شامل کریں</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
+<translation id="8898837844145554490">‏<ph name="TASK_TITLE" />‫\n‏Gemini نے آپ کے ٹاسک پر کام کرنا بند کر دیا۔</translation>
 <translation id="8899851313684471736">لنک نئی ونڈو میں کھولیں</translation>
 <translation id="8900413463156971200">سیلولر کو فعال کریں</translation>
 <translation id="8902059453911237649">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ لیں اور اس <ph name="DEVICE_TYPE" /> کو آج ہی واپس کریں۔}other{<ph name="MANAGER" /> کا تقاضہ ہے کہ آپ اپنے ڈیٹا کا بیک اپ ليں اور آخری تاریخ سے پہلے اس <ph name="DEVICE_TYPE" /> کو واپس کریں۔}}</translation>
@@ -11467,7 +11469,6 @@
 <translation id="8983018820925880511">یہ نئی پروفائل <ph name="DOMAIN" /> کے زیر انتطام ہو گی۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> <ph name="FILENAME" /> میں ترمیم کر سکتا ہے</translation>
 <translation id="8984694057134206124">آپ ہر ایک کو <ph name="MINUTES" /> منٹ کیلئے مرئی ہوں گے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> دن پہلے فعال کیا گیا</translation>
 <translation id="8985561265504464578">حد کا پتہ لگائیں</translation>
 <translation id="8985661493893822002">براہ کرم اپنے <ph name="DEVICE_TYPE" /> میں سائن ان کرنے کے لیے انٹرنیٹ سے منسلک ہوں۔</translation>
 <translation id="8985661571449404298">غیر محفوظ فائل ڈاؤن لوڈ ہو گئی</translation>

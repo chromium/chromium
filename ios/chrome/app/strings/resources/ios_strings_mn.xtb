@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"Энэ табаар үргэлжлүүлэх"-ийг нуух</translation>
 <translation id="1520027731907768768">Мөшгөдөг бүтээгдэхүүнүүдийнхээ үнэ буурсан талаарх дохиог хүлээн авна уу.</translation>
 <translation id="1521366073263497277">Табын хүснэгт рүүгээ очно уу</translation>
-<translation id="1521774566618522728">Өнөөдөр идэвхтэй</translation>
 <translation id="1523567067736644845">Нууц үгийг харуулахын тулд түгжээг тайлна уу</translation>
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
 <translation id="1531038290222364269">Табуудыг харуулах</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг.</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" />-н дэлгэрэнгүйг харуулах</translation>
 <translation id="2309265394777270359">Табыг хаах</translation>
+<translation id="2310789833878085574">Хадгалж, автоматаар бөглөх</translation>
 <translation id="2311077293164383652">Бэхэлсэн табыг хаах</translation>
 <translation id="2316129865977710310">Үгүй ээ, баярлалаа</translation>
 <translation id="2320166752086256636">Компьютерийн гарыг нуух</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Бүтээгдэхүүнийг хянахын тулд Хянах дээр товшино уу</translation>
 <translation id="5121618895923301719">Та энэ бүтээгдэхүүнийг аль хэдийн хянаж байна. Энэ хуудсыг <ph name="BEGIN_LINK" />Мобайл хавчуургад<ph name="END_LINK" /> хадгалсан.</translation>
 <translation id="512533434554095351">Танд нууц үгний хэд хэдэн асуудал байна.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> хоногийн өмнө идэвхтэй байсан</translation>
 <translation id="5128788795241319992">Шинэ цэсийг судлах</translation>
 <translation id="5132942445612118989">Нууц үг, түүх болон бусад зүйлээ бүх төхөөрөмждөө синк хийгээрэй</translation>
 <translation id="5141363746588976328">Таны таб дээрх үнийн бууралтын картыг нуух</translation>
@@ -1651,6 +1650,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6806550742467879742">Хуудасны хэрэгсэл</translation>
 <translation id="6807287147325542056">Бусад апп дахь нууц үг</translation>
 <translation id="681368974849482173">Үүссэн зүйл</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Хавчуургыг таны {email} Google Бүртгэлд хадгалсан}other{{count} хавчуургыг таны {email} Google Бүртгэлд хадгалсан}}</translation>
 <translation id="6826004672264649705">Одоогоор энэ бүтээгдэхүүнийг хянаж байна. Үнийн түүхийг харахын тулд нээнэ үү</translation>
 <translation id="6830728435402077660">Аюултай</translation>
@@ -1964,7 +1964,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7952670906562503188">Та {passkey_count} нэвтрэх түлхүүр болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
 <translation id="7958575506592576831">Хуудасны аюулгүй байдлын мэдээлэл</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>
-<translation id="7971136598759319605">1 өдрийн өмнө идэвхтэй</translation>
 <translation id="7972837668077967426">Зотон</translation>
 <translation id="7975036700432177008">Туршиж үзэх</translation>
 <translation id="797588153137233716">Цэс → Түүх → Интернэтээр үзсэн өгөгдлийг устгах</translation>

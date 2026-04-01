@@ -1772,6 +1772,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3744899669254331632">Hindi mo maaaring bisitahin ang <ph name="SITE" /> sa ngayon dahil nagpadala ang website ng mga pinaghalong kredensyal na hindi maproseso ng Chromium. Karaniwang pansamantala ang mga error at pag-atake sa network, kaya malamang na gagana ang page na ito sa ibang pagkakataon.</translation>
 <translation id="3745599309295009257">Ang text mo, at ang content at URL ng page na sinusulatan mo ay ipapadala sa Google, susuriin ng mga tao, at gagamitin para mapahusay ang feature na ito. Iwasang maglagay ng personal na impormasyon (tulad ng mga medikal at pinansyal na detalye) o gamitin ang tool na ito sa mga site na naglalaman ng pribado at sensitibong impormasyon.</translation>
 <translation id="3748009735914587286">Metal (High-Gloss)</translation>
+<translation id="3748647055058832337">Hindi available para sa merchant na ito</translation>
 <translation id="3749600200023337912">Posibleng gamitin para sa pagbabayad na ito ang iyong naka-save na paraan ng awtomatikong pagbabayad. Para i-off ang mga eWallet o app sa pagbabayad sa Chrome, pumunta sa iyong <ph name="BEGIN_LINK1" />mga setting ng pagbabayad<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">I-save ang address sa account?</translation>
 <translation id="3752543821772132562">Binalewala dahil hindi nakatakda ang <ph name="POLICY_NAME" />.</translation>
@@ -2418,6 +2419,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Na-block ang pop-up}one{# pop-up ang na-block}other{# na pop-up ang na-block}}</translation>
 <translation id="4780320432697076749">Software para sa Larawan</translation>
 <translation id="4780366598804516005">Mailbox 1</translation>
+<translation id="4785273477715803444">I-filter ang mga log</translation>
 <translation id="4785376858512657294">Pamahalaan ang Google Account</translation>
 <translation id="4785689107224900852">Lumipat sa tab na ito</translation>
 <translation id="4785998536350006000">Naghahanap para sa "<ph name="SEARCH_QUERY" />"</translation>
@@ -3060,6 +3062,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5759751709240058861">Gamitin at galawin ang iyong camera</translation>
 <translation id="5762131895127128324">Mga lisensya sa pagmamaneho · Mga identity card · Mga passport</translation>
 <translation id="5763042198335101085">Maglagay ng wastong email address</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktibo ngayong araw}=1{Aktibo 1 araw ang nakalipas}one{Aktibo # araw ang nakalipas}other{Aktibo # na araw ang nakalipas}}</translation>
 <translation id="5764725887548570807">Invalid na format ng origin.</translation>
 <translation id="5764920692828389743">Ipadala sa <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Upang makita ang mga pamamaraan at kinakailangan sa paghahatid, pumili ng address</translation>
@@ -3890,6 +3893,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="7057567173736333354">Ilarawan ang iyong larawan</translation>
 <translation id="7058163556978339998">Na-verify ng <ph name="BROWSER" /> na ang <ph name="ISSUER" /> ang nag-isyu ng certificate na ito ng website.</translation>
 <translation id="7058774143982824355">Serbisyong Pang-parse ng CSV na Password</translation>
+<translation id="7059913660448028407">Hindi available sa ngayon</translation>
 <translation id="7062344833049251424">Para mas mabilis na makapagbayad sa susunod, i-save ang iyong card at billing address sa Google Wallet</translation>
 <translation id="706295145388601875">Magdagdag at mamahala ng mga address sa mga setting ng Chrome</translation>
 <translation id="7063157783216323487">Berde 2</translation>
@@ -4171,6 +4175,7 @@ Mga karagdagang detalye:
 <translation id="7471007961486718967">Magbigay ng dahilan para sa paglilipat (nire-require)</translation>
 <translation id="7473033553872550521">Puwede ka ring makipag-ugnayan sa may-ari ng site at magmungkahing mag-upgrade siya sa HTTPS. <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">Hindi, Salamat</translation>
+<translation id="7475618719385705713">Naka-block ang page na ito</translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7481603210197454575">Envelope Italian</translation>
 <translation id="7482823403440483089">Pinahusay na autofill</translation>
@@ -4192,6 +4197,7 @@ Mga karagdagang detalye:
 <translation id="7508255263130623398">Walang laman ang ibinalik na device id ng patakaran o hindi ito tumutugma sa kasalukuyang device id</translation>
 <translation id="7508577201115425418">Mga Serbisyo sa Dokumento at Pag-print</translation>
 <translation id="7510269639068718544">Mga Pusa</translation>
+<translation id="7511707705708508147">Hindi sinusuportahan ang currency</translation>
 <translation id="7511955381719512146">Maaaring hilingin ng Wi-Fi na ginagamit mo na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
 <translation id="7512685745044087310">Hindi puwedeng itakda sa "True" at maging mandatoryo ang patakarang ito, kung kaya naman, ginawa itong inirerekomenda.</translation>
 <translation id="7514365320538308">I-download</translation>
@@ -4691,6 +4697,7 @@ Mga karagdagang detalye:
 <translation id="8281886186245836920">Laktawan</translation>
 <translation id="8282292167096638950">I-delete ang lisensya sa pagmamaneho</translation>
 <translation id="8282409409360764263">Maintenance ng Bakuran</translation>
+<translation id="828282277746732142">I-save ang IBAN sa Google Wallet</translation>
 <translation id="8282947398454257691">Alamin ang natatanging identifier ng iyong device</translation>
 <translation id="8284769179630993263">Pamahalaan ang iyong Ligtas na Pag-browse at higit pa sa mga setting ng Chrome</translation>
 <translation id="828558778104922222">Nawala ang larawan dahil sa hindi alam na error</translation>

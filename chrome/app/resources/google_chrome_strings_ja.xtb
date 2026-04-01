@@ -182,6 +182,7 @@
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2888126860611144412">Chrome について</translation>
 <translation id="2915996080311180594">後で再起動</translation>
+<translation id="2916983411556218750">Chrome の設定を始めましょう</translation>
 <translation id="2926676257163822632">脆弱なパスワードは簡単に推測されてしまいます。Chrome で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
 <translation id="2928420929544864228">インストールが完了しました。</translation>
@@ -598,6 +599,7 @@
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>
 <translation id="7193885263065350793"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。</translation>
 <translation id="7242029209006116544">現在、管理対象アカウントでログインしており、あなたの Google Chrome プロファイルを管理者が制御できる状態になっています。あなたの Chrome データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。新しいプロファイルを作成して、既存の Chrome データを別に保管することができます。<ph name="LEARN_MORE" /></translation>
+<translation id="7274402351400635015">メッセージ、ドキュメント、他のアプリのリンクをクリックしたときに、常に Chrome で開くことができます。タスクバーにも固定されます。</translation>
 <translation id="7285616922384953075">Chrome は <ph name="MANAGER" /> によって管理されています</translation>
 <translation id="7285990705317078173">スマートフォンに Chrome をダウンロードして、価格をトラッキングしたり、サイトで値下げがあった際に通知を受け取ったりできます</translation>
 <translation id="7288567540154601580">タブと拡張機能</translation>

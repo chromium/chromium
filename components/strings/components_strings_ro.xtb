@@ -2418,6 +2418,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Fereastră pop-up blocată}few{# ferestre pop-up blocate}other{# de ferestre pop-up blocate}}</translation>
 <translation id="4780320432697076749">Software foto</translation>
 <translation id="4780366598804516005">Căsuța de e-mail 1</translation>
+<translation id="4785273477715803444">Filtrează jurnalele</translation>
 <translation id="4785376858512657294">Gestionează Contul Google</translation>
 <translation id="4785689107224900852">Comută la această filă</translation>
 <translation id="4785998536350006000">Se caută „<ph name="SEARCH_QUERY" />”</translation>
@@ -3060,6 +3061,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5759751709240058861">Mișcă și folosește camera</translation>
 <translation id="5762131895127128324">Permise de conducere · Cărți de identitate · Pașapoarte</translation>
 <translation id="5763042198335101085">Introdu o adresă de e-mail validă</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Activ astăzi}=1{Activ acum o zi}few{Activ acum # zile}other{Activ acum # de zile}}</translation>
 <translation id="5764725887548570807">Format de origine nevalid.</translation>
 <translation id="5764920692828389743">Trimite la <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Pentru a vedea metodele de livrare și cerințele, selectează o adresă</translation>

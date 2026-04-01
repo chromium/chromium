@@ -1769,6 +1769,7 @@
 <translation id="3744899669254331632">বর্তমান আপুনি <ph name="SITE" />ৰ চাব নোৱাৰে কাৰণ ৱেবছাইটটোৱে এক বিশৃংখল ক্ৰিডেনশ্বিয়েল পঠিয়াইছে যিটোত Chromiumএ প্ৰক্ৰিয়া চলাব নোৱাৰে। নেটৱর্কৰ আসোঁৱাহ আৰু আক্ৰমণবোৰ সাধাৰণতে অস্থায়ী হয় গতিকে এই পৃষ্ঠাটোৱে পাছত কাম কৰিব পাৰে।</translation>
 <translation id="3745599309295009257">আপোনাৰ পাঠ আৰু আপুনি যিখন পৃষ্ঠাত লিখিবলৈ লৈছে সেইখনৰ সমল আৰু URL Googleলৈ পঠিওৱা হ’ব, মানুহৰ দ্বাৰা পৰ্যালোচনা কৰা হ’ব আৰু সেয়া এই সুবিধাটো উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব। ব্যক্তিগত তথ্য (যেনে - চিকিৎসা সম্পৰ্কীয় অথবা বিত্তীয় সবিশেষ) দিয়া অথবা এই সঁজুলিটো ব্যক্তিগত অথবা সংবেদনশীল তথ্য থকা ছাইটত ব্যৱহাৰ কৰাৰ পৰা বিৰত থাকক।</translation>
 <translation id="3748009735914587286">মেটেল (হাই-গ্লছ)</translation>
+<translation id="3748647055058832337">এই বণিকৰ বাবে উপলব্ধ নহয়</translation>
 <translation id="3749600200023337912">এই পৰিশোধটোৰ বাবে আপোনাৰ ছেভ কৰি থোৱা স্বয়ংক্ৰিয়ভাৱে পৰিশোধ কৰাৰ পদ্ধতি ব্যৱহাৰ কৰা হ’ব পাৰে। Chromeত eWallets বা পৰিশোধৰ এপ্‌ অফ কৰিবলৈ, আপোনাৰ <ph name="BEGIN_LINK1" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="3752181611900535304">ঠিকনা একাউণ্টত ছেভ কৰিবনে?</translation>
 <translation id="3752543821772132562"><ph name="POLICY_NAME" /> ছেট কৰা হোৱা নাই বাবে উপেক্ষা কৰা হৈছে।</translation>
@@ -2414,6 +2415,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{পপ-আপ অৱৰোধ কৰা হ’ল}one{#টা পপ-আপ অৱৰোধ কৰা হৈছে}other{#টা পপ-আপ অৱৰোধ কৰা হৈছে}}</translation>
 <translation id="4780320432697076749">ফট’ৰ ছফ্টৱেৰ</translation>
 <translation id="4780366598804516005">মেইলবক্স ১</translation>
+<translation id="4785273477715803444">লগসমূহ ফিল্টাৰ কৰক</translation>
 <translation id="4785376858512657294">Google একাউণ্ট পৰিচালনা কৰক</translation>
 <translation id="4785689107224900852">এই টেবটোলৈ যাওক</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" সন্ধান কৰি থকা হৈছে</translation>
@@ -3056,6 +3058,7 @@
 <translation id="5759751709240058861">আপোনাৰ কেমেৰা ব্যৱহাৰ আৰু লৰচৰ কৰা</translation>
 <translation id="5762131895127128324">চালকৰ অনুজ্ঞাপত্ৰ · পৰিচয় পত্ৰ · পাছপ’ৰ্ট</translation>
 <translation id="5763042198335101085">এটা মান্য ইমেইল ঠিকনা দিয়ক</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{আজি সক্ৰিয় হৈছে}=1{১দিনৰ পূৰ্বে সক্ৰিয় আছিল}one{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}other{#দিনৰ পূৰ্বে সক্ৰিয় আছিল}}</translation>
 <translation id="5764725887548570807">উৎসৰ ফৰ্মেট মান্য নহয়।</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />লৈ পঠিয়াওক</translation>
 <translation id="5765072501007116331">ডেলিভাৰীৰ পদ্ধতি আৰু আৱশ্যকতা সম্পর্কে চাবলৈ কোনো ঠিকনা বাছনি কৰক</translation>
@@ -3885,6 +3888,7 @@
 <translation id="7057567173736333354">আপোনাৰ প্ৰতিচ্ছবি বৰ্ণনা কৰক</translation>
 <translation id="7058163556978339998"><ph name="BROWSER" />এ সত্যাপন কৰিছে যে <ph name="ISSUER" />এ এই ৱেবছাইটটোৰ প্ৰমাণপত্ৰ জাৰি কৰিছে।</translation>
 <translation id="7058774143982824355">CSV পাছৱৰ্ড পাৰ্ছাৰ সেৱা</translation>
+<translation id="7059913660448028407">বৰ্তমান উপলব্ধ নহয়</translation>
 <translation id="7062344833049251424">পৰৱৰ্তী সময়ত দ্ৰুততাৰে পৰিশোধ কৰিবলৈ, Google Walletত আপোনাৰ কাৰ্ড আৰু বিলিঙৰ ঠিকনা ছেভ কৰক</translation>
 <translation id="706295145388601875">Chromeৰ ছেটিঙত ঠিকনা যোগ দিয়ক আৰু পৰিচালনা কৰক</translation>
 <translation id="7063157783216323487">সেউজীয়া ২</translation>
@@ -4165,6 +4169,7 @@
 <translation id="7471007961486718967">স্থানান্তৰণ কৰাৰ কাৰণ দিয়ক (আৱশ্যকীয়)</translation>
 <translation id="7473033553872550521">আপুনি ছাইটৰ গৰাকীৰ সৈতেও যোগাযোগ কৰিব পাৰে আৰু তেওঁক HTTPSলৈ আপগ্ৰে’ড কৰাৰ বাবে পৰামৰ্শ দিব পাৰে। <ph name="LEARN_MORE" /></translation>
 <translation id="7473891865547856676">নালাগে, ধন্যবাদ</translation>
+<translation id="7475618719385705713">এই পৃষ্ঠাখন অৱৰোধ কৰা হৈছে</translation>
 <translation id="7481312909269577407">ফৰৱাৰ্ড কৰক</translation>
 <translation id="7481603210197454575">এনভেল’প ইটালিয়ান</translation>
 <translation id="7482823403440483089">স্বয়ংক্রিয়ভাৱে পূৰ হোৱা বৰ্ধিত সুবিধা</translation>
@@ -4186,6 +4191,7 @@
 <translation id="7508255263130623398">উভতোৱা নীতিৰ ডিভাইচ আইডি খালী বা বর্তমান আইডি সৈতে অমিল</translation>
 <translation id="7508577201115425418">নথি আৰু প্ৰিণ্ট কৰাৰ সেৱা</translation>
 <translation id="7510269639068718544">মেকুৰী</translation>
+<translation id="7511707705708508147">মুদ্ৰা সমৰ্থিত নহয়</translation>
 <translation id="7511955381719512146">আপুনি ব্যৱহাৰ কৰি থকা ৱাই-ফাইৰ বাবে আপুনি <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />লৈ যাব লগিব।</translation>
 <translation id="7512685745044087310">এই নীতিটো "সঁচা" বুলি তথা বাধ্যতামূলক হিচাপে ছেট কৰিব নোৱাৰি, সেয়েহে ইয়াক চুপাৰিছ কৰালৈ সলনি কৰা হৈছে।</translation>
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
@@ -4685,6 +4691,7 @@
 <translation id="8281886186245836920">এৰি যাওক</translation>
 <translation id="8282292167096638950">চালকৰ অনুজ্ঞাপত্ৰ মচক</translation>
 <translation id="8282409409360764263">চোতালৰ তত্ত্বাৱধান</translation>
+<translation id="828282277746732142">Google Walletত IBAN ছেভ কৰক</translation>
 <translation id="8282947398454257691">আপোনাৰ অনন্য ডিভাইচ চিনাক্তকৰণকাৰীৰ বিষয়ে জানক</translation>
 <translation id="8284769179630993263">Chromeৰ ছেটিঙত আপোনাৰ সুৰক্ষিত ব্ৰাউজিং আৰু অন্য অধিক পৰিচালনা কৰক</translation>
 <translation id="828558778104922222">এটা অজ্ঞাত আসোঁৱাহৰ বাবে ফট’খন হেৰাইছে</translation>

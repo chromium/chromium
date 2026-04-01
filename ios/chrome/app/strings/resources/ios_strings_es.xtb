@@ -29,7 +29,7 @@
 <translation id="1082554859195167538">Reseñas de productos para ti</translation>
 <translation id="1084365883616172403">Publicado en Facebook</translation>
 <translation id="1085677983426914530">No se ha podido abrir <ph name="FILENAME" /></translation>
-<translation id="1086486568852410168">Buscar con Google Lens</translation>
+<translation id="1086486568852410168">Busca con Google Lens</translation>
 <translation id="1096992026380844478">Tus ajustes de sincronización se restaurarán en función de tu última copia de seguridad. <ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traducir siempre del <ph name="LANGUAGE" /></translation>
 <translation id="1110772719190051587">Desbloquear con Face ID</translation>
@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Ocultar Continuar en esta pestaña</translation>
 <translation id="1520027731907768768">Recibe alertas si los productos que sigues bajan de precio.</translation>
 <translation id="1521366073263497277">Ve a la cuadrícula de pestañas</translation>
-<translation id="1521774566618522728">Activo hoy</translation>
 <translation id="1523567067736644845">Desbloquea para ver la contraseña</translation>
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1531038290222364269">Mostrar pestañas</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Tus contraseñas se cifran en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
 <translation id="2306265833370324042">Mostrar detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Cerrar pestaña</translation>
+<translation id="2310789833878085574">Guardar y autocompletar</translation>
 <translation id="2311077293164383652">Cerrar pestaña fija</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -651,7 +651,7 @@
 <translation id="3365529507898144230">Guardar en Fotos</translation>
 <translation id="3371831930909698441">El Traductor está disponible. Opciones disponibles cerca de la parte inferior de la pantalla.</translation>
 <translation id="3377063233124932127">Ahora tus marcadores, contraseñas y otros elementos guardados se muestran en la parte superior.</translation>
-<translation id="3378214228000661758">Crea una clave de acceso para</translation>
+<translation id="3378214228000661758">Crea una llave de acceso para</translation>
 <translation id="3380352560400387991">Este sitio está intentando abrir una aplicación. Como resultado, saldrás del modo Incógnito.</translation>
 <translation id="3385742921291399323">Accede a tus contraseñas, pestañas y marcadores, entre otras cosas.</translation>
 <translation id="3391765987934722383">No te pierdas ninguna bajada de precio</translation>
@@ -729,7 +729,7 @@
 <translation id="3642060527569456384">Los grupos de pestañas se guardan y se actualizan automáticamente en todos tus dispositivos.</translation>
 <translation id="3643338347976071250">{count,plural, =1{{count} contraseña solo se guarda en este dispositivo. Para usarla en tus otros dispositivos, guárdala en tu cuenta de Google: {email}.}other{{count} contraseñas solo se guardan en este dispositivo. Para usarlas en tus otros dispositivos, guárdalas en tu cuenta de Google: {email}.}}</translation>
 <translation id="3659297405161482746">No se ha encontrado ningún método de pago</translation>
-<translation id="3662966164093827811">{count,plural, =1{1 seleccionado}other{# seleccionados}}</translation>
+<translation id="3662966164093827811">{count,plural, =1{1 seleccionada}other{# seleccionadas}}</translation>
 <translation id="3668816008081204991">La lista de lectura está oculta</translation>
 <translation id="3670030362669914947">Número</translation>
 <translation id="3672283986707092811">Seleccionar todo</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Marcar como leídas</translation>
 <translation id="428768789042547925">Novedades</translation>
 <translation id="429074084062258019">{count,plural, =1{Añadir pestaña al grupo}other{Añadir pestañas al grupo}}</translation>
+<translation id="4300830875340617674">Escanear tarjeta y autocompletar</translation>
 <translation id="4302061870579014542">Establecer posición</translation>
 <translation id="4304713468139749426">Gestor de contraseñas</translation>
 <translation id="4306349443295056740">Firma de OCSP</translation>
@@ -986,7 +987,7 @@
 <translation id="4607887340472970274">Seguimiento de precios</translation>
 <translation id="4619564267100705184">Demostrar mi identidad</translation>
 <translation id="4621768135601674446">Abrir opciones del modo Lectura</translation>
-<translation id="4627107755957573804">Permite que los sitios y las aplicaciones actualicen las cuentas para usar claves de acceso</translation>
+<translation id="4627107755957573804">Permite que los sitios y las apps actualicen las cuentas para usar llaves de acceso</translation>
 <translation id="4629065796475200039">Tu contraseña no se ha importado</translation>
 <translation id="4630212057753624203">Cuadro de muestra</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> contraseñas reutilizadas</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Para hacer un seguimiento del producto, toca Seguir</translation>
 <translation id="5121618895923301719">Ya estás siguiendo este producto. Esta página se ha guardado en <ph name="BEGIN_LINK" />Marcadores del móvil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tienes varios problemas relacionados con contraseñas.</translation>
-<translation id="5127538504377457572">Activo hace <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora el nuevo menú</translation>
 <translation id="5132942445612118989">Sincroniza tus contraseñas, tu historial y más en todos tus dispositivos</translation>
 <translation id="5141363746588976328">Ocultar tarjeta Bajadas de precio en tus pestañas</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Activar cámara</translation>
 <translation id="5229315183665181733">Editar sitio</translation>
+<translation id="5233111790346066304">Guarda archivos en tu Google Drive y accede a ellos en cualquier momento.</translation>
 <translation id="5233638681132016545">Nueva pestaña</translation>
 <translation id="5234094073825090254">{count,plural, =1{Marcador guardado en tu cuenta de Google: {email}.}other{Marcadores guardados en tu cuenta de Google: {email}.}}</translation>
 <translation id="5234764350956374838">Cerrar</translation>
@@ -1649,6 +1650,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6806550742467879742">Herramientas de página</translation>
 <translation id="6807287147325542056">Contraseñas en otras aplicaciones</translation>
 <translation id="681368974849482173">Elemento creado</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado en tu cuenta de Google ({email})}other{{count} marcadores guardados en tu cuenta de Google ({email})}}</translation>
 <translation id="6826004672264649705">Estás siguiendo este producto. Abre para ver el historial de precios.</translation>
 <translation id="6830728435402077660">No es seguro</translation>
@@ -1962,7 +1964,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7952670906562503188">Estás a punto de eliminar {passkey_count} llaves de acceso y la lista de sitios y aplicaciones de los que has elegido no guardar nunca información de inicio de sesión. Las cuentas que hayas creado para sitios y aplicaciones no se eliminarán.</translation>
 <translation id="7958575506592576831">Información de seguridad de la página</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>
@@ -1971,7 +1972,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="797874245254030665">Accede a tus contraseñas y llaves de acceso desde cualquier aplicación</translation>
 <translation id="7982789257301363584">Red</translation>
 <translation id="798299424881500862">Tema naranja</translation>
-<translation id="7987685713885608670">Para una mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google.</translation>
+<translation id="7987685713885608670">Para una mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el Gestor de contraseñas de Google</translation>
 <translation id="798991908416757345">Los grupos de pestañas no están disponibles</translation>
 <translation id="7993170188789685695">Toca dos veces para cerrar esta notificación.</translation>
 <translation id="7996239959906074962">Configurar…</translation>
@@ -2137,7 +2138,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8551311254462607218">En la barra de direcciones, toca el icono de la cámara de Google Lens</translation>
 <translation id="8556590991644167667">{count,plural, =1{Has cerrado {count} advertencia}other{Has cerrado {count} advertencias}}</translation>
 <translation id="8558046478684552694">Cerrar grupo.</translation>
-<translation id="8559858985063901027">Claves de acceso</translation>
+<translation id="8559858985063901027">Llaves de acceso</translation>
 <translation id="8560253818350321773">Muestra primero los artículos utilizados con más frecuencia.</translation>
 <translation id="8561999115126307258">{count,plural, =1{{count} opción de contraseña disponible encima de tu teclado.}other{{count} opciones de contraseña disponibles encima de tu teclado.}}</translation>
 <translation id="8564894539416715395">Nueva página de pestaña</translation>

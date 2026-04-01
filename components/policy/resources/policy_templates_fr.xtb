@@ -405,22 +405,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez la page https://www
 <translation id="1317158052518324525">Ne pas autoriser la saisie automatique améliorée.</translation>
 <translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1318233005302276244">Permet aux utilisateurs de suivre leurs colis sur Chrome.</translation>
-<translation id="1321747583289636863">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy pour les requêtes WebSocket.
-
-Pour modifier les limites des requêtes non WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
-
-Certaines applis Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applis Web avec des connexions de ce type sont ouvertes.
-Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
-
-La valeur doit être supérieure ou égale à 6.
-Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
-Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
-
-La valeur doit être inférieure ou égale à 256.
-Si vous définissez une valeur supérieure à cette limite, la valeur limite (256) sera utilisée.
-Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="1323501563951768821">Les paramètres F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
 <translation id="1325547947664414578">Lorsqu'un utilisateur passe d'un appareil <ph name="PRODUCT_OS_NAME" /> à un autre, le service <ph name="PRODUCT_NAME" /> rétablit sur le nouvel appareil les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil précédent.
 Si cette règle est activée, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
@@ -4889,7 +4873,6 @@ Si cette règle est activée ou qu'elle n'est pas configurée, les utilisateurs 
 Si cette règle est désactivée, les données du gestionnaire de mots de passe seront inchangées, mais les fonctionnalités du gestionnaire seront interrompues.
 
 Si cette règle est configurée, les utilisateurs ne peuvent pas la modifier dans <ph name="PRODUCT_NAME" />.</translation>
-<translation id="4321788213579606602">Nombre maximal de connexions simultanées au serveur proxy pour les requêtes non WebSocket</translation>
 <translation id="4322842393287974810">Autoriser l'application kiosque lancée automatiquement sans délai à contrôler la version de l'application <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="4323412353642577604">Activer l'attestation à distance pour la protection du contenu</translation>
 <translation id="4325690621216251241">Ajouter un bouton de déconnexion dans la barre d'état système</translation>
@@ -7673,7 +7656,6 @@ Si la règle est définie sur "False", les enseignants ne peuvent pas accéder �
 <translation id="6075316301208933536">La règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" permet de personnaliser le pourcentage à partir duquel la recharge de la batterie doit s'arrêter (si la règle "<ph name="DEVICE_BATTERY_CHARGE_MODE_POLICY_NAME" />" est définie sur "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_MODE_NAME" />"). La valeur de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" doit être inférieure d'au moins cinq points par rapport à celle de la règle "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />".
 
       Si cette règle n'est pas configurée, le mode <ph name="DEVICE_BATTERY_CHARGE_STANDARD_MODE_NAME" /> de recharge de la batterie est alors appliqué.</translation>
-<translation id="6080808146443476891">Nombre maximal de connexions simultanées au serveur proxy pour les requêtes WebSocket</translation>
 <translation id="6082161804984853051">Si cette règle est configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire que vous indiquez pour stocker les fichiers mis en cache sur le disque, que l'utilisateur spécifie ou non le flag "--disk-cache-dir".
 
       Si cette règle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise le répertoire de cache par défaut. Toutefois, l'utilisateur peut modifier ce paramètre avec le flag de ligne de commande "--disk-cache-dir".
@@ -11056,22 +11038,6 @@ Cette fonctionnalité n'est disponible que dans la version Canary.
 
 Si elle est activée ou si elle n'est pas configurée, la page est accessible.
 Si elle est désactivée, la page est bloquée.</translation>
-<translation id="8264002158987842436">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy pour les requêtes non WebSocket.
-
-Pour modifier les limites de requêtes WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
-
-Certaines applis Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applis Web avec des connexions de ce type sont ouvertes.
-Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
-
-La valeur doit être supérieure ou égale à 6.
-Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
-Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
-
-La valeur doit être inférieure ou égale à 256 (99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures).
-Si vous définissez une valeur supérieure à cette limite, la valeur limite (256, ou 99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures) sera utilisée.
-Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="8266778278542911985">Si cette règle est définie sur "3", les sites Web peuvent demander à accéder aux ports série. Si elle est définie sur "2", l'accès aux ports série est refusé.
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Paslēpt vienumu “Turpināt šajā cilnē”</translation>
 <translation id="1520027731907768768">Saņemiet paziņojumus par izsekoto produktu cenu kritumu.</translation>
 <translation id="1521366073263497277">Pārejiet uz ciļņu režģi.</translation>
-<translation id="1521774566618522728">Aktīvs šodien</translation>
 <translation id="1523567067736644845">Atbloķējiet, lai skatītu paroli</translation>
 <translation id="1524563461097350801">Nē, paldies</translation>
 <translation id="1531038290222364269">Rādīt cilnes</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Jūsu paroles tiek šifrētas jūsu ierīcē, pirms tās tiek saglabātas Google paroļu pārvaldniekā.</translation>
 <translation id="2306265833370324042">Rādīt informāciju par meklētājprogrammu <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Aizvērt cilni</translation>
+<translation id="2310789833878085574">Saglabāt un automātiski aizpildīt</translation>
 <translation id="2311077293164383652">Aizvērt piesprausto cilni</translation>
 <translation id="2316129865977710310">Nē, paldies</translation>
 <translation id="2320166752086256636">Paslēpt tastatūru</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Atzīmēt kā izlasītu(-as)</translation>
 <translation id="428768789042547925">Jaunumi</translation>
 <translation id="429074084062258019">{count,plural, =1{Pievienot cilni grupai}zero{Pievienot cilnes grupai}one{Pievienot cilnes grupai}other{Pievienot cilnes grupai}}</translation>
+<translation id="4300830875340617674">Skenēt karti un automātiski aizpildīt</translation>
 <translation id="4302061870579014542">Iestatīt pozīciju</translation>
 <translation id="4304713468139749426">Paroļu pārvaldnieks</translation>
 <translation id="4306349443295056740">OCSP parakstīšana</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Lai izsekotu produktam, pieskarieties pogai “Izsekošana”.</translation>
 <translation id="5121618895923301719">Jūs jau sekojat līdzi šī produkta informācijai. Šī lapa ir saglabāta sadaļā <ph name="BEGIN_LINK" />Mobilās grāmatzīmes<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Jums ir vairākas ar parolēm saistītas problēmas.</translation>
-<translation id="5127538504377457572">Aktīvs pirms <ph name="DAYS" /> dienām</translation>
 <translation id="5128788795241319992">Izpētiet jauno izvēlni</translation>
 <translation id="5132942445612118989">Sinhronizējiet paroles, vēsturi un citu saturu visās ierīcēs</translation>
 <translation id="5141363746588976328">Paslēpt kartīti “Cenu samazinājums cilnēs”</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Ieslēgt kameru</translation>
 <translation id="5229315183665181733">Rediģēt vietni</translation>
+<translation id="5233111790346066304">Saglabājiet failus Google diskā un piekļūstiet tiem jebkurā laikā.</translation>
 <translation id="5233638681132016545">Jauna cilne</translation>
 <translation id="5234094073825090254">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}other{Grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="5234764350956374838">Nerādīt</translation>
@@ -1649,6 +1650,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6806550742467879742">Lapas rīki</translation>
 <translation id="6807287147325542056">Paroles citās lietotnēs</translation>
 <translation id="681368974849482173">Vienums izveidots</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Grāmatzīme tika saglabāta jūsu Google kontā ({email}).}zero{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}one{{count} grāmatzīme tika saglabāta jūsu Google kontā ({email}).}other{{count} grāmatzīmes tika saglabātas jūsu Google kontā ({email}).}}</translation>
 <translation id="6826004672264649705">Jūs pašlaik izsekojat šo produktu. Atveriet, lai skatītu cenu vēsturi.</translation>
 <translation id="6830728435402077660">Nav droši</translation>
@@ -1962,7 +1964,6 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7952670906562503188">Jūs gatavojaties dzēst piekļuves atslēgas ({passkey_count}) un to vietņu un lietotņu sarakstu, kurām izvēlējāties nekad nesaglabāt pierakstīšanās informāciju. Konti, kurus izveidojāt vietnēm un lietotnēm, netiks dzēsti.</translation>
 <translation id="7958575506592576831">Lapas drošības informācija</translation>
 <translation id="7961015016161918242">Nekad</translation>
-<translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Izmēģināt</translation>
 <translation id="797588153137233716">Izvēlne → Vēsture → Pārlūkošanas datu dzēšana</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Da bismo vam pomogli da budete bezbedni, dozvole su uklonjene sa nekih sajtova</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1384704387250346179">Prev. sl. uz Google obj. <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Poslednja aktivnost: pre <ph name="LAST_UPDATED" /> dan/a</translation>
 <translation id="1390418506739274310">Možete da vidite istoriju iz drugih aplikacija koje otvaraju linkove u Chrome-u. Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Donja tabela sa uvidima u cene je otvorena preko celog ekrana</translation>
 <translation id="1397811292916898096">Pretražite pomoću: <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1513352483775369820">Obeleživači i veb-istorija</translation>
 <translation id="1515901671075971249">Prečice za navigaciju pomoću tastera Tab</translation>
 <translation id="1516966594427080024">Otvorite novi prozor u režimu bez arhiviranja</translation>
-<translation id="1521774566618522728">Aktivan je danas</translation>
 <translation id="153446405401665083">Dostupna je nova verzija Chrome-a</translation>
 <translation id="1540012742443808215">Traka za adresu je trenutno u vrhu</translation>
 <translation id="1544084554881119930">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
@@ -222,6 +220,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="1925021887439448749">Unesite prilagođenu veb-adresu</translation>
 <translation id="1928618076168182477">Ovo je vizuelni prikaz</translation>
 <translation id="1928696683969751773">Ažuriranja</translation>
+<translation id="1934545916152269346">Nedavno korišćeno</translation>
 <translation id="1943398124995840148">Izgled otvorenih kartica je sada ažuriran u XR-u</translation>
 <translation id="1944535645109964458">Nije dostupan nijedan pristupni kôd</translation>
 <translation id="1957557050935255529">PDF se učitava…</translation>
@@ -1727,7 +1726,6 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7968014550143838305">Dodato je na listu za čitanje</translation>
 <translation id="7968982339740310781">Prikaži detalje</translation>
 <translation id="7969391000881506217">Datum isteka*</translation>
-<translation id="7971136598759319605">Poslednja aktivnost: pre 1 dan</translation>
 <translation id="7975379999046275268">Prikaži stranicu <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Upozorava vas ako koristite lozinku koja je ugrožena pri povredi podataka.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome je uklonio dozvole za ove sajtove jer ih niste nedavno posećivali</translation>

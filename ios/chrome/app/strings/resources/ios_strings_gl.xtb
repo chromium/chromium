@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Ocultar Continuar con esta pestana</translation>
 <translation id="1520027731907768768">Recibe alertas se os produtos que segues baixan de prezo.</translation>
 <translation id="1521366073263497277">Vai á túa grade de pestanas</translation>
-<translation id="1521774566618522728">Dispositivo activo hoxe</translation>
 <translation id="1523567067736644845">Desbloquea o dispositivo para mostrar o contrasinal</translation>
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google.</translation>
 <translation id="2306265833370324042">Mostrar os detalles de <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Pechar pestana</translation>
+<translation id="2310789833878085574">Gardar e autocompletar</translation>
 <translation id="2311077293164383652">Pechar pestana fixada</translation>
 <translation id="2316129865977710310">Non, grazas</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Marcar como sen ler</translation>
 <translation id="428768789042547925">Novidades</translation>
 <translation id="429074084062258019">{count,plural, =1{Engadir pestana ao grupo}other{Engadir pestanas ao grupo}}</translation>
+<translation id="4300830875340617674">Escanear tarxeta e autocompletar</translation>
 <translation id="4302061870579014542">Definir posición</translation>
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4306349443295056740">Sinatura de OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Para facer un seguimento do produto, toca a opción correspondente</translation>
 <translation id="5121618895923301719">Xa estás facendo un seguimento deste produto. A páxina está gardada en <ph name="BEGIN_LINK" />Marcadores do móbil<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tes varios problemas cos contrasinais.</translation>
-<translation id="5127538504377457572">Dispositivo activo hai <ph name="DAYS" /> días</translation>
 <translation id="5128788795241319992">Explora o novo menú</translation>
 <translation id="5132942445612118989">Sincroniza os teus contrasinais, o historial e moito máis en todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar a tarxeta Baixadas de prezo nas túas pestanas</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Acender cámara</translation>
 <translation id="5229315183665181733">Editar sitio</translation>
+<translation id="5233111790346066304">Garda ficheiros en Google Drive e accede a eles cando queiras.</translation>
 <translation id="5233638681132016545">Nova pestana</translation>
 <translation id="5234094073825090254">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email}).}other{Os marcadores gardáronse na túa Conta de Google ({email}).}}</translation>
 <translation id="5234764350956374838">Rexeitar</translation>
@@ -1649,6 +1650,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6806550742467879742">Ferramentas de páxina</translation>
 <translation id="6807287147325542056">Contrasinais doutras aplicacións</translation>
 <translation id="681368974849482173">Creouse o elemento</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{O marcador gardouse na túa Conta de Google ({email})}other{{count} marcadores gardáronse na túa Conta de Google ({email})}}</translation>
 <translation id="6826004672264649705">Estás facendo un seguimento deste produto. Accede para ver o historial de prezos</translation>
 <translation id="6830728435402077660">Non seguro</translation>
@@ -1962,7 +1964,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7952670906562503188">Vas eliminar {passkey_count} contrasinais e a lista de sitios e aplicacións dos que elixises non gardar nunca a información de inicio de sesión. Non se eliminarán as contas que creases para sitios e aplicacións.</translation>
 <translation id="7958575506592576831">Información de seguranza da páxina</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7972837668077967426">Lenzo</translation>
 <translation id="7975036700432177008">Probar</translation>
 <translation id="797588153137233716">Menú → Historial → Eliminar datos de navegación</translation>

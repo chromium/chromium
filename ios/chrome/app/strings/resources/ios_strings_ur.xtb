@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">"اس ٹیب کے ساتھ جاری رکھیں" کو چھپائیں</translation>
 <translation id="1520027731907768768">آپ جو پروڈکٹس ٹریک کرتے ہیں ان کے لیے قیمت میں کمی کے الرٹس وصول کریں۔</translation>
 <translation id="1521366073263497277">اپنے ٹیب گرڈ پر جائیں</translation>
-<translation id="1521774566618522728">آج فعال کیا گیا</translation>
 <translation id="1523567067736644845">پاس ورڈ دکھانے کے لیے غیر مقفل کریں</translation>
 <translation id="1524563461097350801">نہیں شکریہ</translation>
 <translation id="1531038290222364269">ٹیبز دکھائیں</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">‏آپ کے پاس ورڈز Google پاس ورڈ مینیجر میں محفوظ ہونے سے پہلے آپ کے آلے پر مرموز ہو ہوتا ہے۔</translation>
 <translation id="2306265833370324042">‫<ph name="SEARCH_ENGINE_NAME" /> کی تفصیلات دکھائیں</translation>
 <translation id="2309265394777270359">ٹیب بند کریں</translation>
+<translation id="2310789833878085574">محفوظ کریں اور آٹو فل کریں</translation>
 <translation id="2311077293164383652">پن کردہ ٹیب کو بند کریں</translation>
 <translation id="2316129865977710310">نہیں، شکریہ</translation>
 <translation id="2320166752086256636">کی بورڈ چھپائیں</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">پڑھی ہوئی کا نشان لگائیں</translation>
 <translation id="428768789042547925">نیا کیا ہے</translation>
 <translation id="429074084062258019">{count,plural, =1{گروپ میں ٹیب شامل کریں}other{گروپ میں ٹیبز شامل کریں}}</translation>
+<translation id="4300830875340617674">کارڈ اسکین کریں اور آٹو فل کریں</translation>
 <translation id="4302061870579014542">پوزیشن سیٹ کریں</translation>
 <translation id="4304713468139749426">پاس ورڈ مینیجر</translation>
 <translation id="4306349443295056740">‏‫OCSP پر دستخط کرنا</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">پروڈکٹ کو ٹریک کرنے کے لیے، ٹریک کریں پر تھپتھپائیں</translation>
 <translation id="5121618895923301719">آپ پہلے سے ہی اس پروڈکٹ کو ٹریک کر رہے ہیں۔ یہ صفحہ <ph name="BEGIN_LINK" />موبائل بُک مارکس<ph name="END_LINK" /> میں محفوظ ہے۔</translation>
 <translation id="512533434554095351">آپ کے پاس ورڈ میں مختلف مسائل ہیں۔</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="5128788795241319992">نیا مینو دریافت کریں</translation>
 <translation id="5132942445612118989">سبھی آلات پر اپنے پاس ورڈز اور سرگزشت کی مطابقت پذیری اور مزید بہت کچھ کریں</translation>
 <translation id="5141363746588976328">ٹیبز کارڈ پر قیمت میں کمی کو چھپائیں</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">کیمرا آن کریں</translation>
 <translation id="5229315183665181733">سائٹ میں ترمیم کریں</translation>
+<translation id="5233111790346066304">‏اپنی Google Drive میں فائلز محفوظ کریں اور کسی بھی وقت ان تک رسائی حاصل کریں۔</translation>
 <translation id="5233638681132016545">نیا ٹیب</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏بُک مارک کو آپ کے Google اکاؤنٹ {email} میں محفوظ کیا گیا۔}other{‏بُک مارکس کو آپ کے Google اکاؤنٹ {email} میں محفوظ کیا گیا۔}}</translation>
 <translation id="5234764350956374838">برخاست کریں</translation>
@@ -1649,6 +1650,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6806550742467879742">صفحہ سے متعلق ٹولز</translation>
 <translation id="6807287147325542056">دیگر ایپس میں پاس ورڈز</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏بُک مارک آپ کے Google اکاؤنٹ، {email} میں محفوظ کیا گیا}other{‏‫{count} بُک مارکس آپ کے Google اکاؤنٹ، {email} میں محفوظ کیے گئے}}</translation>
 <translation id="6826004672264649705">فی الحال اس پروڈکٹ کو ٹریک کیا جا رہا ہے۔ قیمت کی سرگزشت دیکھنے کے لیے کھولیں</translation>
 <translation id="6830728435402077660">محفوظ نہیں</translation>
@@ -1962,7 +1964,6 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7952670906562503188">‏آپ {passkey_count} پاس کیز اور سائٹس اور ایپس کی فہرست حذف کرنے والے ہیں جنہیں آپ نے کبھی سائن ان معلومات محفوظ نہ کرنے کا انتخاب کیا تھا۔ جو بھی اکاؤنٹ آپ نے سائٹس اور ایپس کے لیے بنایا ہے وہ حذف نہیں ہوگا۔</translation>
 <translation id="7958575506592576831">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
-<translation id="7971136598759319605">1 دن پہلے فعال تھا</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">آزمائیں</translation>
 <translation id="797588153137233716">مینو ← سرگزشت ← براؤزنگ ڈیٹا حذف کریں</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Güvenliğinizi sağlamak için bazı sitelerin izinleri kaldırıldı</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1384704387250346179">Resmi Google Lens ile çevir <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> gün önce etkindi</translation>
 <translation id="1390418506739274310">Chrome'da bağlantı açan diğer uygulamalardaki geçmişi görebilirsiniz. Google Hesabınızın <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> adresinde başka biçimlerde tarama geçmişi olabilir.</translation>
 <translation id="139752016751285248">Fiyat analizleri alt sayfası tam ekranda açıldı</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> ile ara</translation>
@@ -136,7 +135,6 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="1513352483775369820">Yer işaretleri ve web geçmişi</translation>
 <translation id="1515901671075971249">Sekme gezinme kısayolları</translation>
 <translation id="1516966594427080024">Gizli modda yeni bir pencere açılır</translation>
-<translation id="1521774566618522728">Bugün etkindi</translation>
 <translation id="153446405401665083">Chrome'un yeni sürümü kullanıma sunuldu</translation>
 <translation id="1540012742443808215">Adres çubuğu şu anda üstte</translation>
 <translation id="1544084554881119930">Ödeme yöntemleri ve adresler şifrelenmez. Chrome'daki tarama geçmişi senkronize edilmez.
@@ -222,6 +220,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="1925021887439448749">Özel web adresini girin</translation>
 <translation id="1928618076168182477">Görsel görünüm gösteriliyor</translation>
 <translation id="1928696683969751773">Güncellemeler</translation>
+<translation id="1934545916152269346">En Son Kullanılanlar</translation>
 <translation id="1943398124995840148">Açık sekmelerinizin XR'deki görünümü yenilendi</translation>
 <translation id="1944535645109964458">Geçiş anahtarı yok</translation>
 <translation id="1957557050935255529">PDF yükleniyor…</translation>
@@ -1727,7 +1726,6 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7968014550143838305">Okuma listesine eklendi</translation>
 <translation id="7968982339740310781">Ayrıntıları görüntüle</translation>
 <translation id="7969391000881506217">Son kullanım tarihi*</translation>
-<translation id="7971136598759319605">1 gün önce etkindi</translation>
 <translation id="7975379999046275268">Sayfanın önizlemesini aç <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Veri ihlali nedeniyle güvenliği ihlal edilmiş bir şifre kullanırsanız sizi uyarır.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome, yakın zamanda ziyaret etmediğiniz için bu izinleri kaldırdı</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">پنهان کردن «ادامه دادن با این زبانه»</translation>
 <translation id="1520027731907768768">دریافت اعلان‌های کاهش قیمت برای محصولاتی که پیگیری می‌کنید.</translation>
 <translation id="1521366073263497277">به جدول زبانه‌ها بروید</translation>
-<translation id="1521774566618522728">امروز فعال بود</translation>
 <translation id="1523567067736644845">برای نمایش گذرواژه، قفل را باز کنید</translation>
 <translation id="1524563461097350801">نه، متشکرم</translation>
 <translation id="1531038290222364269">نشان دادن زبانه‌ها</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شود.</translation>
 <translation id="2306265833370324042">نشان دادن جزئیات <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">بستن زبانه</translation>
+<translation id="2310789833878085574">ذخیره و تکمیل خودکار</translation>
 <translation id="2311077293164383652">بستن زبانه سنجاق‌شده</translation>
 <translation id="2316129865977710310">نه متشکرم</translation>
 <translation id="2320166752086256636">پنهان کردن صفحه‌کلید</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="428768789042547925">ویژگی‌های جدید</translation>
 <translation id="429074084062258019">{count,plural, =1{افزودن زبانه به گروه}one{افزودن زبانه به گروه}other{افزودن زبانه‌ها به گروه}}</translation>
+<translation id="4300830875340617674">اسکن کردن کارت و تکمیل خودکار</translation>
 <translation id="4302061870579014542">تنظیم کردن موقعیت</translation>
 <translation id="4304713468139749426">مدیر گذرواژه</translation>
 <translation id="4306349443295056740">‏امضای OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">برای پیگیری محصول، روی «پیگیری» تک‌ضرب بزنید</translation>
 <translation id="5121618895923301719">ازقبل این محصول را پیگیری می‌کنید. این صفحه در <ph name="BEGIN_LINK" />نشانک‌های دستگاه همراه<ph name="END_LINK" /> ذخیره شده است.</translation>
 <translation id="512533434554095351">چندین مشکل گذرواژه دارید.</translation>
-<translation id="5127538504377457572">‫<ph name="DAYS" /> روز قبل فعال بوده است</translation>
 <translation id="5128788795241319992">کاوش کردن منو جدید</translation>
 <translation id="5132942445612118989">همگام‌سازی گذرواژه‌ها، سابقه و موارد دیگر در همه دستگاه‌ها</translation>
 <translation id="5141363746588976328">پنهان کردن کارت «کاهش قیمت در زبانه‌ها»</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">روشن کردن دوربین</translation>
 <translation id="5229315183665181733">ویرایش کردن سایت</translation>
+<translation id="5233111790346066304">‏فایل‌ها را در Google Drive ذخیره کنید و هر زمان خواستید به آن‌ها دسترسی داشته باشید.</translation>
 <translation id="5233638681132016545">زبانه جدید</translation>
 <translation id="5234094073825090254">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد.}one{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شد.}other{‏نشانک‌ها در «حساب Google» شما ({email}) ذخیره شد.}}</translation>
 <translation id="5234764350956374838">بستن</translation>
@@ -1649,6 +1650,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6806550742467879742">ابزارهای صفحه</translation>
 <translation id="6807287147325542056">گذرواژه‌ها در برنامه‌های دیگر</translation>
 <translation id="681368974849482173">مورد ایجاد شد</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏نشانک در «حساب Google» شما ({email}) ذخیره شد}one{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}other{‏‫{count} نشانک در «حساب Google» شما ({email}) ذخیره شد}}</translation>
 <translation id="6826004672264649705">درحال‌حاضر این محصول را پیگیری می‌کنید. برای دیدن سابقه قیمت باز کنید</translation>
 <translation id="6830728435402077660">امن نیست</translation>
@@ -1962,7 +1964,6 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7952670906562503188">‏شما درآستانه حذف {passkey_count} گذرکلید و فهرست سایت‌ها و برنامه‌هایی هستید که انتخاب کرده‌اید هرگز اطلاعات ورود به سیستم را ذخیره نکنند. هیچ‌کدام از حساب‌هایی که برای سایت‌ها یا برنامه‌ها ایجاد کرده‌اید حذف نخواهد شد.</translation>
 <translation id="7958575506592576831">اطلاعات امنیتی صفحه</translation>
 <translation id="7961015016161918242">هرگز</translation>
-<translation id="7971136598759319605">آخرین فعالیت: ۱ روز قبل</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">امتحان کنید</translation>
 <translation id="797588153137233716">منو ← سابقه ← حذف داده‌های مرور</translation>

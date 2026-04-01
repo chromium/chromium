@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">بإمكان الموقع الإلكتروني طلب قفل لوحة المفاتيح واستخدامها</translation>
 <translation id="2839032553903800133">تم حظر الإشعارات.</translation>
 <translation id="2839501879576190149">الموقع الذي تطلب الدخول إليه مزيّف</translation>
+<translation id="2840680829170913626">‏تتم مشاركة محتوى صفحة الدفع مع Google لتقديم هذه الخيارات. تخضع خطط الدفع لمتطلبات الأهلية. لإخفاء خيارات "الدفع لاحقًا" ضِمن ميزة "الملء التلقائي"، يُرجى الانتقال إلى "<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />".</translation>
 <translation id="2843623755398178332">هل تسمح بالانتقال للأعلى أو للأسفل في محتوى علامة التبويب التي تمّت مشاركتها وتكبيره أو تصغيره؟</translation>
 <translation id="2851291081585704741">لا يتوفر اتصال بالإنترنت</translation>
 <translation id="2854163610915391726">‏إدارة معلومات Chrome التي يتم حفظها في حسابك على Google</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">يتعذّر تسجيل هذا الجهاز في الوقت الحالي لأنّ الوحدة التنظيمية قد وصلت إلى الحدّ الأقصى المسموح به للتسجيل الأولي. يُرجى التواصل مع المشرف للحصول على المساعدة.</translation>
 <translation id="3162559335345991374">‏قد يتطلب Wi-Fi الذي تستخدمه زيارة صفحة تسجيل الدخول.</translation>
 <translation id="316638481603975524">يمكن للموقع الإلكتروني طلب تثبيت تطبيقات الويب</translation>
+<translation id="3166788340998560642">‏سيعرض Chrome خيار حفظ البيانات في "<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />" عند استخدامها المرة القادمة</translation>
 <translation id="3168744840365648658">أجهزة معدات لاسلكية</translation>
 <translation id="3168938241115725594">مركبات كلاسيكية</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
@@ -2416,6 +2418,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{تم حظر نافذة منبثقة}zero{تم حظر # نافذة منبثقة}two{تم حظر نافذتين منبثقتين (#)}few{تم حظر # نوافذ منبثقة}many{تم حظر # نافذةً منبثقةً}other{تم حظر # نافذة منبثقة}}</translation>
 <translation id="4780320432697076749">برامج للصور</translation>
 <translation id="4780366598804516005">صندوق البريد الإلكتروني 1</translation>
+<translation id="4785273477715803444">فلترة السجلّات</translation>
 <translation id="4785376858512657294">‏إدارة حساب Google</translation>
 <translation id="4785689107224900852">التبديل إلى علامة التبويب هذه</translation>
 <translation id="4785998536350006000">جارٍ البحث عن "<ph name="SEARCH_QUERY" />"</translation>
@@ -3058,6 +3061,7 @@
 <translation id="5759751709240058861">استخدام الكاميرا وتحريكها</translation>
 <translation id="5762131895127128324">رُخَص القيادة · بطاقات تعريف الهوية · جوازات السفر</translation>
 <translation id="5763042198335101085">أدخِل عنوان بريد إلكتروني صحيحًا</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{نشط اليوم}=1{نشط قبل يوم واحد}two{نشط قبل يومين (#)}few{نشط قبل # أيام}many{نشط قبل # يومًا}other{نشط قبل # يوم}}</translation>
 <translation id="5764725887548570807">تنسيق المصدر غير صالح.</translation>
 <translation id="5764920692828389743">إرسال إلى <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">لعرض طرق التسليم ومتطلباته، اختَر عنوانًا</translation>

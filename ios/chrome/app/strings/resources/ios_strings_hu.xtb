@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">A „Folytatás ezen a lapon” beállítás elrejtése</translation>
 <translation id="1520027731907768768">Árcsökkenési értesítéseket kaphat az Ön által nyomon követett termékekkel kapcsolatban.</translation>
 <translation id="1521366073263497277">Ugorjon a laprácshoz.</translation>
-<translation id="1521774566618522728">Ma volt aktív</translation>
 <translation id="1523567067736644845">Oldja fel a jelszó megjelenítéséhez</translation>
 <translation id="1524563461097350801">Köszönöm, nem</translation>
 <translation id="1531038290222364269">Lapok megjelenítése</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Jelszavai titkosításra kerülnek az eszközön, mielőtt elmenti őket a rendszer a Google Jelszókezelőbe.</translation>
 <translation id="2306265833370324042">A(z) <ph name="SEARCH_ENGINE_NAME" /> részleteinek megjelenítése</translation>
 <translation id="2309265394777270359">Lap bezárása</translation>
+<translation id="2310789833878085574">Mentés és automatikus kitöltés</translation>
 <translation id="2311077293164383652">Rögzített lap bezárása</translation>
 <translation id="2316129865977710310">Köszönöm, nem</translation>
 <translation id="2320166752086256636">Billentyűzet elrejtése</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Megjelölés olvasottként</translation>
 <translation id="428768789042547925">Újdonságok</translation>
 <translation id="429074084062258019">{count,plural, =1{Lap hozzáadása csoporthoz}other{Lapok hozzáadása csoporthoz}}</translation>
+<translation id="4300830875340617674">Kártya beolvasása és automatikus kitöltés</translation>
 <translation id="4302061870579014542">Pozíció beállítása</translation>
 <translation id="4304713468139749426">Jelszókezelő</translation>
 <translation id="4306349443295056740">OCSP-aláírás</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">A termék nyomon követéséhez koppintson a Nyomon követés elemre</translation>
 <translation id="5121618895923301719">Ön már nyomon követi ezt a terméket. A rendszer a <ph name="BEGIN_LINK" />Mobilos könyvjelzők<ph name="END_LINK" /> közé mentette az oldalt.</translation>
 <translation id="512533434554095351">Számos probléma merült fel a jelszavaival kapcsolatban.</translation>
-<translation id="5127538504377457572"><ph name="DAYS" /> napja volt aktív</translation>
 <translation id="5128788795241319992">Az új menü felfedezése</translation>
 <translation id="5132942445612118989">Jelszavak, előzmények és egyebek szinkronizálása valamennyi eszközén</translation>
 <translation id="5141363746588976328">Az „Árcsökkenések az Ön lapjain” kártya elrejtése</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Kamera bekapcsolása</translation>
 <translation id="5229315183665181733">Webhely szerkesztése</translation>
+<translation id="5233111790346066304">Fájlokat menthet a Google Drive-ra, és bármikor hozzájuk férhet.</translation>
 <translation id="5233638681132016545">Új lap</translation>
 <translation id="5234094073825090254">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{Könyvjelző mentve a Google-fiókjába ({email})}}</translation>
 <translation id="5234764350956374838">Elvetés</translation>
@@ -1649,6 +1650,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6806550742467879742">Oldaleszközök</translation>
 <translation id="6807287147325542056">Más alkalmazásoknál használt jelszavak</translation>
 <translation id="681368974849482173">Elem létrehozva</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{A könyvjelző mentve a Google-fiókjába ({email})}other{{count} könyvjelző mentve a Google-fiókjába ({email})}}</translation>
 <translation id="6826004672264649705">Jelenleg nyomon követi ezt a terméket. Az árelőzmények megtekintéséhez nyissa meg</translation>
 <translation id="6830728435402077660">Nem biztonságos</translation>
@@ -1962,7 +1964,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7952670906562503188">{passkey_count} azonosítókulcsot, valamint azon webhelyek és alkalmazások listáját készül törölni, amelyeknél úgy döntött, hogy soha nem menti a bejelentkezési adatokat. A webhelyekhez és alkalmazásokhoz létrehozott fiókok nem törlődnek.</translation>
 <translation id="7958575506592576831">Oldal biztonsági információi</translation>
 <translation id="7961015016161918242">Soha</translation>
-<translation id="7971136598759319605">1 napja volt aktív</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Kipróbálás</translation>
 <translation id="797588153137233716">Menü → Előzmények → Böngészési adatok törlése</translation>

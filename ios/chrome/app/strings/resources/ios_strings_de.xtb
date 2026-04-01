@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">„Mit diesem Tab fortfahren“ ausblenden</translation>
 <translation id="1520027731907768768">Benachrichtigungen zu Preissenkungen für Produkte, die du beobachtest.</translation>
 <translation id="1521366073263497277">Gehe zum Tab-Raster</translation>
-<translation id="1521774566618522728">Heute aktiv</translation>
 <translation id="1523567067736644845">Entsperren, um Passwort zu zeigen</translation>
 <translation id="1524563461097350801">Nein, danke</translation>
 <translation id="1531038290222364269">Tabs anzeigen</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Deine Passwörter werden auf deinem Gerät verschlüsselt, bevor sie im Google Passwortmanager gespeichert werden.</translation>
 <translation id="2306265833370324042">Details für <ph name="SEARCH_ENGINE_NAME" /> anzeigen</translation>
 <translation id="2309265394777270359">Tab schließen</translation>
+<translation id="2310789833878085574">Speichern und automatisch ausfüllen</translation>
 <translation id="2311077293164383652">Angepinnten Tab schließen</translation>
 <translation id="2316129865977710310">Nein, danke</translation>
 <translation id="2320166752086256636">Tastatur ausblenden</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Tippe auf „Verfolgen“, um das Produkt zu beobachten</translation>
 <translation id="5121618895923301719">Du beobachtest dieses Produkt bereits. Diese Seite ist in den <ph name="BEGIN_LINK" />mobilen Lesezeichen<ph name="END_LINK" /> gespeichert.</translation>
 <translation id="512533434554095351">Es gibt mehrere Probleme mit deinen Passwörtern.</translation>
-<translation id="5127538504377457572">Vor <ph name="DAYS" /> Tagen aktiv</translation>
 <translation id="5128788795241319992">Neues Menü ansehen</translation>
 <translation id="5132942445612118989">Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="5141363746588976328">Karte „Preissenkungen auf deinen Tabs“ ausblenden</translation>
@@ -1651,6 +1650,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6806550742467879742">Seitentools</translation>
 <translation id="6807287147325542056">Passwörter in anderen Apps</translation>
 <translation id="681368974849482173">Element erstellt</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Lesezeichen in deinem Google-Konto ({email}) gespeichert}other{{count} Lesezeichen in deinem Google-Konto {email} gespeichert}}</translation>
 <translation id="6826004672264649705">Dieses Produkt wird derzeit beobachtet. Öffnen, um die Preisentwicklung zu sehen.</translation>
 <translation id="6830728435402077660">Nicht sicher</translation>
@@ -1964,7 +1964,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7952670906562503188">Du bist im Begriff, {passkey_count} Passkeys und die Liste der Websites und Apps zu löschen, für die du festgelegt hast, dass Anmeldedaten nie gespeichert werden sollen. Konten, die du für Websites und Apps erstellt hast, werden nicht gelöscht.</translation>
 <translation id="7958575506592576831">Sicherheitsinformationen zur Seite</translation>
 <translation id="7961015016161918242">Nie</translation>
-<translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Testen</translation>
 <translation id="797588153137233716">„Menü“ → „Verlauf“ → „Browserdaten löschen“</translation>

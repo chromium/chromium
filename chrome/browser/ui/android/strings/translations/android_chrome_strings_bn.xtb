@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">আপনাকে সুরক্ষিত রাখতে, কিছু সাইট থেকে অনুমতি সরানো হয়েছে</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1384704387250346179">Google Lens <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" />-এর সাহায্যে ছবি অনুবাদ করুন</translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="1390418506739274310">Chrome-এ লিঙ্ক খোলে, এমন অন্যান্য অ্যাপ থেকে আপনি ইতিহাস দেখতে পেতে পারেন। <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> লিঙ্কে আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিং ইতিহাস থাকতে পারে।</translation>
 <translation id="139752016751285248">স্ক্রিনের নিচে অ্যাটাচ করা শিটে প্রাইস ইনসাইট সম্পূর্ণ স্ক্রিনে খুলেছে</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> এর সাহায্যে খুঁজুন</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">বুকমার্কগুলি এবং ওয়েব ইতিহাস</translation>
 <translation id="1515901671075971249">ট্যাব নেভিগেশনের শর্টকাট</translation>
 <translation id="1516966594427080024">ছদ্মবেশী মোডে একটি নতুন উইন্ডো খুলুন</translation>
-<translation id="1521774566618522728">আজ ব্যবহার করা হয়েছে</translation>
 <translation id="153446405401665083">Chrome-এর নতুন ভার্সন উপলভ্য আছে</translation>
 <translation id="1540012742443808215">অ্যাড্রেস বার বর্তমানে একবারে উপরে রয়েছে</translation>
 <translation id="1544084554881119930">পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome-এর ব্রাউজিং ইতিহাস সিঙ্ক হবে না।
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">কাস্টম ওয়েব ঠিকানা লিখুন</translation>
 <translation id="1928618076168182477">ভিজ্যুয়াল ভিউ দেখানো হচ্ছে</translation>
 <translation id="1928696683969751773">আপডেট</translation>
+<translation id="1934545916152269346">সম্প্রতি ব্যবহার করা হয়েছে</translation>
 <translation id="1943398124995840148">XR-এ আপনার খোলা ট্যাবের এখন আপডেট করা একটি লুক রয়েছে</translation>
 <translation id="1944535645109964458">কোনও 'পাসকী' উপলভ্য নেই</translation>
 <translation id="1957557050935255529">পিডিএফ লোড করা হচ্ছে…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">পড়ার তালিকায় যোগ করা হয়েছে</translation>
 <translation id="7968982339740310781">বিশদ বিবরণ দেখুন</translation>
 <translation id="7969391000881506217">মেয়াদ সমাপ্তির তারিখ*</translation>
-<translation id="7971136598759319605">১ দিন আগে ব্যবহার করা হয়েছে</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /> পৃষ্ঠার প্রিভিউ দেখুন</translation>
 <translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>

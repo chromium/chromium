@@ -1177,6 +1177,7 @@
 <translation id="2837891525090413132">Може да побара да ја заклучи и користи тастатурата</translation>
 <translation id="2839032553903800133">Известувањата се блокирани</translation>
 <translation id="2839501879576190149">Пред вас е лажен сајт</translation>
+<translation id="2840680829170913626">Содржините од страницата за наплата се споделуваат со Google за да се понудат опцииве. Тарифните пакети зависат од подобноста. За да ги скриете опциите за „Платете подоцна“ во „Автоматско пополнување“, одете во <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Да се лизга и зумира вашата споделена картичка?</translation>
 <translation id="2851291081585704741">Офлајн сте</translation>
 <translation id="2854163610915391726">Управувајте со тоа кои податоци од Chrome ги зачувувате во вашата сметка на Google</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3162070126914310576">Уредов не може да се регистрира во моментов бидејќи вашата организациска единица го достигна своето ограничување за првично регистрирање. Контактирајте со администраторот за помош.</translation>
 <translation id="3162559335345991374">Wi-Fi што го користите може да бара да ја посетите страницата за најавување.</translation>
 <translation id="316638481603975524">Сајтовите може да бараат да инсталираат апликации за прелистувач</translation>
+<translation id="3166788340998560642">Chrome ќе предложи да ги зачува во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> следниот пат кога ќе ја користите.</translation>
 <translation id="3168744840365648658">Радиоопрема</translation>
 <translation id="3168938241115725594">Класични возила</translation>
 <translation id="3169472444629675720">Откриј</translation>
@@ -2416,6 +2418,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Скокачкиот прозорец е блокиран}one{# скокачки прозорец е блокиран}other{# скокачки прозорци се блокирани}}</translation>
 <translation id="4780320432697076749">Софтвер за фотографии</translation>
 <translation id="4780366598804516005">Поштенско сандаче 1</translation>
+<translation id="4785273477715803444">Филтрирајте ја евиденцијата</translation>
 <translation id="4785376858512657294">Управувајте со сметката на Google</translation>
 <translation id="4785689107224900852">Префрлете се на оваа картичка</translation>
 <translation id="4785998536350006000">Се пребарува „<ph name="SEARCH_QUERY" />“</translation>
@@ -3058,6 +3061,7 @@
 <translation id="5759751709240058861">да ја користи и движи камерата</translation>
 <translation id="5762131895127128324">Возачки дозволи · Лични карти · Пасоши</translation>
 <translation id="5763042198335101085">Внесете важечка адреса на е-пошта</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Активен денес}=1{Активен пред 1 ден}one{Активен пред # ден}other{Активен пред # дена}}</translation>
 <translation id="5764725887548570807">Неважечки формат на потекло.</translation>
 <translation id="5764920692828389743">Испрати на <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">За да ги видите методите и условите за доставување, изберете адреса</translation>

@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Pour assurer votre sécurité, des autorisations pour certains sites ont été retirées</translation>
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384704387250346179">Traduire l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
 <translation id="1390418506739274310">Vous pourriez voir l'historique d'autres applis qui ouvrent des liens dans Chrome. Votre compte Google peut contenir d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Zone de contenu dans le bas de l'écran concernant les statistiques sur les prix ouverte à pleine hauteur</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Afin d'accéder à plus de paramètres utilisant des données pour améliorer vo
 <translation id="1513352483775369820">Favoris et historique Web</translation>
 <translation id="1515901671075971249">Raccourcis de navigation d'onglets</translation>
 <translation id="1516966594427080024">Ouvrir une nouvelle fenêtre en mode de navigation privée</translation>
-<translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="153446405401665083">Une nouvelle version de Chrome est offerte</translation>
 <translation id="1540012742443808215">La barre d'adresse est présentement en haut</translation>
 <translation id="1544084554881119930">Les modes de paiement et les adresses ne seront pas chiffrés. L'historique de navigation de Chrome ne se synchronisera pas.
@@ -222,6 +220,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="1925021887439448749">Entrer une adresse Web personnalisée</translation>
 <translation id="1928618076168182477">Affichage de la vue visuelle en cours…</translation>
 <translation id="1928696683969751773">Mises à jour</translation>
+<translation id="1934545916152269346">Utilisés récemment</translation>
 <translation id="1943398124995840148">Vos onglets ouverts ont maintenant un style actualisé pour la RE</translation>
 <translation id="1944535645109964458">Aucune clé d'accès accessible</translation>
 <translation id="1957557050935255529">Chargement du fichier PDF en cours…</translation>
@@ -1727,7 +1726,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7968982339740310781">Afficher les détails</translation>
 <translation id="7969391000881506217">Date d'expiration*</translation>
-<translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe qui a été compromis à la suite d'une violation de données.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome a retiré ces autorisations, car vous n'avez pas consulté ce site récemment</translation>

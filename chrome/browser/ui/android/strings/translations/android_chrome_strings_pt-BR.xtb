@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Para proteger você, as permissões de alguns sites foram removidas</translation>
 <translation id="1383876407941801731">Pesquise</translation>
 <translation id="1384704387250346179">Traduzir imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Ativado há <ph name="LAST_UPDATED" /> dias</translation>
 <translation id="1390418506739274310">É possível que o histórico de outros apps que abrem links no Chrome seja mostrado. Sua Conta do Google pode ter outras formas de histórico de navegação em <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">A página inferior de informações de preço está aberta no tamanho máximo</translation>
 <translation id="1397811292916898096">Pesquisar com o <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Para conferir mais configurações que usam dados para melhorar sua experiência
 <translation id="1513352483775369820">Favoritos e histórico da Web</translation>
 <translation id="1515901671075971249">Atalhos de navegação de guias</translation>
 <translation id="1516966594427080024">Abrir uma nova janela no modo de navegação anônima</translation>
-<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="153446405401665083">Uma nova versão do Chrome está disponível</translation>
 <translation id="1540012742443808215">A barra de endereço está na parte de cima da tela</translation>
 <translation id="1544084554881119930">Formas de pagamento e endereços não serão criptografados. O histórico de navegação do Chrome não será sincronizado.
@@ -769,7 +767,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4270730597186910506">Monitorar ou parar de monitorar um produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
-<translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
+<translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu admin pode configurar ou restringir determinados recursos.</translation>
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, guia anônima picture-in-picture</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
 <translation id="4285846616383034558">Cookies, cache e outros dados de sites</translation>
@@ -1261,6 +1259,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6251449557817521191">Acesse seu histórico do Chrome aqui</translation>
 <translation id="6254139308321626268">Você está visualizando um arquivo PDF</translation>
 <translation id="6255809143828972562">Com esses recursos, você navega com segurança e fica no controle</translation>
+<translation id="6260260490042862943">Controles do site</translation>
 <translation id="6264376385120300461">Fazer o download mesmo assim</translation>
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu essas permissões devido a spam ou conteúdo enganoso</translation>
@@ -1729,7 +1728,6 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7968982339740310781">Mais detalhes</translation>
 <translation id="7969391000881506217">Data de vencimento*</translation>
-<translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Avisa se você usa uma senha que foi comprometida em uma violação de dados.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>

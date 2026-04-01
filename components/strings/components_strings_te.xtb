@@ -2413,6 +2413,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{పాప్-అప్ బ్లాక్ చేయబడింది}other{# పాప్-అప్‌లు బ్లాక్ చేయబడ్డాయి}}</translation>
 <translation id="4780320432697076749">ఫోటో సాఫ్ట్‌వేర్</translation>
 <translation id="4780366598804516005">మెయిల్‌బాక్స్ 1</translation>
+<translation id="4785273477715803444">లాగ్‌లను ఫిల్టర్ చేయండి</translation>
 <translation id="4785376858512657294">Google ఖాతాను మేనేజ్ చేయండి</translation>
 <translation id="4785689107224900852">ఈ ట్యాబ్‌కు మారండి</translation>
 <translation id="4785998536350006000">"<ph name="SEARCH_QUERY" />" కోసం సెర్చ్ చేస్తోంది</translation>
@@ -3055,6 +3056,7 @@
 <translation id="5759751709240058861">మీ కెమెరాను ఉపయోగించండి, తరలించండి</translation>
 <translation id="5762131895127128324">డ్రైవింగ్ లైసెన్స్‌లు · ఐడెంటిటీ కార్డ్‌లు · పాస్‌పోర్ట్‌లు</translation>
 <translation id="5763042198335101085">చెల్లుబాటు అయ్యే ఈమెయిల్‌ అడ్రస్‌ను నమోదు చేయండి</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{ఈ రోజు యాక్టివ్‌గా ఉంది}=1{1 రోజు క్రితం యాక్టివ్‌గా ఉంది}other{# రోజుల క్రితం యాక్టివ్‌గా ఉంది}}</translation>
 <translation id="5764725887548570807">చెల్లని ఆరిజిన్ ఫార్మాట్.</translation>
 <translation id="5764920692828389743"><ph name="EMAIL_ADDRESS" />‌కి పంపండి</translation>
 <translation id="5765072501007116331">డెలివరీ పద్ధతులు మరియు అవసరాలను చూడాలంటే, అడ్రస్‌ను ఎంచుకోండి</translation>

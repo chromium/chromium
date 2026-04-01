@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Oculte a opção "Continuar com este separador"</translation>
 <translation id="1520027731907768768">Receba alertas de descida do preço de produtos que acompanha.</translation>
 <translation id="1521366073263497277">Aceda à grelha de separadores</translation>
-<translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1523567067736644845">Desbloqueie para mostrar a palavra-passe</translation>
 <translation id="1524563461097350801">Não</translation>
 <translation id="1531038290222364269">Mostrar separadores</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">As palavras-passe são encriptadas no seu dispositivo antes de serem guardadas no Gestor de palavras-passe da Google.</translation>
 <translation id="2306265833370324042">Mostrar detalhes do <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Fechar separador</translation>
+<translation id="2310789833878085574">Guardar e preencher automaticamente</translation>
 <translation id="2311077293164383652">Fechar separador fixo</translation>
 <translation id="2316129865977710310">Não</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Para acompanhar o produto, toque em Acompanhar</translation>
 <translation id="5121618895923301719">Já está a acompanhar este produto. Esta página está guardada nos <ph name="BEGIN_LINK" />Marcadores dos dispositivos móveis<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tem vários problemas de palavras-passe.</translation>
-<translation id="5127538504377457572">Ativo há <ph name="DAYS" /> dias</translation>
 <translation id="5128788795241319992">Explore o novo menu</translation>
 <translation id="5132942445612118989">Sincronize as suas palavras-passe, o histórico e muito mais em todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar quedas de preço no seu cartão de separadores</translation>
@@ -1651,6 +1650,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6806550742467879742">Ferramentas da página</translation>
 <translation id="6807287147325542056">Palavras-passe noutras apps</translation>
 <translation id="681368974849482173">Item criado</translation>
+<translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6825078212112407882">{count,plural, =1{Marcador guardado na sua Conta Google, {email}}other{{count} marcadores guardados na sua Conta Google, {email}}}</translation>
 <translation id="6826004672264649705">Está a acompanhar este produto. Abra o separador para ver o histórico de preços</translation>
 <translation id="6830728435402077660">Inseguro</translation>
@@ -1964,7 +1964,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7952670906562503188">Está prestes a eliminar {passkey_count} chaves de acesso e a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>
 <translation id="7961015016161918242">Nunca</translation>
-<translation id="7971136598759319605">Ativo há 1 dia</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Experimentar</translation>
 <translation id="797588153137233716">Menu → Histórico → Eliminar dados de navegação</translation>

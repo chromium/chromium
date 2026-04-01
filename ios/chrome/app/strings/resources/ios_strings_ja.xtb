@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">[このタブを続行] を非表示にする</translation>
 <translation id="1520027731907768768">追跡している商品の値下げアラートを受け取ります。</translation>
 <translation id="1521366073263497277">タブグリッドに移動します</translation>
-<translation id="1521774566618522728">最終同期: 今日</translation>
 <translation id="1523567067736644845">パスワードを表示するにはロックを解除してください</translation>
 <translation id="1524563461097350801">スキップ</translation>
 <translation id="1531038290222364269">タブを表示</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Google パスワード マネージャーに保存する前にデバイス上でパスワードを暗号化します。</translation>
 <translation id="2306265833370324042"><ph name="SEARCH_ENGINE_NAME" /> の詳細を表示</translation>
 <translation id="2309265394777270359">タブを閉じる</translation>
+<translation id="2310789833878085574">保存して自動入力</translation>
 <translation id="2311077293164383652">固定タブを閉じる</translation>
 <translation id="2316129865977710310">今はしない</translation>
 <translation id="2320166752086256636">キーボードを非表示</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">商品をトラッキングするには、[トラッキング] をタップします</translation>
 <translation id="5121618895923301719">この商品はすでにトラッキングしています。このページは<ph name="BEGIN_LINK" />モバイルのブックマーク<ph name="END_LINK" />に保存されます。</translation>
 <translation id="512533434554095351">パスワードにいくつかの問題があります。</translation>
-<translation id="5127538504377457572">アクティブ: <ph name="DAYS" /> 日前</translation>
 <translation id="5128788795241319992">新しいメニューを確認する</translation>
 <translation id="5132942445612118989">すべてのデバイスでパスワード、履歴、その他の設定を同期する</translation>
 <translation id="5141363746588976328">タブの値下げ情報カードを非表示にする</translation>
@@ -1651,6 +1650,7 @@
 <translation id="6806550742467879742">ページツール</translation>
 <translation id="6807287147325542056">他のアプリのパスワード</translation>
 <translation id="681368974849482173">作成済みのアイテム</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Google アカウント（{email}）にブックマークを保存しました}other{Google アカウント（{email}）に　{count}　件のブックマークを保存しました}}</translation>
 <translation id="6826004672264649705">現在この商品を追跡しています。開くと価格の推移を確認できます。</translation>
 <translation id="6830728435402077660">保護されていません</translation>
@@ -1964,7 +1964,6 @@
 <translation id="7952670906562503188">{passkey_count} 件のパスキーと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="7958575506592576831">ページのセキュリティ情報</translation>
 <translation id="7961015016161918242">使用しない</translation>
-<translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">試す</translation>
 <translation id="797588153137233716">[メニュー] → [履歴] → [閲覧履歴データを削除]</translation>

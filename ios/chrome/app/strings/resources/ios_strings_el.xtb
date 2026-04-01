@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Απόκρυψη της επιλογής Συνέχεια με αυτή την καρτέλα</translation>
 <translation id="1520027731907768768">Λάβετε ειδοποιήσεις για πτώσεις τιμών για προϊόντα που παρακολουθείτε.</translation>
 <translation id="1521366073263497277">Μετάβαση στο πλέγμα καρτελών</translation>
-<translation id="1521774566618522728">Ενεργή σήμερα</translation>
 <translation id="1523567067736644845">Ξεκλ. για εμφ. κωδικού</translation>
 <translation id="1524563461097350801">Όχι, ευχαριστώ</translation>
 <translation id="1531038290222364269">Εμφάνιση καρτελών</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Οι κωδικοί πρόσβασης κρυπτογραφούνται στη συσκευή σας προτού αποθηκευτούν στον Διαχειριστή κωδικών πρόσβασης Google.</translation>
 <translation id="2306265833370324042">Εμφάνιση λεπτομερειών <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Κλείσιμο καρτέλας</translation>
+<translation id="2310789833878085574">Αποθήκευση και αυτόματη συμπλήρωση</translation>
 <translation id="2311077293164383652">Κλείσιμο καρφιτσωμένης καρτέλας</translation>
 <translation id="2316129865977710310">Όχι, ευχαριστώ</translation>
 <translation id="2320166752086256636">Απόκρυψη πληκτρολογίου</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Επισήμανση ως αναγνωσμένου</translation>
 <translation id="428768789042547925">Τι νέο υπάρχει</translation>
 <translation id="429074084062258019">{count,plural, =1{Προσθήκη καρτέλας στην ομάδα}other{Προσθήκη καρτελών στην ομάδα}}</translation>
+<translation id="4300830875340617674">Σάρωση κάρτας και αυτόματη συμπλήρωση</translation>
 <translation id="4302061870579014542">Ορισμός θέσης</translation>
 <translation id="4304713468139749426">Διαχείριση κωδικών πρόσβασης</translation>
 <translation id="4306349443295056740">Υπογραφή OCSP</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Για να παρακολουθήσετε το προϊόν, πατήστε Παρακολούθηση</translation>
 <translation id="5121618895923301719">Παρακολουθείτε ήδη αυτό το προϊόν. Αυτή η σελίδα έχει αποθηκευτεί στους <ph name="BEGIN_LINK" />Σελιδοδείκτες κινητής συσκευής<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Έχετε αρκετά προβλήματα με τους κωδικούς πρόσβασης.</translation>
-<translation id="5127538504377457572">Ενεργή <ph name="DAYS" /> ημέρες πριν</translation>
 <translation id="5128788795241319992">Εξερευνήστε το νέο μενού</translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
 <translation id="5141363746588976328">Κάρτα για την απόκρυψη των πτώσεων τιμών στις καρτέλες σας</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Ενεργοποίηση κάμερας</translation>
 <translation id="5229315183665181733">Επεξεργασία ιστοτόπου</translation>
+<translation id="5233111790346066304">Αποθηκεύστε αρχεία στο Google Drive και αποκτήστε πρόσβαση σε αυτά ανά πάσα στιγμή.</translation>
 <translation id="5233638681132016545">Νέα καρτέλα</translation>
 <translation id="5234094073825090254">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον Λογαριασμό σας Google, {email}}other{Οι σελιδοδείκτες αποθηκεύτηκαν στον Λογαριασμό σας Google, {email}}}</translation>
 <translation id="5234764350956374838">Παράβλεψη</translation>
@@ -1650,6 +1651,7 @@
 <translation id="6806550742467879742">Εργαλεία σελίδας</translation>
 <translation id="6807287147325542056">Κωδικοί πρόσβασης σε άλλες εφαρμογές</translation>
 <translation id="681368974849482173">Δημιουργήθηκε ένα στοιχείο</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στον Λογαριασμό σας Google {email}}other{{count} σελιδοδείκτες αποθηκεύτηκαν στον Λογαριασμό σας Google {email}}}</translation>
 <translation id="6826004672264649705">Αυτή τη στιγμή παρακολουθείτε αυτό το προϊόν. Ανοίξτε για να δείτε το ιστορικό τιμών</translation>
 <translation id="6830728435402077660">Μη ασφαλές</translation>
@@ -1963,7 +1965,6 @@
 <translation id="7952670906562503188">Πρόκειται να διαγράψετε {passkey_count} κλειδιά πρόσβασης και τη λίστα ιστοτόπων και εφαρμογών που έχετε επιλέξει να μην αποθηκεύουν ποτέ πληροφορίες σύνδεσης. Τυχόν λογαριασμοί που δημιουργήσατε για ιστοτόπους και εφαρμογές δεν θα διαγραφούν.</translation>
 <translation id="7958575506592576831">Πληροφορίες ασφάλειας σελίδας</translation>
 <translation id="7961015016161918242">Ποτέ</translation>
-<translation id="7971136598759319605">Ενεργή 1 ημέρα πριν</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Δοκιμή</translation>
 <translation id="797588153137233716">Μενού → Ιστορικό → Διαγραφή δεδομένων περιήγησης</translation>

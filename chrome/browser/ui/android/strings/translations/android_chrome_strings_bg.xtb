@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">За да се осигури безопасността ви, бяха премахнати разрешенията за някои сайтове</translation>
 <translation id="1383876407941801731">Търсене</translation>
 <translation id="1384704387250346179">Превод с Google Обектив <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Активно преди <ph name="LAST_UPDATED" /> дни</translation>
 <translation id="1390418506739274310">Възможно е да виждате историята от други приложения, които отварят връзки в Chrome. В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Долният лист със статистика за цените е отворен на пълната височина</translation>
 <translation id="1397811292916898096">Търсене чрез <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">Отметки и посетени сайтове</translation>
 <translation id="1515901671075971249">Клавишни комбинации за навигиране между разделите</translation>
 <translation id="1516966594427080024">Отваряне на нов прозорец в режим „инкогнито“</translation>
-<translation id="1521774566618522728">Активно днес</translation>
 <translation id="153446405401665083">Налице е нова версия на Chrome</translation>
 <translation id="1540012742443808215">Адресната лента понастоящем е в горната част</translation>
 <translation id="1544084554881119930">Начините на плащане и адресите няма да се шифроват. Историята на сърфиране от Chrome няма да се синхронизира.
@@ -222,6 +220,7 @@
 <translation id="1925021887439448749">Въведете персонализиран уеб адрес</translation>
 <translation id="1928618076168182477">Показва се детайлният изглед</translation>
 <translation id="1928696683969751773">Актуализации</translation>
+<translation id="1934545916152269346">Наскоро използвани</translation>
 <translation id="1943398124995840148">Отворените ви раздели вече изглеждат по нов начин в XR</translation>
 <translation id="1944535645109964458">Няма налични кодове за достъп</translation>
 <translation id="1957557050935255529">PDF файлът се зарежда…</translation>
@@ -1727,7 +1726,6 @@
 <translation id="7968014550143838305">Добавено към списъка за четене</translation>
 <translation id="7968982339740310781">Преглед на подробностите</translation>
 <translation id="7969391000881506217">Дата на валидност*</translation>
-<translation id="7971136598759319605">Активно преди 1 ден</translation>
 <translation id="7975379999046275268">Визуализация <ph name="BEGIN_NEW" />Ново<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Предупреждава ви, ако използвате парола, която е компрометирана при нарушение на сигурността на данните.</translation>
 <translation id="7987499071758862048">„<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“ <ph name="SEPARATOR" /> Chrome премахна тези разрешения, защото не сте посещавали този сайт наскоро</translation>

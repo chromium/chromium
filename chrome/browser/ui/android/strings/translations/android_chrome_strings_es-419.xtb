@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Para protegerte, se quitaron los permisos de algunos sitios</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1384704387250346179">Traducir imagen con Lens <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Activo hace <ph name="LAST_UPDATED" /> días</translation>
 <translation id="1390418506739274310">Es posible que veas el historial de otras apps que abren vínculos en Chrome. Es posible que tu Cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">La hoja inferior de información sobre precios está abierta en su totalidad</translation>
 <translation id="1397811292916898096">Buscar con <ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Si quieres ver más parámetros de configuración que usan datos para mejorar tu
 <translation id="1513352483775369820">Favoritos e historial web</translation>
 <translation id="1515901671075971249">Combinaciones de teclas para la navegación de pestañas</translation>
 <translation id="1516966594427080024">Abrir una ventana nueva en modo Incógnito</translation>
-<translation id="1521774566618522728">Activo hoy</translation>
 <translation id="153446405401665083">Hay una nueva versión de Chrome disponible</translation>
 <translation id="1540012742443808215">La barra de direcciones está en la parte superior</translation>
 <translation id="1544084554881119930">No se encriptarán las formas de pago ni las direcciones. No se sincronizará el historial de navegación de Chrome.
@@ -1728,7 +1726,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7968982339740310781">Ver los detalles</translation>
 <translation id="7969391000881506217">Fecha de vencimiento*</translation>
-<translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>

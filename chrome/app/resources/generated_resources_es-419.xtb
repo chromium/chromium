@@ -161,7 +161,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1102759278139578486">No se pueden descargar los archivos de anotaciones de nodos principales. Vuelve a intentarlo más tarde.</translation>
 <translation id="1103523840287552314">Siempre traducir <ph name="LANGUAGE" /></translation>
 <translation id="1104098698795583187">Perderás de inmediato el acceso a este grupo de pestañas y se borrará de todos tus dispositivos</translation>
-<translation id="1105934302947321130">Google Beam con Zoom</translation>
 <translation id="1106270460549661906">Dejar de compartir con Gemini</translation>
 <translation id="1106350001632362876">Aumentar el umbral</translation>
 <translation id="110850812463801904">Conectarse a OneDrive de forma manual</translation>
@@ -207,7 +206,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1131201598497838573">Se actualizó el PIN de tu hijo o hija</translation>
 <translation id="1133418583142946603">Agregar pestaña actual</translation>
 <translation id="1133751489735776037">Hacer clic tres veces con el mouse</translation>
-<translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> de <ph name="EMOJI_COUNT" />.</translation>
 <translation id="1136712381129578788">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Para desbloquearla, quítala y vuelve a insertarla.</translation>
 <translation id="1137589305610962734">datos temporales</translation>
 <translation id="1137673463384776352">Abrir vínculo en <ph name="APP" /></translation>
@@ -240,6 +238,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1155816283571436363">Se está estableciendo conexión con tu teléfono</translation>
 <translation id="1157952955648710254">Cerrar el panel lateral de la Búsqueda de Google</translation>
 <translation id="1158080958325422608">Convertir a mayúsculas</translation>
+<translation id="1158134713295836892">Gemini en Chrome</translation>
 <translation id="1159879754517035595">Administrar la configuración de extensiones</translation>
 <translation id="1160800016654917722">La ventana se movió hacia abajo y hacia la izquierda</translation>
 <translation id="1161190590171867633">Las tablas de comparación se guardan en tu Cuenta de Google.</translation>
@@ -760,7 +759,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1517467582299994451">Para transmitir con un código, activa la configuración de sincronización del navegador Chrome</translation>
 <translation id="1521442365706402292">Administrar certificados</translation>
 <translation id="1521655867290435174">Hojas de cálculo de Google</translation>
-<translation id="1521774566618522728">Activo hoy</translation>
 <translation id="1521933835545997395">Conectado a un teléfono Android</translation>
 <translation id="1523279371236772909">Visto durante el mes pasado</translation>
 <translation id="1523486680453956384">Ver tarea</translation>
@@ -3584,7 +3582,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3473241910002674503">Con los botones del modo tablet, puedes navegar hacia la pantalla de inicio, regresar y cambiar de apps.</translation>
 <translation id="3473479545200714844">Lupa</translation>
 <translation id="3474218480460386727">Las palabras nuevas pueden tener un máximo de 99 letras.</translation>
-<translation id="3474330892505468100">Google Beam con Meet</translation>
 <translation id="3474624961160222204">Continuar como <ph name="NAME" /></translation>
 <translation id="3477772589943384839">Obtén un ahorro de memoria moderado. Las pestañas se vuelven inactivas después de un período más largo.</translation>
 <translation id="347785443197175480">Continuar permitiendo que <ph name="HOST" /> acceda a la cámara y al micrófono</translation>
@@ -4161,7 +4158,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3841964634449506551">La contraseña no es válida</translation>
 <translation id="3842552989725514455">Fuente Serif</translation>
 <translation id="3843464315703645664">Permiso otorgado de manera interna</translation>
-<translation id="3844888638014364087">Se insertó el emoji</translation>
 <translation id="3846116211488856547">Obtén herramientas para desarrollar sitios web, apps de Android y mucho más. Si instalas Linux, se descargarán <ph name="DOWNLOAD_SIZE" /> de datos.</translation>
 <translation id="3847319713229060696">Ayudar a mejorar la seguridad en la Web para todos los usuarios</translation>
 <translation id="3847734730889093333"><ph name="RATE" />x</translation>
@@ -5027,7 +5023,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4453430595102511050">Toca el sensor de huellas dactilares en la esquina superior derecha del teclado. Los datos de las huellas dactilares se almacenan de forma segura y no salen nunca de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4453946976636652378">Buscar en <ph name="SEARCH_ENGINE_NAME" /> o escribir una URL</translation>
 <translation id="4457472090507035117">Seleccionar voz actual:</translation>
-<translation id="4459169140545916303">Activo hace <ph name="DEVICE_LAST_ACTIVATED_TIME" /> días</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4461483878391246134">Agrega idiomas para los que no se ofrecerá nunca la traducción</translation>
 <translation id="4462159676511157176">Servidores de nombres personalizados</translation>
@@ -5782,6 +5777,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4990673372047946816">No hay ninguna cámara disponible</translation>
 <translation id="4991420928586866460">Tratar las teclas de la fila superior como teclas de función</translation>
 <translation id="4991873517942703737">Preguntar sobre este documento</translation>
+<translation id="4992066212339426712">Dejar de silenciar</translation>
 <translation id="4992443049233195791">Configuración de archivos de Microsoft 365</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">Tu administrador limitó los métodos de entrada disponibles.</translation>
@@ -6762,7 +6758,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5701212929149679556">Roaming con red móvil</translation>
 <translation id="5701786609538182967">Se configuraron otras apps para abrir los mismos vínculos que <ph name="APP_NAME" />. Esta acción impedirá que <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> y 1 app más abran los vínculos compatibles.</translation>
 <translation id="5702161882524398150">Preguntar sobre la pestaña anterior</translation>
-<translation id="5702749864074810610">Se descartó la sugerencia</translation>
 <translation id="5703716265115423771">bajar volumen</translation>
 <translation id="5703998022096520811">Protección proactiva en tiempo real a través del envío de más información a la Navegación segura de Google</translation>
 <translation id="5704875434923668958">Sincronizando con</translation>
@@ -7566,7 +7561,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6270309713620950855">Aviso de micrófono silenciado</translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres recibir notificaciones</translation>
 <translation id="6270770586500173387">Enviar <ph name="BEGIN_LINK2" />métricas<ph name="END_LINK2" /> e <ph name="BEGIN_LINK1" />información de apps y el sistema<ph name="END_LINK1" /></translation>
-<translation id="6271348838875430303">se deshizo la corrección</translation>
 <translation id="6271824294945464304">Compartiendo contraseña</translation>
 <translation id="6273677812470008672">Calidad</translation>
 <translation id="6274089201566806618">Estableciendo conexión con <ph name="HOST_DEVICE_NAME" /></translation>
@@ -10536,7 +10530,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8339288417038613756">Tamaño de la pantalla y el texto</translation>
 <translation id="833986336429795709">Para abrir este vínculo, selecciona una app</translation>
 <translation id="8340547030807793004">Más acciones para <ph name="DEVICE" /></translation>
-<translation id="8341693734243413517">Actualizador de Chrome</translation>
 <translation id="8341804784147620576">Mostrar atajos de búsqueda</translation>
 <translation id="8342221978608739536">No lo intenté</translation>
 <translation id="8342387517402567689">No se admiten las instalaciones de apps web en el modo Incógnito</translation>
@@ -10782,6 +10775,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8518809011298357036">Cerrar vista superior</translation>
 <translation id="8518942514525208851">Ocultar lenguaje obsceno</translation>
 <translation id="8520238089740349550">No se pudo realizar: Se bloqueó la descarga local</translation>
+<translation id="8520408093016204772">Almacena tus contraseñas, favoritos y parámetros de configuración</translation>
 <translation id="8523493869875972733">Conservar cambios</translation>
 <translation id="8523849605371521713">Agregada por la política</translation>
 <translation id="8524594273111932386">Búsqueda + flecha hacia abajo</translation>
@@ -10967,6 +10961,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8651585100578802546">Volver a cargar esta página</translation>
 <translation id="8651806635673244884">Para volver a mover las pestañas a la parte superior, haz clic con el botón derecho en cualquiera de ellas y selecciona “Mostrar las pestañas horizontalmente”</translation>
 <translation id="8652400352452647993">Error al empaquetar extensiones</translation>
+<translation id="8652412805227733853">El correo electrónico se verificó automáticamente</translation>
 <translation id="8654151524613148204">El archivo es demasiado grande para que tu equipo lo procese.</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655972064210167941">Se produjo un error de acceso porque no se pudo verificar la contraseña. Comunícate con el administrador o vuelve a intentarlo.</translation>
@@ -11475,7 +11470,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="8983018820925880511"><ph name="DOMAIN" /> administrará este nuevo perfil. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> puede editar <ph name="FILENAME" /></translation>
 <translation id="8984694057134206124">Estarás visible para todas las personas durante <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
-<translation id="8985264973231822211">Activo hace <ph name="DEVICE_LAST_ACTIVATED_TIME" /> día</translation>
 <translation id="8985561265504464578">Umbral de detección</translation>
 <translation id="8985661493893822002">Conéctate a Internet para acceder a tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8985661571449404298">Se descargó un archivo no seguro</translation>

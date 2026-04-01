@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">तपाईंको सुरक्षार्थ केही साइटहरूलाई दिइएका अनुमति रद्द गरिएका छन्</translation>
 <translation id="1383876407941801731">खोज्नुहोस्</translation>
 <translation id="1384704387250346179">Google लेन्स प्रयोग गरी फोटोमा भएका कुरा अनुवाद गर्नुहोस् <ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिनअघि सक्रिय</translation>
 <translation id="1390418506739274310">तपाईं Chrome मा लिंक खोल्ने अन्य एपहरूको हिस्ट्री देख्न सक्नुहुन्छ। तपाईंको Google खातामा रहेको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा अन्य स्वरूपमा ब्राउजिङ हिस्ट्री सेभ गरिएको हुन सक्छ।</translation>
 <translation id="139752016751285248">मूल्यसम्बन्धी इनसाइटहरू समावेश भएको पुछारको पाना फुल स्क्रिनमा खोलिएको छ</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> मार्फत खोज्नुहोस्</translation>
@@ -136,7 +135,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1513352483775369820">बुकमार्कहरू र वेब इतिहास</translation>
 <translation id="1515901671075971249">ट्याब नेभिगेसनका सर्टकटहरू</translation>
 <translation id="1516966594427080024">इन्कोग्निटो मोडमा नयाँ विन्डो खोलियोस्</translation>
-<translation id="1521774566618522728">आज सक्रिय गरिएको समय</translation>
 <translation id="153446405401665083">Chrome को नयाँ संस्करण उपलब्ध छ</translation>
 <translation id="1540012742443808215">एड्रेस बार हाल सिरानमा छ</translation>
 <translation id="1544084554881119930">भुक्तानी विधि र ठेगानाहरू इन्क्रिप्ट गरिने छैनन्। Chrome को ब्राउजिङ हिस्ट्री सिंक गरिने छैन।
@@ -222,6 +220,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="1925021887439448749"> कस्टम पारिएको वेब ठेगाना प्रविष्टि गर्नुहोस्</translation>
 <translation id="1928618076168182477">भिजुअल भ्यू देखाइँदै छ</translation>
 <translation id="1928696683969751773">अपडेटहरू</translation>
+<translation id="1934545916152269346">हालसालै प्रयोग गरिएको</translation>
 <translation id="1943398124995840148">XR मा खोलिएका तपाईंका ट्याबहरू अब नयाँ स्वरूपमा देखिन्छन्</translation>
 <translation id="1944535645109964458">कुनै पनि पासकी उपलब्ध छैन</translation>
 <translation id="1957557050935255529">PDF लोड गरिँदै छ…</translation>
@@ -1726,7 +1725,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="7968014550143838305">अध्ययन सूचीमा हालियो</translation>
 <translation id="7968982339740310781">विवरणहरू हेर्नुहोस्</translation>
 <translation id="7969391000881506217">म्याद सकिने मिति*</translation>
-<translation id="7971136598759319605">१ दिनअघि सक्रिय</translation>
 <translation id="7975379999046275268"><ph name="BEGIN_NEW" />नयाँ<ph name="END_NEW" /> पृष्ठको पूर्वावलोकन गर्नु…</translation>
 <translation id="7977451675950311423">तपाईंले डेटा चोरीको घटनामा अरूले देखेका पासवर्ड प्रयोग गर्नुभयो भने यसले तपाईंलाई चेतावनी दिन्छ।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> तपाईंले हालसालै यो साइट नखोल्नुभएकाले Chrome ले यसलाई दिइएका यी अनुमति रद्द गरेको छ</translation>

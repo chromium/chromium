@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">તમને સુરક્ષિત રાખવામાં સહાય કરવા માટે, અમુક સાઇટ પરથી પરવાનગીઓ દૂર કરવામાં આવી હતી</translation>
 <translation id="1383876407941801731">શોધો</translation>
 <translation id="1384704387250346179">Google Lensથી છબીનો અનુવાદ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="1390418506739274310">Chromeમાં અન્ય ઍપ દ્વારા ખોલવામાં આવતી લિંકનો ઇતિહાસ કદાચ તમે જોઈ શકશો. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના અન્ય સ્વરૂપો હોઈ શકે છે.</translation>
 <translation id="139752016751285248">સંપૂર્ણ ઊંચાઈએ કિંમત વિશે જાણકારીની બોટમ શીટ ખુલ્લી છે</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> વડે શોધો</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">બુકમાર્ક અને વેબ ઇતિહાસ</translation>
 <translation id="1515901671075971249">ટૅબ નૅવિગેશન માટેના શૉર્ટકટ</translation>
 <translation id="1516966594427080024">છૂપા મોડમાં એક નવી વિન્ડો ખોલો</translation>
-<translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="153446405401665083">Chromeનું નવું વર્ઝન ઉપલબ્ધ છે</translation>
 <translation id="1540012742443808215">હાલમાં ઍડ્રેસ બાર સૌથી ઉપર છે</translation>
 <translation id="1544084554881119930">ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંથી બ્રાઉઝિંગ ઇતિહાસ સિંક થશે નહીં.
@@ -1260,6 +1258,7 @@
 <translation id="6251449557817521191">તમારો Chrome ઇતિહાસ અહીં જુઓ</translation>
 <translation id="6254139308321626268">તમે કોઈ PDF ફાઇલ જોઈ રહ્યાં છો</translation>
 <translation id="6255809143828972562">Chromeના ટૂલ વડે, તમે સલામત રીતે બ્રાઉઝ કરી શકો છો તેમજ નિયંત્રણ જાળવી શકો છો</translation>
+<translation id="6260260490042862943">સાઇટના નિયંત્રણો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
 <translation id="6267106249090587268">નોટિફિકેશન <ph name="SEPARATOR" /> સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી છે</translation>
@@ -1728,7 +1727,6 @@
 <translation id="7968014550143838305">વાંચન સૂચિમાં ઉમેર્યું</translation>
 <translation id="7968982339740310781">વિગતો જુઓ</translation>
 <translation id="7969391000881506217">સમાપ્તિ તારીખ*</translation>
-<translation id="7971136598759319605">1 દિવસ પહેલાં સક્રિય હતું</translation>
 <translation id="7975379999046275268">પેજને પ્રીવ્યૂ કરો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">તમે ઉપયોગમાં લો છો તે પાસવર્ડ સાથે કોઈ ડેટા ઉલ્લંઘન દરમિયાન ચેડાં કરવામાં આવ્યા હોય તો તમને ચેતવણી આપે છે.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે તમે તાજેતરમાં મુલાકાત લીધી ન હતી</translation>

@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">Piilota "Jatka tällä välilehdellä"</translation>
 <translation id="1520027731907768768">Tilaa hinnanlaskuilmoitukset seuraamistasi tuotteista.</translation>
 <translation id="1521366073263497277">Siirry välilehtiruudukkoon</translation>
-<translation id="1521774566618522728">Aktiivinen tänään</translation>
 <translation id="1523567067736644845">Avaa lukitus, niin salasana näkyy</translation>
 <translation id="1524563461097350801">Ei kiitos</translation>
 <translation id="1531038290222364269">Näytä välilehdet</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Salasanat salataan laitteella ennen niiden tallentamista Googlen Salasanojen ylläpitoon.</translation>
 <translation id="2306265833370324042">Näytä tiedot: <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Sulje välilehti</translation>
+<translation id="2310789833878085574">Tallenna ja täytä automaattisesti</translation>
 <translation id="2311077293164383652">Sulje kiinnitetty välilehti</translation>
 <translation id="2316129865977710310">Ei kiitos</translation>
 <translation id="2320166752086256636">Piilota näppäimistö</translation>
@@ -906,6 +906,7 @@
 <translation id="4287172530684295552">Merkitse luetuksi</translation>
 <translation id="428768789042547925">Uutta</translation>
 <translation id="429074084062258019">{count,plural, =1{Lisää välilehti ryhmään}other{Lisää välilehtiä ryhmään}}</translation>
+<translation id="4300830875340617674">Skannaa kortti ja täytä tiedot automaattisesti</translation>
 <translation id="4302061870579014542">Aseta sijainti</translation>
 <translation id="4304713468139749426">Salasanojen ylläpito</translation>
 <translation id="4306349443295056740">OCSP-allekirjoitus</translation>
@@ -1147,7 +1148,6 @@
 <translation id="5119329531859909472">Seuraa tuotetta napauttamalla Seuraa</translation>
 <translation id="5121618895923301719">Seuraat jo tätä tuotetta. Tämä sivu on tallennettu <ph name="BEGIN_LINK" />mobiilikirjanmerkkeihin<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Sinulla on useita salasanaongelmia.</translation>
-<translation id="5127538504377457572">Aktiivinen <ph name="DAYS" /> päivää sitten</translation>
 <translation id="5128788795241319992">Tutustu uuteen valikkoon</translation>
 <translation id="5132942445612118989">Synkronoi salasanasi, historiasi ja paljon muuta kaikilla laitteilla</translation>
 <translation id="5141363746588976328">Piilota "Hinnanlaskut avoimilla välilehdillä" ‑kortti</translation>
@@ -1182,6 +1182,7 @@
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">Käynnistä kamera</translation>
 <translation id="5229315183665181733">Muokkaa sivustoa</translation>
+<translation id="5233111790346066304">Tallenna tiedostoja Google Driveen ja käytä niitä milloin tahansa.</translation>
 <translation id="5233638681132016545">Uusi välilehti</translation>
 <translation id="5234094073825090254">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email}).}other{Kirjanmerkit tallennettu Google-tilillesi ({email}).}}</translation>
 <translation id="5234764350956374838">Hylkää</translation>
@@ -1649,6 +1650,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6806550742467879742">Sivutyökalut</translation>
 <translation id="6807287147325542056">Salasanat muissa sovelluksissa</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Kirjanmerkki tallennettu Google-tilillesi ({email})}other{{count} kirjanmerkkiä tallennettu Google-tilillesi ({email})}}</translation>
 <translation id="6826004672264649705">Tätä tuotetta seurataan tällä hetkellä. Avaa nähdäksesi hintahistorian</translation>
 <translation id="6830728435402077660">Ei turvallinen</translation>
@@ -1962,7 +1964,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7952670906562503188">Olet poistamassa {passkey_count} avainkoodia ja listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="7958575506592576831">Sivun suojaustiedot</translation>
 <translation id="7961015016161918242">Ei koskaan</translation>
-<translation id="7971136598759319605">Aktiivinen 1 päivä sitten</translation>
 <translation id="7972837668077967426">Kanvas</translation>
 <translation id="7975036700432177008">Kokeile</translation>
 <translation id="797588153137233716">Valikko → Historia → Poista selausdata</translation>

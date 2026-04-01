@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">Ukukusiza ukukugcina uphephile, izimvume zisusiwe kwamanye amasayithi</translation>
 <translation id="1383876407941801731">Sesha</translation>
 <translation id="1384704387250346179">Humusha isithombe ngokuthi ama-Google Lens <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382">Isebenze ezinsukwini ezingu-<ph name="LAST_UPDATED" /> ezedlule</translation>
 <translation id="1390418506739274310">Ungase ubone umlando kwamanye ama-app avula amalinki ku-Chrome. I-Google Account yakho ingase ibe namanye amafomu omlando wokuphequlula kokuthi <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="139752016751285248">Ishidi eliphansi lemininingwane yentengo livuleke ngokuphelele</translation>
 <translation id="1397811292916898096">Sesha nge-<ph name="PRODUCT_NAME" /></translation>
@@ -136,7 +135,6 @@ Ukuze uthole amasethingi angeziwe asebenzisa idatha ukuthuthukisa ukuzizwisa kwa
 <translation id="1513352483775369820">Amabhukhimakhi nomlando wendawo</translation>
 <translation id="1515901671075971249">Izinqamuleli zokufuna kwethebhu</translation>
 <translation id="1516966594427080024">Vula iwindi elisha kumodi ye-incognito</translation>
-<translation id="1521774566618522728">Iyasebenza namhlanje</translation>
 <translation id="153446405401665083">Uhlobo olusha lweChrome luyatholakala</translation>
 <translation id="1540012742443808215">Okwamanje ibha yekheli ingaphezulu</translation>
 <translation id="1544084554881119930">Izindlela zokukhokha kanye namakheli ngeke kubethelwe. Umlando wokubhrawuza ovela kuChrome ngeke uvumelanise.
@@ -222,6 +220,7 @@ Ngumuntu onomushwana wakho wokungena kuphela ongafunda idatha yakho ebetheliwe. 
 <translation id="1925021887439448749">Faka ikheli lewebhu langokwezifiso</translation>
 <translation id="1928618076168182477">Ibonisa ukubuka okubukwayo</translation>
 <translation id="1928696683969751773">Izibuyekezo</translation>
+<translation id="1934545916152269346">Okusanda Kusetshenziswa</translation>
 <translation id="1943398124995840148">Amathebhu akho avuliwe manje asenokubukeka okubuyekeziwe ku-XR</translation>
 <translation id="1944535645109964458">Abekho okhiye bokudlula abatholakalayo</translation>
 <translation id="1957557050935255529">Ilayisha i-PDF…</translation>
@@ -1727,7 +1726,6 @@ Ukuze ushintshe le sethingi, <ph name="BEGIN_LINK" />sula idatha yakho ye-Chrome
 <translation id="7968014550143838305">Kungezwe kuhlu lokufunda</translation>
 <translation id="7968982339740310781">Buka imininingwane</translation>
 <translation id="7969391000881506217">Ilanga lokuphelelwa isikhathi*</translation>
-<translation id="7971136598759319605">Isebenze ngosuku olungu-1 oludlule</translation>
 <translation id="7975379999046275268">Buka kuqala ikhasi <ph name="BEGIN_NEW" />Okusha<ph name="END_NEW" /></translation>
 <translation id="7977451675950311423">Iyakuxwayisa uma usebenzisa iphasiwedi eyonakaliswe ukuphulwa kwedatha.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> IChrome isuse lezi zimvume ngenxa yokuthi awukaze uvakashe muva nje</translation>

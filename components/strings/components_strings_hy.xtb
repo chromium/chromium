@@ -1181,6 +1181,7 @@
 <translation id="2837891525090413132">Կարող է խնդրել ձեր ստեղնաշարը կողպելու և օգտագործելու թույլտվություն</translation>
 <translation id="2839032553903800133">Ծանուցումներն արգելափակված են</translation>
 <translation id="2839501879576190149">Կայքը, որը պատրաստվում եք այցելել, կեղծ է</translation>
+<translation id="2840680829170913626">Վճարման էջի բովանդակությունը փոխանցվում է Google-ին՝ այս տարբերակներն առաջարկելու համար։ Վճարային պլանները հասանելի են միայն պահանջները բավարարելու դեպքում։ Տարաժամկետ վճարման տարբերակները ավտոմատ լրացման ժամանակ թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />։</translation>
 <translation id="2843623755398178332">Ոլորումով փոխե՞լ ընդհանուր ներդիրի մասշտաբը</translation>
 <translation id="2851291081585704741">Դուք օֆլայն եք</translation>
 <translation id="2854163610915391726">Ընտրել, թե Chrome-ի ինչ տվյալներ պահել Google հաշվում</translation>
@@ -1394,6 +1395,7 @@
 <translation id="3162070126914310576">Այս սարքը չի կարող գրանցվել հիմա, քանի որ ձեր կազմակերպության ստորաբաժանման գրանցումների սահմանաչափը լրացել է։ Օգնության համար դիմեք ձեր ադմինիստրատորին։</translation>
 <translation id="3162559335345991374">Անլար կապը, որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք նրա մուտքի էջը:</translation>
 <translation id="316638481603975524">Կարող է խնդրել տեղադրել վեբ ծրագրեր</translation>
+<translation id="3166788340998560642">Հաջորդ անգամ, երբ օգտագործեք դրանք, Chrome-ը կառաջարկի պահել <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում</translation>
 <translation id="3168744840365648658">Ռադիոտեխնիկա</translation>
 <translation id="3168938241115725594">Դասական ավտոմեքենաներ</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2422,6 +2424,7 @@
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Ելնող պատուհանն արգելափակված է}one{# ելնող պատուհան արգելափակված է}other{# ելնող պատուհան արգելափակված է}}</translation>
 <translation id="4780320432697076749">Լուսանկարների մշակման ծրագիր</translation>
 <translation id="4780366598804516005">Փոստարկղ 1</translation>
+<translation id="4785273477715803444">Զտեք մատյանները</translation>
 <translation id="4785376858512657294">Կառավարել Google հաշիվը</translation>
 <translation id="4785689107224900852">Անցնել այս ներդիրին</translation>
 <translation id="4785998536350006000">Որոնում «<ph name="SEARCH_QUERY" />» հարցումով</translation>
@@ -3067,6 +3070,7 @@
 <translation id="5759751709240058861">Օգտագործել և տեղաշարժել ձեր տեսախցիկը</translation>
 <translation id="5762131895127128324">Վարորդական վկայականներ · Նույնականացման քարտեր · Անձնագրեր</translation>
 <translation id="5763042198335101085">Մուտքագրեք վավեր էլ․ հասցե</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Այսօր ակտիվ է եղել}=1{Ակտիվ է եղել 1 օր առաջ}one{Ակտիվ է եղել # օր առաջ}other{Ակտիվ է եղել # օր առաջ}}</translation>
 <translation id="5764725887548570807">Աղբյուրի սխալ ձևաչափ։</translation>
 <translation id="5764920692828389743">Ուղարկել <ph name="EMAIL_ADDRESS" /> հասցեին</translation>
 <translation id="5765072501007116331">Առաքման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>

@@ -1177,6 +1177,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2837891525090413132">Môže požiadať o uzamknutie a používanie klávesnice</translation>
 <translation id="2839032553903800133">Upozornenia sú zablokované</translation>
 <translation id="2839501879576190149">Falošný web</translation>
+<translation id="2840680829170913626">Obsah stránky platby sa zdieľa s Googlom, aby sa vám mohli ponúkať tieto možnosti. Ak chcete používať platobné tarify, musíte spĺňať podmienky. Ak chcete skryť možnosti platby neskôr v automatickom dopĺňaní, prejdite na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2843623755398178332">Chcete sa posunúť a priblížiť zdieľanú kartu?</translation>
 <translation id="2851291081585704741">Ste offline</translation>
 <translation id="2854163610915391726">Spravovať, ktoré informácie z Chromu sa ukladajú vo vašom účte Google</translation>
@@ -1388,6 +1389,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="3162070126914310576">Toto zariadenie sa momentálne nedá zaregistrovať, pretože vaša organizačná jednotka dosiahla počiatočný limit registrácie. Kontaktujte správcu a požiadajte o pomoc.</translation>
 <translation id="3162559335345991374">Sieť Wi‑Fi, ktorú používate, môže vyžadovať, aby ste navštívili jej prihlasovaciu stránku</translation>
 <translation id="316638481603975524">Môže žiadať o povolenie inštalovať webové aplikácie</translation>
+<translation id="3166788340998560642">Chrome vám pri ďalšom použití ponúkne uloženie do služby <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="3168744840365648658">Rádiozariadenia</translation>
 <translation id="3168938241115725594">Klasické vozidlá</translation>
 <translation id="3169472444629675720">Objaviť</translation>
@@ -2412,6 +2414,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{Zablokované vyskakovacie okno}few{Zablokované # vyskakovacie okná}many{# pop-ups blocked}other{Zablokovaných # vyskakovacích okien}}</translation>
 <translation id="4780320432697076749">Softvér na spracovanie fotiek</translation>
 <translation id="4780366598804516005">Poštová schránka č. 1</translation>
+<translation id="4785273477715803444">Filtrovať denníky</translation>
 <translation id="4785376858512657294">Spravovať účet Google</translation>
 <translation id="4785689107224900852">Prepnite na túto kartu</translation>
 <translation id="4785998536350006000">Hľadá sa „<ph name="SEARCH_QUERY" />“</translation>
@@ -3054,6 +3057,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="5759751709240058861">Používať kameru a hýbať ňou</translation>
 <translation id="5762131895127128324">Vodičské preukazy · Doklady totožnosti · Pasy</translation>
 <translation id="5763042198335101085">Zadajte platnú e-mailovú adresu</translation>
+<translation id="5763338081255973061">{DAYS,plural, =0{Aktívne dnes}=1{Aktívne včera}few{Aktívne pred # dňami}many{Aktívne pred # dňa}other{Aktívne pred # dňami}}</translation>
 <translation id="5764725887548570807">Neplatný formát zdroja.</translation>
 <translation id="5764920692828389743">Odoslať na <ph name="EMAIL_ADDRESS" /></translation>
 <translation id="5765072501007116331">Ak chcete zobraziť spôsoby a požiadavky doručenia, vyberte adresu</translation>

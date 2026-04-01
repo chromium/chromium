@@ -151,7 +151,6 @@
 <translation id="1517166097004694782">I-hide ang "Magpatuloy sa tab na ito"</translation>
 <translation id="1520027731907768768">Makatanggap ng mga alerto sa pagbaba ng presyo para sa mga produktong sinusubaybayan mo.</translation>
 <translation id="1521366073263497277">Pumunta sa iyong grid ng tab</translation>
-<translation id="1521774566618522728">Aktibo ngayong araw</translation>
 <translation id="1523567067736644845">I-unlock para ipakita ang password</translation>
 <translation id="1524563461097350801">Hindi, Salamat na lang</translation>
 <translation id="1531038290222364269">Ipakita ang mga tab</translation>
@@ -376,6 +375,7 @@
 <translation id="2299218006564889602">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager.</translation>
 <translation id="2306265833370324042">Ipakita ang mga detalye ng <ph name="SEARCH_ENGINE_NAME" /></translation>
 <translation id="2309265394777270359">Isara ang Tab</translation>
+<translation id="2310789833878085574">I-save at i-autofill</translation>
 <translation id="2311077293164383652">Isara ang Naka-pin na Tab</translation>
 <translation id="2316129865977710310">Hindi, salamat</translation>
 <translation id="2320166752086256636">Itago ang keyboard</translation>
@@ -1148,7 +1148,6 @@
 <translation id="5119329531859909472">Para subaybayan ang produkto, i-tap ang Subaybayan</translation>
 <translation id="5121618895923301719">Sinusubaybayan mo na ang produktong ito. Naka-save ang page na ito sa <ph name="BEGIN_LINK" />Mga Bookmark sa Mobile<ph name="END_LINK" /></translation>
 <translation id="512533434554095351">Mayroon kang ilang isyu sa password.</translation>
-<translation id="5127538504377457572">Aktibo <ph name="DAYS" /> (na) araw ang nakalipas</translation>
 <translation id="5128788795241319992">I-explore ang bagong menu</translation>
 <translation id="5132942445612118989">I-sync ang iyong mga password, history, at higit pa sa lahat ng device</translation>
 <translation id="5141363746588976328">I-hide ang card na mga pagbaba ng presyo sa iyong mga tab</translation>
@@ -1651,6 +1650,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6806550742467879742">Mga tool ng page</translation>
 <translation id="6807287147325542056">Mga password sa iba pang app</translation>
 <translation id="681368974849482173">Nagawa ang item</translation>
+<translation id="6820686453637990663">CVC</translation>
 <translation id="6825078212112407882">{count,plural, =1{Na-save ang bookmark sa iyong Google Account na {email}}one{Na-save ang {count} bookmark sa iyong Google Account na {email}}other{Na-save ang {count} na bookmark sa iyong Google Account na {email}}}</translation>
 <translation id="6826004672264649705">Kasalukuyang sinusubaybayan ang produktong ito. Buksan para makita ang history ng presyo</translation>
 <translation id="6830728435402077660">Hindi secure</translation>
@@ -1964,7 +1964,6 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7952670906562503188">Ide-delete mo ang {passkey_count} (na) passkey at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="7958575506592576831">Impormasyon sa seguridad ng page</translation>
 <translation id="7961015016161918242">Hindi Kailanman</translation>
-<translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Subukan</translation>
 <translation id="797588153137233716">Menu → History → I-delete ang data mula sa pag-browse</translation>

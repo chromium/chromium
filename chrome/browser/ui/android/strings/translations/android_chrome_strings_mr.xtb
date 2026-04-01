@@ -104,7 +104,6 @@
 <translation id="1381838868249179644">तुम्हाला सुरक्षित ठेवण्यात मदत व्हावी, यासाठी काही साइटच्या परवानग्या काढून टाकल्या आहेत</translation>
 <translation id="1383876407941801731">शोधा</translation>
 <translation id="1384704387250346179">Google Lens सह इमेजचे भाषांतर करा <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /></translation>
-<translation id="1386674309198842382"><ph name="LAST_UPDATED" /> दिवसांपूर्वी ॲक्टिव्ह होते</translation>
 <translation id="1390418506739274310">तुम्हाला Chrome मध्ये लिंक उघडणाऱ्या इतर ॲप्समधील इतिहास दिसू शकतो. <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> येथे तुमच्या Google खाते चा इतर स्वरूपांमधील ब्राउझिंग इतिहास असू शकतो.</translation>
 <translation id="139752016751285248">किमतीच्या इनसाइटची तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="1397811292916898096"><ph name="PRODUCT_NAME" /> सह शोधा</translation>
@@ -136,7 +135,6 @@
 <translation id="1513352483775369820">बुकमार्क आणि वेब इतिहास</translation>
 <translation id="1515901671075971249">टॅब नेव्हिगेशन शॉर्टकट</translation>
 <translation id="1516966594427080024">गुप्त मोडमध्ये नवीन विंडो उघडा</translation>
-<translation id="1521774566618522728">आज ॲक्टिव्ह होते</translation>
 <translation id="153446405401665083">Chrome ची नवीन आवृत्ती उपलब्ध आहे</translation>
 <translation id="1540012742443808215">अ‍ॅड्रेस बार सध्या सर्वात वरती आहे</translation>
 <translation id="1544084554881119930">पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chrome वरील ब्राउझिंग इतिहास सिंक होणार नाही.
@@ -1260,6 +1258,7 @@
 <translation id="6251449557817521191">तुमचा Chrome इतिहास इथे पहा</translation>
 <translation id="6254139308321626268">तुम्ही PDF फाइल पाहत आहात</translation>
 <translation id="6255809143828972562">तुम्ही Chrome ची टूल वापरून सुरक्षितरीत्या ब्राउझ करू शकता आणि तुमचा डेटा नियंत्रित करू शकता</translation>
+<translation id="6260260490042862943">साइट नियंत्रणे</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
 <translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
 <translation id="6267106249090587268">नोटिफिकेशन <ph name="SEPARATOR" /> स्पॅम किंवा फसव्या आशयामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
@@ -1728,7 +1727,6 @@
 <translation id="7968014550143838305">वाचन सूचीमध्ये जोडले</translation>
 <translation id="7968982339740310781">तपशील पहा</translation>
 <translation id="7969391000881506217">एक्स्पायरीची तारीख*</translation>
-<translation id="7971136598759319605">१ दिवसापूर्वी ॲक्टिव्ह होते</translation>
 <translation id="7975379999046275268">पेज <ph name="BEGIN_NEW" />नवीन<ph name="END_NEW" /> चे पूर्वावलोकन करा</translation>
 <translation id="7977451675950311423">तुम्ही डेटा भंगामध्ये धोक्यात असलेला पासवर्ड वापरल्यास, तुम्हाला चेतावणी देते.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> तुम्ही अलीकडे भेट न दिल्यामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
