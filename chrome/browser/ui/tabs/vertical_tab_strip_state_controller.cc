@@ -107,7 +107,7 @@ VerticalTabStripStateController::~VerticalTabStripStateController() {
 }
 
 VerticalTabStripStateController::ScopedEnableStateLock::ScopedEnableStateLock(
-    base::WeakPtr<VerticalTabStripStateController> controller)
+    VerticalTabStripStateController* controller)
     : controller_(controller) {
   if (controller_) {
     controller_->OnLockCreated();
@@ -123,8 +123,7 @@ VerticalTabStripStateController::ScopedEnableStateLock::
 
 std::unique_ptr<VerticalTabStripStateController::ScopedEnableStateLock>
 VerticalTabStripStateController::GetEnableStateLock() {
-  return std::make_unique<ScopedEnableStateLock>(
-      weak_ptr_factory_.GetWeakPtr());
+  return std::make_unique<ScopedEnableStateLock>(this);
 }
 
 // static
