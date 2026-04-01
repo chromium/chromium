@@ -29,6 +29,8 @@ EnumTraits<proxy_resolver::mojom::MacProxyStatus,
       return proxy_resolver::mojom::MacProxyStatus::kCFNetworkResolutionError;
     case net::MacProxyResolutionStatus::kEmptyProxyList:
       return proxy_resolver::mojom::MacProxyStatus::kEmptyProxyList;
+    case net::MacProxyResolutionStatus::kAborted:
+      return proxy_resolver::mojom::MacProxyStatus::kAborted;
   }
 
   return proxy_resolver::mojom::MacProxyStatus::kOk;
@@ -54,6 +56,8 @@ net::MacProxyResolutionStatus EnumTraits<proxy_resolver::mojom::MacProxyStatus,
       return net::MacProxyResolutionStatus::kCFNetworkResolutionError;
     case proxy_resolver::mojom::MacProxyStatus::kEmptyProxyList:
       return net::MacProxyResolutionStatus::kEmptyProxyList;
+    case proxy_resolver::mojom::MacProxyStatus::kAborted:
+      return net::MacProxyResolutionStatus::kAborted;
   }
 
   NOTREACHED();

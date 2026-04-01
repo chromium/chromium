@@ -44,9 +44,9 @@ class NET_EXPORT SystemProxyResolutionRequest : public ProxyResolutionRequest {
  protected:
   SystemProxyResolutionRequest(
       SystemProxyResolutionService* service,
-      const GURL& url,
-      const std::string& method,
-      const NetworkAnonymizationKey& network_anonymization_key,
+      GURL url,
+      std::string method,
+      NetworkAnonymizationKey network_anonymization_key,
       ProxyInfo* results,
       CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log);

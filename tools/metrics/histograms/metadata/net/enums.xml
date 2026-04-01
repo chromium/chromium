@@ -709,6 +709,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//net/dns/host_cache.h:LookupOutcome) -->
 
+<!-- LINT.IfChange(MacProxyResolutionStatus) -->
+
+<enum name="MacProxyResolutionStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="SystemConfigurationError"/>
+  <int value="2" label="CFNetworkExecutePacScriptFailed"/>
+  <int value="3" label="PacScriptFetchFailed"/>
+  <int value="4" label="PacScriptExecutionFailed"/>
+  <int value="5" label="EmptyProxyList"/>
+  <int value="6" label="CFNetworkResolutionError"/>
+  <int value="7" label="Aborted"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/proxy_resolution/mac/mac_proxy_resolution_status.h:MacProxyResolutionStatus) -->
+
 <!-- LINT.IfChange(MTCResult) -->
 
 <enum name="MTCResult">

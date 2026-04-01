@@ -123,6 +123,7 @@ enum MacProxyStatus {
   kPacScriptExecutionFailed,
   kEmptyProxyList,
   kCFNetworkResolutionError,
+  kAborted,
 };
 // LINT.ThenChange(//net/proxy_resolution/mac/mac_proxy_resolution_status.h:
 //                 MacProxyResolutionStatus)

@@ -3724,6 +3724,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.HttpProxy.MacSystemResolver.OsError"
+    units="macOS error code" expires_after="2027-03-24">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records macOS error codes returned by the macOS System Proxy Resolver when
+    proxy resolution fails. This histogram is only recorded when a non-zero OS
+    error code is returned, indicating a macOS API failure during proxy
+    resolution.
+  </summary>
+</histogram>
+
+<histogram name="Net.HttpProxy.MacSystemResolver.Status"
+    enum="MacProxyResolutionStatus" expires_after="2027-03-24">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    Records the status of macOS system proxy resolution requests. This histogram
+    is recorded for every proxy resolution request made through the macOS system
+    proxy resolver, indicating whether the resolution succeeded or failed.
+    Aborted requests (e.g., during browser shutdown) are not recorded.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpProxy.ProxyResolverWin.HttpSessionInitializationState"
     enum="WinHttpStatus" expires_after="2026-07-04">
   <owner>ricea@chromium.org</owner>

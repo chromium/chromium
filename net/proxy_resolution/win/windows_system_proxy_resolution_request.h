@@ -32,11 +32,11 @@ class NET_EXPORT WindowsSystemProxyResolutionRequest
   // for each one of these saved parameters can be found below.
   WindowsSystemProxyResolutionRequest(
       WindowsSystemProxyResolutionService* service,
-      const GURL& url,
-      const std::string& method,
-      const NetworkAnonymizationKey& network_anonymization_key,
+      GURL url,
+      std::string method,
+      NetworkAnonymizationKey network_anonymization_key,
       ProxyInfo* results,
-      const CompletionOnceCallback user_callback,
+      CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log,
       WindowsSystemProxyResolver* windows_system_proxy_resolver);
 

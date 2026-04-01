@@ -14,18 +14,18 @@ namespace net {
 
 SystemProxyResolutionRequest::SystemProxyResolutionRequest(
     SystemProxyResolutionService* service,
-    const GURL& url,
-    const std::string& method,
-    const NetworkAnonymizationKey& network_anonymization_key,
+    GURL url,
+    std::string method,
+    NetworkAnonymizationKey network_anonymization_key,
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log)
     : service_(service),
       user_callback_(std::move(user_callback)),
       results_(results),
-      url_(url),
-      method_(method),
-      network_anonymization_key_(network_anonymization_key),
+      url_(std::move(url)),
+      method_(std::move(method)),
+      network_anonymization_key_(std::move(network_anonymization_key)),
       net_log_(net_log),
       creation_time_(base::TimeTicks::Now()) {
   DCHECK(!user_callback_.is_null());
