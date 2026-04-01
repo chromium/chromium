@@ -473,10 +473,10 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
     // Thus we should also extract HDR metadata here in case we
     // miss the information.
     if (current_frame_->hdr_cll_set()) {
-      hdr_metadata_.SetCLLI(ToSkHdrCLLI(current_frame_->hdr_cll()));
+      hdr_metadata_bitstream_.SetCLLI(ToSkHdrCLLI(current_frame_->hdr_cll()));
     }
     if (current_frame_->hdr_mdcv_set()) {
-      hdr_metadata_.SetMDCV(ToSkHdrMDCV(current_frame_->hdr_mdcv()));
+      hdr_metadata_bitstream_.SetMDCV(ToSkHdrMDCV(current_frame_->hdr_mdcv()));
     }
     if (current_frame_->itut_t35_count() > 0) {
       // SAFETY: The best we can do is trust the count provided by libgav1.
@@ -491,7 +491,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
                                                       t35_payload_span)) {
           // Overwrite existing AGTM metadata if any. If there is more than one
           // metadata associated with this frame, use the last one.
-          hdr_metadata_.SetSerializedAgtm(*agtm);
+          hdr_metadata_bitstream_.SetSerializedAgtm(*agtm);
         }
       }
     }
@@ -513,10 +513,7 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
 
     // Set the color space for the picture.
     pic->set_colorspace(picture_color_space_);
-
-    if (!hdr_metadata_.IsEmpty()) {
-      pic->set_hdr_metadata(hdr_metadata_);
-    }
+    pic->SetDynamicHdrMetadata(hdr_metadata_bitstream_, decoder_buffer_.get());
 
     pic->frame_header = frame_header;
     if (decrypt_config_)
@@ -624,11 +621,6 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
          current_frame_header_->refresh_frame_flags == 0xff);
   UpdateReferenceFrames(std::move(pic));
   return AV1Accelerator::Status::kOk;
-}
-
-gfx::HDRMetadata AV1Decoder::GetHDRMetadata() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return hdr_metadata_;
 }
 
 gfx::Size AV1Decoder::GetPicSize() const {

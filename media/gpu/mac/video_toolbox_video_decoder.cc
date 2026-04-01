@@ -375,7 +375,10 @@ void VideoToolboxVideoDecoder::OnAcceleratorDecode(
         gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
   }
 
-  metadata->hdr_metadata = accelerator_->GetHDRMetadata();
+  // TODO(https://crbug.com/395659818): Access `metadata->picture` directly in
+  // VideoToolboxFrameConverter::Convert, rather than redundantly putting it
+  // here.
+  metadata->hdr_metadata = metadata->picture->dynamic_hdr_metadata();
   if (metadata->hdr_metadata.IsEmpty()) {
     // Note: The VP9 accelerator contains this same logic so that the format
     // description can include HDR metadata (there is no in-band HDR metadata

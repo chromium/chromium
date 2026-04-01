@@ -38,6 +38,7 @@
 #include "ui/gfx/switches.h"
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SaveArg;
@@ -139,6 +140,10 @@ MATCHER_P(MatchesFrameData, decoder_buffer, "") {
   auto decoder_buffer_span = base::span(*decoder_buffer);
   return arg.data() == decoder_buffer_span.data() &&
          arg.size() == decoder_buffer_span.size();
+}
+
+MATCHER_P(MatchesHDRMetadata, hdr_metadata, "") {
+  return arg.dynamic_hdr_metadata() == hdr_metadata;
 }
 
 class MockAV1Accelerator : public AV1Decoder::AV1Accelerator {
@@ -1025,12 +1030,15 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
     auto av1_picture = base::MakeRefCounted<AV1Picture>();
     EXPECT_CALL(*mock_accelerator_, CreateAV1Picture(/*apply_grain=*/false))
         .WillOnce(Return(av1_picture));
+    gfx::HDRMetadata expected_hdr_metadata;
+    expected_hdr_metadata.SetAgtm({.fHdrReferenceWhite = 203.0101f});
     EXPECT_CALL(
         *mock_accelerator_,
         SubmitDecode(
-            MatchesFrameHeader(kFrameSize, kRenderSize,
-                               /*show_existing_frame=*/false,
-                               /*show_frame=*/true),
+            AllOf(MatchesFrameHeader(kFrameSize, kRenderSize,
+                                     /*show_existing_frame=*/false,
+                                     /*show_frame=*/true),
+                  MatchesHDRMetadata(expected_hdr_metadata)),
             MatchesYUV420SequenceHeader(kProfile, /*bitdepth=*/8, kFrameSize,
                                         /*film_grain_params_present=*/false),
             _, NonEmptyTileBuffers(), MatchesFrameData(buffer)))
@@ -1045,9 +1053,6 @@ TEST_F(AV1DecoderTest, DecodeStreamWithAgtmMetadata) {
     testing::Mock::VerifyAndClearExpectations(mock_accelerator_);
   }
   EXPECT_EQ(results, expected);
-  const gfx::HDRMetadata hdr_metadata = decoder_->GetHDRMetadata();
-  ASSERT_TRUE(hdr_metadata.HasAgtm());
-  EXPECT_EQ(hdr_metadata.GetAgtm().fHdrReferenceWhite, 203.0101f);
 }
 
 // TODO(hiroh): Add more tests: reference frame tracking, render size change,

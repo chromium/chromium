@@ -406,9 +406,8 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
               return kRanOutOfSurfaces;
             if (current_decrypt_config_)
               curr_pic_->set_decrypt_config(current_decrypt_config_->Clone());
-            if (!hdr_metadata_.IsEmpty()) {
-              curr_pic_->set_hdr_metadata(hdr_metadata_);
-            }
+            curr_pic_->SetDynamicHdrMetadata(hdr_metadata_bitstream_,
+                                             decoder_buffer_.get());
 
             curr_pic_->first_picture_ = first_picture_;
             first_picture_ = false;
@@ -501,17 +500,10 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
           std::visit(absl::Overload{
                          [](const H265SEIAlphaChannelInfo& info) {},
                          [this](const H265SEIContentLightLevelInfo& info) {
-                           // HEVC HDR metadata may appears in the below
-                           // places:
-                           // 1. Container.
-                           // 2. Bitstream.
-                           // 3. Both container and bitstream.
-                           // Thus we should also extract HDR metadata here in
-                           // case we miss the information.
-                           hdr_metadata_.SetCLLI(info.ToSkHdr());
+                           hdr_metadata_bitstream_.SetCLLI(info.ToSkHdr());
                          },
                          [this](const H265SEIMasteringDisplayInfo& info) {
-                           hdr_metadata_.SetMDCV(info.ToSkHdr());
+                           hdr_metadata_bitstream_.SetMDCV(info.ToSkHdr());
                          },
                          [](std::monostate) {},
                      },
@@ -561,9 +553,6 @@ VideoChromaSampling H265Decoder::GetChromaSampling() const {
 
 VideoColorSpace H265Decoder::GetVideoColorSpace() const {
   return picture_color_space_;
-}
-gfx::HDRMetadata H265Decoder::GetHDRMetadata() const {
-  return hdr_metadata_;
 }
 
 size_t H265Decoder::GetRequiredNumOfPictures() const {

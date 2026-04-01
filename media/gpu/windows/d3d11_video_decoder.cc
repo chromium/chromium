@@ -979,7 +979,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   if (shared_image->color_space().IsHDR()) {
     // Some streams may have varying metadata, so bitstream metadata should be
     // preferred over metadata provide by the configuration.
-    gfx::HDRMetadata hdr_metadata = picture->hdr_metadata();
+    gfx::HDRMetadata hdr_metadata = picture->dynamic_hdr_metadata();
     if (hdr_metadata.IsEmpty()) {
       hdr_metadata = config_.hdr_metadata();
     }

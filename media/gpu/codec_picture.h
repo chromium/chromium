@@ -21,6 +21,8 @@
 
 namespace media {
 
+class DecoderBuffer;
+
 // Represents a picture encoded (or to be encoded) with a video codec, such as
 // VP8. Users of this class do not require knowledge of the codec format, or any
 // codec-specific details related to the picture, but may otherwise need to pass
@@ -56,10 +58,17 @@ class MEDIA_GPU_EXPORT CodecPicture
     colorspace_ = colorspace;
   }
 
-  const gfx::HDRMetadata& hdr_metadata() const { return hdr_metadata_; }
-  void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
-    hdr_metadata_ = hdr_metadata;
-  }
+  // The dynamic HDR metadata, which comes from timed metadata tracks and
+  // the codec bitstream. This is later merged on top of static HDR metadata.
+  const gfx::HDRMetadata& dynamic_hdr_metadata() const { return hdr_metadata_; }
+
+  // Populate the dynamic HDR metadata. If `decoder_buffer` is non-nullptr and
+  // contains HDR metadata in its side data, then that takes highest precedence
+  // (since it comes from a timed metadata track). After that prefer
+  // `hdr_metadata_bitstream`, which comes from the codec bitstream.
+  void SetDynamicHdrMetadata(const gfx::HDRMetadata& hdr_metadata_bitstream,
+                             const DecoderBuffer* decoder_buffer);
+  void SetDynamicHdrMetadata(const DecoderBuffer* decoder_buffer);
 
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
   const std::vector<DolbyVisionMetadata>& dolby_vision_metadata() const {

@@ -153,7 +153,7 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
       break;
   }
 
-  gfx::HDRMetadata hdr_metadata = pic->hdr_metadata();
+  gfx::HDRMetadata hdr_metadata = pic->dynamic_hdr_metadata();
   if (hdr_metadata.IsEmpty()) {
     hdr_metadata = hdr_metadata_;
   }

@@ -198,6 +198,14 @@ void HDRMetadata::SetSerializedAgtm(base::span<const uint8_t> data) {
   }
 }
 
+void HDRMetadata::Reset() {
+  mdcv_.reset();
+  clli_.reset();
+  agtm_.reset();
+  ndwl_.reset();
+  extended_range.reset();
+}
+
 void HDRMetadata::MergeMetadataFrom(const HDRMetadata& other) {
   if (other.mdcv_) {
     mdcv_ = other.mdcv_;

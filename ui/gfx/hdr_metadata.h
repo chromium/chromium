@@ -107,6 +107,9 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   // Brightness points for extended range color spaces.
   std::optional<HdrMetadataExtendedRange> extended_range;
 
+  // Reset all metadata to be unspecified.
+  void Reset();
+
   // For each metadata item of `other` that is specified, replace `this`
   // metadata item with that of `other`. E.g, if `other` has CLLI and MDCV
   // metadata, and `this` has MDCV and AGTM metadata, then after this call,

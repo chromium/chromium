@@ -146,6 +146,8 @@ bool VP8Decoder::DecodeAndOutputCurrentFrame(scoped_refptr<VP8Picture> pic) {
     pic->set_colorspace(container_color_space_);
   else
     pic->set_colorspace(VideoColorSpace::REC601());
+  // VP8 doesn't support bitstream level HDR metadata.
+  pic->SetDynamicHdrMetadata(decoder_buffer_.get());
 
   if (curr_frame_hdr_->IsKeyframe()) {
     horizontal_scale_ = curr_frame_hdr_->horizontal_scale;
@@ -200,11 +202,6 @@ VideoColorSpace VP8Decoder::GetVideoColorSpace() const {
   // VP8 decoder currently does not store color space information and trigger
   // changes for color space.
   return VideoColorSpace();
-}
-
-gfx::HDRMetadata VP8Decoder::GetHDRMetadata() const {
-  // VP8 doesn't support HDR metadata.
-  return gfx::HDRMetadata();
 }
 
 size_t VP8Decoder::GetRequiredNumOfPictures() const {

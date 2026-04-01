@@ -32,7 +32,7 @@ scoped_refptr<VP9Picture> VP9Picture::Duplicate() {
   ret->set_bitstream_id(bitstream_id());
   ret->set_visible_rect(visible_rect());
   ret->set_colorspace(get_colorspace());
-  ret->set_hdr_metadata(hdr_metadata());
+  ret->SetDynamicHdrMetadata(dynamic_hdr_metadata(), nullptr);
 
   return ret;
 }
