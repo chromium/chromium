@@ -11,18 +11,24 @@ import threading
 import pytest
 
 from chrome.test.variations.test_utils import SRC_DIR
-from http.server import SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 HTTP_DATA_BASEDIR = os.path.join(
     SRC_DIR, 'chrome', 'test', 'data', 'variations', 'http_server')
+
+class VariationsHTTPRequestHandler(SimpleHTTPRequestHandler):
+  # HTTP/1.1 enables persistent connections (Keep-Alive). This is more
+  # efficient and reliable for modern browsers, particularly in
+  # resource-constrained environments.
+  protocol_version = 'HTTP/1.1'
 
 def _start_http_server(
     port: int = 0,
     directory: str = HTTP_DATA_BASEDIR
     ) -> http.server.HTTPServer:
   """Starts a HTTP server serving the given directory."""
-  http_server = http.server.HTTPServer(('', port),
-      functools.partial(SimpleHTTPRequestHandler, directory=directory))
+  http_server = ThreadingHTTPServer(('', port),
+      functools.partial(VariationsHTTPRequestHandler, directory=directory))
   logging.info('local http server is running as http://%s:%s',
                http_server.server_name, http_server.server_port)
   threading.Thread(target=http_server.serve_forever).start()
