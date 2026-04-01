@@ -33,6 +33,24 @@ TEST(MediaSourceTest, IsValidPresentationUrl) {
   EXPECT_TRUE(IsValidPresentationUrl(GURL("cast://foo")));
   EXPECT_TRUE(IsValidPresentationUrl(GURL("cast:foo")));
   EXPECT_TRUE(IsValidPresentationUrl(GURL("remote-playback:foo")));
+
+  EXPECT_TRUE(IsValidPresentationUrl(GURL("http://127.0.0.1")));
+  EXPECT_TRUE(IsValidPresentationUrl(GURL("http://localhost")));
+  EXPECT_FALSE(IsValidPresentationUrl(GURL("http://google.com")));
+}
+
+TEST(MediaSourceTest, IsValidStandardPresentationSource) {
+  EXPECT_FALSE(IsValidStandardPresentationSource(""));
+  EXPECT_FALSE(IsValidStandardPresentationSource("unsupported-scheme://foo"));
+
+  EXPECT_TRUE(IsValidStandardPresentationSource("https://google.com"));
+  EXPECT_TRUE(IsValidStandardPresentationSource("http://127.0.0.1"));
+  EXPECT_TRUE(IsValidStandardPresentationSource("http://localhost"));
+  EXPECT_FALSE(IsValidStandardPresentationSource("http://google.com"));
+
+  // Legacy Cast presentation URL is not a standard presentation source.
+  EXPECT_FALSE(IsValidStandardPresentationSource(
+      "https://google.com/cast#__castAppId__=DEADBEEF"));
 }
 
 TEST(MediaSourceTest, IsAutoJoinPresentationId) {
@@ -48,14 +66,14 @@ TEST(MediaSourceTest, Constructor) {
 }
 
 TEST(MediaSourceTest, ConstructorWithGURL) {
-  GURL test_url = GURL("http://google.com");
+  GURL test_url = GURL("https://google.com");
   MediaSource source1(test_url);
   EXPECT_EQ(test_url.spec(), source1.id());
   EXPECT_EQ(test_url, source1.url());
 }
 
 TEST(MediaSourceTest, ConstructorWithURLString) {
-  GURL test_url = GURL("http://google.com");
+  GURL test_url = GURL("https://google.com");
   MediaSource source1(test_url.spec());
   EXPECT_EQ(test_url.spec(), source1.id());
   EXPECT_EQ(test_url, source1.url());

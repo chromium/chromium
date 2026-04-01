@@ -23,6 +23,7 @@
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace media_router {
 
@@ -49,10 +50,15 @@ constexpr std::array<const char* const, 5> kAllowedSchemes{
      "test"}};
 
 bool IsSchemeAllowed(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() ||
-         std::ranges::any_of(kAllowedSchemes, [&url](const char* const scheme) {
-           return url.SchemeIs(scheme);
-         });
+  if (url.SchemeIs(url::kHttpsScheme)) {
+    return true;
+  } else if (url.SchemeIs(url::kHttpScheme)) {
+    return net::IsLocalhost(url);
+  } else {
+    return std::ranges::any_of(
+        kAllowedSchemes,
+        [&url](const char* const scheme) { return url.SchemeIs(scheme); });
+  }
 }
 
 bool IsSystemAudioCaptureSupported() {
@@ -82,9 +88,17 @@ bool IsValidPresentationUrl(const GURL& url) {
 
 bool IsValidStandardPresentationSource(const std::string& media_source) {
   const GURL source_url(media_source);
-  return source_url.is_valid() && source_url.SchemeIsHTTPOrHTTPS() &&
-         !base::StartsWith(source_url.spec(), kLegacyCastPresentationUrlPrefix,
-                           base::CompareCase::INSENSITIVE_ASCII);
+  if (!source_url.is_valid()) {
+    return false;
+  } else if (source_url.SchemeIs(url::kHttpsScheme)) {
+    return !base::StartsWith(source_url.spec(),
+                             kLegacyCastPresentationUrlPrefix,
+                             base::CompareCase::INSENSITIVE_ASCII);
+  } else if (source_url.SchemeIs(url::kHttpScheme)) {
+    return net::IsLocalhost(source_url);
+  } else {
+    return false;
+  }
 }
 
 bool IsAutoJoinPresentationId(const std::string& presentation_id) {
