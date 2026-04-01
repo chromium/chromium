@@ -1381,8 +1381,12 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         builder.Append(')');
         break;
       }
+      case kPseudoPicker:
+      case kPseudoOverscrollAreaParent:
       case kPseudoScrollButton: {
         builder.Append('(');
+        // These accept only fixed arguments that do not require escaping (in
+        // some cases including "*" which should not be escaped).
         builder.Append(Argument());
         builder.Append(')');
         break;
@@ -1409,11 +1413,6 @@ void CSSSelector::SerializeSimpleSelector(StringBuilder& builder,
         builder.Append(')');
         break;
       }
-      case kPseudoOverscrollAreaParent:
-        builder.Append('(');
-        builder.Append(Argument());
-        builder.Append(')');
-        break;
       default:
         break;
     }

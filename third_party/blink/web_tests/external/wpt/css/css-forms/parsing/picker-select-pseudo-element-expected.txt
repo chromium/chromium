@@ -1,27 +1,7 @@
 This is a testharness.js-based test.
-[FAIL] "::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)" but got "::picker"
-[FAIL] "*::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)" but got "::picker"
-[FAIL] "foo.bar[baz]::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "foo.bar[baz]::picker(select)" but got "foo.bar[baz]::picker"
 [FAIL] "::picker(foo)" should be an invalid selector
   assert_throws_dom: "::picker(foo)" should throw in querySelector function "() => document.querySelector(selector)" did not throw
 [FAIL] "::picker(SELECT)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)" but got "::picker"
-[FAIL] "::picker(select)::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)::picker(select)" but got "::picker::picker"
-[FAIL] "::picker(select)::before" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)::before" but got "::picker::before"
-[FAIL] "::picker(select)::after" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)::after" but got "::picker::after"
-[FAIL] "::picker(select)::marker" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)::marker" but got "::picker::marker"
-[FAIL] "::picker(select)::placeholder" should be a valid selector
-  assert_equals: serialization should be canonical expected "::picker(select)::placeholder" but got "::picker::placeholder"
-[FAIL] "::slotted(*)::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::slotted(*)::picker(select)" but got "::slotted(*)::picker"
-[FAIL] "::part(foo)::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::part(foo)::picker(select)" but got "::part(foo)::picker"
+  assert_equals: serialization should be canonical expected "::picker(select)" but got "::picker(SELECT)"
 Harness: the test ran to completion.
 

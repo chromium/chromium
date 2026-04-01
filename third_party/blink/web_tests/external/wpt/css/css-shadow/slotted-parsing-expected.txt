@@ -13,7 +13,5 @@ This is a testharness.js-based test.
   Failed to execute 'querySelector' on 'Document': '::slotted(*):where(#id)' is not a valid selector.
 [FAIL] "::slotted(*):where(::before)" should be a valid selector
   Failed to execute 'querySelector' on 'Document': '::slotted(*):where(::before)' is not a valid selector.
-[FAIL] "::slotted(select)::picker(select)" should be a valid selector
-  assert_equals: serialization should be canonical expected "::slotted(select)::picker(select)" but got "::slotted(select)::picker"
 Harness: the test ran to completion.
 
