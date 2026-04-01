@@ -11,6 +11,7 @@ source_set("ui") {
   ]
   deps = [
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/webauthn/ui/resources",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",

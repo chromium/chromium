@@ -15,7 +15,8 @@ NSString* const kPasskeyIncognitoInterstitialViewID =
 @implementation PasskeyIncognitoInterstitialViewController
 
 - (void)loadView {
-  // TODO(crbug.com/487898150): Add 'incognito' header image to the dialog box.
+  self.image = [UIImage imageNamed:@"passkey_incognito_interstitial_header"];
+
   self.titleString = l10n_util::GetNSString(
       IDS_IOS_PASSKEY_INCOGNITO_INTERSTITIAL_DIALOG_TITLE);
   self.subtitleString = l10n_util::GetNSString(
@@ -32,8 +33,7 @@ NSString* const kPasskeyIncognitoInterstitialViewID =
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.accessibilityIdentifier = kPasskeyIncognitoInterstitialViewID;
-  // TODO(crbug.com/487898150): Modify background color.
-  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
