@@ -70,8 +70,8 @@ class WTF_EXPORT AtomicString {
 
   // Factories ------------------------------------------------------
 
-  // AtomicString::FromUtf8 will crash if the input data contains invalid
-  // UTF-8 sequences.
+  // AtomicString::FromUtf8 will return a null string if the input data
+  // contains invalid UTF-8 sequences.
   static AtomicString FromUtf8(base::span<const uint8_t>);
   static AtomicString FromUtf8(std::string_view utf8_string) {
     return FromUtf8(base::as_byte_span(utf8_string));

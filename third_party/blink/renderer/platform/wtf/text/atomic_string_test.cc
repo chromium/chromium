@@ -122,4 +122,8 @@ TEST(AtomicStringTest, ContainsIgnoringAsciiCase) {
   EXPECT_FALSE(AtomicString("link").ContainsIgnoringAsciiCase(u"\u212A"));
 }
 
+TEST(AtomicStringTest, FromUtf8_Invalid) {
+  EXPECT_EQ(AtomicString(), AtomicString::FromUtf8("brokenutf8\x80"));
+}
+
 }  // namespace blink

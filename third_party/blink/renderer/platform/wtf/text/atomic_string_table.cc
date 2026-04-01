@@ -511,6 +511,16 @@ String AtomicStringTable::AddUTF8(base::span<const uint8_t> characters_span) {
     return Add(characters_span);
   }
 
+  // If CalculateStringLengthFromUtf8() detects invalid UTF-8, it will return
+  // 0. Calling ConvertUtf8ToUtf16() with a zero-length UTF-16 buffer will
+  // cause it to return a status of kTargetExhausted. Return a null String in
+  // this case instead. This matches String::FromUtf8(). If there are no
+  // characters, `seen_non_ascii` will be false, and thus the ASCII code-path
+  // will have been taken.
+  if (utf16_length == 0) {
+    return String();
+  }
+
   auto utf16_buf = base::HeapArray<UChar>::Uninit(utf16_length);
   if (blink::unicode::ConvertUtf8ToUtf16(characters_span, utf16_buf).status !=
       blink::unicode::kConversionOK) {
