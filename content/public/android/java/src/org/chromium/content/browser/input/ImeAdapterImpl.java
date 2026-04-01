@@ -1476,7 +1476,14 @@ public class ImeAdapterImpl
      */
     boolean setEditableSelectionOffsets(int start, int end) {
         if (!isValid()) return false;
-        ImeAdapterImplJni.get().setEditableSelectionOffsets(mNativeImeAdapterAndroid, start, end);
+        // Blink code expects start <= end.
+        if (start <= end) {
+            ImeAdapterImplJni.get()
+                    .setEditableSelectionOffsets(mNativeImeAdapterAndroid, start, end);
+        } else {
+            ImeAdapterImplJni.get()
+                    .setEditableSelectionOffsets(mNativeImeAdapterAndroid, end, start);
+        }
         return true;
     }
 
