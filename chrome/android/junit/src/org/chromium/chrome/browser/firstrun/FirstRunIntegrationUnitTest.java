@@ -333,4 +333,38 @@ public final class FirstRunIntegrationUnitTest {
         Assert.assertEquals(
                 "Pager index should be saved", 0, outState.getInt("LAST_PAGER_INDEX", -1));
     }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.DEFAULT_BROWSER_PROMO_FRE)
+    public void testHistorySyncStepPersistence() {
+        FirstRunActivity activity =
+                (FirstRunActivity) createActivity(FirstRunActivity.class, new Intent());
+
+        // Initialize mPager by inflating the content view.
+        activity.setContentView(activity.createContentView());
+
+        Assert.assertFalse(
+                "History sync step should not be completed initially",
+                activity.getHistorySyncStepCompleted());
+
+        // Simulate the user completing the history sync step.
+        activity.setHistorySyncStepCompleted(true);
+        Assert.assertTrue(
+                "Getter failed for History Sync step completed",
+                activity.getHistorySyncStepCompleted());
+
+        // Trigger onSaveInstanceState to simulate activity destruction & recreation.
+        Bundle outState = new Bundle();
+        activity.onSaveInstanceState(outState);
+
+        // Verify the state was saved into the Bundle with the correct key.
+        Assert.assertTrue(
+                "onSaveInstanceState failed to save History Sync step state",
+                outState.getBoolean("HISTORY_SYNC_STEP_COMPLETED"));
+
+        // Verify the key actually exists in the bundle.
+        Assert.assertTrue(
+                "Bundle should contain the completion key",
+                outState.containsKey("HISTORY_SYNC_STEP_COMPLETED"));
+    }
 }

@@ -125,7 +125,15 @@ public class HistorySyncFirstRunFragment extends Fragment
     /** Implements {@link HistorySyncDelegate} */
     @Override
     public void dismissHistorySync(boolean didSignOut, boolean isHistorySyncAccepted) {
-        assumeNonNull(getPageDelegate()).advanceToNextPage();
+        FirstRunPageDelegate delegate = getPageDelegate();
+        if (delegate == null) return;
+
+        // We mark the step as completed no matter what the user chose.
+        if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+            delegate.setHistorySyncStepCompleted(true);
+        }
+
+        delegate.advanceToNextPage();
         if (mHistorySyncCoordinator != null) {
             mHistorySyncCoordinator.destroy();
             mHistorySyncCoordinator = null;

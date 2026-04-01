@@ -187,6 +187,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private static final String KEY_LAST_PAGER_INDEX = "LAST_PAGER_INDEX";
     private static final String KEY_PROMO_DIALOG_TRIGGERED =
             "DEFAULT_BROWSER_ROLE_MANAGER_DIALOG_TRIGGERED";
+    private static final String KEY_HISTORY_SYNC_STEP_COMPLETED = "HISTORY_SYNC_STEP_COMPLETED";
 
     private static final int TRANSITION_DELAY_MS = 450;
 
@@ -238,6 +239,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     /** Tracks if the role manager dialog has been shown in default browser promo. */
     private boolean mPromoRoleManagerDialogTriggered;
 
+    /** Tracks whether the History Sync page has been completed (either opted in or not). */
+    private boolean mHistorySyncStepCompleted;
+
     private boolean isFlowKnown() {
         return mFreProperties != null;
     }
@@ -249,6 +253,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             // etc.). Before activity recreation, store which page the user was looking at.
             outState.putInt(KEY_LAST_PAGER_INDEX, mPager.getCurrentItem());
             outState.putBoolean(KEY_PROMO_DIALOG_TRIGGERED, mPromoRoleManagerDialogTriggered);
+            outState.putBoolean(KEY_HISTORY_SYNC_STEP_COMPLETED, mHistorySyncStepCompleted);
         }
 
         super.onSaveInstanceState(outState);
@@ -262,6 +267,16 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     @Override
     public void setPromoRoleManagerDialogTriggered(boolean val) {
         mPromoRoleManagerDialogTriggered = val;
+    }
+
+    @Override
+    public boolean getHistorySyncStepCompleted() {
+        return mHistorySyncStepCompleted;
+    }
+
+    @Override
+    public void setHistorySyncStepCompleted(boolean val) {
+        mHistorySyncStepCompleted = val;
     }
 
     /** Creates first page and sets up adapter. Should result UI being shown on the screen. */
@@ -312,7 +327,15 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // An optional history sync opt-in page, the visibility of this page will be decided on the
         // fly according to the situation.
-        BooleanSupplier showHistorySync = () -> mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
+        BooleanSupplier showHistorySync =
+                () -> {
+                    if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
+                        return mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE)
+                                && !mHistorySyncStepCompleted;
+                    } else {
+                        return mFreProperties.getBoolean(SHOW_HISTORY_SYNC_PAGE);
+                    }
+                };
         if (!showHistorySync.getAsBoolean()) {
             HistorySyncHelper historySyncHelper = HistorySyncHelper.getForProfile(originalProfile);
             historySyncHelper.recordHistorySyncNotShown(SigninAccessPoint.START_PAGE);
@@ -755,6 +778,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
             if (savedState != null) {
                 mPromoRoleManagerDialogTriggered =
                         savedState.getBoolean(KEY_PROMO_DIALOG_TRIGGERED, false);
+                mHistorySyncStepCompleted =
+                        savedState.getBoolean(KEY_HISTORY_SYNC_STEP_COMPLETED, false);
             }
         }
 

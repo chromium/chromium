@@ -109,4 +109,10 @@ public interface FirstRunPageDelegate {
 
     /** Sets whether the Role Manager Dialog has been triggered. */
     void setPromoRoleManagerDialogTriggered(boolean triggered);
+
+    /** Returns whether the History Sync screen has been completed. */
+    boolean getHistorySyncStepCompleted();
+
+    /** Sets whether the History Sync screen has been completed. */
+    void setHistorySyncStepCompleted(boolean completed);
 }
