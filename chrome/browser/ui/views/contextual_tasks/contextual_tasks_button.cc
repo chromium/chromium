@@ -26,6 +26,7 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -66,8 +67,10 @@ ContextualTasksButton::ContextualTasksButton(
         base::BindRepeating(&ContextualTasksButton::OnPinStateChanged,
                             base::Unretained(this)));
   } else {
-    CHECK_EQ(contextual_tasks::kShowEntryPoint.Get(),
-             contextual_tasks::EntryPointOption::kToolbarRevisit);
+    CHECK(contextual_tasks::kShowEntryPoint.Get() ==
+              contextual_tasks::EntryPointOption::kToolbarRevisit ||
+          contextual_tasks::kShowEntryPoint.Get() ==
+              contextual_tasks::EntryPointOption::kToolbarEphemeralBranded);
     ContextualTasksEphemeralButtonController* const controller =
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
@@ -83,6 +86,12 @@ ContextualTasksButton::ContextualTasksButton(
           ->RegisterOnEntryPointEligibilityChanged(
               base::BindRepeating(&ContextualTasksButton::OnEligibilityChange,
                                   base::Unretained(this)));
+
+  auto* controller = contextual_tasks::ContextualTasksPanelController::From(
+      browser_window_interface_);
+  CHECK(controller);
+  panel_controller_observation_.Observe(controller);
+
   OnSidePanelAlignmentChanged();
   MaybeUpdateVisibility();
 }
@@ -117,13 +126,24 @@ void ContextualTasksButton::OnPinStateChanged() {
 }
 
 void ContextualTasksButton::OnSidePanelAlignmentChanged() {
-  PrefService* const pref_service =
-      browser_window_interface_->GetProfile()->GetPrefs();
-  const gfx::VectorIcon& contextual_tasks_icon =
-      pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
-          ? kDockToRightSparkIcon
-          : kDockToLeftSparkIcon;
-  SetVectorIcon(contextual_tasks_icon);
+  if (contextual_tasks::kShowEntryPoint.Get() ==
+      contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    const gfx::VectorIcon& contextual_tasks_icon =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+        vector_icons::kGoogleGLogoIcon;
+#else
+        kBrowserLogoIcon;
+#endif
+    SetVectorIcon(contextual_tasks_icon);
+  } else {
+    PrefService* const pref_service =
+        browser_window_interface_->GetProfile()->GetPrefs();
+    const gfx::VectorIcon& contextual_tasks_icon =
+        pref_service->GetBoolean(prefs::kSidePanelHorizontalAlignment)
+            ? kDockToRightSparkIcon
+            : kDockToLeftSparkIcon;
+    SetVectorIcon(contextual_tasks_icon);
+  }
 }
 
 void ContextualTasksButton::OnShouldUpdateVisibility(bool should_show) {
@@ -134,11 +154,22 @@ void ContextualTasksButton::OnEligibilityChange(bool is_eligible) {
   MaybeUpdateVisibility();
 }
 
+void ContextualTasksButton::OnSurfaceStateChanged(
+    contextual_tasks::ContextualTasksPanelHost::SurfaceState state,
+    contextual_tasks::ContextualTasksPanelHost::StateChangeReason reason) {
+  MaybeUpdateVisibility();
+}
+
+void ContextualTasksButton::OnControllerDestroyed() {
+  panel_controller_observation_.Reset();
+}
+
 void ContextualTasksButton::MaybeUpdateVisibility() {
   const bool is_button_eligible =
       contextual_tasks::EntryPointEligibilityManager::From(
           browser_window_interface_)
           ->AreEntryPointsEligible();
+
   if (contextual_tasks::kShowEntryPoint.Get() ==
       contextual_tasks::EntryPointOption::kToolbarPermanent) {
     SetVisible(is_button_eligible && pin_state_.GetValue());
@@ -148,6 +179,17 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
         ContextualTasksEphemeralButtonController::From(
             browser_window_interface_);
     SetVisible(is_button_eligible && controller->ShouldShowEphemeralButton());
+  } else if (contextual_tasks::kShowEntryPoint.Get() ==
+             contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    auto* panel_controller =
+        contextual_tasks::ContextualTasksPanelController::From(
+            browser_window_interface_);
+    CHECK(panel_controller);
+    ContextualTasksEphemeralButtonController* const controller =
+        ContextualTasksEphemeralButtonController::From(
+            browser_window_interface_);
+    SetVisible(!panel_controller->IsPanelOpenForContextualTask() &&
+               is_button_eligible && controller->ShouldShowEphemeralButton());
   }
 }
 

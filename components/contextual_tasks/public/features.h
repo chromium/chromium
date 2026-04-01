@@ -72,7 +72,8 @@ enum class EntryPointOption {
   kNoEntryPoint,
   kPageActionRevisit,
   kToolbarRevisit,
-  kToolbarPermanent
+  kToolbarPermanent,
+  kToolbarEphemeralBranded,
 };
 
 // Enum of expand button UI option
@@ -244,7 +245,8 @@ extern bool ShouldUseSearchResultsScope();
 // Returns whether basic mode should be enabled.
 extern bool GetIsBasicModeEnabled();
 
-// Returns whether the z-order of the composebox should be changed in basic mode.
+// Returns whether the z-order of the composebox should be changed in basic
+// mode.
 extern bool ShouldEnableBasicModeZOrder();
 
 // Returns whether the cookie sync should be enabled.

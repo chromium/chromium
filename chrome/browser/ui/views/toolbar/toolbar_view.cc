@@ -437,12 +437,16 @@ void ToolbarView::Init() {
         AddChildView(std::make_unique<SplitTabsToolbarButton>(browser_));
   }
 
-  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
-      ((contextual_tasks::kShowEntryPoint.Get() ==
-        contextual_tasks::EntryPointOption::kToolbarPermanent) ||
-       (contextual_tasks::kShowEntryPoint.Get() ==
-        contextual_tasks::EntryPointOption::kToolbarRevisit))) {
-    AddChildView(std::make_unique<ContextualTasksButton>(browser_));
+  if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
+    if ((contextual_tasks::kShowEntryPoint.Get() ==
+         contextual_tasks::EntryPointOption::kToolbarPermanent) ||
+        (contextual_tasks::kShowEntryPoint.Get() ==
+         contextual_tasks::EntryPointOption::kToolbarRevisit)) {
+      AddChildView(std::make_unique<ContextualTasksButton>(browser_));
+    } else if (contextual_tasks::kShowEntryPoint.Get() ==
+               contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+      AddChildViewAt(std::make_unique<ContextualTasksButton>(browser_), 0);
+    }
   }
 
   if (location_bar_view) {

@@ -139,7 +139,9 @@ const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
 
 // Enables tab auto-chip for contextual tasks.
 const base::FeatureParam<bool> kContextualTasksTabAutoSuggestionChipEnabled(
-    &kContextualTasks, "ContextualTasksTabAutoSuggestionChipEnabled", true);
+    &kContextualTasks,
+    "ContextualTasksTabAutoSuggestionChipEnabled",
+    true);
 
 // The base URL for the AI page.
 const base::FeatureParam<std::string> kContextualTasksAiPageUrl{
@@ -163,7 +165,8 @@ constexpr base::FeatureParam<EntryPointOption>::Option kEntryPointOptions[] = {
     {EntryPointOption::kNoEntryPoint, "no-entry-point"},
     {EntryPointOption::kPageActionRevisit, "page-action-revisit"},
     {EntryPointOption::kToolbarRevisit, "toolbar-revisit"},
-    {EntryPointOption::kToolbarPermanent, "toolbar-permanent"}};
+    {EntryPointOption::kToolbarPermanent, "toolbar-permanent"},
+    {EntryPointOption::kToolbarEphemeralBranded, "toolbar-ephemeral-branded"}};
 
 const base::FeatureParam<EntryPointOption> kShowEntryPoint(
     &kContextualTasks,

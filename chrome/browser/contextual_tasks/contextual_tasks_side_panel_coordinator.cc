@@ -219,6 +219,9 @@ ContextualTasksSidePanelCoordinator::ContextualTasksSidePanelCoordinator(
 }
 
 ContextualTasksSidePanelCoordinator::~ContextualTasksSidePanelCoordinator() {
+  for (auto& observer : observers_) {
+    observer.OnControllerDestroyed();
+  }
   active_task_context_provider_->SetContextualTasksPanelController(nullptr);
   TabListInterface::From(browser_window_)->RemoveTabListInterfaceObserver(this);
   contextual_tasks_panel_host_->RemoveObserver(this);
@@ -980,6 +983,10 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
   } else {
     NotifyActiveTaskContextProvider();
   }
+
+  observers_.Notify(
+      &ContextualTasksPanelController::Observer::OnSurfaceStateChanged, state,
+      reason);
 }
 
 void ContextualTasksSidePanelCoordinator::MoveTaskUiToNewTab() {

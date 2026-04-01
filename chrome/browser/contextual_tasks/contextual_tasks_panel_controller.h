@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_CONTROLLER_H_
 
 #include "base/observer_list_types.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 
@@ -33,6 +34,10 @@ class ContextualTasksPanelController {
   class Observer : public base::CheckedObserver {
    public:
     virtual void ExpandToFullTabStateChanged() {}
+    virtual void OnSurfaceStateChanged(
+        ContextualTasksPanelHost::SurfaceState state,
+        ContextualTasksPanelHost::StateChangeReason reason) {}
+    virtual void OnControllerDestroyed() {}
   };
 
   virtual void AddObserver(Observer* observer) = 0;
