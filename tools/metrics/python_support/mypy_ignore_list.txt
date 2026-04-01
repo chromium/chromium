@@ -16,11 +16,6 @@ tools/metrics/structured/sync/model.py:179: error: Incompatible types in assignm
 tools/metrics/structured/sync/model.py:348: error: Argument 1 to "has_enum" of "Project" has incompatible type "str | None"; expected "str"  [arg-type]
 tools/metrics/structured/sync/model.py:357: error: Argument 1 to "int" has incompatible type "str | None"; expected "str | Buffer | SupportsInt | SupportsIndex | SupportsTrunc"  [arg-type]
 tools/metrics/structured/sync/model.py:369: error: Unsupported right operand type for in ("str | None")  [operator]
-tools/metrics/common/models.py:112: error: Invalid self argument "Node" to attribute function "appendChild" with type "Callable[[DocumentFragment | Attr | Element | Document, _ChildNodePlusFragmentVar], _ChildNodePlusFragmentVar]"  [misc]
-tools/metrics/common/models.py:124: error: List comprehension has incompatible type List[Element | ProcessingInstruction | Comment | Text | CDATASection]; expected List[Element]  [misc]
-tools/metrics/common/models.py:222: error: Invalid self argument "Node" to attribute function "appendChild" with type "Callable[[DocumentFragment | Attr | Element | Document, _ChildNodePlusFragmentVar], _ChildNodePlusFragmentVar]"  [misc]
-tools/metrics/common/models.py:504: error: Return type "Mapping[str, NodeType]" of "GetNodeTypes" incompatible with return type "dict[str, NodeType]" in supertype "NodeType"  [override]
-tools/metrics/common/models.py:513: error: Argument 1 to "update" of "MutableMapping" has incompatible type "dict[str, NodeType]"; expected "SupportsKeysAndGetItem[str, ObjectNodeType]"  [arg-type]
 tools/metrics/actions/extract_actions_test.py:10: error: Skipping analyzing "parameterized": module is installed, but missing library stubs or py.typed marker  [import-untyped]
 tools/metrics/actions/extract_actions_test.py:10: note: See https://mypy.readthedocs.io/en/stable/running_mypy.html#missing-imports
 tools/metrics/histograms/histogram_configuration_model.py:48: error: Argument "text_attribute" to "ObjectNodeType" has incompatible type "bool"; expected "str | None"  [arg-type]

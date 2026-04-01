@@ -14,7 +14,7 @@ those files, or convert content back into a canonicalized version of the file.
 
 import abc
 import re
-from typing import cast, Callable, Dict, Iterable, List, Mapping, Optional, Set, Tuple, Union
+from typing import cast, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
 from xml.dom import minidom
 import xml.etree.ElementTree as ET
 
@@ -99,7 +99,8 @@ def GetTrailingCommentsForNode(node: minidom.Element) -> List[str]:
   return comments
 
 
-def PutCommentsInNode(doc: minidom.Document, node: minidom.Node,
+def PutCommentsInNode(doc: minidom.Document, node: Union[minidom.Element,
+                                                         minidom.Document],
                       comments: List[str]) -> None:
   """Appends comments to the DOM node.
 
@@ -121,7 +122,10 @@ def GetChildrenByTag(node: minidom.Element, tag: str) -> List[minidom.Element]:
   Returns:
     A list of DOM nodes.
   """
-  return [child for child in node.childNodes if child.nodeName == tag]
+  return [
+      child for child in node.childNodes
+      if isinstance(child, minidom.Element) and child.tagName == tag
+  ]
 
 
 def GetUnexpectedChildren(node: minidom.Element,
@@ -209,7 +213,8 @@ class NodeType:
     # The base NodeType does not store comments
     return []
 
-  def MarshallIntoNode(self, doc: minidom.Document, node: minidom.Node,
+  def MarshallIntoNode(self, doc: minidom.Document,
+                       node: Union[minidom.Element, minidom.Document],
                        obj: XMLObjectType) -> None:
     """Marshalls the object and appends it to a node, with comments.
 
@@ -501,14 +506,14 @@ class ObjectNodeType(NodeType):
     """
     return self.required_attributes or []
 
-  def GetNodeTypes(self) -> Mapping[str, 'NodeType']:
+  def GetNodeTypes(self) -> Dict[str, 'NodeType']:
     """Get a map of tags to node types for all dependent types.
 
     Returns:
       A map of tags to node-types for this node and all of the nodes that it
       can contain.
     """
-    types = {self.tag: self}
+    types: Dict[str, NodeType] = {self.tag: self}
     for child in self.children:
       types.update(child.node_type.GetNodeTypes())
     return types
