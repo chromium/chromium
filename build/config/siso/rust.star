@@ -19,17 +19,9 @@ def __filegroups(ctx):
         "third_party/rust-toolchain:toolchain": {
             "type": "glob",
             "includes": [
-                "bin/rustc",
                 "lib/*.so",
                 "lib/libclang.so.*",
-                "lib/rustlib/src/rust/library/std/src/lib.rs",
                 "lib/rustlib/x86_64-unknown-linux-gnu/lib/*",
-            ],
-        },
-        "third_party/rust:rustlib": {
-            "type": "glob",
-            "includes": [
-                "*.rs",
             ],
         },
         "build/linux/debian_bullseye_amd64-sysroot:rustlink": {
@@ -295,7 +287,6 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/rust/gni_impl/run_build_script.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
-                "third_party/rust:rustlib",
             ],
             "handler": "rust_build_handler",
             "remote": remote and config.get(ctx, "cog"),
@@ -306,7 +297,6 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/rust/std/find_std_rlibs.py",
             "inputs": [
                 "third_party/rust-toolchain:toolchain",
-                "third_party/rust-toolchain/lib/rustlib:rlib",
             ],
             "remote": remote and config.get(ctx, "cog"),
             "timeout": "2m",

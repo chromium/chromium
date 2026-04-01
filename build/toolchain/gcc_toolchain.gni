@@ -681,6 +681,7 @@ template("single_gcc_toolchain") {
         "//build/action_helpers.py",
         "//build/gn_helpers.py",
         "//build/rust/gni_impl/rustc_wrapper.py",
+        "//third_party/rust-toolchain/bin/rustc",
       ]
 
       # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249

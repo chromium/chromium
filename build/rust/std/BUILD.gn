@@ -267,6 +267,12 @@ if (toolchain_has_rust) {
       out_libdir = rebase_path(target_out_dir, root_build_dir)
       out_depfile = rebase_path(depfile, root_build_dir)
 
+      if (host_os == "win") {
+        inputs = [ "//third_party/rust-toolchain/bin/rustc.exe" ]
+      } else {
+        inputs = [ "//third_party/rust-toolchain/bin/rustc" ]
+      }
+
       # For the rustc sysroot we must include even the rlibs we don't pass to
       # the C++ linker.
       all_stdlibs_to_copy = stdlib_files + skip_stdlib_files

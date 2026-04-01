@@ -455,6 +455,13 @@ template("cargo_crate") {
         _rustflags_txt,
         rustc_print_cfg_path,
       ]
+
+      if (host_os == "win") {
+        inputs += [ "//third_party/rust-toolchain/bin/rustc.exe" ]
+      } else {
+        inputs += [ "//third_party/rust-toolchain/bin/rustc" ]
+      }
+
       build_script_target = ":${_build_script_name}($rust_macro_toolchain)"
       deps = [
         ":${_build_script_name}_write_rustflags",
