@@ -721,10 +721,14 @@ gfx::Rect VerticalTabView::GetChildBounds(const gfx::Rect& container,
 }
 
 absl::flat_hash_map<views::View*, bool>
-VerticalTabView::CalculateChildVisibilities() const {
+VerticalTabView::CalculateChildVisibilities(const int width) const {
   absl::flat_hash_map<views::View*, bool> child_visibility_map;
 
-  child_visibility_map[title_] = !pinned_;
+  // Pinned titles should be visible in the expand on hover state when the width
+  // is sufficient to show the title.
+  child_visibility_map[title_] =
+      !pinned_ ||
+      (collapsed_ && width >= VerticalTabStripRegionView::kCollapsedWidth);
 
   child_visibility_map[alert_indicator_] =
       alert_indicator_->showing_alert_state().has_value();
@@ -751,13 +755,12 @@ VerticalTabView::CalculateChildVisibilities() const {
 
 views::ProposedLayout VerticalTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
-  auto child_visibility_map = CalculateChildVisibilities();
-
   const int width = size_bounds.width().value_or(
       VerticalTabStripRegionView::kUncollapsedMaxWidth);
   const int height =
       GetLayoutConstant(pinned_ ? LayoutConstant::kVerticalTabPinnedHeight
                                 : LayoutConstant::kVerticalTabHeight);
+  auto child_visibility_map = CalculateChildVisibilities(width);
 
   views::ProposedLayout layouts;
   layouts.host_size = gfx::Size(width, height);
@@ -768,8 +771,9 @@ views::ProposedLayout VerticalTabView::CalculateProposedLayout(
   // If the tab is collapsed but animating with a wider width then we shouldn't
   // center the contents.
   const bool is_centered =
-      (collapsed_ && width < VerticalTabStripRegionView::kCollapsedWidth) ||
-      pinned_;
+      (pinned_ && !collapsed_) ||
+      ((pinned_ || collapsed_) &&
+       width < VerticalTabStripRegionView::kCollapsedWidth);
 
   int placed_children = 0;
   for (const auto& child : tab_children_configs_) {
