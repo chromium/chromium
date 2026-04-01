@@ -2213,25 +2213,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.AudioInputController{MediaAudioInputControllerTime}"
-    units="ms" expires_after="never">
-<!-- expires-never: Audio pipeline health metric. -->
-
+    units="ms" expires_after="2027-04-01">
   <owner>dalecurtis@chromium.org</owner>
   <owner>olka@chromium.org</owner>
+  <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    Measures the time taken for AudioInputController::
-    {MediaAudioInputControllerTime}
+    Measures the execution time of
+    AudioInputController{MediaAudioInputControllerTime}. Recorded when the
+    corresponding AudioInputController method finishes execution.
   </summary>
   <token key="MediaAudioInputControllerTime">
-    <variant name=""/>
-    <variant name=".CloseTime"
-        summary="Measures the time taken for DoClose()."/>
-    <variant name=".CreateTime"
-        summary="Measures the time taken for DoCreate()."/>
-    <variant name=".RecordTime"
-        summary="Measures the time taken for DoRecord()."/>
+    <variant name=".CloseTime"/>
+    <variant name=".CreateTime"/>
+    <variant name=".RecordTime"/>
   </token>
 </histogram>
 
