@@ -206,6 +206,7 @@ void DisplayLinkMacMojo::OnDisplayLinkVSyncCallback(int64_t display_id,
   viz::CADisplayLinkParams viz_params(display_id, params.callback_timebase,
                                       params.display_timebase,
                                       params.callback_interval);
+  viz_params.ipc_begin_timestamp = base::TimeTicks::Now();
   external_begin_frame_controller_->IssueExternalVSync(viz_params);
 }
 

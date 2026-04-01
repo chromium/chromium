@@ -99,7 +99,8 @@ bool StructTraits<viz::mojom::CADisplayLinkParamsDataView,
          viz::CADisplayLinkParams* out) {
   if (!data.ReadTimestamp(&out->timestamp) ||
       !data.ReadTargetTimestamp(&out->target_timestamp) ||
-      !data.ReadInterval(&out->interval)) {
+      !data.ReadInterval(&out->interval) ||
+      !data.ReadIpcBeginTimestamp(&out->ipc_begin_timestamp)) {
     return false;
   }
   out->display_id = data.display_id();

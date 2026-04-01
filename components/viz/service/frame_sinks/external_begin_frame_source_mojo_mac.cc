@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_macros.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -47,6 +48,14 @@ ExternalBeginFrameSourceMojoMac::~ExternalBeginFrameSourceMojoMac() {
 // mojom::ExternalBeginFrameController implementation.
 void ExternalBeginFrameSourceMojoMac::IssueExternalVSync(
     const CADisplayLinkParams& params) {
+  base::TimeDelta ipc_duration =
+      base::TimeTicks::Now() - params.ipc_begin_timestamp;
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Viz.BeginFrameSource.IPC.Latency", ipc_duration,
+        base::Microseconds(10), base::Milliseconds(34), 50);
+  }
+
   ui::VSyncParamsMac ui_params(true, params.timestamp, params.interval, true,
                                params.target_timestamp, params.interval);
   ui::VSyncProviderMac::GetInstance()->OnVSync(ui_params, params.display_id);

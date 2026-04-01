@@ -139,6 +139,11 @@ struct StructTraits<viz::mojom::CADisplayLinkParamsDataView,
     return params.interval;
   }
 
+  static base::TimeTicks ipc_begin_timestamp(
+      const viz::CADisplayLinkParams& params) {
+    return params.ipc_begin_timestamp;
+  }
+
   static bool Read(viz::mojom::CADisplayLinkParamsDataView data,
                    viz::CADisplayLinkParams* out);
 };

@@ -309,6 +309,9 @@ struct VIZ_COMMON_EXPORT CADisplayLinkParams {
   base::TimeTicks target_timestamp;
   // The time interval between screen refresh updates.
   base::TimeDelta interval;
+  // The time when DisplayLinkMacMojo::OnDisplayLinkVSyncCallback() is called in
+  // the Browser process.
+  base::TimeTicks ipc_begin_timestamp;
 };
 #endif
 
