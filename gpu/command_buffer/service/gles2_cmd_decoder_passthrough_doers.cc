@@ -4319,8 +4319,9 @@ GLES2DecoderPassthroughImpl::DoGetTransformFeedbackVaryingsCHROMIUM(
   api()->glGetProgramivFn(service_program, GL_TRANSFORM_FEEDBACK_VARYINGS,
                           &num_transform_feedback_varyings);
 
-  // Resize the data to fit the headers and info objects so that strings can be
-  // appended.
+  // Resize the data to fit the headers and info objects. Strings will be
+  // appended at the end of the buffer and info objects will point to the
+  // strings using their offset in the buffer.
   const base::CheckedNumeric<size_t> buffer_header_size(
       sizeof(TransformFeedbackVaryingsHeader));
   const base::CheckedNumeric<size_t> buffer_block_size(
@@ -4357,12 +4358,15 @@ GLES2DecoderPassthroughImpl::DoGetTransformFeedbackVaryingsCHROMIUM(
     varying_info.size = size;
     varying_info.type = type;
 
+    // Add the string at the end and make the info object point at it using its
+    // offset.
     DCHECK(length + 1 <= max_transform_feedback_varying_length);
-    varying_info.name_length = data->size();
+    varying_info.name_offset = data->size();
     varying_info.name_length = length + 1;
     AppendStringToBuffer(data, transform_feedback_varying_name_buf.data(),
                          length + 1);
 
+    // Put the header info in the previously reserved space in the buffer.
     InsertValueIntoBuffer(
         data, varying_info,
         (buffer_header_size +
