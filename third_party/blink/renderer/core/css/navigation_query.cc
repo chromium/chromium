@@ -100,6 +100,15 @@ void NavigationTypeTestExpression::SerializeTo(StringBuilder& builder) const {
   }
 }
 
+bool NavigationPreviewTestExpression::Matches(Document& document) const {
+  return RouteMap::Get(&document)->IsInPreview();
+}
+
+void NavigationPreviewTestExpression::SerializeTo(
+    StringBuilder& builder) const {
+  builder.Append("preview");
+}
+
 void NavigationExpNode::Trace(Visitor* v) const {
   ConditionalExpNode::Trace(v);
   v->Trace(navigation_test_);

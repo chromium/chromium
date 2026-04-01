@@ -62,8 +62,10 @@ URLPatternParseResult ParseURLPattern(CSSParserTokenStream& stream,
 }
 
 // https://drafts.csswg.org/css-navigation-1/#typedef-navigation-test
+// https://github.com/w3c/csswg-drafts/blob/main/css-view-transitions-2/two-phase-transition-explainer.md
 //
-// <navigation-test> = <navigation-location-test> | <navigation-type-test>
+// <navigation-test> = <navigation-location-test> | <navigation-type-test> |
+// preview
 //
 // <navigation-location-test> =
 //   <navigation-location-keyword> : <navigation-location>
@@ -79,6 +81,10 @@ NavigationTestExpression* ParseNavigationTest(CSSParserTokenStream& stream,
     return nullptr;
   }
   AtomicString ident(stream.ConsumeIncludingWhitespace().Value().ToString());
+  if (ident == "preview" &&
+      RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled()) {
+    return MakeGarbageCollected<NavigationPreviewTestExpression>();
+  }
   if (stream.Peek().GetType() != kColonToken) {
     return nullptr;
   }

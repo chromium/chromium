@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/page_swap_event.h"
@@ -224,10 +225,23 @@ void ViewTransitionSupplement::StartTransition(
     const blink::ViewTransitionToken& navigation_id,
     mojom::blink::PageSwapEventParamsPtr params,
     ViewTransition::ViewTransitionStateCallback callback) {
+  if (RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled()) {
+    callback = blink::BindOnce(
+        [](Document* document,
+           ViewTransition::ViewTransitionStateCallback callback,
+           const ViewTransitionState& state) {
+          if (document) {
+            if (RouteMap* route_map = RouteMap::Get(document)) {
+              route_map->OnPreviewFinished();
+            }
+          }
+          std::move(callback).Run(state);
+        },
+        WrapWeakPersistent(&document), std::move(callback));
+  }
   // TODO(khushalsagar): Per spec, we should be checking the opt-in at this
   // point. See step 2 in
   // https://drafts.csswg.org/css-view-transitions-2/#setup-outbound-transition.
-
   if (document_transition_) {
     if (document_transition_->IsPreview()) {
       CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());

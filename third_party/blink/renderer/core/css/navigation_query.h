@@ -128,6 +128,14 @@ class NavigationTypeTestExpression : public NavigationTestExpression {
   Type type_;
 };
 
+class NavigationPreviewTestExpression : public NavigationTestExpression {
+ public:
+  NavigationPreviewTestExpression() = default;
+
+  bool Matches(Document&) const override;
+  void SerializeTo(StringBuilder&) const override;
+};
+
 class NavigationExpNode : public ConditionalExpNode {
  public:
   explicit NavigationExpNode(NavigationTestExpression& test)

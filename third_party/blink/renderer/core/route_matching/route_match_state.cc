@@ -16,13 +16,15 @@ RouteMatchState* RouteMatchState::Create(const RouteMap& map) {
   map.GetActiveRoutes(NavigationPreposition::kFrom, &state->from_routes_);
   map.GetActiveRoutes(NavigationPreposition::kTo, &state->to_routes_);
   state->traverse_type_ = map.GetHistoryTraverseType();
+  state->in_preview_ = map.IsInPreview();
   return state;
 }
 
 bool RouteMatchState::Equals(const RouteMatchState& other) const {
   return at_routes_ == other.at_routes_ && from_routes_ == other.from_routes_ &&
          to_routes_ == other.to_routes_ &&
-         traverse_type_ == other.traverse_type_;
+         traverse_type_ == other.traverse_type_ &&
+         in_preview_ == other.in_preview_;
 }
 
 void RouteMatchState::Trace(Visitor* v) const {

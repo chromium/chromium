@@ -121,6 +121,11 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
   // complete.
   void OnNavigationDone();
 
+  void OnPreviewStart();
+  void OnPreviewFinished();
+
+  bool IsInPreview() const { return in_preview_; }
+
   // Return the "from" URL of the current navigation, if any.
   KURL GetFromURL() const { return previous_url_; }
 
@@ -141,6 +146,7 @@ class CORE_EXPORT RouteMap final : public ScriptWrappable,
 
   HistoryTraverseType history_traverse_type_ = kNotTraversing;
   bool has_history_rules_ = false;
+  bool in_preview_ = false;
 
 #if DCHECK_IS_ON()
   bool is_updating_active_routes_ = false;

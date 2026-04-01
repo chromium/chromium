@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/url_pattern/url_pattern_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -267,6 +268,22 @@ void RouteMap::OnNavigationDone() {
   if (has_history_rules_) {
     GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
   }
+}
+
+void RouteMap::OnPreviewStart() {
+  CHECK(!in_preview_);
+  CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+  in_preview_ = true;
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
+}
+
+void RouteMap::OnPreviewFinished() {
+  if (!in_preview_) {
+    return;
+  }
+  CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
+  in_preview_ = false;
+  GetDocument().GetStyleEngine().NavigationsMayHaveChanged();
 }
 
 RouteMap::ParseResult RouteMap::AddPatternToRoute(Route& route,

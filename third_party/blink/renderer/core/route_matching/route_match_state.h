@@ -29,6 +29,8 @@ class RouteMatchState : public GarbageCollected<RouteMatchState> {
   RouteMap::MatchCollection to_routes_;
 
   RouteMap::HistoryTraverseType traverse_type_ = RouteMap::kNotTraversing;
+
+  bool in_preview_ = false;
 };
 
 }  // namespace blink

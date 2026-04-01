@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/route_matching/route_map.h"
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
@@ -631,8 +632,9 @@ void ViewTransition::ProcessCurrentState() {
 
       case State::kPreview:
         CHECK(RuntimeEnabledFeatures::TwoPhaseViewTransitionEnabled());
-        // TODO(nrosenthal): reflect "preview" state in CSS (@navigation?
-        // pseudo-class?)
+        if (RouteMap* route_map = RouteMap::Get(document_)) {
+          route_map->OnPreviewStart();
+        }
         ResumeRendering();
         process_next_state = AdvanceTo(State::kAnimateTagDiscovery);
         DCHECK(process_next_state);
