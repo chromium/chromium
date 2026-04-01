@@ -97,6 +97,20 @@ class BnplManagerTestApi {
     return bnpl_manager_->HasSeenAmountExtractionAiTerms();
   }
 
+  void UpdateSuggestionsOnAiAmountExtractionResponse(
+      const std::vector<BnplIssuerContext>& issuer_contexts) {
+    bnpl_manager_->UpdateSuggestionsOnAiAmountExtractionResponse(
+        issuer_contexts);
+  }
+
+  void ShowProgressUiForPayLaterTab() {
+    bnpl_manager_->ShowProgressUiForPayLaterTab();
+  }
+
+  void SetCachedSuggestions(std::vector<Suggestion> suggestions) {
+    bnpl_manager_->cached_suggestions_ = std::move(suggestions);
+  }
+
  private:
   const raw_ref<BnplManager> bnpl_manager_;
 };

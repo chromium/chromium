@@ -3341,8 +3341,8 @@ TEST_F(
   bnpl_manager_->NotifyOfSuggestionGeneration(
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   bnpl_manager_->OnCreditCardSuggestionsShown(
-      {Suggestion(SuggestionType::kCreditCardEntry),
-       Suggestion(SuggestionType::kManageCreditCard)},
+      {Suggestion(SuggestionType::kLoadingThrobber),
+       Suggestion(SuggestionType::kBnplFootnote)},
       mock_update_suggestions_callback.Get());
 
   EXPECT_CALL(GetBnplUiDelegate(), ShowSelectBnplIssuerUi).Times(0);
@@ -3362,10 +3362,6 @@ TEST_F(
                         /*price_higher_bound_in_micros=*/1'000'000'000,
                         IssuerId::kBnplKlarna,
                         /*instrument_id=*/5678);
-
-  autofill_client().SetAutofillSuggestions(
-      {Suggestion(SuggestionType::kLoadingThrobber),
-       Suggestion(SuggestionType::kBnplFootnote)});
 
   using BnplIssuerAlias = autofill::Suggestion::BnplIssuer;
   EXPECT_CALL(
@@ -3394,6 +3390,85 @@ TEST_F(
 
   bnpl_manager_->OnAmountExtractionReturnedFromAi(
       std::make_pair(1'000'000, "USD"));
+}
+
+TEST_F(BnplManagerPayLaterTabTest,
+       OnCreditCardSuggestionsShown_CachesSuggestions) {
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  EXPECT_TRUE(bnpl_manager_->GetCachedSuggestions().empty());
+
+  bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
+
+  ASSERT_FALSE(bnpl_manager_->GetCachedSuggestions().empty());
+  EXPECT_THAT(
+      bnpl_manager_->GetCachedSuggestions(),
+      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
+                  Field(&Suggestion::type, SuggestionType::kBnplEntry)));
+}
+
+TEST_F(BnplManagerPayLaterTabTest,
+       UpdateSuggestionsOnAiAmountExtractionResponse_CachesSuggestions) {
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kLoadingThrobber),
+      Suggestion(SuggestionType::kBnplFootnote),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
+
+  std::vector<BnplIssuerContext> issuer_contexts = {
+      BnplIssuerContext(test::GetTestUnlinkedBnplIssuer(),
+                        BnplIssuerEligibilityForPage::kIsEligible)};
+
+  test_api(*bnpl_manager_)
+      .UpdateSuggestionsOnAiAmountExtractionResponse(issuer_contexts);
+
+  ASSERT_FALSE(bnpl_manager_->GetCachedSuggestions().empty());
+  EXPECT_THAT(
+      bnpl_manager_->GetCachedSuggestions(),
+      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
+                  Field(&Suggestion::type, SuggestionType::kBnplEntry),
+                  Field(&Suggestion::type, SuggestionType::kBnplFootnote),
+                  Field(&Suggestion::type, SuggestionType::kManageCreditCard)));
+}
+
+TEST_F(BnplManagerPayLaterTabTest,
+       ShowProgressUiForPayLaterTab_CachesSuggestions) {
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry),
+      Suggestion(SuggestionType::kBnplFootnote),
+      Suggestion(SuggestionType::kManageCreditCard)};
+  bnpl_manager_->OnCreditCardSuggestionsShown(suggestions, base::DoNothing());
+
+  test_api(*bnpl_manager_).ShowProgressUiForPayLaterTab();
+
+  ASSERT_FALSE(bnpl_manager_->GetCachedSuggestions().empty());
+  EXPECT_THAT(
+      bnpl_manager_->GetCachedSuggestions(),
+      ElementsAre(Field(&Suggestion::type, SuggestionType::kCreditCardEntry),
+                  Field(&Suggestion::type, SuggestionType::kLoadingThrobber),
+                  Field(&Suggestion::type, SuggestionType::kBnplFootnote),
+                  Field(&Suggestion::type, SuggestionType::kManageCreditCard)));
+}
+
+TEST_F(BnplManagerPayLaterTabTest, Reset_ClearsCachedSuggestions) {
+  test_api(*bnpl_manager_)
+      .SetCachedSuggestions({Suggestion(SuggestionType::kBnplEntry)});
+
+  ASSERT_FALSE(bnpl_manager_->GetCachedSuggestions().empty());
+
+  test_api(*bnpl_manager_).Reset();
+
+  EXPECT_TRUE(bnpl_manager_->GetCachedSuggestions().empty());
 }
 #endif  // #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
