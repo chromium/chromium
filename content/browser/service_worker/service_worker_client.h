@@ -447,9 +447,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
   // Syncs matching registrations with live registrations.
   void SyncMatchingRegistrations();
 
-#if DCHECK_IS_ON()
   bool IsMatchingRegistration(ServiceWorkerRegistration* registration) const;
-#endif  // DCHECK_IS_ON()
 
   // Discards all references to matching registrations.
   void RemoveAllMatchingRegistrations();

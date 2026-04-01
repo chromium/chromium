@@ -342,10 +342,8 @@ void ServiceWorkerClient::AddMatchingRegistration(
 void ServiceWorkerClient::RemoveMatchingRegistration(
     ServiceWorkerRegistration* registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_NE(controller_registration_, registration);
-#if DCHECK_IS_ON()
-  DCHECK(IsMatchingRegistration(registration));
-#endif  // DCHECK_IS_ON()
+  CHECK_NE(controller_registration_, registration);
+  CHECK(IsMatchingRegistration(registration));
 
   registration->RemoveListener(this);
   size_t key = registration->scope().spec().size();
@@ -709,10 +707,8 @@ void ServiceWorkerClient::SetControllerRegistration(
 
   if (controller_registration) {
     CHECK(IsEligibleForServiceWorkerController());
-    DCHECK(controller_registration->active_version());
-#if DCHECK_IS_ON()
-    DCHECK(IsMatchingRegistration(controller_registration.get()));
-#endif  // DCHECK_IS_ON()
+    CHECK(controller_registration->active_version());
+    CHECK(IsMatchingRegistration(controller_registration.get()));
   }
 
   controller_registration_ = controller_registration;
@@ -951,7 +947,6 @@ void ServiceWorkerClient::SyncMatchingRegistrations() {
   }
 }
 
-#if DCHECK_IS_ON()
 bool ServiceWorkerClient::IsMatchingRegistration(
     ServiceWorkerRegistration* registration) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -967,7 +962,6 @@ bool ServiceWorkerClient::IsMatchingRegistration(
   }
   return true;
 }
-#endif  // DCHECK_IS_ON()
 
 void ServiceWorkerClient::RemoveAllMatchingRegistrations() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
