@@ -307,6 +307,12 @@ class WebView {
                                            const base::Value& element,
                                            int* backend_node_id) = 0;
 
+  // Gets the element ID of the iframe that owns the frame (with the given
+  // frame_id)
+  virtual Status GetFrameOwnerElementId(const std::string& frame_id,
+                                        const std::string& parent_frame_id,
+                                        std::string* element_id) = 0;
+
   virtual bool IsDetached() const = 0;
 
   // Calls a JavaScript function in a specified frame with the given args and

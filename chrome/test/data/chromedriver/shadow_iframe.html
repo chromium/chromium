@@ -14,8 +14,13 @@
             parent.appendChild(iframe);
         }
         function load() {
-            const shadow = document.getElementById('shadow').attachShadow({ mode: 'open' });
-            const shadow_scroll = document.getElementById('shadow_scroll').attachShadow({ mode: 'open' });
+            let mode = 'open';
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('closed') === 'true') {
+              mode = 'closed';
+            }
+            const shadow = document.getElementById('shadow').attachShadow({ mode });
+            const shadow_scroll = document.getElementById('shadow_scroll').attachShadow({ mode });
             const light_scroll = document.getElementById('light_scroll');
             const light = document.getElementById('light');
             addIframe(shadow, false);

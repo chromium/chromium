@@ -300,6 +300,12 @@ Status StubWebView::GetBackendNodeIdByElement(const std::string& frame,
   return Status(kOk);
 }
 
+Status StubWebView::GetFrameOwnerElementId(const std::string& frame_id,
+                                           const std::string& parent_frame_id,
+                                           std::string* element_id) {
+  return Status(kOk);
+}
+
 bool StubWebView::IsDetached() const {
   return false;
 }

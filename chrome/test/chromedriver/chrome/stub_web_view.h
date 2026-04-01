@@ -134,6 +134,9 @@ class StubWebView : public WebView {
   Status GetBackendNodeIdByElement(const std::string& frame,
                                    const base::Value& element,
                                    int* node_id) override;
+  Status GetFrameOwnerElementId(const std::string& frame_id,
+                                const std::string& parent_frame_id,
+                                std::string* element_id) override;
   bool IsDetached() const override;
   Status CallFunctionWithTimeout(const std::string& frame,
                                  const std::string& function,

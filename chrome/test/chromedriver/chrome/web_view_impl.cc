@@ -1879,6 +1879,52 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
   return status;
 }
 
+Status WebViewImpl::GetFrameOwnerElementId(const std::string& frame_id,
+                                           const std::string& parent_frame_id,
+                                           std::string* element_id) {
+  // Collect the three parts needed to construct the f.X.d.X.e.X element id
+  // 1. Get the effective parent_frame_id
+  std::string effective_parent_frame_id =
+      parent_frame_id.empty() ? id_ : parent_frame_id;
+
+  WebView* target = GetTargetForFrame(effective_parent_frame_id);
+  if (target != nullptr && target != this) {
+    if (target->IsDetached())
+      return Status(kTargetDetached);
+    return target->GetFrameOwnerElementId(frame_id, parent_frame_id,
+                                          element_id);
+  }
+
+  // 2. Get the loader_id
+  std::string loader_id;
+  Timeout local_timeout(base::TimeDelta::Max());
+  Status status =
+      GetLoaderId(effective_parent_frame_id, local_timeout, loader_id);
+  if (status.IsError()) {
+    return status;
+  }
+  // 3. Get the backend_node_id
+  base::DictValue params;
+  params.Set("frameId", frame_id);
+  base::DictValue result;
+  status =
+      client_->SendCommandAndGetResult("DOM.getFrameOwner", params, &result);
+  if (status.IsError()) {
+    return status;
+  }
+  std::optional<int> maybe_backend_node_id = result.FindInt("backendNodeId");
+  if (!maybe_backend_node_id.has_value()) {
+    return Status(kUnknownError,
+                  "DOM.getFrameOwner did not return backendNodeId");
+  }
+  int backend_node_id = maybe_backend_node_id.value();
+
+  *element_id =
+      base::StringPrintf("f.%s.d.%s.e.%d", effective_parent_frame_id.c_str(),
+                         loader_id.c_str(), backend_node_id);
+  return Status(kOk);
+}
+
 Status WebViewImpl::SetFileInputFiles(const std::string& frame,
                                       const base::Value& element,
                                       const std::vector<base::FilePath>& files,
