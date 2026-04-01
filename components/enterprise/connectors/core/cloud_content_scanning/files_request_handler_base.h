@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILES_REQUEST_HANDLER_BASE_H_
 #define COMPONENTS_ENTERPRISE_CONNECTORS_CORE_CLOUD_CONTENT_SCANNING_FILES_REQUEST_HANDLER_BASE_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_analysis_request_base.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/request_handler_base.h"
 
@@ -40,6 +41,12 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
     // happening asynchronously in the background, or false if there is no data
     // to upload.
     virtual bool UploadDataImpl() = 0;
+
+    // Update the file_info for a given `index`. Unlike desktop and android, on
+    // ios, user can't download a folder containing multiple items. So we'll
+    // have platform-dependent implementations for updating the file_info.
+    virtual void UpdateFileInfo(size_t index,
+                                BinaryUploadRequest::Data data) = 0;
   };
 
   // `content_analysis_info` and `upload_service` are used to manage the deep
@@ -66,6 +73,36 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
  protected:
   // This should only call the delegate_->UploadDataImpl().
   bool UploadDataImpl() override;
+
+ private:
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Success);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
+                           OnGotFileInfo_EmptyFile);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
+
+  // Called when the file info for `path` has been fetched. Also begins the
+  // upload process.
+  void OnGotFileInfo(std::unique_ptr<BinaryUploadRequest> request,
+                     size_t index,
+                     ScanRequestUploadResult result,
+                     BinaryUploadRequest::Data data);
+
+  // Called when a request is finished early without uploading it.
+  // This is, e.g., called for encrypted files and responsible for posting the
+  // required data to safe-browsing ui.
+  void FinishRequestEarly(std::unique_ptr<BinaryUploadRequest> request,
+                          ScanRequestUploadResult result);
+
+  // Upload the request for deep scanning using the binary upload service.
+  // These methods exist so they can be overridden in tests as needed.
+  // The `result` argument exists as an optimization to finish the request early
+  // when the result is known in advance to avoid using the upload service.
+  void UploadFileForDeepScanning(ScanRequestUploadResult result,
+                                 std::unique_ptr<BinaryUploadRequest> request);
+
+  // This is set to true as soon as a TOO_MANY_REQUESTS response is obtained. No
+  // more data should be upload for `this` at that point.
+  bool throttled_ = false;
 
   std::unique_ptr<Delegate> delegate_;
 };
