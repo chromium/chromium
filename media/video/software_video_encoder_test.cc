@@ -1372,6 +1372,79 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
   EXPECT_EQ(outputs_count, 3);
 }
 
+TEST_P(H264VideoEncoderTest, OversizedFrameSilentFailure) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(1024, 1024);
+  options.bitrate = Bitrate::ConstantBitrate(1000000u);
+  options.framerate = 25;
+  if (codec_ == VideoCodec::kH264) {
+    options.avc.produce_annexb = true;
+  }
+
+  int total_decoded_frames = 0;
+
+  scoped_refptr<VideoFrame> reference_frame;
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&, this](VideoEncoderOutput output,
+                std::optional<VideoEncoder::CodecDescription> desc) {
+        auto buffer = DecoderBuffer::FromArray(std::move(output.data));
+        buffer->set_timestamp(output.timestamp);
+        buffer->set_is_key_frame(output.key_frame);
+        decoder_->Decode(std::move(buffer), DecoderStatusCB());
+      });
+
+  VideoDecoder::OutputCB decoder_output_cb =
+      base::BindLambdaForTesting([&](scoped_refptr<VideoFrame> decoded_frame) {
+        ASSERT_TRUE(reference_frame);
+
+        EXPECT_EQ(decoded_frame->timestamp(), reference_frame->timestamp());
+        EXPECT_EQ(decoded_frame->visible_rect().size(),
+                  reference_frame->visible_rect().size());
+
+        // This validates that the encoder actually encoded our input frame,
+        // and didn't just read uninitialized memory.
+        if (decoded_frame->format() == reference_frame->format()) {
+          // Allow up to 1% of pixels to be different due to compression
+          // artifacts.
+          const int kAllowedDifferentPixels =
+              reference_frame->visible_rect().size().GetArea() / 100;
+          EXPECT_LE(CountDifferentPixels(*decoded_frame, *reference_frame, 10),
+                    kAllowedDifferentPixels);
+        }
+        ++total_decoded_frames;
+      });
+
+  PrepareDecoder(options.frame_size, std::move(decoder_output_cb));
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb),
+                       ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  // Create frames with identical colors but vastly different sizes.
+  constexpr uint32_t kXorMask = 0x123456;
+  auto oversized_frame = CreateFrame(gfx::Size(4096, 4096), pixel_format_,
+                                     base::TimeDelta(), kXorMask);
+  ASSERT_TRUE(oversized_frame) << "Failed to allocate oversized frame";
+  oversized_frame->set_color_space(gfx::ColorSpace::CreateREC709());
+
+  reference_frame = CreateFrame(options.frame_size, pixel_format_,
+                                base::TimeDelta(), kXorMask);
+  ASSERT_TRUE(reference_frame) << "Failed to allocate reference frame";
+
+  encoder_->Encode(std::move(oversized_frame),
+                   VideoEncoder::EncodeOptions(false),
+                   ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  encoder_->Flush(ValidateStatusThenQuitCB());
+  RunUntilQuit();
+  DecodeAndWaitForStatus(DecoderBuffer::CreateEOSBuffer());
+
+  EXPECT_EQ(total_decoded_frames, 1);
+}
+
 TEST_P(H264VideoEncoderTest, AnnexB) {
   int outputs_count = 0;
   VideoEncoder::Options options = CreateDefaultOptions();
