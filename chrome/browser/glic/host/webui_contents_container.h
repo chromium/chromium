@@ -55,7 +55,10 @@ class WebUIContentsContainerImpl : public content::WebContentsObserver,
       base::TerminationStatus status) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryMainDocumentElementAvailable() override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
+  base::TimeTicks navigation_commit_time_;
   ScopedProfileKeepAlive profile_keep_alive_;
   const std::unique_ptr<content::WebContents> web_contents_;
   const raw_ptr<Profile> profile_;

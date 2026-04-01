@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/browser/glic/host/host.h"
@@ -58,6 +59,9 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
       web_contents_(content::WebContents::Create(
           MakeCreateParams(profile, initially_hidden))),
       profile_(profile) {
+  TRACE_EVENT_INSTANT("glic",
+                      "WebUIContentsContainerImpl::WebUIContentsContainerImpl",
+                      perfetto::Flow::FromPointer(this));
   CHECK(web_contents_);
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(SK_ColorTRANSPARENT);
@@ -93,6 +97,15 @@ void WebUIContentsContainerImpl::AttachToHost(Host* host) {
 
 void WebUIContentsContainerImpl::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    TRACE_EVENT_INSTANT(
+        "glic",
+        "WebUIContentsContainerImpl::DidFinishNavigation - PrimaryMainFrame",
+        perfetto::Flow::FromPointer(this));
+    navigation_commit_time_ = base::TimeTicks::Now();
+    base::UmaHistogramTimes("Glic.Contents.NavigationCommitTime",
+                            navigation_commit_time_ - creation_time_);
+  }
   if (!host_ || !navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted()) {
     return;
@@ -108,6 +121,21 @@ void WebUIContentsContainerImpl::DidFinishNavigation(
   if (auto* glic_ui = GlicUI::From(web_contents_.get())) {
     glic_ui->AttachToHost(host_);
   }
+}
+
+void WebUIContentsContainerImpl::PrimaryMainDocumentElementAvailable() {
+  TRACE_EVENT_INSTANT(
+      "glic", "WebUIContentsContainerImpl::PrimaryMainDocumentElementAvailable",
+      perfetto::Flow::FromPointer(this));
+}
+
+void WebUIContentsContainerImpl::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  TRACE_EVENT_INSTANT(
+      "glic",
+      "WebUIContentsContainerImpl::DocumentOnLoadCompletedInPrimaryMainFrame",
+      perfetto::Flow::FromPointer(this));
+  base::UmaHistogramTimes("Glic.Contents.LoadCompleteTime",
+                          base::TimeTicks::Now() - navigation_commit_time_);
 }
 
 void WebUIContentsContainerImpl::PrimaryMainFrameRenderProcessGone(

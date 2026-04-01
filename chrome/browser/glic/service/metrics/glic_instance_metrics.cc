@@ -68,7 +68,8 @@ enum class GlicTurnSource {
 GlicInstanceMetrics::TurnInfo::TurnInfo() = default;
 GlicInstanceMetrics::TurnInfo::~TurnInfo() = default;
 
-GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {
+GlicInstanceMetrics::GlicInstanceMetrics()
+    : creation_time_(base::TimeTicks::Now()), session_manager_(this) {
   // Used in the unit tests.
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
@@ -79,7 +80,8 @@ GlicInstanceMetrics::GlicInstanceMetrics() : session_manager_(this) {
 }
 
 GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
-    : session_manager_(this),
+    : creation_time_(base::TimeTicks::Now()),
+      session_manager_(this),
       pinned_tabs_changed_subscription_(
           sharing_manager->AddPinnedTabsChangedCallback(
               base::BindRepeating(&GlicInstanceMetrics::OnPinnedTabsChanged,

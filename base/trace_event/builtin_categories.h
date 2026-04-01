@@ -146,6 +146,8 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("fledge"),
     perfetto::Category("fonts"),
     perfetto::Category("GAMEPAD"),
+    perfetto::Category("glic").SetDescription(
+      "Events related to GLiC (Gemini Live in Chrome)."),
     perfetto::Category("gpu").SetTags("rendering"),
     perfetto::Category("gpu.angle"),
     perfetto::Category("gpu.angle.texture_metrics"),

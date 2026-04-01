@@ -2521,7 +2521,7 @@ void GlicPageHandler::CreateWebClient(
 
 void GlicPageHandler::PrepareForClient(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback) {
-  TRACE_EVENT_INSTANT("browser", "GlicPageHandler::PrepareForClient - Request",
+  TRACE_EVENT_INSTANT("glic", "GlicPageHandler::PrepareForClient - Request",
                       perfetto::Flow::FromPointer(this));
 
   auto wrapped_callback = base::BindOnce(
@@ -2530,7 +2530,7 @@ void GlicPageHandler::PrepareForClient(
          mojom::PrepareForClientResult result) {
         if (origin_this) {
           TRACE_EVENT_INSTANT(
-              "browser", "GlicPageHandler::PrepareForClient - Response",
+              "glic", "GlicPageHandler::PrepareForClient - Response",
               perfetto::TerminatingFlow::FromPointer(origin_this.get()));
         }
         std::move(callback).Run(std::move(result));

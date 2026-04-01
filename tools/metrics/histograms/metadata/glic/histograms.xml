@@ -369,6 +369,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Contents.LoadCompleteTime" units="ms"
+    expires_after="2026-11-01">
+  <owner>acondor@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <summary>
+    Measures the time it takes glic contents to load from the time the
+    navigation commits.
+  </summary>
+</histogram>
+
+<histogram name="Glic.Contents.NavigationCommitTime" units="ms"
+    expires_after="2026-11-01">
+  <owner>acondor@google.com</owner>
+  <owner>harringtond@google.com</owner>
+  <summary>
+    Measures the time it takes from the Glic contents creation until the
+    navigation commits.
+  </summary>
+</histogram>
+
 <histogram name="Glic.CountryFilteringResult" enum="GlicFilteringResult"
     expires_after="2026-08-01">
   <owner>harringtond@chromium.org</owner>
