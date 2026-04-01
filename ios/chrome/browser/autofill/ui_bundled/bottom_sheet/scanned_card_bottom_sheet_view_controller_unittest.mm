@@ -107,6 +107,50 @@ TEST_F(ScannedCardBottomSheetViewControllerTest, TestScannerUpdatesUI) {
   EXPECT_NSEQ(@"12/26", expItem.textFieldValue);
 }
 
+// Tests if the UI model correctly configures placeholder texts for the fields.
+TEST_F(ScannedCardBottomSheetViewControllerTest, TestPlaceholders) {
+  [view_controller_ loadViewIfNeeded];
+
+  NSDiffableDataSourceSnapshot* snapshot = GetSnapshot();
+  NSArray* cardDetailsItems =
+      [snapshot itemIdentifiersInSectionWithIdentifier:@(0)];
+  NSArray* nicknameItems =
+      [snapshot itemIdentifiersInSectionWithIdentifier:@(1)];
+
+  // Card Number.
+  TableViewTextEditItem* numberItem =
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[0]);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER),
+              numberItem.textFieldPlaceholder);
+
+  // Expiration Date.
+  TableViewTextEditItem* expItem =
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[1]);
+  EXPECT_NSEQ(l10n_util::GetNSString(
+                  IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE),
+              expItem.textFieldPlaceholder);
+
+  // Cardholder Name.
+  TableViewTextEditItem* nameItem =
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[2]);
+  EXPECT_NSEQ(nil, nameItem.textFieldPlaceholder);
+
+  // CVC.
+  TableViewTextEditItem* cvcItem =
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(cardDetailsItems[3]);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL),
+      cvcItem.textFieldPlaceholder);
+
+  // Nickname.
+  TableViewTextEditItem* nicknameItem =
+      base::apple::ObjCCastStrict<TableViewTextEditItem>(nicknameItems[0]);
+  EXPECT_NSEQ(
+      l10n_util::GetNSString(IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_NICKNAME),
+      nicknameItem.textFieldPlaceholder);
+}
+
 // Tests the behavior when the "Cancel" button is tapped.
 TEST_F(ScannedCardBottomSheetViewControllerTest, TestDidTapCancel) {
   [view_controller_ loadViewIfNeeded];

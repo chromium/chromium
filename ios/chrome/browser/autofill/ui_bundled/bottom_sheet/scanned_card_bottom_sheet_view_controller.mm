@@ -140,7 +140,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
                                           IDS_IOS_AUTOFILL_CARD_NUMBER)
                        textFieldValue:_cardNumber
                          keyboardType:UIKeyboardTypeNumberPad
-                 textFieldPlaceholder:nil];
+                 textFieldPlaceholder:
+                     l10n_util::GetNSString(
+                         IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER)];
 }
 
 // Creates the expiration date input item.
@@ -150,7 +152,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
           fieldNameLabelText:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_DATE)
               textFieldValue:_expirationDate
                 keyboardType:UIKeyboardTypeNumberPad
-        textFieldPlaceholder:nil];
+        textFieldPlaceholder:
+            l10n_util::GetNSString(
+                IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE)];
 }
 
 // Creates the cardholder name input item.
@@ -170,7 +174,9 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
                                           IDS_IOS_AUTOFILL_SCAN_CARD_CVC)
                        textFieldValue:_cardCVC
                          keyboardType:UIKeyboardTypeNumberPad
-                 textFieldPlaceholder:nil];
+                 textFieldPlaceholder:
+                     l10n_util::GetNSString(
+                         IDS_IOS_AUTOFILL_DIALOG_PLACEHOLDER_CVC_OPTIONAL)];
 }
 
 // Creates the nickname input item.

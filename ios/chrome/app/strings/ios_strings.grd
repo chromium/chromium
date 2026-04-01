@@ -753,6 +753,12 @@
       <message name="IDS_IOS_AUTOFILL_SCAN_CARD_CVC" desc="The placeholder text for credit card security code in the payments card unmask dialog. [iOS only]">
         CVC
       </message>
+      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_CARD_NUMBER" desc="The placeholder text for credit card number in the payments card unmask dialog. [iOS only]">
+        Card Number
+      </message>
+      <message name="IDS_IOS_AUTOFILL_SCAN_CARD_PLACEHOLDER_EXPIRY_DATE" desc="The placeholder text for credit card expiration date (month and year) in the payments card unmask dialog. [iOS only]">
+        MM/YY
+      </message>
       <message name="IDS_IOS_AUTOFILL_SECURITY_CODE" desc="Title of the field representing the CVC of a credit card. [Length: 4em] [iOS only]">
         Security code
       </message>
