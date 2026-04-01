@@ -14,6 +14,7 @@ import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
 import "components/optimization_guide/proto/features/content_annotation.proto";
+import "components/optimization_guide/proto/features/contextual_cueing.proto";
 import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
@@ -125,6 +126,8 @@ message LogAiDataRequest {
 
     AnnotationReducerQueryClassifierLoggingData
         annotation_reducer_query_classifier = 39;
+
+    ContextualCueingLoggingData contextual_cueing = 40;
 
     DefaultLoggingData default = 1000;
   }

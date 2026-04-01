@@ -29,6 +29,7 @@ proto_library("optimization_guide_proto") {
     "features/common_quality_data.proto",
     "features/compose.proto",
     "features/content_annotation.proto",
+    "features/contextual_cueing.proto",
     "features/contextual_tasks_context.proto",
     "features/default.proto",
     "features/enhanced_calendar.proto",
