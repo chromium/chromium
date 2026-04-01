@@ -81,7 +81,7 @@ bool ConvertInterleavedData(int channels,
     return false;
   }
 
-  DCHECK_EQ(frames, audio->frames());
+  CHECK_EQ(frames, audio->frames());
   audio->FromInterleaved<Traits>(
       reinterpret_cast<const typename Traits::ValueType*>(data), frames);
   return true;
@@ -98,7 +98,7 @@ bool ConvertPlanarData(int channels,
     return false;
   }
 
-  DCHECK_EQ(frames, audio->frames());
+  CHECK_EQ(frames, audio->frames());
   const typename Traits::ValueType* base_data =
       reinterpret_cast<const typename Traits::ValueType*>(data);
   for (int c = 0; c < channels; ++c) {
@@ -121,7 +121,7 @@ bool ConvertPlanarFloat(int channels,
     return false;
   }
 
-  DCHECK_EQ(frames, audio->frames());
+  CHECK_EQ(frames, audio->frames());
   const float* base_data = reinterpret_cast<const float*>(data);
   for (int c = 0; c < channels; ++c) {
     const float* source = UNSAFE_TODO(base_data + c * frames);
