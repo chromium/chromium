@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
@@ -360,6 +361,28 @@ TEST_F(FindsServiceTest, ExecutionCooldownPassed) {
 
   histogram_tester_local.ExpectUniqueSample(
       "Finds.Result", FindsService::Result::Status::kSuccess, 1);
+}
+
+TEST_F(FindsServiceTest, VerifyHistoryLookbackIntervalWithFinchParam) {
+  // Override the feature param to something non-default.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds,
+      {{"model_execution_cooldown_duration_in_days", "14"}});
+
+  EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _))
+      .WillOnce([](const std::u16string& text_query,
+                   const history::QueryOptions& options,
+                   history::HistoryService::QueryHistoryCallback callback,
+                   base::CancelableTaskTracker* tracker) {
+        // Assert that lookback interval is 14 days.
+        EXPECT_EQ(options.begin_time, base::Time::Now() - base::Days(14));
+        history::QueryResults results;
+        std::move(callback).Run(std::move(results));
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  service_->ExecuteModelAndScheduleNotification(base::DoNothing());
 }
 
 TEST_F(FindsServiceTest, EmptyNotificationService) {

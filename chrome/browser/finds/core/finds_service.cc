@@ -44,10 +44,6 @@ namespace finds {
 
 namespace {
 
-// The duration of history to look back when gathering URLs for theme
-// suggestions.
-// TODO(crbug.com/493283477): Align with notif cooldown.
-constexpr base::TimeDelta kHistoryLookbackInterval = base::Days(7);
 
 // If the finds::features::kNotificationStartTimeMinutes param is set to less
 // than this threshold, it is considered to be for testing and will bypass the
@@ -83,8 +79,7 @@ bool IsModelExecutionCooldownPassed(const PrefService* pref_service) {
   const base::Time last_execution_time =
       base::Time::FromMillisecondsSinceUnixEpoch(last_timestamp_value);
   return (base::Time::Now() - last_execution_time) >=
-         base::Days(
-             finds::features::kModelExecutionCooldownDurationInDays.Get());
+         GetModelExecutionCooldownDuration();
 }
 
 bool IsThemeCooldownPassed(const PrefService* pref_service,
@@ -267,7 +262,7 @@ void FindsService::ExecuteModelAndScheduleNotification(
   }
 
   history::QueryOptions options;
-  options.begin_time = base::Time::Now() - kHistoryLookbackInterval;
+  options.begin_time = base::Time::Now() - GetModelExecutionCooldownDuration();
 
   history_service_->QueryHistory(
       std::u16string(), options,

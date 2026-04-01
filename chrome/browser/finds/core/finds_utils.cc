@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "chrome/browser/finds/core/finds_features.h"
 #include "chrome/browser/finds/core/finds_metrics.h"
 #include "chrome/browser/finds/core/finds_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -66,6 +67,10 @@ void MarkThemeAsNotInterested(PrefService* pref_service,
   ScopedDictPrefUpdate update(pref_service,
                               prefs::kFindsNotInterestedThemesLastTimestamp);
   update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
+}
+
+base::TimeDelta GetModelExecutionCooldownDuration() {
+  return base::Days(features::kModelExecutionCooldownDurationInDays.Get());
 }
 
 }  // namespace finds

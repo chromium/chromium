@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "components/optimization_guide/proto/features/finds.pb.h"
 #include "components/prefs/pref_service.h"
 
@@ -29,6 +30,9 @@ void MarkThemeAsNotInterested(
     PrefService* pref_service,
     optimization_guide::proto::FindsSuggestionResponse::SuggestionTheme::
         ThemeType theme_type);
+
+// Returns the model execution cooldown duration as a base::TimeDelta.
+base::TimeDelta GetModelExecutionCooldownDuration();
 
 }  // namespace finds
 
