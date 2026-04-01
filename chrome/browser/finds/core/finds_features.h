@@ -51,6 +51,10 @@ extern const base::FeatureParam<int> kFindsOptInPromoCooldownInDays;
 // eligible to receive the opt in promo for finds.
 extern const base::FeatureParam<int> kThemeUrlVisitCountForOptIn;
 
+// The maximum upper limit for history entries to be included in the LLM query.
+// A value of 0 means "no limit".
+extern const base::FeatureParam<int> kMaxHistoryEntries;
+
 }  // namespace finds::features
 
 #endif  // CHROME_BROWSER_FINDS_CORE_FINDS_FEATURES_H_

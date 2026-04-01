@@ -79,7 +79,7 @@ bool IsModelExecutionCooldownPassed(const PrefService* pref_service) {
   const base::Time last_execution_time =
       base::Time::FromMillisecondsSinceUnixEpoch(last_timestamp_value);
   return (base::Time::Now() - last_execution_time) >=
-         GetModelExecutionCooldownDuration();
+         GetModelExecutionCooldownDurationTimeDelta();
 }
 
 bool IsThemeCooldownPassed(const PrefService* pref_service,
@@ -262,7 +262,9 @@ void FindsService::ExecuteModelAndScheduleNotification(
   }
 
   history::QueryOptions options;
-  options.begin_time = base::Time::Now() - GetModelExecutionCooldownDuration();
+  options.begin_time =
+      base::Time::Now() - GetModelExecutionCooldownDurationTimeDelta();
+  options.max_count = finds::features::kMaxHistoryEntries.Get();
 
   history_service_->QueryHistory(
       std::u16string(), options,

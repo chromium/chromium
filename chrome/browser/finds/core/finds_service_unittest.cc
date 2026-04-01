@@ -385,6 +385,40 @@ TEST_F(FindsServiceTest, VerifyHistoryLookbackIntervalWithFinchParam) {
   service_->ExecuteModelAndScheduleNotification(base::DoNothing());
 }
 
+TEST_F(FindsServiceTest, VerifyMaxHistoryEntriesWithFinchParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds, {{"max_history_entries", "50"}});
+
+  EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _))
+      .WillOnce([](const std::u16string& text_query,
+                   const history::QueryOptions& options,
+                   history::HistoryService::QueryHistoryCallback callback,
+                   base::CancelableTaskTracker* tracker) {
+        EXPECT_EQ(options.max_count, 50);
+        history::QueryResults results;
+        std::move(callback).Run(std::move(results));
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  service_->ExecuteModelAndScheduleNotification(base::DoNothing());
+}
+
+TEST_F(FindsServiceTest, VerifyMaxHistoryEntriesDefault) {
+  EXPECT_CALL(*history_service_, QueryHistory(_, _, _, _))
+      .WillOnce([](const std::u16string& text_query,
+                   const history::QueryOptions& options,
+                   history::HistoryService::QueryHistoryCallback callback,
+                   base::CancelableTaskTracker* tracker) {
+        EXPECT_EQ(options.max_count, 0);  // Default should be 0 (no limit)
+        history::QueryResults results;
+        std::move(callback).Run(std::move(results));
+        return base::CancelableTaskTracker::kBadTaskId;
+      });
+
+  service_->ExecuteModelAndScheduleNotification(base::DoNothing());
+}
+
 TEST_F(FindsServiceTest, EmptyNotificationService) {
   auto service = std::make_unique<FindsService>(
       opt_guide_service_.get(), history_service_.get(), &prefs_, nullptr);

@@ -69,7 +69,7 @@ void MarkThemeAsNotInterested(PrefService* pref_service,
   update->Set(theme_pref_string, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
-base::TimeDelta GetModelExecutionCooldownDuration() {
+base::TimeDelta GetModelExecutionCooldownDurationTimeDelta() {
   return base::Days(features::kModelExecutionCooldownDurationInDays.Get());
 }
 

@@ -37,4 +37,7 @@ constexpr base::FeatureParam<int> kThemeUrlVisitCountForOptIn{
     &kChromeFinds, "finds_theme_url_visit_count_for_opt_in",
     /*default_value=*/3};
 
+constexpr base::FeatureParam<int> kMaxHistoryEntries{
+    &kChromeFinds, "max_history_entries", /*default_value=*/0};
+
 }  // namespace finds::features

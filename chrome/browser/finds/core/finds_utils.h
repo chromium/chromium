@@ -32,7 +32,7 @@ void MarkThemeAsNotInterested(
         ThemeType theme_type);
 
 // Returns the model execution cooldown duration as a base::TimeDelta.
-base::TimeDelta GetModelExecutionCooldownDuration();
+base::TimeDelta GetModelExecutionCooldownDurationTimeDelta();
 
 }  // namespace finds
 
