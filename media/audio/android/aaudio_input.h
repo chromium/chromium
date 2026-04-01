@@ -53,6 +53,8 @@ class AAudioInputStream : public AudioInputStream,
   void OnError() override;
   void OnDeviceChange() override;
 
+  // Returns if `device_` explicitly requests Bluetooth SCO type.
+  bool IsExplicitlyRequestingBluetoothSco();
   // Returns the ID of the "actual" device the stream was opened with.
   std::optional<android::AudioDeviceId> GetActualDeviceId();
 

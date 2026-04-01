@@ -70,11 +70,13 @@ void AAudioInputStream::Start(AudioInputCallback* callback) {
     callback_ = callback;
   }
 
+  audio_manager_->OnPrepareToStartAAudioInputStream(this);
   if (stream_wrapper_->Start()) {
     // Successfully started `stream_wrapper_`.
     audio_manager_->OnStartAAudioInputStream(this);
     return;
   }
+  audio_manager_->OnFailedToStartAAudioInputStream(this);
 
   {
     base::AutoLock al(lock_);
@@ -193,6 +195,10 @@ void AAudioInputStream::HandleDeviceChange() {
       callback_->OnError();
     }
   }
+}
+
+bool AAudioInputStream::IsExplicitlyRequestingBluetoothSco() {
+  return device_.GetType() == android::AudioDeviceType::kBluetoothSco;
 }
 
 std::optional<android::AudioDeviceId> AAudioInputStream::GetActualDeviceId() {

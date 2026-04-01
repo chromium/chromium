@@ -177,6 +177,11 @@ class MEDIA_EXPORT AudioManagerAndroid : public AudioManagerBase {
   // output devices.
   static AudioParameters::Format GetHdmiOutputEncodingFormats();
 
+  // Called by an `AAudioInputStream` before it is about to start.
+  void OnPrepareToStartAAudioInputStream(AAudioInputStream* stream);
+  // Called by an `AAudioInputStream` after it failed to start.
+  void OnFailedToStartAAudioInputStream(AAudioInputStream* stream);
+
   // Called by an `AAudioInputStream` when it is started, i.e. it begins
   // providing audio data.
   void OnStartAAudioInputStream(AAudioInputStream* stream);

@@ -896,6 +896,36 @@ AudioInputStream* AudioManagerAndroid::MakeLowLatencyInputStream(
 #endif
 }
 
+// Manages the Bluetooth SCO state when a Bluetooth SCO input device is
+// explicitly requested. The Android framework strictly requires the SCO state
+// to be set via the framework API prior to the stream starting (see
+// b/459531858). `state` should be true before starting the stream, and false
+// if the start fails.
+void AudioManagerAndroid::OnPrepareToStartAAudioInputStream(
+    AAudioInputStream* stream) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  if (!stream->IsExplicitlyRequestingBluetoothSco()) {
+    return;
+  }
+
+  input_streams_requiring_sco_.insert(stream);
+  GetJniDelegate().MaybeSetBluetoothScoState(true);
+}
+
+void AudioManagerAndroid::OnFailedToStartAAudioInputStream(
+    AAudioInputStream* stream) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  if (input_streams_requiring_sco_.erase(stream) == 0) {
+    return;
+  }
+  if (!input_streams_requiring_sco_.empty()) {
+    return;
+  }
+  GetJniDelegate().MaybeSetBluetoothScoState(false);
+}
+
 bool AudioManagerAndroid::IsUsingBluetoothSco(AAudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
@@ -942,7 +972,10 @@ void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
 
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
-  if (!IsUsingBluetoothSco(stream)) {
+  // OnPrepareToStartAAudioInputStream might already inserted the stream when
+  // it explicitly requests SCO.
+  if (input_streams_requiring_sco_.contains(stream) ||
+      !IsUsingBluetoothSco(stream)) {
     return;
   }
 
@@ -955,6 +988,12 @@ void AudioManagerAndroid::OnStartAAudioInputStream(AAudioInputStream* stream) {
 void AudioManagerAndroid::OnAAudioInputStreamDeviceChanged(
     AAudioInputStream* stream) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+
+  // If BT SCO is explicitly requested on this tream, fine to ignore the
+  // device changed callback from system.
+  if (stream->IsExplicitlyRequestingBluetoothSco()) {
+    return;
+  }
 
   const bool was_requiring_sco = input_streams_requiring_sco_.contains(stream);
   const bool is_requiring_sco = IsUsingBluetoothSco(stream);
