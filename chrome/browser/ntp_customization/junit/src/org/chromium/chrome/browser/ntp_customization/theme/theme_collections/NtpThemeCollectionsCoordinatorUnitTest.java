@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,6 +22,8 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -28,6 +31,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,8 +46,14 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.url.GURL;
@@ -76,6 +86,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     private Context mContextSpy;
     private View mBottomSheetView;
     private List<BackgroundCollection> mThemeCollectionsList;
+    private NtpCustomizationConfigManager mNtpCustomizationConfigManager;
 
     @Before
     public void setUp() {
@@ -85,6 +96,10 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         R.style.Theme_BrowserUI_DayNight);
         mContextSpy = spy(mContext);
         mThemeCollectionsList = new ArrayList<>();
+
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        mNtpCustomizationConfigManager = new NtpCustomizationConfigManager();
+        NtpCustomizationConfigManager.setInstanceForTesting(mNtpCustomizationConfigManager);
 
         when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
@@ -101,6 +116,12 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         verify(mBottomSheetDelegate)
                 .registerBottomSheetLayout(eq(THEME_COLLECTIONS), viewCaptor.capture());
         mBottomSheetView = viewCaptor.getValue();
+    }
+
+    @After
+    public void tearDown() {
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        NtpCustomizationConfigManager.getInstance().resetForTesting();
     }
 
     @Test
@@ -288,5 +309,69 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
         // Test for SINGLE_THEME_COLLECTION
         mCoordinator.initializeBottomSheetContent(BottomSheetType.SINGLE_THEME_COLLECTION);
         verify(mNtpSingleThemeCollectionCoordinator).initializeBottomSheetContent();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectUploadImage() {
+        mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
+                mNtpSingleThemeCollectionCoordinator);
+
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        mNtpCustomizationConfigManager.onUploadedImageSelected(bitmap, backgroundImageInfo);
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        verify(mNtpSingleThemeCollectionCoordinator).cancelLoadingState();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectChromeDefault() {
+        mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
+                mNtpSingleThemeCollectionCoordinator);
+
+        mNtpCustomizationConfigManager.onBackgroundReset();
+        mCoordinator.onBackgroundTypeChanged();
+
+        verify(mNtpSingleThemeCollectionCoordinator).cancelLoadingState();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectChromeColors() {
+        mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
+                mNtpSingleThemeCollectionCoordinator);
+
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        verify(mNtpSingleThemeCollectionCoordinator).cancelLoadingState();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectThemeCollection() {
+        mCoordinator.setNtpSingleThemeCollectionCoordinatorForTesting(
+                mNtpSingleThemeCollectionCoordinator);
+
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                bitmap, customBackgroundInfo, backgroundImageInfo);
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        verify(mNtpSingleThemeCollectionCoordinator, never()).cancelLoadingState();
     }
 }

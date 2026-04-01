@@ -21,10 +21,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.ThemeBottomSheetObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
@@ -32,7 +35,7 @@ import java.util.List;
 
 /** Coordinator for the NTP appearance theme collections bottom sheet in the NTP customization. */
 @NullMarked
-public class NtpThemeCollectionsCoordinator {
+public class NtpThemeCollectionsCoordinator implements ThemeBottomSheetObserver {
     private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
     private final List<BackgroundCollection> mThemeCollectionsList;
@@ -159,6 +162,15 @@ public class NtpThemeCollectionsCoordinator {
         }
     }
 
+    @Override
+    public void onBackgroundTypeChanged() {
+        @NtpBackgroundType
+        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
+        if (backgroundType != NtpBackgroundType.THEME_COLLECTION) {
+            cancelLoadingState();
+        }
+    }
+
     /**
      * Initialize the bottom sheet content of the given bottom sheet type when it becomes visible.
      *
@@ -231,6 +243,16 @@ public class NtpThemeCollectionsCoordinator {
 
         mBottomSheetDelegate.showBottomSheet(BottomSheetType.SINGLE_THEME_COLLECTION);
         NtpCustomizationMetricsUtils.recordThemeCollectionShow(themeCollectionHash);
+    }
+
+    /**
+     * Cancels the loading state of any single theme collection item that is currently showing a
+     * spinner.
+     */
+    void cancelLoadingState() {
+        if (mNtpSingleThemeCollectionCoordinator != null) {
+            mNtpSingleThemeCollectionCoordinator.cancelLoadingState();
+        }
     }
 
     void setNtpThemeCollectionsAdapterForTesting(NtpThemeCollectionsAdapter adapter) {

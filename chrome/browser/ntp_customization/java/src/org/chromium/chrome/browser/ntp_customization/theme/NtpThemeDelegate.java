@@ -26,4 +26,7 @@ public interface NtpThemeDelegate {
     void onThemeCollectionsClicked(
             Runnable onDailyRefreshCancelledCallback,
             List<BackgroundCollection> themeCollectionsList);
+
+    /** Called when the chrome default section is clicked. */
+    void onChromeDefaultClicked();
 }

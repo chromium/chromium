@@ -17,6 +17,7 @@ import android.widget.CompoundButton;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtil
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.ThemeBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.EmptyTextWatcher;
@@ -37,7 +39,7 @@ import java.util.List;
 
 /** Coordinator for the NTP appearance chrome colors bottom sheet in the NTP customization. */
 @NullMarked
-public class NtpChromeColorsCoordinator {
+public class NtpChromeColorsCoordinator implements ThemeBottomSheetObserver {
     private static final String TAG = "NtpChromeColor";
     private static final int MAX_NUMBER_OF_COLORS_PER_ROW = 7;
     static final int DAILY_REFRESH_DEFAULT_COLOR_POSITION = 0;
@@ -292,6 +294,19 @@ public class NtpChromeColorsCoordinator {
                 new NtpThemeColorFromHexInfo(
                         mContext, mTypedBackgroundColor.intValue(), mTypedPrimaryColor.intValue());
         onItemClicked(colorInfo);
+    }
+
+    @Override
+    public void onBackgroundTypeChanged() {
+        @NtpBackgroundType
+        int backgroundType = NtpCustomizationConfigManager.getInstance().getBackgroundType();
+
+        if (backgroundType != NtpBackgroundType.CHROME_COLOR) {
+            mPropertyModel.set(
+                    NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, RecyclerView.NO_POSITION);
+            mPropertyModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, false);
+            mIsDailyRefreshEnabled = false;
+        }
     }
 
     public @Nullable NtpThemeColorInfo getPrimaryColorInfoForTesting() {

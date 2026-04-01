@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -40,6 +42,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CollectionImage;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
@@ -73,6 +76,7 @@ public class NtpThemeCoordinatorUnitTest {
     private Context mContext;
     private NtpThemeCoordinator mCoordinator;
     private NtpThemeMediator mMediator;
+    @Mock private ThemeBottomSheetObserver mMockObserver;
 
     @Before
     public void setUp() {
@@ -93,6 +97,7 @@ public class NtpThemeCoordinatorUnitTest {
         mCoordinator.setMediatorForTesting(mMediator);
         mCoordinator.setNtpThemeBottomSheetViewForTesting(mNtpThemeBottomSheetView);
         mCoordinator.setNtpThemeCollectionsCoordinatorForTesting(mNtpThemeCollectionsCoordinator);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mMockObserver);
     }
 
     @Test
@@ -131,23 +136,42 @@ public class NtpThemeCoordinatorUnitTest {
 
     @Test
     public void testOnChromeColorsClicked() {
+        mCoordinator.setNtpChromeColorsCoordinatorForTesting(null);
+
         mCoordinator.getNtpThemeDelegateForTesting().onChromeColorsClicked();
+
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.CHROME_COLORS));
+        // Verifies NtpChromeColorsCoordinator is added to listen the NTP background
+        // type change
+        NtpChromeColorsCoordinator chromeColorsCoordinator =
+                mCoordinator.getNtpChromeColorsCoordinatorForTesting();
+        assertNotNull(chromeColorsCoordinator);
+        assertTrue(mCoordinator.hasThemeBottomSheetObserverForTesting(chromeColorsCoordinator));
     }
 
     @Test
     public void testOnThemeCollectionsClicked() {
+        mCoordinator.setNtpThemeCollectionsCoordinatorForTesting(null);
         List<BackgroundCollection> collections = new ArrayList<>();
+
         mCoordinator
                 .getNtpThemeDelegateForTesting()
                 .onThemeCollectionsClicked(mResetCustomizedThemeRunnable, collections);
+
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.THEME_COLLECTIONS));
+        // Verifies NtpThemeCollectionsCoordinator is added to listen the NTP background
+        // type change
+        NtpThemeCollectionsCoordinator themeCollectionsCoordinator =
+                mCoordinator.getNtpThemeCollectionsCoordinatorForTesting();
+        assertNotNull(themeCollectionsCoordinator);
+        assertTrue(mCoordinator.hasThemeBottomSheetObserverForTesting(themeCollectionsCoordinator));
     }
 
     @Test
     public void testOnThemeImageSelectedCallback() {
         NtpThemeCollectionManager ntpThemeCollectionManager =
                 mCoordinator.getNtpThemeManagerForTesting();
+        mCoordinator.addThemeBottomSheetObserverForTesting(mNtpThemeCollectionsCoordinator);
         GURL url = new GURL("http://test.com");
         CollectionImage image = new CollectionImage("collection", url, url, new ArrayList<>(), url);
         ntpThemeCollectionManager.setThemeCollectionImage(image);
@@ -166,6 +190,11 @@ public class NtpThemeCoordinatorUnitTest {
         verify(mBottomSheetDelegate).onNewThemeCollectionImageSelected(eq(bitmap));
         verify(mMediator)
                 .updateTrailingIconVisibilityForSectionType(NtpBackgroundType.THEME_COLLECTION);
+
+        // Verifies that notifyBottomSheetBackgroundTypeChanged() is called and triggers
+        // onBackgroundTypeChanged() for all registered observers
+        verify(mMockObserver).onBackgroundTypeChanged();
+        verify(mNtpThemeCollectionsCoordinator).onBackgroundTypeChanged();
     }
 
     @Test
@@ -173,5 +202,37 @@ public class NtpThemeCoordinatorUnitTest {
         mCoordinator.initializeBottomSheetContent(BottomSheetType.THEME_COLLECTIONS);
         verify(mNtpThemeCollectionsCoordinator)
                 .initializeBottomSheetContent(BottomSheetType.THEME_COLLECTIONS);
+    }
+
+    @Test
+    public void testNotifyBottomSheetBackgroundTypeChanged() {
+        ThemeBottomSheetObserver observer1 = mock(ThemeBottomSheetObserver.class);
+        ThemeBottomSheetObserver observer2 = mock(ThemeBottomSheetObserver.class);
+        ThemeBottomSheetObserver observer3 = mock(ThemeBottomSheetObserver.class);
+
+        mCoordinator.addThemeBottomSheetObserverForTesting(observer1);
+        mCoordinator.addThemeBottomSheetObserverForTesting(observer2);
+        mCoordinator.addThemeBottomSheetObserverForTesting(observer3);
+
+        mCoordinator.notifyBottomSheetBackgroundTypeChanged();
+
+        verify(observer1).onBackgroundTypeChanged();
+        verify(observer2).onBackgroundTypeChanged();
+        verify(observer3).onBackgroundTypeChanged();
+    }
+
+    @Test
+    public void testOnChromeColorSelected() {
+        NtpChromeColorsCoordinator mockChromeColorsCoordinator =
+                mock(NtpChromeColorsCoordinator.class);
+        mCoordinator.setNtpChromeColorsCoordinatorForTesting(mockChromeColorsCoordinator);
+        mCoordinator.addThemeBottomSheetObserverForTesting(mockChromeColorsCoordinator);
+
+        mCoordinator.onChromeColorSelected();
+
+        // Verifies that notifyBottomSheetBackgroundTypeChanged() is called and triggers
+        // onBackgroundTypeChanged() for all registered observers
+        verify(mMockObserver).onBackgroundTypeChanged();
+        verify(mockChromeColorsCoordinator).onBackgroundTypeChanged();
     }
 }

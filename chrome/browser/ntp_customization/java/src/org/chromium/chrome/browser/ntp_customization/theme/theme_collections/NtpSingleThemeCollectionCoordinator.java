@@ -252,9 +252,7 @@ public class NtpSingleThemeCollectionCoordinator {
         mDailyRefreshThemeCollectionHash = mThemeCollectionHash;
         if (isChecked) {
             mNtpThemeCollectionManager.setThemeCollectionDailyRefreshed(mThemeCollectionId);
-            if (mNtpThemeCollectionsAdapter != null) {
-                mNtpThemeCollectionsAdapter.cancelLoadingState();
-            }
+            cancelLoadingState();
         } else {
             // If unchecked, resets to the default background by invoking the callback.
             mOnDailyRefreshCancelledCallback.run();
@@ -298,6 +296,13 @@ public class NtpSingleThemeCollectionCoordinator {
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(null);
         mDailyRefreshSwitchButton.setCheckedWithoutAnimation(isChecked);
         mDailyRefreshSwitchButton.setOnCheckedChangeListener(this::handleDailyRefreshClick);
+    }
+
+    /** Cancels the loading state of any item that is currently showing a spinner. */
+    void cancelLoadingState() {
+        if (mNtpThemeCollectionsAdapter != null) {
+            mNtpThemeCollectionsAdapter.cancelLoadingState();
+        }
     }
 
     NtpThemeCollectionsAdapter getNtpThemeCollectionsAdapterForTesting() {

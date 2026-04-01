@@ -191,6 +191,7 @@ public class NtpThemeMediator {
     @VisibleForTesting
     void handleChromeDefaultSectionClick(View view) {
         resetCustomizedTheme();
+        mNtpThemeDelegate.onChromeDefaultClicked();
 
         NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.CHROME_DEFAULT);
     }

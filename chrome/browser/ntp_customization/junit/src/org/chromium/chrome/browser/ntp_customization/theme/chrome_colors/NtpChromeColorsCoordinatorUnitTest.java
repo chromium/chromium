@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.theme.chrome_colors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
@@ -57,8 +58,10 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link NtpChromeColorsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -535,6 +538,66 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 RecyclerView.NO_POSITION);
     }
 
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectUploadImage() {
+        setupChromeColorSelectionState();
+
+        // Changes the NTP background to the uploaded image
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        mNtpCustomizationConfigManager.onUploadedImageSelected(bitmap, backgroundImageInfo);
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        verifyChromeColorSelectionCleared();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectChromeDefault() {
+        setupChromeColorSelectionState();
+
+        // Changes the NTP background to the default background
+        mNtpCustomizationConfigManager.onBackgroundReset();
+        mCoordinator.onBackgroundTypeChanged();
+
+        verifyChromeColorSelectionCleared();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectThemeCollection() {
+        setupChromeColorSelectionState();
+
+        // Changes the NTP background to a theme collection image
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo backgroundImageInfo =
+                new BackgroundImageInfo(new Matrix(), new Matrix(), null, null);
+        CustomBackgroundInfo customBackgroundInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.EXAMPLE_URL,
+                        "test",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        mNtpCustomizationConfigManager.onThemeCollectionImageSelected(
+                bitmap, customBackgroundInfo, backgroundImageInfo);
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        verifyChromeColorSelectionCleared();
+    }
+
+    @Test
+    public void testOnBackgroundTypeChanged_afterSelectChromeColors() {
+        setupChromeColorSelectionState();
+
+        mCoordinator.onBackgroundTypeChanged();
+
+        // Verifies the selection state is not cleared
+        assertEquals(5, (int) mPropertyModel.get(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX));
+        assertTrue(mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
+        assertTrue(mCoordinator.getIsDailyRefreshEnabledForTesting());
+    }
+
     private void verifyIsDailyRefreshCheckedState(
             boolean isDailyRefreshEnabled,
             boolean expectedToggleEnabled,
@@ -565,5 +628,27 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 .registerBottomSheetLayout(eq(CHROME_COLORS), viewCaptor.capture());
         mBottomSheetView = viewCaptor.getValue();
         mPropertyModel = mCoordinator.getPropertyModelForTesting();
+    }
+
+    private void setupChromeColorSelectionState() {
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(
+                        mContext, NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorInfo, NtpBackgroundType.CHROME_COLOR);
+        mPropertyModel.set(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX, 5);
+        mPropertyModel.set(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED, true);
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        mCoordinator.onDailyRefreshSwitchToggled(null, true);
+    }
+
+    private void verifyChromeColorSelectionCleared() {
+        assertEquals(
+                RecyclerView.NO_POSITION,
+                (int) mPropertyModel.get(NtpChromeColorsProperties.HIGHLIGHTED_ITEM_INDEX));
+        assertFalse(mPropertyModel.get(NtpChromeColorsProperties.IS_DAILY_REFRESH_SWITCH_CHECKED));
+        assertFalse(mCoordinator.getIsDailyRefreshEnabledForTesting());
+        assertNotEquals(
+                NtpBackgroundType.CHROME_COLOR, mNtpCustomizationConfigManager.getBackgroundType());
     }
 }

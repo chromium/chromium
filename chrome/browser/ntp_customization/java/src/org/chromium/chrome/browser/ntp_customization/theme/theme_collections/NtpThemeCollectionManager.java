@@ -36,6 +36,7 @@ public class NtpThemeCollectionManager {
     private final Context mContext;
     private final NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private final Callback<Bitmap> mOnThemeImageSelectedCallback;
+    private boolean mOtherBackgroundTypeSelected;
     private final @Nullable ImageFetcher mImageFetcher;
     private boolean mIsDestroyed;
     private @Nullable Runnable mFetchNextImageRunnable;
@@ -126,12 +127,14 @@ public class NtpThemeCollectionManager {
     public void selectLocalBackgroundImage() {
         resetSelectionState();
         mNtpThemeCollectionBridge.selectLocalBackgroundImage();
+        mOtherBackgroundTypeSelected = true;
     }
 
     /** Resets the custom background. */
     public void resetCustomBackground() {
         resetSelectionState();
         mNtpThemeCollectionBridge.resetCustomBackground();
+        mOtherBackgroundTypeSelected = true;
     }
 
     /**
@@ -234,18 +237,41 @@ public class NtpThemeCollectionManager {
     private void resetSelectionState() {
         mFetchNextImageRunnable = null;
         mSelectingThemeCollectionImage = null;
+        mOtherBackgroundTypeSelected = false;
     }
 
     /**
-     * Determines whether the received theme update should be processed.
+     * Determines whether a fetched theme update from the native side should be applied. This
+     * prevents applying a theme that the user has already navigated away from.
      *
-     * @param info The {@link CustomBackgroundInfo} of the update.
+     * <p>An asynchronous image fetch might complete after the user has already changed their
+     * selection. This method ensures that only the update corresponding to the user's most recent
+     * choice is processed.
+     *
+     * @param info The {@link CustomBackgroundInfo} of the theme update received from native.
+     * @return {@code true} if the theme update should be processed and applied, {@code false}
+     *     otherwise.
      */
-    private boolean shouldProcessThemeUpdate(CustomBackgroundInfo info) {
+    @VisibleForTesting
+    boolean shouldProcessThemeUpdate(CustomBackgroundInfo info) {
+        // Do not process the update if the user has subsequently selected a non-theme-collection
+        // background (e.g., "Upload an image", "Chrome Default" or "Chrome Colors").
+        if (mOtherBackgroundTypeSelected) {
+            return false;
+        }
+
+        // If the user was selecting a specific image from a theme collection, the incoming
+        // update's URL must match the selected image's URL. This ensures that if the user clicks
+        // multiple images in rapid succession, only the last one clicked is applied.
         if (mSelectingThemeCollectionImage != null) {
             return mSelectingThemeCollectionImage.imageUrl.equals(info.backgroundUrl);
         }
 
+        // Otherwise, the update should only be processed if it's for the daily refresh feature.
         return info.isDailyRefreshEnabled;
+    }
+
+    @Nullable CollectionImage getSelectingThemeCollectionImageForTesting() {
+        return mSelectingThemeCollectionImage;
     }
 }
