@@ -2926,9 +2926,6 @@ crbug.com/491070386 virtual/rust-xml/external/wpt/svg/painting/inner-outer-svg-o
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label.html [ Failure ]
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection.html [ Failure ]
 crbug.com/490449804 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text.html [ Failure ]
-crbug.com/490449804 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label.html [ Failure ]
-crbug.com/490449804 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection.html [ Failure ]
-crbug.com/490449804 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text.html [ Failure ]
 crbug.com/490449804 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label.html [ Failure ]
 crbug.com/490449804 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection.html [ Failure ]
 crbug.com/490449804 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text.html [ Failure ]
@@ -3016,10 +3013,6 @@ crbug.com/489882869 external/wpt/html/semantics/forms/the-select-element/customi
 crbug.com/489879856 [ Win ] external/wpt/orientation-sensor/RelativeOrientationSensor.https.html [ Failure Timeout ]
 crbug.com/489883801 external/wpt/webdriver/tests/classic/get_current_url/get.py [ Failure ]
 crbug.com/489883800 external/wpt/webrtc-encoded-transform/RTCEncodedFrame-copy-construction.https.html [ Skip Timeout ]
-crbug.com/489882869 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-after-select.html [ Failure ]
-crbug.com/489882869 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree.html [ Failure ]
-crbug.com/489882869 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html [ Failure ]
-crbug.com/489882869 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-after-select.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html [ Failure ]
@@ -6717,18 +6710,6 @@ crbug.com/40253999 virtual/indexeddb_sqlite/external/wpt/storage/partitioned-est
 
 # Flaky on headless_shell_wpt_tests
 crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customizable-select/select-option-images.html [ Failure Pass ]
-
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-keyboard-behavior.optional.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-mouse-behavior.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/select-listbox-typeahead.optional.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-multiple-popup/select-multiple-popup-appearance.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-sizing.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/select-listbox-home-end-pagedown-pageup.optional.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select-listbox/customizable-select-listbox-appearance-focused.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-keyboard-behavior.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-filtered-pseudo.tentative.html [ Failure ]
-crbug.com/357649033 virtual/customizable-select-listbox-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-appearance.html [ Failure ]
 
 # These tests are included in the virtual test suite just to make sure that
 # they don't crash when the flag is disabled.

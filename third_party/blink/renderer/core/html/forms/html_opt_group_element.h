@@ -72,13 +72,6 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   Member<HTMLSlotElement> opt_group_slot_;
   Member<HTMLDivElement> label_;
   Member<HTMLSelectElement> owner_select_;
-
-  // customizable_select_rendering_ is set to true when the CustomizableSelect
-  // flag is enabled and this element is in the DOM subtree of a <select> which
-  // UsesMenuList.
-  // TODO(crbug.com/357649033): Remove this flag, it should effectively always
-  // be enabled when CustomizableSelectListbox is enabled.
-  bool customizable_select_rendering_;
 };
 
 }  // namespace blink

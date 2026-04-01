@@ -603,24 +603,6 @@
       "abotella@igalia.com"
     ]
   },
-  {
-    "prefix": "customizable-select-listbox-disabled",
-    "platforms": [
-      "Linux"
-    ],
-    "bases": [
-      "external/wpt/html/semantics/forms/the-select-element",
-      "wpt_internal/html/semantics/forms/the-select-element"
-    ],
-    "args": [
-      "--disable-features=CustomizableSelectListbox"
-    ],
-    "expires": "Aug 1, 2026",
-    "owners": [
-      "jarhar@chromium.org",
-      "dom-dev@google.com"
-    ]
-  },
   "This never expires because it tests rendering of form controls when the",
   "preferred color-scheme is dark. It should now be possible to render",
   "controls dark even if the preferred is light, but that requires a bit of",

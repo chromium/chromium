@@ -2005,16 +2005,9 @@
       depends_on: ["AppearanceBase"],
     },
     {
-      // appearance:base-select for <select multiple> and <select size=n>
-      // https://issues.chromium.org/issues/357649033
-      name: "CustomizableSelectListbox",
-      status: "stable",
-    },
-    {
       // appearance:base-select for <select multiple size=1> with a picker.
       name: "CustomizableSelectMultiplePopup",
       status: "experimental",
-      depends_on: ["CustomizableSelectListbox"],
     },
     // see crbug.com/341313078
     {
@@ -2738,7 +2731,6 @@
       // listbox select element to perform filtering.
       name: "FilterableSelect",
       status: "experimental",
-      depends_on: ["CustomizableSelectListbox"],
     },
     {
       // Fix for https://crbug.com/41153707

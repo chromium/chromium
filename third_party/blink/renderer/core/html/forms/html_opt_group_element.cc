@@ -45,11 +45,6 @@ namespace blink {
 
 namespace {
 
-bool CanAssignToOptGroupSlot(const Node& node) {
-  return node.HasTagName(html_names::kOptionTag) ||
-         node.HasTagName(html_names::kHrTag);
-}
-
 HTMLLegendElement* FirstChildLegend(const HTMLOptGroupElement& optgroup) {
   return Traversal<HTMLLegendElement>::FirstChild(optgroup);
 }
@@ -128,7 +123,6 @@ bool HTMLOptGroupElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
 
 Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
     ContainerNode& insertion_point) {
-  customizable_select_rendering_ = false;
   HTMLElement::InsertedInto(insertion_point);
 
   owner_select_ =
@@ -136,10 +130,6 @@ Node::InsertionNotificationRequest HTMLOptGroupElement::InsertedInto(
   if (owner_select_) {
     owner_select_->OptGroupInsertedOrRemoved(*this);
   }
-  // TODO(crbug.com/1511354): This UsesMenuList check doesn't account for
-  // the case when the select's rendering is changed after insertion.
-  customizable_select_rendering_ =
-      owner_select_ && owner_select_->UsesMenuList();
   UpdateGroupLabel();
 
   if (HTMLSelectElement* select = OwnerSelectElement()) {
@@ -226,10 +216,7 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
   for (Node& child : NodeTraversal::ChildrenOf(*this)) {
     if (!child.IsSlotable())
       continue;
-    if (RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() ||
-        customizable_select_rendering_ || CanAssignToOptGroupSlot(child)) {
-      opt_group_nodes.push_back(child);
-    }
+    opt_group_nodes.push_back(child);
   }
   opt_group_slot_->Assign(opt_group_nodes);
 }
@@ -240,27 +227,16 @@ void HTMLOptGroupElement::UpdateGroupLabel() {
   label.setTextContent(label_text);
   label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));
 
-  // Empty or missing label attributes result in a blank line being rendered,
-  // see fast/forms/select/listbox-appearance-basic.html. If the author provides
-  // a <legend> element which replaces the label attribute, then set the label
-  // to display:none.
-  // The ContainsOnlyWhitespaceOrEmpty() check here was shortsightedly added for
-  // CustomizableSelect to remove the empty line behavior, but we want to remove
-  // it for CustomizableSelectListbox.
-  if ((!RuntimeEnabledFeatures::CustomizableSelectListboxEnabled() &&
-       label_text.ContainsOnlyWhitespaceOrEmpty()) ||
-      FirstChildLegend(*this)) {
-    if (customizable_select_rendering_ ||
-        RuntimeEnabledFeatures::CustomizableSelectListboxEnabled()) {
-      // If the author uses <legend> to label the <optgroup> instead of the
-      // label attribute, then we don't want extra space being taken up for the
-      // unused label attribute.
-      // TODO(crbug.com/383841336): Consider replacing this with UA style rules
-      // if we can make the label attribute become a part like pseudo-element,
-      // and add more tests for the label attribute with base appearance
-      // rendering.
-      label.SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
-    }
+  // If the author provides a <legend> element to replace the label attribute,
+  // then don't render the label element because it would result in an unwanted
+  // empty line. Otherwise, always render the label element, even if it results
+  // in an empty line. See fast/forms/select/listbox-appearance-basic.html.
+  if (FirstChildLegend(*this)) {
+    // TODO(crbug.com/383841336): Consider replacing this with UA style rules
+    // if we can make the label attribute become a part like pseudo-element,
+    // and add more tests for the label attribute with base appearance
+    // rendering.
+    label.SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
   } else {
     label.RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
   }
