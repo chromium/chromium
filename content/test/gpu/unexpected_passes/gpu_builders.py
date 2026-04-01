@@ -56,6 +56,7 @@ class GpuBuilders(builders.Builders):
     if self._non_chromium_builders is None:
       str_builders = {
           'Win V8 FYI Release (NVIDIA)',
+          'Mac V8 FYI Release (Apple M2)',
           'Mac V8 FYI Release (Intel)',
           'Linux V8 FYI Release - pointer compression (NVIDIA)',
           'Linux V8 FYI Release (NVIDIA)',
