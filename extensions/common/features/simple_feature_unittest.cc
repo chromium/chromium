@@ -233,6 +233,117 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
           .result());
 }
 
+TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIds) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  const std::string kIdBaz("bazabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kHashedFoo((ExtensionId(kIdFoo)));
+  const HashedExtensionId kHashedBar((ExtensionId(kIdBar)));
+  const HashedExtensionId kHashedBaz((ExtensionId(kIdBaz)));
+
+  SimpleFeature feature;
+  feature.set_allowlist({kHashedBaz.value().c_str()});
+
+  // Only kIdBaz is in the JSON allowlist; foo and bar are rejected.
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
+            feature
+                .IsAvailableToManifest(kHashedFoo, Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
+                .result());
+
+  {
+    // Allowlist both foo and bar via the command-line override.
+    SimpleFeature::ScopedThreadUnsafeAllowlistForTest allowlist(
+        {kIdFoo, kIdBar});
+
+    // Both foo and bar now pass the allowlist check.
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+              feature
+                  .IsAvailableToManifest(kHashedFoo, Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+              feature
+                  .IsAvailableToManifest(kHashedBar, Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
+
+    // An ID not in either list is still rejected.
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kNotFoundInAllowlist,
+        feature
+            .IsAvailableToManifest(
+                HashedExtensionId(
+                    ExtensionId("notabbbbccccddddeeeeffffgggghhhh")),
+                Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
+                -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+            .result());
+  }
+
+  // After the scoped override, foo is rejected again.
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
+            feature
+                .IsAvailableToManifest(kHashedFoo, Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
+                .result());
+}
+
+TEST_F(SimpleFeatureTest, CommandLineAllowlistMultipleIdsFromFlag) {
+  const std::string kIdFoo("fooabbbbccccddddeeeeffffgggghhhh");
+  const std::string kIdBar("barabbbbccccddddeeeeffffgggghhhh");
+  const HashedExtensionId kHashedFoo((ExtensionId(kIdFoo)));
+  const HashedExtensionId kHashedBar((ExtensionId(kIdBar)));
+
+  SimpleFeature feature;
+  feature.set_allowlist({kHashedFoo.value().c_str()});
+
+  {
+    auto allowlist = SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
+        CreateFromCommaSeparated(kIdFoo + "," + kIdBar);
+
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+              feature
+                  .IsAvailableToManifest(kHashedFoo, Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
+    EXPECT_EQ(Feature::AvailabilityResult::kIsAvailable,
+              feature
+                  .IsAvailableToManifest(kHashedBar, Manifest::Type::kUnknown,
+                                         ManifestLocation::kInvalidLocation, -1,
+                                         Feature::UNSPECIFIED_PLATFORM,
+                                         kUnspecifiedContextId)
+                  .result());
+
+    EXPECT_EQ(
+        Feature::AvailabilityResult::kNotFoundInAllowlist,
+        feature
+            .IsAvailableToManifest(
+                HashedExtensionId(
+                    ExtensionId("notabbbbccccddddeeeeffffgggghhhh")),
+                Manifest::Type::kUnknown, ManifestLocation::kInvalidLocation,
+                -1, Feature::UNSPECIFIED_PLATFORM, kUnspecifiedContextId)
+            .result());
+  }
+
+  EXPECT_EQ(Feature::AvailabilityResult::kNotFoundInAllowlist,
+            feature
+                .IsAvailableToManifest(kHashedBar, Manifest::Type::kUnknown,
+                                       ManifestLocation::kInvalidLocation, -1,
+                                       Feature::UNSPECIFIED_PLATFORM,
+                                       kUnspecifiedContextId)
+                .result());
+}
+
 TEST_F(SimpleFeatureTest, Blocklist) {
   const HashedExtensionId kIdFoo(
       ExtensionId("fooabbbbccccddddeeeeffffgggghhhh"));

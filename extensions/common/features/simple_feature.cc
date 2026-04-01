@@ -16,6 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "components/crx_file/id_util.h"
@@ -41,12 +42,16 @@ namespace {
 
 struct AllowlistInfo {
   AllowlistInfo() {
-    const std::string& allowlisted_extension_id =
+    const std::string& allowlisted_extension_ids =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kAllowlistedExtensionID);
-    hashed_id = HashedIdInHex(allowlisted_extension_id);
+    for (const auto& id :
+         base::SplitString(allowlisted_extension_ids, ",",
+                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+      hashed_ids.push_back(HashedIdInHex(id));
+    }
   }
-  std::string hashed_id;
+  std::vector<std::string> hashed_ids;
 };
 
 // A singleton copy of the --allowlisted-extension-id so that we don't need to
@@ -185,21 +190,39 @@ bool IsCommandLineSwitchEnabled(base::CommandLine* command_line,
 }
 
 bool IsAllowlistedForTest(const HashedExtensionId& hashed_id) {
-  const std::string& allowlisted_id = GetAllowlistInfo().hashed_id;
-  return !allowlisted_id.empty() && allowlisted_id == hashed_id.value();
+  const auto& ids = GetAllowlistInfo().hashed_ids;
+  return std::ranges::contains(ids, hashed_id.value());
 }
 
 }  // namespace
 
 SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
     ScopedThreadUnsafeAllowlistForTest(const std::string& id)
-    : previous_id_(GetAllowlistInfo().hashed_id) {
-  GetAllowlistInfo().hashed_id = HashedIdInHex(id);
+    : previous_ids_(GetAllowlistInfo().hashed_ids) {
+  GetAllowlistInfo().hashed_ids = {HashedIdInHex(id)};
+}
+
+SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
+    ScopedThreadUnsafeAllowlistForTest(const std::vector<std::string>& ids)
+    : previous_ids_(GetAllowlistInfo().hashed_ids) {
+  GetAllowlistInfo().hashed_ids.clear();
+  for (const auto& id : ids) {
+    GetAllowlistInfo().hashed_ids.push_back(HashedIdInHex(id));
+  }
+}
+
+// static
+std::unique_ptr<SimpleFeature::ScopedThreadUnsafeAllowlistForTest>
+SimpleFeature::ScopedThreadUnsafeAllowlistForTest::CreateFromCommaSeparated(
+    const std::string& comma_separated_ids) {
+  return std::make_unique<ScopedThreadUnsafeAllowlistForTest>(
+      base::SplitString(comma_separated_ids, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY));
 }
 
 SimpleFeature::ScopedThreadUnsafeAllowlistForTest::
     ~ScopedThreadUnsafeAllowlistForTest() {
-  GetAllowlistInfo().hashed_id = previous_id_;
+  GetAllowlistInfo().hashed_ids = previous_ids_;
 }
 
 SimpleFeature::SimpleFeature()
