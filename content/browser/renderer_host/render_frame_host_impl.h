@@ -21,6 +21,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -4262,7 +4264,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       LifecycleStateImpl state);
 
   // Check the renderer provided sandbox flags matches with what the browser
-  // process computed on its own. This triggers DCHECK and DumpWithoutCrashing()
+  // process computed on its own. This triggers CHECK and DumpWithoutCrashing()
   //
   // TODO(crbug.com/40051217) Remove this when we are confident the value
   // computed from the browser is always matching.

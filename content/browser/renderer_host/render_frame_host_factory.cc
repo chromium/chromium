@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_host_factory.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -47,13 +48,13 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostFactory::Create(
 
 // static
 void RenderFrameHostFactory::RegisterFactory(RenderFrameHostFactory* factory) {
-  DCHECK(!factory_) << "Can't register two factories at once.";
+  CHECK(!factory_) << "Can't register two factories at once.";
   factory_ = factory;
 }
 
 // static
 void RenderFrameHostFactory::UnregisterFactory() {
-  DCHECK(factory_) << "No factory to unregister.";
+  CHECK(factory_) << "No factory to unregister.";
   factory_ = nullptr;
 }
 

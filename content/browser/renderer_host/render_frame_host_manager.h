@@ -266,8 +266,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
     // Returns the (possibly cached) value of
     // render_frame_host->IsNavigationSameSite(url_info). (For cached results,
-    // this includes DCHECKs that the value hasn't changed, so the optimization
-    // only reduces the number of calls in release builds without DCHECKs.)
+    // this includes CHECKs that the value hasn't changed, so the optimization
+    // only reduces the number of calls in release builds without CHECKs.)
     bool Get(const RenderFrameHostImpl& render_frame_host,
              const UrlInfo& url_info);
 

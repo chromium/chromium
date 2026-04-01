@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/render_frame_host_csp_context.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -25,8 +27,8 @@ void RenderFrameHostCSPContext::SanitizeDataForUseInCspViolation(
     network::mojom::CSPDirectiveName directive,
     GURL* blocked_url,
     network::mojom::SourceLocation* source_location) const {
-  DCHECK(blocked_url);
-  DCHECK(source_location);
+  CHECK(blocked_url);
+  CHECK(source_location);
   GURL source_location_url(source_location->url);
 
   // The main goal of this is to avoid leaking information between potentially

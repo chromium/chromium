@@ -12,6 +12,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
@@ -60,7 +61,7 @@ void JavaScriptResultCallback(
 // static
 RenderFrameHost* RenderFrameHost::FromJavaRenderFrameHost(
     const JavaRef<jobject>& jrender_frame_host_android) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   if (jrender_frame_host_android.is_null())
     return nullptr;
 
@@ -180,7 +181,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& interface_name,
     int64_t message_pipe_raw_handle) const {
-  DCHECK(render_frame_host_->IsRenderFrameLive());
+  CHECK(render_frame_host_->IsRenderFrameLive());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),
       mojo::ScopedMessagePipeHandle(
@@ -190,7 +191,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
 void RenderFrameHostAndroid::TerminateRendererDueToBadMessage(
     JNIEnv* env,
     int32_t reason) const {
-  DCHECK_LT(reason, bad_message::BAD_MESSAGE_MAX);
+  CHECK_LT(reason, bad_message::BAD_MESSAGE_MAX);
   ReceivedBadMessage(render_frame_host_->GetProcess(),
                      static_cast<bad_message::BadMessageReason>(reason));
 }

@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -609,7 +611,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   const mojo::DataPipeConsumerHandle& response_body() {
-    DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
+    CHECK_EQ(state_, WILL_PROCESS_RESPONSE);
     return response_body_.get();
   }
 
@@ -742,7 +744,7 @@ class CONTENT_EXPORT NavigationRequest
                            const GURL& previous_main_frame_url);
 
   NavigationType navigation_type() const {
-    DCHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
+    CHECK(state_ == DID_COMMIT || state_ == DID_COMMIT_ERROR_PAGE);
     return navigation_type_;
   }
 
@@ -818,7 +820,7 @@ class CONTENT_EXPORT NavigationRequest
 
   void set_renderer_cancellation_window_ended_callback(
       base::OnceClosure callback) {
-    DCHECK(!renderer_cancellation_window_ended());
+    CHECK(!renderer_cancellation_window_ended());
     renderer_cancellation_window_ended_callback_ = std::move(callback);
   }
 
@@ -876,7 +878,7 @@ class CONTENT_EXPORT NavigationRequest
   // OnResponseStarted(), this is expected to be equivalent to
   // HasRenderFrameHost().
   bool response_should_be_rendered() const {
-    DCHECK_GE(state_, WILL_PROCESS_RESPONSE);
+    CHECK_GE(state_, WILL_PROCESS_RESPONSE);
     return response_should_be_rendered_;
   }
 
@@ -1140,7 +1142,7 @@ class CONTENT_EXPORT NavigationRequest
   }
 
   PrerenderHostId activating_prerender_host_id() const {
-    DCHECK(activating_prerender_host_id_.has_value())
+    CHECK(activating_prerender_host_id_.has_value())
         << "Must be called after StartNavigation()";
     return *activating_prerender_host_id_;
   }
@@ -1172,14 +1174,14 @@ class CONTENT_EXPORT NavigationRequest
   std::vector<blink::mojom::WebFeature> TakeWebFeaturesToLog();
 
   void set_same_document_metrics_token(base::UnguessableToken token) {
-    DCHECK(!same_document_metrics_token_);
+    CHECK(!same_document_metrics_token_);
     same_document_metrics_token_ = token;
   }
 
   void set_subresource_proxying_url_loader_service_bind_context(
       base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext>
           bind_context) {
-    DCHECK(!subresource_proxying_url_loader_service_bind_context_);
+    CHECK(!subresource_proxying_url_loader_service_bind_context_);
     subresource_proxying_url_loader_service_bind_context_ = bind_context;
   }
 
@@ -2383,11 +2385,11 @@ class CONTENT_EXPORT NavigationRequest
   // response.
   void ComputePoliciesToCommitForError();
 
-  // DCHECK that tranistioning from the current state to |state| valid. This
+  // CHECK that tranistioning from the current state to |state| valid. This
   // does nothing in non-debug builds.
   void CheckStateTransition(NavigationState state) const;
 
-  // Set |state_| to |state| and also DCHECK that this state transition is
+  // Set |state_| to |state| and also CHECK that this state transition is
   // valid.
   void SetState(NavigationState state);
 
@@ -3027,7 +3029,7 @@ class CONTENT_EXPORT NavigationRequest
   // left referencing it.
   std::unique_ptr<NavigationControllerImpl::PendingEntryRef> pending_entry_ref_;
 
-  // Used only by DCHECK.
+  // Used only by CHECK.
   // True if the NavigationThrottles are running an event, the request then can
   // be cancelled for deferring.
   bool processing_navigation_throttle_ = false;
