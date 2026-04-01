@@ -1148,6 +1148,11 @@ void BrowserAccessibilityManagerWin::FinalizeSelectionEvents(
 void BrowserAccessibilityManagerWin::HandleAriaPropertiesChangedEvent(
     BrowserAccessibility& node) {
   DCHECK_IN_ON_ACCESSIBILITY_EVENTS();
+  // ARIA properties are a web concept; skip for non-web-content sources
+  // (e.g. Views-sourced managers via WidgetAXManager).
+  if (delegate_ && !delegate_->AccessibilityIsWebContentSource()) {
+    return;
+  }
   aria_properties_events_.insert(&node);
 }
 
