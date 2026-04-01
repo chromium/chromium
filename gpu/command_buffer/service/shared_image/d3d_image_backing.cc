@@ -1593,6 +1593,11 @@ wgpu::Buffer D3DImageBacking::BeginAccessDawnBuffer(
     wgpu::BackendType backend_type,
     wgpu::BufferUsage usage) {
   AutoLock auto_lock(this);
+
+  if (!ValidateBeginAccess(true)) {
+    return nullptr;
+  }
+
   Microsoft::WRL::ComPtr<ID3D12Device> dawn_d3d12_device;
   if (backend_type == wgpu::BackendType::D3D12) {
     dawn_d3d12_device = dawn::native::d3d12::GetD3D12Device(device.Get());
