@@ -24,28 +24,12 @@ ExtensionActionsBridge::ExtensionActionsBridge(
     const base::android::JavaRef<jobject>& java_object)
     : browser_(browser),
       profile_(browser->GetProfile()),
-      java_object_(java_object),
-      keybinding_registry_(
-          std::make_unique<ExtensionKeybindingRegistryAndroid>(profile_)) {}
+      java_object_(java_object) {}
 
 ExtensionActionsBridge::~ExtensionActionsBridge() = default;
 
 void ExtensionActionsBridge::Destroy(JNIEnv* env) {
   delete this;
-}
-
-jni_zero::ScopedJavaLocalRef<jobject>
-ExtensionActionsBridge::HandleKeyDownEvent(
-    JNIEnv* env,
-    const ui::KeyEventAndroid& key_event) {
-  std::variant<bool, std::string> result =
-      keybinding_registry_->HandleKeyDownEvent(key_event);
-  if (result.index() == 0) {
-    return Java_HandleKeyEventResult_Constructor(env, std::get<bool>(result),
-                                                 "");
-  }
-  return Java_HandleKeyEventResult_Constructor(env, false,
-                                               std::get<std::string>(result));
 }
 
 static int64_t JNI_ExtensionActionsBridge_Init(

@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.extensions.R;
-import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefService;
@@ -172,17 +171,7 @@ public class ExtensionsToolbarCoordinatorImpl implements ExtensionsToolbarCoordi
             return false;
         }
 
-        ExtensionActionsBridge.HandleKeyEventResult result = mBridge.handleKeyDownEvent(event);
-        if (result.handled) {
-            return true;
-        }
-        if (result.actionId.isEmpty()) {
-            return false;
-        }
-
-        mExtensionActionListCoordinator.executeUserAction(
-                result.actionId, InvocationSource.COMMAND);
-        return true;
+        return mExtensionsToolbarBridge.handleKeyDownEvent(event);
     }
 
     @Override

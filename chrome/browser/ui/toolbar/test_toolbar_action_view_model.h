@@ -44,6 +44,8 @@ class TestToolbarActionViewModel : public ToolbarActionViewModel {
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source) override;
   void ExecuteUserAction(InvocationSource source) override;
+  bool CanHandleAccelerators() const override;
+  bool TryHandleAcceleratorPress() override;
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
   extensions::SitePermissionsHelper::SiteInteraction GetSiteInteraction(
       content::WebContents* web_contents) const override;

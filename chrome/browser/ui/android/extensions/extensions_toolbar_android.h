@@ -9,6 +9,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -79,6 +80,7 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
   std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds(JNIEnv* env);
   int GetExtensionsMenuButtonState(JNIEnv* env,
                                    content::WebContents* web_contents);
+  bool HandleKeyDownEvent(JNIEnv* env, const ui::KeyEventAndroid& key_event);
   bool IsActionDraggable(JNIEnv* env,
                          const ToolbarActionsModel::ActionId& action_id);
   void ExecuteUserAction(const ToolbarActionsModel::ActionId& action_id,
@@ -112,6 +114,11 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
                           ExtensionsToolbarViewModel::Observer>
       toolbar_view_model_observation_{this};
 
+  // The registry for keybindings.
+  const std::unique_ptr<ExtensionKeybindingRegistryAndroid>
+      keybinding_registry_;
+
+  // Java counterpart that `this` is owned by.
   const base::android::ScopedJavaGlobalRef<jobject> java_object_;
 };
 

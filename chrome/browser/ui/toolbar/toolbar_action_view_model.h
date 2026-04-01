@@ -165,6 +165,15 @@ class ToolbarActionViewModel {
   // Unregisters an accelerator. Called when the view is removed from a widget.
   virtual void UnregisterCommand() {}
 
+  // Returns true if this controller can handle accelerators (i.e., keyboard
+  // commands) on the currently-active WebContents.
+  // This must only be called if the extension has an associated command.
+  virtual bool CanHandleAccelerators() const = 0;
+
+  // Tries to handle the accelerator press, and returns whether the event was
+  // handled.
+  virtual bool TryHandleAcceleratorPress() = 0;
+
   // Returns the PageInteractionStatus for the current page.
   virtual extensions::SitePermissionsHelper::SiteInteraction GetSiteInteraction(
       content::WebContents* web_contents) const = 0;

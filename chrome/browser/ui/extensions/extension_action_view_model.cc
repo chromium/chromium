@@ -439,6 +439,21 @@ void ExtensionActionViewModel::UnregisterCommand() {
   delegate_->UnregisterCommand();
 }
 
+bool ExtensionActionViewModel::TryHandleAcceleratorPress() {
+  DCHECK(CanHandleAccelerators());
+
+  if (IsShowingPopup()) {
+    // TODO(crbug.com/498029086): This code is not reached on Android, because
+    // the popup absorbs commands when the popup is open, which is a divergent
+    // behavior from Desktop.
+    HidePopup();
+  } else {
+    ExecuteUserAction(ToolbarActionViewModel::InvocationSource::kCommand);
+  }
+
+  return true;
+}
+
 void ExtensionActionViewModel::OnExtensionCommandAdded(
     const std::string& extension_id,
     const std::string& command_name) {

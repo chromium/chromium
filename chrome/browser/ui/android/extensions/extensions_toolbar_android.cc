@@ -11,10 +11,13 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/events/android/key_event_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -42,6 +45,9 @@ ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
           ToolbarActionsModel::Get(browser_->GetProfile()))),
       scoped_toolbar_view_model_user_data_(browser->GetUnownedUserDataHost(),
                                            *toolbar_view_model_),
+      keybinding_registry_(std::make_unique<ExtensionKeybindingRegistryAndroid>(
+          browser_->GetProfile(),
+          toolbar_view_model_.get())),
       java_object_(java_object) {
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());
 
@@ -226,6 +232,12 @@ int ExtensionsToolbarAndroid::GetExtensionsMenuButtonState(
     JNIEnv* env,
     content::WebContents* web_contents) {
   return static_cast<int>(toolbar_view_model_->GetButtonState(*web_contents));
+}
+
+bool ExtensionsToolbarAndroid::HandleKeyDownEvent(
+    JNIEnv* env,
+    const ui::KeyEventAndroid& key_event) {
+  return keybinding_registry_->HandleKeyDownEvent(key_event);
 }
 
 bool ExtensionsToolbarAndroid::IsActionDraggable(

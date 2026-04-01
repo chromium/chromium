@@ -57,12 +57,14 @@ class ExtensionKeybindingRegistryDelegateAndroid
 }  // namespace
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
-    content::BrowserContext* context)
+    content::BrowserContext* context,
+    ExtensionsToolbarViewModel* toolbar_view_model)
     : ExtensionKeybindingRegistry(
           context,
           ExtensionFilter::ALL_EXTENSIONS,
           std::make_unique<ExtensionKeybindingRegistryDelegateAndroid>(
-              context)) {
+              context)),
+      toolbar_view_model_(toolbar_view_model) {
   Init();
 }
 
@@ -116,8 +118,7 @@ bool ExtensionKeybindingRegistryAndroid::ShouldIgnoreCommand(
   return false;
 }
 
-std::variant<bool, std::string>
-ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
+bool ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
     const ui::KeyEventAndroid& key_event) {
   if (is_shortcut_handling_suspended_) {
     return false;
@@ -131,16 +132,13 @@ ExtensionKeybindingRegistryAndroid::HandleKeyDownEvent(
   }
   auto it = active_action_accelerators_.find(accelerator);
   if (it != active_action_accelerators_.end()) {
-    Profile* profile = Profile::FromBrowserContext(browser_context());
-    ToolbarActionsModel* toolbar_model = ToolbarActionsModel::Get(profile);
-
-    // Check the model is in `ToolbarActionsModel`.
-    const ExtensionId& extension_id = it->second;
-    if (toolbar_model && toolbar_model->HasAction(extension_id)) {
-      return extension_id;
+    ToolbarActionViewModel* model =
+        toolbar_view_model_->GetActionModelForId(it->second);
+    if (model == nullptr || !model->CanHandleAccelerators()) {
+      return false;
     }
 
-    return false;
+    return model->TryHandleAcceleratorPress();
   }
 
   return NotifyEventTargets(accelerator);

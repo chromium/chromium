@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_KEYBINDING_REGISTRY_ANDROID_H_
 
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
+#include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace content {
@@ -23,7 +24,9 @@ namespace extensions {
 // related commands.
 class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
  public:
-  explicit ExtensionKeybindingRegistryAndroid(content::BrowserContext* context);
+  explicit ExtensionKeybindingRegistryAndroid(
+      content::BrowserContext* context,
+      ExtensionsToolbarViewModel* toolbar_view_model);
 
   ExtensionKeybindingRegistryAndroid(
       const ExtensionKeybindingRegistryAndroid&) = delete;
@@ -32,12 +35,8 @@ class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
 
   ~ExtensionKeybindingRegistryAndroid() override;
 
-  // Handles the key down event. If the corresponding command is a regular
-  // command (not extension action), it handles the command and returns true. If
-  // the command is an extension action command, it returns the extension id. If
-  // no command matches, it returns false.
-  std::variant<bool, std::string> HandleKeyDownEvent(
-      const ui::KeyEventAndroid& key_event);
+  // Handles the key down event, and returns whether the event was handled.
+  bool HandleKeyDownEvent(const ui::KeyEventAndroid& key_event);
 
  private:
   // Overridden from ExtensionKeybindingRegistry:
@@ -50,6 +49,7 @@ class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
   void OnShortcutHandlingSuspended(bool suspended) override;
   bool ShouldIgnoreCommand(const std::string& command) const override;
 
+  const raw_ptr<ExtensionsToolbarViewModel> toolbar_view_model_;
   std::set<ui::Accelerator> active_accelerators_;
   std::map<ui::Accelerator, ExtensionId> active_action_accelerators_;
   bool is_shortcut_handling_suspended_ = false;

@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_ACTIONS_BRIDGE_H_
 #define CHROME_BROWSER_UI_ANDROID_EXTENSIONS_EXTENSION_ACTIONS_BRIDGE_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -30,16 +27,11 @@ class ExtensionActionsBridge {
 
   // JNI implementations.
   void Destroy(JNIEnv* env);
-  jni_zero::ScopedJavaLocalRef<jobject> HandleKeyDownEvent(
-      JNIEnv* env,
-      const ui::KeyEventAndroid& key_event);
 
  private:
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<Profile> profile_;
   const base::android::ScopedJavaGlobalRef<jobject> java_object_;
-  const std::unique_ptr<ExtensionKeybindingRegistryAndroid>
-      keybinding_registry_;
 };
 
 }  // namespace extensions

@@ -209,16 +209,7 @@ bool ExtensionActionDelegateDesktop::CloseOverflowMenuIfOpen() {
 
 bool ExtensionActionDelegateDesktop::AcceleratorPressed(
     const ui::Accelerator& accelerator) {
-  DCHECK(model_->CanHandleAccelerators());
-
-  if (model_->IsShowingPopup()) {
-    model_->HidePopup();
-  } else {
-    model_->ExecuteUserAction(
-        ToolbarActionViewModel::InvocationSource::kCommand);
-  }
-
-  return true;
+  return model_->TryHandleAcceleratorPress();
 }
 
 bool ExtensionActionDelegateDesktop::CanHandleAccelerators() const {

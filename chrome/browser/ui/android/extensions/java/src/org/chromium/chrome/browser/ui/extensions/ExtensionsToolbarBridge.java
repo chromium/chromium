@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.extensions;
 
 import android.graphics.Bitmap;
+import android.view.KeyEvent;
 
 import androidx.annotation.IntDef;
 
@@ -181,6 +182,12 @@ public class ExtensionsToolbarBridge implements Destroyable {
                         .getRequestAccessButtonParams(mNativeExtensionsToolbarAndroid, webContents);
         assert params != null;
         return params;
+    }
+
+    /** Handles the key down event and returns the result. */
+    public boolean handleKeyDownEvent(KeyEvent event) {
+        return ExtensionsToolbarBridgeJni.get()
+                .handleKeyDownEvent(mNativeExtensionsToolbarAndroid, event);
     }
 
     @CalledByNative
@@ -367,5 +374,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
         int getExtensionsMenuButtonState(
                 long nativeExtensionsToolbarAndroid,
                 @JniType("content::WebContents*") WebContents webContents);
+
+        boolean handleKeyDownEvent(
+                long nativeExtensionsToolbarAndroid,
+                @JniType("ui::KeyEventAndroid") KeyEvent keyEvent);
     }
 }

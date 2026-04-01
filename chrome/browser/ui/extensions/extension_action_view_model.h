@@ -94,6 +94,8 @@ class ExtensionActionViewModel
   void TriggerPopupForAPI(ShowPopupCallback callback) override;
   void RegisterCommand() override;
   void UnregisterCommand() override;
+  bool CanHandleAccelerators() const override;
+  bool TryHandleAcceleratorPress() override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,
@@ -111,13 +113,6 @@ class ExtensionActionViewModel
   // Populates |command| with the command associated with |extension|, if one
   // exists. Returns true if |command| was populated.
   bool GetExtensionCommand(extensions::Command* command) const;
-
-  // Returns true if this controller can handle accelerators (i.e., keyboard
-  // commands) on the currently-active WebContents.
-  // This must only be called if the extension has an associated command.
-  // TODO(devlin): Move accelerator logic out of the platform delegate and into
-  // this class.
-  bool CanHandleAccelerators() const;
 
   ExtensionActionDelegate* delegate() { return delegate_.get(); }
 

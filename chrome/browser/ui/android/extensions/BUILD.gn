@@ -165,7 +165,6 @@ if (enable_extensions_core) {
     sources = [
       "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionDeveloperPrivateBridgeTest.java",
       "javatests/src/org/chromium/chrome/browser/ui/extensions/ExtensionInstallDialogBridgeTest.java",
-      "javatests/src/org/chromium/chrome/browser/ui/extensions/FakeExtensionActionsBridgeTest.java",
     ]
 
     deps = [

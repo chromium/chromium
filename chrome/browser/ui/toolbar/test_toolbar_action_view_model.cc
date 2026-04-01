@@ -99,6 +99,14 @@ TestToolbarActionViewModel::GetSiteInteraction(
   return extensions::SitePermissionsHelper::SiteInteraction::kNone;
 }
 
+bool TestToolbarActionViewModel::CanHandleAccelerators() const {
+  return true;
+}
+
+bool TestToolbarActionViewModel::TryHandleAcceleratorPress() {
+  return true;
+}
+
 void TestToolbarActionViewModel::ShowPopup(bool by_user) {
   popup_showing_ = true;
 }

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
-import android.view.KeyEvent;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -100,28 +98,9 @@ public class FakeExtensionActionsBridge {
         /** The task associated with this model. */
         private final ChromeAndroidTask mTask;
 
-        /** The key event handler for this task. */
-        private @Nullable KeyEventHandler mKeyEventHandler;
-
         private TaskModel(ChromeAndroidTask task) {
             mTask = task;
         }
-
-        /** Returns the {@link KeyEventHandler} for this task. */
-        public @Nullable KeyEventHandler getKeyEventHandler() {
-            return mKeyEventHandler;
-        }
-
-        /** Sets the {@link KeyEventHandler} for this task. */
-        public void setKeyEventHandler(@Nullable KeyEventHandler keyEventHandler) {
-            mKeyEventHandler = keyEventHandler;
-        }
-    }
-
-    /** An interface for handling key events. */
-    public interface KeyEventHandler {
-        /** Handles a key down event. */
-        ExtensionActionsBridge.HandleKeyEventResult handleKeyDownEvent(KeyEvent keyEvent);
     }
 
     /** The JNI bridge implementation. */
@@ -142,48 +121,11 @@ public class FakeExtensionActionsBridge {
         @Override
         public void destroy(long bridgeId) {}
 
-        @Override
-        public ExtensionActionsBridge.HandleKeyEventResult handleKeyDownEvent(
-                long bridgeId, KeyEvent keyEvent) {
-            KeyEventHandler keyEventHandler =
-                    getTaskModelByBridgeIdOrThrow(bridgeId).getKeyEventHandler();
-            if (keyEventHandler == null) {
-                return new ExtensionActionsBridge.HandleKeyEventResult(false, "");
-            }
-            return keyEventHandler.handleKeyDownEvent(keyEvent);
-        }
-
-        /**
-         * Returns the {@link TaskModel} for the given task ID.
-         *
-         * @throws RuntimeException if the task ID is not known.
-         */
-        private TaskModel getTaskModelByTaskIdOrThrow(long taskId) {
-            TaskModel model = mTaskModels.get(taskId);
-            if (model == null) {
-                throw new RuntimeException("TaskModel not created for task " + taskId);
-            }
-            return model;
-        }
-
         /** Allocates a new bridge ID for the given task ID. */
         private long allocateBridgeId(long taskId) {
             long bridgeId = mBridgeIdToTaskId.size() + 1L; // Start bridge IDs at 1.
             mBridgeIdToTaskId.put(bridgeId, taskId);
             return bridgeId;
-        }
-
-        /**
-         * Returns the {@link TaskModel} for the given bridge ID.
-         *
-         * @throws RuntimeException if the bridge ID is not known.
-         */
-        private TaskModel getTaskModelByBridgeIdOrThrow(long bridgeId) {
-            Long taskId = mBridgeIdToTaskId.get(bridgeId);
-            if (taskId == null) {
-                throw new RuntimeException("Bridge " + bridgeId + " not known");
-            }
-            return getTaskModelByTaskIdOrThrow(taskId);
         }
     }
 }
