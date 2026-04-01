@@ -10,6 +10,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui_provider.h"
 #include "chrome/browser/ui/side_panel/test/android/native_unit_test_support_jni/SidePanelCoordinatorAndroidNativeUnitTestSupport_jni.h"
@@ -29,6 +30,7 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
   void SetUp() override {
     SetUpJavaSupport();
     SetUpMockBrowserWindow();
+    SetUpMockTabList();
   }
 
   void TearDown() override { InvokeJavaDestroyNativePtr(); }
@@ -61,12 +63,27 @@ class SidePanelCoordinatorAndroidUnitTest : public testing::Test {
   void SetUpMockBrowserWindow() {
     mock_browser_ = std::make_unique<MockBrowserWindowInterface>();
     ON_CALL(*mock_browser_, GetUnownedUserDataHost())
-        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+        .WillByDefault(testing::ReturnRef(browser_user_data_host_));
+  }
+
+  void SetUpMockTabList() {
+    mock_tab_list_ =
+        std::make_unique<testing::NiceMock<MockTabListInterface>>();
+    tab_list_user_data_ =
+        std::make_unique<ui::ScopedUnownedUserData<TabListInterface>>(
+            browser_user_data_host_, *mock_tab_list_);
   }
 
   ScopedJavaGlobalRef<jobject> java_test_support_;
+
+  // Fields for `BrowserWindowInterface`:
   std::unique_ptr<MockBrowserWindowInterface> mock_browser_;
-  ui::UnownedUserDataHost unowned_user_data_host_;
+  ui::UnownedUserDataHost browser_user_data_host_;
+
+  // Fields for `TabListInterface`:
+  std::unique_ptr<MockTabListInterface> mock_tab_list_;
+  std::unique_ptr<ui::ScopedUnownedUserData<TabListInterface>>
+      tab_list_user_data_;
 };
 
 TEST_F(SidePanelCoordinatorAndroidUnitTest,

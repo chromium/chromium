@@ -22,6 +22,8 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//chrome/browser/android:tabs_public",
+    "//chrome/browser/tab_list",
+    "//chrome/browser/ui/android/tab_model",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",
     "//third_party/jni_zero",
@@ -73,6 +75,7 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base",
+    "//chrome/browser/tab_list:test_support",
     "//chrome/browser/ui:test_support",
     "//chrome/browser/ui/side_panel:side_panel_ui_provider",
     "//chrome/browser/ui/side_panel:side_panel_views_dependent",

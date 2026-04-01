@@ -214,3 +214,58 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   EXPECT_FALSE(
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }
+
+// TODO(crbug.com/497974707): Update this test to check tab-scoped visibility.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_RecordsRegistriesForTesting) {
+  // Arrange.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  EXPECT_NE(nullptr, first_registry);
+  EXPECT_NE(nullptr, second_registry);
+  EXPECT_NE(first_registry, second_registry);
+  EXPECT_FALSE(first_tab->IsActivated());
+  EXPECT_TRUE(second_tab->IsActivated());
+
+  // Act.
+  tab_list->ActivateTab(first_tab->GetHandle());
+
+  // Assert.
+  EXPECT_EQ(first_registry,
+            coordinator->new_registry_on_last_active_tab_change_for_testing());
+  EXPECT_EQ(second_registry,
+            coordinator->old_registry_on_last_active_tab_change_for_testing());
+}
+
+// TODO(crbug.com/497974707): Update this test to check tab-scoped visibility.
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_CloseTab_RecordsRegistriesForTesting) {
+  // Arrange.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  EXPECT_FALSE(first_tab->IsActivated());
+  EXPECT_TRUE(second_tab->IsActivated());
+  SidePanelRegistry* first_registry = SidePanelRegistry::From(first_tab);
+  SidePanelRegistry* second_registry = SidePanelRegistry::From(second_tab);
+
+  // Act.
+  tab_list->CloseTab(second_tab->GetHandle());
+
+  // Assert.
+  EXPECT_EQ(second_registry,
+            coordinator->old_registry_on_last_active_tab_change_for_testing());
+  EXPECT_EQ(first_registry,
+            coordinator->new_registry_on_last_active_tab_change_for_testing());
+}
