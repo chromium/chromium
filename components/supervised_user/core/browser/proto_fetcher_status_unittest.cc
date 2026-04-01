@@ -25,7 +25,7 @@ TEST_F(ProtoFetcherStatusTest, CreateOKStatus) {
 
 TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithTransientError) {
   ProtoFetcherStatus error_status = ProtoFetcherStatus::GoogleServiceAuthError(
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   EXPECT_FALSE(error_status.IsOk());
   EXPECT_TRUE(error_status.IsTransientError());
   EXPECT_FALSE(error_status.IsPersistentError());
@@ -37,9 +37,9 @@ TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithTransientError) {
 }
 
 TEST_F(ProtoFetcherStatusTest, CreateAuthErrorStatusWithPersistentError) {
-  ProtoFetcherStatus error_status =
-      ProtoFetcherStatus::GoogleServiceAuthError(GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  ProtoFetcherStatus error_status = ProtoFetcherStatus::GoogleServiceAuthError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_FALSE(error_status.IsOk());
   EXPECT_FALSE(error_status.IsTransientError());
   EXPECT_TRUE(error_status.IsPersistentError());

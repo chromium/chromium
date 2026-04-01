@@ -117,15 +117,16 @@ TEST_P(ProtoFetcherMetricsTest, RecordAuthError) {
   // Retrying fetcher does not support auth error metrics.
   int expected_bucket_count = IsRetryingFetcher() ? 0 : 1;
   base::HistogramTester histogram_tester;
-  const GoogleServiceAuthError invalid_gaia_error = GoogleServiceAuthError(
-      GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+  const GoogleServiceAuthError invalid_gaia_error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
   metrics_->RecordMetrics(
       ProtoFetcherStatus::GoogleServiceAuthError(invalid_gaia_error));
   histogram_tester.ExpectBucketCount(GetHistogramNameForAuthError(),
                                      invalid_gaia_error.state(),
                                      expected_bucket_count);
   const GoogleServiceAuthError connection_failed_error =
-      GoogleServiceAuthError(GoogleServiceAuthError::State::CONNECTION_FAILED);
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
   metrics_->RecordMetrics(
       ProtoFetcherStatus::GoogleServiceAuthError(connection_failed_error));
   histogram_tester.ExpectBucketCount(GetHistogramNameForAuthError(),
