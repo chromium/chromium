@@ -140,7 +140,6 @@ class ActorAttemptLoginToolTest : public ActorToolsTest {
          password_manager::features::
              kActorLoginPermissionsUseStrongAffiliations,
          password_manager::features::kActorLoginQualityLogs,
-         password_manager::features::kActorLoginGetCredentialsNoLoginForm,
          features::kGlicActor},
         /*disabled_features=*/{kGlicCrossOriginNavigationGating});
   }
@@ -331,7 +330,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
   mock_login_service().SetCredential(MakeTestCredential(
       u"username", url, /*immediately_available_to_login=*/false));
   mock_login_service().SetLoginStatus(
-      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+      actor_login::LoginStatusResult::kErrorNoSigninForm);
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
@@ -343,6 +342,12 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest,
                        MultipleCredentialsOnlyOneAvailable) {
+  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+    // This behaviour does not apply when federated credentials are supported
+    // where we allow password selection regardless of availability.
+    GTEST_SKIP();
+  }
+
   const GURL url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));

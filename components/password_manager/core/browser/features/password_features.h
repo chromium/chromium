@@ -26,9 +26,6 @@ BASE_DECLARE_FEATURE(kActorLoginConflictingPermissionCleanup);
 BASE_DECLARE_FEATURE(kActorLoginFederatedClickFromActor);
 // Enables Actor Login form finding with async check
 BASE_DECLARE_FEATURE(kActorLoginFieldVisibilityCheck);
-// Ensures that `GetCredentials` differentiates between no saved credentials
-// and no signin form found on the page.
-BASE_DECLARE_FEATURE(kActorLoginGetCredentialsNoLoginForm);
 BASE_DECLARE_FEATURE(kActorLoginLocalClassificationModel);
 // Enables the usage of temporary permissions across affiliated origins for
 // Actor Login.

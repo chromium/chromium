@@ -16,8 +16,6 @@ BASE_FEATURE(kActorLoginConflictingPermissionCleanup,
 BASE_FEATURE(kActorLoginFederatedClickFromActor,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginFieldVisibilityCheck, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kActorLoginGetCredentialsNoLoginForm,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kActorLoginLocalClassificationModel,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_IOS)
