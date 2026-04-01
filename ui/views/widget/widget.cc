@@ -561,11 +561,6 @@ void Widget::Init(InitParams params) {
   // set based on the display.
   should_set_initial_bounds = !params.display_id.has_value();
 #endif
-#if BUILDFLAG(IS_WIN)
-  // force_system_menu_for_frameless only applies to frameless windows.
-  CHECK(!params.force_system_menu_for_frameless ||
-        params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-#endif  // BUILDFLAG(IS_WIN)
   background_color_ = params.background_color;
   native_widget_->InitNativeWidget(std::move(params));
   if (type == InitParams::TYPE_MENU) {

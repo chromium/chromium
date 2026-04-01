@@ -131,10 +131,6 @@ WindowStyles CalculateWindowStylesFromInitParams(
       if (params.dont_show_in_taskbar) {
         styles.ex_style |= WS_EX_TOOLWINDOW;
       }
-      if (params.force_system_menu_for_frameless &&
-          params.type == Widget::InitParams::TYPE_WINDOW_FRAMELESS) {
-        styles.style |= WS_SYSMENU;
-      }
       break;
     default:
       NOTREACHED();
