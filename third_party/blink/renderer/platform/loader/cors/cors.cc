@@ -12,6 +12,7 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -139,7 +140,8 @@ PLATFORM_EXPORT Vector<String> PrivilegedNoCorsHeaderNames() {
 }
 
 bool IsForbiddenRequestHeader(const String& name, const String& value) {
-  return !net::HttpUtil::IsSafeHeader(name.Latin1(), value.Latin1());
+  return !net::HttpUtil::IsSafeHeader(
+      name.Latin1(), FetchUtils::NormalizeHeaderValue(value).Latin1());
 }
 
 bool ContainsOnlyCorsSafelistedHeaders(const HTTPHeaderMap& header_map) {
