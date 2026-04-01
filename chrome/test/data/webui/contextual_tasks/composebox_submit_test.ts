@@ -396,8 +396,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -410,8 +409,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -427,8 +425,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -488,8 +485,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -524,8 +520,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
-        '0 Files should be uploading');
+        0, composebox.pendingUploads.size, '0 Files should be uploading');
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
     assertTrue(
@@ -551,7 +546,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
+        1, composebox.pendingUploads.size,
         '1 File should be uploading after second upload starts');
     assertFalse(
         composebox.fileUploadsComplete,
@@ -580,7 +575,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 File should not be uploading after second upload finishes');
     assertTrue(
         composebox.fileUploadsComplete,
@@ -609,8 +604,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -704,8 +698,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 tab should be uploading');
+        1, composebox.pendingUploads.size, '1 tab should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Tabs should not be finished uploading');
@@ -788,8 +781,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
-        '1 File should be uploading');
+        1, composebox.pendingUploads.size, '1 File should be uploading');
     assertFalse(
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
@@ -853,7 +845,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await microtasksFinished();
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         'Delayed tab should have not started uploading');
 
     assertTrue(
@@ -890,7 +882,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    assertEquals(1, composebox.getRemainingFilesToUpload().size);
+    assertEquals(1, composebox.pendingUploads.size);
 
     assertFalse(
         composebox.fileUploadsComplete,
@@ -915,7 +907,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    assertEquals(0, composebox.getRemainingFilesToUpload().size);
+    assertEquals(0, composebox.pendingUploads.size);
 
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
@@ -943,7 +935,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
 
-    assertEquals(1, composebox.getRemainingFilesToUpload().size);
+    assertEquals(1, composebox.pendingUploads.size);
 
     assertFalse(
         composebox.fileUploadsComplete,
@@ -968,7 +960,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    assertEquals(0, composebox.getRemainingFilesToUpload().size);
+    assertEquals(0, composebox.pendingUploads.size);
 
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
@@ -996,7 +988,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
 
-    assertEquals(1, composebox.getRemainingFilesToUpload().size);
+    assertEquals(1, composebox.pendingUploads.size);
 
     assertFalse(
         composebox.fileUploadsComplete,
@@ -1020,7 +1012,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         token, ContextUploadStatus.kUploadExpired, null);
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
-    assertEquals(0, composebox.getRemainingFilesToUpload().size);
+    assertEquals(0, composebox.pendingUploads.size);
 
     assertTrue(
         composebox.fileUploadsComplete, 'Files should be finished uploading');
@@ -1065,7 +1057,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Submit container should still have pointer-events on,\
               even when disabled.');
 
-    assertEquals(1, composebox.getRemainingFilesToUpload().size);
+    assertEquals(1, composebox.pendingUploads.size);
   });
 
   test('Submit button disabled if no input supports unimodal', async () => {

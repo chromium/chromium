@@ -671,7 +671,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
         await composebox.updateComplete;
         await microtasksFinished();
 
-        const remaining = composebox.getRemainingFilesToUpload();
+        const remaining = composebox.pendingUploads;
 
         assertEquals(1, remaining.size, 'Pending uploads should increase');
         assertTrue(

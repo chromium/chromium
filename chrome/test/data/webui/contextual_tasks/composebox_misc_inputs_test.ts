@@ -783,7 +783,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 tab should not be uploading after not uploaded status');
 
     // Start upload.
@@ -799,7 +799,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await composebox.$.carousel.updateComplete;
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 tab should be uploading after upload started since processing startts it');
 
     assertTrue(
@@ -832,7 +832,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'Tab thumbnail spinner should trigger for processing regular tab');
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
+        1, composebox.pendingUploads.size,
         '1 tab should be uploading after processing started');
     assertFalse(
         composebox.fileUploadsComplete,
@@ -860,7 +860,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             ' for suggest signals ready processing tab');
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
+        1, composebox.pendingUploads.size,
         '1 tab should be uploading after suggest signals ready');
     assertFalse(
         composebox.fileUploadsComplete,
@@ -887,7 +887,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'tab thumbnail spinner should not trigger for successful upload');
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         'No tabs should be uploading after upload successful');
     assertTrue(
         composebox.fileUploadsComplete,
@@ -926,8 +926,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertFalse(tabThumbnail.getIsUploadingForTesting());
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
-        '0 tabs should be uploading');
+        0, composebox.pendingUploads.size, '0 tabs should be uploading');
 
     // `delayUpload` is true, but `kProcessing` means the delay already
     // happened.
@@ -950,7 +949,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'Tab thumbnail spinner should trigger for processing autochip tab');
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
+        1, composebox.pendingUploads.size,
         '1 tab should be uploading due to processing status');
 
     assertFalse(
@@ -970,7 +969,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 tabs should be uploading due to expired status');
     assertEquals(
         0, composebox.files.size,
@@ -1004,7 +1003,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
     let tabThumbnail = getThumbnailForTab(FAKE_TOKEN_STRING);
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 tabs should not be uploading after not uploaded status');
     assertTrue(
         composebox.fileUploadsComplete,
@@ -1034,7 +1033,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         'autochip tab thumbnail spinner should be triggered for processing tab');
 
     assertEquals(
-        1, composebox.getRemainingFilesToUpload().size,
+        1, composebox.pendingUploads.size,
         '1 tab should be uploading after processing started');
 
     assertFalse(
@@ -1054,7 +1053,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     await microtasksFinished();
 
     assertEquals(
-        0, composebox.getRemainingFilesToUpload().size,
+        0, composebox.pendingUploads.size,
         '0 tabs should be uploading due to expired status');
     assertEquals(
         0, composebox.files.size,

@@ -1517,14 +1517,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  getRemainingFilesToUpload(): Set<string> {
-    return this.pendingUploads;
-  }
-
-  setPendingUploads(files: string[]) {
-    this.pendingUploads = new Set(files);
-  }
-
   private onAutocompleteResultChanged_(result: AutocompleteResult) {
     if (this.lastQueriedInput === null ||
         this.lastQueriedInput.trimStart() !== result.input) {
