@@ -382,33 +382,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AccessCodeCast.Ui.TabSwitcherUsageType"
-    enum="AccessCodeCastUiTabSwitcherUsage" expires_after="2026-08-23">
-  <owner>ahmedmoussa@google.com</owner>
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    This metric is recorded once per AccessCodeCast tab mirroring session. It
-    records the number of times the tab switcher UI was shown and not used,
-    compared to the number of times it was shown and actually used to switch
-    tabs. This would make it possible to compute the % of users who cast a tab
-    who then switch which tab is being cast. Recorded once at the end of a tab
-    mirroring casting session.
-  </summary>
-</histogram>
-
-<histogram name="AccessCodeCast.Ui.TabSwitchingCount" units="count"
-    expires_after="2026-08-23">
-  <owner>ahmedmoussa@google.com</owner>
-  <owner>muyaoxu@google.com</owner>
-  <owner>openscreen-eng@google.com</owner>
-  <summary>
-    This metric is recorded once per AccessCodeCast tab mirroring session. It
-    records the number of times the tab switcher UI was used to switch the
-    source tab.
-  </summary>
-</histogram>
-
 <histogram name="Ads.InterestGroup.AtAuctionTotalSize.{Type}" units="KB"
     expires_after="2026-04-26">
   <owner>caraitto@chromium.org</owner>

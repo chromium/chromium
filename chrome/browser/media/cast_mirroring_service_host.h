@@ -127,10 +127,6 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   void SwitchMirroringSourceTab(const content::DesktopMediaID& media_id,
                                 bool captured_surface_control_active);
 
-  // Records metrics about the usage of Tab Switcher UI, and resets data members
-  // used for metrics collection.
-  void RecordTabUIUsageMetricsIfNeededAndReset();
-
   // OffscreenTab::Owner implementation.
   void DestroyTab(OffscreenTab* tab) override;
 
@@ -183,11 +179,6 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
   std::unique_ptr<content::MediaStreamUI> media_stream_ui_;
 
   const bool tab_switching_ui_enabled_;
-
-  // Represents the number of times a tab was switched during an active
-  // mirroring session using tab switcher UI bar. Mainly used for metrics
-  // collecting.
-  std::optional<int> tab_switching_count_;
 
   std::u16string sink_name_;
 

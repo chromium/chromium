@@ -91,16 +91,6 @@ enum class AccessCodeCastDiscoveryTypeAndSource {
   kMaxValue = kNewDeviceRemotePlayback
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AccessCodeCastUiTabSwitcherUsage {
-  kTabSwitcherUiShownAndNotUsed = 0,
-  kTabSwitcherUiShownAndUsedToSwitchTabs = 1,
-
-  // NOTE: Do not reorder existing entries, and add entries only immediately
-  // above this line.
-  kMaxValue = kTabSwitcherUiShownAndUsedToSwitchTabs,
-};
 
 class COMPONENT_EXPORT(COMPONENTS_ACCESS_CODE_CAST_COMMON)
     AccessCodeCastMetrics {
@@ -124,8 +114,6 @@ class COMPONENT_EXPORT(COMPONENTS_ACCESS_CODE_CAST_COMMON)
   static const char kHistogramRouteDiscoveryTypeAndSource[];
   static const char kHistogramRouteDuration[];
   static const char kHistogramSavedDeviceRouteCreationDuration[];
-  static const char kHistogramUiTabSwitcherUsageType[];
-  static const char kHistogramUiTabSwitchingCount[];
 
   // Records metrics relating to starting a cast session (route). Mode is
   // media_router::MediaCastMode.
@@ -171,15 +159,6 @@ class COMPONENT_EXPORT(COMPONENTS_ACCESS_CODE_CAST_COMMON)
   // will be rounded up. Also, the largest time reported is 8 hours, and any
   // longer times will be bucketed down.
   static void RecordRouteDuration(base::TimeDelta duration);
-
-  // Records the count of tabs a user switches to during a tab mirroring
-  // session.
-  static void RecordTabSwitchesCountInTabSession(int count);
-
-  // Records the usage type of tab switcher UI, i.e. shown only and not used or
-  // shown and actually used to switch tabs.
-  static void RecordTabSwitcherUsageCase(
-      AccessCodeCastUiTabSwitcherUsage usage);
 
   // Records the time that it takes to connect to a saved device. It is a
   // combination of the time to request a mirroring route + waiting for a
