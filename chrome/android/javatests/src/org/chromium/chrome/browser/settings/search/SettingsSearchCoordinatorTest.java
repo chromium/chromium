@@ -51,6 +51,7 @@ public class SettingsSearchCoordinatorTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // crbug.com/498405883: Flaky on android-desktop.
     public void testBasicSearch() {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
         SettingsSearchCoordinator searchCoordinator = activity.getSearchCoordinatorForTesting();
