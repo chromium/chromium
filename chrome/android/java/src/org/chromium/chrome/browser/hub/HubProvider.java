@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 import java.util.function.Supplier;
@@ -70,6 +71,7 @@ public class HubProvider {
             BackPressManager backPressManager,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             Supplier<SnackbarManager> snackbarManagerSupplier,
+            Supplier<BottomSheetController> bottomSheetControllerSupplier,
             @Nullable BottomBarHostManager bottomBarHostManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
@@ -90,6 +92,9 @@ public class HubProvider {
 
                             SnackbarManager snackbarManager = snackbarManagerSupplier.get();
                             assert snackbarManager != null;
+                            BottomSheetController bottomSheetController =
+                                    bottomSheetControllerSupplier.get();
+                            assert bottomSheetController != null;
                             return HubManagerFactory.createHubManager(
                                     activity,
                                     profileProviderSupplier,
@@ -97,6 +102,7 @@ public class HubProvider {
                                     backPressManager,
                                     menuOrKeyboardActionController,
                                     snackbarManager,
+                                    bottomSheetController,
                                     bottomBarHostManager,
                                     tabSupplier,
                                     menuButtonCoordinatorSupplier.get(),

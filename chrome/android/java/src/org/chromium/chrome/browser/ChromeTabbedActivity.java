@@ -1129,6 +1129,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         mBackPressManager,
                         getMenuOrKeyboardActionController(),
                         this::getSnackbarManager,
+                        mRootUiCoordinator::getBottomSheetController,
                         getBottomBarHostManager(),
                         getTabModelSelectorSupplier(),
                         () -> getToolbarManager().getOverviewModeMenuButtonCoordinator(),

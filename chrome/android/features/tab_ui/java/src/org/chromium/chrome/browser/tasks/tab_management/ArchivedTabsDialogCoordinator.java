@@ -33,6 +33,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -400,6 +402,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 }
             };
 
+    private final SettableNonNullObservableSupplier<Integer> mSnackbarMarginSupplier =
+            ObservableSuppliers.createNonNull(0);
+
     private final Activity mActivity;
     private final ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
     private final TabModel mArchivedTabModel;
@@ -530,6 +535,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         if (mTabGroupSyncService != null) {
             mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
         }
+
+        int closeAllTabsContainerHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.archived_tabs_dialog_bottom_button_container_height);
+        mSnackbarMarginSupplier.set(closeAllTabsContainerHeight);
     }
 
     /** Hides the dialog. */
@@ -626,7 +638,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
         mSnackbarManager.pushParentViewOverride(
                 ParentOverrideSlot.ARCHIVED_TABS_DIALOG,
                 snackbarContainer,
-                /* additionalBottomMarginPxSupplier= */ null);
+                mSnackbarMarginSupplier);
         // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
         mDialogView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
         snackbarContainer.bringToFront();
