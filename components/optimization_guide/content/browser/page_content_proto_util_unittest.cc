@@ -1166,7 +1166,9 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
       ->text = "option text";
   form_control_node->content_attributes->form_control_data->select_options[0]
       ->is_selected = true;
-  form_control_node->content_attributes->form_control_data->redaction_decision =
+  // The canonical redaction signal now lives on ContentAttributes. The proto
+  // form-control field is kept only for compatibility.
+  form_control_node->content_attributes->redaction_decision =
       blink::mojom::AIPageContentRedactionDecision::kNoRedactionNecessary;
   root_content->root_node->children_nodes.emplace_back(
       std::move(form_control_node));
@@ -1201,6 +1203,12 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");
   EXPECT_TRUE(form_control_data_proto.select_options(0).is_selected());
   EXPECT_EQ(
+      page_content.proto.root_node()
+          .children_nodes(0)
+          .content_attributes()
+          .redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
+  EXPECT_EQ(
       form_control_data_proto.redaction_decision(),
       optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY);
 }
@@ -1218,8 +1226,7 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
   empty_password_node->content_attributes->form_control_data->field_name =
       "empty_password_field";
   empty_password_node->content_attributes->form_control_data->field_value = "";
-  empty_password_node->content_attributes->form_control_data
-      ->redaction_decision =
+  empty_password_node->content_attributes->redaction_decision =
       blink::mojom::AIPageContentRedactionDecision::kUnredacted_EmptyPassword;
   root_content->root_node->children_nodes.emplace_back(
       std::move(empty_password_node));
@@ -1234,11 +1241,25 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
   redacted_password_node->content_attributes->form_control_data->field_name =
       "redacted_password_field";
   // field_value is not set when redacted
-  redacted_password_node->content_attributes->form_control_data
-      ->redaction_decision =
+  redacted_password_node->content_attributes->redaction_decision =
       blink::mojom::AIPageContentRedactionDecision::kRedacted_HasBeenPassword;
   root_content->root_node->children_nodes.emplace_back(
       std::move(redacted_password_node));
+
+  // Test kUnredacted_EmptyCustomPassword
+  auto custom_password_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kFormControl);
+  custom_password_node->content_attributes->form_control_data =
+      blink::mojom::AIPageContentFormControlData::New();
+  custom_password_node->content_attributes->form_control_data
+      ->form_control_type = blink::mojom::FormControlType::kInputText;
+  custom_password_node->content_attributes->form_control_data->field_name =
+      "custom_password_field";
+  custom_password_node->content_attributes->form_control_data->field_value = "";
+  custom_password_node->content_attributes->redaction_decision = blink::mojom::
+      AIPageContentRedactionDecision::kUnredacted_EmptyCustomPassword;
+  root_content->root_node->children_nodes.emplace_back(
+      std::move(custom_password_node));
 
   AIPageContentResult page_content;
   EXPECT_TRUE(
@@ -1246,7 +1267,7 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
 
   EXPECT_EQ(page_content.proto.version(),
             optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
-  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 2);
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 3);
 
   // Test first node: kUnredacted_EmptyPassword
   const auto& empty_password_proto = page_content.proto.root_node()
@@ -1272,6 +1293,59 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlDataRedactionDecision) {
   EXPECT_EQ(redacted_password_proto.field_value(), "");  // Empty when redacted
   EXPECT_EQ(
       redacted_password_proto.redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+
+  EXPECT_EQ(
+      page_content.proto.root_node()
+          .children_nodes(0)
+          .content_attributes()
+          .redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD);
+  EXPECT_EQ(
+      page_content.proto.root_node()
+          .children_nodes(1)
+          .content_attributes()
+          .redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
+
+  // Test third node: kUnredacted_EmptyCustomPassword
+  const auto& custom_password_proto = page_content.proto.root_node()
+                                          .children_nodes(2)
+                                          .content_attributes()
+                                          .form_control_data();
+  EXPECT_EQ(custom_password_proto.form_control_type(),
+            optimization_guide::proto::FORM_CONTROL_TYPE_INPUT_TEXT);
+  EXPECT_EQ(custom_password_proto.field_name(), "custom_password_field");
+  EXPECT_EQ(custom_password_proto.field_value(), "");
+  EXPECT_EQ(
+      custom_password_proto.redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD);
+  EXPECT_EQ(
+      page_content.proto.root_node()
+          .children_nodes(2)
+          .content_attributes()
+          .redaction_decision(),
+      optimization_guide::proto::REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD);
+}
+
+TEST_F(PageContentProtoUtilTest, ConvertContentAttributesRedactionDecision) {
+  auto root_content = CreatePageContent();
+  auto anchor_node =
+      CreateContentNode(blink::mojom::AIPageContentAttributeType::kAnchor);
+  anchor_node->content_attributes->redaction_decision = blink::mojom::
+      AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
+  root_content->root_node->children_nodes.emplace_back(std::move(anchor_node));
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  ASSERT_EQ(page_content.proto.root_node().children_nodes_size(), 1);
+  EXPECT_EQ(
+      page_content.proto.root_node()
+          .children_nodes(0)
+          .content_attributes()
+          .redaction_decision(),
       optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD);
 }
 

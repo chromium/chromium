@@ -525,8 +525,6 @@ struct AIPageContentFormControlData {
   // Whether the field is read-only.
   bool is_readonly;
 
-  // Redaction decision for form fields.
-  AIPageContentRedactionDecision redaction_decision;
 };
 
 struct AIPageContentAttributes {
@@ -565,6 +563,12 @@ struct AIPageContentAttributes {
 
   // Only set if attribute_type is kFormControl.
   AIPageContentFormControlData? form_control_data;
+
+  // Redaction decision for this content node.
+  //
+  // This is the canonical redaction signal for all node types, including form
+  // controls and contenteditable controls represented as form controls.
+  AIPageContentRedactionDecision redaction_decision;
 
   // Only set if attribute_type is kTable.
   AIPageContentTableData? table_data;

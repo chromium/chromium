@@ -862,30 +862,27 @@ bool ShouldSkipDescendants(
     return true;
   }
 
-  // Ensure that password editor subtrees are skipped even when the password
-  // is revealed.
-  const auto* form_control_data =
-      content_node->content_attributes->form_control_data.get();
-  if (form_control_data) {
-    const auto redaction_decision = form_control_data->redaction_decision;
-    switch (redaction_decision) {
-      case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
-      case mojom::blink::AIPageContentRedactionDecision::
-          kUnredacted_EmptyPassword:
-      case mojom::blink::AIPageContentRedactionDecision::
-          kUnredacted_EmptyCustomPassword:
-        break;
-      case mojom::blink::AIPageContentRedactionDecision::
-          kRedacted_HasBeenPassword:
-      case mojom::blink::AIPageContentRedactionDecision::
-          kRedacted_CustomPassword_CSS:
-      case mojom::blink::AIPageContentRedactionDecision::
-          kRedacted_CustomPassword_JS:
-        // Custom password-like inputs (e.g. `-webkit-text-security`) can also
-        // have UA/editor subtrees which may contain sensitive text. Skip them
-        // to avoid leaking into extracted text nodes.
-        return true;
-    }
+  // Ensure that password editor subtrees are skipped even when the password is
+  // revealed. The node-level redaction decision is now the canonical source.
+  const auto redaction_decision =
+      content_node->content_attributes->redaction_decision;
+  switch (redaction_decision) {
+    case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kUnredacted_EmptyCustomPassword:
+      break;
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_HasBeenPassword:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_CSS:
+    case mojom::blink::AIPageContentRedactionDecision::
+        kRedacted_CustomPassword_JS:
+      // Custom password-like inputs (e.g. `-webkit-text-security`) can also
+      // have UA/editor subtrees which may contain sensitive text. Skip them to
+      // avoid leaking into extracted text nodes.
+      return true;
   }
 
   return false;
@@ -1141,7 +1138,8 @@ bool ProcessAriaFormControlNode(
   form_control_data.form_control_type = form_control_type;
   form_control_data.is_required = aria_required;
   form_control_data.is_readonly = aria_readonly;
-  form_control_data.redaction_decision =
+  // Redaction is now tracked on the node so all node types share one signal.
+  attributes.redaction_decision =
       mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
   if (!aria_placeholder.empty()) {
@@ -1181,7 +1179,8 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   }
 
   // Set the default value for redaction, and override below as appropriate.
-  form_control_data->redaction_decision =
+  // Keep this on ContentAttributes so redaction is independent of form payload.
+  attributes.redaction_decision =
       mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
 
   if (const auto* text_control_element =
@@ -1199,20 +1198,20 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
 
     if (is_native_password || is_custom_password_css || is_custom_password_js) {
       if (text_control_element->Value().empty()) {
-        form_control_data->redaction_decision =
+        attributes.redaction_decision =
             is_native_password ? mojom::blink::AIPageContentRedactionDecision::
                                      kUnredacted_EmptyPassword
                                : mojom::blink::AIPageContentRedactionDecision::
                                      kUnredacted_EmptyCustomPassword;
       } else {
         if (is_native_password) {
-          form_control_data->redaction_decision = mojom::blink::
+          attributes.redaction_decision = mojom::blink::
               AIPageContentRedactionDecision::kRedacted_HasBeenPassword;
         } else if (is_custom_password_css) {
-          form_control_data->redaction_decision = mojom::blink::
+          attributes.redaction_decision = mojom::blink::
               AIPageContentRedactionDecision::kRedacted_CustomPassword_CSS;
         } else if (is_custom_password_js) {
-          form_control_data->redaction_decision = mojom::blink::
+          attributes.redaction_decision = mojom::blink::
               AIPageContentRedactionDecision::kRedacted_CustomPassword_JS;
         }
         should_redact_value = true;
@@ -2054,6 +2053,10 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNode(
       mojom::blink::AIPageContentAttributes::New();
   mojom::blink::AIPageContentAttributes& attributes =
       *content_node->content_attributes;
+  // Start every node in the non-redacted state and let specialized handlers
+  // promote it when needed.
+  attributes.redaction_decision =
+      mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary;
   // Compute state that is used to decide whether this node generates a
   // ContentNode before making the decision below.
   AddAnnotatedRoles(object, attributes.annotated_roles);
@@ -2352,11 +2355,7 @@ void AIPageContentAgent::ContentBuilder::TrackPasswordRedactionIfNeeded(
     return;
   }
 
-  if (!attributes.form_control_data) {
-    return;
-  }
-
-  switch (attributes.form_control_data->redaction_decision) {
+  switch (attributes.redaction_decision) {
     case mojom::blink::AIPageContentRedactionDecision::kNoRedactionNecessary:
     case mojom::blink::AIPageContentRedactionDecision::
         kUnredacted_EmptyPassword:

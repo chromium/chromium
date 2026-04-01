@@ -591,6 +591,7 @@ optimization_guide::proto::RedactionDecision ConvertRedactionDecision(
 
 void ConvertFormControlData(
     const blink::mojom::AIPageContentFormControlData& mojom_form_control_data,
+    blink::mojom::AIPageContentRedactionDecision redaction_decision,
     const std::optional<AutofillFieldMetadata>& autofill_metadata,
     optimization_guide::proto::FormControlData* proto_form_control_data) {
   proto_form_control_data->set_form_control_type(
@@ -620,8 +621,11 @@ void ConvertFormControlData(
     }
     proto_select_option->set_is_selected(select_option->is_selected);
   }
+  // Set the deprecated proto field for compatibility. The canonical redaction
+  // decision now lives on `ContentAttributes.redaction_decision`.
+  // TODO(crbug.com/480135178): Remove when consumers are migrated.
   proto_form_control_data->set_redaction_decision(
-      ConvertRedactionDecision(mojom_form_control_data.redaction_decision));
+      ConvertRedactionDecision(redaction_decision));
 
   // Incorporate any information received from Autofill.
   if (autofill_metadata) {
@@ -697,6 +701,8 @@ base::expected<void, std::string> ConvertAttributes(
 
   proto_attributes->set_attribute_type(
       ConvertAttributeType(mojom_attributes.attribute_type));
+  proto_attributes->set_redaction_decision(
+      ConvertRedactionDecision(mojom_attributes.redaction_decision));
 
   // When sensitive payment redaction is enabled, we populate
   // `mojom_attributes.geometry` for form controls that may contain
@@ -779,6 +785,7 @@ base::expected<void, std::string> ConvertAttributes(
     }
     ConvertFormControlData(
         *mojom_attributes.form_control_data,
+        mojom_attributes.redaction_decision,
         GetAutofillFieldData(source_frame_token, session, *proto_attributes),
         proto_attributes->mutable_form_control_data());
   } else if (mojom_attributes.table_data) {
