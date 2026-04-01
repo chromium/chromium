@@ -10,6 +10,7 @@
 #include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -102,8 +103,10 @@ IN_PROC_BROWSER_TEST_F(DeleteProfileHelperBrowserTest, KeepAlive) {
   keep_alive_added_waiter.Wait();
   loop.Run();
   // The `ScopedKeepAlive` has been released.
-  EXPECT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
-      KeepAliveOrigin::PROFILE_MANAGER));
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+        KeepAliveOrigin::PROFILE_MANAGER);
+  }));
 }
 
 // Tests that a profile marked for deletion is correctly cleaned up on startup
