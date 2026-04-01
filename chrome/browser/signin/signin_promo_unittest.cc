@@ -1238,12 +1238,11 @@ TEST_F(AvatarButtonPromoManagerTest,
   AvatarButtonPromoManager manager(identity_manager(), &pref_service(),
                                    /*max_shown_count=*/3, /*max_used_count=*/2);
 
-  std::string_view email1("test1@email.com");
   signin::MakeAccountAvailable(
       identity_manager(),
       AccountAvailabilityOptionsBuilder(test_url_loader_factory())
           .WithCookie()
-          .Build(email1));
+          .Build("test1@email.com"));
   ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
             signin_util::SignedInState::kWebOnlySignedIn);
 
@@ -1259,6 +1258,47 @@ TEST_F(AvatarButtonPromoManagerTest,
       switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
       time_remaining_for_promo_to_show);
   // Promo shown time check should still not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Add enough time to allow promo to show.
+  FastForwardBy(2 * time_remaining_for_promo_to_show);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+}
+
+TEST_F(AvatarButtonPromoManagerTest, SigninPromoHasLastExternalEventTimeCheck) {
+  ProfileMenuAvatarButtonPromoInfo::Type signin_promo_type =
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
+  AvatarButtonPromoManager manager(identity_manager(), &pref_service(),
+                                   /*max_shown_count=*/3, /*max_used_count=*/2);
+
+  AccountInfo account_info = signin::MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .Build("test1@email.com"));
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kWebOnlySignedIn);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Changes the last external event time.
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.SetChromeSigninInterceptionLastBubbleDeclineTime(
+      account_info.GetGaiaId(), base::Time::Now());
+
+  // Last event time check does not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Fast forward by less than expected.
+  base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
+  // Uses `switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed`
+  // explicitly as the threshold value is shared.
+  FastForwardBy(
+      switches::kSigninPromoOnAvatarPillDelayForNextPromoAllowed.Get() -
+      time_remaining_for_promo_to_show);
+  // Last external event time check should still not allow the promo to show
+  // yet.
   ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
 
   // Add enough time to allow promo to show.

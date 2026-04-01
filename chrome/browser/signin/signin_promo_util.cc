@@ -201,11 +201,51 @@ base::TimeDelta GetMinimumThresholdSinceLastShownTime(
   }
 }
 
+base::TimeDelta GetMinimumThresholdSinceLastEventTime(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      NOTREACHED() << "The promo does not support last event time checking.";
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // Explicitly uses the same value as the threshold last shown time to
+      // simulate bumping the delay because of a similar event.
+      return GetMinimumThresholdSinceLastShownTime(promo_type);
+  }
+}
+
+std::optional<base::Time> MaybeGetLastExternalEventTime(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type,
+    const SigninPrefs& signin_prefs,
+    GaiaId gaia) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      // These promos does not support external event time checking.
+      return std::nullopt;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      return gaia.empty()
+                 ? std::nullopt
+                 : signin_prefs
+                       .GetChromeSigninInterceptionLastBubbleDeclineTime(gaia);
+  }
+}
+
 struct PromoUsageInfo {
   int shown_count = 0;
   int used_count = 0;
   // Optional as not every promo type supports it.
   std::optional<base::Time> last_shown_time = std::nullopt;
+  // Optional as not every promo type supports it.
+  std::optional<base::Time> last_external_event_time = std::nullopt;
 };
 
 PromoUsageInfo GetPromoUsageInfo(
@@ -237,6 +277,9 @@ PromoUsageInfo GetPromoUsageInfo(
       usage_info.last_shown_time = base::ValueToTime(*last_shown_time);
     }
   }
+
+  usage_info.last_external_event_time =
+      MaybeGetLastExternalEventTime(promo_type, signin_prefs, gaia);
 
   return usage_info;
 }
@@ -928,7 +971,8 @@ bool AvatarButtonPromoManager::ShouldShowPromo(
 
   const AccountInfo account =
       signin_ui_util::GetSingleAccountForPromos(identity_manager_);
-  auto [promo_shown_count, promo_used_count, promo_last_shown_time] =
+  auto [promo_shown_count, promo_used_count, promo_last_shown_time,
+        last_external_event_time] =
       GetPromoUsageInfo(*pref_service_.get(), *signin_prefs_.get(), promo_type,
                         account.gaia);
 
@@ -936,6 +980,13 @@ bool AvatarButtonPromoManager::ShouldShowPromo(
   if (promo_last_shown_time.has_value() &&
       (base::Time::Now() - promo_last_shown_time.value()) <
           GetMinimumThresholdSinceLastShownTime(promo_type)) {
+    return false;
+  }
+
+  // Only check the `last_external_event_time` for eligible `promo_type`.
+  if (last_external_event_time.has_value() &&
+      (base::Time::Now() - last_external_event_time.value() <
+       GetMinimumThresholdSinceLastEventTime(promo_type))) {
     return false;
   }
 

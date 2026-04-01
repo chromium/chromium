@@ -254,8 +254,8 @@ std::optional<base::Time> SigninPrefs::GetChromeLastSignoutTime(
 
 void SigninPrefs::SetChromeSigninInterceptionLastBubbleDeclineTime(
     const GaiaId& gaia_id,
-    base::Time reprompt_time) {
-  SetTimePref(reprompt_time, gaia_id,
+    base::Time last_decline_time) {
+  SetTimePref(last_decline_time, gaia_id,
               kChromeSigninInterceptionLastBubbleDeclineTime);
 }
 
