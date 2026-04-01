@@ -63,17 +63,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
   void DisableAnimationsForTesting() override;
   void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
-  // TODO(crbug.com/497974707): Remove this function.
-  SidePanelRegistry* old_registry_on_last_active_tab_change_for_testing()
-      const {
-    return old_registry_on_last_active_tab_change_for_testing_;
-  }
-
-  // TODO(crbug.com/497974707): Remove this function.
-  SidePanelRegistry* new_registry_on_last_active_tab_change_for_testing()
-      const {
-    return new_registry_on_last_active_tab_change_for_testing_;
-  }
 
  protected:
   // Implements `SidePanelUIBase`:
@@ -142,12 +131,6 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
       scoped_unowned_user_data_;
 
   TabListObserver tab_list_observer_;
-
-  // TODO(crbug.com/497974707): Remove for_testing_ members.
-  raw_ptr<SidePanelRegistry>
-      old_registry_on_last_active_tab_change_for_testing_ = nullptr;
-  raw_ptr<SidePanelRegistry>
-      new_registry_on_last_active_tab_change_for_testing_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_INTERNAL_ANDROID_SIDE_PANEL_COORDINATOR_ANDROID_H_

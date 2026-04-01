@@ -215,11 +215,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }
 
-// TODO(crbug.com/497974707): Update this test to check tab-scoped visibility.
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_RecordsRegistriesForTesting) {
-  // Arrange.
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_NewActiveTabHasNoEntry_ClosesSidePanel) {
+  // Arrange: Open 2 tabs.
   BrowserWindowInterface* browser = GetBrowserWindow();
   auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
   auto* tab_list = TabListInterface::From(browser);
@@ -228,44 +227,147 @@ IN_PROC_BROWSER_TEST_F(
       tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
   auto* first_registry = SidePanelRegistry::From(first_tab);
   auto* second_registry = SidePanelRegistry::From(second_tab);
-  EXPECT_NE(nullptr, first_registry);
-  EXPECT_NE(nullptr, second_registry);
-  EXPECT_NE(first_registry, second_registry);
-  EXPECT_FALSE(first_tab->IsActivated());
-  EXPECT_TRUE(second_tab->IsActivated());
+  ASSERT_NE(nullptr, first_registry);
+  ASSERT_NE(nullptr, second_registry);
+  ASSERT_NE(first_registry, second_registry);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
 
-  // Act.
+  // Arrange: Register a SidePanelEntry for the 2nd tab.
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  second_registry->Register(CreateSidePanelEntry(second_entry_key, browser));
+
+  // Arrange: Show the SidePanelEntry for the 2nd tab.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+
+  // Act: Switch to first tab.
   tab_list->ActivateTab(first_tab->GetHandle());
 
-  // Assert.
-  EXPECT_EQ(first_registry,
-            coordinator->new_registry_on_last_active_tab_change_for_testing());
-  EXPECT_EQ(second_registry,
-            coordinator->old_registry_on_last_active_tab_change_for_testing());
+  // Assert: Side panel should be closed because first tab has no active entry.
+  EXPECT_FALSE(
+      coordinator->IsSidePanelShowing(SidePanelEntry::PanelType::kContent));
 }
 
-// TODO(crbug.com/497974707): Update this test to check tab-scoped visibility.
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_CloseTab_RecordsRegistriesForTesting) {
-  // Arrange.
+    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_BothTabsHaveActiveEntries_ReplacesSidePanelContent) {
+  // Arrange: Open 2 tabs.
   BrowserWindowInterface* browser = GetBrowserWindow();
   auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
   auto* tab_list = TabListInterface::From(browser);
   tabs::TabInterface* first_tab = tab_list->GetActiveTab();
   tabs::TabInterface* second_tab =
       tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
-  EXPECT_FALSE(first_tab->IsActivated());
-  EXPECT_TRUE(second_tab->IsActivated());
-  SidePanelRegistry* first_registry = SidePanelRegistry::From(first_tab);
-  SidePanelRegistry* second_registry = SidePanelRegistry::From(second_tab);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
 
-  // Act.
+  // Arrange: Create and register SidePanelEntries for both tabs.
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  first_registry->Register(CreateSidePanelEntry(first_entry_key, browser));
+  second_registry->Register(CreateSidePanelEntry(second_entry_key, browser));
+
+  // Arrange: Show the SidePanelEntry for the 2nd tab.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+
+  // Arrange: Switch to the first tab.
+  tab_list->ActivateTab(first_tab->GetHandle());
+  ASSERT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Arrange: Show the SidePanelEntry for the first tab.
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Act: Switch back to second tab.
+  tab_list->ActivateTab(second_tab->GetHandle());
+
+  // Assert: Side panel should show second tab's entry (replaces first tab's
+  // entry).
+  EXPECT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasNoEntry_ClosesSidePanel) {
+  // Arrange: Open 2 tabs.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(first_tab->IsActivated());
+  ASSERT_TRUE(second_tab->IsActivated());
+
+  // Arrange: Register a SidePanelEntry for the 2nd tab.
+  auto* second_registry = SidePanelRegistry::From(second_tab);
+  auto second_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  second_registry->Register(CreateSidePanelEntry(second_entry_key, browser));
+
+  // Arrange: Show the SidePanelEntry for the 2nd tab.
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(second_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
+
+  // Act: Close second tab.
   tab_list->CloseTab(second_tab->GetHandle());
 
-  // Assert.
-  EXPECT_EQ(second_registry,
-            coordinator->old_registry_on_last_active_tab_change_for_testing());
-  EXPECT_EQ(first_registry,
-            coordinator->new_registry_on_last_active_tab_change_for_testing());
+  // Assert: Side panel should be closed.
+  EXPECT_FALSE(
+      coordinator->IsSidePanelShowing(SidePanelEntry::PanelType::kContent));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasActiveEntry_OpensSidePanel) {
+  // Arrange: Open the 1st tab and show an entry.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* first_tab = tab_list->GetActiveTab();
+  auto* first_registry = SidePanelRegistry::From(first_tab);
+  auto first_entry_key = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  first_registry->Register(CreateSidePanelEntry(first_entry_key, browser));
+  coordinator->SetNoDelaysForTesting(true);
+  coordinator->SidePanelUIBase::Show(first_entry_key,
+                                     /*open_trigger=*/std::nullopt,
+                                     /*suppress_animations=*/true);
+  ASSERT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Arrange: Open a 2nd tab.
+  // The 1st tab's entry should be closed.
+  tabs::TabInterface* second_tab =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+  ASSERT_FALSE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
+
+  // Act: Close the 2nd tab.
+  tab_list->CloseTab(second_tab->GetHandle());
+
+  // Assert: The 1st tab's entry should be shown.
+  EXPECT_TRUE(
+      coordinator->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
 }

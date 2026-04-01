@@ -147,12 +147,32 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
 void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
     SidePanelRegistry* old_contextual_registry,
     SidePanelRegistry* new_contextual_registry) {
-  // TODO(crbug.com/497974707): Complete the minimal implementation and remove
-  // for_testing_ members.
-  old_registry_on_last_active_tab_change_for_testing_ = old_contextual_registry;
-  new_registry_on_last_active_tab_change_for_testing_ = new_contextual_registry;
-
   // TODO(crbug.com/494002625): Complete the full implementation.
+  // The full implementation will need to:
+  // consider all SidePanelEntry::PanelTypes,
+  // consider fallback logic, such as falling back to global entries,
+  // etc.
+  auto panel_type = SidePanelEntry::PanelType::kContent;
+  if (old_contextual_registry && IsSidePanelShowing(panel_type)) {
+    std::optional<UniqueKey> key = current_key(panel_type);
+    CHECK(key) << "Current key should exist when side panel is showing.";
+
+    if (key->tab_handle ==
+        old_contextual_registry->GetTabInterface().GetHandle()) {
+      Close(panel_type, SidePanelEntryHideReason::kBackgrounded,
+            /*suppress_animations=*/true);
+    }
+  }
+
+  if (new_contextual_registry) {
+    if (auto active_entry =
+            new_contextual_registry->GetActiveEntryFor(panel_type)) {
+      UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
+                    active_entry.value()->key()};
+      Show(key, SidePanelOpenTrigger::kTabChanged,
+           /*suppress_animations=*/true);
+    }
+  }
 }
 
 ScopedJavaLocalRef<jobject> SidePanelCoordinatorAndroid::java_coordinator()
