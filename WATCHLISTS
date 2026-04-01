@@ -997,9 +997,6 @@
     'content_worker': {
       'filepath': 'content/.*worker',
     },
-    'contextual_tasks': {
-      'filepath': 'contextual_tasks/',
-    },
     'core_timing': {
       'filepath': 'third_party/blink/renderer/core/timing/' \
     },
@@ -2928,7 +2925,6 @@
     'content_shell': ['peter@chromium.org'],
     'content_worker': ['blink-worker-reviews@chromium.org',
                        'kinuko+watch@chromium.org'],
-    'contextual_tasks': ['sophiechang@chromium.org'],
     'core_timing': ['speed-metrics-dev+watchlist@chromium.org',
                     'core-timing-reviews@chromium.org'],
     'core_web_vitals_plm': ['speed-metrics-dev+watchlist@chromium.org',
