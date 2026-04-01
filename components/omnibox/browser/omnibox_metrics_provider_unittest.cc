@@ -807,6 +807,175 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_InvalidUkmSourceId) {
       0ul);
 }
 
+TEST_F(OmniboxMetricsProviderTest, RecordMetrics_ToolAndModelModes) {
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/{});
+    log.ukm_source_id = ukm::NoURLSourceId();
+
+    // Explicitly set the AIM state.
+    log.input_state.active_tool = omnibox::TOOL_MODE_IMAGE_GEN;
+    log.input_state.active_model = omnibox::MODEL_MODE_GEMINI_PRO;
+
+    RecordMetrics(log);
+
+    // Verify the UMA histograms. (SEARCH_SUGGEST is non-verbatim so precision
+    // is true)
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByModel.GeminiPro", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        true, 1);
+
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByModel.GeminiPro", true, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        true, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    // SEARCH_WHAT_YOU_TYPED is verbatim type.
+    result.AppendMatches(
+        {BuildMatch(AutocompleteMatch::Type::SEARCH_WHAT_YOU_TYPED)});
+
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/{});
+    log.ukm_source_id = ukm::NoURLSourceId();
+
+    // Explicitly set the AIM state summary with no non-trivial matches.
+    log.input_state.active_tool = omnibox::TOOL_MODE_IMAGE_GEN;
+    log.input_state.active_model = omnibox::MODEL_MODE_GEMINI_PRO;
+
+    RecordMetrics(log);
+
+    // Verify the UMA histograms.
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen", false, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByModel.GeminiPro", false, 1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        false, 1);
+
+    // Precision shouldn't be recorded if not shown.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByModel.GeminiPro", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+
+    // Here we don't set an input state. It should default to Unspecified.
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/{});
+    log.ukm_source_id = ukm::NoURLSourceId();
+    RecordMetrics(log);
+
+    // Verify the UMA histograms.
+    // When Unspecified, we should NOT log the precision/recall metrics anymore.
+    histogram_tester.ExpectTotalCount("Omnibox.NonTrivialSuggestions.Recall",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.Unspecified", 0);
+    histogram_tester.ExpectTotalCount("Omnibox.NonTrivialSuggestions.Precision",
+                                      0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.Unspecified", 0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/{});
+    log.ukm_source_id = ukm::NoURLSourceId();
+
+    // Only set the tool mode.
+    log.input_state.active_tool = omnibox::TOOL_MODE_IMAGE_GEN;
+
+    RecordMetrics(log);
+
+    // Verify that only the tool metric is logged.
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByModel.GeminiPro", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        0);
+
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByModel.GeminiPro", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        0);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    AutocompleteResult result;
+    result.AppendMatches({BuildMatch(AutocompleteMatch::Type::SEARCH_SUGGEST)});
+    OmniboxLog log = BuildOmniboxLog(result, /*selected_index=*/0,
+                                     /*session_data=*/{});
+    log.ukm_source_id = ukm::NoURLSourceId();
+
+    // Only set the model mode.
+    log.input_state.active_model = omnibox::MODEL_MODE_GEMINI_PRO;
+
+    RecordMetrics(log);
+
+    // Verify that only the model metric is logged.
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen", 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByModel.GeminiPro", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Recall.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        0);
+
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen", 0);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByModel.GeminiPro", true, 1);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.NonTrivialSuggestions.Precision.ByToolType.ImageGen.ByModel."
+        "GeminiPro",
+        0);
+  }
+}
+
 // TODO(b/261895038): This test is flaky on android.  Currently scoring signals
 // logging is only enabled on desktop, so disable for mobile.
 #if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))

@@ -15,6 +15,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/common/input_state.h"
 #include "components/sessions/core/session_id.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -160,6 +161,9 @@ struct OmniboxLog {
 
   // The UKM source id for the last committed navigation in the top frame.
   ukm::SourceId ukm_source_id;
+
+  // The input state when the user selected the suggestion.
+  omnibox::InputState input_state;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_LOG_H_

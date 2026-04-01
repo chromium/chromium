@@ -248,7 +248,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Models.ModeOnSubmission.{ContextualSearchSource}"
-    enum="ContextualSearchAimModel" expires_after="2026-08-06">
+    enum="OmniboxModelMode" expires_after="2026-08-06">
   <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Models.{ContextualSearchSource}"
-    enum="ContextualSearchAimModel" expires_after="2026-08-06">
+    enum="OmniboxModelMode" expires_after="2026-08-06">
   <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -745,7 +745,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.SessionEnd.{Result}.ToolMode.{ContextualSearchSource}"
-    enum="ContextualSearchAimTool" expires_after="2027-04-01">
+    enum="OmniboxToolMode" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>
@@ -812,7 +812,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ContextualSearch.Tools.ModeOnSubmission.{ContextualSearchSource}"
-    enum="ContextualSearchAimTool" expires_after="2026-08-06">
+    enum="OmniboxToolMode" expires_after="2026-08-06">
   <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -824,7 +824,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Tools.Shown.{ContextualSearchSource}"
-    enum="ContextualSearchAimTool" expires_after="2027-04-01">
+    enum="OmniboxToolMode" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
   <owner>chrome-mobile-search@google.com</owner>
   <summary>Recorded when an AIM tool is shown in the composebox menu.</summary>
@@ -832,7 +832,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualSearch.Tools.{ContextualSearchSource}"
-    enum="ContextualSearchAimTool" expires_after="2026-08-06">
+    enum="OmniboxToolMode" expires_after="2026-08-06">
   <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

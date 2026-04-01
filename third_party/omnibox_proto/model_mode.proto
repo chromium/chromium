@@ -25,4 +25,4 @@ enum ModelMode {
   // Gemini Pro model without generative UI.
   MODEL_MODE_GEMINI_PRO_NO_GEN_UI = 4;
 }
-// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode)
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode, //components/omnibox/common/omnibox_metrics_utils.cc:ModelMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxModelMode)

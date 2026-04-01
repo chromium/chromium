@@ -29,4 +29,4 @@ enum ToolMode {
   TOOL_MODE_AIM = 9;
   TOOL_MODE_AIM_GEN_PROMPT = 10;
 }
-// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode)
+// LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolMode, //components/omnibox/common/omnibox_metrics_utils.cc:ToolMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxToolMode)

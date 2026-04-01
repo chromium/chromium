@@ -274,6 +274,18 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="forced query"/>
 </enum>
 
+<!-- LINT.IfChange(OmniboxModelMode) -->
+
+<enum name="OmniboxModelMode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="GeminiRegular"/>
+  <int value="2" label="GeminiPro"/>
+  <int value="3" label="GeminiProAutoroute"/>
+  <int value="4" label="GeminiProNoGenUi"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ModelMode) -->
+
 <enum name="OmniboxRichAutocompletionType">
   <int value="0" label="None"/>
   <int value="1" label="URL non-prefix"/>
@@ -281,6 +293,24 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Title non-prefix"/>
   <int value="4" label="Shortcut text prefix"/>
 </enum>
+
+<!-- LINT.IfChange(OmniboxToolMode) -->
+
+<enum name="OmniboxToolMode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="DeepSearch"/>
+  <int value="2" label="Canvas"/>
+  <int value="3" label="GeminiPro"/>
+  <int value="4" label="ImageGen"/>
+  <int value="5" label="DeepBrowse"/>
+  <int value="6" label="ImageGenSelfie"/>
+  <int value="7" label="ImageGenUpload"/>
+  <int value="8" label="DisableSuggest"/>
+  <int value="9" label="Aim"/>
+  <int value="10" label="AimGenPrompt"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/omnibox/common/omnibox_metrics_utils.cc:ToolMode) -->
 
 <enum name="OmniboxWebUIRendererProcessGoneStatus">
   <int value="0" label="Normal termination"/>
