@@ -195,8 +195,7 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // identity. And finally the remove identity confirmation dialog is opened a
 // third time to remove a second identity.
 // The goal of this test is to confirm the dialog can be opened several times.
-// TODO(crbug.com/460742009): Test is flaky.
-- (void)FLAKY_testRemoveAccountSeveralTime {
+- (void)testRemoveAccountSeveralTime {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   FakeSystemIdentity* fakeIdentity3 = [FakeSystemIdentity fakeIdentity3];
@@ -227,7 +226,8 @@ using chrome_test_util::SettingsSignInRowMatcher;
                     stringByAppendingString:fakeIdentity1.userEmail])]
         performAction:grey_tap()];
   } else {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ActionSheetCancelButton()]
         performAction:grey_tap()];
   }
 
