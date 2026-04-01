@@ -260,7 +260,11 @@ class TabDragController : public views::WidgetObserver,
     // `can_release_capture_` is true.
     kWaitingToDragTabs,
     // The drag session has completed or been canceled.
-    kStopped
+    kStopped,
+    // The session is dragging a window, but must wait for the detached window
+    // to be shown (which may be deferred by InitialWebUI) before starting the
+    // nested move loop.
+    kWaitingForWindowToShow,
   };
 
   // Enumeration of the ways a drag session can end.
