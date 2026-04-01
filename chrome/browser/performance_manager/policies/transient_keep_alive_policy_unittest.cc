@@ -143,13 +143,7 @@ TEST_F(TransientKeepAlivePolicyTest, KeepAliveNotYetExpired) {
 // Test that the oldest render process host kept-alive that is currently tracked
 // is evicted once we are over the the limit of tracked items.
 // crbug.com/459626659
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
-#define MAYBE(x) DISABLED_##x
-#else
-#define MAYBE(x) x
-#endif
-TEST_F(TransientKeepAlivePolicyTest,
-       MAYBE(EvictsOldestProcessWhenLimitExceeded)) {
+TEST_F(TransientKeepAlivePolicyTest, EvictsOldestProcessWhenLimitExceeded) {
   NavigateAndCommit(GURL(kTestUrl1));
   content::RenderProcessHost* rph1 = process();
 
@@ -176,8 +170,10 @@ TEST_F(TransientKeepAlivePolicyTest,
   // eviction logic triggered by the third navigation.
   task_environment()->RunUntilIdle();
 
-  // Verify final ref count for each renderer process host.
-  EXPECT_EQ(0, rph1->GetPendingReuseRefCountForTesting());  // Evicted
+  // After eviction the async decrement may trigger Cleanup() on rph1, setting
+  // deleting_soon_. GetPendingReuseRefCountForTesting() CHECKs
+  // !deleting_soon_, so verify eviction via the histogram instead.
+  // rph2, rph3, rph4 are still alive and safe to query.
   EXPECT_EQ(1, rph2->GetPendingReuseRefCountForTesting());  // Still kept alive
   EXPECT_EQ(1, rph3->GetPendingReuseRefCountForTesting());  // Now kept alive
   EXPECT_EQ(1, rph4->GetPendingReuseRefCountForTesting());  // Active process
