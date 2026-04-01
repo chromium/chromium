@@ -388,4 +388,10 @@ BASE_DECLARE_FEATURE(kPageContextIPCOptimization);
 // Returns true if the PageContextIPCOptimization feature is enabled.
 bool IsPageContextIPCOptimizationEnabled();
 
+// Enables the GeminiClientMigration feature.
+BASE_DECLARE_FEATURE(kGeminiClientMigration);
+
+// Returns true if the GeminiClientMigration feature is enabled.
+bool IsGeminiClientMigrationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

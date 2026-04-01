@@ -678,6 +678,11 @@ const char kGeminiChatPersistenceName[] = "Gemini Chat Persistence";
 const char kGeminiChatPersistenceDescription[] =
     "Enables improvements to Gemini Chat persistence.";
 
+const char kGeminiClientMigrationName[] = "Gemini Client Migration";
+const char kGeminiClientMigrationDescription[] =
+    "Enables the client migration for Gemini, adding the infrastructure for "
+    "several key features that render more than just text.";
+
 const char kGeminiCopresenceName[] = "Gemini Copresence";
 const char kGeminiCopresenceDescription[] =
     "Enables the Gemini Copresence feature, which provides a persistent Gemini "

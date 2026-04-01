@@ -418,6 +418,9 @@ extern const char kGeminiBinaryMigrationDescription[];
 extern const char kGeminiChatPersistenceName[];
 extern const char kGeminiChatPersistenceDescription[];
 
+extern const char kGeminiClientMigrationName[];
+extern const char kGeminiClientMigrationDescription[];
+
 extern const char kGeminiCopresenceName[];
 extern const char kGeminiCopresenceDescription[];
 

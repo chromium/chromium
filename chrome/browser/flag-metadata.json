@@ -4918,6 +4918,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "gemini-client-migration",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-copresence",
     "owners": [
       "adamta@chromium.org",

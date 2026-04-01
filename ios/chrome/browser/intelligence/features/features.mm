@@ -728,3 +728,9 @@ BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsPageContextIPCOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kPageContextIPCOptimization);
 }
+
+BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiClientMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiClientMigration);
+}
