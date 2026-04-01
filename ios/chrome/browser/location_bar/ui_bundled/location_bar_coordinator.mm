@@ -862,12 +862,11 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
            entryPoint:LensEntrypoint::OmniboxPostCapture];
     [handler searchImageWithLens:command];
   } else {
-    web::NavigationManager::WebLoadParams webParams =
-        ImageSearchParamGenerator::LoadParamsForImage(
-            image, ios::TemplateURLServiceFactory::GetForProfile(
-                       browser->GetProfile()));
-    UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
-    UrlLoadingBrowserAgent::FromBrowser(browser)->Load(params);
+    __weak LocationBarCoordinator* weakSelf = self;
+    ImageSearchParamGenerator::PrepareImageDataAsync(
+        image, base::BindOnce(^(NSData* imageData) {
+          [weakSelf loadImageSearchWithPreparedData:imageData];
+        }));
   }
 
   id<BrowserCoordinatorCommands> browserCoordinatorHandler = HandlerForProtocol(
@@ -877,6 +876,20 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (UIView*)locationBarSteadyViewVisualCopy {
   return self.viewController.locationBarSteadyViewVisualCopy;
+}
+
+// Called when image data is ready for search.
+- (void)loadImageSearchWithPreparedData:(NSData*)imageData {
+  if (!self.browser) {
+    return;
+  }
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForResizedImageData(imageData,
+                                                               GURL(), service);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 @end

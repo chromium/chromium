@@ -576,9 +576,21 @@ using base::UserMetricsAction;
 // Loads an image-search query with `image`.
 - (void)loadImageQuery:(UIImage*)image {
   DCHECK(image);
+  __weak OmniboxMediator* weakSelf = self;
+  ImageSearchParamGenerator::PrepareImageDataAsync(
+      image, base::BindOnce(^(NSData* imageData) {
+        [weakSelf loadImageSearchWithPreparedData:imageData];
+      }));
+}
+
+// Called when image data is ready for search.
+- (void)loadImageSearchWithPreparedData:(NSData*)imageData {
+  if (!self.URLLoadingBrowserAgent) {
+    return;
+  }
   web::NavigationManager::WebLoadParams webParams =
-      ImageSearchParamGenerator::LoadParamsForImage(image,
-                                                    self.templateURLService);
+      ImageSearchParamGenerator::LoadParamsForResizedImageData(
+          imageData, GURL(), self.templateURLService);
   UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
   self.URLLoadingBrowserAgent->Load(params);
 }

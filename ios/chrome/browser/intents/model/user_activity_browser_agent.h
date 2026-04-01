@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/intents/model/intent_type.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "url/gurl.h"
 
 // This browser agent handles user intents events.
@@ -98,6 +99,18 @@ class UserActivityBrowserAgent
   // Handles the opening of  a new Tab or routes to correct Tab based on a
   // `ApplicationModeForTabOpening`.
   void HandleRouteToCorrectTab(ApplicationModeForTabOpening target_mode);
+
+  // Continues opening with the given `params` and `target_mode` after all
+  // URL load params have been prepared.
+  void ContinueOpeningWithParams(UrlLoadParams params,
+                                 ApplicationModeForTabOpening target_mode);
+
+  // Called when async image processing completes. Builds WebLoadParams
+  // from `image_data` using a fresh TemplateURLService and continues
+  // opening.
+  void ContinueOpeningWithImageData(UrlLoadParams params,
+                                    ApplicationModeForTabOpening target_mode,
+                                    NSData* image_data);
 
   // Handles the opening of a given URL in a tab on a given
   // `ApplicationModeForTabOpening`.

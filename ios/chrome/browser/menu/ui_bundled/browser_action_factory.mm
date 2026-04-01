@@ -400,27 +400,20 @@
 
 - (UIAction*)actionToSearchCopiedImage {
   __weak __typeof(self) weakSelf = self;
-  base::WeakPtr<Browser> weakBrowser = self.browser->AsWeakPtr();
 
   void (^clipboardAction)(std::optional<gfx::Image>) =
       ^(std::optional<gfx::Image> optionalImage) {
         __typeof(weakSelf) strongSelf = weakSelf;
-        if (!optionalImage || !strongSelf || !weakBrowser) {
+        if (!optionalImage || !strongSelf) {
           return;
         }
 
-        TemplateURLService* templateURLService =
-            ios::TemplateURLServiceFactory::GetForProfile(
-                weakBrowser->GetProfile());
-
         UIImage* image = [optionalImage.value().ToUIImage() copy];
 
-        web::NavigationManager::WebLoadParams webParams =
-            ImageSearchParamGenerator::LoadParamsForImage(image,
-                                                          templateURLService);
-        UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
-
-        UrlLoadingBrowserAgent::FromBrowser(weakBrowser.get())->Load(params);
+        ImageSearchParamGenerator::PrepareImageDataAsync(
+            image, base::BindOnce(^(NSData* imageData) {
+              [strongSelf loadWithImageData:imageData];
+            }));
       };
 
   return
@@ -561,6 +554,16 @@
   [geminiHandler
       hideFloatyIfInvokedAnimated:YES
                        fromSource:gemini::FloatyUpdateSource::ContextMenu];
+}
+
+- (void)loadWithImageData:(NSData*)imageData {
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
+  web::NavigationManager::WebLoadParams webParams =
+      ImageSearchParamGenerator::LoadParamsForResizedImageData(imageData,
+                                                               GURL(), service);
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(webParams);
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 @end

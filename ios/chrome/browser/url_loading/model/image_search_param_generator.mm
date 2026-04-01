@@ -4,61 +4,92 @@
 
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 
+#import "base/functional/bind.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/thread_pool.h"
 #import "components/search_engines/template_url_service.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_util.h"
 
-web::NavigationManager::WebLoadParams
-ImageSearchParamGenerator::LoadParamsForImageData(
-    NSData* data,
-    const GURL& url,
-    TemplateURLService* template_url_service) {
-  NSData* image_data = data;
-  UIImage* image = [UIImage imageWithData:image_data];
+namespace {
+
+// Resizes `image` and encodes it as JPEG. Must be called on a background
+// thread. Returns the encoded image data, or nil if the image is empty.
+NSData* ResizeAndEncodeImage(UIImage* image) {
   gfx::Image gfx_image(image);
-  // Converting to gfx::Image creates an empty image if UIImage is nil. However,
-  // we still want to do the image search with nil data because that gives
-  // the user the best error experience.
   if (gfx_image.IsEmpty()) {
-    return LoadParamsForResizedImageData(image_data, url, template_url_service);
+    return nil;
   }
   UIImage* resized_image =
       gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
-  if (![image isEqual:resized_image]) {
-    image_data = UIImageJPEGRepresentation(resized_image, 1.0);
-  }
-
-  return LoadParamsForResizedImageData(image_data, url, template_url_service);
+  return UIImageJPEGRepresentation(resized_image, 1.0);
 }
 
-web::NavigationManager::WebLoadParams
-ImageSearchParamGenerator::LoadParamsForImage(
+// Decodes `data` into a UIImage, resizes it, and encodes it as JPEG. Must
+// be called on a background thread. If the image cannot be decoded or does
+// not need resizing, returns the original `data` unchanged.
+NSData* DecodeResizeAndEncodeImageData(NSData* data) {
+  UIImage* image = [UIImage imageWithData:data];
+  gfx::Image gfx_image(image);
+  if (gfx_image.IsEmpty()) {
+    return data;
+  }
+  UIImage* resized_image =
+      gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
+  if ([image isEqual:resized_image]) {
+    return data;
+  }
+  return UIImageJPEGRepresentation(resized_image, 1.0);
+}
+
+}  // namespace
+
+void ImageSearchParamGenerator::PrepareImageDataAsync(
     UIImage* image,
-    TemplateURLService* template_url_service) {
-  gfx::Image gfx_image(image);
-  // Converting to gfx::Image creates an empty image if UIImage is nil. However,
-  // we still want to do the image search with nil data because that gives
-  // the user the best error experience.
-  if (gfx_image.IsEmpty()) {
-    return LoadParamsForResizedImageData(nil, GURL(), template_url_service);
-  }
-  UIImage* resized_image =
-      gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
-  NSData* data = UIImageJPEGRepresentation(resized_image, 1.0);
-  return LoadParamsForResizedImageData(data, GURL(), template_url_service);
+    ImageDataCallback callback) {
+  __block NSData* resultData = nil;
+  __block ImageDataCallback completionCallback = std::move(callback);
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(^{
+        resultData = ResizeAndEncodeImage(image);
+      }),
+      base::BindOnce(^{
+        std::move(completionCallback).Run(resultData);
+      }));
 }
 
-// This method does all the work of constructing the parameters. Internally,
-// the class uses an empty GURL to signify that the url is not present, and
-// shouldn't be added to the search arguments.
+void ImageSearchParamGenerator::PrepareImageDataFromDataAsync(
+    NSData* data,
+    ImageDataCallback callback) {
+  __block NSData* resultData = nil;
+  __block ImageDataCallback completionCallback = std::move(callback);
+
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(^{
+        resultData = DecodeResizeAndEncodeImageData(data);
+      }),
+      base::BindOnce(^{
+        std::move(completionCallback).Run(resultData);
+      }));
+}
+
 web::NavigationManager::WebLoadParams
 ImageSearchParamGenerator::LoadParamsForResizedImageData(
     NSData* data,
     const GURL& url,
     TemplateURLService* template_url_service) {
-  char const* bytes = reinterpret_cast<const char*>([data bytes]);
-  std::string byte_string(bytes, [data length]);
+  std::string byte_string;
+  if (data) {
+    char const* bytes = reinterpret_cast<const char*>([data bytes]);
+    byte_string.assign(bytes, [data length]);
+  }
 
   const TemplateURL* default_url =
       template_url_service->GetDefaultSearchProvider();
@@ -82,4 +113,37 @@ ImageSearchParamGenerator::LoadParamsForResizedImageData(
           result, ui::PAGE_TRANSITION_TYPED, &post_content);
 
   return web_load_params;
+}
+
+web::NavigationManager::WebLoadParams
+ImageSearchParamGenerator::LoadParamsForImageData(
+    NSData* data,
+    const GURL& url,
+    TemplateURLService* template_url_service) {
+  NSData* image_data = data;
+  UIImage* image = [UIImage imageWithData:image_data];
+  gfx::Image gfx_image(image);
+  if (gfx_image.IsEmpty()) {
+    return LoadParamsForResizedImageData(image_data, url, template_url_service);
+  }
+  UIImage* resized_image =
+      gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
+  if (![image isEqual:resized_image]) {
+    image_data = UIImageJPEGRepresentation(resized_image, 1.0);
+  }
+  return LoadParamsForResizedImageData(image_data, url, template_url_service);
+}
+
+web::NavigationManager::WebLoadParams
+ImageSearchParamGenerator::LoadParamsForImage(
+    UIImage* image,
+    TemplateURLService* template_url_service) {
+  gfx::Image gfx_image(image);
+  if (gfx_image.IsEmpty()) {
+    return LoadParamsForResizedImageData(nil, GURL(), template_url_service);
+  }
+  UIImage* resized_image =
+      gfx::ResizedImageForSearchByImage(gfx_image).ToUIImage();
+  NSData* data = UIImageJPEGRepresentation(resized_image, 1.0);
+  return LoadParamsForResizedImageData(data, GURL(), template_url_service);
 }

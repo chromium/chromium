@@ -785,11 +785,13 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
       if (search_engines::SupportsSearchByImage(template_url_service)) {
         NSData* image_data =
             connection_information_.startupParameters.imageSearchData;
-        web::NavigationManager::WebLoadParams web_load_params =
-            ImageSearchParamGenerator::LoadParamsForImageData(
-                image_data, GURL(), template_url_service);
-
-        params.web_params = web_load_params;
+        ImageSearchParamGenerator::PrepareImageDataFromDataAsync(
+            image_data,
+            base::BindOnce(
+                &UserActivityBrowserAgent::ContinueOpeningWithImageData,
+                weak_ptr_factory_.GetWeakPtr(), std::move(params),
+                target_mode));
+        return;
       }
     } else {
       connection_information_.startupParameters.postOpeningAction =
@@ -803,6 +805,12 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
     params.web_params.url = result;
   }
 
+  ContinueOpeningWithParams(std::move(params), target_mode);
+}
+
+void UserActivityBrowserAgent::ContinueOpeningWithParams(
+    UrlLoadParams params,
+    ApplicationModeForTabOpening target_mode) {
   params.from_external = true;
 
   base::OnceClosure closure =
@@ -817,6 +825,17 @@ void UserActivityBrowserAgent::HandleRouteToCorrectTab(
                                                  FOCUS_OMNIBOX
                                       completion:base::CallbackToBlock(
                                                      std::move(closure))];
+}
+
+void UserActivityBrowserAgent::ContinueOpeningWithImageData(
+    UrlLoadParams params,
+    ApplicationModeForTabOpening target_mode,
+    NSData* image_data) {
+  TemplateURLService* template_url_service =
+      ios::TemplateURLServiceFactory::GetForProfile(profile_);
+  params.web_params = ImageSearchParamGenerator::LoadParamsForResizedImageData(
+      image_data, GURL(), template_url_service);
+  ContinueOpeningWithParams(std::move(params), target_mode);
 }
 
 void UserActivityBrowserAgent::HandleUrlOpening(
