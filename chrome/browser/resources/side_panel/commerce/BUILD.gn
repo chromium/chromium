@@ -13,13 +13,14 @@ build_webui("build") {
 
   web_component_files = [
     "app.ts",
-    "history_graph.ts",
     "price_tracking_section.ts",
   ]
 
   ts_files = [
     "catalog_attributes_row.html.ts",
     "catalog_attributes_row.ts",
+    "history_graph.html.ts",
+    "history_graph.ts",
     "insights_comment_row.html.ts",
     "insights_comment_row.ts",
     "price_insights_browser_proxy.ts",
@@ -27,6 +28,7 @@ build_webui("build") {
 
   css_files = [
     "catalog_attributes_row.css",
+    "history_graph.css",
     "insights_comment_row.css",
   ]
 

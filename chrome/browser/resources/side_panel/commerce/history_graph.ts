@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import '/strings.m.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/d3/d3.min.js';
 
 import type {PricePoint} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './history_graph.html.js';
+import {getCss} from './history_graph.css.js';
+import {getHtml} from './history_graph.html.js';
 
 const LINE_AREA_HEIGHT_PX = 92;
 const GRAPH_BUBBLE_BOTTOM_MARGIN_PX = 8;
@@ -39,31 +39,35 @@ export interface ShoppingInsightsHistoryGraphElement {
 }
 
 // Element that controls the history graph.
-export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
+export class ShoppingInsightsHistoryGraphElement extends CrLitElement {
   static get is() {
     return 'shopping-insights-history-graph';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      data: Array,
-      locale: String,
-      currency: String,
+      data: {type: Array},
+      locale: {type: String},
+      currency: {type: String},
     };
   }
 
-  declare data: PricePoint[];
-  declare locale: string;
-  declare currency: string;
+  accessor data: PricePoint[] = [];
+  accessor locale: string = '';
+  accessor currency: string = '';
   private points: Array<{date: Date, price: number}>;
   private isGraphInteracted_: boolean = false;
   private currentPricePointIndex_?: number;
   private resizeObserver_: ResizeObserver;
-  private currentWidth_: number;
+  private currentWidth_: number = 0;
   private graphSvg_: any;
   private dateTopMarginPx_ = 12;
   private priceRightMarginPx_ = 8;
@@ -75,8 +79,10 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.points = this.data.map(
-        d => ({date: this.stringToDate_(d.date), price: d.price}));
+    if (this.data && this.data.length > 0) {
+      this.points = this.data.map(
+          d => ({date: this.stringToDate_(d.date), price: d.price}));
+    }
 
     this.drawHistoryGraph_();
 
@@ -86,6 +92,7 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     this.resizeObserver_.disconnect();
   }
 
