@@ -9,9 +9,11 @@
 
 #include "base/containers/queue.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "media/base/video_encoder.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
+#include "media/cast/encoding/external_video_encoder.h"
 #include "media/cast/encoding/video_encoder.h"
 
 namespace media {
@@ -68,6 +70,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                    RtpTimeTicks rtp_timestamp,
                    base::TimeTicks reference_time,
                    base::TimeDelta frame_duration,
+                   std::optional<double> estimated_quantizer,
                    FrameEncodedCallback frame_encoded_callback);
     CachedMetadata();
     // This type is move-only due to `frame_encoded_callback`.
@@ -83,8 +86,17 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
     RtpTimeTicks rtp_timestamp;
     base::TimeTicks reference_time;
     base::TimeDelta frame_duration;
+    std::optional<double> estimated_quantizer;
     FrameEncodedCallback frame_encoded_callback;
   };
+
+  // Once the quantizer is estimated asynchronously, this callback is invoked
+  // to enqueue the frame and call the encoder.
+  void OnQuantizerEstimated(scoped_refptr<VideoFrame> video_frame,
+                            media::VideoEncoder::EncodeOptions encode_options,
+                            base::TimeTicks reference_time,
+                            FrameEncodedCallback frame_encoded_callback,
+                            std::optional<double> estimated_quantizer);
 
   // Once we know the frame size on the first call to `EncodeVideoFrame`, we
   // can then construct the encoder.
@@ -183,6 +195,12 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
 
   // Metadata associated with recently queued frames.
   base::queue<CachedMetadata> recent_metadata_;
+
+  // Used to compute utilization metrics for each frame.
+  base::SequenceBound<QuantizerEstimator> quantizer_estimator_;
+
+  // Pending encodes to be run when options are updated.
+  std::vector<base::OnceClosure> pending_encodes_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<MediaVideoEncoderWrapper> weak_factory_{this};
