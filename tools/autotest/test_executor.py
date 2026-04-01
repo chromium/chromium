@@ -42,13 +42,22 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
   return True
 
 
-def RunTestTargets(out_dir: str, targets: list[str], gtest_filter: str,
-                   pref_mapping_filter: str | None, extra_args: list[str],
-                   dry_run: bool, no_try_android_wrappers: bool,
-                   no_fast_local_dev: bool, no_single_variant: bool) -> int:
+def RunTestTargets(out_dir: str,
+                   targets: list[str],
+                   gtest_filter: str,
+                   pref_mapping_filter: str | None,
+                   extra_args: list[str],
+                   dry_run: bool,
+                   no_try_android_wrappers: bool,
+                   no_fast_local_dev: bool,
+                   no_single_variant: bool,
+                   is_suite: bool = False) -> int:
+  total_passed = total_failed = 0
+  failed_test_names = []
+  any_failed = False
 
   for target in targets:
-    target_binary: str = target.split(':')[1]
+    target_binary: str = target.split(':')[-1]
 
     # Look for the Android wrapper script first.
     path: str = os.path.join(out_dir, 'bin', f'run_{target_binary}')
@@ -63,14 +72,51 @@ def RunTestTargets(out_dir: str, targets: list[str], gtest_filter: str,
       if not no_single_variant:
         extra_args = extra_args + ['--single-variant']
 
-    cmd: list[str] = [path, f'--gtest_filter={gtest_filter}']
+    cmd: list[str] = [path]
+    if gtest_filter:
+      cmd.append(f'--gtest_filter={gtest_filter}')
     if pref_mapping_filter:
       cmd.append(f'--test_policy_to_pref_mappings_filter={pref_mapping_filter}')
+
     cmd.extend(extra_args)
 
     print('Running test: ' + shlex.join(cmd))
-    if not dry_run:
-      return_code = command.StreamCommandOrExit(cmd)
+    if dry_run:
+      continue
+
+    return_code, summary = command.RunTestCommandWithSummary(cmd)
+
+    if not is_suite:
       if return_code != 0:
         return return_code
-  return 0
+      continue
+
+    if summary.parse_error:
+      print(
+          f"Warning: Could not parse test summary JSON for {target_binary}. {summary.parse_error}"
+      )
+    else:
+      total_passed += len(summary.passed_tests)
+      total_failed += len(summary.failed_tests)
+      for test_name, _ in summary.failed_tests:
+        failed_test_names.append(f"{target_binary}: {test_name}")
+
+    if return_code != 0:
+      any_failed = True
+
+  if dry_run or not is_suite:
+    return 0
+
+  print('\n' + '=' * 40)
+  print('SUITE EXECUTION SUMMARY')
+  print('=' * 40)
+  print(f'Total Tests Passed/Skipped: {total_passed}')
+  print(f'Total Tests Failed:         {total_failed}')
+  print('=' * 40)
+
+  if failed_test_names:
+    print('\nFAILED TESTS:')
+    for test in failed_test_names:
+      print(f'  - {test}')
+
+  return 1 if any_failed else 0

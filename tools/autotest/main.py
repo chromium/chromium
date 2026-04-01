@@ -97,6 +97,15 @@ def main(ctx, **kwargs) -> int:
     raise click.UsageError(
         'Specify a file to test or use --run-changed or --run-related')
 
+  direct_suites = []
+  if config.suite:
+    for f in config.files:
+      direct_suites.append(f)
+    config.files = tuple()
+    config.run_changed = False
+    if config.name:
+      config.name = None
+
   # Cog is almost unusable with local search, so turn on remote_search.
   use_remote_search: bool = config.remote_search
   if not use_remote_search and const.SRC_DIR.parts[:3] == ('/', 'google',
@@ -147,17 +156,26 @@ def main(ctx, **kwargs) -> int:
     targets = [t.removeprefix('//') for t in config.target]
     used_cache = False
   else:
-    if not filenames:
+    if not filenames and not direct_suites:
       command.ExitWithMessage('No associated test files found.')
 
-    targets, used_cache = target_finder.FindTestTargets(
-        target_cache, out_dir, filenames, config.run_all, config.run_changed
-        or config.run_related, config.target_index)
+    targets = []
+    used_cache = False
+    if filenames:
+      targets, used_cache = target_finder.FindTestTargets(
+          target_cache, out_dir, filenames, config.run_all, config.run_changed
+          or config.run_related, config.target_index)
 
-  if not current_gtest_filter:
+  # Add any direct suites
+  for suite in direct_suites:
+    target_name = suite.removeprefix('//')
+    if target_name not in targets:
+      targets.append(target_name)
+
+  if not current_gtest_filter and not config.suite:
     current_gtest_filter = filters.BuildTestFilter(filenames, config.line)
 
-  if not current_gtest_filter:
+  if not current_gtest_filter and not config.suite:
     command.ExitWithMessage('Failed to derive a gtest filter')
 
   pref_mapping_filter: str | None = config.test_policy_to_pref_mappings_filter
@@ -188,18 +206,22 @@ def main(ctx, **kwargs) -> int:
                                                   config.dry_run, config.quiet,
                                                   True)
 
-  telemetry.RecordMainAttributes(targets, current_gtest_filter, used_cache,
-                                 out_dir)
+  telemetry.RecordMainAttributes(targets, current_gtest_filter or '*',
+                                 used_cache, out_dir)
 
   if not build_ok:
     return 1
 
-  return test_executor.RunTestTargets(out_dir, targets, current_gtest_filter,
-                                      pref_mapping_filter, config.extras,
+  return test_executor.RunTestTargets(out_dir,
+                                      targets,
+                                      current_gtest_filter,
+                                      pref_mapping_filter,
+                                      config.extras,
                                       config.dry_run,
                                       config.no_try_android_wrappers,
                                       config.no_fast_local_dev,
-                                      config.no_single_variant)
+                                      config.no_single_variant,
+                                      is_suite=config.suite)
 
 if __name__ == '__main__':
   telemetry.telemetry.initialize('chromium.tools.autotest')

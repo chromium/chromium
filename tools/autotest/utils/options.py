@@ -27,6 +27,7 @@ class AutotestConfig:
   no_fast_local_dev: bool | None
   no_single_variant: bool | None
   no_build: bool | None
+  suite: bool | None
   files: tuple[str, ...]
   extras: list[str] | None = None  # To hold ctx.args
 
@@ -178,6 +179,9 @@ def autotest_options(f):
                    '--no_build',
                    is_flag=True,
                    help='Do not build before running tests.'),
+      click.option('--suite',
+                   is_flag=True,
+                   help='Run entire test suites instead of individual tests.'),
   ]
   # Apply in reverse so the first item in the list appears first in --help
   for option in reversed(options):

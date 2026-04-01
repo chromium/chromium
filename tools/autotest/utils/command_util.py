@@ -20,7 +20,8 @@ def ExitWithMessage(*args: list[str]):
 
 
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.run_target')
-def StreamCommandOrExit(cmd: list[str], **kwargs: int) -> int:
+def RunTestCommandWithSummary(cmd: list[str],
+                              **kwargs: int) -> tuple[int, TestSummary]:
   user_provided_path: str = None
   for i, arg in enumerate(cmd):
     if arg.startswith('--test-launcher-summary-output='):
@@ -45,7 +46,7 @@ def StreamCommandOrExit(cmd: list[str], **kwargs: int) -> int:
 
     telemetry.RecordRunAttributes(cmd, is_successful, test_summary)
 
-    return result.returncode
+    return result.returncode, test_summary
 
   if user_provided_path:
     return _run_and_parse_tests(cmd, user_provided_path)
