@@ -80,7 +80,6 @@ build_webui("build") {
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
-    "url_pattern.d.ts",
   ]
 
   ts_path_mappings = [

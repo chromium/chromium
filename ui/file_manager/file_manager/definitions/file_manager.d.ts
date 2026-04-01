@@ -6,6 +6,7 @@ import type {FileManagerBase} from '../background/js/file_manager_base.js';
 import type {VolumeManager} from '../background/js/volume_manager.js';
 import type {FilesAppEntry} from '../common/js/files_app_entry_types.js';
 import type {MetadataModel} from '../foreground/js/metadata/metadata_model.js';
+import type {TaskController} from '../foreground/js/task_controller.js';
 import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 
