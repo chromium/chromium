@@ -305,35 +305,6 @@ void SynchronizeVideoFrameRead(
   context_support->SignalQuery(query_id, std::move(on_query_done_cb));
 }
 
-void SynchronizeVideoFrameRead(
-    scoped_refptr<VideoFrame> video_frame,
-    gpu::gles2::GLES2Interface* gl,
-    gpu::ContextSupport* context_support,
-    std::unique_ptr<gpu::RasterScopedAccess> ri_access = nullptr) {
-  WaitAndReplaceSyncTokenClient client(gl, std::move(ri_access));
-  video_frame->UpdateReleaseSyncToken(&client);
-  if (!video_frame->metadata().read_lock_fences_enabled) {
-    return;
-  }
-
-  unsigned query_id = 0;
-  gl->GenQueriesEXT(1, &query_id);
-  DCHECK(query_id);
-  gl->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
-  gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
-
-  // |on_query_done_cb| will keep |video_frame| alive.
-  auto on_query_done_cb = base::DoNothingWithBoundArgs(video_frame);
-  context_support->SignalQuery(query_id, std::move(on_query_done_cb));
-
-  // Delete the query immediately. This will cause |on_query_done_cb| to be
-  // issued prematurely. The alternative, deleting |query_id| within
-  // |on_query_done_cb|, can cause a crash because |gl| may not still exist
-  // at the time of the callback. This is incorrect behavior.
-  // https://crbug.com/1243763
-  gl->DeleteQueriesEXT(1, &query_id);
-}
-
 libyuv::FilterMode ToLibyuvFilterMode(
     PaintCanvasVideoRenderer::FilterMode filter) {
   switch (filter) {
@@ -1300,6 +1271,35 @@ void TextureSubImageUsingIntermediate(unsigned target,
 }  // anonymous namespace
 
 // static
+void PaintCanvasVideoRenderer::SynchronizeVideoFrameRead(
+    scoped_refptr<VideoFrame> video_frame,
+    gpu::gles2::GLES2Interface* gl,
+    gpu::ContextSupport* context_support,
+    std::unique_ptr<gpu::RasterScopedAccess> ri_access) {
+  WaitAndReplaceSyncTokenClient client(gl, std::move(ri_access));
+  video_frame->UpdateReleaseSyncToken(&client);
+  if (!video_frame->metadata().read_lock_fences_enabled) {
+    return;
+  }
+
+  unsigned query_id = 0;
+  gl->GenQueriesEXT(1, &query_id);
+  DCHECK(query_id);
+  gl->BeginQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM, query_id);
+  gl->EndQueryEXT(GL_COMMANDS_COMPLETED_CHROMIUM);
+
+  // |on_query_done_cb| will keep |video_frame| alive.
+  auto on_query_done_cb = base::DoNothingWithBoundArgs(video_frame);
+  context_support->SignalQuery(query_id, std::move(on_query_done_cb));
+
+  // Delete the query immediately. This will cause |on_query_done_cb| to be
+  // issued prematurely. The alternative, deleting |query_id| within
+  // |on_query_done_cb|, can cause a crash because |gl| may not still exist
+  // at the time of the callback. This is incorrect behavior.
+  // https://crbug.com/1243763
+  gl->DeleteQueriesEXT(1, &query_id);
+}
+
 void PaintCanvasVideoRenderer::ConvertVideoFrameToRGBPixels(
     const VideoFrame* video_frame,
     base::span<uint8_t> rgb_pixels,
@@ -1810,9 +1810,9 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     // If VideoFrame has textures, we need to update SyncToken or to keep frame
     // alive until gpu is done with copy if `read_lock_fences_enabled` is set.
     // This is to make sure decoder doesn't re-use frame before copy is done.
-    SynchronizeVideoFrameRead(std::move(video_frame), ri,
-                              raster_context_provider->ContextSupport(),
-                              std::move(src_ri_access));
+    ::media::SynchronizeVideoFrameRead(
+        std::move(video_frame), ri, raster_context_provider->ContextSupport(),
+        std::move(src_ri_access));
   } else {
     sync_token = ConvertYuvVideoFrameToRgbSharedImage(
         video_frame.get(), raster_context_provider, dest_shared_image,
