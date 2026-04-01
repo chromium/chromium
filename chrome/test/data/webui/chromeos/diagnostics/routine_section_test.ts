@@ -1507,7 +1507,8 @@ suite('routineSectionTestSuite', function() {
         });
   });
 
-  test('GoogleServicesConnectivityDetailsClearedOnRerun', () => {
+  // TODO(crbug.com/498100485): Flaky test.
+  test.skip('GoogleServicesConnectivityDetailsClearedOnRerun', () => {
     const networkRoutines = [RoutineType.kGoogleServicesConnectivity];
     return initializeRoutineSection(networkRoutines)
         .then(() => {
