@@ -37,6 +37,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/autofill_ai_ui_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
@@ -426,14 +427,13 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
       base::SysUTF16ToNSString(instance.type().GetNameForI18n());
   item.guid = instance.guid();
 
-  if (instance.record_type() ==
-      autofill::EntityInstance::RecordType::kServerWallet) {
+  if (instance.IsServerInstance()) {
     item.isServerWalletItem = YES;
     item.trailingText = l10n_util::GetNSString(IDS_IOS_AUTOFILL_WALLET_TEXT);
   }
 
-  item.icon = DefaultSymbolTemplateWithPointSize(kPersonCropCircleSymbol,
-                                                 kEntityIconPointSize);
+  item.icon = autofill::DefaultIconForAutofillAiEntityType(
+      instance.type().name(), kEntityIconPointSize);
   return item;
 }
 

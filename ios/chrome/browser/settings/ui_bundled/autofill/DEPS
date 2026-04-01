@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/autofill/autofill_ai/public",
   "+ios/chrome/browser/autofill/form_input_accessory/public",
   "+ios/chrome/browser/autofill/model",
   "+ios/chrome/browser/autofill/ui_bundled",
