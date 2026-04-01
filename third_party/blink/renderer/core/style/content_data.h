@@ -122,11 +122,8 @@ class ImageContentData final : public ContentData {
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsImage()) {
-      return false;
-    }
-    return *static_cast<const ImageContentData&>(data).GetImage() ==
-           *GetImage();
+    const auto* other = DynamicTo<ImageContentData>(data);
+    return other && *other->GetImage() == *GetImage();
   }
 
   void Trace(Visitor*) const override;
@@ -187,10 +184,8 @@ class TextContentData final : public ContentData {
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsText()) {
-      return false;
-    }
-    return static_cast<const TextContentData&>(data).GetText() == GetText();
+    const auto* other = DynamicTo<TextContentData>(data);
+    return other && other->GetText() == GetText();
   }
 
   String DebugString() const override { return text_; }
@@ -219,10 +214,8 @@ class AltTextContentData final : public ContentData {
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsAltText()) {
-      return false;
-    }
-    return static_cast<const AltTextContentData&>(data).GetText() == GetText();
+    const auto* other = DynamicTo<AltTextContentData>(data);
+    return other && other->GetText() == GetText();
   }
 
   String DebugString() const override { return StrCat({"<alt: ", text_, ">"}); }
@@ -294,15 +287,14 @@ class CounterContentData : public ContentData {
 
  protected:
   bool Equals(const ContentData& data) const override {
-    if (!data.IsCounter()) {
+    const auto* other = DynamicTo<CounterContentData>(data);
+    if (!other) {
       return false;
     }
-    const CounterContentData& other =
-        static_cast<const CounterContentData&>(data);
-    return Identifier() == other.Identifier() &&
-           ListStyle() == other.ListStyle() &&
-           Separator() == other.Separator() &&
-           GetTreeScope() == other.GetTreeScope();
+    return Identifier() == other->Identifier() &&
+           ListStyle() == other->ListStyle() &&
+           Separator() == other->Separator() &&
+           GetTreeScope() == other->GetTreeScope();
   }
 
   CounterData counter_data_;
@@ -340,12 +332,9 @@ class AltCounterContentData : public CounterContentData {
   }
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsAltCounter()) {
-      return false;
-    }
-    const AltCounterContentData& other =
-        static_cast<const AltCounterContentData&>(data);
-    return CounterContentData::Equals(other) && GetText() == other.GetText();
+    const auto* other = DynamicTo<AltCounterContentData>(data);
+    return other && CounterContentData::Equals(*other) &&
+           GetText() == other->GetText();
   }
 
   // Text value of counter() or counters() to be used in ax object.
@@ -370,10 +359,8 @@ class QuoteContentData final : public ContentData {
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
 
   bool Equals(const ContentData& data) const override {
-    if (!data.IsQuote()) {
-      return false;
-    }
-    return static_cast<const QuoteContentData&>(data).Quote() == Quote();
+    const auto* other = DynamicTo<QuoteContentData>(data);
+    return other && other->Quote() == Quote();
   }
 
   String DebugString() const override { return "<quote>"; }
