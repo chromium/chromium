@@ -17,6 +17,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
@@ -117,7 +118,11 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             }
         }
 
-        // TODO(488905916) Propagate the occlusion state to the window or a listener.
+        if (ChromeFeatureList.sAndroidSelfOcclusionTrackingForwarding.getValue()) {
+            for (Map.Entry<ActivityWindowAndroid, Boolean> entry : occlusionState.entrySet()) {
+                entry.getKey().setOccluded(entry.getValue());
+            }
+        }
     }
 
     @VisibleForTesting

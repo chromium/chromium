@@ -389,6 +389,19 @@ public class WindowAndroid
         return mOcclusionSupplier;
     }
 
+    /**
+     * Sets whether the window is occluded.
+     *
+     * @param isOccluded Whether the window is occluded.
+     */
+    public void setOccluded(boolean isOccluded) {
+        // If the Trusted Presentation API is already tracking occlusion, it takes precedence.
+        if (shouldTrackOcclusion()) {
+            return;
+        }
+        mOcclusionSupplier.set(isOccluded);
+    }
+
     private static boolean isTv(Context context) {
         UiModeManager uiModeManager =
                 (UiModeManager) context.getSystemService(Context.UI_MODE_SERVICE);
