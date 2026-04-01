@@ -128,4 +128,22 @@ TEST(V4L2VP9HelpersTest, ParseAppendedSuperFrameIndex) {
   }
 }
 
+TEST(V4L2VP9HelpersTest, OverwriteShowFrameOOBRepro) {
+  // Repro case from b/497431705:
+  // buffer->size() = 12, spatial_layers = [16, 0]
+  const size_t kBufferSize = 12;
+  std::vector<uint8_t> tmp_buffer(kBufferSize, 0);
+  // Set first byte to pass header checks: marker=0b10, profile=0,
+  // show_existing=1
+  tmp_buffer[0] = 0x88;
+
+  auto decoder_buffer = DecoderBuffer::CopyFrom(tmp_buffer);
+  std::vector<uint32_t> frame_sizes = {16, 0};
+  AppendSideData(*decoder_buffer, frame_sizes);
+
+  // This should fail because the sum of frame_sizes (16) exceeds the
+  // original buffer size (12), or because a frame size is 0.
+  EXPECT_FALSE(AppendVP9SuperFrameIndex(decoder_buffer));
+}
+
 }  // namespace media

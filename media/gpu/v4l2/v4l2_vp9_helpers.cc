@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 
 namespace media {
@@ -67,36 +68,53 @@ bool OverwriteShowFrame(base::span<uint8_t> frame_data,
 
   size_t offset = 0;
   for (size_t i = 0; i < frame_sizes.size(); ++i) {
-    uint8_t* header = UNSAFE_TODO(frame_data.data() + offset);
+    const size_t frame_size = frame_sizes[i];
+    if (frame_size == 0) {
+      LOG(ERROR) << "Frame size cannot be zero";
+      return false;
+    }
+
+    // subspan() will CHECK that offset and frame_size are within bounds.
+    base::span<uint8_t> frame = frame_data.subspan(offset, frame_size);
+    uint8_t& header = frame[0];
 
     // See VP9 Spec Annex B.
-    const uint8_t frame_marker = UNSAFE_TODO(*header >> 6);
+    const uint8_t frame_marker = header >> 6;
     if (frame_marker != 0b10) {
       LOG(ERROR) << "Invalid frame marker: " << static_cast<int>(frame_marker);
       return false;
     }
-    const uint8_t profile = UNSAFE_TODO((*header >> 4) & 0b11);
+    const uint8_t profile = (header >> 4) & 0b11;
     if (profile == 3) {
       LOG(ERROR) << "Unsupported profile";
       return false;
     }
 
-    const bool show_existing_frame = UNSAFE_TODO((*header >> 3) & 1);
+    const bool show_existing_frame = (header >> 3) & 1;
     const bool show_frame = i == frame_sizes.size() - 1;
     int bit = 0;
     if (show_existing_frame) {
-      UNSAFE_TODO(header++);
+      if (frame.size() < 2) {
+        LOG(ERROR) << "show_existing_frame requires at least 2 bytes";
+        return false;
+      }
+      uint8_t& second_byte = frame[1];
       bit = 6;
+      if (show_frame) {
+        second_byte |= (1u << bit);
+      } else {
+        second_byte &= ~(1u << bit);
+      }
     } else {
       bit = 1;
-    }
-    if (show_frame) {
-      UNSAFE_TODO(*header |= (1u << bit));
-    } else {
-      UNSAFE_TODO(*header &= ~(1u << bit));
+      if (show_frame) {
+        header |= (1u << bit);
+      } else {
+        header &= ~(1u << bit);
+      }
     }
 
-    offset += frame_sizes[i];
+    offset += frame_size;
   }
 
   return true;
@@ -116,12 +134,11 @@ bool AppendVP9SuperFrameIndex(scoped_refptr<DecoderBuffer>& buffer) {
   std::vector<uint8_t> superframe_index = CreateSuperFrameIndex(frame_sizes);
   const size_t vp9_superframe_size = buffer->size() + superframe_index.size();
   auto vp9_superframe = base::HeapArray<uint8_t>::Uninit(vp9_superframe_size);
-  UNSAFE_TODO(memcpy(vp9_superframe.data(), base::span(*buffer).data(),
-                     buffer->size()));
-  UNSAFE_TODO(memcpy(vp9_superframe.data() + buffer->size(),
-                     superframe_index.data(), superframe_index.size()));
 
-  if (!OverwriteShowFrame(vp9_superframe, frame_sizes)) {
+  vp9_superframe.first(buffer->size()).copy_from(*buffer);
+  vp9_superframe.subspan(buffer->size()).copy_from(superframe_index);
+
+  if (!OverwriteShowFrame(vp9_superframe.first(buffer->size()), frame_sizes)) {
     return false;
   }
 
