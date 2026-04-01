@@ -1377,7 +1377,7 @@ void HTMLSelectElement::TypeAheadFind(const KeyboardEvent& event) {
   HTMLOptionElement* option_at_index = OptionAtListIndex(index);
 
   const bool customizable_select_popup =
-      select_type_->IsAppearanceBasePicker() && select_type_->PopupIsVisible();
+      PickerIsPopover() && select_type_->PopupIsVisible();
   const bool customizable_select_in_page =
       !UsesMenuList() && IsAppearanceBase();
 

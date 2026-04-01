@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/496002560">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<select multiple size=1>
+  <option class=one>one</option>
+  <option class=two>two</option>
+</select>
+
+<script>
+function pressKey(key) {
+  return (new test_driver.Actions()
+    .keyDown(key)
+    .keyUp(key))
+    .send();
+}
+
+promise_test(async () => {
+  const select = document.querySelector('select');
+  const optionOne = document.querySelector('.one');
+  const optionTwo = document.querySelector('.two');
+
+  select.focus();
+  await pressKey('\uE00D');
+  assert_equals(document.activeElement, optionOne,
+    'First option should be focused after opening the picker.');
+
+  await pressKey('t');
+  assert_equals(document.activeElement, optionTwo,
+    'Second option should be focused after typing t.');
+  assert_array_equals(Array.from(select.selectedOptions), [],
+    'No options should be selected after using typeahead.');
+  assert_true(select.matches(':open'),
+    'Picker should still be open after using typeahead.');
+});
+</script>
