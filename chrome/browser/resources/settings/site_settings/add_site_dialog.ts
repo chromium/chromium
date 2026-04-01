@@ -21,8 +21,6 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
-import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 
 import {getTemplate} from './add_site_dialog.html.js';
 import {ContentSetting, CookiesExceptionType, SITE_EXCEPTION_WILDCARD} from './constants.js';
@@ -91,8 +89,6 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
   declare cookiesExceptionType: CookiesExceptionType;
   declare private site_: string;
   declare private errorMessage_: string;
-  private metricsBrowserProxy_: MetricsBrowserProxy =
-      MetricsBrowserProxyImpl.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -140,13 +136,6 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     if (this.cookiesExceptionType === CookiesExceptionType.THIRD_PARTY) {
       primaryPattern = SITE_EXCEPTION_WILDCARD;
       secondaryPattern = this.site_;
-    }
-
-    if (this.showIncognitoSessionOnly_()) {
-      // Record how many users are interacting with the incognito checkbox
-      // when it is available.
-      this.metricsBrowserProxy_.recordBooleanHistogram(
-          'Settings.AddSiteDialog.Incognito', this.$.incognito.checked);
     }
 
     this.browserProxy.setCategoryPermissionForPattern(
