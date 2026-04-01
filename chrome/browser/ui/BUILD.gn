@@ -758,6 +758,7 @@ static_library("ui") {
     "//chrome/browser/feedback:feedback_impl",
 
     "//chrome/browser/permissions",
+    "//chrome/browser/printing",
     "//chrome/browser/search",
     "//chrome/browser/ui/omnibox:impl",
     "//chrome/browser/ui/webui/bluetooth_internals",
