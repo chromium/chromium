@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/metrics/user_action_tester.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -115,8 +116,15 @@ IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
       CheckUserAction("TabStripComboButton.ProjectsPanel.Pinned", 1));
 }
 
+// TODO(crbug.com/498634793): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UpdateStylesOnOrientationChange \
+  DISABLED_UpdateStylesOnOrientationChange
+#else
+#define MAYBE_UpdateStylesOnOrientationChange UpdateStylesOnOrientationChange
+#endif
 IN_PROC_BROWSER_TEST_F(TabStripComboButtonInteractiveUiTest,
-                       UpdateStylesOnOrientationChange) {
+                       MAYBE_UpdateStylesOnOrientationChange) {
   using FlatEdge = TabStripFlatEdgeButton::FlatEdge;
   RunTestSequence(
       EnsureBothButtonsVisible(),
