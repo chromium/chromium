@@ -77,8 +77,8 @@ config("skia_config") {
     "SK_CODEC_ENCODES_PNG_WITH_RUST",
 
     "SK_CODEC_DECODES_BMP_WITH_RUST",
-
     "SK_CODEC_COLOR_PROFILE_PARSE_WITH_RUST",
+    "SK_EXIF_PARSE_WITH_RUST",
   ]
 
   include_dirs = [
