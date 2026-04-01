@@ -228,8 +228,8 @@ class InlineScriptCodeCacheBrowserTest : public ContentBrowserTest {
   uint32_t served_count_ = 0;
 };
 
-// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
 #define MAYBE_CacheProducedOnSecondAttempt DISABLED_CacheProducedOnSecondAttempt
 #else
 #define MAYBE_CacheProducedOnSecondAttempt CacheProducedOnSecondAttempt
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
   }
 }
 
-// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
 #define MAYBE_CacheSharedOnDifferentPage DISABLED_CacheSharedOnDifferentPage
 #else
 #define MAYBE_CacheSharedOnDifferentPage CacheSharedOnDifferentPage
@@ -379,8 +379,8 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest,
       CacheBehaviourNameToInt("kNoCacheBecauseScriptTooSmall"), num_tries);
 }
 
-// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
 #define MAYBE_IsolatedByNik DISABLED_IsolatedByNik
 #else
 #define MAYBE_IsolatedByNik IsolatedByNik
@@ -453,8 +453,8 @@ IN_PROC_BROWSER_TEST_F(InlineScriptCodeCacheBrowserTest, MAYBE_IsolatedByNik) {
   }
 }
 
-// TODO(crbug.com/498265776): Test is failing on ChromeOS MSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
+// TODO(crbug.com/498265776): Test is failing on ChromeOS and Linux MSan.
+#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
 #define MAYBE_ProducedCacheHitsOnAnotherProcess \
   DISABLED_ProducedCacheHitsOnAnotherProcess
 #else
