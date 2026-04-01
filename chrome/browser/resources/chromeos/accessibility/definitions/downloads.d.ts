@@ -1,13 +1,15 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview Definitions for chrome.downloads API
- * Partially generated from:
- * chrome/common/extensions/api/downloads.idl
+ * Generated from: chrome/common/extensions/api/downloads.webidl
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/downloads.idl -g ts_definitions` to regenerate.
+ * chrome/common/extensions/api/downloads.webidl -g ts_definitions` to
+ * regenerate.
+ * Note: After generation, this file requires hand editing to adjust the
+ * ChromeEvent path, the search function signature and this comment.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
@@ -103,6 +105,8 @@ declare global {
         PROMPT_FOR_LOCAL_PASSWORD_SCANNING = 'promptForLocalPasswordScanning',
         ACCOUNT_COMPROMISE = 'accountCompromise',
         BLOCKED_SCAN_FAILED = 'blockedScanFailed',
+        FORCE_SAVE_TO_GDRIVE = 'forceSaveToGdrive',
+        FORCE_SAVE_TO_ONEDRIVE = 'forceSaveToOnedrive',
       }
 
       export enum State {

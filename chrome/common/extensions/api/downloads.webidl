@@ -1,0 +1,669 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+dictionary HeaderNameValuePair {
+  // Name of the HTTP header.
+  required DOMString name;
+
+  // Value of the HTTP header.
+  required DOMString value;
+};
+
+// <dl><dt>uniquify</dt>
+//     <dd>To avoid duplication, the <code>filename</code> is changed to
+//     include a counter before the filename extension.</dd>
+//     <dt>overwrite</dt>
+//     <dd>The existing file will be overwritten with the new file.</dd>
+//     <dt>prompt</dt>
+//     <dd>The user will be prompted with a file chooser dialog.</dd>
+// </dl>
+enum FilenameConflictAction {
+  "uniquify",
+  "overwrite",
+  "prompt"
+};
+
+dictionary FilenameSuggestion {
+  // The $(ref:DownloadItem)'s new target $(ref:DownloadItem.filename), as a
+  // path relative to the user's default Downloads directory, possibly
+  // containing subdirectories. Absolute paths, empty paths, and paths
+  // containing back-references ".." will be ignored. <code>filename</code> is
+  // ignored if there are any $(ref:onDeterminingFilename) listeners registered
+  // by any extensions.
+  required DOMString filename;
+
+  // The action to take if <code>filename</code> already exists.
+  FilenameConflictAction conflictAction;
+};
+
+enum HttpMethod {"GET", "POST"};
+
+enum InterruptReason {
+  "FILE_FAILED",
+  "FILE_ACCESS_DENIED",
+  "FILE_NO_SPACE",
+  "FILE_NAME_TOO_LONG",
+  "FILE_TOO_LARGE",
+  "FILE_VIRUS_INFECTED",
+  "FILE_TRANSIENT_ERROR",
+  "FILE_BLOCKED",
+  "FILE_SECURITY_CHECK_FAILED",
+  "FILE_TOO_SHORT",
+  "FILE_HASH_MISMATCH",
+  "FILE_SAME_AS_SOURCE",
+  "NETWORK_FAILED",
+  "NETWORK_TIMEOUT",
+  "NETWORK_DISCONNECTED",
+  "NETWORK_SERVER_DOWN",
+  "NETWORK_INVALID_REQUEST",
+  "SERVER_FAILED",
+  "SERVER_NO_RANGE",
+  "SERVER_BAD_CONTENT",
+  "SERVER_UNAUTHORIZED",
+  "SERVER_CERT_PROBLEM",
+  "SERVER_FORBIDDEN",
+  "SERVER_UNREACHABLE",
+  "SERVER_CONTENT_LENGTH_MISMATCH",
+  "SERVER_CROSS_ORIGIN_REDIRECT",
+  "USER_CANCELED",
+  "USER_SHUTDOWN",
+  "CRASH"
+};
+
+dictionary DownloadOptions {
+  // The URL to download.
+  required DOMString url;
+
+  // A file path relative to the Downloads directory to contain the downloaded
+  // file, possibly containing subdirectories. Absolute paths, empty paths,
+  // and paths containing back-references ".." will cause an error.
+  // $(ref:onDeterminingFilename) allows suggesting a filename after the file's
+  // MIME type and a tentative filename have been determined.
+  DOMString filename;
+
+  // The action to take if <code>filename</code> already exists.
+  FilenameConflictAction conflictAction;
+
+  // Use a file-chooser to allow the user to select a filename regardless of
+  // whether <code>filename</code> is set or already exists.
+  boolean saveAs;
+
+  // The HTTP method to use if the URL uses the HTTP[S] protocol.
+  HttpMethod method;
+
+  // Extra HTTP headers to send with the request if the URL uses the HTTP[s]
+  // protocol. Each header is represented as a dictionary containing the keys
+  // <code>name</code> and either <code>value</code> or
+  // <code>binaryValue</code>, restricted to those allowed by XMLHttpRequest.
+  sequence<HeaderNameValuePair> headers;
+
+  // Post body.
+  DOMString body;
+};
+
+enum DangerType {
+  // The download's filename is suspicious.
+  "file",
+
+  // The download's URL is known to be malicious.
+  "url",
+
+  // The downloaded file is known to be malicious.
+  "content",
+
+  // The download's URL is not commonly downloaded and could be dangerous.
+  "uncommon",
+
+  // The download came from a host known to distribute malicious binaries and
+  // is likely dangerous.
+  "host",
+
+  // The download is potentially unwanted or unsafe. E.g. it could make
+  // changes to browser or computer settings.
+  "unwanted",
+
+  // The download presents no known danger to the user's computer.
+  "safe",
+
+  // The user has accepted the dangerous download.
+  "accepted",
+
+  // Enterprise-related values.
+  "allowlistedByPolicy",
+  "asyncScanning",
+  "asyncLocalPasswordScanning",
+  "passwordProtected",
+  "blockedTooLarge",
+  "sensitiveContentWarning",
+  "sensitiveContentBlock",
+  "deepScannedFailed",
+  "deepScannedSafe",
+  "deepScannedOpenedDangerous",
+  "promptForScanning",
+  "promptForLocalPasswordScanning",
+  "accountCompromise",
+  "blockedScanFailed",
+
+  // For use by the Secure Enterprise Browser extension. When required, Chrome
+  // will block the download to disc and download the file directly to Google
+  // Drive.
+  "forceSaveToGdrive",
+
+  // For use by the Secure Enterprise Browser extension. When required, Chrome
+  // will block the download to disc and download the file directly to
+  // OneDrive.
+  "forceSaveToOnedrive"
+};
+
+// <dl><dt>in_progress</dt>
+//     <dd>The download is currently receiving data from the server.</dd>
+//     <dt>interrupted</dt>
+//     <dd>An error broke the connection with the file host.</dd>
+//     <dt>complete</dt>
+//     <dd>The download completed successfully.</dd>
+// </dl>
+enum State {
+  "in_progress",
+  "interrupted",
+  "complete"
+};
+
+// The state of the process of downloading a file.
+dictionary DownloadItem {
+  // An identifier that is persistent across browser sessions.
+  required long id;
+
+  // The absolute URL that this download initiated from, before any
+  // redirects.
+  required DOMString url;
+
+  // The absolute URL that this download is being made from, after all
+  // redirects.
+  required DOMString finalUrl;
+
+  // Absolute URL.
+  required DOMString referrer;
+
+  // Absolute local path.
+  required DOMString filename;
+
+  // False if this download is recorded in the history, true if it is not
+  // recorded.
+  required boolean incognito;
+
+  // Indication of whether this download is thought to be safe or known to be
+  // suspicious.
+  required DangerType danger;
+
+  // The file's MIME type.
+  required DOMString mime;
+
+  // The time when the download began in ISO 8601 format. May be passed
+  // directly to the Date constructor: <code>chrome.downloads.search({},
+  // function(items){items.forEach(function(item){console.log(new
+  // Date(item.startTime))})})</code>
+  required DOMString startTime;
+
+  // The time when the download ended in ISO 8601 format. May be passed
+  // directly to the Date constructor: <code>chrome.downloads.search({},
+  // function(items){items.forEach(function(item){if (item.endTime)
+  // console.log(new Date(item.endTime))})})</code>
+  DOMString endTime;
+
+  // Estimated time when the download will complete in ISO 8601 format. May be
+  // passed directly to the Date constructor:
+  // <code>chrome.downloads.search({},
+  // function(items){items.forEach(function(item){if (item.estimatedEndTime)
+  // console.log(new Date(item.estimatedEndTime))})})</code>
+  DOMString estimatedEndTime;
+
+  // Indicates whether the download is progressing, interrupted, or complete.
+  required State state;
+
+  // True if the download has stopped reading data from the host, but kept the
+  // connection open.
+  required boolean paused;
+
+  // True if the download is in progress and paused, or else if it is
+  // interrupted and can be resumed starting from where it was interrupted.
+  required boolean canResume;
+
+  // Why the download was interrupted. Several kinds of HTTP errors may be
+  // grouped under one of the errors beginning with <code>SERVER_</code>.
+  // Errors relating to the network begin with <code>NETWORK_</code>, errors
+  // relating to the process of writing the file to the file system begin with
+  // <code>FILE_</code>, and interruptions initiated by the user begin with
+  // <code>USER_</code>.
+  InterruptReason error;
+
+  // Number of bytes received so far from the host, without considering file
+  // compression.
+  required double bytesReceived;
+
+  // Number of bytes in the whole file, without considering file compression,
+  // or -1 if unknown.
+  required double totalBytes;
+
+  // Number of bytes in the whole file post-decompression, or -1 if unknown.
+  required double fileSize;
+
+  // Whether the downloaded file still exists. This information may be out of
+  // date because Chrome does not automatically watch for file removal. Call
+  // $(ref:search)() in order to trigger the check for file existence. When the
+  // existence check completes, if the file has been deleted, then an
+  // $(ref:onChanged) event will fire. Note that $(ref:search)() does not wait
+  // for the existence check to finish before returning, so results from
+  // $(ref:search)() may not accurately reflect the file system. Also,
+  // $(ref:search)() may be called as often as necessary, but will not check for
+  // file existence any more frequently than once every 10 seconds.
+  required boolean exists;
+
+  // The identifier for the extension that initiated this download if this
+  // download was initiated by an extension. Does not change once it is set.
+  DOMString byExtensionId;
+
+  // The localized name of the extension that initiated this download if this
+  // download was initiated by an extension. May change if the extension
+  // changes its name or if the user changes their locale.
+  DOMString byExtensionName;
+};
+
+dictionary DownloadQuery {
+  // This array of search terms limits results to $(ref:DownloadItem) whose
+  // <code>filename</code> or <code>url</code> or <code>finalUrl</code>
+  // contain all of the search terms that do not begin with a dash '-' and
+  // none of the search terms that do begin with a dash.
+  sequence<DOMString> query;
+
+  // Limits results to $(ref:DownloadItem) that started before the given ms in
+  // ISO 8601 format.
+  DOMString startedBefore;
+
+  // Limits results to $(ref:DownloadItem) that started after the given ms in
+  // ISO 8601 format.
+  DOMString startedAfter;
+
+  // Limits results to $(ref:DownloadItem) that ended before the given ms in ISO
+  // 8601 format.
+  DOMString endedBefore;
+
+  // Limits results to $(ref:DownloadItem) that ended after the given ms in ISO
+  // 8601 format
+  DOMString endedAfter;
+
+  // Limits results to $(ref:DownloadItem) whose <code>totalBytes</code> is
+  // greater than the given integer.
+  double totalBytesGreater;
+
+  // Limits results to $(ref:DownloadItem) whose <code>totalBytes</code> is less
+  // than the given integer.
+  double totalBytesLess;
+
+  // Limits results to $(ref:DownloadItem) whose <code>filename</code> matches
+  // the given regular expression.
+  DOMString filenameRegex;
+
+  // Limits results to $(ref:DownloadItem) whose <code>url</code> matches the
+  // given regular expression.
+  DOMString urlRegex;
+
+  // Limits results to $(ref:DownloadItem) whose <code>finalUrl</code> matches
+  // the given regular expression.
+  DOMString finalUrlRegex;
+
+
+  // The maximum number of matching $(ref:DownloadItem) returned. Defaults to
+  // 1000. Set to 0 in order to return all matching $(ref:DownloadItem). See
+  // $(ref:search) for how to page through results.
+  long limit;
+
+  // Set elements of this array to $(ref:DownloadItem) properties in order to
+  // sort search results. For example, setting
+  // <code>orderBy=['startTime']</code> sorts the $(ref:DownloadItem) by their
+  // start time in ascending order. To specify descending order, prefix with a
+  // hyphen: '-startTime'.
+  sequence<DOMString> orderBy;
+
+  // The <code>id</code> of the $(ref:DownloadItem) to query.
+  long id;
+
+  // The absolute URL that this download initiated from, before any redirects.
+  DOMString url;
+
+  // The absolute URL that this download is being made from, after all
+  // redirects.
+  DOMString finalUrl;
+
+  // Absolute local path.
+  DOMString filename;
+
+  // Indication of whether this download is thought to be safe or known to be
+  // suspicious.
+  DangerType danger;
+
+  // The file's MIME type.
+  DOMString mime;
+
+  // The time when the download began in ISO 8601 format.
+  DOMString startTime;
+
+  // The time when the download ended in ISO 8601 format.
+  DOMString endTime;
+
+  // Indicates whether the download is progressing, interrupted, or complete.
+  State state;
+
+  // True if the download has stopped reading data from the host, but kept the
+  // connection open.
+  boolean paused;
+
+  // Why a download was interrupted.
+  InterruptReason error;
+
+  // Number of bytes received so far from the host, without considering file
+  // compression.
+  double bytesReceived;
+
+  // Number of bytes in the whole file, without considering file compression,
+  // or -1 if unknown.
+  double totalBytes;
+
+  // Number of bytes in the whole file post-decompression, or -1 if unknown.
+  double fileSize;
+
+  // Whether the downloaded file exists;
+  boolean exists;
+};
+
+dictionary StringDelta {
+  DOMString previous;
+  DOMString current;
+};
+
+dictionary DoubleDelta {
+  double previous;
+  double current;
+};
+
+dictionary BooleanDelta {
+  boolean previous;
+  boolean current;
+};
+
+// Encapsulates a change in a DownloadItem.
+dictionary DownloadDelta {
+  // The <code>id</code> of the $(ref:DownloadItem) that changed.
+  required long id;
+
+  // The change in <code>url</code>, if any.
+  StringDelta url;
+
+  // The change in <code>finalUrl</code>, if any.
+  StringDelta finalUrl;
+
+  // The change in <code>filename</code>, if any.
+  StringDelta filename;
+
+  // The change in <code>danger</code>, if any.
+  StringDelta danger;
+
+  // The change in <code>mime</code>, if any.
+  StringDelta mime;
+
+  // The change in <code>startTime</code>, if any.
+  StringDelta startTime;
+
+  // The change in <code>endTime</code>, if any.
+  StringDelta endTime;
+
+  // The change in <code>state</code>, if any.
+  StringDelta state;
+
+  // The change in <code>canResume</code>, if any.
+  BooleanDelta canResume;
+
+  // The change in <code>paused</code>, if any.
+  BooleanDelta paused;
+
+  // The change in <code>error</code>, if any.
+  StringDelta error;
+
+  // The change in <code>totalBytes</code>, if any.
+  DoubleDelta totalBytes;
+
+  // The change in <code>fileSize</code>, if any.
+  DoubleDelta fileSize;
+
+  // The change in <code>exists</code>, if any.
+  BooleanDelta exists;
+};
+
+dictionary GetFileIconOptions {
+  // The size of the returned icon. The icon will be square with dimensions
+  // size * size pixels. The default and largest size for the icon is 32x32
+  // pixels. The only supported sizes are 16 and 32. It is an error to specify
+  // any other size.
+  long size;
+};
+
+// Encapsulates a change in the download UI.
+dictionary UiOptions {
+  // Enable or disable the download UI.
+  required boolean enabled;
+};
+
+callback SuggestFilenameCallback =
+    undefined (optional FilenameSuggestion suggestion);
+
+// Listener callback for the onCreated event.
+callback OnCreatedListener = undefined (DownloadItem downloadItem);
+
+interface OnCreatedEvent : ExtensionEvent {
+  static undefined addListener(OnCreatedListener listener);
+  static undefined removeListener(OnCreatedListener listener);
+  static boolean hasListener(OnCreatedListener listener);
+};
+
+// Listener callback for the onErased event.
+// |downloadId|: The <code>id</code> of the $(ref:DownloadItem) that was erased.
+callback OnErasedListener = undefined (long downloadId);
+
+interface OnErasedEvent : ExtensionEvent {
+  static undefined addListener(OnErasedListener listener);
+  static undefined removeListener(OnErasedListener listener);
+  static boolean hasListener(OnErasedListener listener);
+};
+
+// Listener callback for the onChanged event.
+callback OnChangedListener = undefined (DownloadDelta downloadDelta);
+
+interface OnChangedEvent : ExtensionEvent {
+  static undefined addListener(OnChangedListener listener);
+  static undefined removeListener(OnChangedListener listener);
+  static boolean hasListener(OnChangedListener listener);
+};
+
+// Listener callback for the onDeterminingFilename event.
+callback OnDeterminingFilenameListener = undefined (
+    DownloadItem downloadItem, SuggestFilenameCallback suggest);
+
+interface OnDeterminingFilenameEvent : ExtensionEvent {
+  static undefined addListener(OnDeterminingFilenameListener listener);
+  static undefined removeListener(OnDeterminingFilenameListener listener);
+  static boolean hasListener(OnDeterminingFilenameListener listener);
+};
+
+// Use the <code>chrome.downloads</code> API to programmatically initiate,
+// monitor, manipulate, and search for downloads.
+interface Downloads {
+  // Download a URL. If the URL uses the HTTP[S] protocol, then the request
+  // will include all cookies currently set for its hostname. If both
+  // <code>filename</code> and <code>saveAs</code> are specified, then the
+  // Save As dialog will be displayed, pre-populated with the specified
+  // <code>filename</code>. If the download started successfully,
+  // <code>callback</code> will be called with the new $(ref:DownloadItem)'s
+  // <code>downloadId</code>. If there was an error starting the download,
+  // then <code>callback</code> will be called with
+  // <code>downloadId=undefined</code> and $(ref:runtime.lastError) will contain
+  // a descriptive string. The error strings are not guaranteed to remain
+  // backwards compatible between releases. Extensions must not parse it.
+  // |options|: What to download and how.
+  // |Returns|: Returns a Promise which resolves with the id of the new
+  // $(ref:DownloadItem).
+  // |PromiseValue|: downloadId
+  static Promise<long> download(DownloadOptions options);
+
+  // Find $(ref:DownloadItem). Set <code>query</code> to the empty object to get
+  // all $(ref:DownloadItem). To get a specific $(ref:DownloadItem), set only
+  // the <code>id</code> field. To page through a large number of items, set
+  // <code>orderBy: ['-startTime']</code>, set <code>limit</code> to the
+  // number of items per page, and set <code>startedAfter</code> to the
+  // <code>startTime</code> of the last item from the last page.
+  // |PromiseValue|: results
+  [requiredCallback]
+  static Promise<sequence<DownloadItem>> search(DownloadQuery query);
+
+  // Pause the download. If the request was successful the download is in a
+  // paused state. Otherwise $(ref:runtime.lastError) contains an error message.
+  // The request will fail if the download is not active.
+  // |downloadId|: The id of the download to pause.
+  // |Returns|: Returns a Promise which resolves when the pause request is
+  // completed.
+  static Promise<undefined> pause(long downloadId);
+
+  // Resume a paused download. If the request was successful the download is
+  // in progress and unpaused. Otherwise $(ref:runtime.lastError) contains an
+  // error message. The request will fail if the download is not active.
+  // |downloadId|: The id of the download to resume.
+  // |Returns|: Returns a Promise which resolves when the resume request is
+  // completed.
+  static Promise<undefined> resume(long downloadId);
+
+  // Cancel a download. When <code>callback</code> is run, the download is
+  // cancelled, completed, interrupted or doesn't exist anymore.
+  // |downloadId|: The id of the download to cancel.
+  // |Returns|: Returns a Promise which resolves when the cancel request is
+  // completed.
+  static Promise<undefined> cancel(long downloadId);
+
+  // Retrieve an icon for the specified download. For new downloads, file
+  // icons are available after the $(ref:onCreated) event has been received. The
+  // image returned by this function while a download is in progress may be
+  // different from the image returned after the download is complete. Icon
+  // retrieval is done by querying the underlying operating system or toolkit
+  // depending on the platform. The icon that is returned will therefore
+  // depend on a number of factors including state of the download, platform,
+  // registered file types and visual theme. If a file icon cannot be
+  // determined, $(ref:runtime.lastError) will contain an error message.
+  // |downloadId|: The identifier for the download.
+  // |Returns|: Returns a Promise which resolves with a URL to an image that
+  // represents the download.
+  // |PromiseValue|: iconURL
+  [requiredCallback] static Promise<DOMString?> getFileIcon(
+      long downloadId,
+      optional GetFileIconOptions options);
+
+  // Opens the downloaded file now if the $(ref:DownloadItem) is complete;
+  // otherwise returns an error through $(ref:runtime.lastError). This method
+  // requires the <code>"downloads.open"</code> permission in addition to the
+  // <code>"downloads"</code> permission. An $(ref:onChanged) event fires
+  // when the item is opened for the first time. This method can only be called
+  // in response to a user gesture.
+  // |downloadId|: The identifier for the downloaded file.
+  static Promise<undefined> open(long downloadId);
+
+  // Show the downloaded file in its folder in a file manager.
+  // |downloadId|: The identifier for the downloaded file.
+  static undefined show(long downloadId);
+
+  // Show the default Downloads folder in a file manager.
+  static undefined showDefaultFolder();
+
+  // Erase matching $(ref:DownloadItem) from history without deleting the
+  // downloaded file. An $(ref:onErased) event will fire for each
+  // $(ref:DownloadItem) that matches <code>query</code>, then
+  // <code>callback</code> will be called.
+  // |PromiseValue|: erasedIds
+  static Promise<sequence<long>> erase(DownloadQuery query);
+
+  // Remove the downloaded file if it exists and the $(ref:DownloadItem) is
+  // complete; otherwise return an error through $(ref:runtime.lastError).
+  static Promise<undefined> removeFile(long downloadId);
+
+  // Prompt the user to accept a dangerous download. Can only be called from a
+  // visible context (tab, window, or page/browser action popup). Does not
+  // automatically accept dangerous downloads. If the download is accepted,
+  // then an $(ref:onChanged) event will fire, otherwise nothing will happen.
+  // When all the data is fetched into a temporary file and either the
+  // download is not dangerous or the danger has been accepted, then the
+  // temporary file is renamed to the target filename, the |state| changes to
+  // 'complete', and $(ref:onChanged) fires.
+  // |downloadId|: The identifier for the $(ref:DownloadItem).
+  // |Returns|: Returns a Promise which resolves when the danger prompt
+  // dialog closes.
+  static Promise<undefined> acceptDanger(long downloadId);
+
+  // Enable or disable the gray shelf at the bottom of every window associated
+  // with the current browser profile. The shelf will be disabled as long as
+  // at least one extension has disabled it. Enabling the shelf while at least
+  // one other extension has disabled it will return an error through
+  // $(ref:runtime.lastError). Requires the <code>"downloads.shelf"</code>
+  // permission in addition to the <code>"downloads"</code> permission.
+  [deprecated="Use $(ref:setUiOptions) instead."]
+  static undefined setShelfEnabled(boolean enabled);
+
+  // Change the download UI of every window associated with the current
+  // browser profile. As long as at least one extension has set
+  // $(ref:UiOptions.enabled) to false, the download UI will be hidden.
+  // Setting $(ref:UiOptions.enabled) to true while at least one other
+  // extension has disabled it will return an error through
+  // $(ref:runtime.lastError). Requires the <code>"downloads.ui"</code>
+  // permission in addition to the <code>"downloads"</code> permission.
+  // |options|: Encapsulate a change to the download UI.
+  // |Returns|: Returns a Promise which resolves when the UI update is
+  // completed.
+  static Promise<undefined> setUiOptions(UiOptions options);
+
+  // This event fires with the $(ref:DownloadItem) object when a download
+  // begins.
+  static attribute OnCreatedEvent onCreated;
+
+  // Fires with the <code>downloadId</code> when a download is erased from
+  // history.
+  static attribute OnErasedEvent onErased;
+
+  // When any of a $(ref:DownloadItem)'s properties except
+  // <code>bytesReceived</code> and <code>estimatedEndTime</code> changes,
+  // this event fires with the <code>downloadId</code> and an object
+  // containing the properties that changed.
+  static attribute OnChangedEvent onChanged;
+
+  // During the filename determination process, extensions will be given the
+  // opportunity to override the target $(ref:DownloadItem.filename). Each
+  // extension may not register more than one listener for this event. Each
+  // listener must call <code>suggest</code> exactly once, either
+  // synchronously or asynchronously. If the listener calls
+  // <code>suggest</code> asynchronously, then it must return
+  // <code>true</code>. If the listener neither calls <code>suggest</code>
+  // synchronously nor returns <code>true</code>, then <code>suggest</code>
+  // will be called automatically. The $(ref:DownloadItem) will not complete
+  // until all listeners have called <code>suggest</code>. Listeners may call
+  // <code>suggest</code> without any arguments in order to allow the download
+  // to use <code>downloadItem.filename</code> for its filename, or pass a
+  // <code>suggestion</code> object to <code>suggest</code> in order to
+  // override the target filename. If more than one extension overrides the
+  // filename, then the last extension installed whose listener passes a
+  // <code>suggestion</code> object to <code>suggest</code> wins. In order to
+  // avoid confusion regarding which extension will win, users should not
+  // install extensions that may conflict. If the download is initiated by
+  // $(ref:download) and the target filename is known before the MIME type and
+  // tentative filename have been determined, pass <code>filename</code> to
+  // $(ref:download) instead.
+  [maxListeners=1]
+  static attribute OnDeterminingFilenameEvent onDeterminingFilename;
+};
+
+partial interface Browser {
+  static attribute Downloads downloads;
+};

@@ -261,7 +261,7 @@ extensions::api::downloads::InterruptReason ConvertInterruptReason(
   // Note: Any new entries to this switch, as a result of a new keys to
   // DownloadInterruptReason must be follow with a corresponding entry in
   // api::downloads::InterruptReason, at
-  // chrome/common/extensions/api/downloads.idl.
+  // chrome/common/extensions/api/downloads.webidl.
   switch (reason) {
     case download::DOWNLOAD_INTERRUPT_REASON_NONE:
       return extensions::api::downloads::InterruptReason::kNone;
@@ -1987,7 +1987,7 @@ bool ExtensionDownloadsEventRouter::DetermineFilename(
       GetDownload(browser_context, include_incognito, download_id);
   ExtensionDownloadsEventRouterData* data =
       item ? ExtensionDownloadsEventRouterData::Get(item) : nullptr;
-  // maxListeners=1 in downloads.idl and suggestCallback in
+  // maxListeners=1 in downloads.webidl and suggestCallback in
   // downloads_custom_bindings.js should prevent duplicate DeterminerCallback
   // calls from the same renderer, but an extension may have more than one
   // renderer, so don't DCHECK(!reported).
