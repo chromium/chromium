@@ -3531,6 +3531,20 @@ WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
     }
   }
 
+  // On Android WebView where SiteInstance switching is not possible, DIP
+  // information is stored in the PolicyContainer. Check this instead.
+  const auto& override_key =
+      policy_container_host()->policies().cross_origin_isolation_key_override;
+  if (override_key && override_key->cross_origin_isolation_mode ==
+                          blink::mojom::CrossOriginIsolationMode::kConcrete) {
+    CHECK(!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+          !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+          !ShouldUseDefaultSiteInstanceGroup());
+    if (level == WebExposedIsolationLevel::kNotIsolated) {
+      level = WebExposedIsolationLevel::kIsolated;
+    }
+  }
+
   return level;
 }
 

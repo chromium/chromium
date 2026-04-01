@@ -2559,7 +2559,8 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
 
 bool ShouldReuseDOMWindow(LocalDOMWindow* window,
                           SecurityOrigin* security_origin,
-                          bool window_anonymous_matching) {
+                          bool window_anonymous_matching,
+                          const AgentClusterKey& agent_cluster_key) {
   if (!window) {
     return false;
   }
@@ -2575,7 +2576,27 @@ bool ShouldReuseDOMWindow(LocalDOMWindow* window,
   }
 
   // The new origin must match the origin of the initial empty document.
-  return window->GetSecurityOrigin()->CanAccess(security_origin);
+  if (!window->GetSecurityOrigin()->CanAccess(security_origin)) {
+    return false;
+  }
+
+  // The cross-origin isolation status of the window and the navigation should
+  // match.
+  const auto* window_coi_key =
+      window->GetAgent()->GetAgentClusterKey().GetCrossOriginIsolationKey();
+  const auto* navigation_coi_key =
+      agent_cluster_key.GetCrossOriginIsolationKey();
+
+  // If both are null, they match.
+  if (!window_coi_key && !navigation_coi_key) {
+    return true;
+  }
+  // If only one is null, they do not match.
+  if (!window_coi_key || !navigation_coi_key) {
+    return false;
+  }
+  // If both are present, compare their underlying values.
+  return *window_coi_key == *navigation_coi_key;
 }
 
 namespace {
@@ -2734,7 +2755,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
   if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
-                            window_anonymous_matching)) {
+                            window_anonymous_matching, agent_cluster_key)) {
     auto* agent =
         GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));

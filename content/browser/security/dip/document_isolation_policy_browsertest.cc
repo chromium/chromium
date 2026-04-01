@@ -87,6 +87,7 @@ enum class SiteIsolationStatus {
   kSiteIsolation,
   kPartialSiteIsolation,
   kNoSiteIsolation,
+  kNoSiteIsolationNoSIG,
 };
 
 class DocumentIsolationPolicyBrowserTest
@@ -111,8 +112,7 @@ class DocumentIsolationPolicyBrowserTest
     // deferred creation of the speculative RenderDocument.
     feature_list_.InitWithFeatures(
         {network::features::kDocumentIsolationPolicy,
-         features::kDocumentIsolationPolicyWithoutSiteIsolation,
-         features::kDefaultSiteInstanceGroups},
+         features::kDocumentIsolationPolicyWithoutSiteIsolation},
         {features::kDeferSpeculativeRFHCreation, features::kSharedArrayBuffer});
 
     // If we do not have full SiteIsolation, disable origin-keyed processes by
@@ -126,7 +126,8 @@ class DocumentIsolationPolicyBrowserTest
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
                                        std::get<0>(GetParam()));
     // Enable BackForwardCache:
-    if (IsBackForwardCacheEnabled()) {
+    if (IsBackForwardCacheEnabled() &&
+        site_isolation_status_ != SiteIsolationStatus::kNoSiteIsolationNoSIG) {
       feature_list_for_back_forward_cache_.InitWithFeaturesAndParameters(
           GetDefaultEnabledBackForwardCacheFeaturesForTesting(
               /*ignore_outstanding_network_request=*/false),
@@ -135,6 +136,11 @@ class DocumentIsolationPolicyBrowserTest
       feature_list_for_back_forward_cache_.InitWithFeatures(
           {}, {features::kBackForwardCache});
     }
+
+    // Enable DefaultSiteInstanceGroup:
+    feature_list_for_default_site_instance_group_.InitWithFeatureState(
+        features::kDefaultSiteInstanceGroups,
+        site_isolation_status_ != SiteIsolationStatus::kNoSiteIsolationNoSIG);
   }
 
   // Provides meaningful param names instead of /0, /1, ...
@@ -153,6 +159,9 @@ class DocumentIsolationPolicyBrowserTest
       case SiteIsolationStatus::kNoSiteIsolation:
         site_isolation_string = "NoSiteIsolation";
         break;
+      case SiteIsolationStatus::kNoSiteIsolationNoSIG:
+        site_isolation_string = "NoSiteIsolationNoSIG";
+        break;
     }
     return base::StringPrintf(
         "%s_%s_%s_%s",
@@ -161,7 +170,10 @@ class DocumentIsolationPolicyBrowserTest
         require_corp ? "RequireCorp" : "Credentialless", site_isolation_string);
   }
 
-  bool IsBackForwardCacheEnabled() { return std::get<1>(GetParam()); }
+  bool IsBackForwardCacheEnabled() {
+    return std::get<1>(GetParam()) &&
+           site_isolation_status_ != SiteIsolationStatus::kNoSiteIsolationNoSIG;
+  }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -232,6 +244,89 @@ class DocumentIsolationPolicyBrowserTest
     return DipIsolateAndCredentialless();
   }
 
+  // Used in CheckSiteInstancesAreIsolated to track whether we expect a
+  // BrowsingInstance swap to occur.
+  enum class ExpectBISwap { kTrue, kBFCacheOnly, kFalse };
+
+  // Used in CheckSiteInstancesAreIsolated to track whether we expect a
+  // SiteInstance swap to occur. SiteInstanceSwaps are supposed to always occur
+  // on all platforms but Android WebView. On Android WebView, they only happen
+  // when an error page is involved.
+  enum class ExpectSISwap { kRegular, kTopLevelError };
+
+  // Check that two SiteInstances that should be isolated due to
+  // DocumentIsolationPolicy are receiving the expected isolation based on the
+  // isolation capabilities of the platform.
+  void CheckSiteInstancesAreIsolated(
+      SiteInstanceImpl* site_instance_1,
+      SiteInstanceImpl* site_instance_2,
+      ExpectBISwap bi_swap = ExpectBISwap::kFalse,
+      ExpectSISwap si_swap = ExpectSISwap::kRegular) {
+    // With no SiteIsolation and no SiteInstanceGroup, the SiteInstances cannot
+    // change.
+    if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+        !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+        !ShouldUseDefaultSiteInstanceGroup()) {
+      EXPECT_EQ(site_instance_1, site_instance_2);
+      return;
+    }
+
+    // Otherwise, we expect SiteInstances to be different.
+    EXPECT_NE(site_instance_1, site_instance_2);
+
+    // Next, check if process isolation of the SiteInstances is expected.
+
+    // First, check if we expect a BrowsingInstance swap to occur.
+    bool has_bi_swap = bi_swap == ExpectBISwap::kTrue;
+
+    // BFCache may also force BrowsingInstance swaps when it is enabled.
+    has_bi_swap |=
+        bi_swap == ExpectBISwap::kBFCacheOnly && IsBackForwardCacheEnabled();
+
+    // When process isolation for DocumentIsolationPolicy is enabled, a
+    // BrowsingInstance swap happens, or a top level error page is involved, the
+    // two SiteInstances should be in different processes.
+    if (AreAllSitesIsolatedForTesting() ||
+        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
+        has_bi_swap || si_swap == ExpectSISwap::kTopLevelError) {
+      EXPECT_NE(site_instance_1->GetOrCreateProcessForTesting(),
+                site_instance_2->GetOrCreateProcessForTesting());
+
+      // If the navigation triggered a speculative BrowsingInstance swap, the
+      // SiteInstances should be unrelated. Otherwise they should be related.
+      EXPECT_EQ(!has_bi_swap,
+                site_instance_1->IsRelatedSiteInstance(site_instance_2));
+      return;
+    }
+
+    // When no SiteIsolation is available and default SiteInstanceGroup is
+    // available, the SiteInstances are different, however they are both placed
+    // into the default SiteInstanceGroup and share the same process.
+    EXPECT_TRUE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
+    SiteInstanceGroup* default_site_instance_group =
+        site_instance_1->DefaultSiteInstanceGroupForBrowsingInstance();
+    EXPECT_EQ(default_site_instance_group, site_instance_1->group());
+    EXPECT_EQ(default_site_instance_group, site_instance_2->group());
+    EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
+  }
+
+  // A helper function to check if a RenderFrameHost is tracked as cross-origin
+  // isolated. Generally, this checks if the RFH's SiteInstance is cross-origin
+  // isolated, but if there is no SiteIsolation and no SiteInstanceGroups, it
+  // will check whether the RFH's PolicyContainer has an override
+  // CrossOriginIsolationKey instead.
+  bool IsCrossOriginIsolated(RenderFrameHostImpl* rfh) {
+    if (site_isolation_status_ == SiteIsolationStatus::kNoSiteIsolationNoSIG) {
+      const auto& override_key = rfh->policy_container_host()
+                                     ->policies()
+                                     .cross_origin_isolation_key_override;
+      return override_key &&
+             override_key->cross_origin_isolation_mode ==
+                 blink::mojom::CrossOriginIsolationMode::kConcrete;
+    }
+    return rfh->GetSiteInstance()->IsCrossOriginIsolated();
+  }
+
  private:
   class MockContentBrowserClientWithSiteIsolationStatus
       : public ContentBrowserTestContentBrowserClient {
@@ -244,10 +339,17 @@ class DocumentIsolationPolicyBrowserTest
       if (site_isolation_mode == SiteIsolationMode::kStrictSiteIsolation) {
         return status_ != SiteIsolationStatus::kSiteIsolation;
       }
-      return status_ == SiteIsolationStatus::kNoSiteIsolation;
+      return status_ == SiteIsolationStatus::kNoSiteIsolation ||
+             status_ == SiteIsolationStatus::kNoSiteIsolationNoSIG;
     }
     bool ShouldEnableStrictSiteIsolation() override {
       return status_ == SiteIsolationStatus::kSiteIsolation;
+    }
+    bool ShouldIsolateErrorPage(bool in_main_frame) override {
+      if (status_ == SiteIsolationStatus::kNoSiteIsolationNoSIG) {
+        return false;
+      }
+      return in_main_frame;
     }
 
    private:
@@ -291,6 +393,7 @@ class DocumentIsolationPolicyBrowserTest
   base::test::ScopedFeatureList feature_list_disable_origin_keyed_processes_;
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
+  base::test::ScopedFeatureList feature_list_for_default_site_instance_group_;
   net::EmbeddedTestServer https_server_;
 
   SiteIsolationStatus site_isolation_status_;
@@ -722,7 +825,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, IframeCanSetDip) {
   // previously used as the DocumentIsolationPolicy do not match, even if the
   // navigation is same-origin.
   EXPECT_EQ(iframe_rfh->GetLastCommittedURL(), iframe_navigation_url);
-  EXPECT_NE(iframe_rfh->GetSiteInstance(), non_dip_iframe_site_instance);
+  CheckSiteInstancesAreIsolated(iframe_rfh->GetSiteInstance(),
+                                non_dip_iframe_site_instance.get());
 
   EXPECT_EQ(
       iframe_rfh->policy_container_host()->policies().document_isolation_policy,
@@ -929,15 +1033,25 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // Finish the navigation to the non DIP page.
     ASSERT_TRUE(non_dip_navigation.WaitForNavigationFinished());
 
-    // The navigation will not fail after killing the process of the dip page.
-    // A new render process has been created during the navigation to the
-    // non-dip page.
-    EXPECT_TRUE(non_dip_navigation.was_successful());
-    EXPECT_EQ(current_frame_host()
-                  ->policy_container_host()
-                  ->policies()
-                  .document_isolation_policy,
-              DipNone());
+    if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites() &&
+        !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+        !ShouldUseDefaultSiteInstanceGroup()) {
+      // When no SiteInstance switching is available, the navigation does not
+      // commit successfully.
+      // TODO(crbug.com/349104385): This seems unrelated to
+      // DocumentIsolationPolicy. Investigate why this happens.
+      EXPECT_FALSE(non_dip_navigation.was_successful());
+    } else {
+      // The navigation will not fail after killing the process of the dip page.
+      // A new render process has been created during the navigation to the
+      // non-dip page.
+      EXPECT_TRUE(non_dip_navigation.was_successful());
+      EXPECT_EQ(current_frame_host()
+                    ->policy_container_host()
+                    ->policies()
+                    .document_isolation_policy,
+                DipNone());
+    }
   }
 }
 
@@ -1038,24 +1152,11 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   scoped_refptr<SiteInstanceImpl> popup_site_instance(
       static_cast<SiteInstanceImpl*>(
           popup_webcontents->GetPrimaryMainFrame()->GetSiteInstance()));
-  EXPECT_NE(initial_site_instance, popup_site_instance);
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    // The page and its popup should be in different processes even though the
-    // process limit was reached.
-    EXPECT_NE(initial_site_instance->GetProcess(),
-              popup_site_instance->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // the same process.
-    SiteInstanceGroup* default_site_instance_group =
-        initial_site_instance->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_EQ(default_site_instance_group, initial_site_instance->group());
-    EXPECT_EQ(default_site_instance_group, popup_site_instance->group());
-    EXPECT_EQ(initial_site_instance->GetProcess(),
-              popup_site_instance->GetProcess());
-  }
+
+  // The page and its popup should be in different processes even though the
+  // process limit was reached.
+  CheckSiteInstancesAreIsolated(initial_site_instance.get(),
+                                popup_site_instance.get());
 }
 
 // Checks that a process hosting a document with DocumentIsolationPolicy is not
@@ -1063,6 +1164,13 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 // limit has been reached.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
                        NoProcessReuseForDIPProcesses) {
+  // This test only makes sense if it's possible to switch SiteInstances.
+  if (!AreAllSitesIsolatedForTesting() &&
+      !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+      !ShouldUseDefaultSiteInstanceGroup()) {
+    GTEST_SKIP();
+  }
+
   // Set a process limit of 1 for testing.
   RenderProcessHostImpl::SetMaxRendererProcessCount(1);
 
@@ -1119,7 +1227,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
     // Start on a non DIP page.
     EXPECT_TRUE(NavigateToURL(shell(), non_dip_page));
-    scoped_refptr<SiteInstance> initial_site_instance(
+    scoped_refptr<SiteInstanceImpl> initial_site_instance(
         current_frame_host()->GetSiteInstance());
 
     // Navigate to a DIP page.
@@ -1147,8 +1255,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // DocumentIsolationPolicies do not match, the navigation is classified as a
     // cross-site browser-initiated request and the browser triggers a
     // speculative BrowsingInstance swap.
-    EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
-        initial_site_instance.get()));
+    CheckSiteInstancesAreIsolated(current_frame_host()->GetSiteInstance(),
+                                  initial_site_instance.get(),
+                                  ExpectBISwap::kTrue);
     EXPECT_EQ(current_frame_host()
                   ->policy_container_host()
                   ->policies()
@@ -1162,7 +1271,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
     // Start on a DIP page.
     EXPECT_TRUE(NavigateToURL(shell(), dip_page));
-    scoped_refptr<SiteInstance> initial_site_instance(
+    scoped_refptr<SiteInstanceImpl> initial_site_instance(
         current_frame_host()->GetSiteInstance());
 
     // Navigate to a non DIP page.
@@ -1190,8 +1299,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // DocumentIsolationPolicies do not match, the navigation is classified as a
     // cross-site browser-initiated request and the browser triggers a
     // speculative BrowsingInstance swap.
-    EXPECT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
-        initial_site_instance.get()));
+    CheckSiteInstancesAreIsolated(current_frame_host()->GetSiteInstance(),
+                                  initial_site_instance.get(),
+                                  ExpectBISwap::kTrue);
     EXPECT_EQ(current_frame_host()
                   ->policy_container_host()
                   ->policies()
@@ -1205,7 +1315,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
     // Start on a DIP page.
     EXPECT_TRUE(NavigateToURL(shell(), dip_page));
-    scoped_refptr<SiteInstance> initial_site_instance(
+    scoped_refptr<SiteInstanceImpl> initial_site_instance(
         current_frame_host()->GetSiteInstance());
 
     // Navigate to a DIP page.
@@ -1243,11 +1353,18 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 // A test to make sure that loading a page with DIP creates an origin-keyed
 // AgentClusterKey in SiteInstance's SiteInfo.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
+  // This test only makes sense if it's possible to switch SiteInstances.
+  if (!AreAllSitesIsolatedForTesting() &&
+      !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+      !ShouldUseDefaultSiteInstanceGroup()) {
+    GTEST_SKIP();
+  }
   GURL isolated_page = GetDocumentIsolationPolicyURL("a.test");
 
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
   EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+
   EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
 
   // While the AgentClusterKey is origin-keyed, this should not impact the OAC
@@ -1266,6 +1383,12 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
 // AgentClusterKey that has the origin of the DIP document, not its SiteURL.
 IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
                        DipAgentClusterKeyUsesOrigin) {
+  // This test only makes sense if it's possible to switch SiteInstances.
+  if (!AreAllSitesIsolatedForTesting() &&
+      !SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() &&
+      !ShouldUseDefaultSiteInstanceGroup()) {
+    GTEST_SKIP();
+  }
   GURL isolated_page = GetDocumentIsolationPolicyURL("a.b.test");
   url::Origin origin = url::Origin::Create(isolated_page);
 
@@ -1289,8 +1412,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // Initial non cross-origin isolated page.
   {
     EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
-    SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
   }
 
   // Navigation to a cross-origin isolated page.
@@ -1299,13 +1421,12 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(),
-              previous_si->GetOrCreateProcessForTesting());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
-    EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kTrue);
   }
 
   // Navigation to a non cross-origin isolated page.
@@ -1314,13 +1435,12 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(),
-              previous_si->GetOrCreateProcessForTesting());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
-    EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kTrue);
   }
 
   // Back navigation from a a non cross-origin isolated page to a cross-origin
@@ -1331,13 +1451,12 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(),
-              previous_si->GetOrCreateProcessForTesting());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
-    EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kTrue);
   }
 
   // Back navigation to the non cross-origin isolated initial page.
@@ -1347,13 +1466,12 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     web_contents()->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si->GetProcess(),
-              previous_si->GetOrCreateProcessForTesting());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
     // browser-initiated and end up being cross-site due to the DIP mismatch.
-    EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kTrue);
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -1361,16 +1479,15 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
     scoped_refptr<SiteInstanceImpl> site_instance_1 =
         current_frame_host()->GetSiteInstance();
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
     EXPECT_TRUE(NavigateToURL(shell(), isolated_page_b));
     SiteInstanceImpl* site_instance_2 = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
-    EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
-    EXPECT_NE(site_instance_1->GetOrCreateProcessForTesting(),
-              site_instance_2->GetProcess());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
     // The navigation triggers a speculative BrowsingInstance swap because it is
-    // browser-initiated and cross-site.
-    EXPECT_FALSE(site_instance_1->IsRelatedSiteInstance(site_instance_2));
+    // browser-initiated and end up being cross-site due to the DIP mismatch.
+    CheckSiteInstancesAreIsolated(site_instance_1.get(), site_instance_2,
+                                  ExpectBISwap::kTrue);
   }
 }
 
@@ -1388,8 +1505,7 @@ IN_PROC_BROWSER_TEST_P(
   // Initial non cross-origin isolated page.
   {
     EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
-    SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
   }
 
   // Navigation to a cross-origin isolated page.
@@ -1398,31 +1514,10 @@ IN_PROC_BROWSER_TEST_P(
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
-    // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    } else {
-      EXPECT_TRUE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    }
-
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-        IsBackForwardCacheEnabled()) {
-      EXPECT_NE(current_si->GetProcess(),
-                previous_si->GetOrCreateProcessForTesting());
-    } else {
-      // When no SiteIsolation is available and no proactive swapping happened,
-      // the SiteInstances are different, however they are both placed into the
-      // default SiteInstanceGroup and share process.
-      SiteInstanceGroup* default_site_instance_group =
-          current_si->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_NE(current_si, previous_si);
-      EXPECT_EQ(default_site_instance_group, current_si->group());
-      EXPECT_EQ(default_site_instance_group, previous_si->group());
-      EXPECT_EQ(current_si->GetProcess(), previous_si->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kBFCacheOnly);
   }
 
   // Navigation to the same cross-origin isolated page.
@@ -1431,7 +1526,7 @@ IN_PROC_BROWSER_TEST_P(
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
     EXPECT_EQ(current_si, previous_si);
   }
 
@@ -1441,31 +1536,11 @@ IN_PROC_BROWSER_TEST_P(
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), non_isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    } else {
-      EXPECT_TRUE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    }
-
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-        IsBackForwardCacheEnabled()) {
-      EXPECT_NE(current_si->GetProcess(),
-                previous_si->GetOrCreateProcessForTesting());
-    } else {
-      // When no SiteIsolation is available and no proactive swapping happened,
-      // the SiteInstances are different, however they are both placed into the
-      // default SiteInstanceGroup and share process.
-      SiteInstanceGroup* default_site_instance_group =
-          current_si->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_NE(current_si, previous_si);
-      EXPECT_EQ(default_site_instance_group, current_si->group());
-      EXPECT_EQ(default_site_instance_group, previous_si->group());
-      EXPECT_EQ(current_si->GetProcess(), previous_si->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kBFCacheOnly);
   }
 
   // Navigate back to a cross-origin isolated page.
@@ -1475,31 +1550,11 @@ IN_PROC_BROWSER_TEST_P(
     web_contents()->GetController().GoBack();
     ASSERT_TRUE(WaitForLoadStop(web_contents()));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(current_si->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    } else {
-      EXPECT_TRUE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    }
-
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-        IsBackForwardCacheEnabled()) {
-      EXPECT_NE(current_si->GetProcess(),
-                previous_si->GetOrCreateProcessForTesting());
-    } else {
-      // When no SiteIsolation is available and no proactive swapping happened,
-      // the SiteInstances are different, however they are both placed into the
-      // default SiteInstanceGroup and share process.
-      SiteInstanceGroup* default_site_instance_group =
-          current_si->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_NE(current_si, previous_si);
-      EXPECT_EQ(default_site_instance_group, current_si->group());
-      EXPECT_EQ(default_site_instance_group, previous_si->group());
-      EXPECT_EQ(current_si->GetProcess(), previous_si->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kBFCacheOnly);
   }
 
   // Cross origin navigation in between two cross-origin isolated pages.
@@ -1507,36 +1562,14 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), isolated_page));
     scoped_refptr<SiteInstanceImpl> site_instance_1 =
         current_frame_host()->GetSiteInstance();
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), isolated_page_b));
     SiteInstanceImpl* site_instance_2 = current_frame_host()->GetSiteInstance();
-    EXPECT_TRUE(site_instance_1->IsCrossOriginIsolated());
-    EXPECT_TRUE(site_instance_2->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
     // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(
-          site_instance_2->IsRelatedSiteInstance(site_instance_1.get()));
-    } else {
-      EXPECT_TRUE(
-          site_instance_2->IsRelatedSiteInstance(site_instance_1.get()));
-    }
-
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-        IsBackForwardCacheEnabled()) {
-      EXPECT_NE(site_instance_2->GetProcess(),
-                site_instance_1->GetOrCreateProcessForTesting());
-    } else {
-      // When no SiteIsolation is available and no proactive swapping happened,
-      // the SiteInstances are different, however they are both placed into the
-      // default SiteInstanceGroup and share process.
-      SiteInstanceGroup* default_site_instance_group =
-          site_instance_1->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_NE(site_instance_1, site_instance_2);
-      EXPECT_EQ(default_site_instance_group, site_instance_1->group());
-      EXPECT_EQ(default_site_instance_group, site_instance_2->group());
-      EXPECT_EQ(site_instance_1->GetProcess(), site_instance_2->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(site_instance_1.get(), site_instance_2,
+                                  ExpectBISwap::kBFCacheOnly);
   }
 }
 
@@ -1551,7 +1584,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // Initial cross-origin isolated page.
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
   // Same origin cross-origin isolated iframe.
   TestNavigationManager coi_iframe_navigation(web_contents(), isolated_page);
@@ -1586,37 +1619,10 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   RenderFrameHostImpl* non_coi_iframe_rfh =
       current_frame_host()->child_at(1)->current_frame_host();
   SiteInstanceImpl* non_coi_iframe_si = non_coi_iframe_rfh->GetSiteInstance();
-  EXPECT_FALSE(non_coi_iframe_si->IsCrossOriginIsolated());
-  EXPECT_TRUE(non_coi_iframe_si->IsRelatedSiteInstance(main_si));
-  EXPECT_NE(non_coi_iframe_si, main_si);
+  EXPECT_FALSE(IsCrossOriginIsolated(non_coi_iframe_rfh));
 
-  SiteInstanceGroup* default_site_instance_group =
-      main_si->DefaultSiteInstanceGroupForBrowsingInstance();
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(non_coi_iframe_si->GetProcess(), main_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(default_site_instance_group, non_coi_iframe_si->group());
-    EXPECT_EQ(main_si->GetProcess(), non_coi_iframe_si->GetProcess());
-  }
-
-  EXPECT_NE(non_coi_iframe_si, coi_iframe_si);
-
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(non_coi_iframe_si->GetProcess(), coi_iframe_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_EQ(default_site_instance_group, coi_iframe_si->group());
-    EXPECT_EQ(default_site_instance_group, non_coi_iframe_si->group());
-    EXPECT_EQ(coi_iframe_si->GetProcess(), non_coi_iframe_si->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(non_coi_iframe_si, main_si);
+  CheckSiteInstancesAreIsolated(non_coi_iframe_si, coi_iframe_si);
 
   // Cross origin iframe.
   TestNavigationManager cross_origin_iframe_navigation(web_contents(),
@@ -1634,53 +1640,11 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(2)->current_frame_host();
   SiteInstanceImpl* cross_origin_iframe_si = iframe_rfh->GetSiteInstance();
-  EXPECT_TRUE(cross_origin_iframe_si->IsCrossOriginIsolated());
-  EXPECT_TRUE(cross_origin_iframe_si->IsRelatedSiteInstance(main_si));
-  EXPECT_NE(cross_origin_iframe_si, main_si);
+  EXPECT_TRUE(IsCrossOriginIsolated(iframe_rfh));
 
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(main_si->GetProcess(), cross_origin_iframe_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_EQ(default_site_instance_group, cross_origin_iframe_si->group());
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(cross_origin_iframe_si->GetProcess(), main_si->GetProcess());
-  }
-
-  EXPECT_NE(cross_origin_iframe_si, coi_iframe_si);
-
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(coi_iframe_si->GetProcess(),
-              cross_origin_iframe_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_EQ(default_site_instance_group, cross_origin_iframe_si->group());
-    EXPECT_EQ(default_site_instance_group, coi_iframe_si->group());
-    EXPECT_EQ(cross_origin_iframe_si->GetProcess(),
-              coi_iframe_si->GetProcess());
-  }
-
-  EXPECT_NE(cross_origin_iframe_si, non_coi_iframe_si);
-
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(non_coi_iframe_si->GetProcess(),
-              cross_origin_iframe_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_EQ(default_site_instance_group, cross_origin_iframe_si->group());
-    EXPECT_EQ(default_site_instance_group, non_coi_iframe_si->group());
-    EXPECT_EQ(cross_origin_iframe_si->GetProcess(),
-              non_coi_iframe_si->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(cross_origin_iframe_si, main_si);
+  CheckSiteInstancesAreIsolated(cross_origin_iframe_si, coi_iframe_si);
+  CheckSiteInstancesAreIsolated(cross_origin_iframe_si, non_coi_iframe_si);
 
   // Navigate to a non cross-origin isolated page with a cross-origin isolated
   // iframe.
@@ -1689,30 +1653,10 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
         current_frame_host()->GetSiteInstance();
     EXPECT_TRUE(NavigateToURLFromRenderer(shell(), non_isolated_page));
     main_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(main_si->IsCrossOriginIsolated());
-    default_site_instance_group =
-        main_si->DefaultSiteInstanceGroupForBrowsingInstance();
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
 
-    // When BfCache is enabled, a pro-active BrowsingInstance swap happens.
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(main_si->IsRelatedSiteInstance(previous_si.get()));
-    } else {
-      EXPECT_TRUE(main_si->IsRelatedSiteInstance(previous_si.get()));
-    }
-
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-        IsBackForwardCacheEnabled()) {
-      EXPECT_NE(main_si->GetProcess(),
-                previous_si->GetOrCreateProcessForTesting());
-    } else {
-      // When no SiteIsolation is available and no proactive swapping happened,
-      // the SiteInstances are different, however they are both placed into the
-      // default SiteInstanceGroup and share process.
-      EXPECT_EQ(default_site_instance_group, main_si->group());
-      EXPECT_EQ(default_site_instance_group, previous_si->group());
-      EXPECT_EQ(main_si->GetProcess(), previous_si->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(main_si, previous_si.get(),
+                                  ExpectBISwap::kBFCacheOnly);
 
     TestNavigationManager same_origin_iframe_navigation(web_contents(),
                                                         isolated_page);
@@ -1728,20 +1672,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_TRUE(same_origin_iframe_navigation.was_successful());
     iframe_rfh = current_frame_host()->child_at(0)->current_frame_host();
     SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
-    EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
-    EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-    EXPECT_NE(iframe_si, main_si);
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-      EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
-    } else {
-      // When no SiteIsolation is available, the SiteInstances are different,
-      // however they are both placed into the default SiteInstanceGroup and
-      // share process.
-      EXPECT_EQ(default_site_instance_group, main_si->group());
-      EXPECT_EQ(default_site_instance_group, iframe_si->group());
-      EXPECT_EQ(main_si->GetProcess(), iframe_si->GetProcess());
-    }
+    EXPECT_TRUE(IsCrossOriginIsolated(iframe_rfh));
+    CheckSiteInstancesAreIsolated(iframe_si, main_si);
   }
 }
 
@@ -1756,8 +1688,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
 
   // Initial cross-origin isolated page.
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
-  SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
   // Open a non isolated popup.
   {
@@ -1767,7 +1698,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
                 ->web_contents())
             ->GetPrimaryMainFrame();
 
-    EXPECT_FALSE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(popup_rfh));
     EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
   }
@@ -1779,7 +1710,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
             OpenPopup(current_frame_host(), isolated_page, "")->web_contents())
             ->GetPrimaryMainFrame();
 
-    EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(popup_rfh));
     EXPECT_EQ(popup_rfh->GetSiteInstance(),
               current_frame_host()->GetSiteInstance());
   }
@@ -1792,30 +1723,11 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
                 ->web_contents())
             ->GetPrimaryMainFrame();
 
-    EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsCrossOriginIsolated());
+    EXPECT_TRUE(IsCrossOriginIsolated(popup_rfh));
     EXPECT_TRUE(popup_rfh->GetSiteInstance()->IsRelatedSiteInstance(
         current_frame_host()->GetSiteInstance()));
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-      EXPECT_NE(popup_rfh->GetSiteInstance()->GetProcess(),
-                current_frame_host()->GetSiteInstance()->GetProcess());
-    } else {
-      // When no SiteIsolation is available, the SiteInstances are different,
-      // however they are both placed into the default SiteInstanceGroup and
-      // share process.
-      SiteInstanceGroup* default_site_instance_group =
-          current_frame_host()
-              ->GetSiteInstance()
-              ->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_NE(current_frame_host()->GetSiteInstance(),
-                popup_rfh->GetSiteInstance());
-      EXPECT_EQ(default_site_instance_group,
-                current_frame_host()->GetSiteInstance()->group());
-      EXPECT_EQ(default_site_instance_group,
-                popup_rfh->GetSiteInstance()->group());
-      EXPECT_EQ(current_frame_host()->GetSiteInstance()->GetProcess(),
-                popup_rfh->GetSiteInstance()->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(popup_rfh->GetSiteInstance(),
+                                  current_frame_host()->GetSiteInstance());
   }
 }
 
@@ -1842,7 +1754,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // Initial cross-origin isolated page.
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
   // Iframe.
   {
@@ -1865,8 +1777,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
               EvalJs(iframe_rfh, "document.location.href;"));
     EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
-    EXPECT_FALSE(iframe_si->IsCrossOriginIsolated());
-    EXPECT_NE(iframe_si, main_si);
+    EXPECT_FALSE(IsCrossOriginIsolated(iframe_rfh));
+    CheckSiteInstancesAreIsolated(iframe_si, main_si);
   }
 
   // Iframe with a body added to the HTTP 404.
@@ -1891,8 +1803,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // by COEP. An error page is expected in lieu of that document.
     EXPECT_EQ(GURL(kUnreachableWebDataURL),
               EvalJs(iframe_rfh, "document.location.href;"));
-    EXPECT_FALSE(iframe_si->IsCrossOriginIsolated());
-    EXPECT_NE(iframe_si, main_si);
+    EXPECT_FALSE(IsCrossOriginIsolated(iframe_rfh));
+    CheckSiteInstancesAreIsolated(iframe_si, main_si);
   }
 
   // Iframe blocked by coep.
@@ -1912,7 +1824,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
         current_frame_host()->child_at(0)->current_frame_host();
     SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
     EXPECT_TRUE(IsExpectedSubframeErrorTransition(main_si, iframe_si));
-    EXPECT_FALSE(iframe_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(iframe_rfh));
   }
 
   // Top frame.
@@ -1921,21 +1833,17 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
         current_frame_host()->GetSiteInstance();
     EXPECT_FALSE(NavigateToURL(shell(), invalid_url));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    if (IsBackForwardCacheEnabled()) {
-      EXPECT_FALSE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    } else {
-      EXPECT_TRUE(current_si->IsRelatedSiteInstance(previous_si.get()));
-    }
-    EXPECT_NE(current_si->GetProcess(),
-              previous_si->GetOrCreateProcessForTesting());
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
+    CheckSiteInstancesAreIsolated(current_si, previous_si.get(),
+                                  ExpectBISwap::kBFCacheOnly,
+                                  ExpectSISwap::kTopLevelError);
   }
 
   // DIP iframe inside non-DIP page.
   {
     EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
     SiteInstanceImpl* current_si = current_frame_host()->GetSiteInstance();
-    EXPECT_FALSE(current_si->IsCrossOriginIsolated());
+    EXPECT_FALSE(IsCrossOriginIsolated(current_frame_host()));
 
     // First, add an iframe with DocumentIsolationPolicy.
     TestNavigationManager iframe_navigation(web_contents(), isolated_page);
@@ -1951,22 +1859,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     RenderFrameHostImpl* iframe_rfh =
         current_frame_host()->child_at(0)->current_frame_host();
     scoped_refptr<SiteInstanceImpl> iframe_si = iframe_rfh->GetSiteInstance();
-    EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
-    EXPECT_NE(current_si, iframe_si);
+    EXPECT_TRUE(IsCrossOriginIsolated(iframe_rfh));
 
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-      EXPECT_NE(current_si->GetProcess(), iframe_si->GetProcess());
-    } else {
-      // When no SiteIsolation is available, the SiteInstances are different,
-      // however they are both placed into the default SiteInstanceGroup and
-      // share process.
-      SiteInstanceGroup* default_site_instance_group =
-          current_si->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_EQ(default_site_instance_group, current_si->group());
-      EXPECT_EQ(default_site_instance_group, iframe_si->group());
-      EXPECT_EQ(current_si->GetProcess(), iframe_si->GetProcess());
-    }
+    CheckSiteInstancesAreIsolated(current_si, iframe_si.get());
 
     // Now navigate the iframe to an error page.
     TestNavigationManager error_navigation(web_contents(), invalid_url);
@@ -1977,23 +1872,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     EXPECT_FALSE(error_navigation.was_successful());
     iframe_rfh = current_frame_host()->child_at(0)->current_frame_host();
     scoped_refptr<SiteInstanceImpl> error_si = iframe_rfh->GetSiteInstance();
-    EXPECT_FALSE(error_si->IsCrossOriginIsolated());
-    EXPECT_NE(error_si, iframe_si);
-    if (AreAllSitesIsolatedForTesting() ||
-        SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-      EXPECT_NE(error_si->GetProcess(), iframe_si->GetProcess());
-    } else {
-      // When no SiteIsolation is available, the SiteInstances are different,
-      // however they are both placed into the default SiteInstanceGroup and
-      // share process.
-      SiteInstanceGroup* default_site_instance_group =
-          error_si->DefaultSiteInstanceGroupForBrowsingInstance();
-      EXPECT_EQ(default_site_instance_group, error_si->group());
-      EXPECT_EQ(default_site_instance_group, iframe_si->group());
-      EXPECT_EQ(error_si->GetProcess(), iframe_si->GetProcess());
-    }
-    EXPECT_EQ(error_si, current_si);
-    EXPECT_EQ(error_si->GetProcess(), current_si->GetProcess());
+    EXPECT_FALSE(IsCrossOriginIsolated(iframe_rfh));
+    CheckSiteInstancesAreIsolated(error_si.get(), iframe_si.get());
   }
 }
 
@@ -2021,25 +1901,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // We should have swapped SiteInstance.
   scoped_refptr<SiteInstanceImpl> current_si =
       current_frame_host()->GetSiteInstance();
-  EXPECT_NE(main_si, current_si);
   EXPECT_TRUE(
       main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    // The page and its popup should be in different processes even though the
-    // process limit was reached.
-    EXPECT_NE(main_si->GetOrCreateProcessForTesting(),
-              current_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    SiteInstanceGroup* default_site_instance_group =
-        main_si->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(default_site_instance_group, current_si->group());
-    EXPECT_EQ(main_si->GetProcess(), current_si->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(main_si.get(), current_si.get());
 }
 
 // Tests that a reload navigation where the page starts sending
@@ -2064,25 +1928,9 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // We should have swapped SiteInstance.
   scoped_refptr<SiteInstanceImpl> current_si =
       current_frame_host()->GetSiteInstance();
-  EXPECT_NE(main_si, current_si);
   EXPECT_TRUE(
       main_si->IsRelatedSiteInstance(current_frame_host()->GetSiteInstance()));
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    // The page and its popup should be in different processes even though the
-    // process limit was reached.
-    EXPECT_NE(main_si->GetOrCreateProcessForTesting(),
-              current_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    SiteInstanceGroup* default_site_instance_group =
-        main_si->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(default_site_instance_group, current_si->group());
-    EXPECT_EQ(main_si->GetProcess(), current_si->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(main_si.get(), current_si.get());
 }
 
 // Checks that a cross-origin but same site iframe is placed in a different
@@ -2095,7 +1943,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   // Initial cross-origin isolated page.
   EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
   SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
-  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+  EXPECT_TRUE(IsCrossOriginIsolated(current_frame_host()));
 
   TestNavigationManager cross_origin_iframe_navigation(web_contents(),
                                                        isolated_page_b);
@@ -2113,22 +1961,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   RenderFrameHostImpl* iframe_rfh =
       current_frame_host()->child_at(0)->current_frame_host();
   SiteInstanceImpl* iframe_si = iframe_rfh->GetSiteInstance();
-  EXPECT_NE(iframe_si, main_si);
-  EXPECT_TRUE(iframe_si->IsCrossOriginIsolated());
-  EXPECT_TRUE(iframe_si->IsRelatedSiteInstance(main_si));
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    SiteInstanceGroup* default_site_instance_group =
-        main_si->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_EQ(default_site_instance_group, iframe_si->group());
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(main_si->GetProcess(), iframe_si->GetProcess());
-  }
+  EXPECT_TRUE(IsCrossOriginIsolated(iframe_rfh));
+  CheckSiteInstancesAreIsolated(main_si, iframe_si);
 
   // Open an isolated popup from the cross-origin but same-site iframe. It
   // should end up in the same SiteInstance as the main frame, since they are
@@ -2294,15 +2128,20 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
     // possible to transfer a SharedArrayBuffer between the two of them.
     EXPECT_NE(iframe_si->GetProcess(), main_si->GetProcess());
   } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    SiteInstanceGroup* default_site_instance_group =
-        main_si->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_NE(main_si, iframe_si);
-    EXPECT_EQ(default_site_instance_group, main_si->group());
-    EXPECT_EQ(default_site_instance_group, iframe_si->group());
-    EXPECT_EQ(main_si->GetProcess(), iframe_si->GetProcess());
+    if (ShouldUseDefaultSiteInstanceGroup()) {
+      // When no SiteIsolation is available, the SiteInstances are different,
+      // however they are both placed into the default SiteInstanceGroup and
+      // share process.
+      SiteInstanceGroup* default_site_instance_group =
+          main_si->DefaultSiteInstanceGroupForBrowsingInstance();
+      EXPECT_NE(main_si, iframe_si);
+      EXPECT_EQ(default_site_instance_group, main_si->group());
+      EXPECT_EQ(default_site_instance_group, iframe_si->group());
+      EXPECT_EQ(main_si->GetProcess(), iframe_si->GetProcess());
+    } else {
+      // Without SiteInstanceGroups, the SiteInstances cannot change.
+      EXPECT_EQ(main_si, iframe_si);
+    }
     // The top-level document can create a SharedArrayBuffer, however it cannot
     // transfer it to its non-cross-origin-isolated iframe.
     EXPECT_TRUE(ExecJs(sub_document, R"(
@@ -2399,26 +2238,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
 
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(main_document->GetSiteInstance()->GetProcess(),
-              sub_document->GetSiteInstance()->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and
-    // share process.
-    SiteInstanceGroup* default_site_instance_group =
-        main_document->GetSiteInstance()
-            ->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_NE(main_document->GetSiteInstance(),
-              sub_document->GetSiteInstance());
-    EXPECT_EQ(default_site_instance_group,
-              main_document->GetSiteInstance()->group());
-    EXPECT_EQ(default_site_instance_group,
-              sub_document->GetSiteInstance()->group());
-    EXPECT_EQ(current_frame_host()->GetSiteInstance()->GetProcess(),
-              sub_document->GetSiteInstance()->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(main_document->GetSiteInstance(),
+                                sub_document->GetSiteInstance());
 }
 
 // Check that a cross-origin iframe can become cross-origin isolated using
@@ -2444,26 +2265,8 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest,
   EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
   EXPECT_EQ(true, EvalJs(sub_document, "self.crossOriginIsolated"));
 
-  if (AreAllSitesIsolatedForTesting() ||
-      SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
-    EXPECT_NE(main_document->GetSiteInstance()->GetProcess(),
-              sub_document->GetSiteInstance()->GetProcess());
-  } else {
-    // When no SiteIsolation is available, the SiteInstances are different,
-    // however they are both placed into the default SiteInstanceGroup and share
-    // process.
-    EXPECT_NE(main_document->GetSiteInstance(),
-              sub_document->GetSiteInstance());
-    SiteInstanceGroup* default_site_instance_group =
-        main_document->GetSiteInstance()
-            ->DefaultSiteInstanceGroupForBrowsingInstance();
-    EXPECT_EQ(default_site_instance_group,
-              main_document->GetSiteInstance()->group());
-    EXPECT_EQ(default_site_instance_group,
-              sub_document->GetSiteInstance()->group());
-    EXPECT_EQ(main_document->GetSiteInstance()->GetProcess(),
-              sub_document->GetSiteInstance()->GetProcess());
-  }
+  CheckSiteInstancesAreIsolated(main_document->GetSiteInstance(),
+                                sub_document->GetSiteInstance());
 }
 
 // Regression test for crbug.com/394350439.
@@ -2703,13 +2506,14 @@ INSTANTIATE_TEST_SUITE_P(
     DocumentIsolationPolicyWithLogicalCOIBrowserTest,
     kTestParamsWithDefaultSiteInstanceGroup,
     DocumentIsolationPolicyWithLogicalCOIBrowserTest::DescribeParams);
-static auto kTestParamsWithSiteIsolation =
-    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Values(SiteIsolationStatus::kSiteIsolation,
-                                     SiteIsolationStatus::kPartialSiteIsolation,
-                                     SiteIsolationStatus::kNoSiteIsolation));
+static auto kTestParamsWithSiteIsolation = testing::Combine(
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+    testing::Bool(),
+    testing::Bool(),
+    testing::Values(SiteIsolationStatus::kSiteIsolation,
+                    SiteIsolationStatus::kPartialSiteIsolation,
+                    SiteIsolationStatus::kNoSiteIsolation,
+                    SiteIsolationStatus::kNoSiteIsolationNoSIG));
 INSTANTIATE_TEST_SUITE_P(All,
                          DocumentIsolationPolicyBrowserTest,
                          kTestParamsWithSiteIsolation,
