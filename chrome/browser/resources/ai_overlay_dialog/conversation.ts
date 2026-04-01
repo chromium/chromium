@@ -7,9 +7,12 @@ import {assert} from '//resources/js/assert.js';
 import type {PageCallbackRouter, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
 import type {ApiConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
+import {debugLog, DebugLogTag, errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
 import {buildSystemInstruction} from './persona.js';
+
+const FILE = 'Conversation';
 
 /* A bundle of information about how to initialize the model's personality */
 export interface Persona {
@@ -62,7 +65,7 @@ export class Conversation implements ApiSessionDelegate {
       config: ConversationConfig, uiDelegate: UiDelegate,
       pageHandler: PageHandlerRemote, router: PageCallbackRouter,
       initialPageContext?: PageContext) {
-    console.info(`Conversation with ${config.persona.name}, config`, config);
+    log(FILE, `Conversation with ${config.persona.name}, config`, config);
     this.config = config;
     this.uiDelegate = uiDelegate;
     this.pageHandler = pageHandler;
@@ -182,7 +185,7 @@ export class Conversation implements ApiSessionDelegate {
           delete result.scheduling;
         }
       } catch (e) {
-        console.error(`Error executing tool ${name}:`, e);
+        errorLog(FILE, `Error executing tool ${name}:`, e);
       }
 
       responses.push({
@@ -200,9 +203,9 @@ export class Conversation implements ApiSessionDelegate {
     // tracking durations and logging out metrics.
     if (this.mockAudioEndTime > 0) {
       const latency = performance.now() - this.mockAudioEndTime;
-      console.info(
-          `[Conversation] Time between end of mock audio and tool call ` +
-          `completion: ${latency.toFixed(2)}ms`);
+      log(FILE,
+          `Time between end of mock audio and tool call ` +
+              `completion: ${latency.toFixed(2)}ms`);
       this.mockAudioEndTime = 0;
     }
   }
@@ -240,7 +243,7 @@ export class Conversation implements ApiSessionDelegate {
         this.config, context?.title ?? '', context?.url || '',
         context?.content ?? undefined);
 
-    console.info('System Instruction', systemInstruction);
+    debugLog(FILE, DebugLogTag.SYSTEM_INSTRUCTION, systemInstruction);
 
     this.session = new ApiSession(
         systemInstruction, this.config.api_config, this.toolDefinitions, this);

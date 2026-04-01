@@ -4,11 +4,9 @@
 
 import {AudioPlayer} from './audio_player.js';
 import {encodeFloat32ToPcmBase64} from './audio_utils.js';
+import {log} from './logging.js';
 
-function log(msg: string, ...args: any[]) {
-  console.info(
-      `[${performance.now().toFixed(2)}] [AudioCapturer] ${msg}`, ...args);
-}
+const FILE = 'AudioCapturer';
 
 /**
  * Interface for audio capture.
@@ -134,7 +132,7 @@ export class BlobAudioCapturer implements AudioCapturer {
     const silentChunk = new Float32Array(chunkSize);
     const silentBase64 = encodeFloat32ToPcmBase64(silentChunk);
 
-    log(`Started mock silence heartbeat (${chunkMs}ms)`);
+    log(FILE, `Started mock silence heartbeat (${chunkMs}ms)`);
     let nextTick = performance.now();
 
     while (!this.isStopped) {
@@ -146,7 +144,7 @@ export class BlobAudioCapturer implements AudioCapturer {
       const delay = Math.max(0, nextTick - performance.now());
       await new Promise(resolve => setTimeout(resolve, delay));
     }
-    log('Stopped mock silence heartbeat');
+    log(FILE, 'Stopped mock silence heartbeat');
   }
 
   stop() {
@@ -175,22 +173,23 @@ export class BlobAudioCapturer implements AudioCapturer {
   private async sendInternal(blob: Blob, onSpeechDone?: () => void):
       Promise<void> {
     if (!this.onAudioCallback || !this.audioContext) {
-      log('BlobAudioCapturer not ready');
+      log(FILE, 'BlobAudioCapturer not ready');
       return;
     }
 
     const arrayBuffer = await blob.arrayBuffer();
-    log(`Decoding audio data of size ${arrayBuffer.byteLength}`);
+    log(FILE, `Decoding audio data of size ${arrayBuffer.byteLength}`);
     let audioBuffer: AudioBuffer;
     try {
       audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
     } catch (e) {
-      log('Failed to decode audio data', e);
+      log(FILE, 'Failed to decode audio data', e);
       return;
     }
 
-    log(`Injecting mock prompt: ${audioBuffer.duration.toFixed(2)}s, rate ${
-        audioBuffer.sampleRate}Hz`);
+    log(FILE,
+        `Injecting mock prompt: ${audioBuffer.duration.toFixed(2)}s, rate ${
+            audioBuffer.sampleRate}Hz`);
     this.isInjecting = true;
 
     // Play back the audio so we can hear what's sent.
@@ -205,7 +204,7 @@ export class BlobAudioCapturer implements AudioCapturer {
 
     for (let i = 0; i < float32Data.length; i += chunkSize) {
       if (this.isStopped) {
-        log('Mock audio injection stopped early');
+        log(FILE, 'Mock audio injection stopped early');
         break;
       }
 
@@ -242,8 +241,9 @@ export class BlobAudioCapturer implements AudioCapturer {
       await new Promise(resolve => setTimeout(resolve, delay));
     }
 
-    log(`Finished injecting mock prompt, sent ${
-        chunksSent} chunks. Resuming silence.`);
+    log(FILE,
+        `Finished injecting mock prompt, sent ${
+            chunksSent} chunks. Resuming silence.`);
     this.isInjecting = false;
   }
 }

@@ -17,7 +17,10 @@ import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
 import type {ConversationConfig, Persona} from './conversation.js';
+import {errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
+
+const FILE = 'App';
 
 enum UiState {
   INERT = 'inert',
@@ -42,10 +45,6 @@ interface ResourceBundle {
   talkingBlob: Blob;
   listeningBlob: Blob;
   instruction: string;
-}
-
-function log(msg: string, ...args: any[]) {
-  console.info(`[${performance.now().toFixed(2)}] [App] ${msg}`, ...args);
 }
 
 export class AppElement extends CrLitElement {
@@ -262,7 +261,8 @@ export class AppElement extends CrLitElement {
       return;
     }
 
-    log(`Injecting audio: ${button.name}, length: ${button.wavdata.length}`);
+    log(FILE,
+        `Injecting audio: ${button.name}, length: ${button.wavdata.length}`);
     const binaryString = atob(button.wavdata);
     const bytes = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
@@ -290,22 +290,23 @@ export class AppElement extends CrLitElement {
       const stream = await navigator.mediaDevices.getUserMedia({audio: true});
       return new MicrophoneAudioCapturer(stream);
     } catch (e) {
-      log('No Microphone Found', e);
+      log(FILE, 'No Microphone Found', e);
 
       try {
         const {jsonData} = await this.pageHandler.getMockAudioData();
         if (jsonData) {
-          log('Received mock audio data:', jsonData.substring(0, 100) + '...');
+          log(FILE,
+              'Received mock audio data:', jsonData.substring(0, 100) + '...');
           const config = JSON.parse(jsonData);
           this.mockButtons = config.buttons || [];
-          log(`Loaded ${this.mockButtons.length} mock buttons`);
+          log(FILE, `Loaded ${this.mockButtons.length} mock buttons`);
           this.blobCapturer = new BlobAudioCapturer();
           return this.blobCapturer;
         } else {
-          log('No mock audio data provided or found');
+          log(FILE, 'No mock audio data provided or found');
         }
       } catch (mojoError) {
-        log('Failed to get mock audio data', mojoError);
+        log(FILE, 'Failed to get mock audio data', mojoError);
       }
     }
 
@@ -324,7 +325,7 @@ export class AppElement extends CrLitElement {
       const ttcBundleUrl = loadTimeData.getString('ttcBundleUrl');
       const bundle = await this.initializeResourceBundle(ttcBundleUrl);
 
-      console.info('Bundle initialized');
+      log(FILE, 'Bundle initialized');
       this.talkingBlobUrl = URL.createObjectURL(bundle.talkingBlob);
       this.listeningBlobUrl = URL.createObjectURL(bundle.listeningBlob);
 
@@ -344,11 +345,11 @@ export class AppElement extends CrLitElement {
         this.conversation = this.createConversation(config);
       }
 
-      log('Attempting to connect. conversation state is not connected.');
+      log(FILE, 'Attempting to connect. conversation state is not connected.');
       await this.conversation.start();
     } catch (e) {
       this.connectionFailed = true;
-      console.error('startConversation failed: ', e);
+      errorLog(FILE, 'startConversation failed: ', e);
     } finally {
       this.isConnecting = false;
     }
@@ -356,13 +357,13 @@ export class AppElement extends CrLitElement {
 
   private stopConversation() {
     if (this.conversation?.connected) {
-      log('Conversation connected, stopping it.');
+      log(FILE, 'Conversation connected, stopping it.');
       this.conversation.stop();
     }
   }
 
   private async onConversationStateChanged(state: State, oldState: State) {
-    log(`onConversationStateChanged: from ${oldState} to ${state}`);
+    log(FILE, `onConversationStateChanged: from ${oldState} to ${state}`);
 
     if (oldState === State.STOPPED && state !== State.STOPPED) {
       this.isConnecting = false;
@@ -408,7 +409,7 @@ export class AppElement extends CrLitElement {
       throw new Error('No resource bundle URL provided');
     }
 
-    console.info('Loading resource bundle: ', baseUrl);
+    log(FILE, 'Loading resource bundle: ', baseUrl);
 
     const base = baseUrl.endsWith('/') ? baseUrl : baseUrl + '/';
 

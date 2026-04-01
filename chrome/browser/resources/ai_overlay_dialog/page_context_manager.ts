@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {debugLog, DebugLogTag, log, warnLog} from './logging.js';
+
+const FILE = 'PageContextManager';
+
 export interface PageContext {
   url: string;
   title: string|null;
@@ -30,13 +34,15 @@ export class PageContextManager {
   }
 
   updateCurrentPageContext(title: string, content: string) {
-    console.info(
-        'PageContextManager: Update', title, content.substring(0, 200));
+    log(FILE, 'updateCurrentPageContext', title);
+    debugLog(
+        FILE, DebugLogTag.PAGE_CONTENT, 'PageContextManager: Update', title,
+        content);
     if (this.context) {
       this.context.title = title;
       this.context.content = content;
     } else {
-      console.warn('updateCurrentPageContext called without context');
+      warnLog(FILE, 'updateCurrentPageContext called without context');
     }
     this.isStale = false;
 
@@ -46,9 +52,9 @@ export class PageContextManager {
   }
 
   didChangePage(url: string, title: string|null, content: string|null) {
-    console.info(
-        'PageContextManager: didChangePage', url, title,
-        content?.substring(0, 200));
+    log(FILE, 'DidChangePage', title, url);
+    debugLog(FILE, DebugLogTag.PAGE_CONTENT, 'Content', content);
+
     this.context = {url, title, content};
     this.isStale = content === null;
   }
