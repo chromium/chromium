@@ -60,10 +60,7 @@ source_set("feedback") {
 }
 
 source_set("feedback_impl") {
-  sources = [
-    "report_unsafe_site_dialog.cc",
-    "report_unsafe_site_dialog.h",
-  ]
+  sources = [ "report_unsafe_site_dialog.h" ]
   deps = [
     ":feedback",
     "//chrome/browser:browser_features",
@@ -183,10 +180,12 @@ source_set("feedback_impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "report_unsafe_site_dialog_unittest.cc" ]
-  if (!is_android) {
-    sources += [
+  if (is_android) {
+    sources = [ "report_unsafe_site_dialog_android_unittest.cc" ]
+  } else {
+    sources = [
       "report_unsafe_site/screenshot_taker_unittest.cc",
+      "report_unsafe_site_dialog_views_unittest.cc",
       "show_feedback_page_unittest.cc",
     ]
   }

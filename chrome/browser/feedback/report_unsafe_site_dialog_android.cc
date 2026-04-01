@@ -9,6 +9,12 @@
 namespace feedback {
 
 // static
+bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
+  // Not currently implemented on Android.
+  return false;
+}
+
+// static
 void ReportUnsafeSiteDialog::Show(Browser* browser) {
   NOTREACHED();
 }

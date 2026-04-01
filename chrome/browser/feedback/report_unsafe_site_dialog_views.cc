@@ -5,8 +5,10 @@
 #include "chrome/browser/feedback/report_unsafe_site_dialog_views.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/feedback/report_unsafe_site/screenshot_taker.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -21,6 +23,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -99,6 +102,14 @@ END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ReportUnsafeSiteDialogViews,
                                       kReportUnsafeSiteDialogId);
+
+// static
+bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
+  const PrefService* prefs = profile.GetPrefs();
+  return base::FeatureList::IsEnabled(features::kReportUnsafeSite) &&
+         !profile.IsOffTheRecord() && chrome::CanShowFeedback(&profile) &&
+         safe_browsing::IsSafeBrowsingEnabled(*prefs);
+}
 
 // static
 void ReportUnsafeSiteDialog::Show(Browser* browser) {

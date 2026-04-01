@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
 
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/feedback/report_unsafe_site/report_unsafe_site_handler.h"
 #include "chrome/common/pref_names.h"
@@ -106,7 +107,7 @@ FeedbackUI::FeedbackUI(content::WebUI* web_ui) : MojoWebDialogUI(web_ui) {
 FeedbackUI::~FeedbackUI() = default;
 
 bool FeedbackUI::IsFeedbackEnabled(Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kUserFeedbackAllowed);
+  return chrome::CanShowFeedback(profile);
 }
 
 void FeedbackUI::BindInterface(

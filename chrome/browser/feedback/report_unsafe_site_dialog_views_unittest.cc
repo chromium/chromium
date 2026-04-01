@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
-
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/feedback/report_unsafe_site_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -16,10 +15,10 @@
 namespace feedback {
 
 // Tests for ReportUnsafeSiteDialog.
-class ReportUnsafeSiteDialogTest : public testing::Test {
+class ReportUnsafeSiteDialogViewsTest : public testing::Test {
  public:
-  ReportUnsafeSiteDialogTest() = default;
-  ~ReportUnsafeSiteDialogTest() override = default;
+  ReportUnsafeSiteDialogViewsTest() = default;
+  ~ReportUnsafeSiteDialogViewsTest() override = default;
 
  protected:
   void SetUp() override {
@@ -34,37 +33,38 @@ class ReportUnsafeSiteDialogTest : public testing::Test {
   TestingProfile profile_;
 };
 
-class ReportUnsafeSiteDialogTest_FeatureEnabled
-    : public ReportUnsafeSiteDialogTest {
+class ReportUnsafeSiteDialogViewsTest_FeatureEnabled
+    : public ReportUnsafeSiteDialogViewsTest {
  public:
-  ReportUnsafeSiteDialogTest_FeatureEnabled() = default;
-  ~ReportUnsafeSiteDialogTest_FeatureEnabled() override = default;
+  ReportUnsafeSiteDialogViewsTest_FeatureEnabled() = default;
+  ~ReportUnsafeSiteDialogViewsTest_FeatureEnabled() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kReportUnsafeSite};
 };
 
-class ReportUnsafeSiteDialogTest_FeatureDisabled
-    : public ReportUnsafeSiteDialogTest {
+class ReportUnsafeSiteDialogViewsTest_FeatureDisabled
+    : public ReportUnsafeSiteDialogViewsTest {
  public:
-  ReportUnsafeSiteDialogTest_FeatureDisabled() {
+  ReportUnsafeSiteDialogViewsTest_FeatureDisabled() {
     feature_list_.InitAndDisableFeature(features::kReportUnsafeSite);
   }
-  ~ReportUnsafeSiteDialogTest_FeatureDisabled() override = default;
+  ~ReportUnsafeSiteDialogViewsTest_FeatureDisabled() override = default;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ReportUnsafeSiteDialogTest_FeatureDisabled, IsEnabled_FeatureDisabled) {
+TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureDisabled,
+       IsEnabled_FeatureDisabled) {
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled, IsEnabled_Enabled) {
+TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled, IsEnabled_Enabled) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
+TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled,
        IsEnabled_FeedbackDisallowed) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
@@ -72,7 +72,7 @@ TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
+TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled,
        IsEnabled_SafeBrowsingDisabled) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
@@ -81,7 +81,7 @@ TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
-TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled, IsEnabled_Incognito) {
+TEST_F(ReportUnsafeSiteDialogViewsTest_FeatureEnabled, IsEnabled_Incognito) {
   EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 
   Profile* incognito_profile = profile_.GetOffTheRecordProfile(

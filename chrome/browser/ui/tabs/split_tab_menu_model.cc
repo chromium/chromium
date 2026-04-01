@@ -156,8 +156,7 @@ SplitTabMenuModel::SplitTabMenuModel(TabStripModel* tab_strip_model,
 
   // Only render feedback in the toolbar button menu.
   if (menu_source == MenuSource::kToolbarButton &&
-      tab_strip_model->profile()->GetPrefs()->GetBoolean(
-          prefs::kUserFeedbackAllowed)) {
+      chrome::CanShowFeedback(tab_strip_model->profile())) {
     AddSeparator(ui::MenuSeparatorType::NORMAL_SEPARATOR);
     AddItemWithStringIdAndIcon(GetCommandIdInt(CommandId::kSendFeedback),
                                IDS_SPLIT_TAB_SEND_FEEDBACK,

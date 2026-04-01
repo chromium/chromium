@@ -28,6 +28,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/feedback/report_unsafe_site_dialog.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -952,8 +953,7 @@ void HelpMenuModel::Build(Browser* browser) {
       SetCommandIcon(this, IDC_HELP_PAGE_VIA_MENU, kHelpMenuIcon);
     }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    PrefService* pref_service = browser->profile()->GetPrefs();
-    if (pref_service->GetBoolean(prefs::kUserFeedbackAllowed)) {
+    if (chrome::CanShowFeedback(browser->profile())) {
       AddItemWithStringIdAndVectorIcon(this, IDC_FEEDBACK, IDS_FEEDBACK,
                                        kReportIcon);
 

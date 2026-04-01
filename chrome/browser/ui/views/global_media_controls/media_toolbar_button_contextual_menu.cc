@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -42,8 +43,7 @@ MediaToolbarButtonContextualMenu::CreateMenuModel() {
       IDS_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (browser_->profile()->GetPrefs()->GetBoolean(
-          prefs::kUserFeedbackAllowed)) {
+  if (chrome::CanShowFeedback(browser_->profile())) {
     menu_model->AddItemWithStringId(
         IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE,
         IDS_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE);
