@@ -45,6 +45,7 @@ void SendTabToSelfPageHandler::SendTabToDevice(
   request.result_callback = std::move(result_callback);
 
   MaybeExtractFormFields(request);
+  MaybeExtractNavigationHistory(request);
 
   // If the URL has changed or the scroll position feature is not enabled, send
   // the request without the scroll position information.
@@ -273,8 +274,6 @@ void SendTabToSelfPageHandler::SendFinalizedRequest(
     }
     return;
   }
-
-  MaybeExtractNavigationHistory(request);
 
   model->AddEntry(request.url, request.title, request.target_device_guid,
                   std::move(request.page_context),
