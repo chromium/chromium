@@ -33,10 +33,7 @@
       IDS_IOS_COMPOSEBOX_MAXIMUM_TABS_REACHED, attachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
-  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 - (void)showSnackbarForAttachmentLimit:(NSUInteger)attachmentLimit {
@@ -49,10 +46,7 @@
       IDS_IOS_COMPOSEBOX_MAXIMUM_ATTACHMENTS_REACHED, attachmentLimit);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
-  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
 - (void)showUnableToAddAttachmentSnackbarWithBottomOffset:
@@ -61,10 +55,7 @@
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_UNABLE_TO_ADD_ATTACHMENT);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
-  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
 - (void)showAttachmentLimitForImageGenerationSnackbarWithBottomOffset:
@@ -74,10 +65,7 @@
       kAttachmentLimitForImageGeneration);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
-  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:bottomOffset];
 }
 
 - (void)showCannotReloadTabError {
@@ -85,19 +73,27 @@
       l10n_util::GetNSString(IDS_IOS_COMPOSEBOX_CANNOT_RELOAD_TAB_ERROR);
   SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:title];
 
-  CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
-  id<SnackbarCommands> snackbarHandler =
-      HandlerForProtocol(dispatcher, SnackbarCommands);
-  [snackbarHandler showSnackbarMessage:message bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 - (void)dismissAllSnackbars {
+  [self.snackbarHandler dismissAllSnackbars];
+}
+
+#pragma mark - Private
+
+// Returns the snackbar handler if it exist.
+- (id<SnackbarCommands>)snackbarHandler {
+  if (!_browser) {
+    return nil;
+  }
   CommandDispatcher* dispatcher = _browser->GetCommandDispatcher();
   if ([dispatcher dispatchingForProtocol:@protocol(SnackbarCommands)]) {
     id<SnackbarCommands> snackbarHandler =
         HandlerForProtocol(dispatcher, SnackbarCommands);
-    [snackbarHandler dismissAllSnackbars];
+    return snackbarHandler;
   }
+  return nil;
 }
 
 @end
