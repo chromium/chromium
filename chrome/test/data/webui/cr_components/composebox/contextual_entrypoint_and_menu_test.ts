@@ -7,6 +7,7 @@ import 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_me
 
 import type {ContextualEntrypointAndMenuElement} from 'chrome://resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {$$, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -32,8 +33,35 @@ suite('ContextualEntrypointAndMenu', () => {
     loadTimeData.overrideValues({
       composeboxContextMenuEnableMultiTabSelection: true,
       contextualMenuUsePecApi: true,
+      composeboxShowContextMenuDescription: true,
     });
     await createComponent();
+  });
+
+  test('context menu description hides in tool mode', async () => {
+    // Initial state: not in tool mode. Description should be shown.
+    assertTrue(entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
+
+    // Enter tool mode.
+    entrypointAndMenu.$.entrypointButton.inputState = {
+      ...createValidInputState(),
+      activeTool: ToolMode.kDeepSearch,
+    };
+    await microtasksFinished();
+
+    // In tool mode. Description should be hidden.
+    assertFalse(
+        entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
+
+    // Exit tool mode.
+    entrypointAndMenu.inputState = {
+      ...createValidInputState(),
+      activeTool: ToolMode.kUnspecified,
+    };
+    await microtasksFinished();
+
+    // Back to unspecified mode. Description should be shown again.
+    assertTrue(entrypointAndMenu.$.entrypointButton.showContextMenuDescription);
   });
 
   test('context menu shown on entrypoint click event', async () => {

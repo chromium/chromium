@@ -15,6 +15,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
     ${hasAllowedInputs(this.inputState, this.usePecApi_) ? html`
       <cr-composebox-contextual-entrypoint-button id="entrypointButton"
           exportparts="context-menu-entrypoint-icon, entrypoint-button"
+          .inputState="${this.inputState}"
           @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
           ?upload-button-disabled="${this.uploadButtonDisabled}"
           ?show-context-menu-description="${this.showContextMenuDescription}"

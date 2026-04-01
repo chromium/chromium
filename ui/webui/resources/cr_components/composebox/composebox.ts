@@ -132,10 +132,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
         type: String,
       },
-      inToolMode_: {
-        type: Boolean,
-        reflect: true,
-      },
       isCanvasQuerySubmitted: {
         type: Boolean,
       },
@@ -231,7 +227,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   protected accessor expanding_: boolean = false;
   protected accessor isOmniboxInCompactMode_: boolean = false;
   protected inVoiceSearchMode_: boolean = false;
-  protected accessor inToolMode_: boolean = false;
   accessor isCanvasQuerySubmitted: boolean = false;
   // Synchronous immediate guard used to deduplicate processing
   // autochips being added, not fully processed chips.
@@ -1248,11 +1243,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
 
   protected handleToolClick_(tool: ToolMode) {
     const isTogglingOff = this.inputState?.activeTool === tool;
-
-    if (this.contextMenuDescriptionEnabled) {
-      this.showContextMenuDescription =
-          isTogglingOff || tool === ToolMode.kUnspecified;
-    }
 
     const newToolMode = isTogglingOff ? ToolMode.kUnspecified : tool;
 
