@@ -436,6 +436,14 @@ def install_runtime_dmg(mac_toolchain, runtime_cache_folder,
     iossim_util.delete_least_recently_used_simulator_runtimes()
     iossim_util.delete_stale_simulator_runtimes()
 
+    # Ensure that there is not an existing simulator runtime for this platform
+    # and version combination.
+    existing_runtime_info = iossim_util.get_simulator_runtime_info(
+        platform_type, platform_version)
+    if existing_runtime_info is not None:
+      iossim_util.delete_simulator_runtime(existing_runtime_info['identifier'],
+                                           True)
+
     _install_runtime_dmg(mac_toolchain, runtime_cache_folder, platform_type,
                          platform_version, xcode_build_version)
     runtime_dmg_name = get_runtime_dmg_name(runtime_cache_folder)
