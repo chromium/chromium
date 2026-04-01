@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
@@ -42,6 +43,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "crypto/crypto_buildflags.h"
@@ -77,7 +79,7 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 
  private:
   glic::GlicTestEnvironment glic_test_environment_{
-      {.force_signin_and_glic_capability = false }};
+      {.force_signin_and_glic_capability = false}};
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -647,6 +649,8 @@ struct WebActuationTestParams {
   //  0: kEnabled
   //  1: kDisabled
   int policy_value = -1;
+  // Simulate dogfood status.
+  bool is_dogfooder = false;
   // Expected Result (The JS Mocha suite to run)
   std::string expected_suite;
 };
@@ -745,6 +749,11 @@ class SettingsGlicSubPageWebActuationTableTest
       // For "No Pref" branch, clear the pref so IsDefaultValue() returns true.
       GetProfile()->GetPrefs()->ClearPref(
           glic::prefs::kGlicUserEnabledActuationOnWeb);
+    }
+    if (p.is_dogfooder) {
+      auto* variations_service = g_browser_process->variations_service();
+      CHECK(variations_service);
+      variations_service->SetIsLikelyDogfoodClientForTesting(true);
     }
   }
 
@@ -878,7 +887,21 @@ INSTANTIATE_TEST_SUITE_P(
             .user_tier = 100,
             .is_managed_browser = true,
             .policy_value = -1,  // Unset
-            .expected_suite = "GlicSubpage WebActuationToggleVisibleLocked"}),
+            .expected_suite = "GlicSubpage WebActuationToggleVisibleLocked"},
+        // --- DOGFOOD BYPASS CASES ---
+        WebActuationTestParams{
+            .test_name = "Dogfooder_BypassesStrictTierCheck_Visible",
+            .toggle_feature_enabled = true,
+            .user_tier = 999,
+            .is_dogfooder = true,
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
+
+        WebActuationTestParams{
+            .test_name = "NonDogfooder_FailsStrictTierCheck_Hidden",
+            .toggle_feature_enabled = true,
+            .user_tier = 999,
+            .is_dogfooder = false,
+            .expected_suite = "GlicSubpage WebActuationToggleHidden"}),
     GenerateWebActuationSettingsToggleTestName);
 
 class SettingsGlicSubageDataProtectionTest : public SettingsBrowserTest {

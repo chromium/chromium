@@ -40,6 +40,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -353,6 +354,13 @@ bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
   // If the toggle feature is on, enforce toggle visibility based on
   // subscription eligibility.
   if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
+    // Always show the toggle for internal dogfooders, mirroring the bypass in
+    // GlicActorPolicyChecker.
+    auto* variations_service = g_browser_process->variations_service();
+    if (variations_service && variations_service->IsLikelyDogfoodClient()) {
+      return true;
+    }
+    // Strict subscription check for external users.
     auto* subscription_service = subscription_eligibility::
         SubscriptionEligibilityServiceFactory::GetForProfile(profile);
     CHECK(subscription_service);
