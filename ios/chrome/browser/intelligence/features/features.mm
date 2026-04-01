@@ -553,7 +553,7 @@ bool IsGeminiResponseViewDynamicResizingEnabled() {
   return base::FeatureList::IsEnabled(kGeminiResponseViewDynamicResizing);
 }
 
-BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiDynamicSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiDynamicSettingsEnabled() {
   if (!IsPageActionMenuEnabled()) {
