@@ -118,7 +118,7 @@ public class HubToolbarViewRenderTest {
     }
 
     private FullButtonData enabledButtonData(@DrawableRes int drawableRes) {
-        return makeButtonData(drawableRes, () -> {});
+        return makeButtonData(drawableRes, view -> {});
     }
 
     private FullButtonData disabledButtonData(@DrawableRes int drawableRes) {
@@ -126,17 +126,17 @@ public class HubToolbarViewRenderTest {
     }
 
     private FullButtonData makeButtonData(
-            @DrawableRes int drawableRes, @Nullable Runnable onPress) {
+            @DrawableRes int drawableRes, @Nullable Callback<View> onPress) {
         DisplayButtonData displayButtonData =
                 new ResourceButtonData(
                         R.string.button_new_tab, R.string.button_new_tab, drawableRes);
-        return new DelegateButtonData(displayButtonData, onPress);
+        return new DelegateButtonData.Builder(displayButtonData).setOnPress(onPress).build();
     }
 
-    private FullButtonData makeButtonData(Drawable drawable, @Nullable Runnable onPress) {
+    private FullButtonData makeButtonData(Drawable drawable, @Nullable Callback<View> onPress) {
         DisplayButtonData displayButtonData =
                 new DrawableButtonData(R.string.button_new_tab, R.string.button_new_tab, drawable);
-        return new DelegateButtonData(displayButtonData, onPress);
+        return new DelegateButtonData.Builder(displayButtonData).setOnPress(onPress).build();
     }
 
     @Test
@@ -336,7 +336,7 @@ public class HubToolbarViewRenderTest {
 
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
-        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, () -> {}));
+        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, view -> {}));
         paneSwitcherButtonData.add(enabledButtonData(R.drawable.incognito_small));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -373,7 +373,7 @@ public class HubToolbarViewRenderTest {
 
         FullButtonData actionButtonData = enabledButtonData(R.drawable.new_tab_icon);
         List<FullButtonData> paneSwitcherButtonData = new ArrayList<>();
-        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, () -> {}));
+        paneSwitcherButtonData.add(makeButtonData(tabSwitcherDrawable, view -> {}));
         paneSwitcherButtonData.add(enabledButtonData(R.drawable.incognito_small));
 
         ThreadUtils.runOnUiThreadBlocking(

@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.hub;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
@@ -42,9 +40,8 @@ public final class ApplyButtonData {
             CharSequence contentDescription = buttonData.resolveContentDescription(context);
             button.setContentDescription(contentDescription);
             button.setTooltipText(contentDescription);
-            if (buttonData.getOnPressRunnable() != null) {
-                button.setOnClickListener(
-                        (v) -> assumeNonNull(buttonData.getOnPressRunnable()).run());
+            if (buttonData.canPress()) {
+                button.setOnClickListener(buttonData::onPress);
                 button.setEnabled(true);
             } else {
                 button.setOnClickListener(null);

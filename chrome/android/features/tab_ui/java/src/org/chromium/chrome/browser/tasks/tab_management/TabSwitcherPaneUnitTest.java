@@ -14,7 +14,6 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -477,8 +476,9 @@ public class TabSwitcherPaneUnitTest {
                 R.drawable.new_tab_icon,
                 shadowOf(buttonData.resolveIcon(mContext)).getCreatedFromResId());
 
-        buttonData.getOnPressRunnable().run();
-        verify(mNewTabButtonClickListener).onClick(isNull());
+        View mockView = mock(View.class);
+        buttonData.onPress(mockView);
+        verify(mNewTabButtonClickListener).onClick(mockView);
     }
 
     @Test

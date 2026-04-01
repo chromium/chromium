@@ -18,6 +18,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.View;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -223,9 +225,9 @@ public class TabGroupsPaneUnitTest {
         FullButtonData actionButtonData = mTabGroupsPane.getActionButtonDataSupplier().get();
         assertNotNull(actionButtonData);
 
-        Runnable onPressRunnable = actionButtonData.getOnPressRunnable();
-        assertNotNull(onPressRunnable);
-        onPressRunnable.run();
+        assertTrue(actionButtonData.canPress());
+        View mockView = mock(View.class);
+        actionButtonData.onPress(mockView);
 
         verify(mTabCreator).createNewTab(any(), anyInt(), any());
         verify(mTabGroupModelFilter).createSingleTabGroup(mTab);
