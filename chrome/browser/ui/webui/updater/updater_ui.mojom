@@ -93,10 +93,13 @@ struct GetAppStatesError {
   string message;
 };
 
+// Indicates which directory should be opened in a native UI for ShowDirectory.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum ShowDirectoryTarget {
-  kSystemUpdater,
-  kUserUpdater,
-  kEnterpriseCompanionApp,
+  kSystemUpdater = 0,
+  kUserUpdater = 1,
+  kEnterpriseCompanionApp = 2,
 };
 
 struct UnzipUpdaterHistoryFilesResponse {
@@ -112,6 +115,18 @@ struct UnzipUpdaterHistoryFilesResponse {
 struct UnzipUpdaterHistoryFilesError {
   // Non localized description of the error suitable for logging in JS.
   string message;
+};
+
+// Indicates which history filter was changed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum HistoryFilter {
+  kApp = 0,
+  kEvent = 1,
+  kOutcome = 2,
+  kDate = 3,
+  kScope = 4,
+  kAll = 5,
 };
 
 // Called from TS side of chrome://updater (Renderer -> Browser).
@@ -141,6 +156,9 @@ interface PageHandler {
   // installation on the filesystem. Fails silently if the directory does not
   // exist.
   ShowDirectory(ShowDirectoryTarget scope);
+
+  // Called when the user changes the updater history filters.
+  RecordFilterChange(HistoryFilter filter);
 
   // Extracts all updater history JSONL files from a user-supplied zip. This is
   // intended to be used to parse data exported by Chrome's support tool.

@@ -21,6 +21,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/updater/updater_ui.mojom.h"
@@ -721,6 +722,48 @@ TEST_F(UpdaterPageHandlerTest, UnzipUpdaterHistoryFiles_Failure_InvalidZip) {
             run_loop.Quit();
           }));
   run_loop.Run();
+}
+
+TEST_F(UpdaterPageHandlerTest, RecordFilterChange) {
+  base::HistogramTester histogram_tester;
+  handler_->RecordFilterChange(updater_ui::mojom::HistoryFilter::kApp);
+  histogram_tester.ExpectUniqueSample(
+      "Browser.UpdaterWebUI.HistoryFilterChanged",
+      updater_ui::mojom::HistoryFilter::kApp, 1);
+
+  handler_->RecordFilterChange(updater_ui::mojom::HistoryFilter::kAll);
+  histogram_tester.ExpectBucketCount(
+      "Browser.UpdaterWebUI.HistoryFilterChanged",
+      updater_ui::mojom::HistoryFilter::kAll, 1);
+}
+
+TEST_F(UpdaterPageHandlerTest, ShowDirectoryMetrics) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(*mock_delegate_,
+              GetUpdaterInstallDirectory(updater::UpdaterScope::kSystem))
+      .WillOnce(Return(std::nullopt));
+  handler_->ShowDirectory(
+      updater_ui::mojom::ShowDirectoryTarget::kSystemUpdater);
+  histogram_tester.ExpectUniqueSample(
+      "Browser.UpdaterWebUI.InstallPathLinkClicked",
+      updater_ui::mojom::ShowDirectoryTarget::kSystemUpdater, 1);
+
+  EXPECT_CALL(*mock_delegate_,
+              GetUpdaterInstallDirectory(updater::UpdaterScope::kUser))
+      .WillOnce(Return(std::nullopt));
+  handler_->ShowDirectory(updater_ui::mojom::ShowDirectoryTarget::kUserUpdater);
+  histogram_tester.ExpectBucketCount(
+      "Browser.UpdaterWebUI.InstallPathLinkClicked",
+      updater_ui::mojom::ShowDirectoryTarget::kUserUpdater, 1);
+
+  EXPECT_CALL(*mock_delegate_, GetEnterpriseCompanionInstallDirectory())
+      .WillOnce(Return(std::nullopt));
+  handler_->ShowDirectory(
+      updater_ui::mojom::ShowDirectoryTarget::kEnterpriseCompanionApp);
+  histogram_tester.ExpectBucketCount(
+      "Browser.UpdaterWebUI.InstallPathLinkClicked",
+      updater_ui::mojom::ShowDirectoryTarget::kEnterpriseCompanionApp, 1);
 }
 
 }  // namespace

@@ -177,7 +177,7 @@ export class FilterBarElement extends CrLitElement {
       default:
         assertNotReachedCase(category);
     }
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(category);
   }
 
   protected onChipClick(e: MouseEvent) {
@@ -244,14 +244,14 @@ export class FilterBarElement extends CrLitElement {
     this.updateFilterOrder(FilterCategory.APP, e.detail.size > 0);
     this.filterSettings.apps = new Set(e.detail);
     this.closeFilterMenu();
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(FilterCategory.APP);
   }
 
   protected async onEventTypeFilterChange(e: CustomEvent<Set<EventType>>) {
     this.updateFilterOrder(FilterCategory.EVENT, e.detail.size > 0);
     this.filterSettings.eventTypes = new Set(e.detail);
     this.closeFilterMenu();
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(FilterCategory.EVENT);
   }
 
   protected async onUpdateOutcomeFilterChange(
@@ -259,14 +259,14 @@ export class FilterBarElement extends CrLitElement {
     this.updateFilterOrder(FilterCategory.OUTCOME, e.detail.size > 0);
     this.filterSettings.updateOutcomes = new Set(e.detail);
     this.closeFilterMenu();
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(FilterCategory.OUTCOME);
   }
 
   protected async onScopeFilterChange(e: CustomEvent<Set<Scope>>) {
     this.updateFilterOrder(FilterCategory.SCOPE, e.detail.size > 0);
     this.filterSettings.scopes = new Set(e.detail);
     this.closeFilterMenu();
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(FilterCategory.SCOPE);
   }
 
   protected async onDateFilterChange(
@@ -276,7 +276,7 @@ export class FilterBarElement extends CrLitElement {
     this.filterSettings.startDate = e.detail.start;
     this.filterSettings.endDate = e.detail.end;
     this.closeFilterMenu();
-    await this.onFiltersChanged();
+    await this.onFiltersChanged(FilterCategory.DATE);
   }
 
   protected getDateFilterString(): string {
@@ -299,9 +299,9 @@ export class FilterBarElement extends CrLitElement {
     return '';
   }
 
-  private async onFiltersChanged() {
+  private async onFiltersChanged(category: FilterCategory|'all') {
     await this.updateComplete;
-    this.fire('filters-changed');
+    this.fire('filters-changed', category);
     this.requestUpdate();
   }
 
@@ -313,7 +313,7 @@ export class FilterBarElement extends CrLitElement {
     this.filterSettings.startDate = null;
     this.filterSettings.endDate = null;
     this.filterOrder = [];
-    await this.onFiltersChanged();
+    await this.onFiltersChanged('all');
   }
 
   protected isEditing(): boolean {

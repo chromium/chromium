@@ -650,6 +650,21 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="UPLOAD_PROVIDER_IS_NULL"/>
 </enum>
 
+<enum name="UpdaterWebUIHistoryFilterCategory">
+  <int value="0" label="App"/>
+  <int value="1" label="Event"/>
+  <int value="2" label="Outcome"/>
+  <int value="3" label="Date"/>
+  <int value="4" label="Scope"/>
+  <int value="5" label="Clear All"/>
+</enum>
+
+<enum name="UpdaterWebUIInstallPathTarget">
+  <int value="0" label="System Updater"/>
+  <int value="1" label="User Updater"/>
+  <int value="2" label="Chrome Enterprise Companion App"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -23,6 +23,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -477,6 +478,9 @@ void UpdaterPageHandler::ShowDirectory(
     updater_ui::mojom::ShowDirectoryTarget target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  base::UmaHistogramEnumeration("Browser.UpdaterWebUI.InstallPathLinkClicked",
+                                target);
+
   std::optional<base::FilePath> install_dir;
   switch (target) {
     case updater_ui::mojom::ShowDirectoryTarget::kSystemUpdater:
@@ -498,6 +502,13 @@ void UpdaterPageHandler::ShowDirectory(
   platform_util::OpenItem(profile_, *install_dir,
                           platform_util::OpenItemType::OPEN_FOLDER,
                           base::DoNothing());
+}
+
+void UpdaterPageHandler::RecordFilterChange(
+    updater_ui::mojom::HistoryFilter filter) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramEnumeration("Browser.UpdaterWebUI.HistoryFilterChanged",
+                                filter);
 }
 
 void UpdaterPageHandler::UnzipUpdaterHistoryFiles(

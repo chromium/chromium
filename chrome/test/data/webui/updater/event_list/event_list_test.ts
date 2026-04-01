@@ -7,14 +7,19 @@ import 'chrome://updater/event_list/event_list.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import type {EventListElement} from 'chrome://updater/event_list/event_list.js';
 import type {EventListItemElement} from 'chrome://updater/event_list/event_list_item.js';
+import {FilterCategory} from 'chrome://updater/event_list/filter_bar.js';
+import {HistoryFilter, PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 import {microtasksFinished, whenCheck} from 'chrome://webui-test/test_util.js';
 
 suite('EventListElement', () => {
   let element: EventListElement;
+  let handler: PageHandlerRemote&TestMock<PageHandlerRemote>;
 
   function clearFilters() {
     element.filterSettings.apps.clear();
@@ -28,6 +33,9 @@ suite('EventListElement', () => {
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    handler = TestMock.fromClass(PageHandlerRemote);
+    BrowserProxyImpl.getInstance().handler = handler;
+
     PluralStringProxyImpl.setInstance(new TestPluralStringProxy());
     element = document.createElement('event-list');
     clearFilters();
@@ -39,6 +47,22 @@ suite('EventListElement', () => {
     assertEquals(0, element.messages.length);
     assertEquals(
         0, element.shadowRoot.querySelectorAll('event-list-item').length);
+    assertEquals(0, handler.getCallCount('recordFilterChange'));
+  });
+
+  test('records filter change when filters change', async () => {
+    assertEquals(0, handler.getCallCount('recordFilterChange'));
+    element.shadowRoot.querySelector('filter-bar')!.fire(
+        'filters-changed', FilterCategory.APP);
+    await microtasksFinished();
+    assertEquals(1, handler.getCallCount('recordFilterChange'));
+    assertEquals(HistoryFilter.kApp, handler.getArgs('recordFilterChange')[0]);
+
+    element.shadowRoot.querySelector('filter-bar')!.fire(
+        'filters-changed', 'all');
+    await microtasksFinished();
+    assertEquals(2, handler.getCallCount('recordFilterChange'));
+    assertEquals(HistoryFilter.kAll, handler.getArgs('recordFilterChange')[1]);
   });
 
   test('parses and displays events', async () => {

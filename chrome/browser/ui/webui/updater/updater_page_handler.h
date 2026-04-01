@@ -80,6 +80,7 @@ class UpdaterPageHandler final : public updater_ui::mojom::PageHandler {
       GetEnterpriseCompanionStateCallback callback) override;
   void GetAppStates(GetAppStatesCallback callback) override;
   void ShowDirectory(updater_ui::mojom::ShowDirectoryTarget scope) override;
+  void RecordFilterChange(updater_ui::mojom::HistoryFilter filter) override;
   void UnzipUpdaterHistoryFiles(
       mojo_base::BigBuffer zip_data,
       UnzipUpdaterHistoryFilesCallback callback) override;

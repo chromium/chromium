@@ -7,19 +7,22 @@ import './filter_bar.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_infinite_list/cr_infinite_list.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
+import {BrowserProxyImpl} from '../browser_proxy.js';
 import {deduplicateEvents, mergeEvents, parseEvents, UpdaterProcessMap} from '../event_history.js';
 import type {HistoryEvent, MergedHistoryEvent, PolicySet} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {formatDateShort, formatRelativeDate} from '../tools.js';
+import {HistoryFilter} from '../updater_ui.mojom-webui.js';
 
 import {getCss} from './event_list.css.js';
 import {getHtml} from './event_list.html.js';
 import type {EventListItemElement} from './event_list_item.js';
+import {FilterCategory} from './filter_bar.js';
 import {applyFilterSettings, createDefaultFilterSettings} from './filter_settings.js';
 import type {FilterSettings} from './filter_settings.js';
 
@@ -169,12 +172,38 @@ export class EventListElement extends CrLitElement {
         this.processMap, filteredEvents, this.sortedEventsWithDates);
   }
 
-  protected onFiltersChanged() {
+  protected onFiltersChanged(e: CustomEvent<FilterCategory|'all'>) {
     // Subfields of the filter settings have changed, however this does not
     // trigger a new render cycle with an updated filterSettings property.
     // Compute the new `events` array explicitly, which will trigger a new
     // render cycle.
     this.updateEventEntries();
+
+    const category = e.detail;
+    let mojoCategory: HistoryFilter;
+    switch (category) {
+      case FilterCategory.APP:
+        mojoCategory = HistoryFilter.kApp;
+        break;
+      case FilterCategory.EVENT:
+        mojoCategory = HistoryFilter.kEvent;
+        break;
+      case FilterCategory.OUTCOME:
+        mojoCategory = HistoryFilter.kOutcome;
+        break;
+      case FilterCategory.DATE:
+        mojoCategory = HistoryFilter.kDate;
+        break;
+      case FilterCategory.SCOPE:
+        mojoCategory = HistoryFilter.kScope;
+        break;
+      case 'all':
+        mojoCategory = HistoryFilter.kAll;
+        break;
+      default:
+        assertNotReachedCase(category);
+    }
+    BrowserProxyImpl.getInstance().handler.recordFilterChange(mojoCategory);
   }
 
   protected onExpandCollapseAllClick() {

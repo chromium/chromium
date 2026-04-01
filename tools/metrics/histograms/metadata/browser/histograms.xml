@@ -1236,6 +1236,27 @@ chromium-metrics-reviews@google.com.
   <token key="TabSwitchingType" variants="TabSwitchingType"/>
 </histogram>
 
+<histogram name="Browser.UpdaterWebUI.HistoryFilterChanged"
+    enum="UpdaterWebUIHistoryFilterCategory" expires_after="2027-03-27">
+  <owner>noahrose@google.com</owner>
+  <owner>src/chrome/updater/OWNERS</owner>
+  <summary>
+    Recorded when the user changes any of the filters on the chrome://updater
+    history page.
+  </summary>
+</histogram>
+
+<histogram name="Browser.UpdaterWebUI.InstallPathLinkClicked"
+    enum="UpdaterWebUIInstallPathTarget" expires_after="2027-03-27">
+  <owner>noahrose@google.com</owner>
+  <owner>src/chrome/updater/OWNERS</owner>
+  <summary>
+    Recorded when the user clicks an install path link on the chrome://updater
+    page. Sliced by the type of path being followed (per-system updater,
+    per-user updater, or Chrome Enterprise Companion App).
+  </summary>
+</histogram>
+
 <histogram name="Browser.WindowCount.Guest" units="units"
     expires_after="2026-08-02">
   <owner>rhalavati@chromium.org</owner>
