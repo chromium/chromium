@@ -1160,4 +1160,13 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define ENABLE_IF_ATTR(cond, msg)
 #endif
 
+// Hints to the optimizer that `x` is always true. This is potentially unsafe,
+// since it can lead to otherwise load-bearing checks being optimized out. Use
+// sparingly with caution and only with demonstrated impact.
+#if defined(__clang__)
+#define UNSAFE_ASSUME(x) __builtin_assume(x)
+#else
+#define UNSAFE_ASSUME(x)
+#endif
+
 #endif  // BASE_COMPILER_SPECIFIC_H_

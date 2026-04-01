@@ -8,6 +8,7 @@
 #include <concepts>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -155,6 +156,15 @@ const Derived* DynamicTo(const Base* from) {
 
 template <typename Derived, typename Base>
 const Derived* DynamicTo(const Base& from) {
+  // This looks silly, but the body of this function is often inlined into
+  // the caller, which does something like `if (auto* y = DynamicTo<Y>(x))`.
+  // The result looks something like `if (auto* y = IsA<Y> ? &x : nullptr)`...
+  // and with `-fno-delete-null-pointer-checks`, clang emits a test that `&x`
+  // is not null even though that is never written explicitly.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-undefined-compare"
+  UNSAFE_ASSUME(&from != nullptr);
+#pragma clang diagnostic pop
   // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
   // optimize correctly.
   return IsA<Derived>(from) ? &static_cast<const Derived&>(from) : nullptr;
@@ -169,6 +179,15 @@ Derived* DynamicTo(Base* from) {
 
 template <typename Derived, typename Base>
 Derived* DynamicTo(Base& from) {
+  // This looks silly, but the body of this function is often inlined into
+  // the caller, which does something like `if (auto* y = DynamicTo<Y>(x))`.
+  // The result looks something like `if (auto* y = IsA<Y> ? &x : nullptr)`...
+  // and with `-fno-delete-null-pointer-checks`, clang emits a test that `&x`
+  // is not null even though that is never written explicitly.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-undefined-compare"
+  UNSAFE_ASSUME(&from != nullptr);
+#pragma clang diagnostic pop
   // TOOD(https://crbug.com/1449302): Figure out why IsA<T> + To<T> does not
   // optimize correctly.
   return IsA<Derived>(from) ? &static_cast<Derived&>(from) : nullptr;
