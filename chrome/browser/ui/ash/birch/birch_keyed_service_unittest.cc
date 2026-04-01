@@ -269,7 +269,7 @@ class SendTabToSelfModelMock : public send_tab_to_self::TestSendTabToSelfModel {
     auto it = entries_.find(guid);
     if (it != entries_.end()) {
       if (auto* entry = it->second.get()) {
-        entry->MarkOpened();
+        entry->MarkOpened(base::Time::Now());
       }
     }
   }

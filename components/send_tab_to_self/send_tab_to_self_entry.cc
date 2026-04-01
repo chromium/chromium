@@ -62,8 +62,8 @@ NavigationHistory::~NavigationHistory() = default;
 
 namespace {
 
-// Converts a time object to the format used in sync protobufs (ms since the
-// Windows epoch).
+// Converts a time object to the format used in sync protobufs (microseconds
+// since the Windows epoch).
 int64_t TimeToProtoTime(const base::Time t) {
   return t.ToDeltaSinceWindowsEpoch().InMicroseconds();
 }
@@ -91,7 +91,6 @@ SendTabToSelfEntry::SendTabToSelfEntry(
       target_device_sync_cache_guid_(target_device_sync_cache_guid),
       shared_time_(shared_time),
       notification_dismissed_(false),
-      opened_(false),
       page_context_(page_context),
       navigation_history_(std::move(navigation_history)) {
   DCHECK(!guid_.empty());
@@ -127,11 +126,31 @@ const std::string& SendTabToSelfEntry::GetTargetDeviceSyncCacheGuid() const {
 }
 
 bool SendTabToSelfEntry::IsOpened() const {
-  return opened_;
+  return !opened_time_.is_null();
 }
 
-void SendTabToSelfEntry::MarkOpened() {
-  opened_ = true;
+void SendTabToSelfEntry::MarkOpened(base::Time opened_time) {
+  if (opened_time_.is_null()) {
+    opened_time_ = opened_time;
+  }
+}
+
+base::Time SendTabToSelfEntry::GetOpenedTime() const {
+  return opened_time_;
+}
+
+base::Time SendTabToSelfEntry::GetReceivedTime() const {
+  return received_time_;
+}
+
+void SendTabToSelfEntry::MarkReceived(base::Time received_time) {
+  if (received_time_.is_null()) {
+    received_time_ = received_time;
+  }
+}
+
+bool SendTabToSelfEntry::IsReceived() const {
+  return !received_time_.is_null();
 }
 
 void SendTabToSelfEntry::SetNotificationDismissed(bool notification_dismissed) {
@@ -176,6 +195,15 @@ SendTabToSelfLocal SendTabToSelfEntry::AsLocalProto() const {
       pb_entry->set_current_navigation_index(
           *navigation_history_.current_navigation_index);
     }
+  }
+
+  if (IsReceived()) {
+    pb_entry->set_received_time_windows_epoch_micros(
+        TimeToProtoTime(GetReceivedTime()));
+  }
+  if (IsOpened()) {
+    pb_entry->set_opened_time_windows_epoch_micros(
+        TimeToProtoTime(GetOpenedTime()));
   }
 
   sync_pb::PageContext pb_page_context = PageContextToProto(page_context_);
@@ -231,11 +259,22 @@ std::unique_ptr<SendTabToSelfEntry> SendTabToSelfEntry::FromProto(
       PageContextFromProto(pb_entry.page_context()),
       std::move(navigation_history));
 
-  if (pb_entry.opened()) {
-    entry->MarkOpened();
+  if (pb_entry.has_opened_time_windows_epoch_micros()) {
+    // New clients populate the opened_time field.
+    entry->MarkOpened(
+        ProtoTimeToTime(pb_entry.opened_time_windows_epoch_micros()));
+  } else if (pb_entry.opened()) {
+    // Fallback for old clients that only set the opened bool without a
+    // timestamp. Use the shared_time as a best-effort approximation.
+    entry->MarkOpened(shared_time);
   }
   if (pb_entry.notification_dismissed()) {
     entry->SetNotificationDismissed(true);
+  }
+
+  if (pb_entry.has_received_time_windows_epoch_micros()) {
+    entry->MarkReceived(
+        ProtoTimeToTime(pb_entry.received_time_windows_epoch_micros()));
   }
 
   return entry;

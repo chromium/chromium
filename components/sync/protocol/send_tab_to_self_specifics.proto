@@ -56,6 +56,18 @@ message SendTabToSelfSpecifics {
 
   // Index of the current navigation in `navigation`.
   optional int32 current_navigation_index = 12;
+
+  // Time (in microseconds since the Windows epoch) when the entry was first
+  // received by the target device's bridge. Set by the receiving device and
+  // synced back to the sender.
+  // New in M148.
+  optional int64 received_time_windows_epoch_micros = 13;
+
+  // Time (in microseconds since the Windows epoch) when the entry was opened
+  // on the target device. Set by the receiving device and synced back to the
+  // sender.
+  // New in M148.
+  optional int64 opened_time_windows_epoch_micros = 14;
 }
 
 message PageContext {

@@ -1376,6 +1376,8 @@ VISIT_PROTO_FIELDS(const sync_pb::SendTabToSelfSpecifics& proto) {
   VISIT(page_context);
   VISIT_REP(navigation);
   VISIT(current_navigation_index);
+  VISIT(received_time_windows_epoch_micros);
+  VISIT(opened_time_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::TextFragmentData& proto) {

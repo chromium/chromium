@@ -63,8 +63,6 @@ class SendTabToSelfEntry {
  public:
   // Creates a SendTabToSelf entry. |url| and |title| are the main fields of the
   // entry.
-  // |now| is used to fill the |creation_time_us_| and all the update timestamp
-  // fields.
   SendTabToSelfEntry(const std::string& guid,
                      const GURL& url,
                      const std::string& title,
@@ -94,8 +92,16 @@ class SendTabToSelfEntry {
   const std::string& GetTargetDeviceSyncCacheGuid() const;
   // The opened state of the entry.
   bool IsOpened() const;
-  // Sets the opened state of the entry to true.
-  void MarkOpened();
+  // Sets the opened state of the entry to true and records the opened time.
+  void MarkOpened(base::Time opened_time);
+  // Time when this entry was opened on the target device, or a null time if
+  // it hasn't been opened.
+  base::Time GetOpenedTime() const;
+
+  // Time when this entry was first received by the target device's bridge.
+  void MarkReceived(base::Time received_time);
+  bool IsReceived() const;
+  base::Time GetReceivedTime() const;
 
   // The state of this entry's notification: if it has been |dismissed|.
   void SetNotificationDismissed(bool notification_dismissed);
@@ -142,9 +148,10 @@ class SendTabToSelfEntry {
   std::string target_device_sync_cache_guid_;
   base::Time shared_time_;
   bool notification_dismissed_;
-  bool opened_;
   PageContext page_context_;
   NavigationHistory navigation_history_;
+  base::Time received_time_;
+  base::Time opened_time_;
 };
 
 }  // namespace send_tab_to_self

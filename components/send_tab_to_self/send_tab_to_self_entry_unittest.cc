@@ -261,7 +261,7 @@ TEST(SendTabToSelfEntry, MarkAsOpened) {
                            base::Time::FromTimeT(10), "device", "device2",
                            PageContext(), NavigationHistory());
   EXPECT_FALSE(entry.IsOpened());
-  entry.MarkOpened();
+  entry.MarkOpened(base::Time::FromTimeT(20));
   EXPECT_TRUE(entry.IsOpened());
 
   sync_pb::SendTabToSelfSpecifics pb_entry;
@@ -520,6 +520,28 @@ TEST(SendTabToSelfEntry, HistoryTruncation_TooManyForward) {
                               MatchesNavigation("https://example.com/5"),
                               MatchesNavigation("https://example.com/6")),
                   Eq(0)));
+}
+
+TEST(SendTabToSelfEntry, TimestampFieldsRoundTrip) {
+  SendTabToSelfEntry entry("1", GURL("http://example.com"), "bar",
+                           base::Time::FromTimeT(10), "device", "device2",
+                           PageContext(), NavigationHistory());
+  EXPECT_FALSE(entry.IsReceived());
+  EXPECT_FALSE(entry.IsOpened());
+
+  entry.MarkReceived(base::Time::FromTimeT(20));
+  entry.MarkOpened(base::Time::FromTimeT(30));
+
+  SendTabToSelfLocal local_pb = entry.AsLocalProto();
+  EXPECT_TRUE(local_pb.specifics().has_received_time_windows_epoch_micros());
+  EXPECT_TRUE(local_pb.specifics().has_opened_time_windows_epoch_micros());
+
+  std::unique_ptr<SendTabToSelfEntry> restored = SendTabToSelfEntry::FromProto(
+      local_pb.specifics(), base::Time::FromTimeT(100));
+  EXPECT_TRUE(restored->IsReceived());
+  EXPECT_EQ(base::Time::FromTimeT(20), restored->GetReceivedTime());
+  EXPECT_TRUE(restored->IsOpened());
+  EXPECT_EQ(base::Time::FromTimeT(30), restored->GetOpenedTime());
 }
 
 }  // namespace

@@ -216,13 +216,26 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
       } else {
         SendTabToSelfEntry* local_entry =
             GetMutableEntryByGUID(remote_entry->GetGUID());
-        SendTabToSelfLocal remote_entry_pb = remote_entry->AsLocalProto();
         if (local_entry == nullptr) {
+          bool needs_reupload = false;
+          // If this device is the target and the entry hasn't been received
+          // yet, set the received timestamp.
+          if (device_info_tracker_->IsRecentLocalCacheGuid(
+                  remote_entry->GetTargetDeviceSyncCacheGuid()) &&
+              !remote_entry->IsReceived()) {
+            remote_entry->MarkReceived(clock_->Now());
+            needs_reupload = true;
+          }
           if (unknown_opened_entries_.contains(remote_entry->GetGUID())) {
             unknown_opened_entries_.erase(remote_entry->GetGUID());
-            remote_entry->MarkOpened();
-            // Reupload the entry to the server. This operation is safe because
-            // it is happening at most once per entry.
+            remote_entry->MarkOpened(clock_->Now());
+            needs_reupload = true;
+          }
+          // Reupload the entry to the server so the sending device can
+          // observe the acknowledgment. This is safe because it happens at
+          // most once per entry (the IsReceived() guard above prevents
+          // re-entry on subsequent syncs).
+          if (needs_reupload) {
             change_processor()->Put(
                 remote_entry->GetGUID(),
                 CopyToEntityData(remote_entry->AsLocalProto().specifics()),
@@ -233,17 +246,28 @@ SendTabToSelfBridge::ApplyIncrementalSyncChanges(
           if (remote_entry->IsOpened()) {
             opened.push_back(remote_entry.get());
           }
-          entries_[remote_entry->GetGUID()] = std::move(remote_entry);
+
+          // Write to the store *after* all mutations so the local store has
+          // the up-to-date fields.
+          batch->WriteData(guid,
+                           remote_entry->AsLocalProto().SerializeAsString());
+          std::string remote_guid = remote_entry->GetGUID();
+          entries_[remote_guid] = std::move(remote_entry);
         } else {
+          // Propagate timestamp fields from the remote entry.
+          if (remote_entry->IsReceived() && !local_entry->IsReceived()) {
+            local_entry->MarkReceived(remote_entry->GetReceivedTime());
+          }
           // Update existing model if entries have been opened.
           if (remote_entry->IsOpened() && !local_entry->IsOpened()) {
-            local_entry->MarkOpened();
+            local_entry->MarkOpened(remote_entry->GetOpenedTime());
             opened.push_back(local_entry);
           }
-        }
 
-        // Write to the store.
-        batch->WriteData(guid, remote_entry_pb.SerializeAsString());
+          // Write to the store.
+          batch->WriteData(guid,
+                           local_entry->AsLocalProto().SerializeAsString());
+        }
       }
     }
   }
@@ -455,7 +479,7 @@ void SendTabToSelfBridge::MarkEntryOpened(const std::string& guid) {
 
   DCHECK(change_processor()->IsTrackingMetadata());
 
-  entry->MarkOpened();
+  entry->MarkOpened(clock_->Now());
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
 
