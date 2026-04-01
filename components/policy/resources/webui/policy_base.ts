@@ -123,11 +123,13 @@ export class Page {
         getRequiredElement<HTMLInputElement>('search-field-input');
     filterElement.focus();
 
-    filterElement.addEventListener('search', () => {
+    const onFilterChanged = () => {
       for (const policyTable in this.policyTables) {
         this.policyTables[policyTable]!.setFilterPattern(filterElement.value);
       }
-    });
+    };
+    filterElement.addEventListener('search', onFilterChanged);
+    filterElement.addEventListener('input', onFilterChanged);
 
     const reloadPoliciesButton =
         getRequiredElement<HTMLButtonElement>('reload-policies');
