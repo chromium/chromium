@@ -78,7 +78,8 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   SetCanMinimize(!delegate_ || delegate_->can_minimize());
   SetCanResize(!delegate_ || delegate_->can_resize());
   SetModalType(GetDialogModalType());
-  web_view_->set_allow_accelerators(true);
+  web_view_->set_allow_accelerators(!delegate_ ||
+                                    delegate_->allow_accelerators());
   AddChildViewRaw(web_view_.get());
   set_contents_view(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());

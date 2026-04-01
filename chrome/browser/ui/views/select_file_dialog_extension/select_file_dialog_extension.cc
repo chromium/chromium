@@ -203,6 +203,10 @@ class SystemFilesAppDialogDelegate : public ash::SystemWebDialogDelegate {
     RegisterOnDialogClosedCallback(
         base::BindOnce(&SystemFilesAppDialogDelegate::OnDialogClosing,
                        base::Unretained(this)));
+    // Disable early accelerator processing to give the webcontent the first
+    // chance to handle keyboard events (e.g. Ctrl+F). Unhandled events will be
+    // forwarded back to the widget.
+    set_allow_accelerators(false);
   }
   ~SystemFilesAppDialogDelegate() override = default;
 

@@ -108,8 +108,10 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
 
   WebDialogView* web_dialog_view() { return web_dialog_view_; }
 
-  views::WebView* web_view() {
-    return web_dialog_view_ ? web_dialog_view_->web_view_.get() : nullptr;
+  views::WebView* web_view() { return GetWebViewFor(web_dialog_view_); }
+
+  views::WebView* GetWebViewFor(WebDialogView* view) {
+    return view ? view->web_view_.get() : nullptr;
   }
 
   ui::WebDialogDelegate* web_view_delegate() {
@@ -121,6 +123,8 @@ class WebDialogViewUnitTest : public views::test::WidgetTest {
   }
 
   void ResetWebDialogDelegate() { web_dialog_delegate_.reset(); }
+
+  content::BrowserContext* browser_context() { return browser_context_.get(); }
 
  protected:
   std::unique_ptr<content::TestWebContents> CreateWebContents() const {
@@ -225,6 +229,19 @@ TEST_F(WebDialogViewUnitTest, RootViewAccessibleName) {
 
 TEST_F(WebDialogViewUnitTest, MetadataTest) {
   test::TestViewMetadata(web_dialog_view());
+}
+
+TEST_F(WebDialogViewUnitTest, AllowAccelerators) {
+  // By default, allow_accelerators should be true.
+  EXPECT_TRUE(web_view()->allow_accelerators());
+
+  // Test with allow_aceelerators set to false.
+  auto delegate = std::make_unique<TestWebDialogViewWebDialogDelegate>();
+  delegate->set_allow_accelerators(false);
+  auto web_dialog_view = std::make_unique<WebDialogView>(
+      browser_context(), delegate.get(),
+      std::make_unique<ui::test::TestWebContentsHandler>());
+  EXPECT_FALSE(GetWebViewFor(web_dialog_view.get())->allow_accelerators());
 }
 
 }  // namespace views

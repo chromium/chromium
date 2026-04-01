@@ -216,6 +216,7 @@ class WEBVIEW_EXPORT WebView : public View,
   void set_allow_accelerators(bool allow_accelerators) {
     allow_accelerators_ = allow_accelerators;
   }
+  bool allow_accelerators() const { return allow_accelerators_; }
 
   // When `lock = true` changes in web contents will not reset the override.
   // Default is false.

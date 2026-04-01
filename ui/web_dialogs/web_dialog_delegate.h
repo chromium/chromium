@@ -133,6 +133,13 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
     web_view_element_id_ = web_view_element_id;
   }
 
+  // Returns true if the dialog should allow accelerators to be processed
+  // by the FocusManager.
+  bool allow_accelerators() const { return allow_accelerators_; }
+  void set_allow_accelerators(bool allow_accelerators) {
+    allow_accelerators_ = allow_accelerators;
+  }
+
   // A callback to notify the delegate that |source|'s loading state has
   // changed.
   virtual void OnLoadingStateChanged(content::WebContents* source) {}
@@ -294,6 +301,7 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
  private:
   base::flat_map<Accelerator, AcceleratorHandler> accelerators_;
   std::optional<std::u16string> accessible_title_;
+  bool allow_accelerators_ = true;
   bool allow_default_context_menu_ = true;
   bool allow_web_contents_creation_ = true;
   std::string args_;
