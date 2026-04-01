@@ -648,7 +648,9 @@ void GlicInstanceImpl::ResumeActorTask(
                                        std::move(callback));
 }
 
-void GlicInstanceImpl::InterruptActorTask(actor::TaskId task_id) {
+void GlicInstanceImpl::InterruptActorTask(
+    actor::TaskId task_id,
+    std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
   CHECK(actor_task_manager_);
   instance_metrics_.InterruptActorTask();
   actor_task_manager_->InterruptActorTask(task_id);

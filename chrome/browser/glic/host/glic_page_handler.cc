@@ -1294,13 +1294,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         actor::TaskId(task_id), *context_options, std::move(callback));
   }
 
-  void InterruptActorTask(int32_t task_id) override {
+  void InterruptActorTask(int32_t task_id,
+                          std::optional<glic::mojom::ActorTaskInterruptReason>
+                              interrupt_reason) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
       receiver_.ReportBadMessage(
           "InterruptActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().InterruptActorTask(actor::TaskId(task_id));
+    host().instance_delegate().InterruptActorTask(actor::TaskId(task_id),
+                                                  interrupt_reason);
   }
 
   void UninterruptActorTask(int32_t task_id) override {

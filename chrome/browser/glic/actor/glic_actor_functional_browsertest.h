@@ -116,7 +116,9 @@ class GlicActorFunctionalBrowserTestBase
       base::Value context_options);
 
   // Helper to call the InterruptActorTask TS API.
-  void InterruptActorTask(TaskId task_id);
+  void InterruptActorTask(TaskId task_id,
+                          std::optional<glic::mojom::ActorTaskInterruptReason>
+                              reason = std::nullopt);
 
   // Helper to call the UninterruptActorTask TS API.
   void UninterruptActorTask(TaskId task_id);

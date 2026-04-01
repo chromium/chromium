@@ -11,7 +11,7 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {ContentSettingsType} from '../../content_settings_types.mojom-webui.js';
 import type {CaptureRegionObserver, CaptureRegionResult as CaptureRegionResultMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabDataHandlerInterface, TabDataMojoType, TabFaviconHandlerInterface, WebClientHandlerInterface} from '../../glic.mojom-webui.js';
 import {CaptureRegionErrorReason as CaptureRegionErrorReasonMojo, CaptureRegionObserverReceiver, PinCandidatesObserverReceiver, ResponseStopCause as ResponseStopCauseMojo, SettingsPageField as SettingsPageFieldMojo, SkillSource as SkillSourceMojo, TabDataHandlerReceiver, TabFaviconHandlerReceiver, WebClientReceiver} from '../../glic.mojom-webui.js';
-import type {ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
+import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskStopReason, CancelActionsResult, ConversationInfo, CreateSkillRequest, DraggableArea, FormFillingResponse, GetPinCandidatesOptions, Journal, MicrophoneStatus, OnResponseStoppedDetails, OpenSettingsOptions, PinTabsOptions, Screenshot, ScrollToParams, Skill, SkillsWebClientEvent, TabContextOptions, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../../glic_api/glic_api.js';
 import {CaptureScreenshotErrorReason, CreateTaskErrorReason, PerformActionsErrorReason, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
@@ -380,8 +380,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserInterruptActorTask(request: {
     taskId: number,
+    interruptReason?: ActorTaskInterruptReason,
   }): void {
-    this.handler.interruptActorTask(request.taskId);
+    this.handler.interruptActorTask(
+        request.taskId, enumFromClient(request.interruptReason));
   }
 
   glicBrowserUninterruptActorTask(request: {

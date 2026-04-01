@@ -251,7 +251,9 @@ class GlicKeyedService : public KeyedService,
       actor::TaskId task_id,
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
-  void InterruptActorTask(actor::TaskId task_id) override;
+  void InterruptActorTask(
+      actor::TaskId task_id,
+      std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
   void UninterruptActorTask(actor::TaskId task_id) override;
   void CreateActorTab(
       actor::TaskId task_id,

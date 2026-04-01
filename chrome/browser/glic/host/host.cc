@@ -88,7 +88,9 @@ class EmptyInstanceDelegate : public Host::InstanceDelegate {
                            callback) override {
     std::move(callback).Run(mojom::GetContextResultWithActionResultCode::New());
   }
-  void InterruptActorTask(actor::TaskId task_id) override {}
+  void InterruptActorTask(actor::TaskId task_id,
+                          std::optional<mojom::ActorTaskInterruptReason>
+                              interrupt_reason) override {}
   void UninterruptActorTask(actor::TaskId task_id) override {}
   void CreateActorTab(
       actor::TaskId task_id,

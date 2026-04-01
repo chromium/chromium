@@ -419,6 +419,27 @@ enum ActorTaskStopReason {
 };
 
 // @generate glic_api
+// The reason/source of why an actor task was interrupted.
+[Stable, Extensible]
+enum ActorTaskInterruptReason {
+  // Actor task is interrupted for an unknown reason.
+  [Default] kUnknownReason = 0,
+  // Actor task is complete.
+  kTaskComplete = 1,
+  // Actor task was waiting for user input.
+  kWaitingUserInput = 2,
+  // Actor task was waiting for user to provide clarifications on the current
+  // task.
+  kWaitingUserClarification = 3,
+  // Actor task was waiting for user to confirm an action.
+  kWaitingUserConfirmation = 4,
+  // Actor task was waiting for user to take over.
+  kWaitingUserTakeOver = 5,
+  // Actor task was waiting for irrelevant user input.
+  kWaitingIrrelevantUserInput = 6,
+};
+
+// @generate glic_api
 // Reason why capturing desktop screenshot failed. NOTE: This may be extended in
 // the future so avoid using complete switches on the currently used enum
 // values.
@@ -1147,10 +1168,11 @@ interface WebClientHandler {
 
   // Interrupts the task associated with the given id. This is
   // different than pausing a task since this still prevents user
-  // interaction.
+  // interaction. The interrupt_reason indicates the reason for why the
+  // interrupt was initiated.
   // No-op if a task with the given id does not exist.
   // No-op if the state of the task not in the reflecting state.
-  InterruptActorTask(int32 task_id);
+  InterruptActorTask(int32 task_id, ActorTaskInterruptReason? interrupt_reason);
 
   // Indicates the task associated with the given id is no longer waiting
   // on user input.

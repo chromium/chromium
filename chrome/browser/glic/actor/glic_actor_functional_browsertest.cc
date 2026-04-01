@@ -229,9 +229,17 @@ GlicActorFunctionalBrowserTestBase::ResumeActorTask(
       static_cast<::actor::mojom::ActionResultCode>(action_result_int));
 }
 
-void GlicActorFunctionalBrowserTestBase::InterruptActorTask(TaskId task_id) {
-  std::string script = "window.client.browser.interruptActorTask($1);";
-  EXPECT_OK(EvalJsInGlic(content::JsReplace(script, task_id.value())));
+void GlicActorFunctionalBrowserTestBase::InterruptActorTask(
+    TaskId task_id,
+    std::optional<glic::mojom::ActorTaskInterruptReason> reason) {
+  if (reason.has_value()) {
+    EXPECT_OK(EvalJsInGlic(content::JsReplace(
+        "window.client.browser.interruptActorTask($1, $2);", task_id.value(),
+        static_cast<int>(*reason))));
+  } else {
+    EXPECT_OK(EvalJsInGlic(content::JsReplace(
+        "window.client.browser.interruptActorTask($1);", task_id.value())));
+  }
 }
 
 void GlicActorFunctionalBrowserTestBase::UninterruptActorTask(TaskId task_id) {

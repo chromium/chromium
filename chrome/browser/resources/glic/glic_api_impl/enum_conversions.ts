@@ -12,6 +12,12 @@ import type * as mojomActor from '../actor_webui.mojom-webui.js';
 import type * as glicApi from '../glic_api/glic_api.js';
 
 export function enumToClient(
+  val: mojomGlic.ActorTaskInterruptReason):
+    glicApi.ActorTaskInterruptReason;
+export function enumToClient(
+  val: mojomGlic.ActorTaskInterruptReason | null):
+    glicApi.ActorTaskInterruptReason | undefined;
+export function enumToClient(
   val: mojomGlic.ActorTaskPauseReason):
     glicApi.ActorTaskPauseReason;
 export function enumToClient(
@@ -231,6 +237,12 @@ export function enumToClient(val: any): any {
   return val ?? undefined;
 }
 
+export function enumFromClient(
+  val: glicApi.ActorTaskInterruptReason):
+    mojomGlic.ActorTaskInterruptReason;
+export function enumFromClient(
+  val: glicApi.ActorTaskInterruptReason | undefined):
+    mojomGlic.ActorTaskInterruptReason | null;
 export function enumFromClient(
   val: glicApi.ActorTaskPauseReason):
     mojomGlic.ActorTaskPauseReason;

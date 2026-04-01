@@ -373,5 +373,46 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
   EXPECT_EQ(ActorTask::State::kFinished, task_completion_state.Get());
 }
 
+IN_PROC_BROWSER_TEST_F(GlicActorTaskLifecycleFunctionalBrowserTest,
+                       InterruptWithReasons) {
+  ASSERT_OK_AND_ASSIGN(TaskId task_id, CreateTask());
+  EXPECT_NE(task_id, TaskId());
+
+  TestFuture<ActorTask::State> task_completion_state;
+  base::CallbackListSubscription subscription =
+      CreateTaskCompletionSubscription(task_id, task_completion_state);
+
+  // Use a long wait to ensure we can interrupt before it completes.
+  Actions wait_action =
+      ::actor::MakeWait(kLongWaitTime, active_tab()->GetHandle(), task_id);
+  std::unique_ptr<AsyncActionWaiter> action_waiter =
+      PerformActionsAsync(wait_action);
+
+  // Wait for the task to start acting before interrupting.
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  // Test interrupting with NO reason.
+  InterruptActorTask(task_id);
+  WaitForTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  UninterruptActorTask(task_id);
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  // Test interrupting with a specific reason.
+  InterruptActorTask(task_id,
+                     mojom::ActorTaskInterruptReason::kWaitingUserInput);
+  WaitForTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  UninterruptActorTask(task_id);
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  // Test interrupting with another specific reason.
+  InterruptActorTask(task_id,
+                     mojom::ActorTaskInterruptReason::kWaitingUserConfirmation);
+  WaitForTaskState(task_id, ActorTask::State::kWaitingOnUser);
+  UninterruptActorTask(task_id);
+  WaitForTaskState(task_id, ActorTask::State::kActing);
+
+  StopActorTask(task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+}
+
 }  // namespace
 }  // namespace glic::actor

@@ -743,7 +743,9 @@ void GlicKeyedService::ResumeActorTask(
   }
 }
 
-void GlicKeyedService::InterruptActorTask(actor::TaskId task_id) {
+void GlicKeyedService::InterruptActorTask(
+    actor::TaskId task_id,
+    std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
   if (actor_task_manager_) {
     actor_task_manager_->InterruptActorTask(task_id);
   }
