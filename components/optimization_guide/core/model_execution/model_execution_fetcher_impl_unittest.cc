@@ -89,13 +89,13 @@ class ModelExecutionFetcherImplTest : public testing::Test {
     RunUntilIdle();
   }
 
-  void VerifyHasPendingFetchRequest() {
+  void VerifyHasPendingFetchRequest(bool expect_key = false) {
     EXPECT_GE(test_url_loader_factory_.NumPending(), 1);
     auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
     EXPECT_EQ(pending_request->request.method, "POST");
     std::string key_value;
-    EXPECT_TRUE(net::GetValueForKeyInQuery(pending_request->request.url, "key",
-                                           &key_value));
+    EXPECT_EQ(expect_key, net::GetValueForKeyInQuery(
+                              pending_request->request.url, "key", &key_value));
     last_authorization_request_header_.clear();
     if (std::optional<std::string> header =
             pending_request->request.headers.GetHeader(
@@ -415,6 +415,32 @@ TEST_F(ModelExecutionFetcherImplTest, TestNoUserSignIn) {
       FetcherRequestStatus::kUserNotSignedIn, 1);
   EXPECT_EQ(ModelExecutionError::kPermissionDenied,
             last_execute_response_->error().error());
+}
+
+TEST_F(ModelExecutionFetcherImplTest,
+       TestSuccessfulResponseNoAccessTokenRequired) {
+  ExecuteModel(ModelBasedCapabilityKey::kScamDetection,
+               BuildTestMessage("foo request"));
+  VerifyHasPendingFetchRequest(/*expect_key=*/true);
+
+  SimulateSuccessfulResponse(
+      BuildTestExecuteResponse(BuildTestMessage("foo response")));
+
+  EXPECT_EQ(
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
+      last_execute_request_->feature());
+  EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
+            last_execute_request_->request_metadata().type_url());
+  EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
+            last_execute_response_->value().response_metadata().type_url());
+  EXPECT_EQ("foo request", ParsedAnyMetadata<TestMessage>(
+                               last_execute_request_->request_metadata())
+                               ->test());
+  EXPECT_EQ("foo response",
+            ParsedAnyMetadata<TestMessage>(
+                last_execute_response_->value().response_metadata())
+                ->test());
+  EXPECT_TRUE(last_server_timeout_header_.empty());
 }
 
 }  // namespace optimization_guide
