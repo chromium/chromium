@@ -190,4 +190,21 @@ void HTMLDataListElement::MoveActiveOption(Direction direction) {
   }
 }
 
+HTMLInputElement* HTMLDataListElement::ComboboxInput() {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    return nullptr;
+  }
+
+  if (PopoverData* popover_data = GetPopoverData()) {
+    if (auto* input = DynamicTo<HTMLInputElement>(popover_data->invoker())) {
+      if (input->DataList() == this && IsAppearanceBase() &&
+          input->IsAppearanceBase()) {
+        return input;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 }  // namespace blink

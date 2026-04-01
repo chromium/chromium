@@ -266,16 +266,8 @@ bool TextFieldInputType::HandleKeydownForCustomizableCombobox(
   if (datalist->popoverOpen() && !(event.GetModifiers() & ignore_modifiers)) {
     CHECK(datalist->ActiveOption());
     if (key == keywords::kCapitalEnter) {
-      GetElement().SetValue(
-          datalist->ActiveOption()->DisplayLabel(),
-          TextFieldEventBehavior::kDispatchInputAndChangeEvent,
-          TextControlSetValueSelection::kSetSelectionToEnd,
-          WebAutofillState::kNotFilled);
-      datalist->HidePopoverInternal(
-          /*invoker=*/&GetElement(), HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-          /*exception_state=*/nullptr);
-      GetElement().DispatchFormControlChangeEvent();
+      datalist->ActiveOption()->ChooseOptionForCombobox(GetElement(),
+                                                        *datalist);
       return true;
     } else if (key == keywords::kArrowUp) {
       // TODO(crbug.com/485286877): Consider looking at other arrow keys for
@@ -400,10 +392,19 @@ void TextFieldInputType::HandleBlurEvent() {
     auto* datalist = input.DataList();
     CHECK(datalist);
     if (datalist->popoverOpen()) {
-      datalist->HidePopoverInternal(
-          &input, HidePopoverFocusBehavior::kNone,
-          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
-          /*exception_state=*/nullptr);
+      Element* new_focused_element = input.GetDocument().FocusedElement();
+      // Don't close the popover if focus moved to something inside of the
+      // popover, or if focus was reset (which happens when clicking in
+      // non-focusable elements inside the datalist). This makes sure that
+      // clicking on an option inside the datalist works correctly without
+      // closing the datalist before the click is finished.
+      if (new_focused_element &&
+          !FlatTreeTraversal::Contains(*datalist, *new_focused_element)) {
+        datalist->HidePopoverInternal(
+            &input, HidePopoverFocusBehavior::kNone,
+            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+            /*exception_state=*/nullptr);
+      }
     }
   }
 

@@ -70,6 +70,11 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
 
   void MoveActiveOption(Direction);
 
+  // If this datalist is being shown as a popover with base appearance for a
+  // base appearance input element (meaning that it's part of a customizable
+  // combobox), then this method will return that input element, otherwise null.
+  HTMLInputElement* ComboboxInput();
+
   void Trace(Visitor*) const override;
 
  protected:

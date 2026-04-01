@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
@@ -648,6 +649,16 @@ bool HTMLOptionElement::IsVisibleInViewport() {
                                           listbox_top + listbox_rect.Height();
 }
 void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
+  if (nearest_ancestor_datalist_ && event.type() == event_type_names::kClick &&
+      RuntimeEnabledFeatures::CustomizableComboboxEnabled()) {
+    if (HTMLInputElement* combobox_input =
+            nearest_ancestor_datalist_->ComboboxInput()) {
+      ChooseOptionForCombobox(*combobox_input, *nearest_ancestor_datalist_);
+      event.SetDefaultHandled();
+      return;
+    }
+  }
+
   auto* select = OwnerSelectElement();
   if (!select) {
     return;
@@ -874,6 +885,20 @@ void HTMLOptionElement::ChooseOption(Event& event) {
   CHECK(!select->UsesMenuList() || select->PickerIsPopover());
   select->SelectOptionFromPopoverPickerOrListbox(this);
   event.SetDefaultHandled();
+}
+
+void HTMLOptionElement::ChooseOptionForCombobox(HTMLInputElement& input,
+                                                HTMLDataListElement& datalist) {
+  CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled());
+  CHECK_EQ(input.DataList(), &datalist);
+  input.SetValue(datalist.ActiveOption()->DisplayLabel(),
+                 TextFieldEventBehavior::kDispatchInputAndChangeEvent,
+                 TextControlSetValueSelection::kSetSelectionToEnd,
+                 WebAutofillState::kNotFilled);
+  datalist.HidePopoverInternal(
+      /*invoker=*/&input, HidePopoverFocusBehavior::kNone,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      /*exception_state=*/nullptr);
 }
 
 void HTMLOptionElement::FinishParsingChildren() {
