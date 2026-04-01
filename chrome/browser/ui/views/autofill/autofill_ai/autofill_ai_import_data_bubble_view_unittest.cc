@@ -112,8 +112,8 @@ void AutofillAiImportDataBubbleViewTest::CreateViewAndShow() {
   ON_CALL(mock_controller(), CloseOnAccept()).WillByDefault(Return(true));
 
   auto view_unique = std::make_unique<AutofillAiImportDataBubbleView>(
-      anchor_widget_->GetContentsView(), web_contents_.get(),
-      &mock_controller_);
+      views::BubbleAnchor(anchor_widget_->GetContentsView()),
+      web_contents_.get(), &mock_controller_);
   view_ = view_unique.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(view_unique))->Show();
 }

@@ -73,8 +73,9 @@ class QRCodeGeneratorBubbleUITest : public ChromeViewsTestBase {
         anchor_widget_->SetContentsView(std::make_unique<views::View>());
     CHECK(anchor_view_);
     auto bubble = std::make_unique<QRCodeGeneratorBubble>(
-        anchor_view_, web_contents_->GetWeakPtr(), base::DoNothing(),
-        base::DoNothing(), GURL("https://www.chromium.org/a"));
+        views::BubbleAnchor(anchor_view_), web_contents_->GetWeakPtr(),
+        base::DoNothing(), base::DoNothing(),
+        GURL("https://www.chromium.org/a"));
 
     bubble_ = bubble.get();
     // TODO(crbug.com/40232479) - We can probably clean this up and

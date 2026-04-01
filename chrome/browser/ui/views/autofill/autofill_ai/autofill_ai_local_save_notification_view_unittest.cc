@@ -80,8 +80,8 @@ void AutofillAiLocalSaveNotificationViewTest::CreateViewAndShow() {
   anchor_widget_->Show();
 
   auto view_unique = std::make_unique<AutofillAiLocalSaveNotificationView>(
-      anchor_widget_->GetContentsView(), web_contents_.get(),
-      &mock_controller_);
+      views::BubbleAnchor(anchor_widget_->GetContentsView()),
+      web_contents_.get(), &mock_controller_);
   view_ = view_unique.get();
   views::BubbleDialogDelegateView::CreateBubble(std::move(view_unique))->Show();
 }

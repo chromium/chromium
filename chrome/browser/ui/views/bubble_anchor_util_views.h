@@ -17,7 +17,7 @@ namespace bubble_anchor_util {
 
 struct AnchorConfiguration {
   // The bubble anchor.
-  views::BubbleAnchor anchor = nullptr;
+  views::BubbleAnchor anchor;
 
   // The element to be highlighted, or nullopt if it should not be used.
   std::optional<ui::ElementIdentifier> highlighted_element;

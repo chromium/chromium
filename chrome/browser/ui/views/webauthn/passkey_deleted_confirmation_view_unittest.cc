@@ -23,7 +23,7 @@ class PasskeyDeletedConfirmationViewTest : public PasswordBubbleViewTestBase {
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
     view_ = new PasskeyDeletedConfirmationView(
-        web_contents(), anchor_view(),
+        web_contents(), views::BubbleAnchor(anchor_view()),
         LocationBarBubbleDelegateView::AUTOMATIC);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }

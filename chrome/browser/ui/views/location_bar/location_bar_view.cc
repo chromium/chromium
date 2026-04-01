@@ -1244,7 +1244,8 @@ std::optional<bubble_anchor_util::AnchorConfiguration>
 LocationBarView::GetChipAnchor() {
   auto* chip = GetChipController()->chip();
   if (chip->GetVisible()) {
-    return {{chip, PermissionChipView::kPermissionRequestChipElementId,
+    return {{views::BubbleAnchor(chip),
+             PermissionChipView::kPermissionRequestChipElementId,
              views::BubbleBorder::TOP_LEFT}};
   }
   return std::nullopt;
@@ -2267,7 +2268,8 @@ bool LocationBarView::ShowPageInfoDialog() {
   DCHECK(GetWidget());
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
-      PageInfoBubbleSpecification::Builder(this, GetWidget()->GetNativeWindow(),
+      PageInfoBubbleSpecification::Builder(views::BubbleAnchor(this),
+                                           GetWidget()->GetNativeWindow(),
                                            contents, entry->GetVirtualURL())
           .AddInitializedCallback(
               GetPageInfoDialogCreatedCallbackForTesting()

@@ -93,7 +93,8 @@ ManagePasswordsViewTest::ManagePasswordsViewTest() {
 void ManagePasswordsViewTest::CreateViewAndShow() {
   CreateAnchorViewAndShow();
 
-  view_ = new ManagePasswordsView(web_contents(), anchor_view());
+  view_ = new ManagePasswordsView(web_contents(),
+                                  views::BubbleAnchor(anchor_view()));
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   view_widget_ = view_->GetWidget()->GetWeakPtr();
 }

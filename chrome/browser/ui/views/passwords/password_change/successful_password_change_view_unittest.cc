@@ -56,7 +56,8 @@ class SuccessfulPasswordChangeViewTest : public PasswordBubbleViewTestBase {
   void CreateAndShowView() {
     CreateAnchorViewAndShow();
 
-    view_ = new SuccessfulPasswordChangeView(web_contents(), anchor_view());
+    view_ = new SuccessfulPasswordChangeView(
+        web_contents(), views::BubbleAnchor(anchor_view()));
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 

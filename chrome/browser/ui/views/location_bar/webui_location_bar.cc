@@ -121,7 +121,7 @@ LocationBarModel* WebUILocationBar::GetLocationBarModel() {
 std::optional<bubble_anchor_util::AnchorConfiguration>
 WebUILocationBar::GetChipAnchor() {
   NOTIMPLEMENTED();
-  return {{nullptr, std::nullopt, views::BubbleBorder::TOP_LEFT}};
+  return {{views::BubbleAnchor(), std::nullopt, views::BubbleBorder::TOP_LEFT}};
 }
 
 ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {

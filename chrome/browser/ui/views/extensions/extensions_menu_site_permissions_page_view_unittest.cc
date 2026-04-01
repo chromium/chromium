@@ -85,7 +85,8 @@ ExtensionsSitePermissionsPageViewUnitTest::
 
 void ExtensionsSitePermissionsPageViewUnitTest::ShowSitePermissionsPage(
     extensions::ExtensionId extension_id) {
-  menu_coordinator()->Show(extensions_button(), extensions_container());
+  menu_coordinator()->Show(views::BubbleAnchor(extensions_button()),
+                           extensions_container());
   menu_coordinator()->GetDelegateForTesting()->OpenSitePermissionsPage(
       extension_id);
 }

@@ -51,6 +51,11 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
                                 content::WebContents* web_contents,
                                 bool autosize = false);
 
+  // Compat alias for old type.
+  LocationBarBubbleDelegateView(views::View* anchor_view,
+                                content::WebContents* web_contents,
+                                bool autosize = false);
+
   LocationBarBubbleDelegateView(const LocationBarBubbleDelegateView&) = delete;
   LocationBarBubbleDelegateView& operator=(
       const LocationBarBubbleDelegateView&) = delete;

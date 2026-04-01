@@ -266,7 +266,7 @@ ToolbarButton* WebUIPinnedToolbarActions::GetCastButton() {
 views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
     actions::ActionId action_id) {
   NOTIMPLEMENTED();
-  return nullptr;
+  return views::BubbleAnchor();
 }
 
 void WebUIPinnedToolbarActions::SetActionElementIdentifier(

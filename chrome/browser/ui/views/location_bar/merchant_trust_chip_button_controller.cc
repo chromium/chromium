@@ -166,8 +166,9 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          location_icon_view_, chip_button_->GetWidget()->GetNativeWindow(),
-          web_contents(), entry->GetVirtualURL())
+          views::BubbleAnchor(location_icon_view_),
+          chip_button_->GetWidget()->GetNativeWindow(), web_contents(),
+          entry->GetVirtualURL())
           .AddInitializedCallback(
               GetPageInfoDialogCreatedCallbackForTesting()
                   ? std::move(GetPageInfoDialogCreatedCallbackForTesting())

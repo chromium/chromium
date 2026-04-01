@@ -70,7 +70,7 @@ class IOSPromoBubbleBrowserTest
           browser_view->toolbar_button_provider();
 
       PromoType promo_type = GetParam();
-      views::BubbleAnchor anchor = nullptr;
+      views::BubbleAnchor anchor;
       views::Button* highlighted_button = nullptr;
       std::optional<ui::ElementIdentifier> highlighted_element;
 
@@ -104,7 +104,8 @@ class IOSPromoBubbleBrowserTest
           break;
         case PromoType::kEnhancedBrowsing:
         case PromoType::kLens:
-          anchor = browser_view->toolbar()->app_menu_button();
+          anchor =
+              views::BubbleAnchor(browser_view->toolbar()->app_menu_button());
           break;
         default:
           NOTREACHED();

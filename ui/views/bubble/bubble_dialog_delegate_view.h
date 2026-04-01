@@ -233,7 +233,7 @@ FORWARD_DECLARE_TEST(InteractionTestUtilViewsTest, Confirm);
 //   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
 //   ...
 //
-using BubbleAnchor = std::variant<View*, ui::TrackedElement*, std::nullptr_t>;
+using BubbleAnchor = std::variant<std::nullptr_t, View*, ui::TrackedElement*>;
 
 class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
  public:

@@ -152,8 +152,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesToPage) {
 
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
-          *browser(), anchor_widget()->GetContentsView(), entry,
-          mock_callback.Get());
+          *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
+          entry, mock_callback.Get());
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();
@@ -172,8 +172,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewTest, ButtonNavigatesWithScrollPosition) {
 
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
-          *browser(), anchor_widget()->GetContentsView(), entry,
-          mock_callback.Get());
+          *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
+          entry, mock_callback.Get());
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();
@@ -193,8 +193,8 @@ TEST_F(SendTabToSelfToolbarBubbleViewScrollPositionDisabledTest,
 
   SendTabToSelfToolbarBubbleView* bubble =
       SendTabToSelfToolbarBubbleView::CreateBubble(
-          *browser(), anchor_widget()->GetContentsView(), entry,
-          mock_callback.Get());
+          *browser(), views::BubbleAnchor(anchor_widget()->GetContentsView()),
+          entry, mock_callback.Get());
   views::test::WidgetDestroyedWaiter waiter(bubble->GetWidget());
   bubble->OpenInNewTab();
   waiter.Wait();

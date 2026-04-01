@@ -30,7 +30,8 @@ void PostSaveCompromisedBubbleViewTest::CreateViewAndShow(
   CreateAnchorViewAndShow();
 
   EXPECT_CALL(*model_delegate_mock(), GetState).WillOnce(Return(state));
-  view_ = new PostSaveCompromisedBubbleView(web_contents(), anchor_view());
+  view_ = new PostSaveCompromisedBubbleView(web_contents(),
+                                            views::BubbleAnchor(anchor_view()));
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

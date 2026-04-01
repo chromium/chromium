@@ -75,7 +75,7 @@ ExtensionsMenuView::ExtensionsMenuView(
     Browser* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views)
-    : BubbleDialogDelegateView(anchor_view,
+    : BubbleDialogDelegateView(views::BubbleAnchor(anchor_view),
                                views::BubbleBorder::Arrow::TOP_RIGHT),
       browser_(browser),
       extensions_container_(CHECK_DEREF(extensions_container)),

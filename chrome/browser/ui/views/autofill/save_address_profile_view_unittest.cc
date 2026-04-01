@@ -131,9 +131,9 @@ void SaveAddressProfileViewTest::CreateViewAndShow(
   anchor_widget_->Init(std::move(params));
   anchor_widget_->Show();
 
-  view_ = new SaveAddressProfileView(anchor_widget_->GetContentsView(),
-                                     std::move(controller),
-                                     test_web_contents_.get());
+  view_ = new SaveAddressProfileView(
+      views::BubbleAnchor(anchor_widget_->GetContentsView()),
+      std::move(controller), test_web_contents_.get());
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

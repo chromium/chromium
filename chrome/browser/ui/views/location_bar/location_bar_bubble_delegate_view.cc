@@ -114,6 +114,14 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
   SetAccessibleWindowRole(GetAccessibleRoleForReason(display_reason_));
 }
 
+LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
+    views::View* anchor_view,
+    content::WebContents* web_contents,
+    bool autosize)
+    : LocationBarBubbleDelegateView(views::BubbleAnchor(anchor_view),
+                                    web_contents,
+                                    autosize) {}
+
 LocationBarBubbleDelegateView::~LocationBarBubbleDelegateView() {
   CHECK(!fullscreen_controller_.WasInvalidated());
 }

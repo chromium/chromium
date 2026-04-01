@@ -23,8 +23,8 @@ class PasskeySavedConfirmationViewTest : public PasswordBubbleViewTestBase {
 
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
-    view_ =
-        new PasskeySavedConfirmationView(web_contents(), anchor_view(), kRpId);
+    view_ = new PasskeySavedConfirmationView(
+        web_contents(), views::BubbleAnchor(anchor_view()), kRpId);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 

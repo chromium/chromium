@@ -1114,7 +1114,8 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          location_icon_view_, GetWidget()->GetNativeWindow(), contents,
+          views::BubbleAnchor(location_icon_view_),
+          GetWidget()->GetNativeWindow(), contents,
           contents->GetLastCommittedURL())
           .HideExtendedSiteInfo()
           .Build();

@@ -46,7 +46,8 @@ void MoveToAccountStoreBubbleViewTest::CreateViewAndShow() {
 
   CreateAnchorViewAndShow();
 
-  view_ = new MoveToAccountStoreBubbleView(web_contents(), anchor_view());
+  view_ = new MoveToAccountStoreBubbleView(web_contents(),
+                                           views::BubbleAnchor(anchor_view()));
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

@@ -101,19 +101,20 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
       break;
     case PromoType::kEnhancedBrowsing:
       IOSPromoBubble::ShowPromoBubble(
-          {browser_view->toolbar()->app_menu_button()},
+          {views::BubbleAnchor(browser_view->toolbar()->app_menu_button())},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kEnhancedBrowsing, bubble_type);
       break;
     case PromoType::kLens: {
       SidePanel* side_panel = browser_view->contents_height_side_panel();
-      IOSPromoBubble::Anchor anchor = {side_panel};
+      IOSPromoBubble::Anchor anchor = {views::BubbleAnchor(side_panel)};
       if (side_panel) {
         anchor.arrow = side_panel->IsRightAligned()
                            ? views::BubbleBorder::LEFT_CENTER
                            : views::BubbleBorder::RIGHT_CENTER;
       } else {
-        anchor.anchor_base = browser_view->toolbar()->app_menu_button();
+        anchor.anchor_base =
+            views::BubbleAnchor(browser_view->toolbar()->app_menu_button());
       }
       IOSPromoBubble::ShowPromoBubble(anchor,
                                       /*highlighted_button=*/nullptr,
@@ -123,14 +124,16 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
     }
     case PromoType::kTabGroups: {
       IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetAvatarToolbarButton()},
+          {views::BubbleAnchor(
+              toolbar_button_provider->GetAvatarToolbarButton())},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kTabGroups, bubble_type);
       break;
     }
     case PromoType::kPriceTracking: {
       IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetAvatarToolbarButton()},
+          {views::BubbleAnchor(
+              toolbar_button_provider->GetAvatarToolbarButton())},
           /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
           profile, PromoType::kPriceTracking, bubble_type);
       break;

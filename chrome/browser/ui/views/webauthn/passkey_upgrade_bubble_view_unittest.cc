@@ -31,8 +31,8 @@ class PasskeyUpgradeBubbleViewTest : public PasswordBubbleViewTestBase {
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
     view_ = new PasskeyUpgradeBubbleView(
-        web_contents(), anchor_view(), LocationBarBubbleDelegateView::AUTOMATIC,
-        kRpId);
+        web_contents(), views::BubbleAnchor(anchor_view()),
+        LocationBarBubbleDelegateView::AUTOMATIC, kRpId);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 

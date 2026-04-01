@@ -114,7 +114,7 @@ TEST_F(MemorySaverBubbleViewTest, ShouldLogMetricsOnDialogDismiss) {
   // Open bubble
   StubMemorySaverBubbleObserver observer;
   auto* bubble = MemorySaverBubbleView::ShowBubble(
-      browser(), GetPageActionIconView(), &observer);
+      browser(), views::BubbleAnchor(GetPageActionIconView()), &observer);
   ASSERT_NE(GetBubbleView(), nullptr);
 
   // Close bubble

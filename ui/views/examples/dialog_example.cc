@@ -91,7 +91,9 @@ class DialogExampleBubble
     : public DialogExampleDelegate<BubbleDialogDelegateView> {
  public:
   DialogExampleBubble(DialogExample* parent, View* anchor)
-      : DialogExampleDelegate(parent, anchor, BubbleBorder::TOP_LEFT) {
+      : DialogExampleDelegate(parent,
+                              views::BubbleAnchor(anchor),
+                              BubbleBorder::TOP_LEFT) {
     set_close_on_deactivate(!parent->persistent_bubble_checked());
   }
 

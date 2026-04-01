@@ -874,7 +874,7 @@ ToolbarButton* PinnedToolbarActionsContainer::GetCastButton() {
 
 views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(
     actions::ActionId action_id) {
-  return GetButtonFor(action_id);
+  return views::BubbleAnchor(GetButtonFor(action_id));
 }
 
 void PinnedToolbarActionsContainer::SetActionElementIdentifier(

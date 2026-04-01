@@ -189,8 +189,9 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
   void CreateAndShowBubble() {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
     bubble_ = new TranslateBubbleView(
-        anchor_widget_->GetContentsView(), std::move(model),
-        translate::TranslateErrors::NONE, nullptr, base::DoNothing());
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        std::move(model), translate::TranslateErrors::NONE, nullptr,
+        base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
 

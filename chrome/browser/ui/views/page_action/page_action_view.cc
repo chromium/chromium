@@ -358,7 +358,7 @@ void PageActionView::CreateAndShowAnchoredMessage(
   }
 
   auto message_delegate = std::make_unique<AnchoredMessageBubbleView>(
-      this, model,
+      views::BubbleAnchor(this), model,
       base::BindRepeating(&PageActionView::AnchoredMessageClick,
                           base::Unretained(this)),
       base::BindRepeating(&PageActionView::CloseAnchoredMessage,

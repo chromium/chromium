@@ -95,8 +95,9 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   views::View* anchor_view = anchor_widget->GetContentsView();
   controller->StartPartialTranslate(
-      browser()->tab_strip_model()->GetActiveWebContents(), anchor_view,
-      std::nullopt, "fr", "en", std::u16string());
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      views::BubbleAnchor(anchor_view), std::nullopt, "fr", "en",
+      std::u16string());
   base::RunLoop().RunUntilIdle();
   EXPECT_THAT(GetPartialTranslateBubble(), ::testing::NotNull());
 

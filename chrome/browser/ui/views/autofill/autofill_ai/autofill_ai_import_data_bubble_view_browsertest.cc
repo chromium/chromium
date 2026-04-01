@@ -85,7 +85,8 @@ class AutofillAiImportDataBubbleViewBrowsertest
 
   void ShowUi(const std::string& name) override {
     auto bubble = std::make_unique<AutofillAiImportDataBubbleView>(
-        nullptr, browser()->tab_strip_model()->GetActiveWebContents(),
+        views::BubbleAnchor(),
+        browser()->tab_strip_model()->GetActiveWebContents(),
         &mock_controller());
     bubble->set_has_parent(false);
     bubble_ = bubble.get();

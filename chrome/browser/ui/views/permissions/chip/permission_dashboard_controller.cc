@@ -437,7 +437,8 @@ void PermissionDashboardController::ShowBubble() {
                 content_setting_image_delegate_
                     ->GetContentSettingBubbleModelDelegate(),
                 web_contents),
-            web_contents, anchor, views::BubbleBorder::TOP_LEFT);
+            web_contents, views::BubbleAnchor(anchor),
+            views::BubbleBorder::TOP_LEFT);
     bubble_view_->SetHighlightedElement(
         PermissionChipView::kIndicatorChipElementId);
     views::Widget* bubble_widget =
@@ -480,7 +481,7 @@ void PermissionDashboardController::ShowPageInfoDialog() {
 
   std::unique_ptr<PageInfoBubbleSpecification> specification =
       PageInfoBubbleSpecification::Builder(
-          permission_dashboard_view_,
+          views::BubbleAnchor(permission_dashboard_view_),
           permission_dashboard_view_->GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL())
           .AddPageInfoClosingCallback(base::BindOnce(

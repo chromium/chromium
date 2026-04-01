@@ -88,8 +88,8 @@ class SharingDialogViewTest : public TestWithBrowserView {
   }
 
   void CreateDialogView(SharingDialogData dialog_data) {
-    dialog_ = new SharingDialogView(browser_view(), web_contents_,
-                                    std::move(dialog_data));
+    dialog_ = new SharingDialogView(views::BubbleAnchor(browser_view()),
+                                    web_contents_, std::move(dialog_data));
     views::BubbleDialogDelegateView::CreateBubble(dialog_);
   }
 

@@ -32,9 +32,9 @@ namespace {
 class IdleBubbleDialogDelegate : public views::BubbleDialogModelHost {
  public:
   IdleBubbleDialogDelegate(std::unique_ptr<ui::DialogModel> model,
-                           views::View* anchor_view,
+                           views::BubbleAnchor anchor,
                            views::BubbleBorder::Arrow arrow)
-      : views::BubbleDialogModelHost(std::move(model), anchor_view, arrow) {}
+      : views::BubbleDialogModelHost(std::move(model), anchor, arrow) {}
 
   // views::WidgetDelegate:
   void OnWidgetInitialized() override {
@@ -87,7 +87,8 @@ void ShowIdleBubble(BrowserWindowInterface* bwi,
       .SetCloseActionCallback(std::move(on_close));
 
   auto bubble = std::make_unique<IdleBubbleDialogDelegate>(
-      dialog_builder.Build(), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      dialog_builder.Build(), views::BubbleAnchor(anchor_view),
+      views::BubbleBorder::TOP_RIGHT);
   bubble->set_close_on_deactivate(false);
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble))->ShowInactive();

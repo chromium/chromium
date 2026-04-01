@@ -40,7 +40,7 @@ class TestContentSettingBubbleContents : public ContentSettingBubbleContents {
       : ContentSettingBubbleContents(
             std::make_unique<TestContentSettingBubbleModel>(web_contents),
             web_contents,
-            /*anchor_view=*/nullptr,
+            views::BubbleAnchor(),
             views::BubbleBorder::TOP_LEFT) {
     set_parent_window(parent_window);
   }

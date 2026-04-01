@@ -104,7 +104,7 @@ class SharingHubBubbleTest : public ChromeViewsTestBase {
 
   void ShowBubble() {
     auto bubble = std::make_unique<sharing_hub::SharingHubBubbleViewImpl>(
-        anchor_widget_->GetRootView(),
+        views::BubbleAnchor(anchor_widget_->GetRootView()),
         share::ShareAttempt(nullptr, u"Hello!",
                             GURL("https://www.chromium.org"), ui::ImageModel()),
         &controller_);

@@ -286,7 +286,7 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopupInternal() {
 }
 
 views::BubbleAnchor ToolbarActionView::GetReferenceButtonForPopup() {
-  return GetReferenceButtonForPopupInternal();
+  return views::BubbleAnchor(GetReferenceButtonForPopupInternal());
 }
 
 void ToolbarActionView::ShowContextMenuAsFallback() {

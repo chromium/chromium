@@ -31,7 +31,8 @@ class SharedPasswordsNotificationViewTest : public PasswordBubbleViewTestBase {
 void SharedPasswordsNotificationViewTest::CreateViewAndShow() {
   CreateAnchorViewAndShow();
 
-  view_ = new SharedPasswordsNotificationView(web_contents(), anchor_view());
+  view_ = new SharedPasswordsNotificationView(
+      web_contents(), views::BubbleAnchor(anchor_view()));
   views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
 }
 

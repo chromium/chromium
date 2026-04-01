@@ -133,8 +133,8 @@ class PageInfoBubbleViewTestApi {
     }
 
     std::unique_ptr<PageInfoBubbleSpecification> specification =
-        PageInfoBubbleSpecification::Builder(nullptr, parent_, web_contents_,
-                                             GURL(kUrl))
+        PageInfoBubbleSpecification::Builder(views::BubbleAnchor(), parent_,
+                                             web_contents_, GURL(kUrl))
             .AddPageInfoClosingCallback(base::BindOnce(
                 &PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                 base::Unretained(this), run_loop_.QuitClosure()))

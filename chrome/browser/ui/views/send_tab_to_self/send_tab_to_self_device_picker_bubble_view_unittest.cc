@@ -77,7 +77,8 @@ class SendTabToSelfDevicePickerBubbleViewTest : public ChromeViewsTestBase {
                                base::WrapUnique(controller_.get()));
 
     bubble_ = new SendTabToSelfDevicePickerBubbleView(
-        anchor_widget_->GetContentsView(), web_contents_.get());
+        views::BubbleAnchor(anchor_widget_->GetContentsView()),
+        web_contents_.get());
     views::BubbleDialogDelegateView::CreateBubble(bubble_);
   }
 

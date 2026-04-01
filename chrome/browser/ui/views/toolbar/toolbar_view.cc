@@ -1724,11 +1724,11 @@ views::BubbleAnchor ToolbarView::GetBubbleAnchor(
     if (!view->IsDrawn() && browser_view_) {
       auto* top_container = browser_view_->top_container();
       CHECK(top_container);
-      return top_container;
+      return views::BubbleAnchor(top_container);
     }
-    return view;
+    return views::BubbleAnchor(view);
   }
-  return nullptr;
+  return views::BubbleAnchor();
 }
 
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {

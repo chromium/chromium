@@ -259,7 +259,8 @@ bool ContentSettingImageView::ShowBubbleImpl() {
     bubble_view_ = new ContentSettingBubbleContents(
         content_setting_image_model_->CreateBubbleModel(
             delegate_->GetContentSettingBubbleModelDelegate(), web_contents),
-        web_contents, anchor, views::BubbleBorder::TOP_RIGHT);
+        web_contents, views::BubbleAnchor(anchor),
+        views::BubbleBorder::TOP_RIGHT);
     bubble_view_->SetHighlightedElement(
         content_setting_image_model_->GetElementIdentifier());
     views::Widget* bubble_widget =
