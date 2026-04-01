@@ -125,4 +125,42 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceMetricsTest, SessionEndsWhenHidden) {
             1);
 }
 
+class GlicFreMetricsTest : public test::InteractiveGlicTest {
+ public:
+  GlicFreMetricsTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
+         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
+        {});
+  }
+  ~GlicFreMetricsTest() override = default;
+
+  void SetUpOnMainThread() override {
+    test::InteractiveGlicTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetInteger(
+        glic::prefs::kGlicCompletedFre,
+        static_cast<int>(glic::prefs::FreStatus::kNotStarted));
+  }
+
+ protected:
+  base::UserActionTester user_action_tester_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicFreMetricsTest, FreShownAndDismissed) {
+  RunTestSequence(
+      ToggleGlicWindow(GlicWindowMode::kAttached),
+      WaitForAndInstrumentGlic(GlicInstrumentMode::kHostAndContents),
+      Wait(START_TIMER_MS + base::Milliseconds(10)),
+      ToggleGlicWindow(GlicWindowMode::kAttached),
+      WaitForHide(test::kGlicHostElementId));
+
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Shown"), 1);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Accept"), 0);
+  EXPECT_EQ(user_action_tester_.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
+            1);
+}
+
 }  // namespace glic
