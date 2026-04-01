@@ -15,7 +15,9 @@
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/actor/tool_request_variant.h"
@@ -28,6 +30,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace actor::ui {
@@ -235,113 +238,55 @@ struct InputTraits<UiEventDispatcher::ActorTaskSyncChange> {
       };
 };
 
-class UiEventDispatcherImpl : public UiEventDispatcher {
+void Complete(UiCompleteCallback callback, ActionResultPtr result) {
+  TRACE_EVENT_END("actor");
+  if (!callback.is_null()) {
+    std::move(callback).Run(std::move(result));
+  } else {
+    if (result->code != ActionResultCode::kOk) {
+      LOG(DFATAL) << ToDebugString(*result);
+    }
+  }
+}
+
+class AsyncEventSequenceTask {
  public:
-  explicit UiEventDispatcherImpl(ActorUiStateManagerInterface& ui_state_manager)
+  explicit AsyncEventSequenceTask(
+      raw_ref<ActorUiStateManagerInterface> ui_state_manager)
       : ui_state_manager_(ui_state_manager) {}
-  ~UiEventDispatcherImpl() override = default;
 
-  void OnPreTool(const ToolRequest& tr, UiCompleteCallback callback) override {
-    On<PreToolEventsFn>(tr, std::move(callback));
+  ~AsyncEventSequenceTask() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
-  void OnPostTool(const ToolRequest& tr, UiCompleteCallback callback) override {
-    On<PostToolEventsFn>(tr, std::move(callback));
-  }
-
-  void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
-                              UiCompleteCallback callback) override {
-    On<ActorTaskAsyncChangeFn>(change, std::move(callback));
-  }
-
-  void OnActorTaskSyncChange(const ActorTaskSyncChange& change) override {
-    On<ActorTaskSyncChangeFn>(change);
+  template <absl::Overload V>
+  void SendEvents(EventSequence<AsyncUiEvent> events,
+                  UiCompleteCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(callback_.is_null());
+    CHECK(!callback.is_null());
+    callback_ = std::move(callback);
+    MaybeSendNextEvent<V>(std::move(events), MakeOkResult());
   }
 
  private:
-  raw_ref<ActorUiStateManagerInterface> ui_state_manager_;
-  std::variant<EventSequence<AsyncUiEvent>, EventSequence<SyncUiEvent>> events_;
-  UiCompleteCallback overall_callback_;
-  base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
-
-  void ResetAndComplete(ActionResultPtr result) {
-    TRACE_EVENT_END("actor");
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    std::visit([]<typename T>(EventSequence<T>& e) { return e.clear(); },
-               events_);
-    if (!overall_callback_.is_null()) {
-      std::move(overall_callback_).Run(std::move(result));
-    } else {
-      if (result->code != ActionResultCode::kOk) {
-        LOG(DFATAL) << ToDebugString(*result);
-      }
-    }
-  }
-
-  // Takes async path.
-  template <absl::Overload V, typename InputT>
-  void On(const InputT& in, UiCompleteCallback callback) {
-    VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
-            << "): " << InputTraits<InputT>::debug_info(in);
-    GenerateAndSend<V, AsyncUiEvent>(InputTraits<InputT>::convert_fn(in),
-                                     std::move(callback));
-  }
-
-  // Takes synchronous path.
-  template <absl::Overload V, typename InputT>
-  void On(const InputT& in) {
-    VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
-            << "): " << InputTraits<InputT>::debug_info(in);
-    GenerateAndSend<V, SyncUiEvent>(InputTraits<InputT>::convert_fn(in),
-                                    UiCompleteCallback() /*=null*/);
-  }
-
-  template <absl::Overload V, typename EventT, typename ConvertedInputT>
-  void GenerateAndSend(const ConvertedInputT& converted,
-                       UiCompleteCallback callback) {
-    TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
-    CHECK(std::visit([]<typename T>(EventSequence<T>& e) { return e.empty(); },
-                     events_))
-        << "Unexpected: unprocessed UiEvents remaining";
-    if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
-      CHECK(!callback.is_null()) << "Callback not defined for AsyncUiEvent";
-      overall_callback_ = std::move(callback);
-    } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
-      CHECK(callback.is_null()) << "Callback defined for SyncUiEvent";
-    } else {
-      static_assert(false, "Unknown type!");
-    }
-
-    // Visit converted type to generate UiEvent sequence.
-    if constexpr (is_variant<ConvertedInputT>) {
-      events_ = std::visit(V, converted);
-    } else {
-      events_ = V(converted);
-    }
-    // Send events either asynchronously or synchronously.
-    if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
-      MaybeSendNextEvent<V>(MakeOkResult());
-    } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
-      SendAllEvents<V>();
-    }
-  }
-
   // Asynchronously send events.  Called back after each event is processed
   // by ActorUiStateManager.
   template <absl::Overload V>
-  void MaybeSendNextEvent(ActionResultPtr result) {
+  void MaybeSendNextEvent(EventSequence<AsyncUiEvent> events,
+                          ActionResultPtr result) {
     TRACE_EVENT_BEGIN("actor", "MaybeSendNextEvent");
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (result->code != ActionResultCode::kOk) {
       VLOG(4) << VisitorTraits<V>::phase_name
               << " UI actuation failed: " << ToDebugString(*result);
       TRACE_EVENT_END("actor");
-      ResetAndComplete(std::move(result));
+      Complete(std::move(callback_), std::move(result));
       return;
     }
-    auto& events = std::get<EventSequence<AsyncUiEvent>>(events_);
     if (events.empty()) {
       TRACE_EVENT_END("actor");
-      ResetAndComplete(MakeOkResult());
+      Complete(std::move(callback_), MakeOkResult());
       return;
     }
 
@@ -370,15 +315,113 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
     ui_state_manager_->OnUiEvent(
         std::move(event),
         std::move(record_metrics)
-            .Then(base::BindOnce(&UiEventDispatcherImpl::MaybeSendNextEvent<V>,
-                                 weak_ptr_factory_.GetWeakPtr())));
+            .Then(base::BindOnce(&AsyncEventSequenceTask::MaybeSendNextEvent<V>,
+                                 weak_ptr_factory_.GetWeakPtr(),
+                                 std::move(events))));
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  raw_ref<ActorUiStateManagerInterface> ui_state_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  UiCompleteCallback callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+  base::WeakPtrFactory<AsyncEventSequenceTask> weak_ptr_factory_{this};
+};
+
+class UiEventDispatcherImpl : public UiEventDispatcher {
+ public:
+  explicit UiEventDispatcherImpl(ActorUiStateManagerInterface& ui_state_manager)
+      : ui_state_manager_(ui_state_manager) {}
+  ~UiEventDispatcherImpl() override = default;
+
+  void OnPreTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    On<PreToolEventsFn>(tr, std::move(callback));
+  }
+
+  void OnPostTool(const ToolRequest& tr, UiCompleteCallback callback) override {
+    On<PostToolEventsFn>(tr, std::move(callback));
+  }
+
+  void OnActorTaskAsyncChange(const ActorTaskAsyncChange& change,
+                              UiCompleteCallback callback) override {
+    On<ActorTaskAsyncChangeFn>(change, std::move(callback));
+  }
+
+  void OnActorTaskSyncChange(const ActorTaskSyncChange& change) override {
+    On<ActorTaskSyncChangeFn>(change);
+  }
+
+ private:
+  raw_ref<ActorUiStateManagerInterface> ui_state_manager_;
+  absl::flat_hash_set<std::unique_ptr<AsyncEventSequenceTask>> in_flight_tasks_;
+  base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
+
+  // Takes async path.
+  template <absl::Overload V, typename InputT>
+  void On(const InputT& in, UiCompleteCallback callback) {
+    VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
+            << "): " << InputTraits<InputT>::debug_info(in);
+    GenerateAndSend<V, AsyncUiEvent>(InputTraits<InputT>::convert_fn(in),
+                                     std::move(callback));
+  }
+
+  // Takes synchronous path.
+  template <absl::Overload V, typename InputT>
+  void On(const InputT& in) {
+    VLOG(4) << VisitorTraits<V>::phase_name << "(" << InputTraits<InputT>::name
+            << "): " << InputTraits<InputT>::debug_info(in);
+    GenerateAndSend<V, SyncUiEvent>(InputTraits<InputT>::convert_fn(in),
+                                    UiCompleteCallback() /*=null*/);
+  }
+
+  template <absl::Overload V, typename EventT, typename ConvertedInputT>
+  void GenerateAndSend(const ConvertedInputT& converted,
+                       UiCompleteCallback callback) {
+    TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
+    if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
+      CHECK(!callback.is_null()) << "Callback not defined for AsyncUiEvent";
+    } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
+      CHECK(callback.is_null()) << "Callback defined for SyncUiEvent";
+    } else {
+      static_assert(false, "Unknown type!");
+    }
+
+    // Visit converted type to generate UiEvent sequence.
+    std::variant<EventSequence<AsyncUiEvent>, EventSequence<SyncUiEvent>>
+        events;
+    if constexpr (is_variant<ConvertedInputT>) {
+      events = std::visit(V, converted);
+    } else {
+      events = V(converted);
+    }
+    // Send events either asynchronously or synchronously.
+    if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
+      auto& sequence_task =
+          *in_flight_tasks_
+               .emplace(
+                   std::make_unique<AsyncEventSequenceTask>(ui_state_manager_))
+               .first;
+      sequence_task->SendEvents<V>(
+          std::move(std::get<EventSequence<AsyncUiEvent>>(events)),
+          base::BindOnce(
+              [](UiCompleteCallback callback, AsyncEventSequenceTask* task,
+                 base::WeakPtr<UiEventDispatcherImpl> dispatcher,
+                 ActionResultPtr result) {
+                std::move(callback).Run(std::move(result));
+                if (dispatcher) {
+                  dispatcher->in_flight_tasks_.erase(task);
+                }
+              },
+              std::move(callback), sequence_task.get(),
+              weak_ptr_factory_.GetWeakPtr()));
+    } else if constexpr (std::is_same_v<EventT, SyncUiEvent>) {
+      SendAllEvents<V>(std::move(std::get<EventSequence<SyncUiEvent>>(events)));
+    }
   }
 
   // Synchronously send events.
   template <absl::Overload V>
-  void SendAllEvents() {
+  void SendAllEvents(EventSequence<SyncUiEvent> events) {
     TRACE_EVENT("actor", "SendAllEvents");
-    auto& events = std::get<EventSequence<SyncUiEvent>>(events_);
     while (!events.empty()) {
       const SyncUiEvent event = std::move(events.front());
       events.pop_front();
@@ -389,7 +432,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
           GetUiEventDurationScopedTimer(GetUiEventName(event));
       ui_state_manager_->OnUiEvent(std::move(event));
     }
-    ResetAndComplete(MakeOkResult());
+    Complete(UiCompleteCallback(), MakeOkResult());
   }
 };
 }  // namespace

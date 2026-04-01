@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -372,6 +373,33 @@ TEST_F(EventDispatcherTest, AsyncActorTaskChange_OneEvent) {
                                 .handle = tabs::TabHandle(998)},
       result.GetCallback());
   EXPECT_TRUE(IsOk(*result.Get()));
+}
+
+TEST_F(EventDispatcherTest, AsyncActorTaskChange_TwoEvents) {
+  std::vector<UiCompleteCallback> callbacks;
+  EXPECT_CALL(*mock_state_manager_,
+              OnUiEvent(VariantWith<StartingToActOnTab>(_), _))
+      .Times(2)
+      .WillRepeatedly(WithArgs<1>([&](UiCompleteCallback callback) {
+        callbacks.push_back(std::move(callback));
+      }));
+  TestFuture<ActionResultPtr> result1;
+  dispatcher_->OnActorTaskAsyncChange(
+      UiEventDispatcher::AddTab{.task_id = TaskId(992),
+                                .handle = tabs::TabHandle(998)},
+      result1.GetCallback());
+  TestFuture<ActionResultPtr> result2;
+  dispatcher_->OnActorTaskAsyncChange(
+      UiEventDispatcher::AddTab{.task_id = TaskId(992),
+                                .handle = tabs::TabHandle(998)},
+      result2.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return callbacks.size() == 2; }));
+
+  // The events can be interleaved.
+  std::move(callbacks[1]).Run(MakeOkResult());
+  EXPECT_TRUE(IsOk(*result2.Get()));
+  std::move(callbacks[0]).Run(MakeOkResult());
+  EXPECT_TRUE(IsOk(*result1.Get()));
 }
 
 /* Verifies that with GlicActorSplitValidateAndExecute enabled, the event
