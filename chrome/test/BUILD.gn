@@ -1624,9 +1624,6 @@ source_set("platform_browser_tests") {
       "../browser/extensions/api/management/management_api_non_persistent_apitest.cc",
       "../browser/extensions/api/management/management_apitest.cc",
       "../browser/extensions/api/management/management_browsertest.cc",
-      "../browser/extensions/api/messaging/externally_connectable_messaging_apitest.cc",
-      "../browser/extensions/api/messaging/messaging_apitest.cc",
-      "../browser/extensions/api/messaging/service_worker_messaging_apitest.cc",
       "../browser/extensions/api/module/module_apitest.cc",
       "../browser/extensions/api/offscreen/audio_lifetime_enforcer_browsertest.cc",
       "../browser/extensions/api/offscreen/offscreen_apitest.cc",
@@ -1731,6 +1728,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions/api/bookmarks/test:test_support",
+      "//chrome/browser/extensions/api/messaging:platform_browser_tests",
       "//chrome/browser/permissions",
       "//chrome/browser/prefetch",
       "//chrome/browser/prefs",
@@ -4699,8 +4697,6 @@ if (!is_android) {
         "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
         "../browser/extensions/api/image_writer_private/test_utils.cc",
         "../browser/extensions/api/image_writer_private/test_utils.h",
-        "../browser/extensions/api/messaging/message_tracker_browsertest.cc",
-        "../browser/extensions/api/messaging/native_messaging_apitest.cc",
         "../browser/extensions/api/metrics_private/metrics_apitest.cc",
         "../browser/extensions/api/passwords_private/passwords_private_apitest.cc",
         "../browser/extensions/api/printer_provider/printer_provider_apitest.cc",
@@ -4848,9 +4844,9 @@ if (!is_android) {
 
       if (is_win) {
         data_deps += [
-          "//chrome/browser/extensions/api:native_messaging_test_echo_&_host",
-          "//chrome/browser/extensions/api:native_messaging_test_echo_host",
-          "//chrome/browser/extensions/api:native_messaging_test_echo_space_host",
+          "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_&_host",
+          "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_host",
+          "//chrome/browser/extensions/api/messaging:native_messaging_test_echo_space_host",
         ]
       }
 
@@ -4996,6 +4992,8 @@ if (!is_android) {
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
         "//chrome/browser/extensions/api/braille_display_private:controller",
+        "//chrome/browser/extensions/api/messaging:browser_tests",
+        "//chrome/browser/extensions/api/messaging:test_support",
         "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
         "//chrome/browser/hid",
         "//chrome/browser/prefetch",
@@ -9968,16 +9966,9 @@ test("unit_tests") {
         "//net:test_support",
       ]
     } else {
-      sources += [ "../browser/extensions/api/messaging/native_messaging_host_manifest_unittest.cc" ]
-
-      deps += [ "//components/enterprise:test_support" ]
-
-      # The Chrome OS implementation of Native Messaging does not use the source
-      # files corresponding to these tests.
-      sources += [
-        "../browser/extensions/api/messaging/native_message_process_host_unittest.cc",
-        "../browser/extensions/api/messaging/native_messaging_launch_from_native_unittest.cc",
-        "../browser/extensions/api/messaging/native_messaging_policy_handler_unittest.cc",
+      deps += [
+        "//chrome/browser/extensions/api/messaging:unit_tests",
+        "//components/enterprise:test_support",
       ]
     }
   }
