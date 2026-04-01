@@ -777,7 +777,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> mScrimManager,
-                        CallbackUtils.emptyCallback(),
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,

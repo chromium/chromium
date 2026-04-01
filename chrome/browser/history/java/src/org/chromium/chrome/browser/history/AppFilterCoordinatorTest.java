@@ -100,7 +100,6 @@ public class AppFilterCoordinatorTest {
                 new ScrimManager(getActivity(), activityContentView, ScrimClient.NONE);
         return BottomSheetControllerFactory.createBottomSheetController(
                 () -> scrimManager,
-                (unused) -> {},
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),
                 () -> activityContentView,

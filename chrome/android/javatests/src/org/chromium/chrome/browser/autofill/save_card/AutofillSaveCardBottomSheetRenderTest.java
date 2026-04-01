@@ -83,7 +83,6 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     mBottomSheetController =
                             BottomSheetControllerFactory.createFullWidthBottomSheetController(
                                     () -> scrimManager,
-                                    (unused) -> {},
                                     mActivity.getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> activityContentView);

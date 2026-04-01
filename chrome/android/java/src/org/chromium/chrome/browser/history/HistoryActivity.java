@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -115,7 +114,6 @@ public class HistoryActivity extends SnackbarActivity {
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         SupplierUtils.of(scrimManager),
-                        CallbackUtils.emptyCallback(),
                         getWindow(),
                         assumeNonNull(mWindowAndroid).getKeyboardDelegate(),
                         SupplierUtils.of(sheetContainer),

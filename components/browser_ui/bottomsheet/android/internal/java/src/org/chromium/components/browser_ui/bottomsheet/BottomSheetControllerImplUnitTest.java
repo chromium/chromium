@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
@@ -29,7 +28,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -61,7 +59,6 @@ public class BottomSheetControllerImplUnitTest {
     private BottomSheetControllerImpl mController;
     private final OneshotSupplierImpl<ScrimManager> mScrimManagerSupplier =
             new OneshotSupplierImpl<>();
-    private final Callback<View> mInitializedCallback = view -> {};
     private Window mWindow;
     private final OneshotSupplierImpl<ViewGroup> mRootSupplier = new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<Integer> mEdgeToEdgeBottomInsetSupplier =
@@ -79,7 +76,6 @@ public class BottomSheetControllerImplUnitTest {
         mController =
                 new BottomSheetControllerImpl(
                         mScrimManagerSupplier,
-                        mInitializedCallback,
                         mWindow,
                         mKeyboardVisibilityDelegate,
                         mRootSupplier,
@@ -191,7 +187,6 @@ public class BottomSheetControllerImplUnitTest {
         BottomSheetControllerImpl controllerWithNullRoot =
                 new BottomSheetControllerImpl(
                         mScrimManagerSupplier,
-                        mInitializedCallback,
                         mWindow,
                         mKeyboardVisibilityDelegate,
                         nullRootSupplier,

@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
@@ -24,7 +23,6 @@ import java.util.function.Supplier;
 public class BottomSheetControllerFactory {
     /**
      * @param scrimManagerSupplier Suppliers the {@ScrimManager}, used show scrims behind the sheet.
-     * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
@@ -34,7 +32,6 @@ public class BottomSheetControllerFactory {
      */
     public static ManagedBottomSheetController createBottomSheetController(
             final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
-            Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
@@ -42,7 +39,6 @@ public class BottomSheetControllerFactory {
             @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
-                initializedCallback,
                 window,
                 keyboardDelegate,
                 root,
@@ -55,7 +51,6 @@ public class BottomSheetControllerFactory {
      * Create {@link BottomSheetController} of full-width bottom sheets.
      *
      * @param scrimManagerSupplier A supplier of scrimManagerSupplier to be shown behind the sheet.
-     * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
@@ -63,13 +58,11 @@ public class BottomSheetControllerFactory {
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
             final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
-            Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root) {
         return new BottomSheetControllerImpl(
                 scrimManagerSupplier,
-                initializedCallback,
                 window,
                 keyboardDelegate,
                 root,

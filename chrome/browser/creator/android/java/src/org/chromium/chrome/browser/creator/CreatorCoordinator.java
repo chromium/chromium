@@ -414,7 +414,6 @@ public class CreatorCoordinator
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> mScrimManager,
-                        (sheet) -> {},
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> mBottomSheetContainer,

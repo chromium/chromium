@@ -139,7 +139,6 @@ public class NoPasskeysBottomSheetRenderTest {
                 new ScrimManager(getActivity(), activityContentView, ScrimClient.NONE);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
                 () -> scrimManager,
-                (unused) -> {},
                 getActivity().getWindow(),
                 KeyboardVisibilityDelegate.getInstance(),
                 () -> activityContentView);

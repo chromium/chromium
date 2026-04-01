@@ -64,7 +64,6 @@ public class AllPasswordsBottomSheetTestHelper {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrimManager,
-                        (unused) -> {},
                         activity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> contentView,

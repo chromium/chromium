@@ -133,7 +133,6 @@ public class BottomSheetObserverTest {
                             Callback<View> initializedCallback = (v) -> {};
                             return new BottomSheetControllerImpl(
                                     scrimSupplier,
-                                    initializedCallback,
                                     sTestRule.getActivity().getWindow(),
                                     KeyboardVisibilityDelegate.getInstance(),
                                     () -> rootView,

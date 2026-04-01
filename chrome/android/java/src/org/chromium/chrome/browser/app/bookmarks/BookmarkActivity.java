@@ -100,7 +100,6 @@ public class BookmarkActivity extends SnackbarActivity {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrimManager,
-                        (sheet) -> {},
                         getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
                         () -> sheetContainer,

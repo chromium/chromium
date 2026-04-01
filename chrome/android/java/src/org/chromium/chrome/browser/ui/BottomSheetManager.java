@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -70,9 +69,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     /** A mechanism for accessing the currently active tab. */
     private final ActivityTabProvider mTabProvider;
 
-    /** A supplier of a snackbar manager for the bottom sheet. */
-    private final MonotonicObservableSupplier<SnackbarManager> mSnackbarManager;
-
     /** The manager for overlay panels to attach listeners to. */
     private final Supplier<OverlayPanelManager> mOverlayPanelManager;
 
@@ -96,14 +92,12 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             ActivityTabProvider tabProvider,
             BrowserControlsVisibilityManager controlsVisibilityManager,
             ExpandedSheetHelper expandedSheetHelper,
-            MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<OverlayPanelManager> overlayManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
-        mSnackbarManager = snackbarManagerSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
         mCallbackController = new CallbackController();
@@ -266,14 +260,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         }
 
         mExpandedSheetHelper.onSheetCollapsed();
-    }
-
-    @Override
-    public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-        SnackbarManager snackbarManager = mSnackbarManager.get();
-        if (snackbarManager != null) {
-            snackbarManager.dismissAllSnackbars();
-        }
     }
 
     @Override

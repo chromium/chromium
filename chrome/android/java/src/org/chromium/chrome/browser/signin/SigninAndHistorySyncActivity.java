@@ -412,7 +412,6 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
         BottomSheetController bottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrimManager,
-                        (sheet) -> {},
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,

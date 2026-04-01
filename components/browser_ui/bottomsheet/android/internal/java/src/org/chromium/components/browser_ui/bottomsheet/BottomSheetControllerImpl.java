@@ -126,8 +126,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      *
      * @param scrimManagerSupplier A supplier of the scrimManagerSupplier that shows when the bottom
      *     sheet is opened.
-     * @param initializedCallback A callback for the sheet being created (as the sheet is not
-     *     initialized until first use.
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
@@ -137,7 +135,6 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      */
     public BottomSheetControllerImpl(
             final Supplier<@Nullable ScrimManager> scrimManagerSupplier,
-            Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
@@ -157,7 +154,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
 
         mSheetInitializer =
                 () -> {
-                    initializeSheet(initializedCallback, window, keyboardDelegate, root);
+                    initializeSheet(window, keyboardDelegate, root);
                 };
 
         mBackPressHandler =
@@ -205,13 +202,11 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     /**
      * Do the actual initialization of the bottom sheet.
      *
-     * @param initializedCallback A callback for the creation of the sheet.
      * @param window A means of accessing the screen size.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
      */
     private void initializeSheet(
-            Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root) {
@@ -221,10 +216,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
         }
         mBottomSheetContainer.setVisibility(View.VISIBLE);
 
-        LayoutInflater.from(root.get().getContext())
+        var rootView = root.get();
+        LayoutInflater.from(rootView.getContext())
                 .inflate(R.layout.bottom_sheet, mBottomSheetContainer);
-        mBottomSheet = root.get().findViewById(R.id.bottom_sheet);
-        initializedCallback.onResult(mBottomSheet);
+        mBottomSheet = rootView.findViewById(R.id.bottom_sheet);
 
         mBottomSheet.init(
                 window,
