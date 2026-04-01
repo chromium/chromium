@@ -1099,7 +1099,7 @@ void KeepAliveURLLoader::DidObserveNewlyActiveDocumentWithNIK(
     retry_state_ = RetryState::kRetryScheduled;
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&KeepAliveURLLoader::AttemptRetryIfAllowed,
-                                  base::Unretained(this)));
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
