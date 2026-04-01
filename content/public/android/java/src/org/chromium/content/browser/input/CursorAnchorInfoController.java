@@ -62,6 +62,11 @@ final class CursorAnchorInfoController {
 
     private @Nullable CursorAnchorInfo mLastCursorAnchorInfo;
 
+    // Most recent selection bounds, used to detect cursor moves.
+    private boolean mHasLastSelection;
+    private int mLastSelectionStart;
+    private int mLastSelectionEnd;
+
     // Data which has come through the new code path from the renderer. Eventually, other data like
     // visible line bounds, composition bounds and editor bounds will be removed in favour of this.
     private @Nullable InputCursorAnchorInfo mInputCursorAnchorInfo;
@@ -205,12 +210,45 @@ final class CursorAnchorInfoController {
         return true;
     }
 
-    public void updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+    /** Did the selection move since the last cursor anchor info update? */
+    private boolean didSelectionMove(InputCursorAnchorInfo cursorAnchorInfo) {
+        // No selection move if no current selection.
+        if (cursorAnchorInfo.insertionMarker == null) {
+            mHasLastSelection = false;
+            return false;
+        }
+
+        // Check current selection bounds against previous bounds.
+        int selectionStart = mComposingTextDelegate.getSelectionStart();
+        int selectionEnd = mComposingTextDelegate.getSelectionEnd();
+        boolean didMove =
+                !mHasLastSelection
+                        || selectionStart != mLastSelectionStart
+                        || selectionEnd != mLastSelectionEnd;
+
+        // Reset previous bounds and return.
+        mHasLastSelection = true;
+        mLastSelectionStart = selectionStart;
+        mLastSelectionEnd = selectionEnd;
+        return didMove;
+    }
+
+    /**
+     * Updates the CursorAnchorInfo instance if necessary to match the provided information.
+     *
+     * @return Did the selection move since the last update?
+     */
+    public boolean updateCursorAnchorInfoData(InputCursorAnchorInfo cursorAnchorInfo, View view) {
+        // Check selection move before previous information is overwritten.
+        boolean isSelectionMove = didSelectionMove(cursorAnchorInfo);
+
         mInputCursorAnchorInfo = cursorAnchorInfo;
         mLastCursorAnchorInfo = null;
         if (cursorAnchorInfo.requested || mMonitorModeEnabled) {
             updateCursorAnchorInfo(view);
         }
+
+        return isSelectionMove;
     }
 
     /** Computes the CursorAnchorInfo instance and notify to InputMethodManager if needed. */

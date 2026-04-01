@@ -538,7 +538,8 @@ public class CursorAnchorInfoControllerTest {
         mCursorAnchorInfoData.characterBounds =
                 new Rect[] {createRectFromPoints(0, 1, 2, 3), createRectFromPoints(4, 1, 6, 3)};
         mCursorAnchorInfoData.visibleLineBounds = new Rect[] {createRectFromPoints(0, 1, 6, 3)};
-        controller.updateCursorAnchorInfoData(mCursorAnchorInfoData, view);
+        // No insertion marker means no selection move.
+        Assert.assertFalse(controller.updateCursorAnchorInfoData(mCursorAnchorInfoData, view));
         controller.onUpdateFrameInfo(
                 1.0f, 0.0f, false, false, Float.NaN, Float.NaN, Float.NaN, view);
         Assert.assertEquals(1, immw.getUpdateCursorAnchorInfoCounter());
@@ -563,6 +564,13 @@ public class CursorAnchorInfoControllerTest {
         Assert.assertEquals(0, immw.getLastCursorAnchorInfo().getCharacterBoundsFlags(3));
         AssertionHelper.assertComposingText("12", 1, immw.getLastCursorAnchorInfo());
         AssertionHelper.assertSelection(1, 1, immw.getLastCursorAnchorInfo());
+        // Move selection and set insertion marker.
+        composingTextDelegate.updateTextAndSelection(controller, "01234", 2, 3, 2, 2);
+        mCursorAnchorInfoData.characterBounds = new Rect[] {createRectFromPoints(4, 1, 6, 3)};
+        mCursorAnchorInfoData.insertionMarker = createRectFromPoints(6, 1, 6, 3);
+        Assert.assertTrue(controller.updateCursorAnchorInfoData(mCursorAnchorInfoData, view));
+        // Update that doesn't move the selection doesn't return true.
+        Assert.assertFalse(controller.updateCursorAnchorInfoData(mCursorAnchorInfoData, view));
     }
 
     @Test
