@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_USER_MEDIA_REQUEST_PROVIDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_USER_MEDIA_REQUEST_PROVIDER_H_
 
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -21,7 +22,9 @@ class CORE_EXPORT UserMediaRequestProvider
 
   static UserMediaRequestProvider* From(LocalDOMWindow&);
 
-  virtual void StartRequest(HTMLUserMediaElement*, const AtomicString& type) = 0;
+  virtual void StartRequest(
+      HTMLUserMediaElement*,
+      const Vector<mojom::blink::PermissionDescriptorPtr>&) = 0;
 
   void Trace(Visitor*) const override;
 

@@ -49,6 +49,13 @@ class CORE_EXPORT HTMLUserMediaElement
   // <usermedia> element is stable.
   bool IsLegacyMode() const;
 
+  void OnConstraintsSet(bool has_video, bool has_audio);
+
+  const Vector<mojom::blink::PermissionDescriptorPtr>&
+  GetPermissionDescriptors() const {
+    return permission_descriptors_;
+  }
+
  private:
   void StartMediaStreamRequest();
 };

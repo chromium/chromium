@@ -63,8 +63,10 @@ UserMediaRequestProviderImpl::UserMediaRequestProviderImpl(
     LocalDOMWindow& window)
     : UserMediaRequestProvider(window) {}
 
-void UserMediaRequestProviderImpl::StartRequest(HTMLUserMediaElement* element,
-                                                const AtomicString& type) {
+void UserMediaRequestProviderImpl::StartRequest(
+    HTMLUserMediaElement* element,
+    const Vector<mojom::blink::PermissionDescriptorPtr>&
+        permission_descriptors) {
   LocalDOMWindow* window = element->GetDocument().domWindow();
   if (!window) {
     return;
@@ -85,12 +87,13 @@ void UserMediaRequestProviderImpl::StartRequest(HTMLUserMediaElement* element,
   MediaConstraints audio_constraints;
   MediaConstraints video_constraints;
 
-  SpaceSplitString permissions(type);
-  if (permissions.Contains(AtomicString("camera"))) {
-    video_constraints.Initialize();
-  }
-  if (permissions.Contains(AtomicString("microphone"))) {
-    audio_constraints.Initialize();
+  for (const auto& descriptor : permission_descriptors) {
+    if (descriptor->name == mojom::blink::PermissionName::AUDIO_CAPTURE) {
+      audio_constraints.Initialize();
+    } else if (descriptor->name ==
+               mojom::blink::PermissionName::VIDEO_CAPTURE) {
+      video_constraints.Initialize();
+    }
   }
 
   UserMediaRequest* request = MakeGarbageCollected<UserMediaRequest>(
