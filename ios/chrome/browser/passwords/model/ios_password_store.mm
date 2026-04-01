@@ -70,14 +70,12 @@ void PasswordStoreIOS::StartMetricsReporting() {
     // called, so when the profile is getting shut down.
     return;
   }
-  password_manager::PasswordStoreInterface* profile_store =
+  scoped_refptr<password_manager::PasswordStoreInterface> profile_store =
       IOSChromeProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
-  password_manager::PasswordStoreInterface* account_store =
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> account_store =
       IOSChromeAccountPasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::EXPLICIT_ACCESS)
-          .get();
+          profile_, ServiceAccessType::EXPLICIT_ACCESS);
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfileIfExists(profile_);
   password_manager::PasswordReuseManager* password_reuse_manager =
@@ -87,10 +85,23 @@ void PasswordStoreIOS::StartMetricsReporting() {
 
   PrefService* pref_service = profile_->GetPrefs();
 
+  // The scoped_refptrs are passed to the callback to ensure they are kept
+  // alive for the duration of the metrics reporter and cleared in
+  // FreeMetricsReporter when the metrics_reporter_ deletes its callback.
   base::OnceClosure callback = base::BindOnce(
-      &PasswordStoreIOS::FreeMetricsReporter, weak_ptr_factory_.GetWeakPtr());
+      [](base::WeakPtr<PasswordStoreIOS> password_store,
+         scoped_refptr<password_manager::PasswordStoreInterface>
+             profile_store_ref,
+         scoped_refptr<password_manager::PasswordStoreInterface>
+             account_store_ref) {
+        if (password_store) {
+          password_store->FreeMetricsReporter();
+        }
+      },
+      weak_ptr_factory_.GetWeakPtr(), profile_store, account_store);
+
   metrics_reporter_ = std::make_unique<password_manager::StoreMetricsReporter>(
-      profile_store, account_store, sync_service, pref_service,
+      profile_store.get(), account_store.get(), sync_service, pref_service,
       password_reuse_manager, settings, std::move(callback));
 
   [ASCredentialIdentityStore.sharedStore
