@@ -1027,16 +1027,18 @@ void ChromeBrowserMainParts::PreCreateMainMessageLoop() {
     chrome_extra_part->PreCreateMainMessageLoop();
   }
 
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableUpdaterScheduler)) {
-    updater::SchedulePeriodicTasks(
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-        base::BindRepeating(&ShowUpdaterPromotionInfoBar)
-#else
-        base::DoNothing()
-#endif
-    );
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDisableUpdaterScheduler) ||
+      command_line->HasSwitch(switches::kEnableBenchmarking)) {
+    return;
   }
+  updater::SchedulePeriodicTasks(
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+      base::BindRepeating(&ShowUpdaterPromotionInfoBar)
+#else
+      base::DoNothing()
+#endif
+  );
 }
 
 void ChromeBrowserMainParts::PostCreateMainMessageLoop() {
