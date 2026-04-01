@@ -56,6 +56,13 @@ class AppNetWorker : public App {
 
     // If running as root, drop down to "nobody".
     if (getuid() == 0) {
+      // Clear supplementary groups inherited from root.
+      if (initgroups("nobody", kNobodyGid) != 0) {
+        VPLOG(1) << "Failed to initgroups";
+        Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
+        return;
+      }
+
       if (setgid(kNobodyGid)) {
         VPLOG(1) << "Failed to set gid " << kNobodyGid;
         Shutdown(EnterpriseCompanionStatus::FromPosixErrno(errno));
