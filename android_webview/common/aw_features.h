@@ -63,7 +63,6 @@ BASE_DECLARE_FEATURE(kWebViewConnectToComponentProviderInBackground);
 BASE_DECLARE_FEATURE(kAndroidMetricsAsyncMetricLogging);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedExpiration);
 BASE_DECLARE_FEATURE(kWebViewReducedSeedRequestPeriod);
-BASE_DECLARE_FEATURE(kWebViewCacheBoundaryInterfaceMethods);
 BASE_DECLARE_FEATURE(kWebViewOptInToGmsBindServiceOptimization);
 BASE_DECLARE_FEATURE(kWebViewMoveWorkToProviderInit);
 BASE_DECLARE_FEATURE(kWebViewBypassProvisionalCookieManager);

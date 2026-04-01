@@ -1148,9 +1148,6 @@ public final class ProductionSupportedFlagList {
                 "ProbeStylusWritingInBackground",
                 "Offload probing of stylus writing support to a background thread."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_CACHE_BOUNDARY_INTERFACE_METHODS,
-                "Use a cache for reflective method instances in the AndroidX boundary interface"),
-        Flag.baseFeature(
                 AwSwitches.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
                 "Opt-in WebView to GMSCore's bindService optimizations"),
         Flag.baseFeature(

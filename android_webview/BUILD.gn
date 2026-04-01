@@ -636,7 +636,6 @@ if (_is_default_toolchain) {
       ":resources",
       "//android_webview/proto:aw_variations_seed_proto_java",
       "//android_webview/proto:metrics_bridge_records_proto_java",
-      "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
       "//base:base_java",
       "//base:content_uri_utils_java",
       "//base:flagged_apis_java",

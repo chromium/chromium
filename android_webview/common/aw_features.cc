@@ -243,11 +243,6 @@ BASE_FEATURE(kWebViewEarlyTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 // `kWebViewEarlyTracingInit` will take precedent.
 BASE_FEATURE(kWebViewBackgroundTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Caches reflective methods in AndroidX instead of looking them up every time.
-// This should make calling AndroidX methods faster.
-BASE_FEATURE(kWebViewCacheBoundaryInterfaceMethods,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, opts in WebView to GMSCore's bindService optimizations.
 BASE_FEATURE(kWebViewOptInToGmsBindServiceOptimization,
              base::FEATURE_DISABLED_BY_DEFAULT);
