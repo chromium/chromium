@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        .form-grid { display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redress Number Form</title>
+    <script>
+        var FillFormRedressNumber = function() {
+            var form = document.forms['redress_form'];
+            form['redressNumber'].value = '1234567';
+            form['redressOwnerName'].value = 'autofilltestuser';
+        }
+    </script>
+</head>
+<body>
+    <h1>Warning: This form is for testing purposes only.</h1>
+    <form class="form-grid" id="redress_form" action="destination.html" method="get">
+      <h2>Redress Number Information</h2>
+        <div>
+            <label for="redressNumber">Redress Number:</label>
+            <input type="text" id="redressNumber" name="redressNumber">
+        </div>
+        <div>
+            <label for="redressOwnerName">Owner Name:</label>
+            <input type="text" id="redressOwnerName" name="redressOwnerName">
+        </div>
+        <div>
+            <button type="submit" id="submit-button">Submit</button>
+        </div>
+    </form>
+    <button type="button" onclick="FillFormRedressNumber()" id="fill_redress_number">
+        Fill Form (Redress Number)
+    </button>
+</body>
+</html>
