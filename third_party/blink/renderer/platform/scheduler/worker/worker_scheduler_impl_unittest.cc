@@ -614,6 +614,73 @@ TEST_F(NonMainThreadWebSchedulingTaskQueueTest,
                                    "Timer", "BG-C", "BG"));
 }
 
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, TaskQueuesArePausable) {
+  Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "UV",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "PostMessage", .type_info = TaskType::kPostedMessage},
+      {.descriptor = "WebLock", .type_info = TaskType::kWebLocks},
+      {.descriptor = "Timer",
+       .type_info = TaskType::kJavascriptTimerImmediate}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  std::unique_ptr<WorkerScheduler::PauseHandle> pause_handle(
+      worker_scheduler_->Pause());
+
+  // Only the queue associated with `TaskType::kWebLocks` is unpauseble.
+  RunUntilIdle();
+  EXPECT_THAT(run_order, testing::ElementsAre("WebLock"));
+}
+
+TEST_F(NonMainThreadWebSchedulingTaskQueueTest, TaskQueueDisposal) {
+  Vector<String> run_order;
+  Vector<TestTaskSpecEntry> test_spec = {
+      {.descriptor = "UV",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kTaskQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "UV-C",
+       .type_info = WebSchedulingParams(
+           {.queue_type = WebSchedulingQueueType::kContinuationQueue,
+            .priority = WebSchedulingPriority::kUserVisiblePriority})},
+      {.descriptor = "PostMessage", .type_info = TaskType::kPostedMessage},
+      {.descriptor = "WebLock", .type_info = TaskType::kWebLocks},
+      {.descriptor = "Timer",
+       .type_info = TaskType::kJavascriptTimerImmediate}};
+  web_scheduling_test_helper_->PostTestTasks(&run_order, test_spec);
+
+  worker_scheduler_->Dispose();
+  // All queues should have been shut down, so no tasks should run.
+  RunUntilIdle();
+  EXPECT_EQ(run_order.size(), 0u);
+
+  worker_scheduler_.reset();
+}
+
+TEST_F(WorkerSchedulerImplTest, WebSchedulerTaskQueueDestruction) {
+  // This just makes sure that destroying queues before and after disposal
+  // doesn't trigger any CHECKs or other issues.
+  std::unique_ptr<WebSchedulingTaskQueue> queue1 =
+      worker_scheduler_->CreateWebSchedulingTaskQueue(
+          WebSchedulingQueueType::kTaskQueue,
+          WebSchedulingPriority::kUserVisiblePriority);
+  std::unique_ptr<WebSchedulingTaskQueue> queue2 =
+      worker_scheduler_->CreateWebSchedulingTaskQueue(
+          WebSchedulingQueueType::kTaskQueue,
+          WebSchedulingPriority::kUserVisiblePriority);
+  queue2.reset();
+  worker_scheduler_->Dispose();
+  worker_scheduler_.reset();
+  queue1.reset();
+}
+
 enum class DeleterTaskRunnerEnabled { kEnabled, kDisabled };
 
 TEST_F(WorkerSchedulerImplTest, DeleteSoonAfterDispose) {

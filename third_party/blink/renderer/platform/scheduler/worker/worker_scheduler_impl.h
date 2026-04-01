@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_SCHEDULER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_WORKER_WORKER_SCHEDULER_IMPL_H_
 
-#include <map>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -17,6 +15,7 @@
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 namespace scheduler {
@@ -82,6 +81,8 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   void PauseVirtualTime();
   void UnpauseVirtualTime();
 
+  void OnWebSchedulingTaskQueueDestroyed(NonMainThreadTaskQueue*);
+
  protected:
   scoped_refptr<NonMainThreadTaskQueue> ThrottleableTaskQueue();
   scoped_refptr<NonMainThreadTaskQueue> UnpausableTaskQueue();
@@ -101,9 +102,11 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   //   tasks. Lowest guarantees. Can be paused, blocked during user gesture,
   //   throttled when backgrounded or stopped completely after some time in
   //   background.
+  //
   // - pausable task queue. Default queue for high-priority javascript tasks.
   //   They can be paused according to the spec during devtools debugging.
   //   Otherwise scheduler does not tamper with their execution.
+  //
   // - pausable non-virtual time task queue: a pauseable task queue that is
   //   an exempt from virtual time control. Used for the tasks that pause
   //   virtual time for the duration of a pending request, so that responses
@@ -120,11 +123,13 @@ class PLATFORM_EXPORT WorkerSchedulerImpl : public WorkerScheduler {
   scoped_refptr<NonMainThreadTaskQueue> pausable_non_vt_task_queue_;
   scoped_refptr<NonMainThreadTaskQueue> unpausable_task_queue_;
 
-  using TaskQueueVoterMap ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)") =
-      std::map<scoped_refptr<NonMainThreadTaskQueue>,
-               std::unique_ptr<
-                   base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+  using TaskQueueVoterMap = HashMap<
+      scoped_refptr<NonMainThreadTaskQueue>,
+      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
 
+  // `task_runners_` includes the queues listed above along with the associated
+  // voters, plus any task queues and voter pairs created with
+  // `CreateWebSchedulingTaskQueue()`.
   TaskQueueVoterMap task_runners_;
 
   SchedulingLifecycleState lifecycle_state_ =

@@ -55,13 +55,13 @@ WorkerSchedulerImpl::WorkerSchedulerImpl(
           &tracing_controller_,
           perfetto::NamedTrack::ThreadScoped("WorkerThread", this),
           thread_scheduler_) {
-  task_runners_.emplace(throttleable_task_queue_,
-                        throttleable_task_queue_->CreateQueueEnabledVoter());
-  task_runners_.emplace(pausable_task_queue_,
-                        pausable_task_queue_->CreateQueueEnabledVoter());
-  task_runners_.emplace(pausable_non_vt_task_queue_,
-                        pausable_non_vt_task_queue_->CreateQueueEnabledVoter());
-  task_runners_.emplace(unpausable_task_queue_, nullptr);
+  task_runners_.insert(throttleable_task_queue_,
+                       throttleable_task_queue_->CreateQueueEnabledVoter());
+  task_runners_.insert(pausable_task_queue_,
+                       pausable_task_queue_->CreateQueueEnabledVoter());
+  task_runners_.insert(pausable_non_vt_task_queue_,
+                       pausable_non_vt_task_queue_->CreateQueueEnabledVoter());
+  task_runners_.insert(unpausable_task_queue_, nullptr);
 
   thread_scheduler_->RegisterWorkerScheduler(this);
 
@@ -97,8 +97,8 @@ void WorkerSchedulerImpl::PauseImpl() {
   paused_count_++;
   if (paused_count_ == 1) {
     for (const auto& pair : task_runners_) {
-      if (pair.second) {
-        pair.second->SetVoteToEnable(false);
+      if (pair.value) {
+        pair.value->SetVoteToEnable(false);
       }
     }
   }
@@ -109,8 +109,8 @@ void WorkerSchedulerImpl::ResumeImpl() {
   paused_count_--;
   if (paused_count_ == 0 && !is_disposed_) {
     for (const auto& pair : task_runners_) {
-      if (pair.second) {
-        pair.second->SetVoteToEnable(true);
+      if (pair.value) {
+        pair.value->SetVoteToEnable(true);
       }
     }
   }
@@ -145,7 +145,7 @@ void WorkerSchedulerImpl::Dispose() {
   thread_scheduler_->UnregisterWorkerScheduler(this);
 
   for (const auto& pair : task_runners_) {
-    pair.first->ShutdownTaskQueue();
+    pair.key->ShutdownTaskQueue();
   }
 
   task_runners_.clear();
@@ -367,8 +367,9 @@ WorkerSchedulerImpl::CreateWebSchedulingTaskQueue(
           NonMainThreadTaskQueue::QueueCreationParams()
               .SetWebSchedulingQueueType(queue_type)
               .SetWebSchedulingPriority(priority));
+  task_runners_.insert(task_queue, task_queue->CreateQueueEnabledVoter());
   return std::make_unique<NonMainThreadWebSchedulingTaskQueueImpl>(
-      std::move(task_queue));
+      GetWeakPtr(), std::move(task_queue));
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -404,6 +405,17 @@ void WorkerSchedulerImpl::UnpauseVirtualTime() {
     DCHECK(queue->GetTaskQueue()->HasActiveFence());
     queue->GetTaskQueue()->RemoveFence();
   }
+}
+
+void WorkerSchedulerImpl::OnWebSchedulingTaskQueueDestroyed(
+    NonMainThreadTaskQueue* queue) {
+  // `task_runners_` is cleared on disposal.
+  if (is_disposed_) {
+    return;
+  }
+  auto it = task_runners_.find(queue);
+  CHECK(it != task_runners_.end());
+  task_runners_.erase(it);
 }
 
 }  // namespace scheduler
