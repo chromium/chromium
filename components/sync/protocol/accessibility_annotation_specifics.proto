@@ -85,8 +85,8 @@ message AccessibilityAnnotationSpecifics {
     // The order ID(s) associated with this shipment.
     repeated string associated_order_ids = 2;
 
-    // The postal address to which the shipment is being delivered.
-    optional string delivery_address = 3;
+    reserved 3;
+    reserved "delivery_address";
 
     // The name of the courier or logistics service delivering the shipment.
     optional string carrier_name = 4;
@@ -99,6 +99,9 @@ message AccessibilityAnnotationSpecifics {
 
     // The date on which the shipment is estimated to be delivered.
     optional NaiveDate estimated_delivery_date = 7;
+
+    // The postal zip code to which the shipment is being delivered.
+    optional string delivery_zip_code = 8;
   }
 
   // Represents a government-issued driver's license.

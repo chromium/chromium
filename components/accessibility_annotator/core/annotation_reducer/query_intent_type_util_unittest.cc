@@ -402,7 +402,7 @@ TEST(QueryIntentTypeUtilTest, CreateResultFromShipmentEntity) {
   Shipment shipment;
   shipment.tracking_number = "1Z9999999999999999";
   shipment.associated_order_id = "ORD123";
-  shipment.delivery_address = "123 Main St";
+  shipment.delivery_zip_code = "80339";
   shipment.carrier_name = "UPS";
   shipment.carrier_domain = GURL("https://www.example.com");
   shipment.estimated_delivery_date = Date{15, 6, 2026};
@@ -419,8 +419,8 @@ TEST(QueryIntentTypeUtilTest, CreateResultFromShipmentEntity) {
            EntryMetadata(QueryIntentType::kShipmentCarrierDomain, u"",
                          u"https://www.example.com/"),
            EntryMetadata(QueryIntentType::kShipmentCarrierName, u"", u"UPS"),
-           EntryMetadata(QueryIntentType::kShipmentDeliveryAddress, u"",
-                         u"123 Main St"),
+           EntryMetadata(QueryIntentType::kShipmentDeliveryZipCode, u"",
+                         u"80339"),
            EntryMetadata(QueryIntentType::kShipmentEstimatedDeliveryDate, u"",
                          u"2026-06-15")}));
 
@@ -428,15 +428,15 @@ TEST(QueryIntentTypeUtilTest, CreateResultFromShipmentEntity) {
       CreateResultFromEntity(QueryIntentType::kShipmentFull, entity),
       MatchesMemorySearchResult(
           QueryIntentType::kShipmentFull,
-          u"1Z9999999999999999, ORD123, 123 Main St, UPS, "
+          u"1Z9999999999999999, ORD123, 80339, UPS, "
           u"https://www.example.com/, 2026-06-15",
           {EntryMetadata(QueryIntentType::kShipmentAssociatedOrderId, u"",
                          u"ORD123"),
            EntryMetadata(QueryIntentType::kShipmentCarrierDomain, u"",
                          u"https://www.example.com/"),
            EntryMetadata(QueryIntentType::kShipmentCarrierName, u"", u"UPS"),
-           EntryMetadata(QueryIntentType::kShipmentDeliveryAddress, u"",
-                         u"123 Main St"),
+           EntryMetadata(QueryIntentType::kShipmentDeliveryZipCode, u"",
+                         u"80339"),
            EntryMetadata(QueryIntentType::kShipmentEstimatedDeliveryDate, u"",
                          u"2026-06-15"),
            EntryMetadata(QueryIntentType::kShipmentTrackingNumber, u"",
