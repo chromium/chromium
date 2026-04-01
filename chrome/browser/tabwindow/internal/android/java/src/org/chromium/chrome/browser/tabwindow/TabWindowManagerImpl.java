@@ -446,6 +446,12 @@ public class TabWindowManagerImpl implements TabWindowManager {
             }
         }
 
+        for (TabModelSelector selector : getCustomTabsTabModelSelectors()) {
+            if (selector != null) {
+                count += selector.getModel(/* incognito= */ true).getCount();
+            }
+        }
+
         // Count tabs that are moving between activities (e.g. a tab that was recently reparented
         // and hasn't been attached to its new activity yet).
         SparseArray<AsyncTabParams> asyncTabParams = mAsyncTabParamsManager.getAsyncTabParams();
@@ -465,12 +471,24 @@ public class TabWindowManagerImpl implements TabWindowManager {
             }
         }
 
+        for (TabModelSelector selector : getCustomTabsTabModelSelectors()) {
+            if (selector != null) {
+                TabModel tabModel = selector.getModelForTabId(tab.getId());
+                if (tabModel != null) return tabModel;
+            }
+        }
+
         return null;
     }
 
     @Override
     public @Nullable Tab getTabById(@TabId int tabId) {
         for (TabModelSelector selector : getAllTabModelSelectors()) {
+            @Nullable final Tab tab = getTabFromTabModelSelector(selector, tabId);
+            if (tab != null) return tab;
+        }
+
+        for (TabModelSelector selector : getCustomTabsTabModelSelectors()) {
             @Nullable final Tab tab = getTabFromTabModelSelector(selector, tabId);
             if (tab != null) return tab;
         }
@@ -496,6 +514,16 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 }
             }
         }
+
+        for (TabModelSelector selector : getCustomTabsTabModelSelectors()) {
+            for (TabModel tabModel : selector.getModels()) {
+                @Nullable final Tab tab = tabModel.getTabById(tabId);
+                if (tab != null) {
+                    return new TabWindowInfo(INVALID_WINDOW_ID, selector, tabModel, tab);
+                }
+            }
+        }
+
         return null;
     }
 

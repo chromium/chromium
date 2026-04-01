@@ -634,6 +634,48 @@ public class TabWindowManagerImplUnitTest {
         destroyActivity(activityController1);
     }
 
+    /** Tests that getTabById() and other lookups function properly for custom tabs. */
+    @Test
+    public void testCustomTabsLookups() {
+        MockTabModelSelector customSelector =
+                new MockTabModelSelector(
+                        /* profile= */ mProfile,
+                        /* incognitoProfile= */ mIncognitoProfile,
+                        /* tabCount= */ 0,
+                        /* incognitoTabCount= */ 0,
+                        /* delegate= */ null);
+        mSubject.registerCustomTabsTabModelSelector(
+                /* taskId= */ 123, /* selector= */ customSelector);
+
+        Tab tab = customSelector.addMockTab();
+        Tab incognitoTab = customSelector.addMockIncognitoTab();
+
+        // Test getTabById.
+        assertEquals(tab, mSubject.getTabById(tab.getId()));
+        assertEquals(incognitoTab, mSubject.getTabById(incognitoTab.getId()));
+
+        // Test getTabModelForTab.
+        assertEquals(
+                customSelector.getModel(/* incognito= */ false), mSubject.getTabModelForTab(tab));
+        assertEquals(
+                customSelector.getModel(/* incognito= */ true),
+                mSubject.getTabModelForTab(incognitoTab));
+
+        // Test getIncognitoTabCount.
+        assertEquals(1, mSubject.getIncognitoTabCount());
+
+        // Test getTabWindowInfoById.
+        TabWindowInfo info = mSubject.getTabWindowInfoById(tab.getId());
+        assertNotNull(info);
+        assertEquals(tab, info.tab);
+        assertEquals(customSelector, info.tabModelSelector);
+        assertEquals(INVALID_WINDOW_ID, info.windowId);
+
+        mSubject.unregisterCustomTabsTabModelSelector(customSelector);
+        assertNull(mSubject.getTabById(tab.getId()));
+        assertEquals(0, mSubject.getIncognitoTabCount());
+    }
+
     /** Tests that getTabModelForTab(...) functions properly. */
     @Test
     @Feature({"Multiwindow"})

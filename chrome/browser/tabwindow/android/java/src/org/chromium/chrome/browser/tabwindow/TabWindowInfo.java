@@ -9,7 +9,10 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-/** Holds objects related to a tab and where it lives. */
+/**
+ * Holds objects related to a tab and where it lives. CCTs will have an invalid windowId {@link
+ * TabWindowManager#INVALID_WINDOW_ID}.
+ */
 @NullMarked
 public class TabWindowInfo {
     public final @WindowId int windowId;
