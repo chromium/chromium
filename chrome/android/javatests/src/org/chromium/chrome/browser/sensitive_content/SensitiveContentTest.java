@@ -42,6 +42,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -490,11 +491,8 @@ public class SensitiveContentTest {
                     assertEquals(2, tabModel.getCount());
                     secondTabAfterFreeze[0] = tabModel.getTabAt(1);
                     assertNotNull(secondTabAfterFreeze[0]);
+                    tabModel.setIndex(1, TabSelectionType.FROM_USER);
                 });
-
-        // Select the second tab.
-        final RegularTabSwitcherStation regularTabSwitcher = page.openRegularTabSwitcher();
-        regularTabSwitcher.selectTabAtIndex(1, WebPageStation.newBuilder());
 
         // The second tab should have sensitive content. The content sensitivity should have been
         // restored from tab state.
