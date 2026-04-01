@@ -34,6 +34,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 
@@ -129,6 +130,11 @@ public class ChromeActivitySnackbarHelperUnitTest {
         when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
                 .thenReturn(mockContainer);
 
+        BottomSheetContent mockContent = mock(BottomSheetContent.class);
+        when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
+        when(mockContent.hasCustomScrimLifecycle()).thenReturn(false);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
+
         // HALF state -> push override
         observer.onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
         verify(mSnackbarManager)
@@ -150,6 +156,60 @@ public class ChromeActivitySnackbarHelperUnitTest {
         observer.onSheetStateChanged(BottomSheetController.SheetState.HIDDEN, 0);
         verify(mSnackbarManager, times(1))
                 .popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
+        verify(mSnackbarManager, times(2)).dismissAllSnackbars();
+    }
+
+    @Test
+    public void testBottomSheetStateChanged_NotAllowed() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        ViewGroup mockContainer = mock(ViewGroup.class);
+        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
+                .thenReturn(mockContainer);
+
+        BottomSheetContent mockContent = mock(BottomSheetContent.class);
+        when(mockContent.allowInSheetContentSnackbars()).thenReturn(false);
+        when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mBottomSheetController.getCurrentSheetContent()).thenReturn(mockContent);
+
+        // HALF state -> should not push override because not allowed
+        observer.onSheetStateChanged(BottomSheetController.SheetState.HALF, 0);
+        verify(mSnackbarManager, times(0))
+                .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
+        verify(mSnackbarManager, times(0)).dismissAllSnackbars();
+    }
+
+    @Test
+    public void testBottomSheetContentChanged() {
+        ArgumentCaptor<BottomSheetObserver> observerCaptor =
+                ArgumentCaptor.forClass(BottomSheetObserver.class);
+        verify(mBottomSheetController).addObserver(observerCaptor.capture());
+        BottomSheetObserver observer = observerCaptor.getValue();
+
+        ViewGroup mockContainer = mock(ViewGroup.class);
+        when(mActivity.findViewById(R.id.bottom_sheet_snackbar_container))
+                .thenReturn(mockContainer);
+
+        BottomSheetContent mockContent = mock(BottomSheetContent.class);
+        when(mockContent.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mockContent.allowInSheetContentSnackbars()).thenReturn(true);
+        when(mBottomSheetController.getSheetState())
+                .thenReturn(BottomSheetController.SheetState.HALF);
+
+        observer.onSheetContentChanged(mockContent);
+        verify(mSnackbarManager)
+                .pushParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET), any(), any());
+        verify(mSnackbarManager).dismissAllSnackbars();
+
+        // Switch to not allowed content -> pop override
+        BottomSheetContent mockContent2 = mock(BottomSheetContent.class);
+        when(mockContent2.hasCustomScrimLifecycle()).thenReturn(true);
+        when(mockContent2.allowInSheetContentSnackbars()).thenReturn(false);
+        observer.onSheetContentChanged(mockContent2);
+        verify(mSnackbarManager).popParentViewOverride(eq(ParentOverrideSlot.BOTTOM_SHEET));
         verify(mSnackbarManager, times(2)).dismissAllSnackbars();
     }
 

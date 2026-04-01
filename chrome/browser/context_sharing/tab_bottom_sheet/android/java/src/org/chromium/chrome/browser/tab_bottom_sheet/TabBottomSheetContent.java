@@ -117,4 +117,9 @@ public class TabBottomSheetContent implements BottomSheetContent {
     public boolean canSuppressInAnyState() {
         return false;
     }
+
+    @Override
+    public boolean allowInSheetContentSnackbars() {
+        return false;
+    }
 }

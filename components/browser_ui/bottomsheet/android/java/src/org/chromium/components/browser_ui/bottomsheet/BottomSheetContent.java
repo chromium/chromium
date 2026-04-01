@@ -282,4 +282,17 @@ public interface BottomSheetContent {
     default boolean shouldLongPressMoveSheet() {
         return false;
     }
+
+    /**
+     * Whether snackbars should be shown inside the bottom sheet.
+     *
+     * <p>This should only be set to false if the bottom sheet is rarely or never full screen height
+     * (as otherwise the snackbar will be offscreen) and should only be set when the bottom sheet
+     * does not have a scrim in half or full height.
+     *
+     * @return True if snackbars should be shown inside the bottom sheet.
+     */
+    default boolean allowInSheetContentSnackbars() {
+        return true;
+    }
 }

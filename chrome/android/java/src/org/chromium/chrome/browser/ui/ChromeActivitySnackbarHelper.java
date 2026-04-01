@@ -20,6 +20,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.ParentOverrideSlot;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -49,12 +50,37 @@ public class ChromeActivitySnackbarHelper implements ChangeObserver {
                 }
 
                 @Override
+                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
+                    updateSnackbarForBottomSheet(
+                            newContent, mBottomSheetController.getSheetState());
+                }
+
+                @Override
                 public void onSheetStateChanged(int newState, int reason) {
+                    updateSnackbarForBottomSheet(
+                            mBottomSheetController.getCurrentSheetContent(), newState);
+                }
+
+                private void updateSnackbarForBottomSheet(
+                        @Nullable BottomSheetContent content, int newState) {
                     if (mSnackbarManager == null) return;
+
+                    boolean allowInSheetSnackbars =
+                            content != null && content.allowInSheetContentSnackbars();
+                    assert content == null
+                                    || content.allowInSheetContentSnackbars()
+                                    || content.hasCustomScrimLifecycle()
+                                    || content.hasCustomLifecycle()
+                            : "BottomSheetContent can only prevent out-of-sheet snackbars if it has"
+                                    + " a custom (scrim) lifecycle.";
+
                     boolean shouldOverride =
-                            newState == SheetState.HALF || newState == SheetState.FULL;
+                            (newState == SheetState.HALF || newState == SheetState.FULL)
+                                    && allowInSheetSnackbars;
                     boolean shouldPop =
-                            newState == SheetState.HIDDEN || newState == SheetState.PEEK;
+                            newState == SheetState.HIDDEN
+                                    || newState == SheetState.PEEK
+                                    || !allowInSheetSnackbars;
 
                     if (shouldOverride && !mHasSnackbarOverride) {
                         if (mBottomSheetSnackbarContainer == null) {
