@@ -10,7 +10,9 @@
 #import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_ui_delegate.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -110,4 +112,40 @@ void ActorService::ExecuteAction(
       std::move(tool), std::move(entry), std::move(callback));
 
   tool_ptr->Execute(std::move(wrapped_callback));
+}
+
+actor::ActorTaskId ActorService::CreateTask(const std::string& title,
+                                            id<ActorTaskUIDelegate> delegate,
+                                            bool allow_incognito_web_states) {
+  actor::ActorTaskId task_id(base::Token::CreateRandom());
+  while (active_tasks_.find(task_id) != active_tasks_.end()) {
+    task_id = actor::ActorTaskId(base::Token::CreateRandom());
+  }
+  active_tasks_[task_id] =
+      std::make_unique<actor::ActorTask>(task_id, title, delegate);
+  return task_id;
+}
+
+void ActorService::PerformActions(
+    actor::ActorTaskId task_id,
+    std::vector<std::unique_ptr<ActorTool>> actions,
+    const std::string& task_update,
+    actor::PerformActionsCallback callback) {
+  // TODO(crbug.com/496163986): Implement and test.
+  std::move(callback).Run(actor::ActorTaskStoppedReason::kStoppedByUser);
+}
+
+void ActorService::PauseTask(actor::ActorTaskId task_id, bool from_actor) {
+  // TODO(crbug.com/496163986): Implement and test.
+}
+
+void ActorService::StopTask(actor::ActorTaskId task_id,
+                            actor::ActorTaskStoppedReason reason) {
+  // TODO(crbug.com/496163986): Implement and test.
+  active_tasks_.erase(task_id);
+}
+
+std::vector<optimization_guide::proto::Action::ActionCase>
+ActorService::GetSupportedCapabilities() const {
+  return tool_factory_->GetSupportedCapabilities();
 }

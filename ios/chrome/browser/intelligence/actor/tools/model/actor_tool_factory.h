@@ -8,14 +8,9 @@
 #import <memory>
 
 #import "base/types/expected.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_error.h"
-
-namespace optimization_guide {
-namespace proto {
-class Action;
-}  // namespace proto
-}  // namespace optimization_guide
 
 class ProfileIOS;
 
@@ -31,6 +26,10 @@ class ActorToolFactory {
   virtual base::expected<std::unique_ptr<ActorTool>, ActorToolError> CreateTool(
       const optimization_guide::proto::Action& action,
       ProfileIOS* profile);
+
+  // Returns the list of supported capabilities by this tool factory.
+  virtual std::vector<optimization_guide::proto::Action::ActionCase>
+  GetSupportedCapabilities() const;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_FACTORY_H_

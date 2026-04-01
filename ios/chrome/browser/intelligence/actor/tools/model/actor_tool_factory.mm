@@ -18,6 +18,7 @@ ActorToolFactory::~ActorToolFactory() = default;
 base::expected<std::unique_ptr<ActorTool>, ActorToolError>
 ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
                              ProfileIOS* profile) {
+  // LINT.IfChange(CreateTool)
   switch (action.action_case()) {
     case optimization_guide::proto::Action::kNavigate:
       return NavigateTool::Create(action.navigate(), profile);
@@ -33,4 +34,17 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return base::unexpected(
           ActorToolError{ActorToolErrorCode::kUnsupportedAction});
   }
+  // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:SupportedCapabilities)
+}
+
+std::vector<optimization_guide::proto::Action::ActionCase>
+ActorToolFactory::GetSupportedCapabilities() const {
+  // LINT.IfChange(SupportedCapabilities)
+  return {
+      optimization_guide::proto::Action::kNavigate,
+      optimization_guide::proto::Action::kClick,
+      optimization_guide::proto::Action::kBack,
+      optimization_guide::proto::Action::kForward,
+  };
+  // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
 }

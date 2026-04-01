@@ -206,6 +206,7 @@ source_set("unit_tests") {
   sources = [
     "action_target_java_script_feature_unittest.mm",
     "action_target_js_unittest.mm",
+    "actor_tool_factory_unittest.mm",
     "click_tool_java_script_feature_unittest.mm",
     "click_tool_js_unittest.mm",
     "click_tool_unittest.mm",
@@ -219,6 +220,7 @@ source_set("unit_tests") {
     ":action_target_ts",
     ":actor_interface",
     ":actor_tool_error",
+    ":actor_tool_factory",
     ":click_tool",
     ":click_tool_ts",
     ":history_tool",
@@ -249,6 +251,7 @@ source_set("unit_tests") {
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//net:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
