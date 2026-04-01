@@ -44,12 +44,16 @@ concept IsConvertableJObject =
     std::is_convertible_v<U, T> || std::same_as<U, jobject>;
 
 template <typename T>
+  requires internal::IsJobject<T>
+class _JObjectArray : public _jobjectArray {};
+
+template <typename T>
 struct _JArrayHelper;
 
 template <typename T>
   requires internal::IsJobject<T>
 struct _JArrayHelper<T> {
-  using type = _jobjectArray;
+  using type = _JObjectArray<T>;
 };
 
 template <>
@@ -285,6 +289,26 @@ class JavaRef : public JavaRef<jobject> {
 #endif
 
   JavaRef(JNIEnv* env, jobject obj) : JavaRef<jobject>(env, obj) {}
+};
+
+// JavaRef specialization for JArray<T> where T is a jobject subclass.
+template <typename T>
+  requires internal::IsJobject<T>
+class JavaRef<internal::_JObjectArray<T>*> : public JavaRef<jobjectArray> {
+ public:
+  constexpr JavaRef() = default;
+  explicit constexpr JavaRef(std::nullptr_t) {}
+
+  JArray<T> obj() const {
+    return static_cast<JArray<T>>(JavaRef<jobject>::obj());
+  }
+
+  static JavaRef<JArray<T>> CreateLeaky(JNIEnv* env, JArray<T> obj) {
+    return JavaRef<internal::_JObjectArray<T>*>(env, obj);
+  }
+
+ protected:
+  JavaRef(JNIEnv* env, JArray<T> obj) : JavaRef<jobjectArray>(env, obj) {}
 };
 
 // Holds a local reference to a Java object. The local reference is scoped
