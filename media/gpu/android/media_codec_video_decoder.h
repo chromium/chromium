@@ -237,7 +237,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // Returns true if the MediaCodec must be reallocated due to an increase in
   // resolution.
-  bool CodecNeedsReallocation(int new_width);
+  bool CodecNeedsReallocation(const gfx::Size& new_size);
 
   std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal();
 
@@ -344,6 +344,10 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
 
   // KEY_MAX_INPUT_SIZE configured for the current codec.
   size_t max_input_size_ = 0;
+
+  // Whether or not the current codec has exceeded the configured max input
+  // size.
+  bool video_input_exceeds_max_capacity_ = false;
 
   // Optional crypto object from the Cdm.
   base::android::ScopedJavaGlobalRef<jobject> media_crypto_;

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -43,6 +44,23 @@ public class MediaFormatBuilderTest {
     private static final byte[] OPUS_PRE_SKIP_NSEC = ByteBuffer.allocate(8).putLong(11971).array();
     private static final byte[] OPUS_SEEK_PRE_ROLL_NSEC =
             ByteBuffer.allocate(8).putLong(80000000).array();
+
+    @Before
+    public void setUp() {
+        MediaCodecUtilJni.setInstanceForTesting(new FakeMediaCodecUtilNatives());
+    }
+
+    private static class FakeMediaCodecUtilNatives implements MediaCodecUtil.Natives {
+        @Override
+        public boolean isDecoderSupportedForDevice(String mimeType) {
+            return true;
+        }
+
+        @Override
+        public int estimateVideoMaxInputSize(String mimeType, int width, int height) {
+            return 123456;
+        }
+    }
 
     private static class MockHdrMetadata extends HdrMetadata {
         public boolean was_called;
@@ -192,10 +210,6 @@ public class MediaFormatBuilderTest {
     @Test
     public void testDolbyVisionDecoderMaxInputSize() {
         byte[][] csds = {};
-
-        // Estimate the maximum input size assuming three channel 4:2:0 subsampled input frames.
-        int minCompressionRatio = 4;
-        int expectedMaxInputSize = (VIDEO_WIDTH * VIDEO_HEIGHT * 3) / (2 * minCompressionRatio);
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
                         MediaFormat.MIMETYPE_VIDEO_DOLBY_VISION,
@@ -205,7 +219,8 @@ public class MediaFormatBuilderTest {
                         null,
                         true,
                         VideoCodecProfile.DOLBYVISION_PROFILE5);
-        assertEquals(expectedMaxInputSize, format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE));
+        assertTrue(format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE));
+        assertTrue(format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE) > 0);
     }
 
     @Test

@@ -1166,6 +1166,10 @@ BASE_FEATURE(kNdkVideoEncodeAcceleratorNativeSvc,
 BASE_FEATURE(kNdkVideoEncodeAcceleratorBitrateLayering,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables skipping MediaCodec reallocation if input buffer requirements
+// are already met.
+BASE_FEATURE(kSkipMediaCodecReallocation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.

@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
-import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -98,38 +97,15 @@ class MediaFormatBuilder {
         if (allowAdaptivePlayback && format.containsKey(MediaFormat.KEY_MAX_WIDTH)) {
             maxWidth = Math.max(maxWidth, format.getInteger(MediaFormat.KEY_MAX_WIDTH));
         }
-        int maxPixels;
-        int minCompressionRatio;
-        switch (assumeNonNull(format.getString(MediaFormat.KEY_MIME))) {
-            case MimeTypes.VIDEO_H264:
-                if ("BRAVIA 4K 2015".equals(Build.MODEL)) {
-                    // The Sony BRAVIA 4k TV has input buffers that are too small for the calculated
-                    // 4k video maximum input size, so use the default value.
-                    return;
-                }
-                // Round up width/height to an integer number of macroblocks.
-                maxPixels = ((maxWidth + 15) / 16) * ((maxHeight + 15) / 16) * 16 * 16;
-                minCompressionRatio = 2;
-                break;
-            case MimeTypes.VIDEO_VP8:
-                // VPX does not specify a ratio so use the values from the platform's SoftVPX.cpp.
-                maxPixels = maxWidth * maxHeight;
-                minCompressionRatio = 2;
-                break;
-            case MimeTypes.VIDEO_HEVC:
-            case MimeTypes.VIDEO_VP9:
-            case MimeTypes.VIDEO_AV1:
-            case MimeTypes.VIDEO_DV:
-                maxPixels = maxWidth * maxHeight;
-                minCompressionRatio = 4;
-                break;
-            default:
-                // Leave the default max input size.
-                return;
+        int maxInputSize =
+                MediaCodecUtilJni.get()
+                        .estimateVideoMaxInputSize(
+                                assumeNonNull(format.getString(MediaFormat.KEY_MIME)),
+                                maxWidth,
+                                maxHeight);
+        if (maxInputSize > 0) {
+            format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize);
         }
-        // Estimate the maximum input size assuming three channel 4:2:0 subsampled input frames.
-        int maxInputSize = (maxPixels * 3) / (2 * minCompressionRatio);
-        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize);
     }
 
     private static void addProfileInfoToFormat(MediaFormat format, int profile) {

@@ -48,4 +48,28 @@ TEST_F(MediaCodecUtilTest, GuessCodedSizeAlignment) {
                 base::android::android_info::SDK_VERSION_Q));
 }
 
+TEST_F(MediaCodecUtilTest, EstimateVideoBufferSize) {
+  // AVC with rounding
+  EXPECT_EQ(60480u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kH264,
+                                                            321, 240));
+
+  // VP8 (no rounding)
+  EXPECT_EQ(57780u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kVP8,
+                                                            321, 240));
+
+  // HEVC, VP9, AV1, DolbyVision (min compression ratio 4)
+  EXPECT_EQ(28890u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kHEVC,
+                                                            321, 240));
+  EXPECT_EQ(28890u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kVP9,
+                                                            321, 240));
+  EXPECT_EQ(28890u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kAV1,
+                                                            321, 240));
+  EXPECT_EQ(28890u, MediaCodecUtil::EstimateVideoBufferSize(
+                        VideoCodec::kDolbyVision, 321, 240));
+
+  // Unknown codec
+  EXPECT_EQ(0u, MediaCodecUtil::EstimateVideoBufferSize(VideoCodec::kUnknown,
+                                                        321, 240));
+}
+
 }  // namespace media

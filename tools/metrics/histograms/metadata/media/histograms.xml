@@ -540,6 +540,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaCodec.VideoInputExceedsMaxCapacity"
+    enum="Boolean" expires_after="2027-03-24">
+  <owner>sobek@google.com</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when the MediaCodec instance is released (`ReleaseCodec`). It will
+    be true if this MediaCodec instance encountered an input buffer that
+    exceeded the max input buffer size configured by the codec
+    (`max_input_size_`). It will be false otherwise.
+
+    This helps track the frequency of heuristic failures for input buffer
+    estimations during MediaCodec decoder configuration.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audible.ConcurrentTabsTime" units="ms"
     expires_after="2026-05-19">
   <owner>evliu@google.com</owner>

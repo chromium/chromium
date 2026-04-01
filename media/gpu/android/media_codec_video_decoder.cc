@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/android/android_info.h"
+#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -15,6 +16,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -427,7 +430,7 @@ void MediaCodecVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Restrict this behavior to Q, where the behavior changed.
   if (first_init) {
     last_width_ = width;
-  } else if (CodecNeedsReallocation(width)) {
+  } else if (CodecNeedsReallocation(decoder_config_.coded_size())) {
     MEDIA_LOG(INFO, media_log_)
         << "Queuing deferred codec reallocation for resolution change from "
         << old_size.ToString() << " to "
@@ -799,6 +802,7 @@ void MediaCodecVideoDecoder::OnCodecConfigured(
   }
 
   max_input_size_ = codec->GetMaxInputSize();
+  video_input_exceeds_max_capacity_ = false;
   codec_ = std::make_unique<CodecWrapper>(
       CodecSurfacePair(std::move(codec), std::move(surface_bundle)),
       base::BindRepeating(
@@ -931,34 +935,37 @@ bool MediaCodecVideoDecoder::QueueInput() {
   auto pending_buffer = pending_decodes_.front().buffer;
 
   if (!use_block_model_ && !pending_buffer->end_of_stream() &&
-      pending_buffer->is_key_frame() &&
       pending_buffer->size() > max_input_size_) {
-    // If we we're already using the provided resolution, try to guess something
-    // larger based on the actual input size.
-    if (decoder_config_.coded_size().width() == last_width_) {
-      // See MediaFormatBuilder::addInputSizeInfoToFormat() for details.
-      const size_t compression_ratio =
-          (decoder_config_.codec() == VideoCodec::kH264 ||
-           decoder_config_.codec() == VideoCodec::kVP8)
-              ? 2
-              : 4;
-      const size_t max_pixels =
-          (pending_buffer->size() * compression_ratio * 2) / 3;
-      if (max_pixels > 8294400)  // 4K
-        decoder_config_.set_coded_size(gfx::Size(7680, 4320));
-      else if (max_pixels > 2088960)  // 1080p
-        decoder_config_.set_coded_size(gfx::Size(3840, 2160));
-      else
-        decoder_config_.set_coded_size(gfx::Size(1920, 1080));
-    }
+    video_input_exceeds_max_capacity_ = true;
+    if (pending_buffer->is_key_frame()) {
+      // If we we're already using the provided resolution, try to guess
+      // something larger based on the actual input size.
+      if (decoder_config_.coded_size().width() == last_width_) {
+        // See MediaFormatBuilder::addInputSizeInfoToFormat() for details.
+        const size_t compression_ratio =
+            (decoder_config_.codec() == VideoCodec::kH264 ||
+             decoder_config_.codec() == VideoCodec::kVP8)
+                ? 2
+                : 4;
+        const size_t max_pixels =
+            (pending_buffer->size() * compression_ratio * 2) / 3;
+        if (max_pixels > 8294400) {  // 4K
+          decoder_config_.set_coded_size(gfx::Size(7680, 4320));
+        } else if (max_pixels > 2088960) {  // 1080p
+          decoder_config_.set_coded_size(gfx::Size(3840, 2160));
+        } else {
+          decoder_config_.set_coded_size(gfx::Size(1920, 1080));
+        }
+      }
 
-    // Flush and reallocate on the next call to QueueInput() if we changed size;
-    // otherwise just try queuing the buffer and hoping for the best.
-    if (decoder_config_.coded_size().width() != last_width_) {
-      deferred_flush_pending_ = true;
-      deferred_reallocation_pending_ = true;
-      last_width_ = decoder_config_.coded_size().width();
-      return true;
+      // Flush and reallocate on the next call to QueueInput() if we changed
+      // size; otherwise just try queuing the buffer and hoping for the best.
+      if (decoder_config_.coded_size().width() != last_width_) {
+        deferred_flush_pending_ = true;
+        deferred_reallocation_pending_ = true;
+        last_width_ = decoder_config_.coded_size().width();
+        return true;
+      }
     }
   }
 
@@ -982,7 +989,7 @@ bool MediaCodecVideoDecoder::QueueInput() {
       SelectMediaCodec(new_config, requires_secure_codec_, low_delay_,
                        &codec_name);
       return !codec_name_.empty() && codec_name == codec_name_ &&
-             !CodecNeedsReallocation(new_config.coded_size().width());
+             !CodecNeedsReallocation(new_config.coded_size());
     }();
 
     if (can_reuse_codec) {
@@ -1294,6 +1301,9 @@ void MediaCodecVideoDecoder::ReleaseCodec() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!codec_)
     return;
+  base::UmaHistogramBoolean(
+      "Media.Android.MediaCodec.VideoInputExceedsMaxCapacity",
+      video_input_exceeds_max_capacity_);
   auto pair = codec_->TakeCodecSurfacePair();
   codec_ = nullptr;
   codec_allocator_->ReleaseMediaCodec(
@@ -1386,12 +1396,45 @@ void MediaCodecVideoDecoder::CacheFrameInformation() {
       surface_chooser_helper_.ComputeFrameInformation(IsUsingOverlay());
 }
 
-bool MediaCodecVideoDecoder::CodecNeedsReallocation(int new_width) {
+bool MediaCodecVideoDecoder::CodecNeedsReallocation(const gfx::Size& new_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !use_block_model_ && new_width > last_width_ * kReallocateThreshold &&
-         device_info_ &&
-         device_info_->SdkVersion() >
-             base::android::android_info::SDK_VERSION_P;
+
+  // There are two reasons we might force a Codec reallocation:
+  // (1) The required input buffer size is likely to be exceeded at the new
+  // resolution. (2) The required dimensions exceed the codec's configured
+  // KEY_MAX_WIDTH and KEY_MAX_HEIGHT, triggering different memory allocation
+  // behaviors at larger resolutions.
+  //
+  // Android TV is a special case which uses MaxAnticipatedResolutionEstimator
+  // to set KEY_MAX_WIDTH and KEY_MAX_HEIGHT. This matches the physical screen
+  // resolution and does not use the video content dimensions unlike other
+  // platforms.
+  //
+  // As the hardware codec is allocated for maximum screen bounds on TV, it
+  // usually exceeds Chromium's requested KEY_MAX_INPUT_SIZE and instead
+  // allocates a much larger one to match the maximum screen bounds.
+  //
+  // Therefore, on Android TV (and other feature-enabled platforms), we can
+  // safely skip tearing down the pipeline, provided our heuristic determines
+  // the codec's existing returned `max_input_size_` is sufficient for the new
+  // frames.
+
+  bool hit_threshold = !use_block_model_ &&
+                       new_size.width() > last_width_ * kReallocateThreshold;
+
+  if (!hit_threshold) {
+    return false;
+  }
+
+  if (base::FeatureList::IsEnabled(kSkipMediaCodecReallocation)) {
+    size_t required_size = MediaCodecUtil::EstimateVideoBufferSize(
+        decoder_config_.codec(), new_size.width(), new_size.height());
+    if (required_size > 0 && max_input_size_ >= required_size) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 std::vector<SupportedVideoDecoderConfig>

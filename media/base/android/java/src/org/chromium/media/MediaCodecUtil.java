@@ -407,5 +407,8 @@ class MediaCodecUtil {
     @NativeMethods
     interface Natives {
         boolean isDecoderSupportedForDevice(@JniType("std::string") String mimeType);
+
+        int estimateVideoMaxInputSize(
+                @JniType("std::string") String mimeType, int width, int height);
     }
 }
