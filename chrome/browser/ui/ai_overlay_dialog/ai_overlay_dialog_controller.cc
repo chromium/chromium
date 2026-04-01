@@ -66,10 +66,6 @@ void AiOverlayDialogController::ShowOverlay() {
 
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
       overlay_web_view->GetWebContents(), SK_ColorTRANSPARENT);
-  if (auto* rwhv =
-          overlay_web_view->GetWebContents()->GetRenderWidgetHostView()) {
-    rwhv->SetBackgroundColor(SK_ColorTRANSPARENT);
-  }
 
   webui::SetBrowserWindowInterface(overlay_web_view->GetWebContents(),
                                    browser_);

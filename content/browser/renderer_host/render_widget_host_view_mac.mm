@@ -1129,9 +1129,7 @@ void RenderWidgetHostViewMac::TakeFallbackContentFrom(
   RenderWidgetHostViewMac* view_mac =
       static_cast<RenderWidgetHostViewMac*>(view);
   ScopedCAActionDisabler disabler;
-  std::optional<SkColor> color = view_mac->GetBackgroundColor();
-  if (color)
-    SetBackgroundColor(*color);
+  CopyBackgroundColorIfPresentFrom(*view);
 
   // Make the NSView for |this| display the same content as is being displayed
   // in the NSView for |view_mac|.
