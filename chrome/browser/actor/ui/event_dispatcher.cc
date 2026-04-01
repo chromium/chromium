@@ -351,8 +351,11 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   }
 
  private:
-  raw_ref<ActorUiStateManagerInterface> ui_state_manager_;
-  absl::flat_hash_set<std::unique_ptr<AsyncEventSequenceTask>> in_flight_tasks_;
+  raw_ref<ActorUiStateManagerInterface> ui_state_manager_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_set<std::unique_ptr<AsyncEventSequenceTask>> in_flight_tasks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<UiEventDispatcherImpl> weak_ptr_factory_{this};
 
   // Takes async path.
@@ -376,6 +379,7 @@ class UiEventDispatcherImpl : public UiEventDispatcher {
   template <absl::Overload V, typename EventT, typename ConvertedInputT>
   void GenerateAndSend(const ConvertedInputT& converted,
                        UiCompleteCallback callback) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     TRACE_EVENT_BEGIN("actor", "UiEventDispatch");
     if constexpr (std::is_same_v<EventT, AsyncUiEvent>) {
       CHECK(!callback.is_null()) << "Callback not defined for AsyncUiEvent";

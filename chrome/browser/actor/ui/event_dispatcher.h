@@ -19,7 +19,8 @@ namespace ui {
 
 class ActorUiStateManagerInterface;
 
-// This object is not thread safe; it expects to be called from a single thread.
+// This object is not thread safe; it expects to be called from a single
+// sequence.
 class UiEventDispatcher {
  public:
   using UiCompleteCallback =
