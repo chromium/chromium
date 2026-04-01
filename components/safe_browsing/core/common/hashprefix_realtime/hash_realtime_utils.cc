@@ -47,7 +47,7 @@ bool IsHashDetailRelevant(const V5::FullHash::FullHashDetail& detail) {
 #else
     if (detail.threat_type() != V5::ThreatType::SOCIAL_ENGINEERING) {
       // CANARY should only be attached with SOCIAL_ENGINEERING,
-      // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION or API_ABUSE. Only
+      // ABUSIVE_EXPERIENCE_VIOLATION, BETTER_ADS_VIOLATION. Only
       // SOCIAL_ENGINEERING is relevant to hash real time checks (the others
       // are not frame URLs), so only checking SOCIAL_ENGINEERING here.
       return false;

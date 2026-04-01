@@ -106,7 +106,7 @@ TEST(HashRealTimeUtilsTest, TestIsHashDetailRelevant) {
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
       V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(
-      create_hash_detail(V5::ThreatType::API_ABUSE, std::nullopt)));
+      create_hash_detail(V5::ThreatType::NOTIFICATION_ABUSE, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(create_hash_detail(
       V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION, std::nullopt)));
   EXPECT_FALSE(hash_realtime_utils::IsHashDetailRelevant(

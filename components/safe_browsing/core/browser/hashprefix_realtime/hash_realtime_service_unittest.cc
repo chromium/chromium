@@ -743,7 +743,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_OneHash) {
        SB_THREAT_TYPE_URL_PHISHING, 1},
       {V5::ThreatType::TRICK_TO_BILL, std::nullopt, SB_THREAT_TYPE_BILLING, 1},
       // Irrelevant threat types should return safe.
-      {V5::ThreatType::API_ABUSE, std::nullopt, SB_THREAT_TYPE_SAFE, 0},
+      {V5::ThreatType::NOTIFICATION_ABUSE, std::nullopt, SB_THREAT_TYPE_SAFE,
+       0},
   };
 
   GURL url = GURL("https://example.test");
@@ -823,7 +824,7 @@ TEST_F(HashRealTimeServiceTest,
       {CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
                            UrlToFullHashes(url)[0]),
        CreateFullHashProto({V5::ThreatType::MALWARE}, UrlToFullHashes(url)[2]),
-       CreateFullHashProto({V5::ThreatType::API_ABUSE,
+       CreateFullHashProto({V5::ThreatType::NOTIFICATION_ABUSE,
                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION},
                            UrlToFullHashes(url)[4]),
        CreateFullHashProto(
@@ -832,7 +833,8 @@ TEST_F(HashRealTimeServiceTest,
            UrlToFullHashes(url)[6]),
        CreateFullHashProto(
            {V5::ThreatType::MALWARE, V5::ThreatType::SOCIAL_ENGINEERING,
-            V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE},
+            V5::ThreatType::UNWANTED_SOFTWARE,
+            V5::ThreatType::NOTIFICATION_ABUSE},
            UrlToFullHashes(url)[8]),
        CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
                            UrlToFullHashes(url)[15]),
@@ -858,7 +860,7 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_OnlyIrrelevant) {
                            UrlToHashPrefixes(url)[0] + rest_of_hash),
        CreateFullHashProto({V5::ThreatType::MALWARE},
                            UrlToHashPrefixes(url)[2] + rest_of_hash),
-       CreateFullHashProto({V5::ThreatType::API_ABUSE,
+       CreateFullHashProto({V5::ThreatType::NOTIFICATION_ABUSE,
                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION},
                            UrlToFullHashes(url)[4]),
        CreateFullHashProto(
@@ -867,7 +869,8 @@ TEST_F(HashRealTimeServiceTest, TestLookup_MaxHashes_OnlyIrrelevant) {
            UrlToHashPrefixes(url)[6] + rest_of_hash),
        CreateFullHashProto(
            {V5::ThreatType::MALWARE, V5::ThreatType::SOCIAL_ENGINEERING,
-            V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE},
+            V5::ThreatType::UNWANTED_SOFTWARE,
+            V5::ThreatType::NOTIFICATION_ABUSE},
            UrlToHashPrefixes(url)[8] + rest_of_hash),
        CreateFullHashProto({V5::ThreatType::SOCIAL_ENGINEERING},
                            UrlToHashPrefixes(url)[15] + rest_of_hash)},
@@ -1274,7 +1277,7 @@ TEST_F(HashRealTimeServiceTest, TestFullyCached_MaxHashes) {
        CreateFullHashProto(
            {V5::ThreatType::MALWARE, V5::ThreatType::SOCIAL_ENGINEERING},
            UrlToFullHashes(url)[2]),
-       CreateFullHashProto({V5::ThreatType::API_ABUSE,
+       CreateFullHashProto({V5::ThreatType::NOTIFICATION_ABUSE,
                             V5::ThreatType::POTENTIALLY_HARMFUL_APPLICATION},
                            UrlToFullHashes(url)[4])});
   ResetMetrics();

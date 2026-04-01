@@ -128,13 +128,14 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_BasicFunctionality) {
         CreateBasicFullHash(
             "aaaa1111111111111111111111111111",
             {V5::ThreatType::SOCIAL_ENGINEERING, V5::ThreatType::MALWARE,
-             V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE}),
+             V5::ThreatType::UNWANTED_SOFTWARE,
+             V5::ThreatType::NOTIFICATION_ABUSE}),
         CreateBasicFullHash("aaaa2222222222222222222222222222",
                             {V5::ThreatType::MALWARE}),
         CreateBasicFullHash("aaaa3333333333333333333333333333",
-                            {V5::ThreatType::API_ABUSE}),
+                            {V5::ThreatType::NOTIFICATION_ABUSE}),
         CreateBasicFullHash("cccc1111111111111111111111111111",
-                            {V5::ThreatType::API_ABUSE,
+                            {V5::ThreatType::NOTIFICATION_ABUSE,
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
                              V5::ThreatType::BETTER_ADS_VIOLATION,
                              V5::ThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
@@ -211,7 +212,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Expiration) {
         CreateBasicFullHash(
             "aaaa1111111111111111111111111111",
             {V5::ThreatType::SOCIAL_ENGINEERING, V5::ThreatType::MALWARE,
-             V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE}),
+             V5::ThreatType::UNWANTED_SOFTWARE,
+             V5::ThreatType::NOTIFICATION_ABUSE}),
     };
     cache->CacheSearchHashesResponse(requested_hash_prefixes,
                                      response_full_hashes,
@@ -273,7 +275,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_ExpirationNanos) {
         CreateBasicFullHash(
             "aaaa1111111111111111111111111111",
             {V5::ThreatType::SOCIAL_ENGINEERING, V5::ThreatType::MALWARE,
-             V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE}),
+             V5::ThreatType::UNWANTED_SOFTWARE,
+             V5::ThreatType::NOTIFICATION_ABUSE}),
     };
     cache->CacheSearchHashesResponse(requested_hash_prefixes,
                                      response_full_hashes,
@@ -304,7 +307,7 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_Attributes) {
     AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::MALWARE,
                                {V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(
-        full_hash_1, V5::ThreatType::API_ABUSE,
+        full_hash_1, V5::ThreatType::NOTIFICATION_ABUSE,
         {V5::ThreatAttribute::CANARY, V5::ThreatAttribute::FRAME_ONLY});
     AddThreatTypeAndAttributes(full_hash_1, V5::ThreatType::UNWANTED_SOFTWARE,
                                {});
@@ -363,7 +366,8 @@ TEST_F(HashRealTimeCacheTest, TestCacheMatching_OverwrittenEntry) {
         CreateBasicFullHash(
             "aaaa1111111111111111111111111111",
             {V5::ThreatType::SOCIAL_ENGINEERING, V5::ThreatType::MALWARE,
-             V5::ThreatType::UNWANTED_SOFTWARE, V5::ThreatType::API_ABUSE}),
+             V5::ThreatType::UNWANTED_SOFTWARE,
+             V5::ThreatType::NOTIFICATION_ABUSE}),
     };
     cache->CacheSearchHashesResponse(requested_hash_prefixes,
                                      response_full_hashes,

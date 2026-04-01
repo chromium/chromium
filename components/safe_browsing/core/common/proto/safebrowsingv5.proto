@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// This file includes the Safe Browsing V5 API SearchHashes request and response
-// protocol buffers, since that's the only portion of the V5 API that Chrome
-// currently uses. They should be kept in sync with the server implementation.
+// This file includes the Safe Browsing V5 API SearchHashes and
+// BatchGetHashLists request and response protocol buffers, since that's the
+// only portion of the V5 API that Chrome currently uses. They should be kept in
+// sync with the server implementation.
 
 syntax = "proto3";
 
@@ -91,10 +92,13 @@ enum ThreatType {
   // Potentially harmful application threat type.
   POTENTIALLY_HARMFUL_APPLICATION = 4;
 
-  // API abuse threat type.
-  API_ABUSE = 6;
+  reserved 5, 6, 8 to 12, 14, 16 to 19;
 
-  reserved 5, 7 to 13, 14, 16 to 19;
+  // Malicious binary threat type.
+  MALICIOUS_BINARY = 7;
+
+  // Patterns to be used for activating the subresource filter.
+  SUBRESOURCE_FILTER = 13;
 
   // Trick-to-bill threat list.
   TRICK_TO_BILL = 15;
@@ -104,6 +108,11 @@ enum ThreatType {
 
   // Better advertisements threat type.
   BETTER_ADS_VIOLATION = 21;
+
+  reserved 22;
+  reserved 23;
+
+  NOTIFICATION_ABUSE = 24;
 }
 
 // Attributes of threats. These attributes may confer additional meaning to a
@@ -135,4 +144,293 @@ message Duration {
   // of the same sign as the `seconds` field. Must be from -999,999,999
   // to +999,999,999 inclusive.
   int32 nanos = 2;
+}
+
+// The constraints on the sizes of the hash lists.
+message SizeConstraints {
+  // The maximum size in number of entries. The update will not contain more
+  // entries than this value, but it is possible that the update will contain
+  // fewer entries than this value. This MUST be at least 1024. If omitted or
+  // zero, no update size limit is set.
+  int32 max_update_entries = 1;
+
+  // Sets the maximum number of entries that the client is willing to have
+  // in the local database for the list. (The server MAY cause the client to
+  // store less than this number of entries.) If omitted or zero, no database
+  // size limit is set.
+  int32 max_database_entries = 2;
+}
+
+// The Rice-Golomb encoded data. Used for either hashes or
+// removal indices. It is guaranteed that every hash or index here has the same
+// length, and this length is exactly 32 bits.
+//
+// Generally speaking, if we sort all the entries lexicographically, we will
+// find that the higher order bits tend not to change as frequently as lower
+// order bits. This means that if we also take the adjacent difference between
+// entries, the higher order bits have a high probability of being zero. This
+// exploits this high probability of zero by essentially choosing a certain
+// number of bits; all bits more significant than this are likely to be zero so
+// we use unary encoding. See the `rice_parameter` field.
+//
+// Historical note: the Rice-delta encoding was first used in V4 of this API. In
+// V5, two significant improvements were made: firstly, the Rice-delta encoding
+// is now available with hash prefixes longer than 4 bytes; secondly, the
+// encoded data are now treated as big-endian so as to avoid a costly sorting
+// step.
+message RiceDeltaEncoded32Bit {
+  // The first entry in the encoded data (hashes or indices), or, if only a
+  // single hash prefix or index was encoded, that entry's value. If the field
+  // is empty, the entry is zero.
+  uint32 first_value = 1;
+
+  // The Golomb-Rice parameter. This parameter is guaranteed to be between 3 and
+  // 30, inclusive.
+  int32 rice_parameter = 2;
+
+  // The number of entries that are delta encoded in the encoded data. If only a
+  // single integer was encoded, this will be zero and the single value will be
+  // stored in `first_value`.
+  int32 entries_count = 3;
+
+  // The encoded deltas that are encoded using the Golomb-Rice coder.
+  bytes encoded_data = 4;
+}
+
+// Same as `RiceDeltaEncoded32Bit` except this encodes 64-bit numbers.
+message RiceDeltaEncoded64Bit {
+  // The first entry in the encoded data (hashes), or, if only a single
+  // hash prefix was encoded, that entry's value. If the field is empty, the
+  // entry is zero.
+  uint64 first_value = 1;
+
+  // The Golomb-Rice parameter. This parameter is guaranteed to be between 35
+  // and 62, inclusive.
+  int32 rice_parameter = 2;
+
+  // The number of entries that are delta encoded in the encoded data. If only a
+  // single integer was encoded, this will be zero and the single value will be
+  // stored in `first_value`.
+  int32 entries_count = 3;
+
+  // The encoded deltas that are encoded using the Golomb-Rice coder.
+  bytes encoded_data = 4;
+}
+
+// Same as `RiceDeltaEncoded32Bit` except this encodes 128-bit numbers.
+message RiceDeltaEncoded128Bit {
+  // The upper 64 bits of the first entry in the encoded data (hashes). If the
+  // field is empty, the upper 64 bits are all zero.
+  uint64 first_value_hi = 1;
+
+  // The lower 64 bits of the first entry in the encoded data (hashes). If the
+  // field is empty, the lower 64 bits are all zero.
+  fixed64 first_value_lo = 2;
+
+  // The Golomb-Rice parameter. This parameter is guaranteed to be between 99
+  // and 126, inclusive.
+  int32 rice_parameter = 3;
+
+  // The number of entries that are delta encoded in the encoded data. If only a
+  // single integer was encoded, this will be zero and the single value will be
+  // stored in `first_value`.
+  int32 entries_count = 4;
+
+  // The encoded deltas that are encoded using the Golomb-Rice coder.
+  bytes encoded_data = 5;
+}
+
+// Same as `RiceDeltaEncoded32Bit` except this encodes 256-bit numbers.
+message RiceDeltaEncoded256Bit {
+  // The first 64 bits of the first entry in the encoded data (hashes). If the
+  // field is empty, the first 64 bits are all zero.
+  uint64 first_value_first_part = 1;
+
+  // The 65 through 128th bits of the first entry in the encoded data (hashes).
+  // If the field is empty, the 65 through 128th bits are all zero.
+  fixed64 first_value_second_part = 2;
+
+  // The 129 through 192th bits of the first entry in the encoded data (hashes).
+  // If the field is empty, the 129 through 192th bits are all zero.
+  fixed64 first_value_third_part = 3;
+
+  // The last 64 bits of the first entry in the encoded data (hashes). If the
+  // field is empty, the last 64 bits are all zero.
+  fixed64 first_value_fourth_part = 4;
+
+  // The Golomb-Rice parameter. This parameter is guaranteed to be between 227
+  // and 254, inclusive.
+  int32 rice_parameter = 5;
+
+  // The number of entries that are delta encoded in the encoded data. If only a
+  // single integer was encoded, this will be zero and the single value will be
+  // stored in `first_value`.
+  int32 entries_count = 6;
+
+  // The encoded deltas that are encoded using the Golomb-Rice coder.
+  bytes encoded_data = 7;
+}
+
+// Metadata about a particular hash list.
+message HashListMetadata {
+  // If not empty, this specifies that the hash list is a kind of threat list,
+  // and this enumerates the kind of threats associated with hashes or hash
+  // prefixes in this hash list. May be empty if the entry does not represent a
+  // threat, i.e. in the case that it represents a likely safe type.
+  repeated ThreatType threat_types = 1;
+
+  // If not empty, this specifies that the hash list represents a list of likely
+  // safe hashes, and this enumerates the ways they are considered likely safe.
+  // This field is mutually exclusive with the threat_types field.
+  repeated LikelySafeType likely_safe_types = 2;
+
+  // A human-readable description about this list. Written in English.
+  string description = 4;
+
+  // The length of hashes in a hash list.
+  enum HashLength {
+    // Unspecified length.
+    HASH_LENGTH_UNSPECIFIED = 0;
+
+    // Each hash is a four-byte prefix.
+    FOUR_BYTES = 2;
+
+    // Each hash is an eight-byte prefix.
+    EIGHT_BYTES = 3;
+
+    // Each hash is a sixteen-byte prefix.
+    SIXTEEN_BYTES = 4;
+
+    // Each hash is a thirty-two-byte full hash.
+    THIRTY_TWO_BYTES = 5;
+  }
+
+  // The supported hash length for this hash list. Each hash list will support
+  // exactly one length. If a different hash length is introduced for the same
+  // set of threat types or safe types, it will be introduced as a separate list
+  // with a distinct name and respective hash length set.
+  HashLength hash_length = 6;
+
+  // Deprecated fields.
+  reserved 3, 5;
+}
+
+// A list of hashes identified by its name.
+message HashList {
+  // The name of the hash list. Note that the Global Cache is also just a hash
+  // list and can be referred to here.
+  string name = 1;
+
+  // The version of the hash list. The client MUST NOT manipulate those bytes.
+  bytes version = 2;
+
+  // When true, this is a partial diff containing additions and removals
+  // based on what the client already has. When false, this is the complete
+  // hash list.
+  //
+  // When false, the client MUST delete any locally stored version for this
+  // hash list. This means that either the version possessed by the client is
+  // seriously out-of-date or the client data is believed to be corrupt. The
+  // `compressed_removals` field will be empty.
+  //
+  // When true, the client MUST apply an incremental update by applying
+  // removals and then additions.
+  bool partial_update = 3;
+
+  // The Rice-delta encoded version of additions. The hash prefix lengths of
+  // additions are uniform across all additions in the list.
+  oneof compressed_additions {
+    // The 4-byte additions.
+    RiceDeltaEncoded32Bit additions_four_bytes = 4;
+
+    // The 8-byte additions.
+    RiceDeltaEncoded64Bit additions_eight_bytes = 9;
+
+    // The 16-byte additions.
+    RiceDeltaEncoded128Bit additions_sixteen_bytes = 10;
+
+    // The 32-byte additions.
+    RiceDeltaEncoded256Bit additions_thirty_two_bytes = 11;
+  }
+
+  // The Rice-delta encoded version of removal indices. Since each hash list
+  // definitely has less than 2^32 entries, the indices are treated as 32-bit
+  // integers and encoded.
+  RiceDeltaEncoded32Bit compressed_removals = 5;
+
+  // Clients should wait at least this long to get the hash list again. If
+  // omitted or zero, clients SHOULD fetch immediately because it indicates that
+  // the server has an additional update to be sent to the client, but could not
+  // due to the client-specified constraints.
+  Duration minimum_wait_duration = 6;
+
+  // The sorted list of all hashes, hashed again with SHA256.
+  // This is the checksum for the sorted list of all hashes present in the
+  // database after applying the provided update. In the case that no updates
+  // were provided, the server will omit this field to indicate
+  // that the client should use the existing checksum.
+  bytes sha256_checksum = 7;
+
+  // Metadata about the hash list. This is not populated by the `GetHashList`
+  // method, but this is populated by the
+  // `ListHashLists` method.
+  HashListMetadata metadata = 8;
+}
+
+// The request to get multiple hash lists at the same time.
+message BatchGetHashListsRequest {
+  // The names of the particular hash lists. The list MAY be a threat list, or
+  // it may be the Global Cache. The names MUST NOT contain duplicates; if they
+  // did, the client will get an error.
+  repeated string names = 1;
+
+  // The versions of the hash list that the client already has. If this is the
+  // first time the client is fetching the hash lists, the field should be
+  // left empty. Otherwise, the client should supply the versions previously
+  // received from the server. The client MUST NOT manipulate those bytes.
+  //
+  // The client need not send the versions in the same order as the
+  // corresponding list names. The client may send fewer or more versions in a
+  // request than there are names. However the client MUST NOT send multiple
+  // versions that correspond to the same name; if it did, the client will get
+  // an error.
+  //
+  // Historical note: in V4 of the API, this was called
+  // `states`; it is now renamed to `version` for clarity.
+  repeated bytes version = 2;
+
+  // The size constraints on each list. If omitted, there are no
+  // constraints. Note that the sizes here are per-list, not aggregated across
+  // all lists.
+  SizeConstraints size_constraints = 4;
+
+  // Deprecated fields.
+  reserved 3;
+}
+
+// The response containing multiple hash lists.
+message BatchGetHashListsResponse {
+  // The hash lists in the same order given in the request.
+  repeated HashList hash_lists = 1;
+}
+
+// Types of likely-safe sites.
+//
+// Note that the `SearchHashesResponse` intentionally does not contain
+// `LikelySafeType`.
+enum LikelySafeType {
+  // Unknown.
+  LIKELY_SAFE_TYPE_UNSPECIFIED = 0;
+
+  // This site is likely safe enough for general browsing. This is also known as
+  // the global cache.
+  GENERAL_BROWSING = 1;
+
+  // This site is likely safe enough that there is no need to run Client-Side
+  // Detection models or password protection checks.
+  CSD = 2;
+
+  // This site is likely safe enough that downloads from the site need not be
+  // checked.
+  DOWNLOAD = 3;
 }
