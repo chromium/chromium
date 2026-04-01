@@ -9,14 +9,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
-import type {ApiConfig} from './api_session.js';
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AudioCapturer} from './audio_capturer.js';
 import {BlobAudioCapturer, MicrophoneAudioCapturer} from './audio_capturer.js';
 import {AudioPlayer} from './audio_player.js';
 import {Conversation, State} from './conversation.js';
-import type {ConversationConfig, Persona} from './conversation.js';
+import type {ApiConfig, ConversationConfig, Persona} from './conversation.js';
 import {errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 

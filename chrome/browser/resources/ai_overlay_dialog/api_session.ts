@@ -93,10 +93,12 @@ interface ServerContentMessage {
   toolCall?: ToolCall;
 }
 
-export interface ApiConfig {
+export interface ApiSessionConfig {
   endpointUrl: string;
   model: string;
   apiKey: string;
+  systemInstruction: string;
+  voiceName: string;
 }
 
 export interface ApiSessionDelegate {
@@ -112,8 +114,7 @@ export interface ApiSessionDelegate {
  * Manages the connection and communication with the server.
  */
 export class ApiSession {
-  private readonly systemInstruction: string;
-  private readonly config: ApiConfig;
+  private readonly config: ApiSessionConfig;
   private readonly toolDefinitions: Tool[];
 
   private ws: WebSocket|null = null;
@@ -127,9 +128,8 @@ export class ApiSession {
   private setupCompletedCallback: (() => void)|null = null;
 
   constructor(
-      systemInstruction: string, config: ApiConfig, toolDefinitions: Tool[],
+      config: ApiSessionConfig, toolDefinitions: Tool[],
       delegate: ApiSessionDelegate) {
-    this.systemInstruction = systemInstruction;
     this.config = config;
     this.toolDefinitions = toolDefinitions;
     this.delegate = delegate;
@@ -215,12 +215,13 @@ export class ApiSession {
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: {
-            voiceConfig: {prebuiltVoiceConfig: {voiceName: 'Puck'}},
+            voiceConfig:
+                {prebuiltVoiceConfig: {voiceName: this.config.voiceName}},
           },
         },
         systemInstruction: {
           parts: [{
-            text: this.systemInstruction,
+            text: this.config.systemInstruction,
           }],
         },
         tools: this.toolDefinitions,

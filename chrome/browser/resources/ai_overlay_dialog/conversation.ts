@@ -6,7 +6,7 @@ import {assert} from '//resources/js/assert.js';
 
 import type {PageCallbackRouter, PageHandlerRemote} from './ai_overlay_dialog.mojom-webui.js';
 import {ApiSession} from './api_session.js';
-import type {ApiConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
+import type {ApiSessionConfig, ApiSessionDelegate, Tool, ToolCall} from './api_session.js';
 import {debugLog, DebugLogTag, errorLog, log} from './logging.js';
 import type {PageContext} from './page_context_manager.js';
 import {PageContextManager} from './page_context_manager.js';
@@ -14,7 +14,10 @@ import {buildSystemInstruction} from './persona.js';
 
 const FILE = 'Conversation';
 
-/* A bundle of information about how to initialize the model's personality */
+/**
+ * Information about how to initialize the model's personality. Corresponds to
+ * the persona JSON defined in the bundle.
+ */
 export interface Persona {
   id: string;
   name: string;
@@ -22,6 +25,19 @@ export interface Persona {
   voice: string;
 }
 
+/**
+ * Information about setup for the model connection. Corresponds to the
+ * api_config JSON defined in the bundle.
+ */
+export interface ApiConfig {
+  endpointUrl: string;
+  model: string;
+  apiKey: string;
+}
+
+/**
+ * Configuration information used to initialize a Conversation object.
+ */
 export interface ConversationConfig {
   system_instruction: string;
   persona: Persona;
@@ -245,8 +261,15 @@ export class Conversation implements ApiSessionDelegate {
 
     debugLog(FILE, DebugLogTag.SYSTEM_INSTRUCTION, systemInstruction);
 
-    this.session = new ApiSession(
-        systemInstruction, this.config.api_config, this.toolDefinitions, this);
+    const apiSessionConfig: ApiSessionConfig = {
+      endpointUrl: this.config.api_config.endpointUrl,
+      model: this.config.api_config.model,
+      apiKey: this.config.api_config.apiKey,
+      systemInstruction,
+      voiceName: this.config.persona.voice,
+    };
+
+    this.session = new ApiSession(apiSessionConfig, this.toolDefinitions, this);
     await this.session.connect();
   }
 
