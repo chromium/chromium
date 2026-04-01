@@ -4,12 +4,15 @@
 
 #include "services/webnn/ort/context_provider_ort.h"
 
+#include "base/win/windows_version.h"
+#include "services/webnn/public/cpp/win_app_runtime_package_info.h"
 #include "services/webnn/public/mojom/features.mojom.h"
 
 namespace webnn::ort {
 
 bool ShouldCreateOrtContext(const mojom::CreateContextOptions& options) {
-  return base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime);
+  return base::win::GetVersion() >= kWinAppRuntimeSupportedMinVersion &&
+         base::FeatureList::IsEnabled(mojom::features::kWebNNOnnxRuntime);
 }
 
 }  // namespace webnn::ort
