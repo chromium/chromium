@@ -12,7 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/types/optional_ref.h"
-#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_service.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -94,7 +94,7 @@ class EntityDataManager
       scoped_refptr<AutofillWebDataService> profile_database,
       history::HistoryService* history_service,
       strike_database::StrikeDatabaseBase* strike_database,
-      accessibility_annotator::AccessibilityAnnotationService*
+      accessibility_annotator::AccessibilityAnnotatorService*
           accessibility_annotator_service,
       GeoIpCountryCode variation_country_code);
   EntityDataManager(const EntityDataManager&) = delete;
@@ -206,7 +206,7 @@ class EntityDataManager
   base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
       history_service_observation_{this};
 
-  // AccessibilityAnnotationService and therefore its EntityDataProvider
+  // AccessibilityAnnotatorService and therefore its EntityDataProvider
   // outlives the EntityDataManager.
   base::ScopedObservation<accessibility_annotator::EntityDataProvider,
                           accessibility_annotator::EntityDataProvider::Observer>

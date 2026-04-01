@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATION_SERVICE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATION_SERVICE_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_SERVICE_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -16,11 +16,11 @@
 namespace accessibility_annotator {
 
 // Public service for accessing the accessibility annotator.
-class AccessibilityAnnotationService : public KeyedService {
+class AccessibilityAnnotatorService : public KeyedService {
  public:
-  explicit AccessibilityAnnotationService(
+  explicit AccessibilityAnnotatorService(
       std::unique_ptr<EntityDataProvider> entity_data_provider);
-  ~AccessibilityAnnotationService() override;
+  ~AccessibilityAnnotatorService() override;
 
   EntityDataProvider* GetEntityDataProvider();
 
@@ -30,4 +30,4 @@ class AccessibilityAnnotationService : public KeyedService {
 
 }  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATION_SERVICE_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ACCESSIBILITY_ANNOTATOR_SERVICE_H_

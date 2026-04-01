@@ -47,7 +47,7 @@ class DirectServerEntityProvider
   base::ObserverList<EntityDataProvider::Observer> observers_;
 
   // `backend_` is owned by the BrowserContext and is guaranteed to outlive this
-  // object due to the `DependsOn` in the AccessibilityAnnotationServiceFactory
+  // object due to the `DependsOn` in the AccessibilityAnnotatorServiceFactory
   // that creates AccessibilityAnnotationService which owns this object.
   // Backend is used to access underlying storage, mainly the sync bridge for
   // direct access to server entities.

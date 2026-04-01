@@ -4,11 +4,11 @@
 
 source_set("core") {
   sources = [
-    "accessibility_annotation_service.cc",
-    "accessibility_annotation_service.h",
     "accessibility_annotator_enablement_service.h",
     "accessibility_annotator_enablement_service_impl.cc",
     "accessibility_annotator_enablement_service_impl.h",
+    "accessibility_annotator_service.cc",
+    "accessibility_annotator_service.h",
     "accessibility_annotator_types.h",
     "accessibility_query_service.cc",
     "accessibility_query_service.h",

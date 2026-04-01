@@ -16,7 +16,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
-#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_service.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"
 #include "components/accessibility_annotator/core/data_models/entity_types.h"
 #include "components/accessibility_annotator/core/entity_data_provider.h"
@@ -124,8 +124,8 @@ class EntityDataManagerTestBase : public testing::Test {
 
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
-  virtual accessibility_annotator::AccessibilityAnnotationService*
-  GetAccessibilityAnnotationService() {
+  virtual accessibility_annotator::AccessibilityAnnotatorService*
+  GetAccessibilityAnnotatorService() {
     return nullptr;
   }
 
@@ -161,7 +161,7 @@ class EntityDataManagerTestBase : public testing::Test {
         client_->GetPrefs(), client_->GetIdentityManager(), &sync_service_,
         helper_.autofill_webdata_service(),
         /*history_service=*/nullptr,
-        /*strike_database=*/nullptr, GetAccessibilityAnnotationService(),
+        /*strike_database=*/nullptr, GetAccessibilityAnnotatorService(),
         /*variation_country_code=*/GeoIpCountryCode("US"));
   }
 
@@ -534,15 +534,15 @@ class EntityDataManagerTest_AccessibilityAnnotator
       {.record_type = EntityInstance::RecordType::kLocal});
 
  private:
-  accessibility_annotator::AccessibilityAnnotationService*
-  GetAccessibilityAnnotationService() override {
+  accessibility_annotator::AccessibilityAnnotatorService*
+  GetAccessibilityAnnotatorService() override {
     return &service_;
   }
 
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kAutofillUseAccessibilityAnnotator};
 
-  accessibility_annotator::AccessibilityAnnotationService service_{
+  accessibility_annotator::AccessibilityAnnotatorService service_{
       std::make_unique<testing::NiceMock<MockEntityDataProvider>>()};
 };
 

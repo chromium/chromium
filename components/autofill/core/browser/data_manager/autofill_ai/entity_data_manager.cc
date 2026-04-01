@@ -12,7 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "components/accessibility_annotator/core/accessibility_annotation_service.h"
+#include "components/accessibility_annotator/core/accessibility_annotator_service.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
@@ -38,7 +38,7 @@ EntityDataManager::EntityDataManager(
     scoped_refptr<AutofillWebDataService> webdata_service,
     history::HistoryService* history_service,
     strike_database::StrikeDatabaseBase* strike_database,
-    accessibility_annotator::AccessibilityAnnotationService*
+    accessibility_annotator::AccessibilityAnnotatorService*
         accessibility_annotator_service,
     GeoIpCountryCode variation_country_code)
     : webdata_service_(std::move(webdata_service)),
