@@ -43,6 +43,22 @@ span#is_sampling_enabled {
 
 .sourcetype {
   width: 2em;
+  white-space: nowrap;
+}
+
+.source_container > td.url::before {
+  content: '+ ';
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.source_container.expanded > td.url::before {
+  content: '- ';
+}
+
+.events-row > td {
+  padding: 0 !important;
+  border: none !important;
 }
 
 .source-container>td {
@@ -61,15 +77,24 @@ span#is_sampling_enabled {
   padding: 10px 10px 10px 10px;
 }
 
-#sources>tbody>tr:nth-child(odd) {
+/*
+ * Alternate backgrounds for sourceHTMLrow/UKMTable pairs.
+ * Uses :nth-child(4n+X) to band pairs in #ccc and #eee.
+ */
+
+ /* Style the first pair of rows in each block of four */
+#sources>tbody>tr:nth-child(4n+1),
+#sources>tbody>tr:nth-child(4n+2) {
   background: #ccc;
 }
 
-#sources>tbody>tr:nth-child(even) {
+/* Style the second pair of rows in each block of four */
+#sources>tbody>tr:nth-child(4n+3),
+#sources>tbody>tr:nth-child(4n) {
   background: #eee;
 }
 
-#sources>tbody>tr>td.url:hover {
+#sources>tbody>tr.source_container:hover {
   background-color: lightsteelblue;
   cursor: pointer;
 }

@@ -122,14 +122,31 @@ function createSourceRowsForTheSameUrl(
   if (!sourcesForUrl || sourcesForUrl.length === 0) {
     return;
   }
+
   for (const source of sourcesForUrl) {
     const sourceHtmlRow = document.createElement('tr');
     sourceHtmlRow.classList.add('source_container');
-
     sourcesTable.appendChild(sourceHtmlRow);
-    const urlElement = populateSourceHtmlRow(source, sourceHtmlRow);
+
+    // Add a row to contain the event-metrics tables.
+    const eventsRow = document.createElement('tr');
+    eventsRow.classList.add('events-row');
+    const eventsCell = document.createElement('td');
+    eventsCell.setAttribute('colspan', '3');
+    eventsRow.appendChild(eventsCell);
+    sourcesTable.appendChild(eventsRow);
+
+    // Restore the display state from the map.
     const displayState = displayStates.get(as64Bit(source.id));
-    createEventMetricTablesForSource(source, urlElement, displayState);
+    // Apply the display state if any, based on whether the user has clicked
+    // this Source row. Otherwise, apply the display state base on the
+    // "Expand/Collapse All" button state.
+    const expandedAll = getRequiredElement('toggle_expand').textContent ===
+      COLLAPSE_ALL_BUTTON_TEXT;
+    const isExpanded = displayState ? displayState === 'block' : expandedAll;
+    populateSourceHtmlRow(source, sourceHtmlRow, eventsCell, isExpanded);
+    const displayValue = isExpanded ? 'block' : 'none';
+    createEventMetricTablesForSource(source, eventsCell, displayValue);
   }
   // Add a thin horizontal line at the bottom, which visually separates this
   // group of Sources with the same URL value from the next group.
@@ -141,11 +158,12 @@ function createSourceRowsForTheSameUrl(
  * Populates a table row with the given Source data.
  * @param sourceData data pertaining to one Source.
  * @param sourceHtmlRow The HTML element whose content will be populated.
- * @return The HTML Element representing the URL value to which event-metrics
- *     tables can be appended.
+ * @param eventsCell The HTML element to which event-metric tables are appended.
+ * @param isExpanded Whether the row is initially expanded.
  */
 function populateSourceHtmlRow(
-    sourceData: UkmSource, sourceHtmlRow: Element): Element {
+    sourceData: UkmSource, sourceHtmlRow: Element, eventsCell: Element,
+    isExpanded: boolean): void {
   const urlElement = document.createElement('td');
   urlElement.classList.add('url');
   urlElement.innerText = sourceData.url || URL_EMPTY;
@@ -156,47 +174,49 @@ function populateSourceHtmlRow(
   typeElement.classList.add('sourcetype');
   typeElement.innerText = sourceData.type;
 
+  if (isExpanded) {
+    sourceHtmlRow.classList.add('expanded');
+  }
+
   sourceHtmlRow.appendChild(urlElement);
   sourceHtmlRow.appendChild(idElement);
   sourceHtmlRow.appendChild(typeElement);
 
-  // Clicking on the URL of this Source toggles the display state of its
-  // event-metrics tables.
-  urlElement.addEventListener('click', () => {
-    const eventsTables = urlElement.lastChild as HTMLElement;
-    eventsTables.style.display =
-        eventsTables.style.display === 'block' ? 'none' : 'block';
-  });
+  const toggleHandler = () => {
+    // The eventsTables child is appended later in
+    // createEventMetricTablesForSource().
+    const eventsTables = eventsCell.lastChild as HTMLElement;
+    if (eventsTables.style.display === 'block') {
+      eventsTables.style.display = 'none';
+      sourceHtmlRow.classList.remove('expanded');
+    } else {
+      eventsTables.style.display = 'block';
+      sourceHtmlRow.classList.add('expanded');
+    }
+  };
 
-  return urlElement;
+  // Clicking on the row toggles the display state of its event-metrics tables.
+  sourceHtmlRow.addEventListener('click', toggleHandler);
 }
 
 
 /**
- * Adds event-metrics tables of a Source. Clicking on the URL of the Source
+ * Adds event-metrics tables of a Source. Clicking on the Source row
  * toggles their display on or off.
  * @param sourceData Data for one Source.
- * @param urlElement The HTML element showing the URL of the source, to which
- *     the event-metrics tables will be added.
+ * @param eventsCell The HTML element to which the event-metrics tables will be
+ *     added.
  * @param displayState Display style of the event-metrics table for this Source.
  */
 function createEventMetricTablesForSource(
-    sourceData: UkmSource, urlElement: Element,
-    displayState: string|undefined) {
+    sourceData: UkmSource, eventsCell: Element,
+    displayState: string) {
   const eventMetricsElement = document.createElement('div');
   eventMetricsElement.classList.add('events');
-  urlElement.appendChild(eventMetricsElement);
+  eventsCell.appendChild(eventMetricsElement);
 
-  // Apply the display state if any, base on whether the user has clicked this
-  // Source row.
-  if (displayState) {
-    eventMetricsElement.style.display = displayState;
-  } else {
-    // Apply the display state base on the "Expand/Collapse All" button state.
-    const expandedAll = getRequiredElement('toggle_expand').textContent ===
-        COLLAPSE_ALL_BUTTON_TEXT;
-    eventMetricsElement.style.display = expandedAll ? 'block' : 'none';
-  }
+  // Apply the display state
+  eventMetricsElement.style.display = displayState;
 
   if (sourceData.events.length === 0) {
     eventMetricsElement.textContent = '(no events)';
@@ -215,15 +235,15 @@ function createEventMetricTablesForSource(
 /**
  * Creates a table representing metrics associated to one UKM Event.
  * @param event A UKM Event.
- * @param urlElement The HTML element showing the URL of the source, to which
- *     the event-metrics table will be appended.
+ * @param eventsElement The HTML element to which the event-metrics table will
+ *     be appended.
  */
-function createEventMetricsTable(event: UkmEvent, urlElement: Element) {
+function createEventMetricsTable(event: UkmEvent, eventsElement: Element) {
   // Add first column to the table.
   const eventTable = document.createElement('table');
   eventTable.classList.add('event-table');
   eventTable.setAttribute('value', event.name);
-  urlElement.appendChild(eventTable);
+  eventsElement.appendChild(eventTable);
 
   const firstRow = document.createElement('tr');
   eventTable.appendChild(firstRow);
@@ -286,14 +306,22 @@ function addExpandAllToggleButton() {
   const toggleExpand = getRequiredElement('toggle_expand');
   toggleExpand.textContent = EXPAND_ALL_BUTTON_TEXT;
   toggleExpand.addEventListener('click', () => {
+    const containers =
+        document.body.querySelectorAll<HTMLElement>('.source_container');
+    const events = document.body.querySelectorAll<HTMLElement>('.events');
+
     if (toggleExpand.textContent === EXPAND_ALL_BUTTON_TEXT) {
       toggleExpand.textContent = COLLAPSE_ALL_BUTTON_TEXT;
-      setDisplayStyle(
-          document.body.querySelectorAll<HTMLElement>('.events'), 'block');
+      setDisplayStyle(events, 'block');
+      for (const el of containers) {
+        el.classList.add('expanded');
+      }
     } else {
       toggleExpand.textContent = EXPAND_ALL_BUTTON_TEXT;
-      setDisplayStyle(
-          document.body.querySelectorAll<HTMLElement>('.events'), 'none');
+      setDisplayStyle(events, 'none');
+      for (const el of containers) {
+        el.classList.remove('expanded');
+      }
     }
   });
 }
@@ -445,9 +473,11 @@ function updateUkmData() {
     // for example, expanded state.
     const currentDisplayStates = new Map();
     for (const el of document.getElementsByClassName('source_container')) {
-      currentDisplayStates.set(
-          el.querySelector<HTMLElement>('.sourceid')!.textContent,
-          el.querySelector<HTMLElement>('.events')!.style.display);
+      const sourceId = el.querySelector<HTMLElement>('.sourceid')!.textContent;
+      // .events is inside the next sibling (.events-row)
+      const eventsRow = el.nextElementSibling!;
+      const eventsElement = eventsRow.querySelector<HTMLElement>('.events')!;
+      currentDisplayStates.set(sourceId, eventsElement.style.display);
     }
     const urlToSources =
         urlToSourcesMapping(filterSourcesUsingFormOptions(data.sources));
