@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testHitTestInDesktop() {
-    var url = 'data:text/html,<!doctype html>' +
-        encodeURI('<div>Don\'t Click Me</div>' +
-                  '<button>Click Me</button>');
-    var didHitTest = false;
+    const url = `data:text/html,<!doctype html>${
+        encodeURI('<div>Don\'t Click Me</div><button>Click Me</button>')}`;
+    let didHitTest = false;
     chrome.automation.getDesktop(function(desktop) {
       chrome.tabs.create({url: url});
 
@@ -15,7 +14,7 @@ var allTests = [
         if (didHitTest)
           return;
         if (event.target.url.indexOf('data:') >= 0) {
-          var button = desktop.find({ attributes: { name: 'Click Me',
+          const button = desktop.find({ attributes: { name: 'Click Me',
                                                     role: 'button' } });
           if (button) {
             didHitTest = true;
@@ -25,8 +24,8 @@ var allTests = [
             // Click just barely on the second button, very close
             // to the first button. This tests that we are converting
             // coordinate properly.
-            var cx = button.location.left + 10;
-            var cy = button.location.top + 10;
+            const cx = button.location.left + 10;
+            const cy = button.location.top + 10;
             desktop.hitTest(cx, cy, EventType.CLICKED);
           }
         }

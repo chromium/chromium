@@ -2,46 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var ActiveDescendantAttribute = [ 'activeDescendant' ];
-var LinkAttributes = [ 'url' ];
-var DocumentAttributes = [ 'docUrl',
-                           'docTitle',
-                           'docLoaded',
-                           'docLoadingProgress' ];
-var ScrollableAttributes = [ 'scrollX',
-                             'scrollXMin',
-                             'scrollXMax',
-                             'scrollY',
-                             'scrollYMin',
-                             'scrollYMax' ];
-var EditableTextAttributes = [ 'textSelStart',
-                               'textSelEnd' ];
-var RangeAttributes = [ 'valueForRange',
-                        'minValueForRange',
-                        'maxValueForRange' ];
-var TableAttributes = [ 'tableRowCount',
-                        'tableColumnCount',
-                        'ariaRowCount',
-                        'ariaColumnCount' ];
-var TableCellAttributes = [ 'tableCellColumnIndex',
-                            'tableCellAriaColumnIndex',
-                            'tableCellColumnSpan',
-                            'tableCellRowIndex',
-                            'tableCellAriaRowIndex',
-                            'tableCellRowSpan' ];
+const ActiveDescendantAttribute = ['activeDescendant'];
+const LinkAttributes = ['url'];
+const DocumentAttributes =
+    ['docUrl', 'docTitle', 'docLoaded', 'docLoadingProgress'];
+const ScrollableAttributes = [
+  'scrollX', 'scrollXMin', 'scrollXMax', 'scrollY', 'scrollYMin', 'scrollYMax'
+];
+const EditableTextAttributes = ['textSelStart', 'textSelEnd'];
+const RangeAttributes =
+    ['valueForRange', 'minValueForRange', 'maxValueForRange'];
+const TableAttributes =
+    ['tableRowCount', 'tableColumnCount', 'ariaRowCount', 'ariaColumnCount'];
+const TableCellAttributes = [
+  'tableCellColumnIndex', 'tableCellAriaColumnIndex', 'tableCellColumnSpan',
+  'tableCellRowIndex', 'tableCellAriaRowIndex', 'tableCellRowSpan'
+];
 
-var disabledTests = [
+const disabledTests = [
   // http://crbug.com/725420
   function testDocumentAndScrollAttributes_flaky() {
-    for (var i = 0; i < DocumentAttributes.length; i++) {
-      var attribute = DocumentAttributes[i];
-      assertTrue(attribute in rootNode,
-                 'rootNode should have a ' + attribute + ' attribute');
+    for (let i = 0; i < DocumentAttributes.length; i++) {
+      let attribute = DocumentAttributes[i];
+      assertTrue(
+          attribute in rootNode,
+          `rootNode should have a ${attribute} attribute`);
     }
-    for (var i = 0; i < ScrollableAttributes.length; i++) {
-      var attribute = ScrollableAttributes[i];
-      assertTrue(attribute in rootNode,
-                 'rootNode should have a ' + attribute + ' attribute');
+    for (let i = 0; i < ScrollableAttributes.length; i++) {
+      let attribute = ScrollableAttributes[i];
+      assertTrue(
+          attribute in rootNode,
+          `rootNode should have a ${attribute} attribute`);
     }
 
     assertEq('Automation Tests - Attributes', rootNode.docTitle);
@@ -57,16 +48,16 @@ var disabledTests = [
   }
 ];
 
-var allTests = [
+const allTests = [
   function testActiveDescendant() {
-    let combobox = rootNode.find({ role: 'textFieldWithComboBox' });
+    const combobox = rootNode.find({role: 'textFieldWithComboBox'});
     assertTrue(combobox.isComboBox);
     combobox.addEventListener(EventType.FOCUS, () => {
       assertTrue('activeDescendant' in combobox,
                  'combobox button should have an activedescendant attribute');
-      let listbox = rootNode.find({ role: 'listBox' });
+      const listbox = rootNode.find({role: 'listBox'});
       assertFalse(listbox.isComboBox);
-      let opt6 = listbox.children[5];
+      const opt6 = listbox.children[5];
       assertEq(opt6, combobox.activeDescendant);
       chrome.test.succeed();
     }, true);
@@ -74,15 +65,15 @@ var allTests = [
   },
 
   function testLinkAttributes() {
-    var links = rootNode.findAll({ role: 'link' });
+    const links = rootNode.findAll({role: 'link'});
     assertEq(2, links.length);
 
-    var realLink = links[0];
+    const realLink = links[0];
     assertEq('Real link', realLink.name);
     assertTrue('url' in realLink, 'realLink should have a url attribute');
     assertEq('about://blank', realLink.url);
 
-    var ariaLink = links[1];
+    const ariaLink = links[1];
     assertEq('ARIA link', ariaLink.name);
     assertTrue('url' in ariaLink, 'ariaLink should have an empty url');
     assertEq(undefined, ariaLink.url);
@@ -90,28 +81,30 @@ var allTests = [
   },
 
   function testEditableTextAttributes() {
-    let textFields = rootNode.findAll({ role: 'textField' });
+    const textFields = rootNode.findAll({role: 'textField'});
     assertEq(3, textFields.length);
     for (let textField of textFields) {
-      let description = textField.description;
+      const description = textField.description;
       for (let attribute of EditableTextAttributes) {
-        assertTrue(attribute in textField,
-                   'textField (' + description + ') should have a ' +
-                   attribute + ' attribute');
+        assertTrue(
+            attribute in textField,
+            `textField (${description}) should have a ` +
+                `${attribute} attribute`);
       }
     }
 
-    let input = textFields[0];
+    const input = textFields[0];
     input.addEventListener(EventType.FOCUS, () => {
       assertEq('text-input', input.name);
       assertEq(2, input.textSelStart);
       assertEq(8, input.textSelEnd);
 
-      let textArea = textFields[1];
+      const textArea = textFields[1];
       assertEq('textarea', textArea.name);
       for (let attribute of EditableTextAttributes) {
-        assertTrue(attribute in textArea,
-                   'textArea should have a ' + attribute + ' attribute');
+        assertTrue(
+            attribute in textArea,
+            `textArea should have a ${attribute} attribute`);
       }
 
       /* Re-enable the following two assertions once the new selection code is
@@ -124,7 +117,7 @@ var allTests = [
         assertEq(2, textArea.textSelStart);
         assertEq(4, textArea.textSelEnd);
 
-        let ariaTextbox = textFields[2];
+        const ariaTextbox = textFields[2];
         assertEq('textbox-role', ariaTextbox.name);
         assertEq(undefined, ariaTextbox.textSelStart,
                  'ariaTextbox.textSelStart');
@@ -143,42 +136,43 @@ var allTests = [
   },
 
   function testRangeAttributes() {
-    var sliders = rootNode.findAll({ role: 'slider' });
+    const sliders = rootNode.findAll({role: 'slider'});
     assertEq(2, sliders.length);
-    var spinButtons = rootNode.findAll({ role: 'spinButton' });
+    const spinButtons = rootNode.findAll({role: 'spinButton'});
     assertEq(1, spinButtons.length);
-    var progressIndicators = rootNode.findAll({ role: 'progressIndicator' });
+    const progressIndicators = rootNode.findAll({role: 'progressIndicator'});
     assertEq(2, progressIndicators.length);
     assertEq('progressbar-role', progressIndicators[0].name);
-    var scrollBars = rootNode.findAll({ role: 'scrollBar' });
+    const scrollBars = rootNode.findAll({role: 'scrollBar'});
     assertEq(1, scrollBars.length);
 
-    var ranges = sliders.concat(spinButtons, progressIndicators, scrollBars);
+    const ranges = sliders.concat(spinButtons, progressIndicators, scrollBars);
     assertEq(6, ranges.length);
 
-    for (var i = 0; i < ranges.length; i++) {
-      var range = ranges[i];
-      for (var j = 0; j < RangeAttributes.length; j++) {
-        var attribute = RangeAttributes[j];
-        assertTrue(attribute in range,
-                   range.role + ' (' + range.description + ') should have a '
-                   + attribute + ' attribute');
+    for (let i = 0; i < ranges.length; i++) {
+      const range = ranges[i];
+      for (let j = 0; j < RangeAttributes.length; j++) {
+        let attribute = RangeAttributes[j];
+        assertTrue(
+            attribute in range,
+            `${range.role} (${range.description}) should have a ` +
+                `${attribute} attribute`);
       }
     }
 
-    var inputRange = sliders[0];
+    const inputRange = sliders[0];
     assertEq('range-input', inputRange.name);
     assertEq(4, inputRange.valueForRange);
     assertEq(0, inputRange.minValueForRange);
     assertEq(5, inputRange.maxValueForRange);
 
-    var ariaSlider = sliders[1];
+    const ariaSlider = sliders[1];
     assertEq('slider-role', ariaSlider.name);
     assertEq(7, ariaSlider.valueForRange);
     assertEq(1, ariaSlider.minValueForRange);
     assertEq(10, ariaSlider.maxValueForRange);
 
-    var spinButton = spinButtons[0];
+    const spinButton = spinButtons[0];
     assertEq(14, spinButton.valueForRange);
     assertEq(1, spinButton.minValueForRange);
     assertEq(31, spinButton.maxValueForRange);
@@ -197,14 +191,14 @@ var allTests = [
   },
 
   function testTableAttributes() {
-    var table = rootNode.find({ role: 'grid' });;
+    const table = rootNode.find({role: 'grid'});
     assertEq(3, table.tableRowCount);
     assertEq(103, table.ariaRowCount);
     assertEq(3, table.tableColumnCount);
     assertEq(53, table.ariaColumnCount);
 
-    var row1 = table.firstChild;
-    var cell1 = row1.firstChild;
+    const row1 = table.firstChild;
+    const cell1 = row1.firstChild;
     assertEq(0, cell1.tableCellColumnIndex);
     assertEq(51, cell1.tableCellAriaColumnIndex);
     assertEq(1, cell1.tableCellColumnSpan);
@@ -212,7 +206,7 @@ var allTests = [
     assertEq(101, cell1.tableCellAriaRowIndex);
     assertEq(1, cell1.tableCellRowSpan);
 
-    var cell2 = cell1.nextSibling;
+    const cell2 = cell1.nextSibling;
     assertEq(1, cell2.tableCellColumnIndex);
     assertEq(52, cell2.tableCellAriaColumnIndex);
     assertEq(1, cell2.tableCellColumnSpan);
@@ -220,7 +214,7 @@ var allTests = [
     assertEq(101, cell2.tableCellAriaRowIndex);
     assertEq(1, cell2.tableCellRowSpan);
 
-    var cell3 = cell2.nextSibling;
+    const cell3 = cell2.nextSibling;
     assertEq(2, cell3.tableCellColumnIndex);
     assertEq(53, cell3.tableCellAriaColumnIndex);
     assertEq(1, cell3.tableCellColumnSpan);
@@ -228,8 +222,8 @@ var allTests = [
     assertEq(101, cell3.tableCellAriaRowIndex);
     assertEq(1, cell3.tableCellRowSpan);
 
-    var row2 = row1.nextSibling;
-    var cell4 = row2.firstChild;
+    const row2 = row1.nextSibling;
+    const cell4 = row2.firstChild;
     assertEq(0, cell4.tableCellColumnIndex);
     assertEq(51, cell4.tableCellAriaColumnIndex);
     assertEq(2, cell4.tableCellColumnSpan);
@@ -237,7 +231,7 @@ var allTests = [
     assertEq(102, cell4.tableCellAriaRowIndex);
     assertEq(1, cell4.tableCellRowSpan);
 
-    var cell5 = cell4.nextSibling;
+    const cell5 = cell4.nextSibling;
     assertEq(2, cell5.tableCellColumnIndex);
     assertEq(53, cell5.tableCellAriaColumnIndex);
     assertEq(1, cell5.tableCellColumnSpan);
@@ -245,8 +239,8 @@ var allTests = [
     assertEq(102, cell5.tableCellAriaRowIndex);
     assertEq(2, cell5.tableCellRowSpan);
 
-    var row3 = row2.nextSibling;
-    var cell6 = row3.firstChild;
+    const row3 = row2.nextSibling;
+    const cell6 = row3.firstChild;
     assertEq(0, cell6.tableCellColumnIndex);
     assertEq(51, cell6.tableCellAriaColumnIndex);
     assertEq(1, cell6.tableCellColumnSpan);
@@ -254,7 +248,7 @@ var allTests = [
     assertEq(103, cell6.tableCellAriaRowIndex);
     assertEq(1, cell6.tableCellRowSpan);
 
-    var cell7 = cell6.nextSibling;
+    const cell7 = cell6.nextSibling;
     assertEq(1, cell7.tableCellColumnIndex);
     assertEq(52, cell7.tableCellAriaColumnIndex);
     assertEq(1, cell7.tableCellColumnSpan);
@@ -266,64 +260,60 @@ var allTests = [
   },
 
   function testLangAttribute() {
-    var p = rootNode.find({ attributes: { language: 'es-ES' } });
+    const p = rootNode.find({attributes: {language: 'es-ES'}});
     assertTrue(p !== undefined);
     assertEq('paragraph', p.role);
     chrome.test.succeed();
   },
 
   function testNoAttributes() {
-    var div = rootNode.find({ attributes: { name: 'main' } });
+    const div = rootNode.find({attributes: {name: 'main'}});
     assertTrue(div !== undefined);
-    var allAttributes = [].concat(ActiveDescendantAttribute,
-                              LinkAttributes,
-                              DocumentAttributes,
-                              ScrollableAttributes,
-                              EditableTextAttributes,
-                              RangeAttributes,
-                              TableAttributes,
-                              TableCellAttributes);
-    for (var attributeAttr in allAttributes) {
+    const allAttributes = [].concat(
+        ActiveDescendantAttribute, LinkAttributes, DocumentAttributes,
+        ScrollableAttributes, EditableTextAttributes, RangeAttributes,
+        TableAttributes, TableCellAttributes);
+    for (let attributeAttr in allAttributes) {
       assertFalse(attributeAttr in div);
     }
     chrome.test.succeed();
   },
 
   function testNameFrom() {
-    var link = rootNode.find({ role: 'link' });
+    const link = rootNode.find({role: 'link'});
     assertEq(chrome.automation.NameFromType.CONTENTS, link.nameFrom);
-    var textarea = rootNode.find({ attributes: { name: 'textarea' } });
+    const textarea = rootNode.find({attributes: {name: 'textarea'}});
     assertEq(chrome.automation.NameFromType.ATTRIBUTE, textarea.nameFrom);
     chrome.test.succeed();
   },
 
   function testCheckedAttribute() {
     // Checkbox can use all 3 checked attribute values: true|false|mixed
-    var checkTest1 = rootNode.find({ attributes: { name: 'check-test-1' } });
+    const checkTest1 = rootNode.find({attributes: {name: 'check-test-1'}});
     assertTrue(checkTest1.isCheckBox);
     assertTrue(Boolean(checkTest1));
     assertEq(checkTest1.checked, 'true');
 
-    var checkTest2 = rootNode.find({ attributes: { name: 'check-test-2' } });
+    const checkTest2 = rootNode.find({attributes: {name: 'check-test-2'}});
     assertTrue(Boolean(checkTest2));
     assertEq(checkTest2.checked, 'false');
 
-    var checkTest3 = rootNode.find({ attributes: { name: 'check-test-3' } });
+    const checkTest3 = rootNode.find({attributes: {name: 'check-test-3'}});
     assertTrue(Boolean(checkTest3));
     assertEq(checkTest3.checked, 'mixed');
 
     // Uncheckable nodes have a checked attribute of undefined
-    var checkTest4 = rootNode.find({ attributes: { name: 'check-test-4' } });
+    const checkTest4 = rootNode.find({attributes: {name: 'check-test-4'}});
     assertTrue(Boolean(checkTest4));
     assertEq(checkTest4.checked, undefined);
 
     // Treeitem can be checked
-    var checkTest5 = rootNode.find({ attributes: { name: 'check-test-5' } });
+    const checkTest5 = rootNode.find({attributes: {name: 'check-test-5'}});
     assertTrue(Boolean(checkTest5));
     assertEq(checkTest5.checked, 'true');
 
     // button with aria-pressed shows up as checked
-    var checkTest6 = rootNode.find({ attributes: { name: 'check-test-6' } });
+    const checkTest6 = rootNode.find({attributes: {name: 'check-test-6'}});
     assertTrue(Boolean(checkTest6));
     assertEq(checkTest6.checked, 'true');
 
@@ -331,7 +321,7 @@ var allTests = [
   },
 
   function testHtmlTagAttribute() {
-    var figure = rootNode.find({ attributes: { htmlTag: 'figure' } });
+    const figure = rootNode.find({attributes: {htmlTag: 'figure'}});
     assertTrue(Boolean(figure));
     assertEq(figure.htmlTag, 'figure');
 
@@ -339,7 +329,7 @@ var allTests = [
   },
 
   function testIsImageAttribute() {
-    var img = rootNode.find({ role: 'image'});
+    const img = rootNode.find({role: 'image'});
     assertTrue(Boolean(img));
     assertTrue(img.isImage);
 

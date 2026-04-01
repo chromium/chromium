@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testFocusAcrossWindows() {
     // Create two windows with focusable text fields in them.
     // Let window2 have focus. (Enforce this by focusing the WebView
     // that's the parent of the second window's document, below.)
-    var html1 = '<input title="Input1">';
-    var html2 = '<input title="Input2">';
-    var url1 = 'data:text/html,<!doctype html>' + encodeURI(html1);
-    var url2 = 'data:text/html,<!doctype html>' + encodeURI(html2);
+    const html1 = '<input title="Input1">';
+    const html2 = '<input title="Input2">';
+    const url1 = `data:text/html,<!doctype html>${encodeURI(html1)}`;
+    const url2 = `data:text/html,<!doctype html>${encodeURI(html2)}`;
     chrome.windows.create({url: url1, focused: false});
     chrome.windows.create({url: url2, focused: true});
 
@@ -23,7 +23,7 @@ var allTests = [
     // If we get a focus event on the first text field, the test fails,
     // because that window is in the background. If we get a focus event on
     // the second text field, the test succeeds.
-    var input1, input2;
+    let input1, input2;
     chrome.automation.getDesktop(function(rootNode) {
       rootNode.addEventListener('loadComplete', function(event) {
         if (event.target.url == url1) {

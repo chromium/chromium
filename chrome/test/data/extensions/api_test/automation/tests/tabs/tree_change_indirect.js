@@ -10,39 +10,39 @@
 // TODO(accessibility): Verify that the following line really works.
 // return rootNode.find({ htmlId: id });
 
-var allTests = [
+const allTests = [
   function testUpdateRelatedNamesAndDescriptions() {
-    var cats = rootNode.find({ role: "checkBox"});
-    var apples = rootNode.find({ role: "main" } );
-    var butter = rootNode.find({ role: "group" } );
+    let cats = rootNode.find({ role: 'checkBox'});
+    let apples = rootNode.find({ role: 'main' } );
+    let butter = rootNode.find({ role: 'group' } );
     // TODO(aleventhal) why are we getting the wrong objects for these?
-    // var cats = findById("input");
-    // var apples = findById("main");
-    // var butter = findById("group");
-    assertEq("cats", cats.name);
-    assertEq("apples", apples.name);
-    assertEq("butter", butter.description);
+    // let cats = findById('input');
+    // let apples = findById('main');
+    // let butter = findById('group');
+    assertEq('cats', cats.name);
+    assertEq('apples', apples.name);
+    assertEq('butter', butter.description);
 
-    chrome.automation.addTreeChangeObserver("allTreeChanges", function(change) {
-      if (change.type == "textChanged") {
+    chrome.automation.addTreeChangeObserver('allTreeChanges', function(change) {
+      if (change.type == 'textChanged') {
         // TODO(aleventhal) Why is timeout necessary to avoid uncaught exception
         // "Error in event handler for automationInternal.onTreeChange:
         // ReferenceError: treeChange is not defined" ?
         setTimeout(function() {
-          var dogs = rootNode.find({ role: "checkBox"});
-          var oranges = rootNode.find({ role: "main" } );
-          var margarine = rootNode.find({ role: "group"} );
-          assertEq("dogs", dogs.name);
-          assertEq("oranges", oranges.name);
-          assertEq("margarine", margarine.description);
+          const dogs = rootNode.find({ role: 'checkBox'});
+          const oranges = rootNode.find({ role: 'main' } );
+          const margarine = rootNode.find({ role: 'group'} );
+          assertEq('dogs', dogs.name);
+          assertEq('oranges', oranges.name);
+          assertEq('margarine', margarine.description);
           chrome.test.succeed();
         }, 0);
       }
     });
 
-    var button = rootNode.find({ attributes: { name: "Change" }});
+    const button = rootNode.find({ attributes: { name: 'Change' }});
     button.doDefault();
   },
 ];
 
-setUpAndRunTabsTests(allTests, "tree_change_indirect.html");
+setUpAndRunTabsTests(allTests, 'tree_change_indirect.html');

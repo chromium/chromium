@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function detectedLanguageSetOnFirst() {
-    var first = rootNode.children[0].children[0];
+    const first = rootNode.children[0].children[0];
     assertEq('staticText', first.role);
     assertEq('fr', first.language, 'document manually declares lang="fr"');
     assertEq('en', first.detectedLanguage,
@@ -13,7 +13,7 @@ var allTests = [
   },
 
   function detectedLanguageSetOnSecond() {
-    var second = rootNode.children[1].children[0];
+    const second = rootNode.children[1].children[0];
     assertEq('staticText', second.role);
     assertEq('en', second.language, 'document manually declares lang="en"');
     assertEq('fr', second.detectedLanguage,
@@ -25,8 +25,8 @@ var allTests = [
   // contain unicode surrogate pairs.
   function testBuildOutputStringOnSurrogatePair() {
     // containsSurrogatePair = '𝛀 is bold omega'.
-    var containsSurrogatePair = '\u{1D6C0} is bold omega';
-    var symbolArray = [...containsSurrogatePair];
+    const containsSurrogatePair = '\u{1D6C0} is bold omega';
+    const symbolArray = [...containsSurrogatePair];
     // To humans, the length of 𝛀 is 1, but to the computer, it actually has a
     // length of 2.
     // Bold omega is a single unicode code point which is 2 code units in Utf16.
@@ -42,7 +42,7 @@ var allTests = [
     // endIndex = 2 to extract the 𝛀.
     // However, the buildOutputString function is unicode-aware, so to
     // extract the 𝛀, we can set endIndex = 1, instead of 2.
-    var omega = containsSurrogatePair.substring(0,2);
+    let omega = containsSurrogatePair.substring(0,2);
     assertEq('1d6c0',omega.codePointAt(0).toString(16));
     omega = buildOutputString(containsSurrogatePair,0,1);
     assertEq('1d6c0',omega.codePointAt(0).toString(16));
@@ -52,9 +52,9 @@ var allTests = [
 
 // Returns unicode-aware substring of text from startIndex to endIndex.
 function buildOutputString(text,startIndex,endIndex) {
-  var result = '';
-  var textSymbolArray = [...text];
-  for (var i = startIndex; i < endIndex; ++i) {
+  let result = '';
+  const textSymbolArray = [...text];
+  for (let i = startIndex; i < endIndex; ++i) {
     result += textSymbolArray[i];
   }
   return result;

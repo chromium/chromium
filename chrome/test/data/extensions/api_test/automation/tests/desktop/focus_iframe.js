@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testFocusInIframes() {
     chrome.test.getConfig(function(config) {
-      var url = 'http://a.com:' + config.testServer.port + '/iframe_outer.html';
+      const url = `http://a.com:${config.testServer.port}/iframe_outer.html`;
       chrome.tabs.create({url: url});
 
       chrome.automation.getDesktop(function(rootNode) {
@@ -18,7 +18,7 @@ var allTests = [
 
         // Poll until we get the inner button, which is in the inner frame.
         const id = setInterval(() => {
-          var innerButton =
+          const innerButton =
               rootNode.find({attributes: {name: 'Inner'}, role: 'button'});
           if (innerButton) {
             innerButton.focus();

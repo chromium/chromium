@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testForceLayoutFiresFocus() {
-    var node = rootNode.find({ role: 'button'});
+    const node = rootNode.find({ role: 'button'});
     assertEq('button', node.role);
     rootNode.addEventListener('focus', (evt) => {
       if (evt.target.role !== 'button') {

@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testTreeChangedObserverForCreatingNode() {
-    var addButton = rootNode.find({attributes: {name: 'Add'}});
-    var observerOneCallCount = 0;
-    var observerTwoCallCount = 0;
+    const addButton = rootNode.find({attributes: {name: 'Add'}});
+    let observerOneCallCount = 0;
+    let observerTwoCallCount = 0;
 
     function observerOne(change) {
-      if (change.type == "subtreeCreated" && change.target.name == "New") {
+      if (change.type == 'subtreeCreated' && change.target.name == 'New') {
         observerOneCallCount++;
         // The first observer should only ever be called once and then it is
         // removed.
@@ -59,20 +59,20 @@ var allTests = [
   },
 
   function testTreeChangedObserverForRemovingNode() {
-    chrome.automation.addTreeChangeObserver("allTreeChanges", function(change) {
-      if (change.type == "nodeRemoved" && change.target.role == "listItem") {
+    chrome.automation.addTreeChangeObserver('allTreeChanges', function(change) {
+      if (change.type == 'nodeRemoved' && change.target.role == 'listItem') {
         chrome.test.succeed();
       }
     });
 
-    var removeButton = rootNode.find({ attributes: { name: 'Remove' }});
+    const removeButton = rootNode.find({ attributes: { name: 'Remove' }});
     removeButton.doDefault();
   },
 
   function testTreeChangedObserverForLiveRegionsOnly() {
     // This test would fail if we set the filter to allTreeChanges.
     chrome.automation.addTreeChangeObserver(
-        "liveRegionTreeChanges",
+        'liveRegionTreeChanges',
         function(change) {
       if (change.target.name == 'Dead') {
         // The internal bindings will notify us of a subtreeUpdateEnd if there
@@ -92,7 +92,7 @@ var allTests = [
       }
     });
 
-    var liveButton = rootNode.find({ attributes: { name: 'Live' }});
+    const liveButton = rootNode.find({ attributes: { name: 'Live' }});
     liveButton.doDefault();
   }
 ];

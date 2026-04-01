@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   async function testTwoWindows() {
-    const url1 = 'data:text/html,' +
-        encodeURI('<div>Don\'t Click Me</div>' +
-                  '<button>Click Me</button>');
-    const url2 = 'data:text/html,' +
-        encodeURI('<div>Don\'t Click Me too</div>' +
-                  '<button>Click Me too</button>');
+    const url1 = `data:text/html,${
+        encodeURI(`<div>Don't Click Me</div><button>Click Me</button>`)}`;
+    const url2 = `data:text/html,${
+        encodeURI(
+            `<div>Don't Click Me too</div><button>Click Me too</button>`)}`;
     const desktop =
         await new Promise(resolve => chrome.automation.getDesktop(resolve));
     chrome.windows.create({url: url1, focused: true});

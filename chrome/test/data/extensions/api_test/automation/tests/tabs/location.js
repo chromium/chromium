@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testLocation() {
     function assertOkButtonLocation(event) {
-      var okButton = rootNode.find({ role: RoleType.BUTTON,
+      const okButton = rootNode.find({ role: RoleType.BUTTON,
                                      attributes: { name: 'Ok' }});
       assertTrue('location' in okButton);
 
@@ -17,7 +17,7 @@ var allTests = [
       chrome.test.succeed();
     };
 
-    var okButton = rootNode.firstChild.firstChild;
+    const okButton = rootNode.firstChild.firstChild;
     assertTrue('location' in okButton, 'no location in okButton');
     assertTrue('left' in okButton.location, 'no left in location');
     assertTrue('top' in okButton.location, 'no top in location');
@@ -27,10 +27,12 @@ var allTests = [
     okButton.addEventListener(
         EventType.FOCUS, assertOkButtonLocation);
 
-    chrome.tabs.executeScript({ 'code':
-          'document.querySelector("button")' +
-          '.setAttribute("style", "position: absolute; left: 100; top: 150; ' +
-          'width: 300; height: 350;");' });
+    chrome.tabs.executeScript({
+      code: `document.querySelector('button').setAttribute(
+                'style',
+                'position: absolute; left: 100; top: 150; ' +
+                'width: 300; height: 350;');`
+    });
 
     // Just to ensure all pending a11y code is done.
     okButton.focus();

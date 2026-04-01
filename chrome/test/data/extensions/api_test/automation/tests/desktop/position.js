@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testPositionType() {
-    var button = rootNode.find({role: chrome.automation.RoleType.BUTTON});
-    var position = button.createPosition(
+    const button = rootNode.find({role: chrome.automation.RoleType.BUTTON});
+    const position = button.createPosition(
         /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
 
     assertEq(button, position.node);
@@ -22,10 +22,10 @@ var allTests = [
   },
 
   function testBackingObjectsDiffer() {
-    var childOfRoot = rootNode.lastChild;
-    var pos1 = childOfRoot.createPosition(
+    const childOfRoot = rootNode.lastChild;
+    const pos1 = childOfRoot.createPosition(
         /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
-    var pos2 = rootNode.createPosition(
+    const pos2 = rootNode.createPosition(
         /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
     assertFalse(pos1.node == pos2.node, 'Nodes expected to differ');
     chrome.test.succeed();
@@ -33,7 +33,7 @@ var allTests = [
 
   function testCrossRoots() {
     chrome.automation.getDesktop(() => {
-      var rootPosition = rootNode.createPosition(
+      const rootPosition = rootNode.createPosition(
           /* type */ chrome.automation.PositionType.TREE, /* offset */ 0);
       rootPosition.moveToParentPosition();
       assertFalse(rootPosition.isNullPosition());
@@ -43,10 +43,10 @@ var allTests = [
   },
 
   function testBeginningOfContentEditable() {
-    var editable =
+    const editable =
         rootNode.find({role: chrome.automation.RoleType.GENERIC_CONTAINER});
     assertTrue(Boolean(editable));
-    var position = editable.createPosition(
+    const position = editable.createPosition(
         /* type */ chrome.automation.PositionType.TEXT, /*offset=*/ 0);
     assertTrue(position.isTextPosition());
 
@@ -75,12 +75,12 @@ var allTests = [
   },
 
   function testMiddleOfContentEditable() {
-    var editable =
+    const editable =
         rootNode.find({role: chrome.automation.RoleType.GENERIC_CONTAINER});
     assertTrue(Boolean(editable));
-    // The editable value is "This is a test" (all words are contaiend in
-    // separate nodes), so an index of 10 points to the beginning of "test".
-    var position = editable.createPosition(
+    // The editable value is 'This is a test' (all words are contaiend in
+    // separate nodes), so an index of 10 points to the beginning of 'test'.
+    let position = editable.createPosition(
         /* type */ chrome.automation.PositionType.TEXT, /*offset=*/ 10);
     assertTrue(position.isTextPosition());
     position.asLeafTextPosition();
@@ -96,7 +96,7 @@ var allTests = [
     assertEq(' a', position.node.name);
     assertEq(2, position.textOffset);
 
-    // An index of 12 points to the middle of "test".
+    // An index of 12 points to the middle of 'test'.
     position = editable.createPosition(
         /* type */ chrome.automation.PositionType.TEXT, /*offset=*/ 12);
     assertTrue(position.isTextPosition());
@@ -109,13 +109,13 @@ var allTests = [
   },
 
   function testIsTextPositionEdgeCases() {
-    var editable =
+    const editable =
         rootNode.find({role: chrome.automation.RoleType.GENERIC_CONTAINER});
     assertTrue(Boolean(editable));
 
     // Invalid indices should be corrected and set at either the beginning or
     // the end of the editable value.
-    var position = editable.createPosition(
+    let position = editable.createPosition(
         /* type */ chrome.automation.PositionType.TEXT, /*offset=*/ -1);
     assertTrue(position.isTextPosition());
     position.asLeafTextPosition();

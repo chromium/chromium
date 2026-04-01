@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertEq = chrome.test.assertEq;
-var assertFalse = chrome.test.assertFalse;
-var assertTrue = chrome.test.assertTrue;
+const assertEq = chrome.test.assertEq;
+const assertFalse = chrome.test.assertFalse;
+const assertTrue = chrome.test.assertTrue;
 
-var EventType = chrome.automation.EventType;
-var RoleType = chrome.automation.RoleType;
-var StateType = chrome.automation.StateType;
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
+const StateType = chrome.automation.StateType;
 
-var rootNode = null;
+let rootNode = null;
 
 function findAutomationNode(root, condition) {
   if (condition(root))
     return root;
 
-  var children = root.children;
-  for (var i = 0; i < children.length; i++) {
-    var result = findAutomationNode(children[i], condition);
+  const children = root.children;
+  for (let i = 0; i < children.length; i++) {
+    const result = findAutomationNode(children[i], condition);
     if (result)
       return result;
   }
@@ -26,8 +26,8 @@ function findAutomationNode(root, condition) {
 }
 
 function runWithDocument(docString, callback) {
-  var url = 'data:text/html,<!doctype html>' + docString;
-  var createParams = {
+  const url = `data:text/html,<!doctype html>${docString}`;
+  const createParams = {
     active: true,
     url: url
   };
@@ -40,7 +40,7 @@ function runWithDocument(docString, callback) {
         return;
       }
 
-      let listener = () => {
+      const listener = () => {
         rootNode = desktop.find({attributes: {docUrl: url}});
         if (rootNode && rootNode.docLoaded) {
           desktop.removeEventListener('loadComplete', listener);
@@ -54,7 +54,7 @@ function runWithDocument(docString, callback) {
 }
 
 function listenOnce(node, eventType, callback, capture) {
-  var innerCallback = function(evt) {
+  const innerCallback = function(evt) {
     node.removeEventListener(eventType, innerCallback, capture);
     callback(evt);
   };
@@ -69,7 +69,7 @@ function setUpAndRunTests(allTests) {
 }
 
 function setUpAndRunTestsInPage(allTests, opt_path, opt_ensurePersists = true) {
-  var path = opt_path || 'index.html';
+  const path = opt_path || 'index.html';
   getUrlFromConfig(path, function(url) {
     createTabAndWaitUntilLoaded(url, function(unused_tab) {
       chrome.automation.getDesktop(function(desktop) {
@@ -97,14 +97,13 @@ function setUpAndRunTestsInPage(allTests, opt_path, opt_ensurePersists = true) {
 function getUrlFromConfig(path, callback) {
   chrome.test.getConfig(function(config) {
     assertTrue('testServer' in config, 'Expected testServer in config');
-    url = ('http://a.com:PORT/' + path)
-        .replace(/PORT/, config.testServer.port);
+    url = `http://a.com:${config.testServer.port}/${path}`;
     callback(url)
   });
 }
 
 function createTabAndWaitUntilLoaded(url, callback) {
-  chrome.tabs.create({"url": url}, function(tab) {
+  chrome.tabs.create({url: url}, function(tab) {
     chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
       if (tabId == tab.id && changeInfo.status == 'complete') {
         callback(tab);

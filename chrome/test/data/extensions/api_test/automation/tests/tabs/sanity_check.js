@@ -4,42 +4,42 @@
 
 // Do not test orientation or hover attributes (similar to exclusions on native
 // accessibility), since they can be inconsistent depending on the environment.
-var RemoveUntestedStates = function(state) {
-  var result = structuredClone(state);
+const RemoveUntestedStates = function(state) {
+  const result = structuredClone(state);
   delete result[StateType.HORIZONTAL];
   delete result[StateType.HOVERED];
   delete result[StateType.VERTICAL];
   return result;
 };
 
-var allTests = [
+const allTests = [
   function testSimplePage() {
-    var title = rootNode.docTitle;
+    const title = rootNode.docTitle;
     assertEq('Automation Tests', title);
     assertTrue(rootNode.state.focusable);
     assertEq(undefined, rootNode.restriction);
 
-    var children = rootNode.children;
+    const children = rootNode.children;
     assertEq(RoleType.ROOT_WEB_AREA, rootNode.role);
     assertEq(1, children.length);
-    var body = children[0];
+    const body = children[0];
     state = RemoveUntestedStates(body.state);
     assertEq({}, state);
     assertEq(undefined, body.restriction);
 
-    var contentChildren = body.children;
+    const contentChildren = body.children;
     assertEq(3, contentChildren.length);
-    var okButton = contentChildren[0];
+    const okButton = contentChildren[0];
     assertEq('Ok', okButton.name);
     state = RemoveUntestedStates(okButton.state);
     assertEq({focusable: true}, state);
     assertEq(undefined, okButton.restriction);
-    var userNameInput = contentChildren[1];
+    const userNameInput = contentChildren[1];
     assertEq(undefined, userNameInput.restriction);
     assertEq('Username', userNameInput.name);
     state = RemoveUntestedStates(userNameInput.state);
     assertEq({editable: true, focusable: true}, state);
-    var cancelButton = contentChildren[2];
+    const cancelButton = contentChildren[2];
     assertEq('Cancel',
              cancelButton.name);
     state = RemoveUntestedStates(cancelButton.state);

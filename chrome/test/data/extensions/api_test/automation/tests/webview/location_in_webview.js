@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var assertTrue = chrome.test.assertTrue;
+const assertTrue = chrome.test.assertTrue;
 
-var EventType = chrome.automation.EventType;
-var RoleType = chrome.automation.RoleType;
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
 
-var allTests = [
+const allTests = [
   function testLocationInWebView() {
     rootNode.addEventListener(EventType.LOAD_COMPLETE, function() {
-      var outerButton = rootNode.find({ attributes: { name: 'Outer' } });
-      var innerButton = rootNode.find({ attributes: { name: 'Inner' } });
+      const outerButton = rootNode.find({ attributes: { name: 'Outer' } });
+      const innerButton = rootNode.find({ attributes: { name: 'Inner' } });
       if (outerButton && innerButton) {
-        var outerRect = outerButton.location;
-        var innerRect = innerButton.location;
+        const outerRect = outerButton.location;
+        const innerRect = innerButton.location;
 
         // The outer button should be at (50, 150). Allow one pixel off
         // for rounding errors.

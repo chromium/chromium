@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var group;
-var h1;
-var p1;
-var link;
-var main;
-var p2;
-var p3;
-var img;
-var okButton;
-var cancelButton;
+let group;
+let h1;
+let p1;
+let link;
+let main;
+let p2;
+let p3;
+let img;
+let okButton;
+let cancelButton;
 
 function initializeNodes(rootNode) {
   group = rootNode.firstChild;
@@ -53,7 +53,7 @@ function initializeNodes(rootNode) {
   assertEq(undefined, cancelButton.restriction);
 }
 
-var allTests = [
+const allTests = [
   function testFindByRole() {
     initializeNodes(rootNode);
 
@@ -128,7 +128,7 @@ var allTests = [
     assertEq(null, rootNode.find({attributes: {name: 'ok'}}));
 
     // Find by value attribute - regexp.
-    var query = {attributes: {name: /relationship/}};
+    const query = {attributes: {name: /relationship/}};
     assertEq(strong, rootNode.find(query).parent);
 
     // Find by role and hierarchicalLevel attribute.
@@ -176,7 +176,7 @@ var allTests = [
         }),
         'h1 should match focusable: false');
 
-    var p2StaticText = strong.firstChild;
+    const p2StaticText = strong.firstChild;
     assertTrue(
         p2StaticText.matches(
             {role: RoleType.STATIC_TEXT, attributes: {name: /relationship/}}),

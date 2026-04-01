@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let allTests = [
+const allTests = [
   function testEventListenerTarget() {
     let cancelButton = rootNode.firstChild.children[2];
     assertEq('Cancel', cancelButton.name);
@@ -39,7 +39,7 @@ let allTests = [
     assertEq('Cancel', cancelButton.name);
     function onFocusStopPropRoot(event) {
       rootNode.removeEventListener(EventType.FOCUS, onFocusStopPropRoot);
-      chrome.test.fail("Focus event was propagated to root");
+      chrome.test.fail('Focus event was propagated to root');
     };
     cancelButton.addEventListener(EventType.FOCUS,
                                   function onFocusStopProp(event) {
@@ -60,7 +60,7 @@ let allTests = [
     function onFocusCapture(event) {
       okButtonGotEvent = true;
       okButton.removeEventListener(EventType.FOCUS, onFocusCapture);
-      chrome.test.fail("Focus event was not captured by root");
+      chrome.test.fail('Focus event was not captured by root');
     };
     okButton.addEventListener(EventType.FOCUS, onFocusCapture);
     rootNode.addEventListener(EventType.FOCUS,
@@ -78,7 +78,7 @@ let allTests = [
   function testHitTestWithReply() {
     let cancelButton = rootNode.firstChild.children[2];
     assertEq('Cancel', cancelButton.name);
-    let loc = cancelButton.unclippedLocation;
+    const loc = cancelButton.unclippedLocation;
     rootNode.hitTestWithReply(loc.left, loc.top, function(result) {
       assertEq(result, cancelButton);
       chrome.test.succeed();

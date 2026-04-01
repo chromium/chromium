@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testIgnoredNodesNotReturned() {
-    var node = rootNode.find({role: chrome.automation.RoleType.STATIC_TEXT});
+    let node = rootNode.find({role: chrome.automation.RoleType.STATIC_TEXT});
     assertEq('This is a test', node.name);
     assertEq(1, node.children.length);
     assertEq(chrome.automation.RoleType.INLINE_TEXT_BOX, node.firstChild.role);

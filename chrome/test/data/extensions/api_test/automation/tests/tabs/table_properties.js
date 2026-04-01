@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var RoleType = chrome.automation.RoleType;
+// Note: `RoleType` is defined in automation/tests/desktop/common.js.
 
-var allTests = [
+const allTests = [
   function tableProperties() {
-    var cell = rootNode.find({role: RoleType.CELL});
+    const cell = rootNode.find({role: RoleType.CELL});
     assertEq('Cell 1', cell.name);
     assertEq('Header 1', cell.tableCellColumnHeaders[0].name);
-    var cell2 = cell.nextSibling;
+    const cell2 = cell.nextSibling;
     assertEq('Cell 2', cell2.name);
     assertEq('Header 2', cell2.tableCellColumnHeaders[0].name);
     chrome.test.succeed();

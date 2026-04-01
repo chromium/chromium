@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testGetDesktop() {
     chrome.automation.getDesktop(function(rootNode) {
       assertEq(RoleType.DESKTOP, rootNode.role);
@@ -11,7 +11,7 @@ var allTests = [
   },
 
   function testGetDesktopTwice() {
-    var desktop = null;
+    let desktop = null;
     chrome.automation.getDesktop(function(rootNode) {
       desktop = rootNode;
     });
@@ -22,7 +22,7 @@ var allTests = [
   },
 
   function testGetDesktopNested() {
-    var desktop = null;
+    let desktop = null;
     chrome.automation.getDesktop(function(rootNode) {
       desktop = rootNode;
       chrome.automation.getDesktop(function(rootNode2) {

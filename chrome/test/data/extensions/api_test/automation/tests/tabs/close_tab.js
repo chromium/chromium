@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests =
+const allTests =
     [function testCloseTab() {
       getUrlFromConfig('index.html', function(url) {
         createTabAndWaitUntilLoaded(url, function(tab) {
           chrome.automation.getDesktop(function(desktop) {
-            let url = tab.url || tab.pendingUrl;
+            const url = tab.url || tab.pendingUrl;
             function doTestCloseTab() {
               let rootNode = desktop.find({attributes: {docUrl: url}});
               if (!rootNode || !rootNode.docLoaded) {
                 return;
               }
-              var button = rootNode.find({role: 'button'});
+              const button = rootNode.find({role: 'button'});
               assertEq(rootNode, button.root);
 
               // Poll until the root node doesn't have a role anymore

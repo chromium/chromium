@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var EventType = chrome.automation.EventType;
-var RoleType = chrome.automation.RoleType;
-var html = "<head><title>testdoc</title></head>" +
-    '<p>para1</p><input type="text" id="textField" value="hello world">';
+// Note: `RoleType` and `EventType` are defined in
+// automation/tests/desktop/common.js.
 
-var allTests = [
+const html = `<head><title>testdoc</title></head>
+    <p>para1</p><input type="text" id="textField" value="hello world">`;
+
+const allTests = [
   function testInitialSelectionNotSet() {
     assertEq(undefined, rootNode.anchorObject);
     assertEq(undefined, rootNode.anchorOffset);
@@ -17,7 +18,7 @@ var allTests = [
   },
 
   function selectOutsideTextField() {
-    var textNode = rootNode.find({role: RoleType.PARAGRAPH}).firstChild;
+    const textNode = rootNode.find({role: RoleType.PARAGRAPH}).firstChild;
     assertTrue(!!textNode);
     chrome.automation.setDocumentSelection({anchorObject: textNode,
                                             anchorOffset: 0,
@@ -33,7 +34,7 @@ var allTests = [
   },
 
   function selectInTextField() {
-    var textField = rootNode.find({role: RoleType.TEXT_FIELD});
+    const textField = rootNode.find({role: RoleType.TEXT_FIELD});
     textField.focus();
     assertTrue(!!textField);
     // Focusing the textfield will cause a text selection changed event in it.

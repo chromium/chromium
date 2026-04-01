@@ -2,27 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var RoleType = chrome.automation.RoleType;
+// Note: `RoleType` is defined in automation/tests/desktop/common.js.
 
-var allTests = [
+const allTests = [
   function boundsForRange() {
     function getNthListItemInlineTextBox(index) {
-      var list = rootNode.find({role: RoleType.LIST});
-      var listItem = list.children[index];
+      const list = rootNode.find({role: RoleType.LIST});
+      const listItem = list.children[index];
       assertEq(RoleType.LIST_ITEM, listItem.role);
-      var staticText = listItem.children[1];
+      const staticText = listItem.children[1];
       assertEq(RoleType.STATIC_TEXT, staticText.role);
-      var inlineTextBox = staticText.firstChild;
+      const inlineTextBox = staticText.firstChild;
       assertEq(RoleType.INLINE_TEXT_BOX, inlineTextBox.role);
       return inlineTextBox;
     }
 
     // Left-to-right.
-    var ltr = getNthListItemInlineTextBox(0);
+    const ltr = getNthListItemInlineTextBox(0);
     ltr.boundsForRange(
         0, 4,
         (firstHalf) => {ltr.boundsForRange(4, ltr.name.length, (secondHalf) => {
-          var bounds = ltr.location;
+          const bounds = ltr.location;
           assertEq(bounds.top, firstHalf.top);
           assertEq(bounds.left, firstHalf.left);
           assertEq(bounds.height, firstHalf.height);
@@ -36,8 +36,8 @@ var allTests = [
         })});
 
     // Right-to-left.
-    var rtl = getNthListItemInlineTextBox(1);
-    bounds = rtl.location;
+    const rtl = getNthListItemInlineTextBox(1);
+    let bounds = rtl.location;
     rtl.boundsForRange(0, 4, (firstHalf) => {
       rtl.boundsForRange(4, rtl.name.length, (secondHalf) => {
         assertEq(bounds.top, secondHalf.top);
@@ -54,8 +54,8 @@ var allTests = [
     });
 
     // Top-to-bottom.
-    var ttb = getNthListItemInlineTextBox(2);
-    var bounds = ttb.location;
+    const ttb = getNthListItemInlineTextBox(2);
+    bounds = ttb.location;
     ttb.boundsForRange(0, 4, (firstHalf) => {
       ttb.boundsForRange(4, ttb.name.length, (secondHalf) => {
         assertEq(bounds.left, firstHalf.left);
@@ -72,7 +72,7 @@ var allTests = [
     });
 
     // Bottom-to-top.
-    var btt = getNthListItemInlineTextBox(3);
+    const btt = getNthListItemInlineTextBox(3);
     bounds = btt.location;
     btt.boundsForRange(0, 4, (firstHalf) => {
       btt.boundsForRange(4, btt.name.length, (secondHalf) => {
@@ -92,7 +92,7 @@ var allTests = [
   },
 
   function boundsForRangeClips() {
-    let clipped = rootNode.find(
+    const clipped = rootNode.find(
         {role: 'inlineTextBox', attributes: {name: 'This text overflows'}});
     clipped.boundsForRange(0, clipped.name.length, (clippedBounds) => {
       assertTrue(
@@ -103,10 +103,10 @@ var allTests = [
     // The static text parent has 4 children, one for each word. The small box
     // size causes the words to be layed out on different lines, creating four
     // individual inlineTextBox nodes.
-    let hiddenParent = rootNode.find(
+    const hiddenParent = rootNode.find(
         {role: 'staticText', attributes: {name: 'This text is hidden'}});
     assertEq(hiddenParent.children.length, 4);
-    let hiddenChild = hiddenParent.children[0];
+    const hiddenChild = hiddenParent.children[0];
     hiddenChild.boundsForRange(0, hiddenChild.name.length, (hiddenBounds) => {
       assertTrue(
           hiddenParent.location.width < hiddenChild.unclippedLocation.width);
@@ -120,7 +120,7 @@ var allTests = [
   },
 
   function boundsForRangeUnclipped() {
-    let overflowText = rootNode.find(
+    const overflowText = rootNode.find(
         {role: 'inlineTextBox', attributes: {name: 'This text overflows'}});
     overflowText.unclippedBoundsForRange(
         0, overflowText.name.length, (unclippedBounds) => {
@@ -138,10 +138,10 @@ var allTests = [
     // The static text parent has 4 children, one for each word. The small box
     // size causes the words to be laid out on different lines, creating four
     // individual inlineTextBox nodes.
-    let hiddenParent = rootNode.find(
+    const hiddenParent = rootNode.find(
         {role: 'staticText', attributes: {name: 'This text is hidden'}});
     assertEq(hiddenParent.children.length, 4);
-    let hiddenChild = hiddenParent.children[0];
+    const hiddenChild = hiddenParent.children[0];
     hiddenChild.unclippedBoundsForRange(
         0, hiddenChild.name.length, (hiddenBounds) => {
           assertTrue(

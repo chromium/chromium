@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testGetImageData() {
-    var image = rootNode.find({ role: RoleType.IMAGE });
+    const image = rootNode.find({ role: RoleType.IMAGE });
     image.addEventListener(EventType.IMAGE_FRAME_UPDATED, function() {
       assertEq(image.imageDataUrl.substr(0, 22), 'data:image/png;base64,');
       fetch(image.imageDataUrl).then(function(response) {
@@ -15,10 +15,10 @@ var allTests = [
       }).then(function(blob) {
         return createImageBitmap(blob);
       }).then(function(img) {
-        var canvas = new OffscreenCanvas(2, 3);
-        var context = canvas.getContext('2d');
+        const canvas = new OffscreenCanvas(2, 3);
+        const context = canvas.getContext('2d');
         context.drawImage(img, 0, 0);
-        var imageData = context.getImageData(0, 0, 2, 3);
+        const imageData = context.getImageData(0, 0, 2, 3);
         // Check image data in RGBA format.
         // Top row: red
         assertEq(imageData.data[0], 0xFF);

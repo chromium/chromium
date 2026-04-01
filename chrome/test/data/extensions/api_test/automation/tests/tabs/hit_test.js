@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testHitTest() {
-    var buttons = rootNode.findAll({ role: RoleType.BUTTON });
-    var button1 = buttons[0];
+    const buttons = rootNode.findAll({ role: RoleType.BUTTON });
+    const button1 = buttons[0];
     assertEq(button1.name, 'Hit Test 1');
-    var x = button1.location.left + button1.location.width / 2;
-    var y = button1.location.top + button1.location.height / 2;
-    var button2 = buttons[1];
+    let x = button1.location.left + button1.location.width / 2;
+    let y = button1.location.top + button1.location.height / 2;
+    const button2 = buttons[1];
     assertEq(button2.name, 'Hit Test 2');
-    var webArea = button1.parent;
+    let webArea = button1.parent;
     while (webArea.role != RoleType.ROOT_WEB_AREA)
       webArea = webArea.parent;
     button1.addEventListener(EventType.HOVER, function() {

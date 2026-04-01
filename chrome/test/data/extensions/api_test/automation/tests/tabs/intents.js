@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [function testIntents() {
+const allTests = [function testIntents() {
   const text = rootNode.find({role: chrome.automation.RoleType.STATIC_TEXT});
   assertEq('111', text.name);
 

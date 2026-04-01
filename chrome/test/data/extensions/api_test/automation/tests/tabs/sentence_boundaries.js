@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var allTests = [
+const allTests = [
   function testSentenceStartBoundary() {
     const expectations = getExpections();
 
@@ -24,7 +24,7 @@ var allTests = [
 function assertArrayEquals(a, b) {
   assertEq(a.length, b.length);
 
-  for (var i = 0; i < a.length; ++i) {
+  for (let i = 0; i < a.length; ++i) {
     assertEq(a[i], b[i]);
     assertEq(a[i], b[i]);
   }

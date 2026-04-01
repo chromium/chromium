@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var firstButton = undefined;
-var clicked = false;
+let firstButton = undefined;
+let clicked = false;
 
 function checkNodes(rootNode) {
   // Grab the first button and hold on to it.
@@ -40,10 +40,11 @@ function checkNodes(rootNode) {
   chrome.test.succeed();
 }
 
-var allTests = [
+const allTests = [
   function treeDestroyedTest() {
     chrome.test.getConfig(function(config) {
-      const url = 'http://a.com:' + config.testServer.port + '/iframenav/iframe-top.html';
+      const url =
+          `http://a.com:${config.testServer.port}/iframenav/iframe-top.html`;
       chrome.tabs.create({url: url});
 
       chrome.automation.getDesktop(checkNodes.bind(this));
