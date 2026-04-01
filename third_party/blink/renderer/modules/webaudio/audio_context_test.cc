@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
+#include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/modules/webaudio/delay_node.h"
 
 #include <array>
 #include <memory>
@@ -396,6 +398,34 @@ class AudioContextTest : public PageTestBase {
   std::unique_ptr<MockMediaDevicesDispatcherHost>
       mock_media_devices_dispatcher_host_;
 };
+
+TEST_F(AudioContextTest, DisposeOrphansHandlerWhenInterrupted) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+
+  context->StartContextInterruption();
+
+  scoped_refptr<AudioHandler> handler;
+  {
+    DelayNode* node = context->createDelay(ASSERT_NO_EXCEPTION);
+    handler = &node->Handler();
+  }
+
+  // Before GC, handler should have 1 ref (held by us, as the node itself is
+  // still alive in Oilpan but we have no Persistent handle to it).
+  // In Oilpan tests, a garbage collection cycle must be forced to destroy
+  // the node.
+  WebHeap::CollectAllGarbageForTesting();
+
+  // If the node was orphaned, its handler will be added to the
+  // DeferredTaskHandler's orphan list, meaning it will have at least one ref
+  // there, plus our 'handler' ref. (2 refs)
+  //
+  // If it was NOT orphaned, it would have been destroyed if we didn't hold it,
+  // OR it has only our ref. (HasOneRef() == true) Thus this will fail.
+  EXPECT_FALSE(handler->HasOneRef());
+}
 
 TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
   AudioContextOptions* interactive_options = AudioContextOptions::Create();
