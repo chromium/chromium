@@ -806,4 +806,22 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
       [&]() { return !overlay_window()->playback_controls_visible(); }));
 }
 
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest, GetOrigin) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL test_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture_in_picture/one-video.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_page_url));
+
+  // Play video and enter picture-in-picture.
+  ASSERT_TRUE(ExecJs(shell(), "video.play();"));
+  ASSERT_TRUE(ExecJs(shell(), "video.requestPictureInPicture();"));
+  EXPECT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
+
+  // Check that the origin is correct.
+  std::optional<url::Origin> origin = window_controller()->GetOrigin();
+  ASSERT_TRUE(origin.has_value());
+  EXPECT_EQ(origin.value(), url::Origin::Create(test_page_url));
+}
+
 }  // namespace content

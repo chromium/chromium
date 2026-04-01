@@ -90,7 +90,6 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
   std::optional<gfx::Rect> GetWindowBoundsInScreen() override;
 
   std::optional<url::Origin> GetOrigin() override;
-  void SetOrigin(std::optional<url::Origin> origin);
 
   // Called by the MediaSessionImpl when the MediaSessionInfo changes.
   void MediaSessionInfoChanged(
@@ -256,9 +255,6 @@ class CONTENT_EXPORT VideoPictureInPictureWindowControllerImpl
 
   // Coordinates of the video element in WebContents coordinates.
   gfx::Rect source_bounds_;
-
-  // The origin of the initiator.
-  std::optional<url::Origin> origin_;
 
   // Callback to notify the observers about the video PiP window creation event.
   base::OnceClosure on_window_created_notify_observers_callback_;

@@ -76,7 +76,6 @@ PictureInPictureServiceImpl::GetController() {
   auto& controller =
       *VideoPictureInPictureWindowControllerImpl::GetOrCreateForWebContents(
           WebContents::FromRenderFrameHost(&render_frame_host()));
-  controller.SetOrigin(origin());
   return controller;
 }
 

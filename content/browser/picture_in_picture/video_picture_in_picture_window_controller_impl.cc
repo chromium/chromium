@@ -15,6 +15,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/overlay_window.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"  // for PictureInPictureResult
 #include "content/public/browser/web_contents_observer.h"
@@ -177,12 +178,15 @@ WebContents* VideoPictureInPictureWindowControllerImpl::GetChildWebContents() {
 
 std::optional<url::Origin>
 VideoPictureInPictureWindowControllerImpl::GetOrigin() {
-  return origin_;
-}
-
-void VideoPictureInPictureWindowControllerImpl::SetOrigin(
-    std::optional<url::Origin> origin) {
-  origin_ = origin;
+  if (!active_session_ || !active_session_->player_id().has_value()) {
+    return std::nullopt;
+  }
+  RenderFrameHost* rfh =
+      RenderFrameHost::FromID(active_session_->player_id()->frame_routing_id);
+  if (!rfh) {
+    return std::nullopt;
+  }
+  return rfh->GetLastCommittedOrigin();
 }
 
 void VideoPictureInPictureWindowControllerImpl::UpdatePlaybackState() {
