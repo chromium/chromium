@@ -66,6 +66,7 @@ std::vector<uint8_t> SessionCommand::Serialize() const {
 std::optional<size_t> SessionCommand::GetSerializedSize(
     base::span<const uint8_t> data) {
   if (data.size() < sizeof(size_type)) {
+    // If there's just one byte of data, then it's ignored and not an error.
     return std::nullopt;
   }
   return sizeof(size_type) +

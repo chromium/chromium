@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -73,6 +74,10 @@ class CommandStorageBackendTest : public testing::Test {
   CommandStorageBackendTest() : os_crypt_(CreateOSCryptAsync()) {}
 
  protected:
+  using ReadStatus = CommandStorageBackend::ReadStatus;
+  using WriteStatus = CommandStorageBackend::WriteStatus;
+  using ReadCommandsResult = CommandStorageBackend::ReadCommandsResult;
+
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     init_path_ = temp_dir_.GetPath();
@@ -138,6 +143,11 @@ class CommandStorageBackendTest : public testing::Test {
     return result;
   }
 
+  void ForceAppendCommandsToFail(CommandStorageBackend* backend,
+                                 WriteStatus status) {
+    backend->ForceAppendCommandsToFailForTesting(status);
+  }
+
   // Helper for calling CommandStorageBackend::GetFilePath() with a time
   // delta in microseconds.
   static base::FilePath GetFilePath(SessionType type,
@@ -173,6 +183,15 @@ class CommandStorageBackendTest : public testing::Test {
     }
     return base::CopyFile(
         test_file_path, sessions_dir(encrypted).AppendASCII(session_filename));
+  }
+
+  std::string GetHistogramName(SessionType type,
+                               bool encrypted,
+                               std::string_view operation,
+                               std::string_view slice,
+                               std::string_view metric) {
+    return CommandStorageBackend::GetHistogramNameForTesting(
+        type, encrypted, operation, slice, metric);
   }
 
   // The path that is passed to `CreateBackend`.
@@ -235,6 +254,7 @@ class CommandStorageBackendTest : public testing::Test {
 TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
   // V1 files do not contain markers.
   // They were used in production prior to commit 223e5cd on 2021-05-25.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(
       CopyTestDataToSessionFile("Session-v1NoMarker", "Session_1234", false));
 
@@ -243,14 +263,20 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV1) {
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(backend->IsValidFileForTest(
       sessions_dir(false).AppendASCII("Session_1234")));
-  SessionCommands commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_TRUE(commands.empty());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_TRUE(result.error_reading);
+  ASSERT_TRUE(result.commands.empty());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kInvalidHeader, 1);
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
   // V2 files are encrypted and do not contain markers.
   // They could have been written prior to commit 223e5cd on 2021-05-25.
   // They were never used in production.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(CopyTestDataToSessionFile("Session-v2NoMarkerEncrypted",
                                         "Session_1234", false));
 
@@ -259,35 +285,50 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV2) {
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(backend->IsValidFileForTest(
       sessions_dir(false).AppendASCII("Session_1234")));
-  SessionCommands commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_TRUE(commands.empty());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_TRUE(result.commands.empty());
+  ASSERT_TRUE(result.error_reading);
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kInvalidHeader, 1);
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
   // V3 files contain markers.
   // They have been used in production from early 2021 through at least
   // 2026-02.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(
       CopyTestDataToSessionFile("Session-v3WithMarker", "Session_1234", false));
 
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  SessionCommands commands = backend->ReadLastSessionCommands().commands;
-
-  ASSERT_EQ(1u, commands.size());
-  AssertCommandEqualsData(TestData({1, "a"}), commands[0].get());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_EQ(1u, result.commands.size());
+  ASSERT_FALSE(result.error_reading);
+  AssertCommandEqualsData(TestData({1, "a"}), result.commands[0].get());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kSuccess, 1);
 }
 
 TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
   // This test ensures that we don't accidentally change the format of V3 files.
   // If you intend to change the output file format, then you should create a
   // new test data file, and update this test to read that new file.
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   struct TestData data = {1, "a"};
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data));
-  backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  bool write_error_occurred = false;
+  backend->AppendCommands(std::move(commands), true,
+                          base::BindLambdaForTesting([&write_error_occurred]() {
+                            write_error_occurred = true;
+                          }));
   const base::FilePath written_path = backend->current_path_for_testing();
 
   // Ensure that the file is fully written and contains the expected data.
@@ -296,6 +337,7 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
   base::RunLoop run_loop;
   task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+  EXPECT_FALSE(write_error_occurred);
   const base::FilePath expected_data_path =
       GetTestFilePath("Session-v3WithMarker");
   base::MemoryMappedFile written_file;
@@ -304,6 +346,10 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
   ASSERT_TRUE(expected_data_file.Initialize(expected_data_path));
   ASSERT_EQ(expected_data_file.length(), written_file.length());
   ASSERT_EQ(expected_data_file.bytes(), written_file.bytes());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext.AppendCommands."
+      "Truncate.Status",
+      WriteStatus::kSuccess, 1);
 }
 
 TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
@@ -314,18 +360,24 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
   // which results in the Marker being in the middle of the file (between
   // the "banana" and "coconut" commands).  See also related test
   // `WriteSessionFileV3With2Appends`.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(CopyTestDataToSessionFile("Session-v3With2Appends",
                                         "Session_1234", false));
 
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
-  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
 
-  ASSERT_EQ(4u, commands.size());
-  AssertCommandEqualsData(TestData({1, "apple"}), commands[0].get());
-  AssertCommandEqualsData(TestData({2, "banana"}), commands[1].get());
-  AssertCommandEqualsData(TestData({3, "coconut"}), commands[2].get());
-  AssertCommandEqualsData(TestData({4, "durian"}), commands[3].get());
+  ASSERT_FALSE(result.error_reading);
+  ASSERT_EQ(4u, result.commands.size());
+  AssertCommandEqualsData(TestData({1, "apple"}), result.commands[0].get());
+  AssertCommandEqualsData(TestData({2, "banana"}), result.commands[1].get());
+  AssertCommandEqualsData(TestData({3, "coconut"}), result.commands[2].get());
+  AssertCommandEqualsData(TestData({4, "durian"}), result.commands[3].get());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kSuccess, 1);
 }
 
 TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
@@ -365,17 +417,62 @@ TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
 TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   // V4 files contain markers and are encrypted.
   // They have never been used in production, but could have been written from
-  // early 2021 through at least 2026-02.
+  // early 2021 through at least 2026-02.  They are no longer supported.
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(CopyTestDataToSessionFile("Session-v4WithMarkerEncrypted",
                                         "Session_1234", false));
 
-  // V4 files are no longer supported.
   scoped_refptr<CommandStorageBackend> backend =
       CreateBackend(SessionType::kSessionRestore, /*encrypted=*/false);
   ASSERT_FALSE(backend->IsValidFileForTest(
       sessions_dir(false).AppendASCII("Session_1234")));
-  SessionCommands commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_TRUE(commands.empty());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_TRUE(result.error_reading);
+  ASSERT_TRUE(result.commands.empty());
+  histogram_tester.ExpectUniqueSample(
+      "Session.CommandStorageBackend.SessionRestore.Cleartext."
+      "ReadLastSessionCommands.Status",
+      ReadStatus::kInvalidHeader, 1);
+}
+
+TEST_F(CommandStorageBackendTest, GetHistogramName) {
+  // An error when AppendCommands fails for a SessionRestore, Cleartext backend.
+  EXPECT_EQ(GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/false,
+                             "AppendCommands", "Truncate", "Status"),
+            "Session.CommandStorageBackend.SessionRestore.Cleartext."
+            "AppendCommands.Truncate.Status");
+
+  // Different encryption (Encrypted vs Cleartext)
+  EXPECT_EQ(GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/true,
+                             "AppendCommands", "Truncate", "Status"),
+            "Session.CommandStorageBackend.SessionRestore.Encrypted."
+            "AppendCommands.Truncate.Status");
+
+  // Different metric (Duration vs Status)
+  EXPECT_EQ(GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/false,
+                             "AppendCommands", "Truncate", "Duration"),
+            "Session.CommandStorageBackend.SessionRestore.Cleartext."
+            "AppendCommands.Truncate.Duration");
+
+  // Different session type (AppRestore vs SessionRestore)
+  EXPECT_EQ(GetHistogramName(SessionType::kAppRestore, /*encrypted=*/false,
+                             "AppendCommands", "Truncate", "Status"),
+            "Session.CommandStorageBackend.AppRestore.Cleartext."
+            "AppendCommands.Truncate.Status");
+
+  // Different slice (Append vs Truncate)
+  EXPECT_EQ(
+      GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/false,
+                       "AppendCommands", "Append", "Status"),
+      "Session.CommandStorageBackend.SessionRestore.Cleartext.AppendCommands."
+      "Append.Status");
+
+  // Different operation (ReadLastSessionCommands vs AppendCommands)
+  EXPECT_EQ(GetHistogramName(SessionType::kSessionRestore, /*encrypted=*/false,
+                             "ReadLastSessionCommands", "", "Status"),
+            "Session.CommandStorageBackend.SessionRestore.Cleartext."
+            "ReadLastSessionCommands.Status");
 }
 
 // Parameterized tests for CommandStorageBackend.
@@ -401,9 +498,18 @@ class CommandStorageBackendParamTest
         GetParam().session_type, init_path(), time_delta_microseconds,
         GetParam().encrypted);
   }
+
+  std::string GetHistogramName(std::string_view operation,
+                               std::string_view slice,
+                               std::string_view metric) {
+    return CommandStorageBackendTest::GetHistogramName(
+        GetParam().session_type, GetParam().encrypted, operation, slice,
+        metric);
+  }
 };
 
 TEST_P(CommandStorageBackendParamTest, SimpleWrite) {
+  base::HistogramTester histogram_tester;
   base::SimpleTestClock test_clock;
   test_clock.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(13234316721694577)));
@@ -417,21 +523,30 @@ TEST_P(CommandStorageBackendParamTest, SimpleWrite) {
   commands.push_back(CreateCommandFromData(data[0]));
   commands.push_back(CreateCommandFromData(data[1]));
   commands.push_back(CreateCommandFromData(data[2]));
-  bool write_error = false;
+  bool write_error_occurred = false;
 
-  backend->AppendCommands(
-      std::move(commands), true,
-      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
+  backend->AppendCommands(std::move(commands), true,
+                          base::BindLambdaForTesting([&write_error_occurred]() {
+                            write_error_occurred = true;
+                          }));
 
-  EXPECT_FALSE(write_error);
+  EXPECT_FALSE(write_error_occurred);
   const base::FilePath path = backend->current_path_for_testing();
   EXPECT_TRUE(base::PathExists(path));
   base::FilePath expected_path = GetFilePath(13234316721694577);
   EXPECT_EQ(expected_path, path);
   EXPECT_GT(base::GetFileSize(path), 0);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("AppendCommands", "Truncate", "Status"),
+      WriteStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Duration"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "FileSize"), 1);
 }
 
 TEST_P(CommandStorageBackendParamTest, SimpleReadWrite) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   auto data = std::to_array<TestData>({
       {1, "a"},
@@ -450,6 +565,12 @@ TEST_P(CommandStorageBackendParamTest, SimpleReadWrite) {
   AssertCommandEqualsData(data[0], commands[0].get());
   AssertCommandEqualsData(data[1], commands[1].get());
   AssertCommandEqualsData(data[2], commands[2].get());
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
 }
 
 TEST_P(CommandStorageBackendParamTest, RandomData) {
@@ -535,6 +656,7 @@ TEST_P(CommandStorageBackendParamTest, MarkerOnly) {
 }
 
 TEST_P(CommandStorageBackendParamTest, AppendCommandsTwice) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   auto data = std::to_array<TestData>({
       {1, "a"},
@@ -545,20 +667,22 @@ TEST_P(CommandStorageBackendParamTest, AppendCommandsTwice) {
   // Write the first command.
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(data[0]));
-  bool write_error = false;
-  backend->AppendCommands(
-      std::move(commands), /*truncate=*/true,
-      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
-  EXPECT_FALSE(write_error);
+  bool write_error_occurred = false;
+  backend->AppendCommands(std::move(commands), /*truncate=*/true,
+                          base::BindLambdaForTesting([&write_error_occurred]() {
+                            write_error_occurred = true;
+                          }));
+  EXPECT_FALSE(write_error_occurred);
 
   // Append the next two commands to the same file.
   commands.clear();
   commands.push_back(CreateCommandFromData(data[1]));
   commands.push_back(CreateCommandFromData(data[2]));
-  backend->AppendCommands(
-      std::move(commands), /*truncate=*/false,
-      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
-  EXPECT_FALSE(write_error);
+  backend->AppendCommands(std::move(commands), /*truncate=*/false,
+                          base::BindLambdaForTesting([&write_error_occurred]() {
+                            write_error_occurred = true;
+                          }));
+  EXPECT_FALSE(write_error_occurred);
 
   // Read it back in and verify all 3 commands are present.
   backend->MoveCurrentSessionToLastSession();
@@ -567,22 +691,47 @@ TEST_P(CommandStorageBackendParamTest, AppendCommandsTwice) {
   AssertCommandEqualsData(data[0], commands[0].get());
   AssertCommandEqualsData(data[1], commands[1].get());
   AssertCommandEqualsData(data[2], commands[2].get());
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Status"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Duration"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "FileSize"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Append", "Status"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Append", "Duration"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Append", "FileSize"), 1);
 }
 
 // Writes a command, appends another command with reset to true, then reads
 // making sure we only get back the second command.
 TEST_P(CommandStorageBackendParamTest, Truncate) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData first_data = {1, "a"};
   SessionCommands commands;
   commands.push_back(CreateCommandFromData(first_data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Status"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Duration"), 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "FileSize"), 1);
 
   // Write another command, this time resetting the file when appending.
   struct TestData second_data = {2, "b"};
   commands.clear();
   commands.push_back(CreateCommandFromData(second_data));
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Status"), 2);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "Duration"), 2);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("AppendCommands", "Truncate", "FileSize"), 2);
 
   // Read it back in.
   backend = nullptr;
@@ -711,6 +860,7 @@ TEST_P(CommandStorageBackendParamTest, IsNotValidFileWithoutMarker) {
 }
 
 TEST_P(CommandStorageBackendParamTest, DeleteLastSession) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {1, "a"};
   SessionCommands commands;
@@ -719,23 +869,134 @@ TEST_P(CommandStorageBackendParamTest, DeleteLastSession) {
 
   backend = CreateBackend();  // Necessary to recognize the file we just wrote.
   backend->DeleteLastSession();
-  commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_TRUE(commands.empty());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+  ASSERT_FALSE(result.error_reading);
+  ASSERT_TRUE(result.commands.empty());
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kNoFile, 1);
 
   // Also confirm deletion with a new backend.
   backend = CreateBackend();
-  commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_TRUE(commands.empty());
+  result = backend->ReadLastSessionCommands();
+  ASSERT_FALSE(result.error_reading);
+  ASSERT_TRUE(result.commands.empty());
+  histogram_tester.ExpectBucketCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kNoFile, 2);
 }
 
 TEST_P(CommandStorageBackendParamTest, ReadEmptyCommands) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   SessionCommands commands;
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
   backend->MoveCurrentSessionToLastSession();
 
-  commands = backend->ReadLastSessionCommands().commands;
-  ASSERT_EQ(0U, commands.size());
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_FALSE(result.error_reading);
+  ASSERT_EQ(0U, result.commands.size());
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
+}
+
+TEST_P(CommandStorageBackendParamTest, ReadErrorWithEmptyFile) {
+  base::HistogramTester histogram_tester;
+  const auto path = GetFilePath(1234);
+  ASSERT_TRUE(base::WriteFile(path, ""));
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_TRUE(result.error_reading);
+  ASSERT_EQ(0U, result.commands.size());
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kFileEmpty, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
+}
+
+TEST_P(CommandStorageBackendParamTest, ReadErrorWithInvalidHeader) {
+  base::HistogramTester histogram_tester;
+  const auto path = GetFilePath(1234);
+  const char kInvalidHeader[] = "INVALID_HEADER";
+  ASSERT_TRUE(base::WriteFile(path, kInvalidHeader));
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_TRUE(result.error_reading);
+  ASSERT_EQ(0U, result.commands.size());
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kInvalidHeader, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
+}
+
+TEST_P(CommandStorageBackendParamTest, ReadErrorWithCommandSizeZero) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  backend->AppendCommands({}, true, base::DoNothing());
+  const base::FilePath path = backend->current_path_for_testing();
+  ASSERT_TRUE(base::PathExists(path));
+
+  // Close the file before appending to it, which is required on Windows.
+  base::SequencedTaskRunner* task_runner = backend->owning_task_runner();
+  backend.reset();
+  base::RunLoop run_loop;
+  task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Write an invalid command (size_field_value = 0).
+  uint8_t bad_command_data[] = {0u, 0u};
+  ASSERT_TRUE(base::AppendToFile(path, bad_command_data));
+
+  backend = CreateBackend();
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_TRUE(result.error_reading);
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kInvalidCommand, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
+}
+
+TEST_P(CommandStorageBackendParamTest, ReadErrorWithIncompleteCommand) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  backend->AppendCommands({}, true, base::DoNothing());
+  const base::FilePath path = backend->current_path_for_testing();
+  ASSERT_TRUE(base::PathExists(path));
+
+  // Close the file before appending to it, which is required on Windows.
+  base::SequencedTaskRunner* task_runner = backend->owning_task_runner();
+  backend.reset();
+  base::RunLoop run_loop;
+  task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Write a bad command (2 bytes indicating a size of 10, but no more data).
+  uint8_t bad_command_data[] = {10u, 0u};
+  ASSERT_TRUE(base::AppendToFile(path, bad_command_data));
+
+  // Reading it back should result in an error.
+  backend = CreateBackend();
+  ReadCommandsResult result = backend->ReadLastSessionCommands();
+
+  ASSERT_TRUE(result.error_reading);
+  ASSERT_EQ(0U, result.commands.size());
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("ReadLastSessionCommands", "", "Status"),
+      ReadStatus::kInvalidCommand, 1);
+  histogram_tester.ExpectTotalCount(
+      GetHistogramName("ReadLastSessionCommands", "", "Duration"), 1);
 }
 
 // Test parsing the timestamp of a session from the path.
@@ -925,14 +1186,21 @@ TEST_P(CommandStorageBackendParamTest, NewFileOnTruncate) {
 }
 
 TEST_P(CommandStorageBackendParamTest, AppendCommandsCallbackRunOnError) {
+  base::HistogramTester histogram_tester;
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
-  backend->ForceAppendCommandsToFailForTesting();
+  ForceAppendCommandsToFail(backend.get(), WriteStatus::kSerializationError);
   base::RunLoop run_loop;
+
   backend->AppendCommands({}, true, run_loop.QuitClosure());
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      GetHistogramName("AppendCommands", "Truncate", "Status"),
+      WriteStatus::kSerializationError, 1);
 }
 
 TEST_P(CommandStorageBackendParamTest, RestoresFileWithMarkerAfterFailure) {
+  base::HistogramTester histogram_tester;
   // Write `data` and a marker.
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
   struct TestData data = {11, "X"};
@@ -942,14 +1210,20 @@ TEST_P(CommandStorageBackendParamTest, RestoresFileWithMarkerAfterFailure) {
   EXPECT_TRUE(backend->IsFileOpenForTesting());
 
   // Make appending fail, which should close the file.
-  backend->ForceAppendCommandsToFailForTesting();
+  ForceAppendCommandsToFail(backend.get(), WriteStatus::kFileWriteError);
   backend->AppendCommands({}, false, base::DoNothing());
   EXPECT_FALSE(backend->IsFileOpenForTesting());
+  histogram_tester.ExpectBucketCount(
+      GetHistogramName("AppendCommands", "Append", "Status"),
+      WriteStatus::kFileWriteError, 1);
 
   // Append again, with another fail. Should attempt to reopen file and file.
-  backend->ForceAppendCommandsToFailForTesting();
+  ForceAppendCommandsToFail(backend.get(), WriteStatus::kSerializationError);
   backend->AppendCommands({}, true, base::DoNothing());
   EXPECT_FALSE(backend->IsFileOpenForTesting());
+  histogram_tester.ExpectBucketCount(
+      GetHistogramName("AppendCommands", "Truncate", "Status"),
+      WriteStatus::kSerializationError, 1);
 
   // Reopen and read last session. Should get `data` and marker.
   backend = nullptr;

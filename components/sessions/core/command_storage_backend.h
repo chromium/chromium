@@ -138,6 +138,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   friend class base::RefCountedDeleteOnSequence<CommandStorageBackend>;
   friend class base::DeleteHelper<CommandStorageBackend>;
   friend class CommandStorageBackendTest;
+  friend class SessionFileReader;
 
   struct SessionInfo {
     base::FilePath path;
@@ -154,6 +155,46 @@ class SESSIONS_EXPORT CommandStorageBackend
     bool did_write_marker = false;
   };
 
+  // Statuses that can occur when writing a file using AppendCommands().
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(WriteStatus)
+  enum class WriteStatus {
+    kUnknown = 0,
+    kSuccess = 1,
+    kFileNotOpened = 2,
+    kFileWriteError = 3,
+    kSerializationError = 4,
+    // TODO(crbug.com/479420496): Add encryption errors
+    kMaxValue = kSerializationError,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:CommandStorageWriteStatus)
+
+  static bool IsError(WriteStatus status) {
+    return status != WriteStatus::kSuccess;
+  }
+
+  // Statuses that can occur when reading a file using ReadLastSessionCommands()
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(ReadStatus)
+  enum class ReadStatus {
+    kUnknown = 0,
+    kSuccess = 1,  // The file was read successfully.
+    kNoFile = 2,   // No file exists for the last session (not an error).
+    kFileInvalid = 3,
+    kFileEmpty = 4,
+    kInvalidHeader = 5,
+    kInvalidCommand = 6,
+    // TODO(crbug.com/479420496): Add encryption errors
+    kMaxValue = kInvalidCommand,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:CommandStorageReadStatus)
+
+  static bool IsError(ReadStatus status) {
+    return status != ReadStatus::kSuccess && status != ReadStatus::kNoFile;
+  }
+
   ~CommandStorageBackend();
 
   // Performs initialization on the background task run, if necessary.
@@ -164,9 +205,6 @@ class SESSIONS_EXPORT CommandStorageBackend
                                     const base::FilePath& path,
                                     base::Time time,
                                     bool encrypted);
-
-  // Reads the commands from the specified file.
-  static ReadCommandsResult ReadCommandsFromFile(const base::FilePath& path);
 
   // Closes the file. The next time AppendCommands() is called the file will
   // implicitly be reopened.
@@ -186,13 +224,13 @@ class SESSIONS_EXPORT CommandStorageBackend
       const base::FilePath& path) const;
 
   // Appends the specified commands to the specified file.
-  bool AppendCommandsToFile(
+  WriteStatus AppendCommandsToFile(
       base::File* file,
       const std::vector<std::unique_ptr<sessions::SessionCommand>>& commands);
 
-  // Writes |command| to |file|. Returns true on success.
-  bool AppendCommandToFile(base::File* file,
-                           const sessions::SessionCommand& command);
+  // Writes `command` to `file`.
+  WriteStatus AppendCommandToFile(base::File* file,
+                                  const sessions::SessionCommand& command);
 
   // Gets data for the last session file.
   std::optional<SessionInfo> FindLastSessionFile() const;
@@ -218,6 +256,21 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Returns true if `path` can be used for the last session.
   bool CanUseFileForLastSession(const base::FilePath& path) const;
+
+  // Used in testing to emulate an error in writing to the file. The value is
+  // automatically reset after the failure.
+  void ForceAppendCommandsToFailForTesting(WriteStatus status);
+
+  static std::string GetHistogramNameForTesting(
+      CommandStorageManager::SessionType session_type,
+      bool encrypted,
+      std::string_view operation,
+      std::string_view slice = "",
+      std::string_view metric = "");
+
+  std::string GetHistogramName(std::string_view operation,
+                               std::string_view slice,
+                               std::string_view metric) const;
 
   bool is_encrypted() const { return encryptor_.has_value(); }
 
@@ -262,7 +315,7 @@ class SESSIONS_EXPORT CommandStorageBackend
   std::optional<base::FilePath> last_or_current_path_with_valid_marker_;
   std::optional<base::FilePath> second_to_last_path_with_valid_marker_;
 
-  bool force_append_commands_to_fail_for_testing_ = false;
+  WriteStatus force_write_status_for_testing_ = WriteStatus::kUnknown;
 };
 
 }  // namespace sessions

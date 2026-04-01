@@ -22,6 +22,22 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AppendCommandsSlice">
+  <variant name="Append"/>
+  <variant name="Truncate"/>
+</variants>
+
+<variants name="CommandStorageSessionType">
+  <variant name="AppRestore"/>
+  <variant name="SessionRestore"/>
+  <variant name="TabRestore"/>
+</variants>
+
+<variants name="EncryptedStatus">
+  <variant name="Cleartext"/>
+  <variant name="Encrypted"/>
+</variants>
+
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
     enum="Boolean" expires_after="2026-09-06">
   <owner>nafisabedin@google.com</owner>
@@ -62,6 +78,82 @@ chromium-metrics-reviews@google.com.
 
     Mac-only.
   </summary>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.Duration"
+    units="ms" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The duration of the AppendCommands operation for {SessionType} sessions
+    ({EncryptedStatus}), when the truncate parameter was {Slice}. AppendCommands
+    is typically called periodically during a browser session to save the
+    current session state.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
+  <token key="Slice" variants="AppendCommandsSlice"/>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.FileSize"
+    units="bytes" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The size of the file written by CommandStorageBackend for {SessionType}
+    sessions ({EncryptedStatus}), when the truncate parameter was {Slice}.
+    Recorded each time the file is written successfully. The file is written
+    periodically during a browser session to save the current session state.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
+  <token key="Slice" variants="AppendCommandsSlice"/>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.AppendCommands.{Slice}.Status"
+    enum="CommandStorageWriteStatus" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The result of the AppendCommands operation for {SessionType} sessions
+    ({EncryptedStatus}), when the truncate parameter was {Slice}. AppendCommands
+    is typically called periodically during a browser session to save the
+    current session state.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
+  <token key="Slice" variants="AppendCommandsSlice"/>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.ReadLastSessionCommands.Duration"
+    units="ms" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The duration of the ReadLastSessionCommands operation for {SessionType}
+    sessions ({EncryptedStatus}). ReadLastSessionCommands is typically called
+    during browser startup to restore the previous session state.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
+</histogram>
+
+<histogram
+    name="Session.CommandStorageBackend.{SessionType}.{EncryptedStatus}.ReadLastSessionCommands.Status"
+    enum="CommandStorageReadStatus" expires_after="2026-09-01">
+  <owner>sammon@google.com</owner>
+  <owner>dljames@chromium.org</owner>
+  <summary>
+    The result of the ReadLastSessionCommands operation for {SessionType}
+    sessions ({EncryptedStatus}). ReadLastSessionCommands is typically called
+    during browser startup to restore the previous session state.
+  </summary>
+  <token key="SessionType" variants="CommandStorageSessionType"/>
+  <token key="EncryptedStatus" variants="EncryptedStatus"/>
 </histogram>
 
 <histogram name="Session.ID.RestoredDifference" units="Session IDs"
