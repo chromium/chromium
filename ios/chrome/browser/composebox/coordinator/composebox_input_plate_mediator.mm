@@ -2362,26 +2362,30 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   BOOL showShortcuts =
       !hasContent && !canSend &&
       !base::FeatureList::IsEnabled(kHideFuseboxVoiceLensActions);
-
+  // Hide the plus button is different from !allowsMultimodalActions. When the
+  // plus button is hidden, the user can still use multimodal actions from other
+  // sources such as drag and drop.
+  BOOL hidePlusButton = NO;
   if (IsComposeboxConditionalPlusButtonEnabled() && !isCobrowse &&
       _modeHolder.isRegularSearch && compactMode) {
     BOOL isPreEditURL = !_userInputInProgress && _hasText;
     BOOL isURLQuery = _userInputInProgress && _hasText && !_isSearchQuery;
-    allowsMultimodalActions = !isURLQuery;
+    hidePlusButton = isURLQuery;
     if (GetComposeboxConditionalPlusButtonVariant() ==
             ComposeboxConditionalPlusButtonVariant::kHideInPreEdit &&
         isPreEditURL) {
-      allowsMultimodalActions = YES;
+      hidePlusButton = YES;
     }
   }
 
   BOOL showLeadingImage =
-      !isCobrowse && (!compactMode || !allowsMultimodalActions);
+      !isCobrowse &&
+      (!compactMode || !allowsMultimodalActions || hidePlusButton);
   BOOL shouldPersistAIMButton =
       IsComposeboxAIMNudgeEnabled() && !compactMode && allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
-      allowsMultimodalActions ? kPlus : kNone;
+      (allowsMultimodalActions && !hidePlusButton) ? kPlus : kNone;
 
   ComposeboxInputPlateControls leadingImage =
       showLeadingImage ? kLeadingImage : kNone;
