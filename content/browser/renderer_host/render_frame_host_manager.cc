@@ -1110,8 +1110,20 @@ void RenderFrameHostManager::DidChangeOpener(
         *opener_frame_token);
     // If |opener_rfhi| is null, the opener RFH has already disappeared.  In
     // this case, clear the opener rather than keeping the old opener around.
-    if (opener_rfhi)
+    if (opener_rfhi) {
+      // Ignore this message if |opener_rfhi| is inactive (e.g., in BFCache or
+      // pending deletion), or if the FrameTreeNode's current RenderFrameHost
+      // is in a different BrowsingInstance, as it would be incorrect to
+      // establish an opener relationship in those cases.
+      if (opener_rfhi->IsInactiveAndDisallowActivation(
+              DisallowActivationReasonId::kDidChangeOpener) ||
+          !render_frame_host_->GetSiteInstance()
+               ->group()
+               ->IsRelatedSiteInstanceGroup(source_site_instance_group)) {
+        return;
+      }
       opener = opener_rfhi->frame_tree_node();
+    }
   }
 
   if (frame_tree_node_->opener() == opener)

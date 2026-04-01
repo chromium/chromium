@@ -64,6 +64,7 @@ enum DisallowActivationReasonId : uint64_t {
   kIndexedDBTransactionIsStartingWhileBlockingOthers = 40,
   kIndexedDBTransactionIsOngoingAndBlockingOthers = 41,
   kBrowserInitiatedErrorPage = 42,
+  kDidChangeOpener = 43,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

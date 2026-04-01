@@ -9706,6 +9706,8 @@ void RenderFrameHostImpl::DidChangeOpener(
     return;
   }
 
+  // Note that this call internally protects against `opener_frame_token`
+  // referring to an inactive frame.
   owner_->GetRenderFrameHostManager().DidChangeOpener(
       opener_frame_token, GetSiteInstance()->group());
 }

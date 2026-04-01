@@ -5957,6 +5957,72 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+// Tests that a renderer cannot change the opener of a frame across different
+// BrowsingInstances (e.g., when trying to reconnect to a named window that
+// has navigated to a WebUI URL).
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       CannotChangeOpenerAcrossBrowsingInstances) {
+  StartEmbeddedServer();
+
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_a3(embedded_test_server()->GetURL("a.com", "/title3.html"));
+  GURL webui_url = GetWebUIURL(kChromeUIGpuHost);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  WebContentsImpl* web_contents_1 =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* ftn_1 = web_contents_1->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh_1 = ftn_1->current_frame_host();
+
+  // Use window.open() to open a popup from A1 to A2 named "foo", and another
+  // unnamed popup from A1 to A3.
+  Shell* tab_2 = OpenPopup(rfh_1, url_a2, "foo");
+  Shell* tab_3 = OpenPopup(rfh_1, url_a3, "");
+
+  WebContentsImpl* web_contents_2 =
+      static_cast<WebContentsImpl*>(tab_2->web_contents());
+  FrameTreeNode* ftn_2 = web_contents_2->GetPrimaryFrameTree().root();
+  WebContentsImpl* web_contents_3 =
+      static_cast<WebContentsImpl*>(tab_3->web_contents());
+  FrameTreeNode* ftn_3 = web_contents_3->GetPrimaryFrameTree().root();
+
+  // Verify the initial opener relationship.
+  EXPECT_EQ(ftn_1, ftn_2->opener());
+
+  // Verify all tabs are in the same BrowsingInstance.
+  EXPECT_TRUE(rfh_1->GetSiteInstance()->IsRelatedSiteInstance(
+      web_contents_2->GetPrimaryMainFrame()->GetSiteInstance()));
+  EXPECT_TRUE(rfh_1->GetSiteInstance()->IsRelatedSiteInstance(
+      web_contents_3->GetPrimaryMainFrame()->GetSiteInstance()));
+
+  // From Tab 3, discover Tab 2 by name and change its opener to Tab 3. This
+  // should work, as they're in the same BrowsingInstance.
+  EXPECT_TRUE(ExecJs(tab_3, "!!window.open('', 'foo');"));
+  EXPECT_EQ(ftn_3, ftn_2->opener());
+
+  // Navigate Tab 2 to a WebUI URL. This forces a BrowsingInstance swap.
+  EXPECT_TRUE(NavigateToURL(tab_2, webui_url));
+  EXPECT_FALSE(rfh_1->GetSiteInstance()->IsRelatedSiteInstance(
+      web_contents_2->GetPrimaryMainFrame()->GetSiteInstance()));
+
+  // Currently, the WebUI page's opener in the browser process is not severed,
+  // unlike COOP cases. (This allows the opener to still function if we were to
+  // go back to the previous page.) However, window.opener visible to JS should
+  // be null.
+  EXPECT_EQ(ftn_3, ftn_2->opener());
+  EXPECT_TRUE(ExecJs(tab_2, "window.opener == null"));
+
+  // From Tab 1, attempt to discover Tab 2 by name and change its opener to
+  // Tab 1.
+  EXPECT_TRUE(ExecJs(ftn_1, "!!window.open('', 'foo');"));
+
+  // Because those two tabs are now in different BrowsingInstances, this attempt
+  // to change the opener should be rejected. Verify the opener did not change.
+  EXPECT_EQ(ftn_3, ftn_2->opener());
+  EXPECT_TRUE(ExecJs(tab_2, "window.opener == null"));
+}
+
 namespace {
 
 // A helper to post a recurring check that a renderer process is foregrounded.
