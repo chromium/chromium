@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/html/html_ulist_element.h"
 #include "third_party/blink/renderer/core/html/html_wbr_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
@@ -783,10 +784,9 @@ void StyleAdjuster::AdjustStyleForDisplay(
             true);
       }
     }
-    if (!builder.IsFloating()) {
-      builder.SetIsInInlinifyingDisplay();
-      builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
-    }
+    DCHECK(!builder.IsFloating());
+    builder.SetIsInInlinifyingDisplay();
+    builder.SetDisplay(EquivalentInlineDisplay(builder.Display()));
   }
 
   if (builder.StyleType() == kPseudoIdScrollMarkerGroup) {
@@ -1122,8 +1122,6 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   bool is_document_element =
       element && element->GetDocument().documentElement() == element;
-  bool is_video_element = element && IsA<HTMLMediaElement>(*element) &&
-                          To<HTMLMediaElement>(*element).IsHTMLVideoElement();
   bool is_in_top_layer = false;
   if (RuntimeEnabledFeatures::OverlayPropertyEnabled()) {
     if (RuntimeEnabledFeatures::OverlayGlobalRuleRemovalEnabled()) {
@@ -1248,7 +1246,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
 
   bool is_replaced_normal_flow_video =
       RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled() &&
-      is_video_element && builder.GetPosition() == EPosition::kStatic &&
+      IsA<HTMLVideoElement>(element) &&
+      builder.GetPosition() == EPosition::kStatic &&
       element->FastHasAttribute(html_names::kControlsAttr);
 
   if (is_document_element || is_replaced_normal_flow_video ||
