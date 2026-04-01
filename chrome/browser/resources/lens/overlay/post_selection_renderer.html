@@ -168,10 +168,14 @@
     pointer-events: auto;
     z-index: 5;
     cursor: pointer;
-    /* TODO(b/498267472): Replace with a color token that provides a value
-     * accessible in both light and dark modes. */
-    border: 2px solid #C6E6FF;
+    border: 2px solid transparent;
     border-radius: var(--post-selection-cutout-corner-radius);
+    background: linear-gradient(to right, #C6E6FF, #E0E7FF) border-box;
+    -webkit-mask:
+      linear-gradient(#fff 0 0) padding-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
     box-sizing: border-box;
   }
 
