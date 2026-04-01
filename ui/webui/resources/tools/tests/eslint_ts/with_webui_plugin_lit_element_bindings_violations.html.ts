@@ -22,8 +22,10 @@ export function getHtml(this: BindingsViolationsElement) {
     .fooArray="${this.getErrorMessage()}"
     .fooBoolean="${this.getLabels()}"
     .fooObject="${this.disabled ? 'A' : 'B'}"
+    .mixinString="${this.disabled}"
     .nonExistentProperty="${this.value}">
 </hello-world-child>
+<hello-world-child .mixinString="${this.label}"></hello-world-child>
 <div ?hidden="${this.getErrorMessage()}" aria-label="${this.getLabels()}">
 </div>
 <button ?disabled="${this.buttonDisabled}"></button>

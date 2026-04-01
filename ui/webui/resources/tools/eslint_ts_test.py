@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 
 import eslint_ts
+import json
 import os
 import tempfile
 import shutil
@@ -41,7 +42,36 @@ class EslintTsTest(unittest.TestCase):
   def _run_test(self, in_files, enable_web_component_missing_deps=False):
     config_base = os.path.join(_BUILD_DIR, "gen", "ui", "webui", "resources",
                                "tools", "eslint", "eslint_ts.config_base.js")
-    tsconfig = os.path.join(self._in_folder, "tsconfig.json")
+    orig_tsconfig_path = os.path.join(self._in_folder, "tsconfig.json")
+
+    with open(orig_tsconfig_path, "r") as f:
+      config = json.load(f)
+
+    if "compilerOptions" not in config:
+      config["compilerOptions"] = {}
+    if "paths" not in config["compilerOptions"]:
+      config["compilerOptions"]["paths"] = {}
+
+    gen_lit_dir = os.path.join(
+        os.path.abspath(_BUILD_DIR), "gen", "third_party", "lit", "v3_0")
+    rel_lit_path = os.path.relpath(gen_lit_dir,
+                                   self._in_folder).replace(os.sep, "/")
+    config["compilerOptions"]["paths"]["/resources/lit/v3_0/lit.rollup.js"] = [
+        rel_lit_path + "/lit.d.ts"
+    ]
+
+    config["compilerOptions"]["rootDir"] = os.path.normpath(self._in_folder)
+    config["extends"] = os.path.normpath(
+        os.path.join(self._in_folder, config["extends"]))
+    config["files"] = [
+        os.path.join(self._in_folder, f) for f in config["files"]
+    ]
+    config["references"] = [{"path": rel_lit_path + "/tsconfig_build_ts.json"}]
+
+    tsconfig = os.path.join(self._out_dir, "tsconfig.json")
+    with open(tsconfig, "w") as f:
+      json.dump(config, f, indent=4)
+
     custom_loader = os.path.join(_HERE_DIR, "eslint", "custom_loader.mjs")
 
     args = [
@@ -71,7 +101,8 @@ class EslintTsTest(unittest.TestCase):
     path_to_build_dir = os.path.relpath(_BUILD_DIR,
                                         self._out_dir).replace('\\', '/')
     expected_contents = self._read_file(
-        os.path.join(self._in_folder, "eslint_expected.config.mjs"))
+        os.path.join(self._in_folder, "eslint_expected.config.mjs")).replace(
+            './../tsconfig.json', './tsconfig.json')
     self.assertMultiLineEqual(
         expected_contents % {"path_to_build_dir": path_to_build_dir},
         actual_contents)
@@ -763,6 +794,12 @@ class EslintTsTest(unittest.TestCase):
             'propertyName': 'nonExistentProperty',
             'tagName': 'hello-world-child',
         },
+        _BINDING_TYPE_MISMATCH_ERROR % {
+            'propertyName': 'mixinString',
+            'tagName': 'hello-world-child',
+            'expectedType': 'string',
+            'providedType': 'boolean',
+        },
     ]
     for e in errors:
       self.assertTrue(
@@ -801,6 +838,10 @@ class EslintTsTest(unittest.TestCase):
         _BINDING_TYPE_MISMATCH_PREFIX_ERROR % {
             'propertyName': 'style',
             'tagName': 'div',
+        },
+        _PROPERTY_NOT_FOUND_ERROR % {
+            'propertyName': 'mixinString',
+            'tagName': 'hello-world-child',
         },
     ]
     for e in non_errors:
