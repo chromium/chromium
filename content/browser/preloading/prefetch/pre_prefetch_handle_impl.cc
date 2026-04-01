@@ -18,4 +18,11 @@ PrePrefetchHandleImpl::PrePrefetchHandleImpl(
 
 PrePrefetchHandleImpl::~PrePrefetchHandleImpl() = default;
 
+std::unique_ptr<PrePrefetchContainer>
+PrePrefetchHandleImpl::TakePrePrefetchContainerOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(pre_prefetch_container_);
+  return std::move(pre_prefetch_container_);
+}
+
 }  // namespace content

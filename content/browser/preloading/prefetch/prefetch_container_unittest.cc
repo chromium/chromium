@@ -13,6 +13,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/variations_ids_provider.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_match_resolver.h"
@@ -111,6 +112,46 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
         PreloadPipelineInfo::Create(
             /*planned_max_preloading_type=*/PreloadingType::kPrefetch),
         /*attempt=*/nullptr);
+  }
+
+  std::unique_ptr<PrefetchContainer>
+  CreateEmbedderPrefetchContainerFromPrePrefetch(const GURL& prefetch_url) {
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+    std::ignore = pending_remote.InitWithNewPipeAndPassReceiver();
+
+    base::test::TestFuture<std::unique_ptr<PrePrefetchContainer>> future;
+    base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})
+        ->PostTaskAndReplyWithResult(
+            FROM_HERE,
+            base::BindOnce(
+                [](PrefetchContainerTestBase* test_fixture, const GURL& url,
+                   mojo::PendingRemote<network::mojom::URLLoaderFactory>
+                       factory) {
+                  auto prefetch_request = PrefetchRequest::
+                      CreateBrowserInitiatedWithoutWebContentsOffTheMainThread(
+                          test_fixture->browser_context()->GetWeakPtr(), url,
+                          PrefetchType(PreloadingTriggerType::kEmbedder,
+                                       /*use_prefetch_proxy=*/true),
+                          test::kPreloadingEmbedderHistgramSuffixForTesting,
+                          blink::mojom::Referrer(),
+                          /*javascript_enabled=*/true,
+                          /*referring_origin=*/std::nullopt,
+                          /*no_vary_search_hint=*/std::nullopt,
+                          /*priority=*/std::nullopt);
+                  return PrePrefetchContainer::CreateAndStartForTesting(
+                      std::move(prefetch_request), std::move(factory));
+                },
+                base::Unretained(this), prefetch_url,
+                std::move(pending_remote)),
+            future.GetCallback());
+
+    auto pre_prefetch_container = future.Take();
+
+    std::unique_ptr<const PrefetchRequest> prefetch_request =
+        pre_prefetch_container->TakePrefetchRequestOnUI();
+
+    return PrefetchContainer::CreateForTesting(
+        std::move(prefetch_request), std::move(pre_prefetch_container));
   }
 
   std::unique_ptr<PrefetchContainer> CreateBrowserContextPrefetchContainer(
@@ -354,6 +395,30 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_EQ(prefetch_container->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
                          /*use_prefetch_proxy=*/false));
+  EXPECT_EQ(prefetch_container->key(),
+            PrefetchKey(std::nullopt, GURL("https://test.com")));
+  EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
+  // Embedder-initiated prefetch shouldn't include any tag.
+  EXPECT_FALSE(prefetch_container->request().speculation_rules_tags());
+
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  EXPECT_FALSE(
+      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
+}
+
+// Test that Prefetch from PrePrefetch can be created successfully.
+TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder_PrePrefetch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPrefetchOffTheMainThread);
+
+  auto prefetch_container =
+      CreateEmbedderPrefetchContainerFromPrePrefetch(GURL("https://test.com"));
+
+  ASSERT_FALSE(prefetch_container->request().GetRendererInitiatorInfo());
+  EXPECT_EQ(prefetch_container->GetURL(), GURL("https://test.com"));
+  EXPECT_EQ(prefetch_container->request().prefetch_type(),
+            PrefetchType(PreloadingTriggerType::kEmbedder,
+                         /*use_prefetch_proxy=*/true));
   EXPECT_EQ(prefetch_container->key(),
             PrefetchKey(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());

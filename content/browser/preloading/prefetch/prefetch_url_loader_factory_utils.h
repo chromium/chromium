@@ -35,7 +35,9 @@ CreatePrefetchURLLoaderFactoryParams();
 // `URLLoaderFactory` is created around prefetching.
 CONTENT_EXPORT scoped_refptr<network::SharedURLLoaderFactory>
 CreatePrefetchURLLoaderFactory(network::mojom::NetworkContext* network_context,
-                               const PrefetchRequest& prefetch_request);
+                               const PrefetchRequest& prefetch_request,
+                               scoped_refptr<network::SharedURLLoaderFactory>
+                                   pre_prefetch_url_loader_factory = nullptr);
 
 }  // namespace content
 

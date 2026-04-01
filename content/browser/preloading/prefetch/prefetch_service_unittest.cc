@@ -14,6 +14,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -21,6 +22,10 @@
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/mock_prefetch_service_delegate.h"
+#include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -552,6 +557,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     net::RequestPriority expected_priority = net::RequestPriority::IDLE;
     std::optional<std::string> sec_purpose_header_value = std::nullopt;
     net::HttpRequestHeaders additional_headers;
+    bool is_pre_prefetch = false;
   };
 
   void VerifyCommonRequestState(const GURL& url) {
@@ -1124,36 +1130,44 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
     EXPECT_EQ(request->request.url, url);
     EXPECT_EQ(request->request.method, "GET");
     EXPECT_TRUE(request->request.enable_load_timing);
-    EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
+
     EXPECT_EQ(request->request.credentials_mode,
               network::mojom::CredentialsMode::kInclude);
 
-    EXPECT_THAT(
-        request->request.headers.GetHeader(blink::kPurposeHeaderName),
-        testing::Optional(std::string(blink::kSecPurposePrefetchHeaderValue)));
+    // TODO(crbug.com/452389538): Remove this once `PrePrefetchContainer` uses
+    // the common utility to handle this properly.
+    if (!options.is_pre_prefetch) {
+      EXPECT_EQ(request->request.load_flags, net::LOAD_PREFETCH);
 
-    std::string sec_purpose_header_value;
-    if (options.sec_purpose_header_value) {
-      sec_purpose_header_value = options.sec_purpose_header_value.value();
-    } else {
-      sec_purpose_header_value =
-          options.use_prefetch_proxy
-              ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
-              : blink::kSecPurposePrefetchHeaderValue;
+      EXPECT_THAT(request->request.headers.GetHeader(blink::kPurposeHeaderName),
+                  testing::Optional(
+                      std::string(blink::kSecPurposePrefetchHeaderValue)));
+      std::string sec_purpose_header_value;
+      if (options.sec_purpose_header_value) {
+        sec_purpose_header_value = options.sec_purpose_header_value.value();
+      } else {
+        sec_purpose_header_value =
+            options.use_prefetch_proxy
+                ? blink::kSecPurposePrefetchAnonymousClientIpHeaderValue
+                : blink::kSecPurposePrefetchHeaderValue;
+      }
+
+      EXPECT_THAT(
+          request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
+          testing::Optional(sec_purpose_header_value));
+
+      EXPECT_THAT(request->request.headers.GetHeader("Accept"),
+                  testing::Optional(FrameAcceptHeaderValue(
+                      /*allow_sxg_responses=*/true, browser_context())));
+
+      EXPECT_THAT(
+          request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
+          testing::Optional(std::string("1")));
+
+      ASSERT_TRUE(request->request.trusted_params.has_value());
+
+      VerifyIsolationInfo(request->request.trusted_params->isolation_info);
     }
-    EXPECT_THAT(
-        request->request.headers.GetHeader(blink::kSecPurposeHeaderName),
-        testing::Optional(sec_purpose_header_value));
-
-    EXPECT_THAT(request->request.headers.GetHeader("Accept"),
-                testing::Optional(FrameAcceptHeaderValue(
-                    /*allow_sxg_responses=*/true, browser_context())));
-
-    EXPECT_THAT(request->request.headers.GetHeader("Upgrade-Insecure-Requests"),
-                testing::Optional(std::string("1")));
-
-    ASSERT_TRUE(request->request.trusted_params.has_value());
-    VerifyIsolationInfo(request->request.trusted_params->isolation_info);
 
     EXPECT_EQ(request->request.priority, options.expected_priority);
 
@@ -1244,6 +1258,7 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
   std::map<GURL, mojo::ScopedDataPipeProducerHandle> producer_handle_for_gurl_;
 
   std::vector<PrefetchRequestHandler> request_handler_keep_alive_;
+  std::vector<std::unique_ptr<PrefetchHandle>> test_prefetch_handles_;
 };
 
 class PrefetchServiceTest
@@ -1261,6 +1276,65 @@ class PrefetchServiceTest
 
 INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
                          PrefetchServiceTest,
+                         testing::ValuesIn(PrefetchRearchParam::Params()));
+
+class PrefetchServicePrePrefetchTest : public PrefetchServiceTest {
+ public:
+  void SetUp() override {
+    PrefetchServiceTest::SetUp();
+    pre_prefetch_service_ = PrePrefetchService::Create(browser_context());
+    PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(
+        test_shared_url_loader_factory_.get());
+  }
+
+  void TearDown() override {
+    pre_prefetch_service_.reset();
+    PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(nullptr);
+    PrefetchServiceTest::TearDown();
+  }
+
+  void InitScopedFeatureList() override {
+    PrefetchServiceTest::InitScopedFeatureList();
+    preprefetch_feature_list_.InitAndEnableFeature(
+        features::kPrefetchOffTheMainThread);
+  }
+
+  PrePrefetchService* pre_prefetch_service() {
+    return pre_prefetch_service_.get();
+  }
+
+  [[nodiscard]] std::unique_ptr<content::PrefetchHandle>
+  MakePrefetchFromPrePrefetch(const GURL& prefetch_url) {
+    base::test::TestFuture<std::unique_ptr<PrePrefetchHandle>> future;
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            [](PrePrefetchService* service_ptr, const GURL& url) {
+              base::ScopedAllowBaseSyncPrimitivesForTesting allow_blocking;
+              return service_ptr->StartPrePrefetchRequest(
+                  url, test::kPreloadingEmbedderHistgramSuffixForTesting,
+                  /*javascript_enabled=*/true,
+                  /*no_vary_search_hint=*/std::nullopt,
+                  /*priority=*/std::nullopt,
+                  /*additional_headers=*/{},
+                  /*request_status_listener=*/nullptr, base::TimeDelta(),
+                  /*should_append_variations_header=*/false,
+                  /*should_disable_block_until_head_timeout=*/false,
+                  /*should_bypass_http_cache=*/false);
+            },
+            pre_prefetch_service(), prefetch_url),
+        future.GetCallback());
+
+    return prefetch_service().AddPrefetchRequestFromPrePrefetch(future.Take());
+  }
+
+ private:
+  std::unique_ptr<PrePrefetchService> pre_prefetch_service_;
+  base::test::ScopedFeatureList preprefetch_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ParametrizedTests,
+                         PrefetchServicePrePrefetchTest,
                          testing::ValuesIn(PrefetchRearchParam::Params()));
 
 TEST_P(PrefetchServiceTest, SuccessCase) {
@@ -1756,6 +1830,66 @@ TEST_P(PrefetchServiceTest,
   // No servable PrefetchContainer is returned for different DocumentToken.
   EXPECT_FALSE(
       GetPrefetchToServe(GURL("https://example.com"), MainDocumentToken()));
+}
+
+// Test that Prefetch from PrePrefetch can be served successfully.
+TEST_P(PrefetchServicePrePrefetchTest, SuccessCase_Embedder_PrePrefetch) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  const PrefetchType prefetch_type =
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false);
+  auto handle = MakePrefetchFromPrePrefetch(GURL("https://example.com"));
+
+  VerifyCommonRequestState(GURL("https://example.com"),
+                           {.use_prefetch_proxy = false,
+                            .expected_priority = net::RequestPriority::HIGHEST,
+                            .is_pre_prefetch = true});
+  MakeResponseAndWait(net::HTTP_OK, net::OK, kHTMLMimeType,
+                      /*use_prefetch_proxy=*/false,
+                      {{"X-Testing", "Hello World"}}, kHTMLBody);
+
+  // Verify that the prefetch request was successful.
+  // TODO(crbug.com/40269462): Revise current helper functions (ExpectPrefetch*)
+  // for browser-initiated prefetch.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  NavigateInitiatedByBrowser(GURL("https://example.com"));
+
+  PrefetchServingHandle serving_handle =
+      GetPrefetchToServe(GURL("https://example.com"), std::nullopt);
+  ExpectServingReaderSuccess(serving_handle);
+
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.AfterClick.RedirectChainSize", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Prefetch.PrefetchMatchingBlockedNavigation.PerMatchingCandidate.",
+           GetMetricsSuffixTriggerTypeAndEagerness(
+               prefetch_type,
+               test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+      false, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Prefetch.PrefetchPotentialCandidateServingResult."
+                    "PerMatchingCandidate.",
+                    GetMetricsSuffixTriggerTypeAndEagerness(
+                        prefetch_type,
+                        test::kPreloadingEmbedderHistgramSuffixForTesting)}),
+      PrefetchPotentialCandidateServingResult::kServed, 1);
 }
 
 TEST_P(PrefetchServiceTest, NoPrefetchingPreloadingDisabled) {
@@ -3271,6 +3405,52 @@ TEST_P(PrefetchServiceTest, NoVarySearchSuccessCase_Embedder) {
 
   VerifyCommonRequestStateForWebContentsPrefetch(
       GURL("https://example.com?a=1"), {.use_prefetch_proxy = false});
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
+      kHTMLBody);
+
+  // TODO(crbug.com/40269462): Revise current helper functions (ExpectPrefetch*)
+  // for browser-initiated prefetch.
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.RespCode", net::HTTP_OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.NetError", net::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.BodyLength", std::size(kHTMLBody), 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.TotalTime", kTotalTimeDuration, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PrefetchProxy.Prefetch.Mainframe.ConnectTime", kConnectTimeDuration, 1);
+
+  NavigateInitiatedByBrowser(GURL("https://example.com"));
+
+  PrefetchServingHandle serving_handle =
+      GetPrefetchToServe(GURL("https://example.com"), std::nullopt);
+  ExpectServingReaderSuccess(serving_handle);
+  EXPECT_EQ(serving_handle.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com/?a=1"));
+}
+
+// Test that Prefetch from PrePrefetch can be served via NVS matching.
+TEST_P(PrefetchServicePrePrefetchTest,
+       NoVarySearchSuccessCase_Embedder_PrePrefetch) {
+  base::HistogramTester histogram_tester;
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/std::nullopt));
+
+  const PrefetchType prefetch_type =
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false);
+  auto handle = MakePrefetchFromPrePrefetch(GURL("https://example.com/?a=1"));
+
+  VerifyCommonRequestState(GURL("https://example.com/?a=1"),
+                           {.use_prefetch_proxy = false,
+                            .expected_priority = net::RequestPriority::HIGHEST,
+                            .is_pre_prefetch = true});
   MakeResponseAndWait(
       net::HTTP_OK, net::OK, kHTMLMimeType,
       /*use_prefetch_proxy=*/false,

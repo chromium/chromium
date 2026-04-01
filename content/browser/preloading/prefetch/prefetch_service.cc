@@ -22,6 +22,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
@@ -41,6 +42,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/prefetch/prefetch_url_loader_factory_utils.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/proxy_lookup_client_impl.h"
@@ -60,6 +62,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key_collection.h"
@@ -70,6 +73,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -370,7 +374,8 @@ PrefetchOriginProber* PrefetchService::GetPrefetchOriginProber() const {
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
-    std::unique_ptr<const PrefetchRequest> prefetch_request) {
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container) {
   CHECK(prefetch_request);
   CHECK_EQ(prefetch_request->browser_context(), GetBrowserContext());
 
@@ -461,16 +466,20 @@ base::WeakPtr<PrefetchContainer> PrefetchService::AddPrefetchRequestInternal(
     case Action::kReplaceOldWithNew:
       ResetPrefetchContainer(prefetch_iter->second->GetWeakPtr(),
                              /*should_progress=*/false);
-      return CreatePrefetchContainer(std::move(prefetch_request));
+      return CreatePrefetchContainer(std::move(prefetch_request),
+                                     std::move(pre_prefetch_container));
     case Action::kTakeNew:
-      return CreatePrefetchContainer(std::move(prefetch_request));
+      return CreatePrefetchContainer(std::move(prefetch_request),
+                                     std::move(pre_prefetch_container));
   }
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::CreatePrefetchContainer(
-    std::unique_ptr<const PrefetchRequest> prefetch_request) {
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container) {
   auto owned_prefetch_container = PrefetchContainer::Create(
-      base::PassKey<PrefetchService>(), std::move(prefetch_request));
+      base::PassKey<PrefetchService>(), std::move(prefetch_request),
+      std::move(pre_prefetch_container));
   const base::WeakPtr<PrefetchContainer> prefetch_container =
       owned_prefetch_container->GetWeakPtr();
 
@@ -625,7 +634,37 @@ struct PrefetchService::CheckEligibilityParams final {
 std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchRequestWithHandle(
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
   base::WeakPtr<PrefetchContainer> prefetch_container =
-      AddPrefetchRequestInternal(std::move(prefetch_request));
+      AddPrefetchRequestInternal(std::move(prefetch_request),
+                                 /*pre_prefetch_container=*/nullptr);
+
+  if (prefetch_container) {
+    PrefetchUrl(prefetch_container);
+  }
+
+  return std::make_unique<PrefetchHandleImpl>(GetWeakPtr(), prefetch_container);
+}
+
+std::unique_ptr<PrefetchHandle>
+PrefetchService::AddPrefetchRequestFromPrePrefetch(
+    std::unique_ptr<PrePrefetchHandle> pre_prefetch_handle) {
+  TRACE_EVENT("loading", "PrefetchService::AddPrefetchRequestFromPrePrefetch");
+
+  CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+  CHECK(pre_prefetch_handle);
+
+  auto* handle_impl =
+      static_cast<PrePrefetchHandleImpl*>(pre_prefetch_handle.get());
+  std::unique_ptr<PrePrefetchContainer> pre_prefetch_container =
+      handle_impl->TakePrePrefetchContainerOnUI();
+
+  CHECK(pre_prefetch_container);
+
+  std::unique_ptr<const PrefetchRequest> prefetch_request =
+      pre_prefetch_container->TakePrefetchRequestOnUI();
+
+  base::WeakPtr<PrefetchContainer> prefetch_container =
+      AddPrefetchRequestInternal(std::move(prefetch_request),
+                                 std::move(pre_prefetch_container));
 
   if (prefetch_container) {
     PrefetchUrl(prefetch_container);
@@ -637,7 +676,8 @@ std::unique_ptr<PrefetchHandle> PrefetchService::AddPrefetchRequestWithHandle(
 base::WeakPtr<PrefetchContainer>
 PrefetchService::AddPrefetchRequestWithoutStartingPrefetchForTesting(
     std::unique_ptr<const PrefetchRequest> prefetch_request) {
-  return AddPrefetchRequestInternal(std::move(prefetch_request));
+  return AddPrefetchRequestInternal(std::move(prefetch_request),
+                                    /*pre_prefetch_container=*/nullptr);
 }
 
 void PrefetchService::PrefetchUrl(
@@ -1595,6 +1635,22 @@ PrefetchService::GetURLLoaderFactoryForCurrentPrefetch(
     PrefetchContainer& prefetch_container) {
   if (g_url_loader_factory_for_testing) {
     return base::WrapRefCounted(g_url_loader_factory_for_testing);
+  }
+
+  // We can only use PrePrefetch's `URLLoaderFactory` for the initial request.
+  // E.g., assume the page 4 redirects (1)A -> (2)A -> (3)B -> (4)A,
+  // and B is a cross-site redirect. In this case,
+  // - PrePrefetch's `URLLoaderFactory` is utilized for (1),
+  // - No `URLLoaderFactory` is utilized for (2), because we can continue using
+  //   `URLLoader`/`URLLoaderClient` created in (1) by `FollowRedirect()`.
+  // - `IsolatedNetworkContext`'s `URLLoaderFactory` is utilized for (3),
+  // - Default `NetworkContext`'s `URLLoaderFactory` is utilized for (4).
+  // TODO(crbug.com/452389538): If the header validation between Prefetch and
+  // PrePrefetch is failed, we should use normal URLLoaderFactory.
+  if (prefetch_container.IsConstructedFromPrePrefetch() &&
+      prefetch_container.ExistsValidPrePrefetch()) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+    return prefetch_container.CreatePrePrefetchURLLoaderFactory();
   }
 
   if (!prefetch_container

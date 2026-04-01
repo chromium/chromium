@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "content/browser/preloading/prefetch/pre_prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
@@ -178,13 +179,21 @@ class CONTENT_EXPORT PrefetchContainer
   // `PrefetchService`.
   static std::unique_ptr<PrefetchContainer> Create(
       base::PassKey<PrefetchService>,
-      std::unique_ptr<const PrefetchRequest> request);
+      std::unique_ptr<const PrefetchRequest> request,
+      std::unique_ptr<PrePrefetchContainer> pre_prefetch_container);
   static std::unique_ptr<PrefetchContainer> CreateForTesting(
-      std::unique_ptr<const PrefetchRequest> request);
+      std::unique_ptr<const PrefetchRequest> request,
+      std::unique_ptr<PrePrefetchContainer> pre_prefetch_container = nullptr);
 
   // Use `Create*()` above.
-  PrefetchContainer(base::PassKey<PrefetchContainer>,
-                    std::unique_ptr<const PrefetchRequest> request);
+  // TODO(crbug.com/452389538): Receiving `PrefetchRequest` and
+  // `PrePrefetchContainer` whose only `PrefetchRequest` is moved out (when
+  // `PrefetchService::AddPrefetchRequestFromPrePrefetch()`) is confusing.
+  // Revisit to find a better interface.
+  PrefetchContainer(
+      base::PassKey<PrefetchContainer>,
+      std::unique_ptr<const PrefetchRequest> request,
+      std::unique_ptr<PrePrefetchContainer> pre_prefetch_container);
 
   ~PrefetchContainer() override;
 
@@ -559,6 +568,22 @@ class CONTENT_EXPORT PrefetchContainer
 
   bool IsExactMatch(const GURL& url) const;
   bool IsNoVarySearchHeaderMatch(const GURL& url) const;
+
+  // Returns true if this `PrefetchContainer` was constructed from a
+  // `PrePrefetchContainer`.
+  bool IsConstructedFromPrePrefetch() const;
+
+  // Returns true if both `pre_prefetch_loader_` and
+  // `pre_prefetch_loader_client_receiver_` are valid, which means the
+  // initial request can be made by `PrePrefetchContainer`.
+  bool ExistsValidPrePrefetch() const;
+
+  // Uses `pre_prefetch_loader_` and `pre_prefetch_loader_client_receiver_` to
+  // create a new `URLLoaderFactory` that returns the pre-prefetch when
+  // `CreateLoaderAndStart()` is called on the first redirect hop.
+  scoped_refptr<network::SharedURLLoaderFactory>
+  CreatePrePrefetchURLLoaderFactory();
+
   // Checks that the URL matches to the NoVarySearch hint with a precondition.
   //
   // The precondition is that a non redirect header is not received, as
@@ -735,13 +760,26 @@ class CONTENT_EXPORT PrefetchContainer
   // `PrefetchContainer` members outside `request_`.
   const std::unique_ptr<const PrefetchRequest> request_;
 
+  // True if this `PrefetchContainer` was constructed from a
+  // `PrePrefetchContainer`.
+  const bool is_constructed_from_pre_prefetch_ = false;
+
   PrefetchServiceWorkerState service_worker_state_ =
       PrefetchServiceWorkerState::kAllowed;
 
-  // Information about the current prefetch request. Updated when a redirect is
-  // encountered, whether or not the direct can be processed by the same URL
-  // loader or requires the instantiation of a new loader.
+  // Information about the current prefetch request.
+  // For normal Prefetches, this is initially created via
+  // `MakeInitialResourceRequest()`, which is called from `PrefetchService` when
+  // Prefetch is dequeued and its request is actually started. For
+  // PrePrefetches, it is given via ctor and updated when a redirect happens,
+  // whether or not the redirect is handled by the same URL loader or requires a
+  // new loader with an isolated context.
   std::unique_ptr<network::ResourceRequest> resource_request_;
+
+  // ResourceRequest that was used for `PrePrefetch`. This should eventually be
+  // moved to `resource_request_` when the initial resource request after the
+  // validation succeeds.
+  std::unique_ptr<network::ResourceRequest> resource_request_for_pre_prefetch_;
 
   // The No-Vary-Search response data, parsed from the actual response header
   // (`GetHead()`).
@@ -783,6 +821,14 @@ class CONTENT_EXPORT PrefetchContainer
   // `PrefetchStreamingURLLoader` is scheduled for deletion and then the new
   // `PrefetchStreamingURLLoader` is set here.
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_loader_;
+
+  // The URLLoader and URLLoaderClient created when PrePrefetch.
+  // This should be moved from `PrePrefetchContainer` when `this` ctor, and
+  // connected to PrefetchStreamingURLLoader when starting Prefetch.
+  // It should be consumed after `CreatePrePrefetchURLLoaderFactory()`.
+  mojo::PendingRemote<network::mojom::URLLoader> pre_prefetch_loader_;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient>
+      pre_prefetch_loader_client_receiver_;
 
   // The amount of time it took for the headers to be received.
   std::optional<base::TimeDelta> header_latency_;

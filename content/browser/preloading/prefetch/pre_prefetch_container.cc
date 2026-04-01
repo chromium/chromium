@@ -9,8 +9,12 @@
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
+#include "content/public/browser/frame_accept_header.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -112,6 +116,37 @@ void PrePrefetchContainer::Start(
                                 new_resource_request, std::move(client_remote),
                                 net::MutableNetworkTrafficAnnotationTag(
                                     kNavigationalPrefetchTrafficAnnotation));
+}
+
+// ----------------------------------------------------------------
+// Methods should be called from the UI thread.
+
+std::unique_ptr<const PrefetchRequest>
+PrePrefetchContainer::TakePrefetchRequestOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(prefetch_request_);
+  return std::move(prefetch_request_);
+}
+
+std::unique_ptr<network::ResourceRequest>
+PrePrefetchContainer::TakeResourceRequestOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(resource_request_);
+  return std::move(resource_request_);
+}
+
+mojo::PendingRemote<network::mojom::URLLoader>
+PrePrefetchContainer::TakePendingURLLoaderOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(url_loader_);
+  return std::move(url_loader_);
+}
+
+mojo::PendingReceiver<network::mojom::URLLoaderClient>
+PrePrefetchContainer::TakePendingURLLoaderClientReceiverOnUI() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(url_loader_client_receiver_);
+  return std::move(url_loader_client_receiver_);
 }
 
 // ----------------------------------------------------------------

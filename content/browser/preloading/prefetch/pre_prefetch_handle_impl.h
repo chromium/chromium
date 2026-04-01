@@ -6,16 +6,21 @@
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PRE_PREFETCH_HANDLE_IMPL_H_
 
 #include "content/browser/preloading/prefetch/pre_prefetch_container.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 
 namespace content {
 
 // Please see pre_prefetch_handle.h for the thread model and more details.
-class PrePrefetchHandleImpl final : public PrePrefetchHandle {
+class CONTENT_EXPORT PrePrefetchHandleImpl final : public PrePrefetchHandle {
  public:
   explicit PrePrefetchHandleImpl(
       std::unique_ptr<PrePrefetchContainer> pre_prefetch_container);
   ~PrePrefetchHandleImpl() override;
+
+  // Takes the ownership of `pre_prefetch_container_` for its consumption
+  // handled in UI thread `PrefetchService`.
+  std::unique_ptr<PrePrefetchContainer> TakePrePrefetchContainerOnUI();
 
  private:
   std::unique_ptr<PrePrefetchContainer> pre_prefetch_container_;

@@ -55,6 +55,9 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/single_request_url_loader_factory.h"
+#include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -239,28 +242,44 @@ GetPrefetchResponseCompletedCallbackForTesting() {
 // static
 std::unique_ptr<PrefetchContainer> PrefetchContainer::Create(
     base::PassKey<PrefetchService>,
-    std::unique_ptr<const PrefetchRequest> request) {
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container) {
   return std::make_unique<PrefetchContainer>(base::PassKey<PrefetchContainer>(),
-                                             std::move(request));
+                                             std::move(prefetch_request),
+                                             std::move(pre_prefetch_container));
 }
 
 // static
 std::unique_ptr<PrefetchContainer> PrefetchContainer::CreateForTesting(
-    std::unique_ptr<const PrefetchRequest> request) {
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container) {
   return std::make_unique<PrefetchContainer>(base::PassKey<PrefetchContainer>(),
-                                             std::move(request));
+                                             std::move(prefetch_request),
+                                             std::move(pre_prefetch_container));
 }
 
 PrefetchContainer::PrefetchContainer(
     base::PassKey<PrefetchContainer>,
-    std::unique_ptr<const PrefetchRequest> prefetch_request)
+    std::unique_ptr<const PrefetchRequest> prefetch_request,
+    std::unique_ptr<PrePrefetchContainer> pre_prefetch_container)
     : request_(std::move(prefetch_request)),
+      is_constructed_from_pre_prefetch_(pre_prefetch_container != nullptr),
       container_id_for_testing_(base::UnguessableToken::Create().ToString()) {
   CHECK(request_);
 
   TRACE_EVENT_END("loading", request().preload_pipeline_info().GetTrack());
   TRACE_EVENT_BEGIN("loading", "PrefetchContainer::LoadState::kNotStarted",
                     request().preload_pipeline_info().GetTrack());
+
+  if (pre_prefetch_container) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+    pre_prefetch_loader_ = pre_prefetch_container->TakePendingURLLoaderOnUI();
+    pre_prefetch_loader_client_receiver_ =
+        pre_prefetch_container->TakePendingURLLoaderClientReceiverOnUI();
+
+    resource_request_for_pre_prefetch_ =
+        pre_prefetch_container->TakeResourceRequestOnUI();
+  }
 
   is_likely_ahead_of_prerender_ =
       CalculateIsLikelyAheadOfPrerender(request().preload_pipeline_info());
@@ -577,8 +596,50 @@ PrefetchIsolatedNetworkContext* PrefetchContainer::GetIsolatedNetworkContext()
   return isolated_network_context_.get();
 }
 
+bool PrefetchContainer::IsConstructedFromPrePrefetch() const {
+  return is_constructed_from_pre_prefetch_;
+}
+
+bool PrefetchContainer::ExistsValidPrePrefetch() const {
+  return pre_prefetch_loader_ && pre_prefetch_loader_client_receiver_;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+PrefetchContainer::CreatePrePrefetchURLLoaderFactory() {
+  CHECK(ExistsValidPrePrefetch());
+  // PrePrefetch URLLoader Factory should be used only for the initial request.
+  // Please see also the comment at
+  // `PrefetchService::GetURLLoaderFactoryForCurrentPrefetch()`.
+  CHECK_EQ(redirect_chain_.size(), 1u);
+  scoped_refptr<network::SharedURLLoaderFactory>
+      pre_prefetch_url_loader_factory = base::MakeRefCounted<
+          network::SingleRequestURLLoaderFactory>(base::BindOnce(
+          [](mojo::PendingRemote<network::mojom::URLLoader> pre_prefetch_loader,
+             mojo::PendingReceiver<network::mojom::URLLoaderClient>
+                 pre_prefetch_client_receiver,
+             const network::ResourceRequest& resource_request,
+             mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+             mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+            mojo::FusePipes(std::move(receiver),
+                            std::move(pre_prefetch_loader));
+            mojo::FusePipes(std::move(pre_prefetch_client_receiver),
+                            std::move(client));
+          },
+          std::move(pre_prefetch_loader_),
+          std::move(pre_prefetch_loader_client_receiver_)));
+
+  // Currently `feature::kPrefetchOffTheMainThread` doesn't support the
+  // request w/ isolated context.
+  return CreatePrefetchURLLoaderFactory(request()
+                                            .browser_context()
+                                            ->GetDefaultStoragePartition()
+                                            ->GetNetworkContext(),
+                                        request());
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 PrefetchContainer::GetOrCreateDefaultNetworkContextURLLoaderFactory() {
+  CHECK(!IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   if (!default_network_context_url_loader_factory_) {
     // The corresponding `CreatePrefetchURLLoaderFactory()` call is inside
     // `PrefetchIsolatedNetworkContext`.
@@ -1324,6 +1385,21 @@ PrefetchContainer::GetResponseReaderForCurrentPrefetch() {
 }
 
 void PrefetchContainer::MakeInitialResourceRequest() {
+  if (IsConstructedFromPrePrefetch()) {
+    CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
+    CHECK(resource_request_for_pre_prefetch_);
+
+    // TODO(crbug.com/452389538): `resource_request_for_pre_prefetch_` was
+    // constructed from a non-main thread snapshot during PrePrefetch. We can
+    // validate `resource_request_for_pre_prefetch_` by comparing it with the
+    // strictly accurate resource request that is constructed here and modified
+    // via `URLLoaderFactory`s. This can only be done after
+    // `URLLoaderFactory::CreateLoaderAndStart` on
+    // `PrefetchStreamingURLLoader::Start()`.
+    resource_request_ = std::move(resource_request_for_pre_prefetch_);
+    return;
+  }
+
   resource_request_ =
       MakeInitialResourceRequestForPrefetch(request(), IsDecoy());
 }
