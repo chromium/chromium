@@ -1009,8 +1009,8 @@ ParseAndPersistAcceptCHForNavigation(
     return std::nullopt;
   }
 
-  // Only the main frame should parse accept-CH.
-  if (!frame_tree_node->IsMainFrame()) {
+  // Only the outermost main frame should parse accept-CH.
+  if (!frame_tree_node->IsOutermostMainFrame()) {
     return std::nullopt;
   }
 

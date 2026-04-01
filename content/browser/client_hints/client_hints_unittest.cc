@@ -63,6 +63,23 @@ class ClientHintsTest : public RenderViewHostImplTestHarness {
         /*document_ukm_source_id=*/ukm::kInvalidSourceId);
   }
 
+  void AddOneFencedFrameNode() {
+    main_test_rfh()->OnCreateChildFrame(
+        /*new_routing_id=*/15, TestRenderFrameHost::CreateStubFrameRemote(),
+        TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
+        TestRenderFrameHost::CreateStubPolicyContainerBindParams(),
+        TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
+        /*scope=*/blink::mojom::TreeScopeType::kDocument, /*frame_name=*/"",
+        /*frame_unique_name=*/"uniqueName1", /*is_created_by_script=*/false,
+        /*frame_token=*/blink::LocalFrameToken(),
+        /*devtools_frame_token=*/base::UnguessableToken::Create(),
+        /*document_token=*/blink::DocumentToken(),
+        /*frame_policy=*/blink::FramePolicy(),
+        /*frame_owner_properties=*/blink::mojom::FrameOwnerProperties(),
+        /*owner_type=*/blink::FrameOwnerElementType::kFencedframe,
+        /*document_ukm_source_id=*/ukm::kInvalidSourceId);
+  }
+
   std::optional<ClientHintsVector> ParseAndPersist(
       const GURL& url,
       const net::HttpResponseHeaders* response_header,
@@ -308,6 +325,39 @@ TEST_F(ClientHintsTest, SubFrame) {
   // hints.
   auto actual_updated_hints = ParseAndPersist(
       url, response_headers.get(), accept_ch_str, sub_frame_node, &delegate);
+
+  EXPECT_EQ(std::nullopt, actual_updated_hints);
+  blink::EnabledClientHints current_hints;
+  delegate.GetAllowedClientHintsFromSource(url::Origin::Create(url),
+                                           &current_hints);
+  EXPECT_EQ(existing_hints, current_hints.GetEnabledHints());
+}
+
+TEST_F(ClientHintsTest, FencedFrame) {
+  GURL url = GURL(ClientHintsTest::kOriginUrl);
+  contents()->NavigateAndCommit(url);
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* main_frame_node = frame_tree.root();
+  AddOneFencedFrameNode();
+  FrameTreeNode* fenced_frame_node = main_frame_node->child_at(0);
+
+  blink::UserAgentMetadata ua_metadata;
+  MockClientHintsControllerDelegate delegate(ua_metadata);
+
+  // Persist existing hint to accept-ch cache.
+  ClientHintsVector existing_hints = ClientHintsVector{
+      WebClientHintsType::kUAPlatform, WebClientHintsType::kUABitness};
+  delegate.PersistClientHints(url::Origin::Create(url),
+                              main_frame_node->GetParentOrOuterDocument(),
+                              existing_hints);
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  std::string accept_ch_str = "sec-ch-ua-platform-version";
+
+  // We shouldn't parse accept-ch in fenced frame, it should not overwrite
+  // existing hints.
+  auto actual_updated_hints = ParseAndPersist(
+      url, response_headers.get(), accept_ch_str, fenced_frame_node, &delegate);
 
   EXPECT_EQ(std::nullopt, actual_updated_hints);
   blink::EnabledClientHints current_hints;
