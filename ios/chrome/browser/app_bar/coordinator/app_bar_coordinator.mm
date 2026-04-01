@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/authentication/account_menu/coordinator/account_menu_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -105,7 +105,7 @@
                                             _regularBrowser->GetProfile())
               authenticationService:AuthenticationServiceFactory::GetForProfile(
                                         profile)
-                      geminiService:BwgServiceFactory::GetForProfile(profile)
+                      geminiService:GeminiServiceFactory::GetForProfile(profile)
               accountManagerService:ChromeAccountManagerServiceFactory::
                                         GetForProfile(profile)
                     identityManager:IdentityManagerFactory::GetForProfile(

@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
@@ -51,7 +51,7 @@
 
 - (void)start {
   raw_ptr<BwgService> geminiService =
-      BwgServiceFactory::GetForProfile(self.profile);
+      GeminiServiceFactory::GetForProfile(self.profile);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
 

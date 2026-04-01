@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
@@ -17,7 +17,7 @@ class BwgService;
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildBwgService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildGeminiService(ProfileIOS* profile) {
   if (!IsPageActionMenuEnabled()) {
     return nullptr;
   }
@@ -30,32 +30,32 @@ std::unique_ptr<KeyedService> BuildBwgService(ProfileIOS* profile) {
 }  // namespace
 
 // static
-BwgService* BwgServiceFactory::GetForProfile(ProfileIOS* profile) {
+BwgService* GeminiServiceFactory::GetForProfile(ProfileIOS* profile) {
   return GetInstance()->GetServiceForProfileAs<BwgService>(profile,
                                                            /*create=*/true);
 }
 
 // static
-BwgServiceFactory* BwgServiceFactory::GetInstance() {
-  static base::NoDestructor<BwgServiceFactory> instance;
+GeminiServiceFactory* GeminiServiceFactory::GetInstance() {
+  static base::NoDestructor<GeminiServiceFactory> instance;
   return instance.get();
 }
 
-BwgServiceFactory::BwgServiceFactory()
-    : ProfileKeyedServiceFactoryIOS("BwgService") {
+GeminiServiceFactory::GeminiServiceFactory()
+    : ProfileKeyedServiceFactoryIOS("GeminiService") {
   DependsOn(AuthenticationServiceFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(OptimizationGuideServiceFactory::GetInstance());
 }
 
-BwgServiceFactory::~BwgServiceFactory() = default;
+GeminiServiceFactory::~GeminiServiceFactory() = default;
 
 // static
-BwgServiceFactory::TestingFactory BwgServiceFactory::GetDefaultFactory() {
-  return base::BindOnce(&BuildBwgService);
+GeminiServiceFactory::TestingFactory GeminiServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildGeminiService);
 }
 
-std::unique_ptr<KeyedService> BwgServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService> GeminiServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  return BuildBwgService(profile);
+  return BuildGeminiService(profile);
 }

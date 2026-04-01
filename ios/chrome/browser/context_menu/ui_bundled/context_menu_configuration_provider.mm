@@ -28,8 +28,8 @@
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -567,7 +567,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Launch the Gemini experience with an image attached.
   UIMenuElement* geminiElement = nil;
   BwgService* geminiService =
-      BwgServiceFactory::GetForProfile(self.browser->GetProfile());
+      GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
   BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(webState);
   BOOL canShowGeminiElement =
       IsGeminiImageRemixToolEnabled() && geminiTabHelper &&

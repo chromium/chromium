@@ -75,7 +75,7 @@ source_set("model") {
     "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/overlays",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
-    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/link_to_text/model",

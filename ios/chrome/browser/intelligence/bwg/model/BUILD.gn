@@ -97,7 +97,7 @@ source_set("tab_helper") {
   ]
   deps = [
     ":bwg_service",
-    ":bwg_service_factory",
+    ":gemini_service_factory",
     ":page_context",
     "//components/favicon/ios",
     "//components/feature_engagement/public",
@@ -155,10 +155,10 @@ source_set("bwg_service") {
   ]
 }
 
-source_set("bwg_service_factory") {
+source_set("gemini_service_factory") {
   sources = [
-    "bwg_service_factory.h",
-    "bwg_service_factory.mm",
+    "gemini_service_factory.h",
+    "gemini_service_factory.mm",
   ]
   deps = [
     ":bwg_service",
@@ -209,7 +209,7 @@ source_set("unit_tests") {
   deps = [
     ":browser_agent",
     ":bwg_service",
-    ":bwg_service_factory",
+    ":gemini_service_factory",
     ":model",
     ":tab_helper",
     "//base",

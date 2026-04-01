@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_coordinator_delegate.h"
 #import "ios/chrome/browser/location_bar/badge/coordinator/location_bar_badge_mediator.h"
@@ -69,7 +69,7 @@
       initWithWebStateList:self.browser->GetWebStateList()
                    tracker:tracker
                prefService:_prefService
-             geminiService:BwgServiceFactory::GetForProfile(self.profile)];
+             geminiService:GeminiServiceFactory::GetForProfile(self.profile)];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   _viewController.mutator = _mediator;
