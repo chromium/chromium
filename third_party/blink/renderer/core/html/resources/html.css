@@ -2099,14 +2099,14 @@ select:not(:-internal-list-box) {
   select:not(:-internal-list-box):not([multiple]) > button:first-child {
     all: unset;
     display: contents;
-    interactivity: inert;
+    interactivity: inert !important;
   }
 }
 @supports blink-feature(CustomizableSelectMultiplePopup) {
   select:not(:-internal-list-box) > button:first-child {
     all: unset;
     display: contents;
-    interactivity: inert;
+    interactivity: inert !important;
   }
 }
 
