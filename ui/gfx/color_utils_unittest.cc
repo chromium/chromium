@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/color_utils.h"
+
 #include <stdlib.h>
+
+#include <cmath>
 
 #include "skia/ext/platform_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace color_utils {
@@ -350,6 +353,25 @@ TEST(ColorUtils, PickGoogleColor) {
   EXPECT_EQ(
       gfx::kGoogleBlue800,
       PickGoogleColor(gfx::kGoogleBlue900, gfx::kGoogleBlue700, 1.18f, 1.2f));
+
+  // If only the search endpoint reaches the minimum contrast, it should still
+  // be returned.
+  const float darker_than_blue900 =
+      std::nextafter(GetContrastRatio(gfx::kGoogleBlue900, SK_ColorWHITE),
+                     kMaximumPossibleContrast);
+  EXPECT_EQ(
+      gfx::kGoogleGrey900,
+      PickGoogleColor(gfx::kGoogleBlue050, SK_ColorWHITE, darker_than_blue900));
+
+  // When reducing contrast, if the nearest candidate to the background would
+  // violate `min_contrast`, the reverse search should still be able to return
+  // the endpoint at the source color.
+  const float above_blue100 =
+      std::nextafter(GetContrastRatio(gfx::kGoogleBlue100, gfx::kGoogleBlue200),
+                     kMaximumPossibleContrast);
+  EXPECT_EQ(gfx::kGoogleBlue050,
+            PickGoogleColor(gfx::kGoogleBlue050, gfx::kGoogleBlue200,
+                            above_blue100, above_blue100));
 }
 
 TEST(ColorUtils, PickGoogleColorTwoBackgrounds) {

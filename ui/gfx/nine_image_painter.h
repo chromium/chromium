@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <vector>
 
 #include "base/component_export.h"
@@ -48,7 +49,7 @@ class COMPONENT_EXPORT(GFX) NineImagePainter {
   // |__i0__|__i1__|__i2__|
   // |__i3__|__i4__|__i5__|
   // |__i6__|__i7__|__i8__|
-  ImageSkia images_[9];
+  std::array<ImageSkia, 9> images_;
 };
 
 }  // namespace gfx

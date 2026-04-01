@@ -5,7 +5,9 @@
 #include "ui/gfx/skia_util.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/auto_spanification_helper.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -20,17 +22,18 @@ bool BitmapsAreEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
       (bitmap1.empty() && bitmap2.empty()))
     return true;
 
-  // Calling getAddr32() on null or empty bitmaps will assert. The conditions
+  // Calling getPixels() on null or empty bitmaps will assert. The conditions
   // above should return early if either bitmap is empty or null.
   DCHECK(!bitmap1.isNull() && !bitmap2.isNull());
   DCHECK(!bitmap1.empty() && !bitmap2.empty());
 
-  void* addr1 = bitmap1.getAddr32(0, 0);
-  void* addr2 = bitmap2.getAddr32(0, 0);
+  auto bitmap_span1 = UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap1);
+  auto bitmap_span2 = UNSAFE_SKBITMAP_TO_BYTES_SPAN(bitmap2);
+
   size_t size1 = bitmap1.computeByteSize();
   size_t size2 = bitmap2.computeByteSize();
 
-  return (size1 == size2) && (0 == UNSAFE_TODO(memcmp(addr1, addr2, size1)));
+  return (size1 == size2) && (bitmap_span1 == bitmap_span2);
 }
 
 // We treat HarfBuzz ints as 16.16 fixed-point.

@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/i18n/break_iterator.h"
 #include "base/i18n/char_iterator.h"
 #include "base/i18n/rtl.h"
@@ -368,10 +369,16 @@ void SkiaTextRenderer::DrawPosText(const SkPoint* pos,
   const auto& run_buffer = builder.allocRunPos(font_, glyph_count);
 
   static_assert(sizeof(*glyphs) == sizeof(*run_buffer.glyphs), "");
-  UNSAFE_TODO(memcpy(run_buffer.glyphs, glyphs, glyph_count * sizeof(*glyphs)));
+  // SAFETY: `allocRunPos(font_, glyph_count)` allocates storage for exactly
+  // `glyph_count` glyph IDs in `run_buffer.glyphs`.
+  UNSAFE_TODO(base::span(run_buffer.glyphs, glyph_count)
+                  .copy_from(base::span(glyphs, glyph_count)));
 
-  static_assert(sizeof(*pos) == 2 * sizeof(*run_buffer.pos), "");
-  UNSAFE_TODO(memcpy(run_buffer.pos, pos, glyph_count * sizeof(*pos)));
+  static_assert(sizeof(*pos) == sizeof(*run_buffer.points()), "");
+  // SAFETY: `allocRunPos(font_, glyph_count)` allocates storage for exactly
+  // `glyph_count` `SkPoint`s in `run_buffer.pos`, exposed via `points()`.
+  UNSAFE_TODO(base::span(run_buffer.points(), glyph_count)
+                  .copy_from(base::span(pos, glyph_count)));
 
   canvas_skia_->drawTextBlob(builder.make(), 0, 0, flags_);
 }

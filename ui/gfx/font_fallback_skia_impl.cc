@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/normalizer2.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -40,10 +41,11 @@ bool UnicodeDecomposeCodepoint(UChar32 codepoint, icu::UnicodeString* output) {
 // decomposition. Inserts in |codepoints| the set of codepoints in |text|.
 void RetrieveCodepointsAndDecomposedCodepoints(std::u16string_view text,
                                                std::set<UChar32>* codepoints) {
+  base::span<const UChar> text_span(text);
   size_t offset = 0;
   while (offset < text.length()) {
     UChar32 codepoint;
-    UNSAFE_TODO(U16_NEXT(text.data(), offset, text.length(), codepoint));
+    U16_NEXT(text_span, offset, text_span.size(), codepoint);
 
     if (codepoints->insert(codepoint).second) {
       // For each codepoint, add the decomposed codepoints.
@@ -63,11 +65,12 @@ void RetrieveCodepointsAndDecomposedCodepoints(std::u16string_view text,
 size_t ComputeMissingGlyphsForGivenTypeface(std::u16string_view text,
                                             sk_sp<SkTypeface> typeface) {
   // Validate that every character has a known glyph in the font.
+  base::span<const UChar> text_span(text);
   size_t missing_glyphs = 0;
   size_t i = 0;
   while (i < text.length()) {
     UChar32 codepoint;
-    UNSAFE_TODO(U16_NEXT(text.data(), i, text.length(), codepoint));
+    U16_NEXT(text_span, i, text_span.size(), codepoint);
 
     // The glyph is present in the font.
     if (typeface->unicharToGlyph(codepoint) != 0)
