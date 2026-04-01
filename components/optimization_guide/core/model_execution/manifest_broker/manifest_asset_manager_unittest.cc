@@ -33,13 +33,14 @@ namespace {
 struct DummyAsset {
   std::string use_case;
   std::string asset_id;
-  std::string key_prefix = "dummy_key_";
+  std::string public_key;
   std::string version = "1.0.0.0";
 
   static DummyAsset For(std::string use_case) {
     return {
         .use_case = use_case,
         .asset_id = "asset_" + use_case,
+        .public_key = "dummy_key_" + use_case,
     };
   }
 
@@ -49,9 +50,9 @@ struct DummyAsset {
     return copy;
   }
 
-  DummyAsset WithPublicKey(std::string new_key_prefix) const {
+  DummyAsset WithPublicKey(std::string new_public_key) const {
     DummyAsset copy = *this;
-    copy.key_prefix = std::move(new_key_prefix);
+    copy.public_key = std::move(new_public_key);
     return copy;
   }
 
@@ -75,9 +76,8 @@ class DummyManifest {
     ManifestBuilder builder;
     for (const auto& asset : assets_) {
       DeviceUseCase use_case{DeviceCategory::kCpu, asset.use_case};
-      builder.Add(
-          asset.asset_id,
-          OnDemandComponent(asset.key_prefix + asset.asset_id, asset.version));
+      builder.Add(asset.asset_id,
+                  OnDemandComponent(asset.public_key, asset.version));
       builder.Add(asset.asset_id + "_base_model",
                   BaseModelRecipe(
                       FileReference(asset.asset_id, "weights.bin"),
@@ -122,14 +122,21 @@ class ManifestAssetManagerTest : public testing::Test {
     delegate_.reset();
   }
 
+  void MakeAssetInstallable(const DummyAsset& asset) {
+    auto base_model_asset = std::make_unique<FakeBaseModelAsset>();
+    base_model_asset->set_version(asset.version);
+    component_state_.UpdateBaseModel(asset.public_key, *base_model_asset);
+    base_model_assets_.push_back(std::move(base_model_asset));
+  }
+
   void SetupReadyComponents(const DummyManifest& dummy_manifest) {
+    // Ensure all manifest components are installable.
+    for (const auto& asset : dummy_manifest.assets()) {
+      MakeAssetInstallable(asset);
+    }
     CreateManager(dummy_manifest.Build());
     for (const auto& asset : dummy_manifest.assets()) {
-      EXPECT_TRUE(component_state_.WaitForRegistration(asset.key_prefix +
-                                                       asset.asset_id));
-      component_state_.SimulateComponentReady(
-          asset.key_prefix + asset.asset_id, base::Version(asset.version),
-          base::FilePath(FILE_PATH_LITERAL("/fake/path")));
+      EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
     }
   }
 
@@ -138,43 +145,46 @@ class ManifestAssetManagerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   ModelBrokerPrefService local_state_;
-  UsageTracker usage_tracker_{&local_state_.local_state()};
+  // Defer cleanup of these assets until the end of the test.
+  std::vector<std::unique_ptr<FakeBaseModelAsset>> base_model_assets_;
   TestManifestAssetManagerComponentState component_state_;
+  // ManifestBrokerState pieces:
+  UsageTracker usage_tracker_{&local_state_.local_state()};
   std::unique_ptr<ManifestAssetManager::Delegate> delegate_;
   std::unique_ptr<ManifestAssetManager> manager_;
 };
 
 TEST_F(ManifestAssetManagerTest, RegistersComponentsForActiveUseCases) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest()
-                    .Add(DummyAsset::For("compose"))
-                    .Add(DummyAsset::For("test"))
-                    .Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  DummyAsset compose_asset = DummyAsset::For("compose");
+  DummyAsset test_asset = DummyAsset::For("test");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
+  CreateManager(DummyManifest().Add(compose_asset).Add(test_asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(compose_asset.public_key));
   EXPECT_TRUE(
-      component_state_.WasOnDemandUpdateRequested("dummy_key_asset_compose"));
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_test"));
+      component_state_.WasOnDemandUpdateRequested(compose_asset.public_key));
+  EXPECT_FALSE(component_state_.IsRegistered(test_asset.public_key));
   EXPECT_FALSE(
-      component_state_.WasOnDemandUpdateRequested("dummy_key_asset_test"));
+      component_state_.WasOnDemandUpdateRequested(test_asset.public_key));
 }
 
 // Test that the manager registers components for feature usage keyed on
 // mojom::OnDeviceFeature.
 TEST_F(ManifestAssetManagerTest, RegistersComponentsForLegacyFeatureUsage) {
+  DummyAsset asset = DummyAsset::For("test");
   usage_tracker_.OnDeviceEligibleFeatureUsed(mojom::OnDeviceFeature::kTest);
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("test")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
 
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_test"));
-  EXPECT_TRUE(
-      component_state_.WasOnDemandUpdateRequested("dummy_key_asset_test"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
+  EXPECT_TRUE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DynamicEnterprisePolicyChange) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  CreateManager(DummyManifest().Add(asset).Build());
 
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 
   // Disable enterprise policy.
   local_state_.local_state().SetInteger(
@@ -184,7 +194,7 @@ TEST_F(ManifestAssetManagerTest, DynamicEnterprisePolicyChange) {
           model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::
                   kDisallowed));
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 
   // Enabling the policy should trigger registration.
   local_state_.local_state().SetInteger(
@@ -193,110 +203,110 @@ TEST_F(ManifestAssetManagerTest, DynamicEnterprisePolicyChange) {
       std::to_underlying(
           model_execution::prefs::
               GenAILocalFoundationalModelEnterprisePolicySettings::kAllowed));
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DynamicOnDeviceAISettingsChange) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  CreateManager(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 
   // Disable user setting.
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
       false);
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 
   // Enable user setting.
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, AlreadyInstalledFlow) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  component_state_.SetAlreadyInstalled("dummy_key_asset_compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  MakeAssetInstallable(asset);
+  CreateManager(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
   // Because it was already installed, it shouldn't request an on-demand update.
-  EXPECT_FALSE(
-      component_state_.WasOnDemandUpdateRequested("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, NotYetInstalledFlow) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  CreateManager(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  CreateManager(DummyManifest().Add(asset).Build());
 
-  EXPECT_FALSE(manager_->GetInstallDirectory("asset_compose").has_value());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_FALSE(manager_->GetInstallDirectory(asset.asset_id).has_value());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 
-  base::FilePath fake_path(FILE_PATH_LITERAL("/fake/path"));
-  component_state_.SimulateComponentReady("dummy_key_asset_compose",
-                                          base::Version("1.0"), fake_path);
+  MakeAssetInstallable(asset);
 
-  auto path = manager_->GetInstallDirectory("asset_compose");
+  auto path = manager_->GetInstallDirectory(asset.asset_id);
   ASSERT_TRUE(path.has_value());
-  EXPECT_EQ(path.value(), fake_path);
 }
 
 TEST_F(ManifestAssetManagerTest, ResumesInstallationOnStartup) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  CreateManager(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 
   // Restart manager. It should immediately load from the pref-based ledger
   // and trigger registration again.
   ResetManager();
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  CreateManager(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallOutOfRetentionOnStartup) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
+  DummyAsset compose_asset = DummyAsset::For("compose");
+  DummyAsset test_asset = DummyAsset::For("test");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(compose_asset.use_case);
+  SetupReadyComponents(DummyManifest().Add(compose_asset));
 
   task_environment_.FastForwardBy(features::GetOnDeviceModelRetentionTime() +
                                   base::Days(1));
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("test");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(test_asset.use_case);
   ResetManager();
-  CreateManager(DummyManifest()
-                    .Add(DummyAsset::For("compose"))
-                    .Add(DummyAsset::For("test"))
-                    .Build());
+  CreateManager(DummyManifest().Add(compose_asset).Add(test_asset).Build());
 
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(compose_asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, ObsoleteVersionOnStartup) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  DummyAsset compose_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
-  DummyAsset compose_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
-  SetupReadyComponents(DummyManifest().Add(compose_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
-  component_state_.ClearRegistered();
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_v1));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.public_key));
+  component_state_.SimulateRestart();
 
   // Restart manager.
   ResetManager();
-  CreateManager(DummyManifest().Add(compose_v2).Build());
+  CreateManager(DummyManifest().Add(asset_v2).Build());
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, ChangedPublicKeyOnStartup) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("test");
   DummyAsset test_v1 = DummyAsset::For("test").WithPublicKey("key1");
   DummyAsset test_v2 = DummyAsset::For("test").WithPublicKey("key2");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(test_v1.use_case);
   SetupReadyComponents(DummyManifest().Add(test_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration("key1asset_test"));
-  component_state_.ClearRegistered();
+  EXPECT_TRUE(component_state_.WaitForRegistration(test_v1.public_key));
+  component_state_.SimulateRestart();
 
   // Restart manager.
   ResetManager();
@@ -304,123 +314,123 @@ TEST_F(ManifestAssetManagerTest, ChangedPublicKeyOnStartup) {
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  EXPECT_TRUE(component_state_.WaitForUninstall("key1asset_test"));
-  EXPECT_TRUE(component_state_.WaitForRegistration("key2asset_test"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(test_v1.public_key));
+  EXPECT_TRUE(component_state_.WaitForRegistration(test_v2.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, ChangedAssetIdOnStartup) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("prompt_api");
-  DummyAsset prompt_v1 = DummyAsset::For("prompt_api").WithAssetId("asset1");
-  DummyAsset prompt_v2 = DummyAsset::For("prompt_api").WithAssetId("asset2");
-  SetupReadyComponents(DummyManifest().Add(prompt_v1));
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset1"));
-  component_state_.ClearRegistered();
+  DummyAsset asset_v1 = DummyAsset::For("prompt_api").WithAssetId("asset1");
+  DummyAsset asset_v2 = DummyAsset::For("prompt_api").WithAssetId("asset2");
+  // These assets have the same public key and version.
+  ASSERT_EQ(asset_v1.public_key, asset_v2.public_key);
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_v1));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v1.public_key));
+  component_state_.SimulateRestart();
 
   // Restart manager.
   ResetManager();
-  CreateManager(DummyManifest().Add(prompt_v2).Build());
+  CreateManager(DummyManifest().Add(asset_v2).Build());
   // Wait for the delayed uninstall task.
   task_environment_.FastForwardBy(base::Seconds(2));
 
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset1"));
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset2"));
+  // Since the public key and version are the same, it should not trigger an
+  // uninstall, and we should just consider it already installed.
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset_v1.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, ReRegistersWhenTargetVersionUpdated) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(
-      DummyManifest().Add(DummyAsset::For("compose").WithVersion("1.0.0.0")));
-  component_state_.ClearRegistered();
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_v1));
+  component_state_.SimulateRestart();
 
   // Trigger update manifest with a new version.
-  manager_->UpdateManifest(
-      DummyManifest()
-          .Add(DummyAsset::For("compose").WithVersion("2.0.0.0"))
-          .Build());
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest,
        ReRegistersWhenVersionUpdatedWhileRegistering) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithVersion("1.0.0.0");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithVersion("2.0.0.0");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
   component_state_.SetDeferRegistrationCallbacks(true);
-  CreateManager(DummyManifest()
-                    .Add(DummyAsset::For("compose").WithVersion("1.0.0.0"))
-                    .Build());
-  component_state_.ClearRegistered();
+  CreateManager(DummyManifest().Add(asset_v1).Build());
+  component_state_.SimulateRestart();
 
   // Update manifest with new version while the first registration is pending.
-  manager_->UpdateManifest(
-      DummyManifest()
-          .Add(DummyAsset::For("compose").WithVersion("2.0.0.0"))
-          .Build());
+  manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
 
   // Complete the deferred callback for version 1.0.
   component_state_.RunPendingRegistrations();
 
   // Register again for the new version.
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
 }
 
-TEST_F(ManifestAssetManagerTest, UninstallsWhenAssetObsoleted) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(
-      DummyManifest().Add(DummyAsset::For("compose").WithAssetId("asset_1")));
-  manager_->UpdateManifest(
-      DummyManifest()
-          .Add(DummyAsset::For("compose").WithAssetId("asset_2"))
-          .Build());
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_1"));
+TEST_F(ManifestAssetManagerTest, KeepInstalledWhenAssetRenamed) {
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithAssetId("asset_1");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithAssetId("asset_2");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_v1));
+  manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
+  // When only the asset id is changed, we should consider it already installed.
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset_v2.public_key));
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset_v1.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallsWhenPublicKeyChanged) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
-  manager_->UpdateManifest(
-      DummyManifest()
-          .Add(DummyAsset::For("compose").WithPublicKey("new_key_"))
-          .Build());
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  DummyAsset asset_v1 = DummyAsset::For("compose").WithPublicKey("key1");
+  DummyAsset asset_v2 = DummyAsset::For("compose").WithPublicKey("key2");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_v1.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_v1));
+  manager_->UpdateManifest(DummyManifest().Add(asset_v2).Build());
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset_v1.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallsWhenOutOfRetention) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset));
   task_environment_.FastForwardBy(features::GetOnDeviceModelRetentionTime() +
                                   base::Days(1));
-  manager_->UpdateManifest(
-      DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  manager_->UpdateManifest(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallsWhenRunningOutOfDiskSpace) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset));
   // 5gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   component_state_.SetFreeDiskSpace(base::GiB(5) - base::ByteCount(1));
   task_environment_.FastForwardBy(base::Seconds(11));
-  manager_->UpdateManifest(
-      DummyManifest().Add(DummyAsset::For("compose")).Build());
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  manager_->UpdateManifest(DummyManifest().Add(asset).Build());
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenFeatureNotEnabled) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kOptimizationGuideModelExecution);
   ResetManager();
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   component_state_.SetDeferRegistrationCallbacks(true);
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
 
   // Verify that it is currently registering.
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 
   // Feature is disabled while registration is pending.
   local_state_.local_state().SetBoolean(
@@ -429,58 +439,57 @@ TEST_F(ManifestAssetManagerTest, UninstallWhileRegistrationPending) {
 
   // Uninstall is queued and triggered once registration is complete.
   component_state_.RunPendingRegistrations();
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, RegisterWhileUninstallPending) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   // 1. The component is already installed.
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
+  SetupReadyComponents(DummyManifest().Add(asset));
 
   // 2. Trigger uninstall.
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
       false);
-  EXPECT_TRUE(component_state_.WaitForUninstall("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForUninstall(asset.public_key));
 
   // 3. Re-enable and verify it eventually installs again.
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled, true);
   task_environment_.FastForwardBy(base::Seconds(2));
-  EXPECT_TRUE(component_state_.WaitForRegistration("dummy_key_asset_compose"));
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, RemainsInstalledWhenReferencedInManifest) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(
-      DummyManifest().Add(DummyAsset::For("compose").WithAssetId("asset_1")));
+  DummyAsset asset_compose = DummyAsset::For("compose").WithAssetId("asset_1");
+  DummyAsset asset_test = DummyAsset::For("test").WithAssetId("asset_1");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset_compose.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset_compose));
   // compose no longer requires asset_1, but Test does (which isn't used).
-  manager_->UpdateManifest(
-      DummyManifest()
-          .Add(DummyAsset::For("test").WithAssetId("asset_1"))
-          .Build());
-  EXPECT_FALSE(component_state_.WasUninstallRequested("dummy_key_asset_1"));
+  manager_->UpdateManifest(DummyManifest().Add(asset_test).Build());
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset_test.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, AssetRemainsInstalledWhileNotRequested) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
-  SetupReadyComponents(DummyManifest().Add(DummyAsset::For("compose")));
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
+  SetupReadyComponents(DummyManifest().Add(asset));
   // Clear usage prefs so that the model is no longer eligible for download.
   local_state_.local_state().ClearPref(
       model_execution::prefs::localstate::kLastUsageByFeature);
 
   // Trigger an update manifest to re-evaluate the registration.
-  manager_->UpdateManifest(
-      DummyManifest().Add(DummyAsset::For("compose")).Build());
+  manager_->UpdateManifest(DummyManifest().Add(asset).Build());
 
   // Should not uninstall.
-  EXPECT_TRUE(manager_->GetInstallDirectory("asset_compose").has_value());
-  EXPECT_FALSE(
-      component_state_.WasUninstallRequested("dummy_key_asset_compose"));
+  EXPECT_TRUE(manager_->GetInstallDirectory(asset.asset_id).has_value());
+  EXPECT_FALSE(component_state_.WasUninstallRequested(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenDisabledByEnterprisePolicy) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   local_state_.local_state().SetInteger(
       model_execution::prefs::localstate::
           kGenAILocalFoundationalModelEnterprisePolicySettings,
@@ -489,50 +498,54 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenDisabledByEnterprisePolicy) {
               GenAILocalFoundationalModelEnterprisePolicySettings::
                   kDisallowed));
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest,
        DoesNotInstallWhenDisabledByOnDeviceAIUserSetting) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   local_state_.local_state().SetBoolean(
       model_execution::prefs::localstate::kOnDeviceAiUserSettingsEnabled,
       false);
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNotEnoughDiskSpace) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
   component_state_.SetFreeDiskSpace(base::GiB(20) - base::ByteCount(1));
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenEligibleUseCaseUseTooOld) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   task_environment_.FastForwardBy(base::Days(31));
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNoEligibleUseCaseUse) {
-  usage_tracker_.OnDeviceEligibleUseCaseUsed("compose");
+  DummyAsset asset = DummyAsset::For("compose");
+  usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   local_state_.local_state().ClearPref(
       model_execution::prefs::localstate::kLastUsageByFeature);
 
-  CreateManager(DummyManifest().Add(DummyAsset::For("compose")).Build());
+  CreateManager(DummyManifest().Add(asset).Build());
   task_environment_.RunUntilIdle();
-  EXPECT_FALSE(component_state_.IsRegistered("dummy_key_asset_compose"));
+  EXPECT_FALSE(component_state_.IsRegistered(asset.public_key));
 }
 
 }  // namespace

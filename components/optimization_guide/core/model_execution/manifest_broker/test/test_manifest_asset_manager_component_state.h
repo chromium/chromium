@@ -17,8 +17,11 @@
 #include "base/test/run_until.h"
 #include "base/version.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/test/manifest_builder.h"
 #include "components/optimization_guide/core/model_execution/test/fake_component_update_service.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace optimization_guide {
 
@@ -26,12 +29,113 @@ namespace optimization_guide {
 // component updater via its Delegate.
 class TestManifestAssetManagerComponentState final {
  public:
+  // What the broker can request to be installed.
+  struct InstallTarget {
+    std::string public_key_hex;
+    base::Version version;
+
+    bool operator==(const InstallTarget& other) const {
+      return public_key_hex == other.public_key_hex && version == other.version;
+    }
+
+    template <typename H>
+    friend H AbslHashValue(H h, const InstallTarget& target) {
+      return H::combine(std::move(h), target.public_key_hex,
+                        target.version.components());
+    }
+  };
+
+  // A component that we can simulate being installed.
+  struct InstallableComponent {
+    InstallableComponent();
+    InstallableComponent(const InstallTarget& target,
+                         const base::FilePath& install_dir);
+    ~InstallableComponent();
+    InstallableComponent(const InstallableComponent&);
+    InstallableComponent& operator=(const InstallableComponent&);
+
+    InstallTarget target;
+    base::FilePath install_dir;
+  };
+
+  enum class DownloadScenario {
+    kHealthy,    // All downloads will complete successfully.
+    kThrottled,  // Only foreground downloads will complete.
+    kOffline,    // No downloads will complete.
+  };
+
+  // Simulated Component Updater state for a single component.
+  struct Registration {
+    Registration();
+    ~Registration();
+    Registration(const Registration&);
+    Registration& operator=(const Registration&);
+
+    // The last target that was registered.
+    InstallTarget target;
+    // The manager to send callbacks to.
+    base::WeakPtr<ManifestAssetManager> manager;
+    // Whether the manager is expecting OnInstallerRegistered to be called.
+    bool pending_registration = false;
+    // Whether the manager is expecting OnAssetUninstalled to be called.
+    bool pending_uninstall = false;
+    // Whether a foreground OnDemandUpdate has been requested for this
+    // registration.
+    bool has_foreground_update_requested = false;
+    // Whether a background OnDemandUpdate has been requested for this
+    // registration.
+    bool has_background_update_requested = false;
+  };
+
   TestManifestAssetManagerComponentState();
   ~TestManifestAssetManagerComponentState();
 
+  // Constructs the delegate for the ManifestBrokerState to use.
   std::unique_ptr<ManifestAssetManager::Delegate> CreateDelegate();
 
-  // Test assertions
+  /////////////////////////////
+  // Behavior configuration  //
+  /////////////////////////////
+
+  void SetFreeDiskSpace(base::ByteCount free_space_bytes) {
+    free_disk_space_ = free_space_bytes;
+  }
+
+  // If true, OnInstallerRegistered and OnAssetUninstalled will be deferred
+  // instead of called immediately on registration/uninstallation.
+  void SetDeferRegistrationCallbacks(bool defer) {
+    defer_registration_callbacks_ = defer;
+  }
+  // Runs deferred callbacks for the given public key.
+  void RunPendingRegistrations(const std::string& public_key);
+  void RunPendingRegistrations(Registration& registration);
+  // Runs deferred callbacks for all registrations.
+  void RunPendingRegistrations();
+
+  // Indicates how downloads should behave.
+  void SetDownloadScenario(DownloadScenario scenario);
+
+  // Methods for making components installable.
+  // These will also cause installations to complete based on the download
+  // scenario and active registrations.
+  void UpdateManifest(const ManifestComponentDirectory& manifest_dir);
+  void UpdateBaseModel(const std::string& public_key,
+                       const FakeBaseModelAsset& asset);
+  void UpdateModelAdaptation(const std::string& public_key,
+                             const FakeAdaptationAsset& asset);
+  void UpdateSafetyModel(const std::string& public_key,
+                         const FakeSafetyModelAsset& asset);
+  void UpdateLanguageDetectionModel(const std::string& public_key,
+                                    const FakeLanguageModelAsset& asset);
+
+  // Simulate restart behavior.
+  // This will clear all registrations, but not installed components.
+  void SimulateRestart();
+
+  //////////////////////
+  // Test assertions  //
+  //////////////////////
+
   bool IsRegistered(const std::string& public_key) const;
   bool WasUninstallRequested(const std::string& public_key) const;
   bool WasOnDemandUpdateRequested(const std::string& public_key) const;
@@ -46,26 +150,8 @@ class TestManifestAssetManagerComponentState final {
         [&]() { return WasUninstallRequested(public_key); });
   }
 
-  // Test manipulators.
-  void SetFreeDiskSpace(base::ByteCount free_space_bytes) {
-    free_disk_space_ = free_space_bytes;
-  }
-
-  void SetDeferRegistrationCallbacks(bool defer) {
-    defer_registration_callbacks_ = defer;
-  }
-  void RunPendingRegistrations();
-
-  void ClearRegistered() { registered_components_.clear(); }
-  // Simulates the component updater finishing a download/install
-  void SimulateComponentReady(const std::string& public_key,
-                              const base::Version& version,
-                              const base::FilePath& install_dir);
-
-  // Sets up a component to simulate being already installed when registered.
-  void SetAlreadyInstalled(const std::string& public_key) {
-    already_installed_components_.insert(public_key);
-  }
+  bool IsInstalled(const InstallTarget& target) const;
+  bool IsUninstalled(const std::string& public_key) const;
 
   // Provides access to the fake component update service for future
   // update simulation and progress tracking.
@@ -76,23 +162,29 @@ class TestManifestAssetManagerComponentState final {
  private:
   class DelegateImpl;
 
+  void MaybeCompleteDownload(const std::string& public_key);
+
+  // The simulated network behavior.
+  DownloadScenario download_scenario_ = DownloadScenario::kHealthy;
+  // The contents we are pretending that server has available for download.
+  absl::flat_hash_map<InstallTarget, InstallableComponent>
+      installable_components_;
+
+  // The amount of free disk space we are pretending is available.
   base::ByteCount free_disk_space_ = base::GiB(100);
+  // The directories that we are pretending that the component updater has
+  // installed, keyed by public key.
+  absl::flat_hash_map<std::string, InstallableComponent> installed_components_;
 
-  // Tracks requests from the ManifestAssetManager to the component updater,
-  // keyed by public key.
-  base::flat_set<std::string> registered_components_;
-  base::flat_set<std::string> uninstalled_components_;
-  base::flat_set<std::string> foreground_updates_requested_;
-  base::flat_set<std::string> background_updates_requested_;
-  base::flat_set<std::string> already_installed_components_;
+  absl::flat_hash_set<std::string> registered_components_;
+  absl::flat_hash_set<std::string> uninstalled_components_;
 
+  // Whether to defer calling OnInstallerRegistered/OnAssetUninstalled.
   bool defer_registration_callbacks_ = false;
-  std::vector<base::OnceClosure> pending_registrations_;
+  // The simulated state of CUS registrations for on-demand components.
+  absl::flat_hash_map<std::string, Registration> registrations_;
 
-  // Track the managers to simulate callbacks from the component updater, keyed
-  // by public key.
-  base::flat_map<std::string, base::WeakPtr<ManifestAssetManager>> managers_;
-
+  // All registrations for the Manifest component.
   base::OnceCallbackList<void(base::FilePath)> manifest_ready_callbacks_;
 
   testing::NiceMock<FakeComponentUpdateService> component_update_service_;
