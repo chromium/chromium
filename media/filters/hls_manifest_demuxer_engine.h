@@ -50,8 +50,8 @@ class MEDIA_EXPORT HlsManifestDemuxerEngine : public ManifestDemuxer::Engine,
 
   // DataSourceInfo implementation
   int64_t GetMemoryUsage() override;
-  bool WouldTaintOrigin() override;
-  bool IsStreaming() override;
+  bool WouldTaintOrigin() const override;
+  bool IsStreaming() const override;
 
   // ManifestDemuxer::Engine implementation
   std::string GetName() const override;

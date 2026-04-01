@@ -47,7 +47,7 @@ bool IPCDataSource::GetSize(int64_t* size_out) {
   return true;
 }
 
-bool IPCDataSource::IsStreaming() {
+bool IPCDataSource::IsStreaming() const {
   DCHECK_CALLED_ON_VALID_THREAD(data_source_thread_checker_);
   return false;
 }
@@ -91,7 +91,7 @@ bool IPCDataSource::PassedTimingAllowOriginCheck() {
   return false;
 }
 
-bool IPCDataSource::WouldTaintOrigin() {
+bool IPCDataSource::WouldTaintOrigin() const {
   // The mojo ipc channel doesn't support this yet, so cautiously return true,
   // for now.
   // TODO(crbug.com/40243452): Rework this method to be asynchronous, if

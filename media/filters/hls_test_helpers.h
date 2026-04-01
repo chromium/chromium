@@ -37,10 +37,10 @@ class MockDataSource : public CrossOriginDataSource {
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, Abort, (), (override));
   MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
-  MOCK_METHOD(bool, IsStreaming, (), (override));
+  MOCK_METHOD(bool, IsStreaming, (), (const, override));
   MOCK_METHOD(void, SetBitrate, (int bitrate), (override));
   MOCK_METHOD(bool, PassedTimingAllowOriginCheck, (), (override));
-  MOCK_METHOD(bool, WouldTaintOrigin, (), (override));
+  MOCK_METHOD(bool, WouldTaintOrigin, (), (const, override));
   MOCK_METHOD(bool, AssumeFullyBuffered, (), (const, override));
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
   MOCK_METHOD(void, SetPreload, (DataSource::Preload preload), (override));

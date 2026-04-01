@@ -266,11 +266,11 @@ int64_t HlsManifestDemuxerEngine::GetMemoryUsage() {
   return total_stream_memory_;
 }
 
-bool HlsManifestDemuxerEngine::WouldTaintOrigin() {
+bool HlsManifestDemuxerEngine::WouldTaintOrigin() const {
   return origin_tainted_;
 }
 
-bool HlsManifestDemuxerEngine::IsStreaming() {
+bool HlsManifestDemuxerEngine::IsStreaming() const {
   return !is_seekable_;
 }
 

@@ -273,7 +273,7 @@ void MultiBufferDataSource::SetPreload(media::DataSource::Preload preload) {
   UpdateBufferSizes();
 }
 
-bool MultiBufferDataSource::HasSingleOrigin() {
+bool MultiBufferDataSource::HasSingleOrigin() const {
   DCHECK(render_task_runner_->BelongsToCurrentThread());
   // Before initialization completes there is no risk of leaking data. Callers
   // are required to order checks such that this isn't a race.
@@ -288,7 +288,7 @@ bool MultiBufferDataSource::PassedTimingAllowOriginCheck() {
   return url_data_->passed_timing_allow_origin_check();
 }
 
-bool MultiBufferDataSource::WouldTaintOrigin() {
+bool MultiBufferDataSource::WouldTaintOrigin() const {
   // When the resource is redirected to another origin we think of it as
   // tainted. This is actually not specified, and is under discussion.
   // See https://github.com/whatwg/fetch/issues/737.
@@ -452,7 +452,7 @@ bool MultiBufferDataSource::GetSize(int64_t* size_out) {
   return false;
 }
 
-bool MultiBufferDataSource::IsStreaming() {
+bool MultiBufferDataSource::IsStreaming() const {
   return streaming_;
 }
 

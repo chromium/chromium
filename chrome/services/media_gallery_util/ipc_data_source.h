@@ -38,10 +38,10 @@ class IPCDataSource : public media::DataSource {
             base::span<uint8_t> destination,
             ReadCB callback) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
-  bool IsStreaming() override;
+  bool IsStreaming() const override;
   void SetBitrate(int bitrate) override;
   bool PassedTimingAllowOriginCheck() override;
-  bool WouldTaintOrigin() override;
+  bool WouldTaintOrigin() const override;
 
  private:
   // Media data read helpers: must be run on the utility thread.

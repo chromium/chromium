@@ -35,10 +35,10 @@ class MEDIA_EXPORT FileDataSource : public DataSource {
             base::span<uint8_t> data,
             DataSource::ReadCB read_cb) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
-  bool IsStreaming() override;
+  bool IsStreaming() const override;
   void SetBitrate(int bitrate) override;
   bool PassedTimingAllowOriginCheck() final;
-  bool WouldTaintOrigin() final;
+  bool WouldTaintOrigin() const final;
 
   // Unit test helpers. Recreate the object if you want the default behaviour.
   void force_read_errors_for_testing() { force_read_errors_ = true; }

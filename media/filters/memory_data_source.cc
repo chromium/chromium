@@ -53,7 +53,7 @@ bool MemoryDataSource::GetSize(int64_t* size_out) {
   return true;
 }
 
-bool MemoryDataSource::IsStreaming() {
+bool MemoryDataSource::IsStreaming() const {
   return false;
 }
 
@@ -64,7 +64,7 @@ bool MemoryDataSource::PassedTimingAllowOriginCheck() {
   return true;
 }
 
-bool MemoryDataSource::WouldTaintOrigin() {
+bool MemoryDataSource::WouldTaintOrigin() const {
   // There are no HTTP responses, so this can safely return false.
   return false;
 }

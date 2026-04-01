@@ -75,14 +75,14 @@ class PLATFORM_EXPORT MultiBufferDataSource
   // Only valid to call after Initialize() has completed.
   //
   // Method called on the render thread.
-  bool HasSingleOrigin();
+  bool HasSingleOrigin() const;
 
   // Provides a callback to be run when the underlying url is redirected.
   void OnRedirect(RedirectCB callback);
 
   bool PassedTimingAllowOriginCheck() override;
 
-  bool WouldTaintOrigin() override;
+  bool WouldTaintOrigin() const override;
 
   // Returns the CorsMode of the underlying UrlData.
   UrlData::CorsMode cors_mode() const;
@@ -111,7 +111,7 @@ class PLATFORM_EXPORT MultiBufferDataSource
             base::span<uint8_t> data,
             media::DataSource::ReadCB read_cb) override;
   [[nodiscard]] bool GetSize(int64_t* size_out) override;
-  bool IsStreaming() override;
+  bool IsStreaming() const override;
   void SetBitrate(int bitrate) override;
   void SetIsClientAudioElement(bool is_client_audio_element) {
     is_client_audio_element_ = is_client_audio_element;
