@@ -595,6 +595,9 @@ extern const char kLensCameraUnbinnedCaptureFormatsPreferredDescription[];
 extern const char kLensContinuousZoomEnabledName[];
 extern const char kLensContinuousZoomEnabledDescription[];
 
+extern const char kLensEnableSendRawFileMediaTypesName[];
+extern const char kLensEnableSendRawFileMediaTypesDescription[];
+
 extern const char kLensEnableSendUrlsInComposeboxesName[];
 extern const char kLensEnableSendUrlsInComposeboxesDescription[];
 

@@ -99,6 +99,7 @@ NSString* const kChartLineDowntrendXYAxisSymbol =
 NSString* const kCircleSymbol = @"circle";
 NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kPhotoSymbol = @"photo";
+NSString* const kPaperclipSymbol = @"paperclip";
 NSString* const kPhotoBadgeArrowDownSymbol = @"photo.badge.arrow.down";
 NSString* const kTabGroupsSymbol = @"square.grid.2x2";
 NSString* const kCropSymbol = @"crop";

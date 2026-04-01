@@ -2577,7 +2577,7 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf.mutator processPDFFileURL:pdfURL];
+    [weakSelf.mutator processFileURL:pdfURL isPDF:YES];
   });
 }
 

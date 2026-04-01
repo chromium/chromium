@@ -955,6 +955,11 @@ const char kLensContinuousZoomEnabledName[] =
 const char kLensContinuousZoomEnabledDescription[] =
     "When enabled, Lens camera supports continuous zoom.";
 
+const char kLensEnableSendRawFileMediaTypesName[] =
+    "Lens enable send raw file media types";
+const char kLensEnableSendRawFileMediaTypesDescription[] =
+    "Enables sending raw file media types in the Lens overlay.";
+
 const char kLensEnableSendUrlsInComposeboxesName[] =
     "Lens enable send urls in composeboxes";
 const char kLensEnableSendUrlsInComposeboxesDescription[] =

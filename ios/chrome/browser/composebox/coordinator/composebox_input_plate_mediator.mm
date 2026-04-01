@@ -617,15 +617,15 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   [self.delegate refineWithText:text];
 }
 
-- (void)processPDFFileURL:(GURL)PDFFileURL {
+- (void)processFileURL:(GURL)fileURL isPDF:(BOOL)isPDF {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  NSString* assetID = base::SysUTF8ToNSString(PDFFileURL.spec());
+  NSString* assetID = base::SysUTF8ToNSString(fileURL.spec());
   if ([_items assetAlreadyLoaded:assetID]) {
     return;
   }
 
   // Check file size.
-  NSURL* nsURL = net::NSURLWithGURL(PDFFileURL);
+  NSURL* nsURL = net::NSURLWithGURL(fileURL);
   NSError* error = nil;
   NSNumber* fileSize =
       [[nsURL resourceValuesForKeys:@[ NSURLFileSizeKey ]
@@ -635,11 +635,14 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     return;
   }
 
-  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
-      initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeFile
-                              assetID:assetID];
-  item.title = base::SysUTF8ToNSString(PDFFileURL.ExtractFileName());
+  ComposeboxInputItemType itemType =
+      isPDF ? ComposeboxInputItemType::kComposeboxInputItemTypePDF
+            : ComposeboxInputItemType::kComposeboxInputItemTypeRawFile;
+
+  ComposeboxInputItem* item =
+      [[ComposeboxInputItem alloc] initWithComposeboxInputItemType:itemType
+                                                           assetID:assetID];
+  item.title = base::SysUTF8ToNSString(fileURL.ExtractFileName());
   [self addItem:item];
   base::UnguessableToken identifier = item.identifier;
 
@@ -647,10 +650,10 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   __weak __typeof(self) weakSelf = self;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-      base::BindOnce(&ReadDataFromURL, PDFFileURL),
+      base::BindOnce(&ReadDataFromURL, fileURL),
       base::BindOnce(^(NSData* data) {
         [weakSelf onDataReadForItemWithIdentifier:identifier
-                                          fromURL:PDFFileURL
+                                          fromURL:fileURL
                                          withData:data];
       }));
 }
@@ -1339,7 +1342,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   switch (item.type) {
     case ComposeboxInputItemType::kComposeboxInputItemTypeImage:
       return composebox_debugger::AttachmentType::kImage;
-    case ComposeboxInputItemType::kComposeboxInputItemTypeFile:
+    case ComposeboxInputItemType::kComposeboxInputItemTypeRawFile:
+    case ComposeboxInputItemType::kComposeboxInputItemTypePDF:
       return composebox_debugger::AttachmentType::kFile;
     case ComposeboxInputItemType::kComposeboxInputItemTypeTab:
       return composebox_debugger::AttachmentType::kTab;

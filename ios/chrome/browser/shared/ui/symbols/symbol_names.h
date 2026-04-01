@@ -107,6 +107,7 @@ extern NSString* const kChartLineDowntrendXYAxisSymbol;
 extern NSString* const kCircleSymbol;
 extern NSString* const kCircleFillSymbol;
 extern NSString* const kPhotoSymbol;
+extern NSString* const kPaperclipSymbol;
 extern NSString* const kPhotoBadgeArrowDownSymbol;
 extern NSString* const kTabGroupsSymbol;
 extern NSString* const kCropSymbol;

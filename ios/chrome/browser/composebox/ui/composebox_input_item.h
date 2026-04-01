@@ -22,7 +22,8 @@ enum class ComposeboxInputItemState {
 // Enum for the aim input item type.
 enum class ComposeboxInputItemType {
   kComposeboxInputItemTypeImage,
-  kComposeboxInputItemTypeFile,
+  kComposeboxInputItemTypePDF,
+  kComposeboxInputItemTypeRawFile,
   kComposeboxInputItemTypeTab,
 };
 
@@ -41,8 +42,7 @@ enum class ComposeboxInputItemType {
 @property(nonatomic, assign) base::UnguessableToken serverToken;
 // The preview image for this item.
 @property(nonatomic, strong) UIImage* previewImage;
-// The icon image for this item. Only set for kComposeboxInputItemTypeFile and
-// kComposeboxInputItemTypeTab types.
+// The icon image for this item. Only set for file and tab types.
 @property(nonatomic, strong) UIImage* leadingIconImage;
 // The title for this item.
 @property(nonatomic, copy) NSString* title;

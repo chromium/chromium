@@ -12,6 +12,7 @@
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
+#import "components/lens/lens_features.h"
 #import "components/lens/lens_overlay_invocation_source.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
@@ -439,9 +440,15 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     [self showMaxAttachmentSnackbarError];
     return;
   }
-  UIDocumentPickerViewController* picker =
-      [[UIDocumentPickerViewController alloc]
-          initForOpeningContentTypes:@[ UTTypePDF ]];
+  UIDocumentPickerViewController* picker;
+  if (lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    picker = [[UIDocumentPickerViewController alloc]
+        initForOpeningContentTypes:@[ UTTypeData ]];
+  } else {
+    picker = [[UIDocumentPickerViewController alloc]
+        initForOpeningContentTypes:@[ UTTypePDF ]];
+  }
+
   picker.allowsMultipleSelection = NO;
   picker.delegate = self;
   [_viewController presentViewController:picker animated:YES completion:nil];
@@ -577,7 +584,33 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   if (urls.count == 0) {
     return;
   }
-  [_mediator processPDFFileURL:net::GURLWithNSURL(urls.firstObject)];
+
+  NSURL* selectedURL = urls.firstObject;
+  if (!lens::features::IsLensSendRawFileMediaTypesEnabled()) {
+    [_mediator processFileURL:net::GURLWithNSURL(selectedURL) isPDF:YES];
+    return;
+  }
+
+  NSError* error = nil;
+  UTType* contentType = nil;
+
+  [selectedURL getResourceValue:&contentType
+                         forKey:NSURLContentTypeKey
+                          error:&error];
+  if (contentType && !error) {
+    if ([contentType conformsToType:UTTypeImage]) {
+      NSItemProvider* provider =
+          [[NSItemProvider alloc] initWithContentsOfURL:selectedURL];
+      [_mediator processImageItemProvider:provider
+                                  assetID:contentType.identifier];
+      return;
+    } else if ([contentType conformsToType:UTTypePDF]) {
+      [_mediator processFileURL:net::GURLWithNSURL(selectedURL) isPDF:YES];
+      return;
+    }
+  }
+
+  [_mediator processFileURL:net::GURLWithNSURL(selectedURL) isPDF:NO];
 }
 
 #pragma mark - UIImagePickerControllerDelegate

@@ -71,7 +71,8 @@
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   NSUInteger result = 0;
   for (ComposeboxInputItem* item in _containedItems) {
-    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeFile) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeRawFile ||
+        item.type == ComposeboxInputItemType::kComposeboxInputItemTypePDF) {
       result++;
     }
   }

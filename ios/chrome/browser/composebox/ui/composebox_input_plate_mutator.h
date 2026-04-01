@@ -34,8 +34,8 @@ class WebStateID;
 /// Requests a refresh of UI.
 - (void)requestUIRefresh;
 
-/// Processes the given `PDFFileURL` for a file.
-- (void)processPDFFileURL:(GURL)PDFFileURL;
+/// Processes the given `fileURL` for a file.
+- (void)processFileURL:(GURL)fileURL isPDF:(BOOL)isPDF;
 
 /// Processes the given `itemProvider` for an image.
 - (void)processImageItemProvider:(NSItemProvider*)itemProvider
