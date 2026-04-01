@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="36"
-    platformBuildVersionName="16"
+    platformBuildVersionCode="37"
+    platformBuildVersionName="17"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=0"
     android:versionName="#.#.#.#">

@@ -165,8 +165,8 @@ if (is_android) {
   }
 
   public_android_sdk_root = "//third_party/android_sdk/public"
-  public_android_sdk_platform_version = "36.1"
-  public_android_sdk_build_tools_version = "36.1.0"
+  public_android_sdk_platform_version = "37.0"
+  public_android_sdk_build_tools_version = "37.0.0"
   if (android_sdk_release == "b") {
     default_android_sdk_root = public_android_sdk_root
     default_android_sdk_platform_version = public_android_sdk_platform_version
@@ -369,11 +369,7 @@ if (is_android) {
 
     # Component build breaks javaless renderers - see
     # go/javaless-renderers-component-build
-    # Ensuring that we are on version 37+ as that's what's required for aapt2
-    # to read our manifest. Once 37 is the default public SDK that check can go
-    # away.
-    enable_javaless_renderers =
-        !is_component_build && android_sdk_platform_version != "36.1"
+    enable_javaless_renderers = !is_component_build
 
     # Enables trace event injection on Android views with bytecode rewriting.
     # This adds an additional step on android_app_bundle_module targets that

@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="36"
-    platformBuildVersionName="16"
+    platformBuildVersionCode="37"
+    platformBuildVersionName="17"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=30"
     android:versionName="#.#.#.#">
@@ -97,7 +97,8 @@
       android:networkSecurityConfig="@xml/network_security_config"
       android:roundIcon="@drawable/ic_launcher_round"
       android:supportsRtl="true"
-      android:zygotePreloadName="org.chromium.chrome.app.TrichromeZygotePreload">
+      android:zygotePreloadName="org.chromium.chrome.app.TrichromeZygotePreload"
+      android:zygotePreloadNativeLib="libmonochrome.so">
     <activity  # DIFF-ANCHOR: ea1a94af
         android:name="com.google.android.gms.common.api.GoogleApiActivity"
         android:exported="false"
@@ -227,6 +228,28 @@
         android:exported="false"
         android:permission="android.permission.BIND_JOB_SERVICE">
     </service>  # DIFF-ANCHOR: a550decc
+    <service  # DIFF-ANCHOR: 55f101d6
+        android:name="org.chromium.content.app.NativeOnlySandboxedProcessService0"
+        android:exported="False"
+        android:isolatedProcess="true"
+        android:nativeService="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process0"
+        android:useAppZygote="true">
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME" android:value="NativeChildProcessService_onCreate"/>
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME" android:value="libmonochrome.so"/>
+    </service>  # DIFF-ANCHOR: 55f101d6
+    <service  # DIFF-ANCHOR: bb0c45b7
+        android:name="org.chromium.content.app.NativeOnlySandboxedProcessService1"
+        android:exported="False"
+        android:isolatedProcess="true"
+        android:nativeService="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process1"
+        android:useAppZygote="true">
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_FUNCTION_NAME" android:value="NativeChildProcessService_onCreate"/>
+      <property android:name="android.app.PROPERTY_NATIVE_SERVICE_LIBRARY_NAME" android:value="libmonochrome.so"/>
+    </service>  # DIFF-ANCHOR: bb0c45b7
     <service  # DIFF-ANCHOR: 0c6c4fd9
         android:name="org.chromium.content.app.PrivilegedProcessService0"
         android:exported="false"

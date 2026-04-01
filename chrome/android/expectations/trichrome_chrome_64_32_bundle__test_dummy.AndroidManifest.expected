@@ -4,8 +4,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="test_dummy"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="36"
-    platformBuildVersionName="16"
+    platformBuildVersionCode="37"
+    platformBuildVersionName="17"
     android:versionCode="OFFSET=33"
     android:versionName="#.#.#.#">
   <dist:module dist:onDemand="true" dist:title="@string/test_dummy_module_title">  # DIFF-ANCHOR: d029b25b

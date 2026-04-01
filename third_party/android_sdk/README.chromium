@@ -1,11 +1,11 @@
 Name: Android SDK
 URL: http://developer.android.com/sdk/index.html
-Version: 36.1
-  Android SDK Build-Tools 36.1.0
+Version: 37.0
+  Android SDK Build-Tools 37.0.0
   Android SDK Command-line Tools (auto-rolled)
   Android SDK Emulator 31.2.10
-  Android SDK Platform-Tools 36.1.0
-  Android SDK Platform API 36.1
+  Android SDK Platform-Tools 37.0.0
+  Android SDK Platform API 37.0
 Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
