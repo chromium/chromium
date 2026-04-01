@@ -1,14 +1,6 @@
 # TODO(crbug.com/40947766): Delete lines from this file as these test failures
 # are addressed.
 
-# These appear to fail with imperciptible pixel differences.
--All/BackdropFilterInvertTest.StandardDpi/SkiaGraphiteDawn
--All/BackdropFilterOffsetTest.StandardDpi/SkiaGraphiteDawn
--All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_0_33/SkiaGL
--All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_0_33/SkiaGraphiteDawn
--All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_1_0/SkiaGL
--All/LayerTreeHostFiltersPixelTest.BackdropFilterQuality_1_0/SkiaGraphiteDawn
-
 # Spot checking seems to show that the following tests fail with errors like
 # the following:
 # dawn_context_provider.cc(448)] First instance (1) must be zero.

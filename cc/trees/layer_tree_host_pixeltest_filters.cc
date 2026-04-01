@@ -322,8 +322,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_0_33) {
   blur->SetBackdropFilters(filters);
   blur->SetBackdropFilterQuality(0.33);
 
-#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
-  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+#if BUILDFLAG(IS_IOS)
+  // iOS has imperceptible pixel differences (max error of 1 per channel).
+  pixel_comparator_ =
+      std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+#elif BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 (non-iOS) have 436 pixels off by 1: crbug.com/259915
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
           .DiscardAlpha()
@@ -358,8 +362,12 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterQuality_1_0) {
   blur->SetBackdropFilters(filters);
   blur->SetBackdropFilterQuality(1.0);
 
-#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
-  // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
+#if BUILDFLAG(IS_IOS)
+  // iOS has imperceptible pixel differences (max error of 1 per channel).
+  pixel_comparator_ =
+      std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+#elif BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+  // Windows and ARM64 (non-iOS) have 436 pixels off by 1: crbug.com/259915
   pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       FuzzyPixelComparator()
           .DiscardAlpha()
@@ -1318,6 +1326,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterOffsetTest);
 
 TEST_P(BackdropFilterOffsetTest, StandardDpi) {
+#if BUILDFLAG(IS_IOS)
+  // iOS has imperceptible pixel differences with SkiaGraphiteDawn.
+  if (renderer_type() == viz::RendererType::kSkiaGraphiteDawn) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
+#endif
   RunPixelTestType(1.f);
 }
 
@@ -1372,6 +1387,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(BackdropFilterInvertTest);
 
 TEST_P(BackdropFilterInvertTest, StandardDpi) {
+#if BUILDFLAG(IS_IOS)
+  // iOS has imperceptible pixel differences with SkiaGraphiteDawn.
+  if (renderer_type() == viz::RendererType::kSkiaGraphiteDawn) {
+    pixel_comparator_ =
+        std::make_unique<AlphaDiscardingFuzzyPixelOffByOneComparator>();
+  }
+#endif
   RunPixelTestType(1.f);
 }
 
