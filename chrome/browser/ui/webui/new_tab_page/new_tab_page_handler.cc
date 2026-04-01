@@ -637,6 +637,8 @@ void NewTabPageHandler::GetMostVisitedSettings(
 }
 
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
+  bool enable_animated_logo =
+      base::FeatureList::IsEnabled(ntp_features::kNtpAnimatedDoodles);
   search_provider_logos::LogoCallbacks callbacks;
   callbacks.on_cached_encoded_logo_available =
       base::BindOnce(&NewTabPageHandler::OnLogoAvailable,
@@ -644,7 +646,7 @@ void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {
   // This will trigger re-downloading the doodle and caching it. This means a
   // new doodle will be returned on subsequent NTP loads.
   logo_service_->GetLogo(std::move(callbacks), /*for_webui_ntp=*/true,
-                         /*enable_animated_logo=*/false);
+                         enable_animated_logo);
 }
 
 void NewTabPageHandler::UpdatePromoData() {

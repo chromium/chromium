@@ -812,6 +812,26 @@ TEST_F(NewTabPageHandlerTest, Histograms) {
       1);
 }
 
+TEST_F(NewTabPageHandlerTest, GetDoodleAnimatedDoodlesFlagEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(ntp_features::kNtpAnimatedDoodles);
+
+  EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, true))
+      .Times(1);
+  base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
+  handler_->GetDoodle(callback.Get());
+}
+
+TEST_F(NewTabPageHandlerTest, GetDoodleAnimatedDoodlesFlagDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(ntp_features::kNtpAnimatedDoodles);
+
+  EXPECT_CALL(mock_logo_service_, GetLogo(testing::_, testing::_, false))
+      .Times(1);
+  base::MockCallback<NewTabPageHandler::GetDoodleCallback> callback;
+  handler_->GetDoodle(callback.Get());
+}
+
 TEST_F(NewTabPageHandlerTest, GetAnimatedDoodle) {
   search_provider_logos::EncodedLogo logo;
   logo.encoded_image =
