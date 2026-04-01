@@ -440,9 +440,9 @@ void RecordMaxFrameCountUMA(size_t max_frame_count) {
 // WebContents::GetFirstWebContentsInLiveOriginalOpenerChain() and
 // WebContents::GetOuterWebContents(). The |web_contents| parameter will be
 // included in the returned set.
-base::flat_set<WebContentsImpl*> GetAllOpeningWebContents(
+base::flat_set<raw_ptr<WebContentsImpl>> GetAllOpeningWebContents(
     WebContentsImpl* web_contents) {
-  base::flat_set<WebContentsImpl*> result;
+  base::flat_set<raw_ptr<WebContentsImpl>> result;
   base::flat_set<WebContentsImpl*> current;
 
   current.insert(web_contents);
@@ -4776,7 +4776,7 @@ bool WebContentsImpl::CanEnterFullscreenMode(
   // WebContents has an active blocker.
   return delegate_ &&
          std::ranges::all_of(GetAllOpeningWebContents(this),
-                             [](auto* opener) {
+                             [](auto opener) {
                                return opener->fullscreen_blocker_count_ == 0;
                              }) &&
          delegate_->CanEnterFullscreenModeForTab(requesting_frame);
@@ -7422,7 +7422,7 @@ base::ScopedClosureRunner WebContentsImpl::ForSecurityDropFullscreen(
 
   std::vector<base::WeakPtr<WebContentsImpl>> blocked_contentses;
 
-  for (auto* opener : GetAllOpeningWebContents(this)) {
+  for (auto opener : GetAllOpeningWebContents(this)) {
     if (is_fullscreen(opener, display_id)) {
       opener->ExitFullscreen(true);
     }
