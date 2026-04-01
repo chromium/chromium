@@ -96,7 +96,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     // not in search mode when app filter is in effect.
     private boolean mShowSourceApp;
 
-    private boolean mIsLargeScreenWithKeyboard;
+    private boolean mIsLargeFormFactorDevice;
     private final boolean mShouldClusterByDomain;
     private final Set<String> mExpandedClusterKeys = new HashSet<>();
     private final List<HistoryItem> mAllItems = new ArrayList<>();
@@ -117,7 +117,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mShowAppFilter = mManager.showAppFilter();
         mShowSourceApp = mShowAppFilter; // defaults to BrApp full history
         mHistorySyncPromoCoordinator = historySyncPromoCoordinator;
-        mIsLargeScreenWithKeyboard = false;
+        mIsLargeFormFactorDevice = false;
         mShouldClusterByDomain = shouldClusterByDomain;
     }
 
@@ -329,7 +329,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         boolean isEmpty = items.size() > 0 || mHistorySyncPromoVisible;
         if ((!mAreHeadersInitialized && isEmpty && !mIsSearching)
                 || (mIsSearching && mShowAppFilter)
-                || mIsLargeScreenWithKeyboard) {
+                || mIsLargeFormFactorDevice) {
             setHeaders();
             mAreHeadersInitialized = true;
         }
@@ -419,8 +419,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ViewGroup privacyDisclaimerContainer = getPrivacyDisclaimerContainer(null);
         ViewGroup clearBrowsingDataButtonContainer = getClearBrowsingDataButtonContainer(null);
 
-        // Add a search box in the recycler view iff lff device w/ phy keyboard
-        if (mIsLargeScreenWithKeyboard) {
+        // Add a search box in the recycler view if the device is Large Form Factor device with
+        // physical keyboard
+        if (mIsLargeFormFactorDevice) {
             @Nullable ViewGroup searchBoxContainer = getSearchBoxContainer(null);
             mIsSearching = true;
             if (searchBoxContainer != null) {
@@ -584,7 +585,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     /** Pass header items to {@link #setHeaders(HeaderItem...)} as parameters. */
     private void setHeaders() {
-        if (mIsLargeScreenWithKeyboard) {
+        if (mIsLargeFormFactorDevice) {
             setLFFHeaders();
             return;
         }
@@ -686,7 +687,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
             mSearchBoxVisible = false;
             return;
         }
-        mSearchBoxVisible = mIsLargeScreenWithKeyboard;
+        mSearchBoxVisible = mIsLargeFormFactorDevice;
     }
 
     /* Regenerate searchbox header after toolbar becomes non-null*/
@@ -711,8 +712,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAppId = appId;
     }
 
-    public void setIsLargeScreenWithKeyboard(boolean isLargeScreenWithKeyboard) {
-        mIsLargeScreenWithKeyboard = isLargeScreenWithKeyboard;
+    public void setIsLargeFormFactorDevice(boolean isLargeFormFactorDevice) {
+        mIsLargeFormFactorDevice = isLargeFormFactorDevice;
     }
 
     void updateHistorySyncPromoVisibility() {

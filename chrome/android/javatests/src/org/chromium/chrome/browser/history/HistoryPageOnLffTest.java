@@ -76,7 +76,7 @@ public class HistoryPageOnLffTest {
 
     @Test
     @MediumTest
-    public void testAutoFocusOnHistoryPageByTabSwitchingWithKeyboard() {
+    public void testAutoFocusOnHistoryPageByTabSwitching() {
         DeviceInput.setSupportsKeyboardForTesting(true);
 
         // Pre-check: The test is for devices w/ keyboard

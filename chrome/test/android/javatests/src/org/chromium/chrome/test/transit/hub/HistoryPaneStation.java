@@ -39,12 +39,12 @@ public class HistoryPaneStation extends HubBaseStation {
     }
 
     /** Expect history entries to be displayed in the history pane. */
-    public HistoryWithEntriesFacility expectEntries(boolean isLLFDevice) {
-        return noopTo().enterFacility(new HistoryWithEntriesFacility(isLLFDevice));
+    public HistoryWithEntriesFacility expectEntries(boolean isLargeFormFactorDevice) {
+        return noopTo().enterFacility(new HistoryWithEntriesFacility(isLargeFormFactorDevice));
     }
 
     /** Expect no history to be displayed in the history pane. */
-    public void expectEmptyState(boolean isLLFDevice) {
+    public void expectEmptyState(boolean isLargeFormFactorDevice) {
         var emptyHistory = new Facility<>("EmptyState");
 
         emptyHistory.declareView(withText("You’ll find your history here"));
@@ -53,8 +53,11 @@ public class HistoryPaneStation extends HubBaseStation {
                         "You can see the pages you’ve visited or delete them from your"
                                 + " history"));
 
-        if (!isLLFDevice) emptyHistory.declareNoView(withId(R.id.history_page_recycler_view));
-        else emptyHistory.declareView(withId(R.id.history_page_recycler_view));
+        if (!isLargeFormFactorDevice) {
+            emptyHistory.declareNoView(withId(R.id.history_page_recycler_view));
+        } else {
+            emptyHistory.declareView(withId(R.id.history_page_recycler_view));
+        }
         noopTo().enterFacility(emptyHistory);
     }
 
@@ -63,9 +66,9 @@ public class HistoryPaneStation extends HubBaseStation {
         public final ViewElement<View> recyclerViewElement;
         public final ViewElement<View> searchButtonElement;
 
-        public HistoryWithEntriesFacility(boolean isLLFDevice) {
+        public HistoryWithEntriesFacility(boolean isLargeFormFactorDevice) {
             recyclerViewElement = declareView(withId(R.id.history_page_recycler_view));
-            if (isLLFDevice) {
+            if (isLargeFormFactorDevice) {
                 searchButtonElement = null;
                 declareNoView(withId(R.id.search_menu_id));
                 return;
@@ -84,8 +87,8 @@ public class HistoryPaneStation extends HubBaseStation {
         }
 
         /** Open the history search. */
-        public HistorySearchFacility openSearch(boolean isLLFDevice) {
-            if (isLLFDevice) {
+        public HistorySearchFacility openSearch(boolean isLargeFormFactorDevice) {
+            if (isLargeFormFactorDevice) {
                 return noopTo().enterFacility(new HistorySearchFacility());
             } else {
                 SoftKeyboardFacility softKeyboard = new SoftKeyboardFacility();

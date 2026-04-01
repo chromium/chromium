@@ -225,10 +225,10 @@ public class HistoryManager
                 mContentManager.getAdapter(),
                 mContentManager.getRecyclerView(),
                 edgeToEdgePadAdjusterGenerator);
-        boolean isLargeScreenWithKeyboard =
-                DeviceInput.supportsKeyboard(mActivity)
-                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        if (mContentManager.showAppFilter() || isLargeScreenWithKeyboard) {
+
+        boolean isLargeFormFactorDevice =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
+        if (mContentManager.showAppFilter() || isLargeFormFactorDevice) {
             // Now the search mode can have a header. Let the layout ignore it to
             // return the right item count.
             mSelectableListLayout.ignoreItemTypeForEmptyState(ItemViewType.STANDARD_HEADER);
@@ -267,15 +267,15 @@ public class HistoryManager
                     }
                 });
 
-        mToolbar.setIsLargeScreenWithKeyboard(isLargeScreenWithKeyboard);
-
         /* If the current device is LFF device w/ physical keyboard attached,
          * then initialize the search box only; Otherwise initialize the whole toolbar
          */
-        if (!isLargeScreenWithKeyboard) {
+        if (!isLargeFormFactorDevice) {
             mToolbar.initializeSearchView(
                     this, R.string.history_manager_search, R.id.search_menu_id);
-        } else mToolbar.initializeInlineSearchView(this, R.id.search_menu_id);
+        } else {
+            mToolbar.initializeInlineSearchView(this, R.id.search_menu_id);
+        }
 
         mToolbar.setInfoMenuItem(R.id.info_menu_id);
         mToolbar.updateInfoMenuItem(shouldShowInfoButton(), shouldShowInfoHeaderIfAvailable());
@@ -303,7 +303,7 @@ public class HistoryManager
         onBackPressStateChanged(); // Initialize back press State.
         mContentManager.maybeQueryApps();
 
-        mContentManager.getAdapter().setIsLargeScreenWithKeyboard(isLargeScreenWithKeyboard);
+        mContentManager.getAdapter().setIsLargeFormFactorDevice(isLargeFormFactorDevice);
         mContentManager.getAdapter().setToolbar(mToolbar);
     }
 

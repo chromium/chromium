@@ -39,7 +39,6 @@ import org.chromium.chrome.test.transit.hub.HistoryPaneStation.HistoryWithEntrie
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.DeviceInput;
 import org.chromium.ui.test.transit.SoftKeyboardCondition;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -59,21 +58,19 @@ public class HistoryPaneTest {
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private WebPageStation mStartingPage;
-    private boolean mIsLLFDevice;
+    private boolean mIsLargeFormFactorDevice;
 
     @Before
     public void setUp() {
         mStartingPage = mCtaTestRule.startOnBlankPage();
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
-        final AtomicBoolean supportsKeyboard = new AtomicBoolean();
         final AtomicBoolean isTablet = new AtomicBoolean();
         runOnUiThreadBlocking(
                 () -> {
                     clearHistory(cta.getProfileProviderSupplier().get().getOriginalProfile());
-                    supportsKeyboard.set(DeviceInput.supportsKeyboard(cta));
                     isTablet.set(DeviceFormFactor.isNonMultiDisplayContextOnTablet(cta));
                 });
-        mIsLLFDevice = supportsKeyboard.get() && isTablet.get();
+        mIsLargeFormFactorDevice = isTablet.get();
     }
 
     @Test
@@ -81,7 +78,7 @@ public class HistoryPaneTest {
     @DisabledTest(message = "https://crbug.com/494280678")
     public void testEmptyView() {
         RegularTabSwitcherStation tabSwitcher = mStartingPage.openRegularTabSwitcher();
-        tabSwitcher.selectHistoryPane().expectEmptyState(mIsLLFDevice);
+        tabSwitcher.selectHistoryPane().expectEmptyState(mIsLargeFormFactorDevice);
     }
 
     @Test
@@ -98,7 +95,7 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
         HistoryWithEntriesFacility history =
-                tabSwitcher.selectHistoryPane().expectEntries(mIsLLFDevice);
+                tabSwitcher.selectHistoryPane().expectEntries(mIsLargeFormFactorDevice);
         history.expectEntry("One");
         history.expectEntry("Two");
     }
@@ -117,12 +114,13 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
         HistoryPaneStation historyPaneStation = tabSwitcher.selectHistoryPane();
-        HistoryWithEntriesFacility history = historyPaneStation.expectEntries(mIsLLFDevice);
+        HistoryWithEntriesFacility history =
+                historyPaneStation.expectEntries(mIsLargeFormFactorDevice);
         history.expectEntry("One");
         history.expectEntry("Two");
 
         // Search for "One" in the history search box.
-        HistorySearchFacility search = history.openSearch(mIsLLFDevice);
+        HistorySearchFacility search = history.openSearch(mIsLargeFormFactorDevice);
         search.typeSearchTerm("One");
 
         // Verify that "One" is displayed as a match.
@@ -148,7 +146,9 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlOne)
                         .loadWebPageProgrammatically(urlTwo);
         HistoryWithEntriesFacility history =
-                page.openRegularTabSwitcher().selectHistoryPane().expectEntries(mIsLLFDevice);
+                page.openRegularTabSwitcher()
+                        .selectHistoryPane()
+                        .expectEntries(mIsLargeFormFactorDevice);
         history.expectEntry("One").selectToOpenWebPage(page, urlOne);
     }
 
@@ -172,7 +172,7 @@ public class HistoryPaneTest {
                         .loadWebPageProgrammatically(urlTwo)
                         .openRegularTabSwitcher();
         HistoryWithEntriesFacility history =
-                tabSwitcher.selectHistoryPane().expectEntries(mIsLLFDevice);
+                tabSwitcher.selectHistoryPane().expectEntries(mIsLargeFormFactorDevice);
 
         // Before expansion, only the cluster head is visible. "One" and "Two" are hidden.
         history.expectEntry(domain);
