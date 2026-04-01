@@ -51553,6 +51553,52 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabStripComboButton.EverythingMenu.Pinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User pinned the Saved Tab Groups Everything Menu button to the tabstrip.
+  </description>
+</action>
+
+<action name="TabStripComboButton.EverythingMenu.Unpinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unpinned the Saved Tab Groups Everything Menu button from the tabstrip.
+  </description>
+</action>
+
+<action name="TabStripComboButton.ProjectsPanel.Pinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User pinned the Projects Panel button to the tabstrip.
+  </description>
+</action>
+
+<action name="TabStripComboButton.ProjectsPanel.Unpinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unpinned the Projects Panel button from the tabstrip.
+  </description>
+</action>
+
+<action name="TabStripComboButton.TabSearch.Pinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>User pinned the Tab Search button to the tabstrip.</description>
+</action>
+
+<action name="TabStripComboButton.TabSearch.Unpinned">
+  <owner>emshack@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    User unpinned the Tab Search button from the tabstrip.
+  </description>
+</action>
+
 <action name="TabStrip{ActionType}">
   <obsolete>The feature was deprecated and code deleted.</obsolete>
   <owner>yusufo@chromium.org</owner>
