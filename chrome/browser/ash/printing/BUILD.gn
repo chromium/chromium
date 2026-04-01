@@ -162,7 +162,6 @@ static_library("printing") {
     "//chrome/browser/ash/printing/enterprise",
     "//chrome/browser/ash/printing/history",
     "//chrome/browser/ash/printing/print_management",
-    "//chrome/browser/printing",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
