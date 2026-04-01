@@ -11,18 +11,22 @@ ts_library("build_ts") {
     "inline_event_handler.js",
     "lit_element_bindings.js",
     "lit_element_invalid_interface.js",
-    "lit_element_structure.js",
+    "lit_element_structure.ts",
     "lit_element_template_structure.js",
     "lit_property_accessor.js",
-    "no_mixed_type_and_value_imports.js",
+    "no_mixed_type_and_value_imports.ts",
     "polymer_property_class_member.js",
     "polymer_property_declare.js",
     "query_utils.ts",
-    "web_component_missing_deps.js",
+    "web_component_missing_deps.ts",
     "webui_eslint_plugin.js",
   ]
 
   path_mappings = [
+    "/third_party/node/node_modules/typescript/lib/typescript.js|" +
+        rebase_path(
+            "//third_party/node/node_modules/typescript/lib/typescript.d.ts",
+            target_gen_dir),
     "/third_party/node/node_modules/@typescript-eslint/*|" +
         rebase_path("//third_party/node/node_modules/@typescript-eslint/*",
                     target_gen_dir),
