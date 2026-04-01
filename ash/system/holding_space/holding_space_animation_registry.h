@@ -52,7 +52,10 @@ class ASH_EXPORT HoldingSpaceAnimationRegistry
   std::unique_ptr<ProgressIndicatorAnimationDelegate>
       progress_indicator_animation_delegate_;
 
-  base::ScopedObservation<Shell, ShellObserver> shell_observation_{this};
+  // TODO(crbug.com/498093308): remove when the HoldingSpaceAnimationRegistry is
+  // no longer outliving the Shell it observes.
+  base::ScopedObservation<Shell, ShellObserver>::LeakedDanglingUntriaged
+      shell_observation_{this};
 };
 
 }  // namespace ash
