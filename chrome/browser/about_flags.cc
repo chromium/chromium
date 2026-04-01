@@ -783,16 +783,16 @@ const FeatureEntry::Choice kSafetyHubUnifiedPasswordsModuleChoices[] = {
      "SafetyHubLocalPasswordsModule, SafetyHubUnifiedPasswordsModule"},
 };
 
-const FeatureEntry::FeatureParam kChromeFindsAlwaysShowOptIn[] = {
-    {"always_show_opt_in_promo", "true"}};
-const FeatureEntry::FeatureParam kChromeFindsBypassCooldowns[] = {
+const FeatureEntry::FeatureParam kChromeFindsTestConfiguration[] = {
+    {"always_show_opt_in_promo", "true"},
     {"theme_cooldown_duration_in_days", "0"},
     {"finds_notification_schedule_start_time_minutes", "0"},
-    {"finds_notification_schedule_window_time_minutes", "1"}};
+    {"finds_notification_schedule_window_time_minutes", "1"},
+    {"model_execution_cooldown_duration_in_days", "0"},
+    {"finds_opt_in_promo_cooldown_in_days", "0"}};
 
 const FeatureEntry::FeatureVariation kChromeFindsVariations[] = {
-    {" - Always Show Opt-in", kChromeFindsAlwaysShowOptIn, nullptr},
-    {" - Bypass Cooldowns", kChromeFindsBypassCooldowns, nullptr}};
+    {" - Test Configuration", kChromeFindsTestConfiguration, nullptr}};
 
 const FeatureEntry::FeatureParam kPopularSitesRefreshUsParamArm1[] = {
     {"arm", "1"}};  // ntp_tiles::kPopularSitesRefreshUsArm.name
