@@ -354,7 +354,7 @@ SeedReaderWriter::SeedReaderWriter(
   if (!seed_file_dir.empty()) {
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
         GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
-        kSeedWriterHistogramSuffix);
+        /*interval=*/base::Seconds(1), kSeedWriterHistogramSuffix);
     old_seed_file_path_ = GetFilePath(seed_file_dir, old_seed_filename);
   }
   if (IsEligibleForSeedFileTrial(channel, seed_file_dir, entropy_providers)) {
