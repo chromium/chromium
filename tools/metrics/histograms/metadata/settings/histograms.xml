@@ -1538,7 +1538,8 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram
     name="Settings.TrackedPreferenceNullInitialized{TrackedPreferencesExternalValidators}"
-    enum="TrackedPreference" expires_after="2026-04-05">
+    enum="TrackedPreference" expires_after="2026-11-01">
+  <owner>zackhan@chromium.org</owner>
   <owner>anunoy@chromium.org</owner>
   <owner>junhao.huang@microsoft.com</owner>
   <summary>
