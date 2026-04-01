@@ -156,7 +156,6 @@ webview:not([hidden]) {
   height: 24px;
   display: flex;
   justify-content: space-between;
-  cursor: grab;
   -webkit-app-region: drag;
 }
 
