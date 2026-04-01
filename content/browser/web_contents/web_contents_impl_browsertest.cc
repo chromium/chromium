@@ -2683,13 +2683,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
           true,
           blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
 
-  // This triggers creating a NavigationRequest without a NavigationEntry. More
-  // specifically back() triggers creating a pending entry, and because back()
-  // does not complete, the reload() call results in a NavigationRequest with no
-  // NavigationEntry.
-  EXPECT_TRUE(
-      ExecJs(shell()->web_contents(), "history.back(); location.reload();"));
-
   base::test::TestFuture<net::test_server::HttpRequest> request_future;
 
   // Override the previous behavior for the path "/test.html" to also call
@@ -2698,6 +2691,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   handler.OnRequest("/test2.html")
       .RespondWith("text/html", "<html>")
       .SetValue(request_future);
+
+  // This triggers creating a NavigationRequest without a NavigationEntry. More
+  // specifically back() triggers creating a pending entry, and because back()
+  // does not complete, the reload() call results in a NavigationRequest with no
+  // NavigationEntry.
+  EXPECT_TRUE(
+      ExecJs(shell()->web_contents(), "history.back(); location.reload();"));
+
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   EXPECT_EQ(user_agent_override, request_future.Get().headers.at(
                                      net::HttpRequestHeaders::kUserAgent));
