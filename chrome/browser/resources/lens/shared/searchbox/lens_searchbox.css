@@ -1,0 +1,128 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --cr-searchbox-width: var(--cr-searchbox-min-width);
+  --cr-searchbox-border-radius: calc(0.5 * var(--cr-searchbox-height));
+  --cr-searchbox-icon-width: 26px;
+  --cr-searchbox-inner-icon-margin: 8px;
+  --cr-searchbox-voice-icon-offset: 16px;
+  --cr-searchbox-voice-search-button-width: 0px;
+  --cr-compose-button-width: 104px;
+  --cr-searchbox-icon-spacing: 11px;
+  border-radius: var(--cr-searchbox-border-radius);
+  font-size: var(--cr-searchbox-font-size, 16px);
+  height: var(--cr-searchbox-height);
+  width: var(--cr-searchbox-width);
+  z-index: 99;
+}
+
+/* Side panel searchbox should not have a shadow when dropdown isn't visible */
+:host(:not([dropdown-is-visible])) {
+  --cr-searchbox-shadow: none;
+}
+
+@media (forced-colors: active) {
+  :host {
+    border: 1px solid ActiveBorder;
+  }
+}
+
+:host([searchbox-lens-search-enabled_]) {
+  --cr-searchbox-voice-icon-offset: 53px;
+}
+
+#inputWrapper {
+  background-color: var(--color-searchbox-background);
+  border-radius: var(--cr-searchbox-border-radius);
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: var(--cr-searchbox-height);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+#input {
+  height: 100%;
+  width: 100%;
+}
+
+cr-searchbox-input::part(searchbox-input):focus::placeholder {
+  visibility: visible;
+}
+
+/* Search bubble realbox input color shouldn't change when dropdown is
+ * visible. */
+:host([dropdown-is-visible]) cr-searchbox-input::part(searchbox-input) {
+  background-color:
+      var(--color-bubble-searchbox-results-input-background,
+          --color-searchbox-results-background);
+}
+
+:host(:not([dropdown-is-visible]))
+    cr-searchbox-input::part(searchbox-input):focus {
+  background-color: var(--color-searchbox-background);
+}
+
+cr-searchbox-icon {
+  height: 100%;
+  padding-inline-end: 4px;
+  padding-inline-start: var(--cr-searchbox-icon-left-position);
+  position: relative;
+  top: var(--cr-searchbox-icon-top-position);
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  cr-searchbox-icon {
+    background-color: Highlight;
+    border-radius: 4px;
+  }
+}
+
+:host([compose-button-enabled][searchbox-lens-search-enabled_]) {
+  --cr-searchbox-voice-icon-offset:
+      calc(16px + 2 * var(--cr-searchbox-icon-spacing) +
+          var(--cr-searchbox-icon-width) + var(--cr-compose-button-width));
+}
+
+cr-searchbox-input::part(input-inner-container) {
+  min-height: 52px;
+}
+
+cr-searchbox-input::part(searchbox-input),
+cr-searchbox-icon,
+.searchbox-icon-button {
+  z-index: 100;
+}
+
+:host([searchbox-layout-mode='Compact'][compose-button-enabled]
+    [searchbox-lens-search-enabled_]) .searchbox-icon-button-container.lens {
+  inset-inline-end: calc(var(--cr-searchbox-icon-spacing)
+      + var(--cr-compose-button-width));
+}
+
+#thumbnailContainer {
+  align-self: center;
+  padding-inline: 10px;
+  z-index: 101;
+}
+
+#inputInnerContainer {
+  align-items: flex-start;
+  display: flex;
+  min-height: 48px;
+  position: relative;
+  width: 100%;
+}

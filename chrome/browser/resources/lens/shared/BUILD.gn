@@ -14,12 +14,20 @@ build_webui("build") {
 
   web_component_files = [ "searchbox_ghost_loader.ts" ]
 
-  ts_files = [ "searchbox_ghost_loader_browser_proxy.ts" ]
+  ts_files = [
+    "searchbox_ghost_loader_browser_proxy.ts",
+    "searchbox/lens_searchbox.ts",
+    "searchbox/lens_searchbox.html.ts",
+  ]
 
-  css_files = [ "searchbox_shared_style.css" ]
+  css_files = [
+    "searchbox_shared_style.css",
+    "searchbox/lens_searchbox.css",
+  ]
 
   ts_composite = true
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
