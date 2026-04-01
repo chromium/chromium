@@ -114,6 +114,7 @@
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
 #import "ios/public/provider/chrome/browser/url_rewriters/url_rewriters_api.h"
 #import "ios/web/common/features.h"
@@ -471,6 +472,13 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
     }
     if (MediaAPIUsageJavaScriptFeature::ShouldOverrideAPI()) {
       features.push_back(MediaAPIUsageJavaScriptFeature::GetInstance());
+    }
+  }
+  if (web::features::IsCobaltEnabled()) {
+    web::JavaScriptFeature* cobalt_feature =
+        ios::provider::GetCobaltJavascriptFeatureForProfile(profile);
+    if (cobalt_feature) {
+      features.push_back(cobalt_feature);
     }
   }
 
