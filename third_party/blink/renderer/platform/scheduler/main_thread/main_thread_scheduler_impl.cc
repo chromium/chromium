@@ -91,6 +91,10 @@ namespace scheduler {
 BASE_FEATURE(kBusyLoopAggressiveAfterCommittedLoad,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+namespace {
+constexpr base::TimeDelta kBusyLoopAggressiveTime = base::Milliseconds(500);
+}
+
 // When scrolling and the main thread is not expected to be blocking, decrease
 // its thread priority, so as not to contend with the actually display critical
 // threads.
@@ -2322,6 +2326,12 @@ void MainThreadSchedulerImpl::DidCommitProvisionalLoad(
   if (base::FeatureList::IsEnabled(kBusyLoopOnRendererMain) &&
       base::FeatureList::IsEnabled(kBusyLoopAggressiveAfterCommittedLoad)) {
     main_thread_only().last_committed_load_time = NowTicks();
+    // This will go back to the normal factor in the future.
+    control_task_queue_->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&MainThreadSchedulerImpl::MaybeSetBusyLoop,
+                       weak_factory_.GetWeakPtr()),
+        kBusyLoopAggressiveTime);
   }
 
   // If this either isn't a history inert commit or it's a reload then we must
@@ -2957,10 +2967,6 @@ void MainThreadSchedulerImpl::MaybeUpdatePolicyOnTaskCompleted(
     }
   }
 
-  if (!main_thread_only().last_committed_load_time.is_null()) {
-    needs_policy_update = true;
-  }
-
   RenderingPrioritizationState old_state =
       main_thread_only().main_frame_prioritization_state;
   UpdateRenderingPrioritizationStateOnTaskCompleted(queue, task_timing);
@@ -3213,7 +3219,7 @@ void MainThreadSchedulerImpl::MaybeSetBusyLoop() {
   if (busy_loop_scale_factor != 0.f &&
       !main_thread_only().last_committed_load_time.is_null()) {
     if (NowTicks() - main_thread_only().last_committed_load_time <
-        base::Milliseconds(500)) {
+        kBusyLoopAggressiveTime) {
       busy_loop_scale_factor = 1.5;
     } else {
       main_thread_only().last_committed_load_time = base::TimeTicks();
