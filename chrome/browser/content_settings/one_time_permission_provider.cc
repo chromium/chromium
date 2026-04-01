@@ -180,6 +180,14 @@ bool OneTimePermissionProvider::ResetLastVisitTime(
   return false;
 }
 
+bool OneTimePermissionProvider::SetAutorevocationBypassedByUser(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // Autorevocation does not include one-time permissions.
+  return false;
+}
+
 bool OneTimePermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

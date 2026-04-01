@@ -341,6 +341,12 @@ class HostContentSettingsMap : public content_settings::Observer,
                              const ContentSettingsPattern& secondary_pattern,
                              ContentSettingsType type);
 
+  // Sets the `autorevocation_bypassed_by_user` field for the given setting.
+  void SetAutorevocationBypassedByUser(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType type);
+
   // Updates the expiration to `lifetime + now()`, if `setting_to_match` is
   // nullopt or if it matches the rule's value. Returns the TimeDelta between
   // now and the setting's old expiration time if any setting was matched and

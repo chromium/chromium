@@ -1114,7 +1114,7 @@ TEST_F(PrefProviderTest, LastVisitedTimeStoredOnDisk) {
 
   RuleMetaData metadata_from_disk;
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+            TestUtils::GetContentSetting(&provider2, primary_url, primary_url,
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata_from_disk));
   EXPECT_EQ(metadata.last_visited(), metadata_from_disk.last_visited());
@@ -1166,6 +1166,79 @@ TEST_F(PrefProviderTest, LastVisitedTimeUpdating) {
                                          ContentSettingsType::GEOLOCATION,
                                          false, &metadata));
   EXPECT_EQ(metadata.last_visited(), base::Time());
+  provider.ShutdownOnUIThread();
+}
+
+TEST_F(PrefProviderTest, AutorevocationBypassedByUserStoredOnDisk) {
+  TestingProfile testing_profile;
+  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
+                        /*store_last_modified=*/true,
+                        /*restore_session=*/false);
+  GURL primary_url("http://example.com/");
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::GEOLOCATION,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
+  provider.SetAutorevocationBypassedByUser(primary_pattern, primary_pattern,
+                                           ContentSettingsType::GEOLOCATION);
+  RuleMetaData metadata;
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                         ContentSettingsType::GEOLOCATION,
+                                         false, &metadata));
+  EXPECT_TRUE(metadata.autorevocation_bypassed_by_user());
+
+  // Shutdown our provider and we should still have a setting present.
+  provider.ShutdownOnUIThread();
+  PrefProvider provider2(testing_profile.GetPrefs(), /*off_the_record=*/false,
+                         /*store_last_modified=*/true,
+                         /*restore_session=*/false);
+
+  RuleMetaData metadata_from_disk;
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(&provider2, primary_url, primary_url,
+                                         ContentSettingsType::GEOLOCATION,
+                                         false, &metadata_from_disk));
+  EXPECT_TRUE(metadata_from_disk.autorevocation_bypassed_by_user());
+
+  provider2.ShutdownOnUIThread();
+}
+
+TEST_F(PrefProviderTest, AutorevocationBypassedByUserUpdated) {
+  TestingProfile testing_profile;
+  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
+                        /*store_last_modified=*/true,
+                        /*restore_session=*/false);
+  base::SimpleTestClock clock;
+  clock.SetNow(base::Time::Now());
+  provider.SetClockForTesting(&clock);
+
+  GURL primary_url("http://example.com/");
+  ContentSettingsPattern primary_pattern =
+      ContentSettingsPattern::FromString("[*.]example.com");
+  ContentSettingConstraints constraints;
+
+  provider.SetWebsiteSetting(primary_pattern, primary_pattern,
+                             ContentSettingsType::GEOLOCATION,
+                             base::Value(CONTENT_SETTING_ALLOW), constraints);
+  RuleMetaData metadata;
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                         ContentSettingsType::GEOLOCATION,
+                                         false, &metadata));
+  EXPECT_FALSE(metadata.autorevocation_bypassed_by_user());
+
+  provider.SetAutorevocationBypassedByUser(primary_pattern, primary_pattern,
+                                           ContentSettingsType::GEOLOCATION);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                         ContentSettingsType::GEOLOCATION,
+                                         false, &metadata));
+  EXPECT_TRUE(metadata.autorevocation_bypassed_by_user());
+
   provider.ShutdownOnUIThread();
 }
 

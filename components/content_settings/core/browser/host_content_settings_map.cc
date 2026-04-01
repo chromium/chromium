@@ -910,6 +910,17 @@ void HostContentSettingsMap::ResetLastVisitedTime(
   }
 }
 
+void HostContentSettingsMap::SetAutorevocationBypassedByUser(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType type) {
+  for (content_settings::UserModifiableProvider* provider :
+       user_modifiable_providers_) {
+    provider->SetAutorevocationBypassedByUser(primary_pattern,
+                                              secondary_pattern, type);
+  }
+}
+
 void HostContentSettingsMap::UpdateLastVisitedTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,

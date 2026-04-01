@@ -671,6 +671,14 @@ bool NotificationChannelsProviderAndroid::UpdateLastVisitTime(
   return false;
 }
 
+bool NotificationChannelsProviderAndroid::SetAutorevocationBypassedByUser(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  // Autorevocation does not include this type.
+  return false;
+}
+
 std::optional<base::TimeDelta>
 NotificationChannelsProviderAndroid::RenewContentSetting(
     const GURL& primary_url,

@@ -50,6 +50,7 @@ const char kSettingKey[] = "setting";
 const char kLastModifiedKey[] = "last_modified";
 const char kLifetimeKey[] = "lifetime";
 const char kDecidedByRelatedWebsiteSets[] = "decided_by_related_website_sets";
+const char kAutorevocationBypassedByUser[] = "autorevocation_bypassed_by_user";
 
 const base::TimeDelta kLastUsedPermissionExpiration = base::Hours(24);
 
@@ -116,6 +117,12 @@ base::TimeDelta GetLifetime(const base::DictValue& dictionary) {
 // Will return false if no value exists for that key.
 bool GetDecidedByRelatedWebsiteSets(const base::DictValue& dictionary) {
   return dictionary.FindBool(kDecidedByRelatedWebsiteSets).value_or(false);
+}
+
+// Extract a bool from `dictionary[kAutorevocationBypassedByUser]`.
+// Will return false if no value exists for that key.
+bool GetAutorevocationBypassedByUser(const base::DictValue& dictionary) {
+  return dictionary.FindBool(kAutorevocationBypassedByUser).value_or(false);
 }
 
 // Extract a SessionModel from |dictionary[kSessionModelKey]|. Will return
@@ -366,6 +373,7 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
       base::Time last_modified;
       base::Time last_used;
       base::Time last_visited;
+      bool autorevocation_bypassed_by_user = false;
       if (!off_the_record_) {
         // Don't copy over timestamps for OTR profiles because some features
         // rely on this to differentiate inherited from fresh OTR permissions.
@@ -378,6 +386,8 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
           last_used = base::Time();
         }
         last_visited = GetLastVisit(settings_dictionary);
+        autorevocation_bypassed_by_user =
+            GetAutorevocationBypassedByUser(settings_dictionary);
       }
       DCHECK(IsValueAllowedForType(*value, content_type_))
           << value->DebugString() << " " << content_type_;
@@ -385,6 +395,8 @@ void ContentSettingsPref::ReadSettingsFromDictionary(
       metadata.set_last_modified(last_modified);
       metadata.set_last_used(last_used);
       metadata.set_last_visited(last_visited);
+      metadata.set_autorevocation_bypassed_by_user(
+          autorevocation_bypassed_by_user);
       metadata.SetExpirationAndLifetime(expiration, lifetime);
       metadata.set_session_model(session_model.value());
       metadata.set_decided_by_related_website_sets(
@@ -548,6 +560,11 @@ void ContentSettingsPref::UpdatePref(
         settings_dictionary->SetKey(
             kDecidedByRelatedWebsiteSets,
             base::Value(metadata.decided_by_related_website_sets()));
+      }
+      if (metadata.autorevocation_bypassed_by_user()) {
+        settings_dictionary->SetKey(
+            kAutorevocationBypassedByUser,
+            base::Value(metadata.autorevocation_bypassed_by_user()));
       }
     }
 

@@ -369,6 +369,22 @@ bool PrefProvider::UpdateLastVisitTime(
                           GetCoarseVisitedTime(clock_->Now()));
 }
 
+bool PrefProvider::SetAutorevocationBypassedByUser(
+    const ContentSettingsPattern& primary_pattern,
+    const ContentSettingsPattern& secondary_pattern,
+    ContentSettingsType content_type) {
+  return UpdateSetting(
+      content_type,
+      [&](const Rule& rule) -> bool {
+        return rule.primary_pattern == primary_pattern &&
+               rule.secondary_pattern == secondary_pattern;
+      },
+      [&](Rule& rule) -> bool {
+        rule.metadata.set_autorevocation_bypassed_by_user(true);
+        return true;
+      });
+}
+
 std::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,

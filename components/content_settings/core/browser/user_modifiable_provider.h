@@ -37,6 +37,12 @@ class UserModifiableProvider : public ObservableProvider {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type) = 0;
+  // Sets the `autorevocation_bypassed_by_user` field for the given setting.
+  // Returns true if the setting was found and updated.
+  virtual bool SetAutorevocationBypassedByUser(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type) = 0;
   // Updates the expiration time for the given setting, based on its lifetime.
   // (Only settings that have lifetimes may be renewed.) If `setting_to_match`
   // is nullopt, then the first rule with the appropriate patterns and type will
