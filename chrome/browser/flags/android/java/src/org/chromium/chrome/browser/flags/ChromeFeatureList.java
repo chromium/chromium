@@ -1521,6 +1521,13 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_SELF_OCCLUSION_TRACKING, "occlusion_state_forwarding", false);
 
+    public static final IntCachedFeatureParam
+            sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold =
+                    newIntCachedFeatureParam(
+                            ANDROID_SELF_OCCLUSION_TRACKING,
+                            "minimum_visibility_size_threshold",
+                            0);
+
     public static final IntCachedFeatureParam sBackgroundThreadPoolFieldTrialConfig =
             newIntCachedFeatureParam(BACKGROUND_THREAD_POOL_FIELD_TRIAL, "config", 4);
 
@@ -1829,6 +1836,7 @@ public abstract class ChromeFeatureList {
                     sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox,
                     sAndroidBottomToolbarV2ReverseOrderSuggestionsList,
                     sAndroidSelfOcclusionTrackingForwarding,
+                    sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold,
                     sAndroidThemeModuleForceDependencies,
                     sAndroidThemeResourceProviderForceLight,
                     sAndroidTipsNotificationsAlwaysShowOptInPromo,

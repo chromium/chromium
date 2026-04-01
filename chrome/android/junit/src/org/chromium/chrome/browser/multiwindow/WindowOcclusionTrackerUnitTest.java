@@ -35,7 +35,6 @@ import org.chromium.ui.display.DisplayAndroid;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -87,7 +86,7 @@ public class WindowOcclusionTrackerUnitTest {
         SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
         zOrder.put(DISPLAY_ID, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
-        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singleton(window));
+        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singletonList(window));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -102,7 +101,7 @@ public class WindowOcclusionTrackerUnitTest {
         SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
         zOrder.put(DISPLAY_ID, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
-        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singleton(window));
+        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singletonList(window));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -120,8 +119,7 @@ public class WindowOcclusionTrackerUnitTest {
         SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
         zOrder.put(DISPLAY_ID, Arrays.asList(window1, window2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
-        when(mZOrderTracker.getAllWindowAndroids())
-                .thenReturn(new HashSet<>(Arrays.asList(window1, window2)));
+        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Arrays.asList(window1, window2));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -140,7 +138,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
         when(mZOrderTracker.getAllWindowAndroids())
-                .thenReturn(new HashSet<>(Arrays.asList(bottomWindow, topWindow)));
+                .thenReturn(Arrays.asList(bottomWindow, topWindow));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -159,7 +157,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
         when(mZOrderTracker.getAllWindowAndroids())
-                .thenReturn(new HashSet<>(Arrays.asList(bottomWindow, topWindow)));
+                .thenReturn(Arrays.asList(bottomWindow, topWindow));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -181,7 +179,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow1, topWindow2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
         when(mZOrderTracker.getAllWindowAndroids())
-                .thenReturn(new HashSet<>(Arrays.asList(bottomWindow, topWindow1, topWindow2)));
+                .thenReturn(Arrays.asList(bottomWindow, topWindow1, topWindow2));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -199,7 +197,7 @@ public class WindowOcclusionTrackerUnitTest {
         SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
         zOrder.put(999, Collections.singletonList(window));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
-        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singleton(window));
+        when(mZOrderTracker.getAllWindowAndroids()).thenReturn(Collections.singletonList(window));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -227,7 +225,7 @@ public class WindowOcclusionTrackerUnitTest {
         zOrder.put(displayId2, Collections.singletonList(window2));
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
         when(mZOrderTracker.getAllWindowAndroids())
-                .thenReturn(new HashSet<>(Arrays.asList(bottomWindow1, topWindow1, window2)));
+                .thenReturn(Arrays.asList(bottomWindow1, topWindow1, window2));
 
         Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
 
@@ -277,5 +275,51 @@ public class WindowOcclusionTrackerUnitTest {
         mOcclusionTracker.onGlobalLayout();
 
         verify(window, never()).setOccluded(anyBoolean());
+    }
+
+    @Test
+    public void testVisibleDimensionThreshold() {
+        // Threshold of 10 pixels
+        ChromeFeatureList.sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold.setForTesting(
+                10);
+
+        // Recreate the test instance to grab the overridden threshold.
+        mOcclusionTracker = new WindowOcclusionTracker(mZOrderTracker);
+
+        // Bottom view: 100x100
+        View bottomView = createView(0, 0, 100, 100);
+        ActivityWindowAndroid bottomWindow = createWindowAndroid(bottomView);
+
+        // Top view: 100x91. Leaves 100x9 visible at the bottom. Height = 9.
+        // If threshold is 10, this should be occluded.
+        View topView1 = createView(0, 0, 100, 91);
+        ActivityWindowAndroid topWindow1 = createWindowAndroid(topView1);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow1));
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+        when(mZOrderTracker.getAllWindowAndroids())
+                .thenReturn(Arrays.asList(bottomWindow, topWindow1));
+
+        Map<ActivityWindowAndroid, Boolean> occlusionState = mOcclusionTracker.calculateOcclusion();
+        assertTrue(
+                "Window with visible height 9 should be occluded",
+                occlusionState.get(bottomWindow));
+
+        // Now test with visible height 10.
+        // Bottom view: 0,0 - 100,100
+        // Top view: 0,0 - 100,90. Visible rect: 0,90 - 100,100. Height = 10.
+        View topView2 = createView(0, 0, 100, 90);
+        ActivityWindowAndroid topWindow2 = createWindowAndroid(topView2);
+
+        zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow2));
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+        when(mZOrderTracker.getAllWindowAndroids())
+                .thenReturn(Arrays.asList(bottomWindow, topWindow2));
+
+        occlusionState = mOcclusionTracker.calculateOcclusion();
+        assertFalse(
+                "Window with visible height 10 should NOT be occluded",
+                occlusionState.get(bottomWindow));
     }
 }

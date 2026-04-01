@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.multiwindow;
 
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.RegionIterator;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -34,9 +35,14 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
     private static @Nullable WindowOcclusionTracker sInstance;
 
     private final WindowZOrderTracker mWindowZOrderTracker;
+    private final int mMinimumVisibilitySizeThreshold;
 
     @VisibleForTesting
     WindowOcclusionTracker(@Nullable WindowZOrderTracker windowZOrderTracker) {
+        mMinimumVisibilitySizeThreshold =
+                ChromeFeatureList.sAndroidSelfOcclusionTrackingMinimumVisibilitySizeThreshold
+                        .getValue();
+
         if (windowZOrderTracker == null) {
             mWindowZOrderTracker = new WindowZOrderTracker(this::forwardOcclusionState);
         } else {
@@ -210,9 +216,25 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
             // Add the view to the cumulative occluded region.
             cumulativeOccludedRegion.op(viewScreenRect, Region.Op.UNION);
 
-            // The window is fully occluded if its visible region is empty.
-            occlusionState.put(window, viewVisibleRegion.isEmpty());
+            occlusionState.put(window, !isNoticeablyVisible(viewVisibleRegion));
         }
+    }
+
+    private boolean isNoticeablyVisible(Region visibleRegion) {
+        RegionIterator iterator = new RegionIterator(visibleRegion);
+        Rect rect = new Rect();
+        while (iterator.next(rect)) {
+            if (rect.width() >= mMinimumVisibilitySizeThreshold
+                    && rect.height() >= mMinimumVisibilitySizeThreshold) {
+                return true;
+            }
+        }
+
+        if (DEBUG_LOGGING && !visibleRegion.isEmpty()) {
+            Log.i(TAG, "Setting partially visible view as occluded: %s", visibleRegion);
+        }
+
+        return false;
     }
 
     /**
