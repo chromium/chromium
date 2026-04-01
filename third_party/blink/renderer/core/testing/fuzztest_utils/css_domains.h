@@ -46,9 +46,78 @@ fuzztest::Domain<std::string> AnyCSSOverflowValue();
 // Examples: "mixed", "upright", "sideways"
 fuzztest::Domain<std::string> AnyCSSTextOrientationValue();
 
+// Generates CSS flex-direction values from the EFlexDirection enum.
+// Examples: "row", "column", "row-reverse", "column-reverse"
+fuzztest::Domain<std::string> AnyCSSFlexDirectionValue();
+
+// Generates reading-flow values from the EReadingFlow enum.
+fuzztest::Domain<std::string> AnyCSSReadingFlowValue();
+
 // Generates text-overflow values: either "clip"/"ellipsis" from the enum,
 // or custom string values generated from arbitrary strings.
 fuzztest::Domain<std::string> AnyCSSTextOverflowValue();
+
+// Generates CSS animation-direction values.
+// Examples: "normal", "reverse", "alternate", "alternate-reverse"
+fuzztest::Domain<std::string> AnyCSSAnimationDirectionValue();
+
+// Generates CSS animation-fill-mode values.
+// Examples: "none", "forwards", "backwards", "both"
+fuzztest::Domain<std::string> AnyCSSAnimationFillModeValue();
+
+// Generates CSS animation-play-state values: "running" or "paused".
+fuzztest::Domain<std::string> AnyCSSAnimationPlayStateValue();
+
+// Generates CSS animation-timing-function values.
+// Examples: "linear", "step-start", "steps(4, jump-none)",
+// "cubic-bezier(0.25, 0.1, 0.25, 1)", "linear(0, 0.5 50%, 1)"
+fuzztest::Domain<std::string> AnyCSSAnimationTimingFunctionValue();
+
+// Generates CSS animation-duration values as time strings.
+fuzztest::Domain<std::string> AnyCSSAnimationDurationValue();
+
+// Generates CSS animation-delay values as time strings, including negatives.
+fuzztest::Domain<std::string> AnyCSSAnimationDelayValue();
+
+// Generates CSS animation-iteration-count values.
+fuzztest::Domain<std::string> AnyCSSAnimationIterationCountValue();
+
+// Generates CSS animation-name values referencing predefined @keyframes
+// injected by the runner.
+fuzztest::Domain<std::string> AnyCSSAnimationNameValue();
+
+// Generates CSS scroll-marker-group values.
+// Examples: "none", "after", "before", "after tabs", "before links"
+fuzztest::Domain<std::string> AnyCSSScrollMarkerGroupValue();
+
+// Generates CSS scroll-target-group values: "none" or "auto".
+fuzztest::Domain<std::string> AnyCSSScrollTargetGroupValue();
+
+// Generates CSS scroll-snap-align values.
+// Examples: "none", "start", "center", "end"
+fuzztest::Domain<std::string> AnyCSSScrollSnapAlignValue();
+
+// Generates CSS scroll-snap-type values: "none" or "<axis> <strictness>".
+// Examples: "none", "x mandatory", "y proximity", "both mandatory"
+fuzztest::Domain<std::string> AnyCSSScrollSnapTypeValue();
+
+// Generates CSS opacity values as decimal strings.
+fuzztest::Domain<std::string> AnyCSSOpacityValue();
+
+// Generates CSS length values: numeric with units (px, %, em, vh, vw).
+fuzztest::Domain<std::string> AnyCSSLengthValue();
+
+// Generates CSS size values for width/height: lengths, sizing keywords
+// (auto, fit-content, min-content, max-content, stretch), or calc-size().
+fuzztest::Domain<std::string> AnyCSSSizeValue();
+
+// Generates CSS size values for max-width/max-height: like AnyCSSSizeValue
+// but uses none instead of auto.
+fuzztest::Domain<std::string> AnyCSSMaxSizeValue();
+
+// Generates CSS transform values: translate, scale, rotate, skew,
+// perspective, matrix, matrix3d, or none.
+fuzztest::Domain<std::string> AnyCSSTransformValue();
 
 // Generates a value that is appropriate for certain CSS properties.
 // It uses the utilities above and in the case of color-related properties,
