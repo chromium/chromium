@@ -229,6 +229,7 @@ source_set("ui_impl") {
     "contextual_tasks_ui.cc",
     "contextual_tasks_ui_service.cc",
     "contextual_tasks_ui_service_factory.cc",
+    "contextual_tasks_url_loader_factory_interceptor.cc",
     "contextual_tasks_url_loader_factory_interceptor.h",
     "entry_point_eligibility_manager.cc",
   ]
@@ -241,7 +242,6 @@ source_set("ui_impl") {
     sources += [
       "contextual_tasks_composebox_handler.cc",
       "contextual_tasks_panel_host_desktop.cc",
-      "contextual_tasks_url_loader_factory_interceptor.cc",
       "contextual_tasks_web_view.cc",
     ]
   }
@@ -279,6 +279,7 @@ source_set("ui_impl") {
     "//components/application_locale_storage",
     "//components/contextual_search:public",
     "//components/contextual_tasks/public:feature_list",
+    "//components/embedder_support:user_agent",
     "//components/keyed_service/core",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
@@ -286,6 +287,7 @@ source_set("ui_impl") {
     "//components/shared_highlighting/core/common",
     "//components/tabs:public",
     "//content/public/browser",
+    "//extensions/buildflags",
     "//google_apis",
     "//net",
   ]

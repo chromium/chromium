@@ -73,6 +73,9 @@
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/defaults.h"
@@ -528,9 +531,6 @@
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_url_loader_factory_interceptor.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
@@ -6564,16 +6564,16 @@ void ChromeContentBrowserClient::WillCreateURLLoaderFactory(
   }
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     contextual_tasks::MaybeInterceptURLLoaderFactory(frame, factory_builder);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_GUEST_VIEW) && !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#else   // !BUILDFLAG (ENABLE_EXTENSIONS_CORE)
   guest_view::MaybeInterceptURLLoaderFactoryForSlimWebView(
       frame, factory_builder, header_client);
-#endif
+#endif  // BUILDFLAG (ENABLE_EXTENSIONS_CORE)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   // WARNING: This must be the last interceptor in the chain as the proxying
   // URLLoaderFactory installed by this needs to be the one actually sending
