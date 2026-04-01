@@ -37,8 +37,11 @@ using ActivePrintManager = printing::PrintViewManagerBasic;
 
 PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          content::WebContents* web_contents,
-                         protocol::UberDispatcher* dispatcher)
-    : agent_host_(agent_host), web_contents_(web_contents->GetWeakPtr()) {
+                         protocol::UberDispatcher* dispatcher,
+                         bool is_trusted)
+    : agent_host_(agent_host),
+      web_contents_(web_contents->GetWeakPtr()),
+      is_trusted_(is_trusted) {
   protocol::Page::Dispatcher::wire(dispatcher, this);
 }
 
@@ -86,6 +89,11 @@ protocol::Response PageHandler::SetAdBlockingEnabled(bool enabled) {
 
 protocol::Response PageHandler::SetSPCTransactionMode(
     const protocol::String& mode) {
+  if (!is_trusted_) {
+    return protocol::Response::ServerError(
+        "Permission denied: Page.setSPCTransactionMode requires a trusted "
+        "client");
+  }
   if (!web_contents_)
     return protocol::Response::ServerError("No web contents to host a dialog.");
 
@@ -116,6 +124,11 @@ protocol::Response PageHandler::SetRPHRegistrationMode(
     const protocol::String& mode) {
   if (!web_contents_) {
     return protocol::Response::ServerError("No web contents to host a dialog.");
+  }
+  if (!is_trusted_) {
+    return protocol::Response::ServerError(
+        "Permission denied: Page.setRPHRegistrationMode requires a trusted "
+        "client");
   }
 
   custom_handlers::RphRegistrationMode rph_mode =

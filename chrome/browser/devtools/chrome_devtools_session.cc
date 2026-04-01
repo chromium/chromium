@@ -61,7 +61,8 @@ ChromeDevToolsSession::ChromeDevToolsSession(
     if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
         channel->GetClient()->IsTrusted()) {
       page_handler_ = std::make_unique<PageHandler>(
-          agent_host, agent_host->GetWebContents(), &dispatcher_);
+          agent_host, agent_host->GetWebContents(), &dispatcher_,
+          channel->GetClient()->IsTrusted());
     }
     if (IsDomainAvailableToUntrustedClient<SecurityHandler>() ||
         channel->GetClient()->IsTrusted()) {

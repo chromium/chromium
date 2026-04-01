@@ -31,7 +31,8 @@ class PageHandler : public protocol::Page::Backend {
  public:
   PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
               content::WebContents* web_contents,
-              protocol::UberDispatcher* dispatcher);
+              protocol::UberDispatcher* dispatcher,
+              bool is_trusted);
 
   PageHandler(const PageHandler&) = delete;
   PageHandler& operator=(const PageHandler&) = delete;
@@ -99,6 +100,7 @@ class PageHandler : public protocol::Page::Backend {
   base::WeakPtr<content::WebContents> web_contents_;
 
   bool enabled_ = false;
+  const bool is_trusted_;
 
   base::WeakPtrFactory<PageHandler> weak_ptr_factory_{this};
 };
