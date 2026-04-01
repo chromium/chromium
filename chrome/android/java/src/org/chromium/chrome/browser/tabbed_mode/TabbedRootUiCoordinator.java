@@ -201,6 +201,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
+import org.chromium.chrome.browser.ui.app_rating.AppRatingPromoController;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
@@ -2201,6 +2202,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             UserEducationUtils.recordOptionalPromoType(OptionalPromoType.APP_LANGUAGE_PROMO);
             return true;
         }
+
+        if (AppRatingPromoController.maybeShowPromo(profile, mActivity)) {
+            UserEducationUtils.recordOptionalPromoType(OptionalPromoType.APP_RATING_PROMPT);
+            return true;
+        }
+
         UserEducationUtils.recordOptionalPromoType(OptionalPromoType.NONE_SHOWN);
         return false;
     }

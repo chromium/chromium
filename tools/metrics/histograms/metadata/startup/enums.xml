@@ -141,6 +141,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Fullscreen Signin Promo"/>
   <int value="4" label="Default Browser Promo"/>
   <int value="5" label="App Language Promo"/>
+  <int value="6" label="App Rating Prompt"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/user_education/java/src/org/chromium/chrome/browser/user_education/UserEducationUtils.java:OptionalPromoType) -->

@@ -36,40 +36,49 @@ public class AppRatingPromoController {
     private final WeakReference<Activity> mActivityRef;
     private @Nullable Tracker mTracker;
 
-    public AppRatingPromoController(Profile profile, Activity activity) {
+    private AppRatingPromoController(Profile profile, Activity activity) {
         mProfile = profile;
         mActivityRef = new WeakReference<>(activity);
     }
 
-    /** Entry point to potentially trigger the app rating prompt. */
-    public void maybeShowPromo() {
+    /**
+     * Entry point to potentially trigger the app rating prompt.
+     *
+     * @param profile The current user profile.
+     * @param activity The current activity.
+     * @return Whether we launched an asynchronous process to check the segmentation result and show
+     *     the promo if the user is eligible.
+     */
+    public static boolean maybeShowPromo(Profile profile, Activity activity) {
         if (!ChromeFeatureList.sAndroidAppRatingPrompt.isEnabled()
-                || !UserPrefs.areNativePrefsLoaded(mProfile)) {
-            return;
+                || !UserPrefs.areNativePrefsLoaded(profile)) {
+            return false;
         }
 
         // Bypasses all eligibility checks (Segmentation, prefs, etc.) for manual QA.
         if (ChromeFeatureList.sAndroidAppRatingPromptBypassChecks.getValue()) {
-            Activity activity = mActivityRef.get();
             if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
-                triggerAppRatingReviewFlow(activity);
+                triggerAppRatingReviewFlow(activity, profile, null);
             }
-            return;
+            return true;
         }
 
         // Ensure the prompt is only shown once
-        if (UserPrefs.get(mProfile).getBoolean(Pref.APP_RATING_PROMPT_SHOWN)) {
-            return;
+        if (UserPrefs.get(profile).getBoolean(Pref.APP_RATING_PROMPT_SHOWN)) {
+            return false;
         }
 
-        mTracker = TrackerFactory.getTrackerForProfile(mProfile);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         // Check if the 72-hour cooldown has passed (without actually claiming the UI yet).
         // This fails fast to avoid waking up the Segmentation Service unnecessarily.
-        if (!mTracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
-            return;
+        if (!tracker.wouldTriggerHelpUi(FeatureConstants.APP_RATING_PROMPT_FEATURE)) {
+            return false;
         }
 
-        checkSegmentationResult();
+        AppRatingPromoController controller = new AppRatingPromoController(profile, activity);
+        controller.mTracker = tracker;
+        controller.checkSegmentationResult();
+        return true;
     }
 
     /** Queries the Segmentation Platform for the user's engagement level. */
@@ -113,25 +122,26 @@ public class AppRatingPromoController {
             return;
         }
 
-        triggerAppRatingReviewFlow(activity);
+        triggerAppRatingReviewFlow(activity, mProfile, mTracker);
     }
 
-    private void triggerAppRatingReviewFlow(Activity activity) {
+    private static void triggerAppRatingReviewFlow(
+            Activity activity, Profile profile, @Nullable Tracker tracker) {
         // The Play Store In-App Review API is a black box that fails silently if the user has
         // already rated the app or seen the prompt too recently.
         // It does not inform us if the UI was actually shown.
         // To strictly avoid spamming users, we record the attempt as a success.
-        UserPrefs.get(mProfile).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
+        UserPrefs.get(profile).setBoolean(Pref.APP_RATING_PROMPT_SHOWN, true);
         AppRatingManager manager = AppRatingManagerFactory.create();
         manager.requestAndShowReviewFlow(
                 activity,
                 () -> {
                     // This callback only indicates that the API flow has finished (or failed
                     // silently). It does NOT mean the user saw the dialog or provided a rating.
-                    // TODO(crbug.com/493340627): Log or update metrics */
-                    if (mTracker != null) {
+                    // TODO(crbug.com/493340627): Log or update metrics
+                    if (tracker != null) {
                         // Tell the tracker we're done so it releases the UI lock.
-                        mTracker.dismissed(FeatureConstants.APP_RATING_PROMPT_FEATURE);
+                        tracker.dismissed(FeatureConstants.APP_RATING_PROMPT_FEATURE);
                     }
                 });
     }

@@ -25,7 +25,8 @@ public class UserEducationUtils {
         OptionalPromoType.PWA_RESTORE_PROMO,
         OptionalPromoType.FULLSCREEN_SIGNIN_PROMO,
         OptionalPromoType.DEFAULT_BROWSER_PROMO,
-        OptionalPromoType.APP_LANGUAGE_PROMO
+        OptionalPromoType.APP_LANGUAGE_PROMO,
+        OptionalPromoType.APP_RATING_PROMPT
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface OptionalPromoType {
@@ -35,7 +36,8 @@ public class UserEducationUtils {
         int FULLSCREEN_SIGNIN_PROMO = 3;
         int DEFAULT_BROWSER_PROMO = 4;
         int APP_LANGUAGE_PROMO = 5;
-        int NUM_ENTRIES = 6;
+        int APP_RATING_PROMPT = 6;
+        int NUM_ENTRIES = 7;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:OptionalPromoType)
