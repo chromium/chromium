@@ -40,13 +40,12 @@ void HandleWalletUpsertResponse(
 std::string GetWalletManagementURL(const EntityInstance& entity);
 
 // Logs a `sync_pb::UserConsentTypes::WalletPrivatePassConsent` with
-// `ui_string_ids` and `clicked_button_string_id` as its consent details to the
-// `client`'s ConsentAuditor.
+// `consent_string_id` and `clicked_button_string_id` as its consent details to
+// the `client`'s ConsentAuditor.
 // This is required when saving a new Wallet private pass, either through
-// settings or on import.
-// Returns the session ID identifying the consent logged.
+// settings or on import. Returns the session ID identifying the consent logged.
 consent_auditor::ConsentAuditor::SessionId RecordWalletPrivatePassConsent(
-    const std::vector<int>& ui_string_ids,
+    int consent_string_id,
     int clicked_button_string_id,
     AutofillClient& client);
 

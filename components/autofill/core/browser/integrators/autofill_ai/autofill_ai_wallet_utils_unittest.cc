@@ -269,8 +269,8 @@ TEST_F(AutofillAiWalletUtilsTest, RecordWalletPrivatePassConsent) {
                       SaveArg<2>(&consent)));
 
   consent_auditor::ConsentAuditor::SessionId returned_session_id =
-      RecordWalletPrivatePassConsent(/*ui_string_ids=*/{1, 2},
-                                     /*clicked_button_string_id=*/3,
+      RecordWalletPrivatePassConsent(/*consent_string_id=*/1,
+                                     /*clicked_button_string_id=*/2,
                                      autofill_client());
   // Expect that the consent details are populated correctly and that the same
   // session ID passed to the ConsentAuditor is returned;
@@ -281,8 +281,7 @@ TEST_F(AutofillAiWalletUtilsTest, RecordWalletPrivatePassConsent) {
   EXPECT_EQ(session_id, returned_session_id);
   sync_pb::UserConsentTypes::WalletPrivatePassConsent expected_consent;
   expected_consent.mutable_description_grd_ids()->Add(1);
-  expected_consent.mutable_description_grd_ids()->Add(2);
-  expected_consent.set_confirmation_grd_id(3);
+  expected_consent.set_confirmation_grd_id(2);
   EXPECT_THAT(consent, base::test::EqualsProto(expected_consent));
 }
 

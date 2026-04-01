@@ -416,11 +416,13 @@ void AutofillAiManager::HandlePromptResult(
         // doesn't require a valid `session_id`.
         if (base::FeatureList::IsEnabled(
                 wallet::features::kWalletApiPrivatePassesConsent)) {
-          // To accept an import, the user needs to click a confirmation button.
+          // Wallet private pass save/migrate prompts include a consent that the
+          // user needs to accept to proceed.
+          CHECK(ui_context.consent_string_id.has_value());
           CHECK(ui_context.clicked_button_string_id.has_value());
           session_id = RecordWalletPrivatePassConsent(
-              ui_context.ui_string_ids, *ui_context.clicked_button_string_id,
-              *client_);
+              *ui_context.consent_string_id,
+              *ui_context.clicked_button_string_id, *client_);
         }
         wallet_manager->SaveWalletEntityInstance(entity, session_id,
                                                  std::move(callback));

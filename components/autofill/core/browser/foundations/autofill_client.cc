@@ -56,24 +56,6 @@ AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
 AutofillClient::PopupOpenArgs& AutofillClient::PopupOpenArgs::operator=(
     AutofillClient::PopupOpenArgs&&) = default;
 
-AutofillClient::EntityImportUIContext::EntityImportUIContext() = default;
-AutofillClient::EntityImportUIContext::EntityImportUIContext(
-    std::vector<int> ui_string_ids,
-    std::optional<int> clicked_button_string_id)
-    : ui_string_ids(std::move(ui_string_ids)),
-      clicked_button_string_id(clicked_button_string_id) {}
-AutofillClient::EntityImportUIContext::EntityImportUIContext(
-    const AutofillClient::EntityImportUIContext&) = default;
-AutofillClient::EntityImportUIContext::EntityImportUIContext(
-    AutofillClient::EntityImportUIContext&&) = default;
-AutofillClient::EntityImportUIContext&
-AutofillClient::EntityImportUIContext::operator=(
-    const AutofillClient::EntityImportUIContext&) = default;
-AutofillClient::EntityImportUIContext&
-AutofillClient::EntityImportUIContext::operator=(
-    AutofillClient::EntityImportUIContext&&) = default;
-AutofillClient::EntityImportUIContext::~EntityImportUIContext() = default;
-
 version_info::Channel AutofillClient::GetChannel() const {
   return version_info::Channel::UNKNOWN;
 }
