@@ -341,7 +341,6 @@ void RemoteDisplaySessionManager::OnRemoteDisplayChanged(
   RemoteDisplaySession& session = session_it->second;
   session.session_info = std::nullopt;
   session.user_info = std::nullopt;
-  session.environment_variables.clear();
   if (display.session_id.empty()) {
     delegate_->OnRemoteDisplayChanged(display_name, display_info);
     return;
@@ -480,90 +479,8 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
     LOG(ERROR) << user_info_expected.error();
   }
 
-  FetchSystemdEnvironmentVariables(display_name, display_path,
-                                   session.session_info->username);
-}
-
-void RemoteDisplaySessionManager::FetchSystemdEnvironmentVariables(
-    const std::string& display_name,
-    const gvariant::ObjectPath& display_path,
-    const std::string& username) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::FilePath exe_path;
-  if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
-    LOG(ERROR) << "Failed to get the current executable path.";
-    session_info_queries_blocking_startup_.erase(display_path);
-    HandleSessionInfoQueriesBlockingStartup();
-    return;
-  }
-  base::CommandLine command_line(exe_path);
-  command_line.AppendSwitchASCII(kProcessTypeSwitchName,
-                                 kProcessTypeUserSystemdEnv);
-  command_line.AppendSwitchASCII(kSystemdUserEnvUsernameSwitchName, username);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(
-          [](const base::CommandLine& command_line) {
-            std::string output;
-            int exit_code;
-            if (!base::GetAppOutputWithExitCode(command_line, &output,
-                                                &exit_code)) {
-              exit_code = -1;  // Launch failure.
-            }
-            if (exit_code != EXIT_SUCCESS) {
-              LOG(ERROR) << "User systemd environment helper process returned "
-                            "exit code: "
-                         << exit_code;
-              return std::string{};
-            }
-            HOST_LOG << "Successfully fetched systemd environment variable.";
-            return output;
-          },
-          command_line),
-      base::BindOnce(
-          &RemoteDisplaySessionManager::OnGetUserSystemdEnvironmentResult,
-          weak_ptr_factory_.GetWeakPtr(), display_name, display_path));
-}
-
-void RemoteDisplaySessionManager::OnGetUserSystemdEnvironmentResult(
-    const std::string& display_name,
-    const gvariant::ObjectPath& display_path,
-    const std::string& output) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (output.empty()) {
-    // Failed to get environment variables. Logged above.
-  } else {
-    auto remote_display_it = remote_displays_.find(display_name);
-    if (remote_display_it == remote_displays_.end()) {
-      LOG(WARNING) << "Remote display " << display_name << " not found.";
-    } else {
-      auto& remote_display_info = remote_display_it->second;
-      auto& session = remote_display_info.sessions[display_path];
-      auto result =
-          base::JSONReader::Read(output, base::JSON_ALLOW_TRAILING_COMMAS);
-      if (!result.has_value() || !result->is_dict()) {
-        LOG(ERROR)
-            << "Failed to parse user systemd environment JSON for display "
-            << display_name << ": " << display_path.value();
-      } else {
-        for (auto [key, value] : result->GetDict()) {
-          if (!value.is_string()) {
-            LOG(WARNING) << "Non-string value in systemd environment for key: "
-                         << key;
-            continue;
-          }
-          session.environment_variables[std::move(key)] =
-              std::move(value).TakeString();
-        }
-
-        if (start_state_ == StartState::STARTED) {
-          delegate_->OnRemoteDisplayChanged(display_name, remote_display_info);
-        }
-      }
-    }
+  if (start_state_ == StartState::STARTED) {
+    delegate_->OnRemoteDisplayChanged(display_name, remote_display_info);
   }
 
   session_info_queries_blocking_startup_.erase(display_path);

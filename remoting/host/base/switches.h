@@ -38,7 +38,6 @@ extern const char kProcessTypeFileChooser[];
 extern const char kProcessTypeUrlForwarderConfigurator[];
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 extern const char kProcessTypeXSessionChooser[];
-extern const char kProcessTypeUserSystemdEnv[];
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 extern const char kEvaluateCapabilitySwitchName[];
@@ -46,9 +45,6 @@ extern const char kEvaluateCapabilitySwitchName[];
 #if BUILDFLAG(IS_LINUX)
 // Used to record client sessions to wtmpd.
 extern const char kEnableWtmpdb[];
-
-// Username of the user to query the systemd environment variables for.
-extern const char kSystemdUserEnvUsernameSwitchName[];
 #endif
 
 // Indicates whether Corp Messaging should be enabled for signaling.

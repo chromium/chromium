@@ -56,13 +56,6 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
     // Information about the remote display's user. This is null if no session
     // has been created for the remote display yet.
     std::optional<PasswdUserInfo> user_info;
-
-    // Environment variables for launching processes under the remote display's
-    // current systemd login session. Empty if the session is not ready yet.
-    // Note that it is possible that `session_info` has value while this map is
-    // empty, in which case you should wait for OnRemoteDisplayChanged() to be
-    // called.
-    base::EnvironmentMap environment_variables;
   };
 
   struct RemoteDisplayInfo {
