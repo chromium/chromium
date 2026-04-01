@@ -12,19 +12,5 @@
 #include "extra_include.h"
 
 // Relevant jobject subclasses:
-#ifndef _JNI_ZERO_org_jni_zero_JTinySample_DEFINED
-namespace org::jni_zero {
-class _JTinySample : public _jobject {};
-using JTinySample = _JTinySample*;
-}
-#define _JNI_ZERO_org_jni_zero_JTinySample_DEFINED
-#endif
-
-// Alias type into the global namespace.
-#ifndef _JNI_ZERO_JTinySample_DEFINED
-using ::org::jni_zero::JTinySample;
-#define _JNI_ZERO_JTinySample_DEFINED
-#endif
-
 
 #endif  // org_jni_1zero_TinySample_SHARED_JNI

@@ -376,6 +376,10 @@ class BaseTest(unittest.TestCase):
 
 @unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class Tests(BaseTest):
+
+  def testGenerics(self):
+    self._TestEndToEndGeneration(['SampleGenerics.java'], srcjar=True)
+
   def testNonProxy(self):
     self._TestEndToEndGeneration(['SampleNonProxy.java'])
 
@@ -391,7 +395,6 @@ class Tests(BaseTest):
     self._TestEndToEndGeneration(['JavapClass.class'])
 
   def testJavaUtilList(self):
-    # Taken from android.jar's java/util/List.class.
     self._TestEndToEndGeneration(['List.class'])
 
   def testUniqueAnnotations(self):

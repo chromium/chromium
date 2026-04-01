@@ -147,6 +147,13 @@ class StringBuilder:
         self(f'}}  // namespace{value}\n')
 
   @contextlib.contextmanager
+  def ifndef(self, macro_name):
+    self(f'#ifndef {macro_name}\n')
+    self(f'#define {macro_name}\n')
+    yield
+    self('#endif\n\n')
+
+  @contextlib.contextmanager
   def block(self, *, indent=2, after=None, no_trailing_newline=False):
     self(' {\n')
     with self.indent(indent):
@@ -210,6 +217,15 @@ def sanitize_cpp_keywords(value):
   if value in _CPP_RESERVED_KEYWORDS:
     return value + '_'
   return value
+
+
+def add_note(e, note):
+  """Adds a suffix to an exception message."""
+  note = f' ({note})'
+  if e.args and isinstance(e.args[0], str):
+    e.args = (e.args[0] + note, *e.args[1:])
+  else:
+    e.args = e.args + (note, )
 
 
 @contextlib.contextmanager

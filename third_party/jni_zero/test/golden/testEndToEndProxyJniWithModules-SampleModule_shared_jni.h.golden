@@ -12,19 +12,5 @@
 #include "extra_include.h"
 
 // Relevant jobject subclasses:
-#ifndef _JNI_ZERO_org_jni_zero_JSampleModule_DEFINED
-namespace org::jni_zero {
-class _JSampleModule : public _jobject {};
-using JSampleModule = _JSampleModule*;
-}
-#define _JNI_ZERO_org_jni_zero_JSampleModule_DEFINED
-#endif
-
-// Alias type into the global namespace.
-#ifndef _JNI_ZERO_JSampleModule_DEFINED
-using ::org::jni_zero::JSampleModule;
-#define _JNI_ZERO_JSampleModule_DEFINED
-#endif
-
 
 #endif  // org_jni_1zero_SampleModule_SHARED_JNI

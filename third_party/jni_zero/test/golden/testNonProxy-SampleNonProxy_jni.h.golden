@@ -42,11 +42,6 @@
 //     const jni_zero::JavaRef<jstring>& title,
 //     const jni_zero::JavaRef<::java::lang::JInteger>& visits);
 //
-// static void JNI_SampleNonProxy_CreateHistoricalTabFromState(
-//     JNIEnv* env,
-//     const jni_zero::JavaRef<JArray<int8_t>>& state,
-//     int32_t tabIndex);
-//
 // static void JNI_SampleNonProxy_Destroy(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
@@ -56,16 +51,6 @@
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     const jni_zero::JavaRef<jstring>& find);
-//
-// static jni_zero::ScopedJavaLocalRef<JArray<jstring>> JNI_SampleNonProxy_GetAutofillProfileGUIDs(
-//     JNIEnv* env);
-//
-// static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(
-//     JNIEnv* env,
-//     const jni_zero::JavaRef<jstring>& url);
-//
-// static jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleNonProxy_OnFrameAvailableListener> JNI_SampleNonProxy_GetInnerClass(
-//     JNIEnv* env);
 //
 // static jni_zero::ScopedJavaLocalRef<JArray<int8_t>> JNI_SampleNonProxy_GetStateAsByteArray(
 //     JNIEnv* env,
@@ -84,10 +69,6 @@
 //
 // static int32_t JNI_SampleNonProxy_Init(JNIEnv* env, const jni_zero::JavaRef<jobject>& jcaller);
 //
-// static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleNonProxy_MessWithJavaException(
-//     JNIEnv* env,
-//     const jni_zero::JavaRef<jthrowable>& e);
-//
 // static jni_zero::ScopedJavaLocalRef<::android::graphics::JBitmap> JNI_SampleNonProxy_QueryBitmap(
 //     JNIEnv* env,
 //     const jni_zero::JavaRef<jobject>& jcaller,
@@ -102,6 +83,25 @@
 //     const jni_zero::JavaRef<jobject>& jcaller,
 //     int32_t sessionId,
 //     const jni_zero::JavaRef<JArray<jstring>>& results);
+//
+// static void JNI_SampleNonProxy_CreateHistoricalTabFromState(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<JArray<int8_t>>& state,
+//     int32_t tabIndex);
+//
+// static jni_zero::ScopedJavaLocalRef<JArray<jstring>> JNI_SampleNonProxy_GetAutofillProfileGUIDs(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jstring>& url);
+//
+// static jni_zero::ScopedJavaLocalRef<::org::jni_zero::JSampleNonProxy_OnFrameAvailableListener> JNI_SampleNonProxy_GetInnerClass(
+//     JNIEnv* env);
+//
+// static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleNonProxy_MessWithJavaException(
+//     JNIEnv* env,
+//     const jni_zero::JavaRef<jthrowable>& e);
 //
 
 // Triggers a compiler warning if DEFINE_JNI(SampleNonProxy) is forgotten (requires -Wunused-function).
@@ -253,31 +253,6 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
     return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState( \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller,                                                                              \
-      jbyteArray state,                                                                            \
-      int32_t tabIndex) {                                                                          \
-    auto state_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                           \
-        static_cast<JArray<int8_t>>(state));                                                       \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
-        return JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...); \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env, state_ref, tabIndex); }) {                        \
-        return func_wrapper(env, state_ref, tabIndex);                                             \
-      } else if constexpr (requires { func_wrapper(state_ref, tabIndex); }) {                      \
-        return func_wrapper(state_ref, tabIndex);                                                  \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<int8_t>>&, int32_t)\nSee SampleNonProxy_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    dependent_context(0);                                                                          \
-  }                                                                                                \
-                                                                                                   \
   JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(                   \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
@@ -338,75 +313,6 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
     };                                                                                             \
     auto return_value = dependent_context(0);                                                      \
     return return_value;                                                                           \
-  }                                                                                                \
-                                                                                                   \
-  JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs( \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller) {                                                                            \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...)) { \
-        return JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...);  \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env); }) {                                             \
-        return func_wrapper(env);                                                                  \
-      } else if constexpr (requires { func_wrapper(); }) {                                         \
-        return func_wrapper();                                                                     \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetAutofillProfileGUIDs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
-  }                                                                                                \
-                                                                                                   \
-  JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(   \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller,                                                                              \
-      jstring url) {                                                                               \
-    auto url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                    \
-        url);                                                                                      \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...)) {   \
-        return JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...);     \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env, url_ref); }) {                                    \
-        return func_wrapper(env, url_ref);                                                         \
-      } else if constexpr (requires { func_wrapper(url_ref); }) {                                  \
-        return func_wrapper(url_ref);                                                              \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetDomainAndRegistry() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
-  }                                                                                                \
-                                                                                                   \
-  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(          \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller) {                                                                            \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...)) {          \
-        return JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...);            \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env); }) {                                             \
-        return func_wrapper(env);                                                                  \
-      } else if constexpr (requires { func_wrapper(); }) {                                         \
-        return func_wrapper();                                                                     \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_GetInnerClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
   JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray( \
@@ -536,31 +442,6 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
     return return_value;                                                                           \
   }                                                                                                \
                                                                                                    \
-  JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException( \
-      JNIEnv* env,                                                                                 \
-      jclass jcaller,                                                                              \
-      jthrowable e) {                                                                              \
-    auto e_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,                                   \
-        e);                                                                                        \
-    /* Lambda required to make "if constexpr" work properly. */                                    \
-    auto dependent_context = [&](auto) {                                                           \
-      /* Lambda required to disambiguate overloads. */                                             \
-      auto func_wrapper = [&](auto&&... args) ->                                                   \
-      decltype(JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...)) {  \
-        return JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...);    \
-      };                                                                                           \
-      if constexpr (requires { func_wrapper(env, e_ref); }) {                                      \
-        return func_wrapper(env, e_ref);                                                           \
-      } else if constexpr (requires { func_wrapper(e_ref); }) {                                    \
-        return func_wrapper(e_ref);                                                                \
-      } else {                                                                                     \
-        static_assert(false, "JNI_SampleNonProxy_MessWithJavaException() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jthrowable>&)\nSee SampleNonProxy_jni.h for an example."); \
-      }                                                                                            \
-    };                                                                                             \
-    auto return_value = dependent_context(0);                                                      \
-    return return_value.ReleaseLocal();                                                            \
-  }                                                                                                \
-                                                                                                   \
   JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(            \
       JNIEnv* env,                                                                                 \
       jobject jcaller,                                                                             \
@@ -659,6 +540,125 @@ static void YouForgotToCallMacro_DEFINE_JNI_SampleNonProxy() {}
       }                                                                                            \
     };                                                                                             \
     dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jbyteArray state,                                                                            \
+      int32_t tabIndex) {                                                                          \
+    auto state_ref = jni_zero::JavaRef<JArray<int8_t>>::CreateLeaky(env,                           \
+        static_cast<JArray<int8_t>>(state));                                                       \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleNonProxy_CreateHistoricalTabFromState(std::forward<decltype(args)>(args)...); \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, state_ref, tabIndex); }) {                        \
+        return func_wrapper(env, state_ref, tabIndex);                                             \
+      } else if constexpr (requires { func_wrapper(state_ref, tabIndex); }) {                      \
+        return func_wrapper(state_ref, tabIndex);                                                  \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_CreateHistoricalTabFromState() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<JArray<int8_t>>&, int32_t)\nSee SampleNonProxy_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    dependent_context(0);                                                                          \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...)) { \
+        return JNI_SampleNonProxy_GetAutofillProfileGUIDs(std::forward<decltype(args)>(args)...);  \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetAutofillProfileGUIDs() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(   \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jstring url) {                                                                               \
+    auto url_ref = jni_zero::JavaRef<jstring>::CreateLeaky(env,                                    \
+        url);                                                                                      \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...)) {   \
+        return JNI_SampleNonProxy_GetDomainAndRegistry(std::forward<decltype(args)>(args)...);     \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, url_ref); }) {                                    \
+        return func_wrapper(env, url_ref);                                                         \
+      } else if constexpr (requires { func_wrapper(url_ref); }) {                                  \
+        return func_wrapper(url_ref);                                                              \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetDomainAndRegistry() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jstring>&)\nSee SampleNonProxy_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(          \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller) {                                                                            \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...)) {          \
+        return JNI_SampleNonProxy_GetInnerClass(std::forward<decltype(args)>(args)...);            \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env); }) {                                             \
+        return func_wrapper(env);                                                                  \
+      } else if constexpr (requires { func_wrapper(); }) {                                         \
+        return func_wrapper();                                                                     \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_GetInnerClass() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: ()\nSee SampleNonProxy_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
+  }                                                                                                \
+                                                                                                   \
+  JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException( \
+      JNIEnv* env,                                                                                 \
+      jclass jcaller,                                                                              \
+      jthrowable e) {                                                                              \
+    auto e_ref = jni_zero::JavaRef<jthrowable>::CreateLeaky(env,                                   \
+        e);                                                                                        \
+    /* Lambda required to make "if constexpr" work properly. */                                    \
+    auto dependent_context = [&](auto) {                                                           \
+      /* Lambda required to disambiguate overloads. */                                             \
+      auto func_wrapper = [&](auto&&... args) ->                                                   \
+      decltype(JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...)) {  \
+        return JNI_SampleNonProxy_MessWithJavaException(std::forward<decltype(args)>(args)...);    \
+      };                                                                                           \
+      if constexpr (requires { func_wrapper(env, e_ref); }) {                                      \
+        return func_wrapper(env, e_ref);                                                           \
+      } else if constexpr (requires { func_wrapper(e_ref); }) {                                    \
+        return func_wrapper(e_ref);                                                                \
+      } else {                                                                                     \
+        static_assert(false, "JNI_SampleNonProxy_MessWithJavaException() is missing or has incorrect signature.\nIt should accept an optional JNIEnv* parameter as well as rvalues of the given types: (const jni_zero::JavaRef<jthrowable>&)\nSee SampleNonProxy_jni.h for an example."); \
+      }                                                                                            \
+    };                                                                                             \
+    auto return_value = dependent_context(0);                                                      \
+    return return_value.ReleaseLocal();                                                            \
   }                                                                                                \
                                                                                                    \
                                                                                                    \

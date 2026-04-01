@@ -13,101 +13,96 @@
 
 // Relevant jobject subclasses:
 #ifndef _JNI_ZERO_java_lang_JStringBuilder_DEFINED
+#define _JNI_ZERO_java_lang_JStringBuilder_DEFINED
 namespace java::lang {
 class _JStringBuilder : public _jobject {};
 using JStringBuilder = _JStringBuilder*;
 }
-#define _JNI_ZERO_java_lang_JStringBuilder_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JStringBuilder_DEFINED
-using ::java::lang::JStringBuilder;
 #define _JNI_ZERO_JStringBuilder_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_java_util_JMap_DEFINED
-namespace java::util {
-class _JMap : public _jobject {};
-using JMap = _JMap*;
-}
-#define _JNI_ZERO_java_util_JMap_DEFINED
-#endif
-
-// Alias type into the global namespace.
-#ifndef _JNI_ZERO_JMap_DEFINED
-using ::java::util::JMap;
-#define _JNI_ZERO_JMap_DEFINED
+using ::java::lang::JStringBuilder;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests : public _jobject {};
 using JSampleForTests = _JSampleForTests*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleForTests_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_DEFINED
-using ::org::jni_zero::JSampleForTests;
 #define _JNI_ZERO_JSampleForTests_DEFINED
+using ::org::jni_zero::JSampleForTests;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests_InnerStructB : public _jobject {};
 using JSampleForTests_InnerStructB = _JSampleForTests_InnerStructB*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
-using ::org::jni_zero::JSampleForTests_InnerStructB;
 #define _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
-#endif
-
-#ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
-namespace org::jni_zero {
-class _JSampleProxyEdgeCases : public _jobject {};
-using JSampleProxyEdgeCases = _JSampleProxyEdgeCases*;
-}
-#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
-#endif
-
-// Alias type into the global namespace.
-#ifndef _JNI_ZERO_JSampleProxyEdgeCases_DEFINED
-using ::org::jni_zero::JSampleProxyEdgeCases;
-#define _JNI_ZERO_JSampleProxyEdgeCases_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerStructB;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_Integer_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_Integer_DEFINED
 namespace org::jni_zero {
 class _JSampleProxyEdgeCases_Integer : public _jobject {};
 using JSampleProxyEdgeCases_Integer = _JSampleProxyEdgeCases_Integer*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_Integer_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleProxyEdgeCases_Integer_DEFINED
-using ::org::jni_zero::JSampleProxyEdgeCases_Integer;
 #define _JNI_ZERO_JSampleProxyEdgeCases_Integer_DEFINED
+using ::org::jni_zero::JSampleProxyEdgeCases_Integer;
+#endif
+
+#ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_OtherInnerClass_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_OtherInnerClass_DEFINED
+namespace org::jni_zero {
+class _JSampleProxyEdgeCases_OtherInnerClass : public _jobject {};
+using JSampleProxyEdgeCases_OtherInnerClass = _JSampleProxyEdgeCases_OtherInnerClass*;
+}
+#endif
+
+#ifndef _JNI_ZERO_JSampleProxyEdgeCases_OtherInnerClass_DEFINED
+#define _JNI_ZERO_JSampleProxyEdgeCases_OtherInnerClass_DEFINED
+using ::org::jni_zero::JSampleProxyEdgeCases_OtherInnerClass;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_internal_JBoolean_DEFINED
+#define _JNI_ZERO_org_jni_zero_internal_JBoolean_DEFINED
 namespace org::jni_zero::internal {
 class _JBoolean : public _jobject {};
 using JBoolean = _JBoolean*;
 }
-#define _JNI_ZERO_org_jni_zero_internal_JBoolean_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JBoolean_DEFINED
-using ::org::jni_zero::internal::JBoolean;
 #define _JNI_ZERO_JBoolean_DEFINED
+using ::org::jni_zero::internal::JBoolean;
+#endif
+
+#ifndef _JNI_ZERO_java_util_JMap_DEFINED
+#define _JNI_ZERO_java_util_JMap_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T1, ::jni_zero::internal::IsJobject T2>
+class _JMap : public _jobject {};
+template <typename T1, typename T2>
+using JMap = _JMap<T1, T2>*;
+}
+#endif
+
+#ifndef _JNI_ZERO_JMap_DEFINED
+#define _JNI_ZERO_JMap_DEFINED
+using ::java::util::JMap;
 #endif
 
 

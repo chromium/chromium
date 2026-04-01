@@ -20,7 +20,7 @@ class _Context:
     self.proxy_class = java_types.JavaClass(
         f'{self.jni_obj.java_class.full_name_with_slashes}Jni')
     self.type_resolver = java_types.TypeResolver(self.proxy_class)
-    imports = jni_obj.GetClassesToBeImported() + [
+    imports = jni_obj.CollectClassesToBeImported() + [
         java_types.JavaClass('javax/annotation/processing/Generated'),
         java_types.JavaClass('org/jni_zero/CheckDiscard'),
         java_types.JavaClass('org/jni_zero/JniTestInstanceHolder'),

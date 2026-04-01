@@ -13,87 +13,81 @@
 
 // Relevant jobject subclasses:
 #ifndef _JNI_ZERO_android_content_JContext_DEFINED
+#define _JNI_ZERO_android_content_JContext_DEFINED
 namespace android::content {
 class _JContext : public _jobject {};
 using JContext = _JContext*;
 }
-#define _JNI_ZERO_android_content_JContext_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JContext_DEFINED
-using ::android::content::JContext;
 #define _JNI_ZERO_JContext_DEFINED
+using ::android::content::JContext;
 #endif
 
 #ifndef _JNI_ZERO_android_view_JView_DEFINED
+#define _JNI_ZERO_android_view_JView_DEFINED
 namespace android::view {
 class _JView : public _jobject {};
 using JView = _JView*;
 }
-#define _JNI_ZERO_android_view_JView_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JView_DEFINED
-using ::android::view::JView;
 #define _JNI_ZERO_JView_DEFINED
+using ::android::view::JView;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_DEFINED
 namespace org::jni_zero {
 class _JSampleForAnnotationProcessor : public _jobject {};
 using JSampleForAnnotationProcessor = _JSampleForAnnotationProcessor*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForAnnotationProcessor_DEFINED
-using ::org::jni_zero::JSampleForAnnotationProcessor;
 #define _JNI_ZERO_JSampleForAnnotationProcessor_DEFINED
+using ::org::jni_zero::JSampleForAnnotationProcessor;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_MultiLine_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_MultiLine_DEFINED
 namespace org::jni_zero {
 class _JSampleForAnnotationProcessor_MultiLine : public _jobject {};
 using JSampleForAnnotationProcessor_MultiLine = _JSampleForAnnotationProcessor_MultiLine*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_MultiLine_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForAnnotationProcessor_MultiLine_DEFINED
-using ::org::jni_zero::JSampleForAnnotationProcessor_MultiLine;
 #define _JNI_ZERO_JSampleForAnnotationProcessor_MultiLine_DEFINED
+using ::org::jni_zero::JSampleForAnnotationProcessor_MultiLine;
 #endif
 
 #ifndef _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_TestStruct_DEFINED
+#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_TestStruct_DEFINED
 namespace org::jni_zero {
 class _JSampleForAnnotationProcessor_TestStruct : public _jobject {};
 using JSampleForAnnotationProcessor_TestStruct = _JSampleForAnnotationProcessor_TestStruct*;
 }
-#define _JNI_ZERO_org_jni_zero_JSampleForAnnotationProcessor_TestStruct_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForAnnotationProcessor_TestStruct_DEFINED
-using ::org::jni_zero::JSampleForAnnotationProcessor_TestStruct;
 #define _JNI_ZERO_JSampleForAnnotationProcessor_TestStruct_DEFINED
+using ::org::jni_zero::JSampleForAnnotationProcessor_TestStruct;
 #endif
 
 #ifndef _JNI_ZERO_org_stubs_JMyClass_SecondNestedInterface_DEFINED
+#define _JNI_ZERO_org_stubs_JMyClass_SecondNestedInterface_DEFINED
 namespace org::stubs {
 class _JMyClass_SecondNestedInterface : public _jobject {};
 using JMyClass_SecondNestedInterface = _JMyClass_SecondNestedInterface*;
 }
-#define _JNI_ZERO_org_stubs_JMyClass_SecondNestedInterface_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JMyClass_SecondNestedInterface_DEFINED
-using ::org::stubs::JMyClass_SecondNestedInterface;
 #define _JNI_ZERO_JMyClass_SecondNestedInterface_DEFINED
+using ::org::stubs::JMyClass_SecondNestedInterface;
 #endif
 
 

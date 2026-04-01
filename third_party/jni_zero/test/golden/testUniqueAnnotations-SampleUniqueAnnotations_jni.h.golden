@@ -179,7 +179,7 @@ static void Java_SampleUniqueAnnotations_useBar1(
 namespace jni_zero_internal {
 
 template<>
-class _CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations> {
+class _CalledByNativesStatics<::org::jni_zero::JSampleUniqueAnnotations> {
   public:
   static void useBar1(JNIEnv* env, const ::jni_zero::JavaRef<::org::jni_zero::JBar1_Inner>& inner) {
     Java_SampleUniqueAnnotations_useBar1(env, inner);
@@ -191,13 +191,13 @@ class _CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations> {
 }  // namespace jni_zero_internal
 
 namespace org::jni_zero {
-using SampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleUniqueAnnotations>;
+using SampleUniqueAnnotationsJni = ::jni_zero_internal::_CalledByNativesStatics<::org::jni_zero::JSampleUniqueAnnotations>;
 }
-
 #ifndef _JNI_ZERO_SampleUniqueAnnotationsJni_DEFINED
-using org::jni_zero::SampleUniqueAnnotationsJni;
 #define _JNI_ZERO_SampleUniqueAnnotationsJni_DEFINED
+using ::org::jni_zero::SampleUniqueAnnotationsJni;
 #endif
+
 
 #pragma clang diagnostic pop
 #endif  // org_jni_1zero_SampleUniqueAnnotations_JNI

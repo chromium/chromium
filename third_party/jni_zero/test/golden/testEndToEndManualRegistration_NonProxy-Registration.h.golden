@@ -46,11 +46,6 @@ JNI_ZERO_BOUNDARY_EXPORT int64_t Java_org_jni_1zero_SampleNonProxy_nativeAddBook
     jbyteArray favicon,
     jstring title,
     jobject visits);
-JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
-    JNIEnv* env,
-    jclass jcaller,
-    jbyteArray state,
-    int32_t tabIndex);
 JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeDestroy(
     JNIEnv* env,
     jobject jcaller,
@@ -59,16 +54,6 @@ JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeFindAll
     JNIEnv* env,
     jobject jcaller,
     jstring find);
-JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
-    JNIEnv* env,
-    jclass jcaller,
-    jstring url);
-JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_ZERO_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray(
     JNIEnv* env,
     jobject jcaller,
@@ -86,10 +71,6 @@ JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(
 JNI_ZERO_BOUNDARY_EXPORT int32_t Java_org_jni_1zero_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller);
-JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
-    JNIEnv* env,
-    jclass jcaller,
-    jthrowable e);
 JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap(
     JNIEnv* env,
     jobject jcaller,
@@ -103,6 +84,25 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecogni
     jobject jcaller,
     int32_t sessionId,
     jobjectArray results);
+JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState(
+    JNIEnv* env,
+    jclass jcaller,
+    jbyteArray state,
+    int32_t tabIndex);
+JNI_ZERO_BOUNDARY_EXPORT jobjectArray Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jstring Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry(
+    JNIEnv* env,
+    jclass jcaller,
+    jstring url);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass(
+    JNIEnv* env,
+    jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jthrowable Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException(
+    JNIEnv* env,
+    jclass jcaller,
+    jthrowable e);
 
 // Helper Methods.
 namespace {
@@ -118,10 +118,6 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
           "(ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Long;[BLjava/lang/String;Ljava/lang/Integer;)J",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI)
       }, {
-          "nativeCreateHistoricalTabFromState",
-          "([BI)V",
-          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
-      }, {
           "nativeDestroy",
           "(I)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy)
@@ -129,18 +125,6 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
           "nativeFindAll",
           "(Ljava/lang/String;)I",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll)
-      }, {
-          "nativeGetAutofillProfileGUIDs",
-          "()[Ljava/lang/String;",
-          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs)
-      }, {
-          "nativeGetDomainAndRegistry",
-          "(Ljava/lang/String;)Ljava/lang/String;",
-          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry)
-      }, {
-          "nativeGetInnerClass",
-          "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
-          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass)
       }, {
           "nativeGetStateAsByteArray",
           "(Landroid/view/View;)[B",
@@ -158,10 +142,6 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
           "()I",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
       }, {
-          "nativeMessWithJavaException",
-          "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
-          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException)
-      }, {
           "nativeQueryBitmap",
           "(I[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/Bitmap;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap)
@@ -169,6 +149,26 @@ bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
           "nativeSetRecognitionResults",
           "(I[Ljava/lang/String;)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults)
+      }, {
+          "nativeCreateHistoricalTabFromState",
+          "([BI)V",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
+      }, {
+          "nativeGetAutofillProfileGUIDs",
+          "()[Ljava/lang/String;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs)
+      }, {
+          "nativeGetDomainAndRegistry",
+          "(Ljava/lang/String;)Ljava/lang/String;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry)
+      }, {
+          "nativeGetInnerClass",
+          "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass)
+      }, {
+          "nativeMessWithJavaException",
+          "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
+          reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException)
       },
   };
   jclass clazz = org_jni_1zero_SampleNonProxy_clazz(env);

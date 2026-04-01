@@ -940,14 +940,6 @@ class _CalledByNatives<::org::jni_zero::JSampleForAnnotationProcessor_MultiLine>
 
 }  // namespace jni_zero_internal
 
-namespace org::jni_zero {
-using SampleForAnnotationProcessor_MultiLineJni = ::jni_zero_internal::_CalledByNatives<::org::jni_zero::JSampleForAnnotationProcessor_MultiLine>;
-}
-
-#ifndef _JNI_ZERO_SampleForAnnotationProcessor_MultiLineJni_DEFINED
-using org::jni_zero::SampleForAnnotationProcessor_MultiLineJni;
-#define _JNI_ZERO_SampleForAnnotationProcessor_MultiLineJni_DEFINED
-#endif
 
 #pragma clang diagnostic pop
 #endif  // org_jni_1zero_SampleForAnnotationProcessor_JNI

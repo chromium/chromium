@@ -13,101 +13,108 @@
 
 // Relevant jobject subclasses:
 #ifndef _JNI_ZERO_java_util_JCollection_DEFINED
-namespace java::util {
-class _JCollection : public _jobject {};
-using JCollection = _JCollection*;
-}
 #define _JNI_ZERO_java_util_JCollection_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JCollection : public _jobject {};
+template <typename T>
+using JCollection = _JCollection<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JCollection_DEFINED
-using ::java::util::JCollection;
 #define _JNI_ZERO_JCollection_DEFINED
+using ::java::util::JCollection;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JComparator_DEFINED
-namespace java::util {
-class _JComparator : public _jobject {};
-using JComparator = _JComparator*;
-}
 #define _JNI_ZERO_java_util_JComparator_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JComparator : public _jobject {};
+template <typename T>
+using JComparator = _JComparator<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JComparator_DEFINED
-using ::java::util::JComparator;
 #define _JNI_ZERO_JComparator_DEFINED
+using ::java::util::JComparator;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JIterator_DEFINED
-namespace java::util {
-class _JIterator : public _jobject {};
-using JIterator = _JIterator*;
-}
 #define _JNI_ZERO_java_util_JIterator_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JIterator : public _jobject {};
+template <typename T>
+using JIterator = _JIterator<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JIterator_DEFINED
-using ::java::util::JIterator;
 #define _JNI_ZERO_JIterator_DEFINED
+using ::java::util::JIterator;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JList_DEFINED
-namespace java::util {
-class _JList : public _jobject {};
-using JList = _JList*;
-}
 #define _JNI_ZERO_java_util_JList_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JList : public _jobject {};
+template <typename T>
+using JList = _JList<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JList_DEFINED
-using ::java::util::JList;
 #define _JNI_ZERO_JList_DEFINED
+using ::java::util::JList;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JListIterator_DEFINED
-namespace java::util {
-class _JListIterator : public _jobject {};
-using JListIterator = _JListIterator*;
-}
 #define _JNI_ZERO_java_util_JListIterator_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JListIterator : public _jobject {};
+template <typename T>
+using JListIterator = _JListIterator<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JListIterator_DEFINED
-using ::java::util::JListIterator;
 #define _JNI_ZERO_JListIterator_DEFINED
+using ::java::util::JListIterator;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JSpliterator_DEFINED
-namespace java::util {
-class _JSpliterator : public _jobject {};
-using JSpliterator = _JSpliterator*;
-}
 #define _JNI_ZERO_java_util_JSpliterator_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JSpliterator : public _jobject {};
+template <typename T>
+using JSpliterator = _JSpliterator<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSpliterator_DEFINED
-using ::java::util::JSpliterator;
 #define _JNI_ZERO_JSpliterator_DEFINED
+using ::java::util::JSpliterator;
 #endif
 
 #ifndef _JNI_ZERO_java_util_function_JUnaryOperator_DEFINED
-namespace java::util::function {
-class _JUnaryOperator : public _jobject {};
-using JUnaryOperator = _JUnaryOperator*;
-}
 #define _JNI_ZERO_java_util_function_JUnaryOperator_DEFINED
+namespace java::util::function {
+template <::jni_zero::internal::IsJobject T>
+class _JUnaryOperator : public _jobject {};
+template <typename T>
+using JUnaryOperator = _JUnaryOperator<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JUnaryOperator_DEFINED
-using ::java::util::function::JUnaryOperator;
 #define _JNI_ZERO_JUnaryOperator_DEFINED
+using ::java::util::function::JUnaryOperator;
 #endif
 
 

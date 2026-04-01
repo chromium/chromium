@@ -4,8 +4,8 @@
 """Entry point for "from-source" and "from-jar" commands."""
 
 import collections
-import dataclasses
 import os
+import logging
 import pickle
 import shutil
 import subprocess
@@ -29,6 +29,11 @@ import proxy
 
 class NativeMethod:
   """Describes a C/C++ method that is called by Java."""
+
+  @property
+  def java_type(self):
+    return self.java_class.as_type()
+
   def __init__(self, parsed_method, *, java_class, is_proxy):
     # The Java class the containing the natives. Never a nested class.
     self.java_class = java_class
@@ -149,6 +154,7 @@ class NativeMethod:
 class CalledByNative:
   """Describes a Java method that is called from C++"""
   def __init__(self,
+               class_type_resolver,
                parsed_called_by_native,
                *,
                unchecked=False):
@@ -156,7 +162,7 @@ class CalledByNative:
     self.signature = parsed_called_by_native.signature
     self.static = parsed_called_by_native.static
     self.unchecked = parsed_called_by_native.unchecked or unchecked
-    self.java_class = parsed_called_by_native.java_class
+    self.type_params = parsed_called_by_native.type_params
     self.return_type = self.signature.return_type
     self.is_constructor = self.name == '<init>'
 
@@ -166,7 +172,15 @@ class CalledByNative:
     # Set the return type & static of constructors to for simpler codegen logic.
     if self.is_constructor:
       self.static = True
-      self.return_type = self.java_class.as_type()
+      self.return_type = class_type_resolver.java_class.as_type()
+      # Constructors are non-static, so can use class generics, but we expose
+      # them as static methods, so merge the method and class generics.
+      all_params = class_type_resolver.type_params
+      if all_params:
+        if self.type_params:
+          all_params = java_types.JavaTypeParamList(all_params +
+                                                    self.type_params)
+        self.type_params = all_params
 
   @property
   def params(self):
@@ -181,14 +195,49 @@ class CalledByNative:
     return common.sanitize_cpp_keywords(self.name)
 
 
-@dataclasses.dataclass
-class Field:
-  java_class: java_types.JavaClass  # Containing class (might be a nested class).
-  name: str
-  java_type: java_types.JavaType
-  static: bool
-  final: bool
-  const_value: Optional[str] = None
+class JniField:
+
+  def __init__(self, parsed_field):
+    self.name = parsed_field.name
+    self.java_type = parsed_field.java_type
+    self.static = parsed_field.static
+    self.final = parsed_field.final
+    self.const_value = parsed_field.const_value
+
+  def NeedsAccessor(self):
+    # Don't need an accessor when returning a constant.
+    return self.const_value is None or self.java_type.is_string()
+
+
+class JniClass:
+
+  def __init__(self, parsed_class, *, unchecked=False):
+    self.type_resolver = parsed_class.type_resolver
+    self.java_type = java_types.JavaType(java_class=self.java_class,
+                                         generics=self.type_params.get_types())
+
+    self.fields = [JniField(f) for f in parsed_class.fields]
+    called_by_natives = []
+    for parsed_called_by_native in parsed_class.called_by_natives:
+      called_by_natives.append(
+          CalledByNative(self.type_resolver,
+                         parsed_called_by_native,
+                         unchecked=unchecked))
+
+    _AssignMethodIdFunctionNames(self.type_resolver, called_by_natives)
+    self.called_by_natives = called_by_natives
+
+  @property
+  def java_class(self):
+    return self.type_resolver.java_class
+
+  @property
+  def type_params(self):
+    return self.type_resolver.type_params
+
+  def has_any_statics(self, is_static=True):
+    return any(f for f in self.fields if f.static == is_static) or any(
+        cbn for cbn in self.called_by_natives if cbn.static == is_static)
 
 
 def NameIsTestOnly(name):
@@ -213,8 +262,7 @@ def _MangleMethodName(type_resolver, name, param_types):
 def _AssignMethodIdFunctionNames(type_resolver, called_by_natives):
   # Mangle names for overloads with different number of parameters.
   def key(called_by_native):
-    return (called_by_native.java_class.full_name_with_slashes,
-            called_by_native.name, len(called_by_native.params))
+    return (called_by_native.name, len(called_by_native.params))
 
   method_counts = collections.Counter(key(x) for x in called_by_natives)
 
@@ -241,20 +289,12 @@ class JniObject:
                from_javap,
                default_namespace=None,
                javap_unchecked_exceptions=False):
+    self.from_javap = from_javap
     self.filename = parsed_file.filename
-    self.type_resolver = parsed_file.type_resolver
+    self.type_resolver = parsed_file.outer_class.type_resolver
     self.module_name = parsed_file.module_name
     self.proxy_interface = parsed_file.proxy_interface
     self.proxy_visibility = parsed_file.proxy_visibility
-    self.fields = [
-        Field(java_class=f.java_class,
-              name=f.name,
-              java_type=f.java_type,
-              static=f.static,
-              final=f.final,
-              const_value=f.const_value)
-        for f in parsed_file.fields
-    ]
 
     # These are different only for legacy reasons.
     if from_javap:
@@ -262,6 +302,11 @@ class JniObject:
           '$', '__')
     else:
       self.jni_namespace = parsed_file.jni_namespace or default_namespace
+
+    self.jni_classes = [
+        JniClass(c, unchecked=javap_unchecked_exceptions)
+        for c in parsed_file.classes_with_jni
+    ]
 
     natives = [
         NativeMethod(m, java_class=self.java_class, is_proxy=True)
@@ -277,15 +322,6 @@ class JniObject:
 
     self.natives = natives
 
-    called_by_natives = []
-    for parsed_called_by_native in parsed_file.called_by_natives:
-      called_by_natives.append(
-          CalledByNative(parsed_called_by_native,
-                         unchecked=from_javap and javap_unchecked_exceptions))
-
-    _AssignMethodIdFunctionNames(parsed_file.type_resolver, called_by_natives)
-    self.called_by_natives = called_by_natives
-
   @property
   def java_class(self):
     return self.type_resolver.java_class
@@ -298,7 +334,14 @@ class JniObject:
   def non_proxy_natives(self):
     return [n for n in self.natives if not n.is_proxy]
 
-  def GetClassesToBeImported(self):
+  def IterFields(self):
+    for c in self.jni_classes:
+      yield from c.fields
+
+  def RemoveTestOnlyNatives(self):
+    self.natives = [n for n in self.natives if not n.is_test_only]
+
+  def CollectClassesToBeImported(self):
     ret = set()
     for n in self.proxy_natives:
       for t in list(n.signature.param_types) + [n.return_type]:
@@ -310,47 +353,68 @@ class JniObject:
           # java.lang** are never imported.
           continue
         ret.add(class_obj)
-
     return sorted(ret)
 
-  def GetClassesToBeLazilyDefined(self):
-    ret = {f.java_class for f in self.fields if f.java_type.enable_mirror()}
-    ret.update(f.java_type.java_class for f in self.fields
-               if f.java_type.enable_mirror())
-    for n in self.called_by_natives + self.natives:
-      if n.java_class.enable_mirror():
-        ret.add(n.java_class)
-      ret.update(t.java_class for t in n.signature.param_types
-                 if t.enable_mirror())
-      if n.return_type.enable_mirror():
-        ret.add(n.return_type.java_class)
-    # When the java type is a primitive array, its enable_mirror() will be true,
-    # but its java_class is None, so we remove None from the return value here.
-    ret.discard(None)
+  def CollectTypesToBeLazilyDefined(self):
+    # Use a dict to group by JavaClass to ensure we only define each class once.
+    # We need JavaTypes to capture generics.
+    type_by_class = {}
+
+    def collect(t):
+      # Arrays have enable_mirror=True, but can have no/non-mirror java_class.
+      if (not t.converted_type and t.java_class
+          and t.java_class.enable_mirror()
+          and not t.java_class.is_generic_type()):
+        prev = type_by_class.setdefault(t.java_class, t)
+        if prev and prev.num_generics != t.num_generics:
+          raise Exception(
+              'Unsupported: Two of the same class with different number of '
+              f'generics. \nFirst: {prev.to_java(with_generics=True)}\n'
+              f'Second: {t.to_java(with_generics=True)}')
+        if t.generics:
+          for g in t.generics:
+            collect(g)
+
+    def collect_sig(sig):
+      collect(sig.return_type)
+      for t in sig.param_types:
+        collect(t)
+
+    def collect_type_params(type_params):
+      for p in type_params:
+        collect(p.upper_bound_type)
+
+    for jni_class in self.jni_classes:
+      collect(jni_class.java_type)
+      collect_type_params(jni_class.type_params)
+      for f in jni_class.fields:
+        collect(f.java_type)
+      for cbn in jni_class.called_by_natives:
+        collect_type_params(cbn.type_params)
+        collect_sig(cbn.signature)
+
+    for n in self.natives + self.proxy_natives:
+      collect_sig(n.signature)
+
+    return sorted(type_by_class.values())
+
+  def CollectClassesThatRequireAccessors(self):
+    ret = set()
+    for c in self.jni_classes:
+      ret.add(c.java_class)
+      # jclasses required for @JniType conversions.
+      for cbn in c.called_by_natives:
+        for param in cbn.params:
+          java_type = param.java_type
+          if java_type.is_object_array() and java_type.converted_type:
+            ret.add(java_type.java_class)
+
+    # jclasses required for @JniType conversions.
+    for native in self.proxy_natives:
+      return_type = native.return_type
+      if return_type.is_object_array() and return_type.converted_type:
+        ret.add(return_type.java_class)
     return sorted(ret)
-
-  def RemoveTestOnlyNatives(self):
-    self.natives = [n for n in self.natives if not n.is_test_only]
-
-
-def _CollectReferencedClasses(jni_obj):
-  ret = {f.java_class for f in jni_obj.fields}
-
-  # @CalledByNatives can appear on nested classes, so check each one.
-  for called_by_native in jni_obj.called_by_natives:
-    ret.add(called_by_native.java_class)
-    for param in called_by_native.params:
-      java_type = param.java_type
-      if java_type.is_object_array() and java_type.converted_type:
-        ret.add(java_type.java_class)
-
-
-  # Find any classes needed for @JniType conversions.
-  for native in jni_obj.proxy_natives:
-    return_type = native.return_type
-    if return_type.is_object_array() and return_type.converted_type:
-      ret.add(return_type.java_class)
-  return sorted(ret)
 
 
 def _generate_headers(jni_mode,
@@ -373,7 +437,7 @@ def _generate_headers(jni_mode,
     user_includes += extra_includes
   system_includes = ['jni.h']
   if any(f.const_value in ('Infinity', '-Infinity', 'NaN')
-         for f in jni_obj.fields):
+         for f in jni_obj.IterFields()):
     system_includes.append('limits')
 
   preamble, epilogue = header_common.header_preamble(
@@ -386,8 +450,8 @@ def _generate_headers(jni_mode,
   sb(preamble)
 
   with sb.section('Relevant jobject subclasses:'):
-    for java_class in jni_obj.GetClassesToBeLazilyDefined():
-      called_by_native_header.jobject_subclass_definition(sb, java_class)
+    for java_type in jni_obj.CollectTypesToBeLazilyDefined():
+      called_by_native_header.jobject_subclass_definition(sb, java_type)
   sb(epilogue)
   shared_header_content = sb.to_string()
 
@@ -410,21 +474,20 @@ def _generate_headers(jni_mode,
         unshared_header_file,
         enable_definition_macros=enable_definition_macros)
 
-  java_classes = _CollectReferencedClasses(jni_obj)
+  java_classes = jni_obj.CollectClassesThatRequireAccessors()
   if java_classes:
     with sb.section('Class Accessors'):
       header_common.class_accessors(sb, java_classes, jni_obj.module_name)
 
-  if jni_obj.fields:
-    fields_needing_accessors = [
-        f for f in jni_obj.fields
-        if f.const_value is None or f.java_type.is_string()
-    ]
-    if fields_needing_accessors:
-      with sb.section('FieldId Accessors'):
-        called_by_native_header.field_accessors(sb, jni_obj.java_class,
-                                                fields_needing_accessors)
+  has_field_getters = any(f.NeedsAccessor() for f in jni_obj.IterFields())
+  if has_field_getters:
+    with sb.section('FieldId Accessors'):
+      for jni_class in jni_obj.jni_classes:
+        for f in jni_class.fields:
+          if f.NeedsAccessor():
+            called_by_native_header.field_accessor(sb, jni_class, f)
 
+  has_called_by_natives = any(c.called_by_natives for c in jni_obj.jni_classes)
   with sb.namespace(jni_obj.jni_namespace):
     if jni_obj.natives and not enable_definition_macros:
       with sb.section('Java to native functions'):
@@ -436,36 +499,29 @@ def _generate_headers(jni_mode,
                                             gen_jni_class,
                                             unshared_header_file,
                                             include_forward_declaration=True)
-
-    if jni_obj.called_by_natives:
+    if has_called_by_natives:
       with sb.section('Native to Java functions'):
-        for called_by_native in jni_obj.called_by_natives:
-          called_by_native_header.method_definition(sb, called_by_native)
+        for jni_class in jni_obj.jni_classes:
+          for cbn in jni_class.called_by_natives:
+            called_by_native_header.method_definition(
+                sb, jni_class, cbn, allow_unused=jni_obj.from_javap)
 
-  if jni_obj.called_by_natives or jni_obj.fields:
-    all_classes = {f.java_class for f in jni_obj.fields}
-    all_classes.update(c.java_class for c in jni_obj.called_by_natives)
-    all_classes = sorted(all_classes)
+  if jni_obj.jni_classes:
     with sb.section('jobject-subclass-aware definitions:'):
-      if jni_obj.jni_namespace:
-        sb('// Ensure namespace exists for "using namespace"\n')
-        sb(f'namespace {jni_obj.jni_namespace} {{}}\n')
-        sb('\n')
-
       with sb.namespace('jni_zero_internal'):
         if jni_obj.jni_namespace:
           sb(f'using namespace ::{jni_obj.jni_namespace};\n\n')
 
-        for java_class in all_classes:
-          fields = [f for f in jni_obj.fields if f.java_class == java_class]
-          cbns = [
-              c for c in jni_obj.called_by_natives if c.java_class == java_class
-          ]
-          called_by_native_header.called_by_natives_specialization(
-              sb, java_class, fields, cbns)
-
+        for jni_class in jni_obj.jni_classes:
+          for is_static in (True, False):
+            if jni_class.has_any_statics(is_static=is_static):
+              called_by_native_header.called_by_natives_specialization(
+                  sb, jni_class, is_static=is_static)
       sb('\n')
-      called_by_native_header.called_by_natives_aliases(sb, all_classes)
+
+      for jni_class in jni_obj.jni_classes:
+        if jni_class.has_any_statics():
+          called_by_native_header.called_by_natives_alias(sb, jni_class)
 
   sb(epilogue)
   unshared_header_content = sb.to_string()
@@ -510,7 +566,7 @@ def _CheckSameModule(jni_objs):
 def _CheckNotEmpty(jni_objs):
   has_empty = False
   for jni_obj in jni_objs:
-    if not (jni_obj.natives or jni_obj.called_by_natives):
+    if not jni_obj.natives and not jni_obj.jni_classes:
       has_empty = True
       sys.stderr.write(f'No native methods found in {jni_obj.filename}.\n')
   if has_empty:
@@ -518,10 +574,12 @@ def _CheckNotEmpty(jni_objs):
 
 
 def _RunJavap(javap_path, class_file):
-  p = subprocess.run([javap_path, '-s', '-constants', class_file],
+  p = subprocess.run([javap_path, '-constants', class_file],
                      text=True,
-                     capture_output=True,
-                     check=True)
+                     capture_output=True)
+  if p.returncode != 0:
+    sys.stderr.write(p.stderr)
+    p.check_returncode()
   return p.stdout
 
 
@@ -534,7 +592,7 @@ def _ParseClassFiles(jar_file, class_files, args):
       for class_file in class_files:
         class_file = os.path.join(temp_dir, class_file)
         contents = _RunJavap(args.javap, class_file)
-        parsed_file = parse.parse_javap(class_file, contents)
+        parsed_file = parse.parse_javap_data(class_file, contents)
         ret.append(
             JniObject(parsed_file,
                       from_javap=True,
@@ -595,7 +653,7 @@ def _CreatePlaceholderSrcJar(srcjar_path, jni_objs, *, script_name):
       # can have @NativeMethods) all get added first, so we don't accidentally
       # write a stubbed version of the class if it's imported by another class.
       for jni_obj in jni_objs:
-        for java_class in jni_obj.GetClassesToBeImported():
+        for java_class in jni_obj.CollectClassesToBeImported():
           if java_class.full_name_with_slashes.startswith('java/'):
             continue
           # TODO(mheikal): handle more than 1 nesting layer.
@@ -628,16 +686,20 @@ def _WriteHeaders(jni_mode,
       jni_objs, shared_header_names, unshared_header_names):
     shared_header_file = os.path.join(output_dir, shared_header_name)
     unshared_header_file = os.path.join(output_dir, unshared_header_name)
-    shared_header_content, unshared_header_content = _generate_headers(
-        jni_mode,
-        jni_obj,
-        gen_jni_class,
-        shared_header_file,
-        unshared_header_file,
-        enable_definition_macros=enable_definition_macros,
-        include_path_prefix=include_path_prefix,
-        extra_includes=extra_includes,
-        add_natives_macro_definition=add_natives_macro_definition)
+    try:
+      shared_header_content, unshared_header_content = _generate_headers(
+          jni_mode,
+          jni_obj,
+          gen_jni_class,
+          shared_header_file,
+          unshared_header_file,
+          enable_definition_macros=enable_definition_macros,
+          include_path_prefix=include_path_prefix,
+          extra_includes=extra_includes,
+          add_natives_macro_definition=add_natives_macro_definition)
+    except Exception as e:
+      common.add_note(e, f'when processing {jni_obj.filename}')
+      raise
 
     with common.atomic_output(shared_header_file, 'w') as f:
       f.write(shared_header_content)

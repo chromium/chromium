@@ -25,24 +25,24 @@ def _field_id_accessor_name(java_class, field):
   return f'{java_class.to_cpp()}_fieldId_{common.jni_mangle(field.name)}'
 
 
-def field_accessors(sb, java_class, fields):
-  for field in fields:
-    static_str = 'Static' if field.static else 'Instance'
-    field_id_type = f'::jni_zero::internal::FieldID::TYPE_{static_str.upper()}'
-    accessor_name = _field_id_accessor_name(java_class, field)
+def field_accessor(sb, jni_class, field):
+  java_class = jni_class.java_class
+  static_str = 'Static' if field.static else 'Instance'
+  field_id_type = f'::jni_zero::internal::FieldID::TYPE_{static_str.upper()}'
+  accessor_name = _field_id_accessor_name(java_class, field)
 
-    sb(f'inline jfieldID {accessor_name}(JNIEnv* env) {{\n')
-    with sb.indent(2):
-      sb('static std::atomic<jfieldID> cached_field_id(nullptr);\n')
-      class_accessor = header_common.class_accessor_expression(java_class)
-      sb(f'jclass clazz = {class_accessor};\n')
-      sb('JNI_ZERO_DCHECK(clazz);\n')
-      with sb.statement():
-        sb(f'::jni_zero::internal::InitializeFieldID<{field_id_type}>(env, clazz, '
-           f'"{field.name}", "{field.java_type.to_descriptor()}", '
-           f'&cached_field_id)')
-      sb('return cached_field_id.load(std::memory_order_relaxed);\n')
-    sb('}\n\n')
+  sb(f'inline jfieldID {accessor_name}(JNIEnv* env) {{\n')
+  with sb.indent(2):
+    sb('static std::atomic<jfieldID> cached_field_id(nullptr);\n')
+    class_accessor = header_common.class_accessor_expression(java_class)
+    sb(f'jclass clazz = {class_accessor};\n')
+    sb('JNI_ZERO_DCHECK(clazz);\n')
+    with sb.statement():
+      sb(f'::jni_zero::internal::InitializeFieldID<{field_id_type}>(env, clazz, '
+         f'"{field.name}", "{field.java_type.to_descriptor()}", '
+         f'&cached_field_id)')
+    sb('return cached_field_id.load(std::memory_order_relaxed);\n')
+  sb('}\n\n')
 
 
 def _const_value(field):
@@ -137,13 +137,17 @@ def _jni_function_name(called_by_native):
   return f'Call{call}Method'
 
 
-def method_definition(sb, cbn):
-  java_class = cbn.java_class
-  java_class_name = cbn.java_class.nested_name
+def method_definition(sb, jni_class, cbn, *, allow_unused):
+  java_class = jni_class.java_class
+  java_class_name = java_class.nested_name
   return_type = cbn.return_type
   is_void = return_type.is_void()
   return_type_cpp = _return_type_cpp_non_mirror(return_type)
 
+  # Mirror classes use these functions, but if a mirror function is templated,
+  # it does not count as a usage unless the template is instantiated.
+  if allow_unused:
+    sb('[[maybe_unused]] ')
   sb(f'static {return_type_cpp} ')
   sb(f'Java_{java_class_name}_{cbn.method_id_function_name}')
   with sb.param_list() as plist:
@@ -166,13 +170,13 @@ def method_definition(sb, cbn):
       sb(f'CHECK_CLAZZ(env, {receiver_arg}, clazz, {default_value});\n')
 
     checked_str = 'false' if cbn.unchecked else 'true'
-    if cbn.static and not cbn.is_constructor:
-      method_id_type = 'TYPE_STATIC'
-    else:
-      method_id_type = 'TYPE_INSTANCE'
     sb(f'::jni_zero::internal::JniJavaCallContext<{checked_str}> '
        f'call_context;\n')
     with sb.statement():
+      if cbn.static and not cbn.is_constructor:
+        method_id_type = 'TYPE_STATIC'
+      else:
+        method_id_type = 'TYPE_INSTANCE'
       sb(f'call_context.Init<::jni_zero::MethodID::{method_id_type}>')
       sb.param_list([
           'env', 'clazz', f'"{cbn.name}"', f'"{cbn.signature.to_descriptor()}"',
@@ -212,79 +216,109 @@ def method_definition(sb, cbn):
            f'{return_rvalue})')
 
 
-def jobject_subclass_definition(sb, java_class, using_jni_namespace=False):
+def _gen_t_names(generics):
+  if not generics:
+    return '', ''
+  if isinstance(generics, java_types.JavaTypeParamList):
+    names = [p.name for p in generics]
+  elif len(generics) == 1:
+    names = ('T', )
+  else:
+    names = [f'T{n}' for n in range(1, len(generics) + 1)]
+  typename_list = ', '.join(f'typename {t}' for t in names)
+  template_arglist = '<' + ', '.join(names) + '>'
+  template_decl = f'template <{typename_list}>\n'
+  return template_decl, template_arglist
+
+
+def _global_class_alias(sb, namespace, name):
+  with sb.ifndef(f'_JNI_ZERO_{name}_DEFINED'):
+    sb(f'using ::{namespace}::{name};\n')
+
+
+def jobject_subclass_definition(sb, java_type):
   # Don't generated mirror classes for JObject / JThrowable / JString.
   # Use jobject / jthrowable / jstring directly.
-  if not java_class.enable_mirror():
+  if not java_type.enable_mirror():
     return
+  java_class = java_type.java_class
   jobject_name = java_class.jobject_name
   package_with_underscores = java_class.package_with_underscores
   definition_macro_name = (
       f'_JNI_ZERO_{package_with_underscores}_{jobject_name}_DEFINED')
-  alias_macro_name = f'_JNI_ZERO_{jobject_name}_DEFINED'
-  sb(f"""\
-#ifndef {definition_macro_name}
-namespace {java_class.mirror_namespace} {{
-class _{jobject_name} : public _jobject {{}};
-using {jobject_name} = _{jobject_name}*;
-}}
-#define {definition_macro_name}
-#endif
 
-// Alias type into the global namespace.
-#ifndef {alias_macro_name}
-using ::{java_class.mirror_namespace}::{jobject_name};
-#define {alias_macro_name}
-#endif
+  template_decl, template_arglist = _gen_t_names(java_type.generics)
+  with sb.ifndef(definition_macro_name):
+    with sb.namespace(java_class.mirror_namespace, skip_newline=True):
+      sb(template_decl.replace('typename', '::jni_zero::internal::IsJobject'))
+      sb(f'class _{jobject_name} : public _jobject {{}};\n')
 
-""")
+      sb(template_decl)
+      sb(f'using {jobject_name} = _{jobject_name}{template_arglist}*;\n')
+
+  # Alias type into the global namespace.
+  _global_class_alias(sb, java_class.mirror_namespace, jobject_name)
 
 
-def called_by_natives_aliases(sb, java_classes):
-  namespace = java_classes[0].mirror_namespace
-  with sb.namespace(namespace, skip_newline=True):
-    for java_class in java_classes:
-      name = f'{java_class.name_with_underscores}Jni'
-      qualified = java_class.to_mirror_cpp()
-      sb(f'using {name} = '
-         f'::jni_zero_internal::_CalledByNatives<{qualified}>;\n')
-  sb('\n')
+def called_by_natives_alias(sb, jni_class):
+  java_class = jni_class.java_class
+  name = f'{java_class.name_with_underscores}Jni'
+  template_arglist = ''
+  if jni_class.type_params:
+    template_arglist = '<%s>' % ', '.join('jobject'
+                                          for p in jni_class.type_params)
+  qualified_name = java_class.to_mirror_cpp() + template_arglist
+  # Create the alias in the pacakge namespace.
+  with sb.namespace(java_class.mirror_namespace, skip_newline=True):
+    sb(f'using {name} = '
+       f'::jni_zero_internal::_CalledByNativesStatics<{qualified_name}>;\n')
 
-  for java_class in java_classes:
-    name = f'{java_class.name_with_underscores}Jni'
-    macro_name = f'_JNI_ZERO_{name}_DEFINED'
-    sb(f"""\
-#ifndef {macro_name}
-using {java_class.mirror_namespace}::{name};
-#define {macro_name}
-#endif
-""")
+  # Alias type into the global namespace.
+  _global_class_alias(sb, java_class.mirror_namespace, name)
 
 
-def called_by_natives_specialization(sb, java_class, fields, called_by_natives):
-  sb('template<>\n')
-  sb(f'class _CalledByNatives<{java_class.to_mirror_cpp()}>')
+def called_by_natives_specialization(sb, jni_class, *, is_static):
+  java_class = jni_class.java_class
+  java_type = jni_class.java_type
+  # Static methods in java classes do not use class type params.
+  type_params = () if is_static else jni_class.type_params
+  template_decl, template_arglist = _gen_t_names(type_params)
+  if template_arglist:
+    sb(template_decl)
+  else:
+    sb('template<>\n')
+
+  if is_static and jni_class.type_params:
+    template_arglist = '<%s>' % ', '.join('jobject'
+                                          for p in jni_class.type_params)
+
+  qualified = java_class.to_mirror_cpp() + template_arglist
+  class_suffix = 'Statics' if is_static else ''
+  sb(f'class _CalledByNatives{class_suffix}<{qualified}>')
   with sb.block(after=';'):
     sb('public:\n')
-    for f in fields:
-      if f.const_value is not None:
+    for f in jni_class.fields:
+      if f.static == is_static and f.const_value is not None:
         if f.java_type.is_string():
           sb(f'static inline constexpr char {f.name}[] = {_const_value(f)};\n')
         else:
           sb(f'static inline constexpr {f.java_type.to_cpp()} '
              f'{f.name} = {_const_value(f)};\n')
-    for f in fields:
-      _mirrored_field_getter(sb, java_class, f)
-      if not f.final:
-        _mirrored_field_setter(sb, java_class, f)
-    for cbn in called_by_natives:
-      _mirrored_cpp_function(sb, cbn)
-      sb('\n')
+    for f in jni_class.fields:
+      if f.static == is_static:
+        _mirrored_field_getter(sb, java_type, f)
+        if not f.final:
+          _mirrored_field_setter(sb, java_type, f)
+    for cbn in jni_class.called_by_natives:
+      if cbn.static == is_static:
+        _mirrored_cpp_function(sb, java_type, cbn)
+        sb('\n')
   sb('\n')
 
 
-def _mirrored_field_getter(sb, java_class, field):
-  jobject_type = java_class.to_mirror_cpp()
+def _mirrored_field_getter(sb, java_type, field):
+  jobject_type = java_type.to_mirror_cpp()
+  java_class = java_type.java_class
   if field.java_type.enable_mirror():
     return_jobject_type = field.java_type.to_mirror_cpp()
     return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
@@ -327,11 +361,13 @@ def _mirrored_field_getter(sb, java_class, field):
 
       sb(f'::jni_zero::ScopedJavaLocalRef<>::Adopt(env, {getter_part})')
       if return_jobject_type != 'jobject':
-        sb(f'\n    .As<{return_jobject_type}>()')
+        template_keyword = 'template ' if java_type.generics else ''
+        sb(f'\n    .{template_keyword}As<{return_jobject_type}>()')
 
 
-def _mirrored_field_setter(sb, java_class, field):
-  jobject_type = java_class.to_mirror_cpp()
+def _mirrored_field_setter(sb, java_type, field):
+  jobject_type = java_type.to_mirror_cpp()
+  java_class = java_type.java_class
   param_type = _param_type_cpp_mirror(field.java_type)
   if field.static:
     sb('static ')
@@ -369,48 +405,55 @@ def _mirrored_field_setter(sb, java_class, field):
          f'field_id, {param_rvalue})')
 
 
-def _mirrored_cpp_function(sb, cbn):
-  java_class = cbn.java_class
-  jobject_name = java_class.jobject_name
-  jobject_type = java_class.to_mirror_cpp()
-  is_instance_method = not cbn.static and not cbn.is_constructor
+def _mirrored_cpp_function(sb, java_type, cbn):
+  jobject_type = java_type.to_mirror_cpp()
 
-  if cbn.return_type.enable_mirror():
+  template_decl, _ = _gen_t_names(cbn.type_params)
+  sb(template_decl)
+
+  if cbn.is_constructor:
+    return_jobject_type = jobject_type
+    return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
+  elif cbn.return_type.enable_mirror():
     return_jobject_type = cbn.return_type.to_mirror_cpp()
     return_type_cpp = f'::jni_zero::ScopedJavaLocalRef<{return_jobject_type}>'
   else:
     return_jobject_type = None
     return_type_cpp = _return_type_cpp_non_mirror(cbn.return_type)
 
-  if not is_instance_method:
+  if cbn.static:
     sb('static ')
   sb(f'{return_type_cpp} {cbn.mirrored_function_name}')
   with sb.param_list() as plist:
     plist.append('JNIEnv* env')
     plist.extend(f'{_param_type_cpp_mirror(p.java_type)} {p.cpp_name()}'
                  for p in cbn.params)
-  if is_instance_method:
+  if not cbn.static:
     sb(' const')
 
   with sb.block():
-    if is_instance_method:
+    if not cbn.static:
       sb('auto this_obj = reinterpret_cast')
       sb(f'<const ::jni_zero::JavaRef<{jobject_type}>*>(this);\n')
 
     with sb.statement():
       if not cbn.return_type.is_void():
         sb('return ')
-      sb(f'Java_{java_class.nested_name}_{cbn.method_id_function_name}')
+      java_class_name = java_type.java_class.nested_name
+      sb(f'Java_{java_class_name}_{cbn.method_id_function_name}')
       with sb.param_list() as plist:
         plist.append('env')
-        if is_instance_method:
+        if not cbn.static:
           plist.append('*this_obj')
         for p in cbn.params:
           expr = p.cpp_name()
-          if java_type := p.java_type.converted_type:
+          if p.java_type.converted_type:
             if not p.java_type.is_primitive():
               expr = f'std::move({expr})'
           plist.append(expr)
 
       if return_jobject_type:
-        sb(f'\n    .As<{return_jobject_type}>()')
+        template_keyword = ''
+        if cbn.type_params or java_type.generics:
+          template_keyword = 'template '
+        sb(f'\n    .{template_keyword}As<{return_jobject_type}>()')

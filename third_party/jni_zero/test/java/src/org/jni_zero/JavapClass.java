@@ -28,12 +28,16 @@ public class JavapClass<T> {
     static int[][] staticIntMethod(String arg) {
         return null;
     }
-    static int staticIntMethod(String arg1, JavapClass arg2) {
+
+    static <T> int staticIntMethod(String arg1, JavapClass<T> arg2) {
         return 0;
     }
+
     static void needsMangling(int a) {}
+
     static void needsMangling(String s) {}
-    static void needsMangling(java.util.ArrayList<String> x){}
+
+    static void needsMangling(java.util.ArrayList<String> x) {}
 
     <T2 extends Runnable> Class objTest(T thing, T2[] other) {
         return null;

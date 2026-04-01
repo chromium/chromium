@@ -28,7 +28,9 @@
 namespace jni_zero_internal {
 template <typename T>
 class _CalledByNatives;
-}
+template <typename T>
+class _CalledByNativesStatics;
+}  // namespace jni_zero_internal
 
 namespace jni_zero::internal {
 template <typename T>

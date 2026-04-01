@@ -31,7 +31,7 @@ inline jclass java_util_List_clazz(JNIEnv* env) {
 namespace JNI_List {
 
 // Native to Java functions
-static bool Java_List_add(
+[[maybe_unused]] static bool Java_List_add(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -49,7 +49,7 @@ static bool Java_List_add(
   return _ret;
 }
 
-static void Java_List_add(
+[[maybe_unused]] static void Java_List_add(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0,
@@ -67,7 +67,7 @@ static void Java_List_add(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), as_jint(p0), p1.obj());
 }
 
-static bool Java_List_addAll(
+[[maybe_unused]] static bool Java_List_addAll(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0,
@@ -86,7 +86,7 @@ static bool Java_List_addAll(
   return _ret;
 }
 
-static bool Java_List_addAll(
+[[maybe_unused]] static bool Java_List_addAll(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -104,7 +104,7 @@ static bool Java_List_addAll(
   return _ret;
 }
 
-static void Java_List_addFirst(
+[[maybe_unused]] static void Java_List_addFirst(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -121,7 +121,7 @@ static void Java_List_addFirst(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
 }
 
-static void Java_List_addLast(
+[[maybe_unused]] static void Java_List_addLast(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -138,7 +138,7 @@ static void Java_List_addLast(
   env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
 }
 
-static void Java_List_clear(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
+[[maybe_unused]] static void Java_List_clear(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
@@ -152,7 +152,7 @@ static void Java_List_clear(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj
   env->CallVoidMethod(obj.obj(), call_context.method_id());
 }
 
-static bool Java_List_contains(
+[[maybe_unused]] static bool Java_List_contains(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -170,7 +170,7 @@ static bool Java_List_contains(
   return _ret;
 }
 
-static bool Java_List_containsAll(
+[[maybe_unused]] static bool Java_List_containsAll(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -188,24 +188,7 @@ static bool Java_List_containsAll(
   return _ret;
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_copyOf(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, clazz, clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
-      env,
-      clazz,
-      "copyOf",
-      "(Ljava/util/Collection;)Ljava/util/List;",
-      &cached_method_id);
-  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), p0.obj());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static bool Java_List_equals(
+[[maybe_unused]] static bool Java_List_equals(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -223,7 +206,7 @@ static bool Java_List_equals(
   return _ret;
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_get(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_get(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
@@ -241,7 +224,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_get(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getFirst(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getFirst(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -258,7 +241,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getFirst(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getLast(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getLast(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -275,7 +258,9 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_getLast(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static int32_t Java_List_hashCode(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
+[[maybe_unused]] static int32_t Java_List_hashCode(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
@@ -290,7 +275,7 @@ static int32_t Java_List_hashCode(JNIEnv* env, const ::jni_zero::JavaRef<jobject
   return _ret;
 }
 
-static int32_t Java_List_indexOf(
+[[maybe_unused]] static int32_t Java_List_indexOf(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -308,7 +293,9 @@ static int32_t Java_List_indexOf(
   return _ret;
 }
 
-static bool Java_List_isEmpty(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
+[[maybe_unused]] static bool Java_List_isEmpty(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
@@ -323,7 +310,7 @@ static bool Java_List_isEmpty(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& o
   return _ret;
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_iterator(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_iterator(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -340,7 +327,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_iterator(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static int32_t Java_List_lastIndexOf(
+[[maybe_unused]] static int32_t Java_List_lastIndexOf(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     const ::jni_zero::JavaRef<jobject>& p0) {
@@ -358,7 +345,7 @@ static int32_t Java_List_lastIndexOf(
   return _ret;
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -375,7 +362,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
@@ -393,7 +380,290 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_listIterator(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(JNIEnv* env) {
+[[maybe_unused]] static bool Java_List_remove__Object(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, false);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "remove",
+      "(Ljava/lang/Object;)Z",
+      &cached_method_id);
+  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
+  return _ret;
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_remove__int(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    JniIntWrapper p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "remove",
+      "(I)Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0));
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static bool Java_List_removeAll(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, false);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "removeAll",
+      "(Ljava/util/Collection;)Z",
+      &cached_method_id);
+  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
+  return _ret;
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_removeFirst(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "removeFirst",
+      "()Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_removeLast(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "removeLast",
+      "()Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static void Java_List_replaceAll(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "replaceAll",
+      "(Ljava/util/function/UnaryOperator;)V",
+      &cached_method_id);
+  env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
+}
+
+[[maybe_unused]] static bool Java_List_retainAll(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, false);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "retainAll",
+      "(Ljava/util/Collection;)Z",
+      &cached_method_id);
+  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
+  return _ret;
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_reversed(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "reversed",
+      "()Ljava/util/List;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_set(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    JniIntWrapper p0,
+    const ::jni_zero::JavaRef<jobject>& p1) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "set",
+      "(ILjava/lang/Object;)Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0), p1.obj());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static int32_t Java_List_size(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, 0);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "size",
+      "()I",
+      &cached_method_id);
+  auto _ret = env->CallIntMethod(obj.obj(), call_context.method_id());
+  return _ret;
+}
+
+[[maybe_unused]] static void Java_List_sort(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "sort",
+      "(Ljava/util/Comparator;)V",
+      &cached_method_id);
+  env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_spliterator(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "spliterator",
+      "()Ljava/util/Spliterator;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_subList(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    JniIntWrapper p0,
+    JniIntWrapper p1) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "subList",
+      "(II)Ljava/util/List;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0), as_jint(p1));
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobjectArray> Java_List_toArray(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj,
+    const ::jni_zero::JavaRef<jobjectArray>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "toArray",
+      "([Ljava/lang/Object;)[Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), p0.obj());
+  jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobjectArray>::Adopt(env, _ret2);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobjectArray> Java_List_toArray(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "toArray",
+      "()[Ljava/lang/Object;",
+      &cached_method_id);
+  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
+  jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
+  return ::jni_zero::ScopedJavaLocalRef<jobjectArray>::Adopt(env, _ret2);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_copyOf(
+    JNIEnv* env,
+    const ::jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
+  jclass clazz = java_util_List_clazz(env);
+  CHECK_CLAZZ(env, clazz, clazz, nullptr);
+  ::jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<::jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "copyOf",
+      "(Ljava/util/Collection;)Ljava/util/List;",
+      &cached_method_id);
+  auto _ret = env->CallStaticObjectMethod(clazz, call_context.method_id(), p0.obj());
+  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
+}
+
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(JNIEnv* env) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = java_util_List_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
@@ -408,7 +678,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(JNIEnv* env) {
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__Object(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__E(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -425,7 +695,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__Object(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1) {
@@ -443,7 +713,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -467,7 +737,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -493,7 +763,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -521,7 +791,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -551,7 +821,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -583,7 +853,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -617,7 +887,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -653,7 +923,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobject>& p0,
     const ::jni_zero::JavaRef<jobject>& p1,
@@ -691,7 +961,7 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__ObjectArray(
+[[maybe_unused]] static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__EArray(
     JNIEnv* env,
     const ::jni_zero::JavaRef<jobjectArray>& p0) {
   static std::atomic<jmethodID> cached_method_id(nullptr);
@@ -708,615 +978,374 @@ static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_of__ObjectArray(
   return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
 }
 
-static bool Java_List_remove__Object(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, false);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "remove",
-      "(Ljava/lang/Object;)Z",
-      &cached_method_id);
-  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
-  return _ret;
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_remove__int(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    JniIntWrapper p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "remove",
-      "(I)Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0));
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static bool Java_List_removeAll(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, false);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "removeAll",
-      "(Ljava/util/Collection;)Z",
-      &cached_method_id);
-  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
-  return _ret;
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_removeFirst(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "removeFirst",
-      "()Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_removeLast(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "removeLast",
-      "()Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static void Java_List_replaceAll(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "replaceAll",
-      "(Ljava/util/function/UnaryOperator;)V",
-      &cached_method_id);
-  env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
-}
-
-static bool Java_List_retainAll(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, false);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "retainAll",
-      "(Ljava/util/Collection;)Z",
-      &cached_method_id);
-  auto _ret = env->CallBooleanMethod(obj.obj(), call_context.method_id(), p0.obj());
-  return _ret;
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_reversed(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "reversed",
-      "()Ljava/util/List;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_set(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    JniIntWrapper p0,
-    const ::jni_zero::JavaRef<jobject>& p1) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "set",
-      "(ILjava/lang/Object;)Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0), p1.obj());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static int32_t Java_List_size(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, 0);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "size",
-      "()I",
-      &cached_method_id);
-  auto _ret = env->CallIntMethod(obj.obj(), call_context.method_id());
-  return _ret;
-}
-
-static void Java_List_sort(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobject>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "sort",
-      "(Ljava/util/Comparator;)V",
-      &cached_method_id);
-  env->CallVoidMethod(obj.obj(), call_context.method_id(), p0.obj());
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_spliterator(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "spliterator",
-      "()Ljava/util/Spliterator;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobject> Java_List_subList(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    JniIntWrapper p0,
-    JniIntWrapper p1) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "subList",
-      "(II)Ljava/util/List;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), as_jint(p0), as_jint(p1));
-  return ::jni_zero::ScopedJavaLocalRef<jobject>::Adopt(env, _ret);
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobjectArray> Java_List_toArray(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "toArray",
-      "()[Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id());
-  jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
-  return ::jni_zero::ScopedJavaLocalRef<jobjectArray>::Adopt(env, _ret2);
-}
-
-static ::jni_zero::ScopedJavaLocalRef<jobjectArray> Java_List_toArray(
-    JNIEnv* env,
-    const ::jni_zero::JavaRef<jobject>& obj,
-    const ::jni_zero::JavaRef<jobjectArray>& p0) {
-  static std::atomic<jmethodID> cached_method_id(nullptr);
-  jclass clazz = java_util_List_clazz(env);
-  CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
-  ::jni_zero::internal::JniJavaCallContext<true> call_context;
-  call_context.Init<::jni_zero::MethodID::TYPE_INSTANCE>(
-      env,
-      clazz,
-      "toArray",
-      "([Ljava/lang/Object;)[Ljava/lang/Object;",
-      &cached_method_id);
-  auto _ret = env->CallObjectMethod(obj.obj(), call_context.method_id(), p0.obj());
-  jobjectArray _ret2 = static_cast<jobjectArray>(_ret);
-  return ::jni_zero::ScopedJavaLocalRef<jobjectArray>::Adopt(env, _ret2);
-}
-
 
 
 }  // namespace JNI_List
 
 // jobject-subclass-aware definitions:
-// Ensure namespace exists for "using namespace"
-namespace JNI_List {}
-
 namespace jni_zero_internal {
 
 using namespace ::JNI_List;
 
 template<>
-class _CalledByNatives<::java::util::JList> {
+class _CalledByNativesStatics<::java::util::JList<jobject>> {
   public:
-  bool add(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> copyOf(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<::java::util::JCollection<E>>& p0) {
+    return Java_List_copyOf(env, p0)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(JNIEnv* env) {
+    return Java_List_of(env)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0) {
+    return Java_List_of__E(env, p0)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1) {
+    return Java_List_of(env, p0, p1)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2) {
+    return Java_List_of(env, p0, p1, p2)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3) {
+    return Java_List_of(env, p0, p1, p2, p3)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4) {
+    return Java_List_of(env, p0, p1, p2, p3, p4)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4,
+      const ::jni_zero::JavaRef<E>& p5) {
+    return Java_List_of(env, p0, p1, p2, p3, p4, p5)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4,
+      const ::jni_zero::JavaRef<E>& p5,
+      const ::jni_zero::JavaRef<E>& p6) {
+    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4,
+      const ::jni_zero::JavaRef<E>& p5,
+      const ::jni_zero::JavaRef<E>& p6,
+      const ::jni_zero::JavaRef<E>& p7) {
+    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4,
+      const ::jni_zero::JavaRef<E>& p5,
+      const ::jni_zero::JavaRef<E>& p6,
+      const ::jni_zero::JavaRef<E>& p7,
+      const ::jni_zero::JavaRef<E>& p8) {
+    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7, p8)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<E>& p0,
+      const ::jni_zero::JavaRef<E>& p1,
+      const ::jni_zero::JavaRef<E>& p2,
+      const ::jni_zero::JavaRef<E>& p3,
+      const ::jni_zero::JavaRef<E>& p4,
+      const ::jni_zero::JavaRef<E>& p5,
+      const ::jni_zero::JavaRef<E>& p6,
+      const ::jni_zero::JavaRef<E>& p7,
+      const ::jni_zero::JavaRef<E>& p8,
+      const ::jni_zero::JavaRef<E>& p9) {
+    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9)
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename E>
+  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> of(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<JArray<E>>& p0) {
+    return Java_List_of__EArray(env, p0)
+        .template As<::java::util::JList<E>>();
+  }
+
+};
+
+template <typename E>
+class _CalledByNatives<::java::util::JList<E>> {
+  public:
+  bool add(JNIEnv* env, const ::jni_zero::JavaRef<E>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_add(env, *this_obj, p0);
   }
 
-  void add(JNIEnv* env, JniIntWrapper p0, const ::jni_zero::JavaRef<jobject>& p1) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  void add(JNIEnv* env, JniIntWrapper p0, const ::jni_zero::JavaRef<E>& p1) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_add(env, *this_obj, p0, p1);
   }
 
   bool addAll(
       JNIEnv* env,
       JniIntWrapper p0,
-      const ::jni_zero::JavaRef<::java::util::JCollection>& p1) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+      const ::jni_zero::JavaRef<::java::util::JCollection<E>>& p1) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_addAll(env, *this_obj, p0, p1);
   }
 
-  bool addAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  bool addAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection<E>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_addAll(env, *this_obj, p0);
   }
 
-  void addFirst(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  void addFirst(JNIEnv* env, const ::jni_zero::JavaRef<E>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_addFirst(env, *this_obj, p0);
   }
 
-  void addLast(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  void addLast(JNIEnv* env, const ::jni_zero::JavaRef<E>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_addLast(env, *this_obj, p0);
   }
 
   void clear(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_clear(env, *this_obj);
   }
 
   bool contains(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_contains(env, *this_obj, p0);
   }
 
-  bool containsAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  bool containsAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection<jobject>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_containsAll(env, *this_obj, p0);
   }
 
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> copyOf(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<::java::util::JCollection>& p0) {
-    return Java_List_copyOf(env, p0)
-        .As<::java::util::JList>();
-  }
-
   bool equals(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_equals(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> get(JNIEnv* env, JniIntWrapper p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_get(env, *this_obj, p0);
+  ::jni_zero::ScopedJavaLocalRef<E> get(JNIEnv* env, JniIntWrapper p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_get(env, *this_obj, p0)
+        .template As<E>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> getFirst(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_getFirst(env, *this_obj);
+  ::jni_zero::ScopedJavaLocalRef<E> getFirst(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_getFirst(env, *this_obj)
+        .template As<E>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> getLast(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_getLast(env, *this_obj);
+  ::jni_zero::ScopedJavaLocalRef<E> getLast(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_getLast(env, *this_obj)
+        .template As<E>();
   }
 
   int32_t hashCode(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_hashCode(env, *this_obj);
   }
 
   int32_t indexOf(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_indexOf(env, *this_obj, p0);
   }
 
   bool isEmpty(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_isEmpty(env, *this_obj);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JIterator> iterator(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JIterator<E>> iterator(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_iterator(env, *this_obj)
-        .As<::java::util::JIterator>();
+        .template As<::java::util::JIterator<E>>();
   }
 
   int32_t lastIndexOf(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_lastIndexOf(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JListIterator> listIterator(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JListIterator<E>> listIterator(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_listIterator(env, *this_obj)
-        .As<::java::util::JListIterator>();
+        .template As<::java::util::JListIterator<E>>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JListIterator> listIterator(
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JListIterator<E>> listIterator(
       JNIEnv* env,
       JniIntWrapper p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_listIterator(env, *this_obj, p0)
-        .As<::java::util::JListIterator>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(JNIEnv* env) {
-    return Java_List_of(env)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0) {
-    return Java_List_of__Object(env, p0)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1) {
-    return Java_List_of(env, p0, p1)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2) {
-    return Java_List_of(env, p0, p1, p2)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3) {
-    return Java_List_of(env, p0, p1, p2, p3)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4) {
-    return Java_List_of(env, p0, p1, p2, p3, p4)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4,
-      const ::jni_zero::JavaRef<jobject>& p5) {
-    return Java_List_of(env, p0, p1, p2, p3, p4, p5)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4,
-      const ::jni_zero::JavaRef<jobject>& p5,
-      const ::jni_zero::JavaRef<jobject>& p6) {
-    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4,
-      const ::jni_zero::JavaRef<jobject>& p5,
-      const ::jni_zero::JavaRef<jobject>& p6,
-      const ::jni_zero::JavaRef<jobject>& p7) {
-    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4,
-      const ::jni_zero::JavaRef<jobject>& p5,
-      const ::jni_zero::JavaRef<jobject>& p6,
-      const ::jni_zero::JavaRef<jobject>& p7,
-      const ::jni_zero::JavaRef<jobject>& p8) {
-    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7, p8)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<jobject>& p0,
-      const ::jni_zero::JavaRef<jobject>& p1,
-      const ::jni_zero::JavaRef<jobject>& p2,
-      const ::jni_zero::JavaRef<jobject>& p3,
-      const ::jni_zero::JavaRef<jobject>& p4,
-      const ::jni_zero::JavaRef<jobject>& p5,
-      const ::jni_zero::JavaRef<jobject>& p6,
-      const ::jni_zero::JavaRef<jobject>& p7,
-      const ::jni_zero::JavaRef<jobject>& p8,
-      const ::jni_zero::JavaRef<jobject>& p9) {
-    return Java_List_of(env, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9)
-        .As<::java::util::JList>();
-  }
-
-  static ::jni_zero::ScopedJavaLocalRef<::java::util::JList> of(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<JArray<jobject>>& p0) {
-    return Java_List_of__ObjectArray(env, p0)
-        .As<::java::util::JList>();
+        .template As<::java::util::JListIterator<E>>();
   }
 
   bool remove(JNIEnv* env, const ::jni_zero::JavaRef<jobject>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_remove__Object(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> remove(JNIEnv* env, JniIntWrapper p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_remove__int(env, *this_obj, p0);
+  ::jni_zero::ScopedJavaLocalRef<E> remove(JNIEnv* env, JniIntWrapper p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_remove__int(env, *this_obj, p0)
+        .template As<E>();
   }
 
-  bool removeAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  bool removeAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection<jobject>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_removeAll(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> removeFirst(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_removeFirst(env, *this_obj);
+  ::jni_zero::ScopedJavaLocalRef<E> removeFirst(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_removeFirst(env, *this_obj)
+        .template As<E>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> removeLast(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_removeLast(env, *this_obj);
+  ::jni_zero::ScopedJavaLocalRef<E> removeLast(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_removeLast(env, *this_obj)
+        .template As<E>();
   }
 
   void replaceAll(
       JNIEnv* env,
-      const ::jni_zero::JavaRef<::java::util::function::JUnaryOperator>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+      const ::jni_zero::JavaRef<::java::util::function::JUnaryOperator<E>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_replaceAll(env, *this_obj, p0);
   }
 
-  bool retainAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  bool retainAll(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JCollection<jobject>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_retainAll(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JList> reversed(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> reversed(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_reversed(env, *this_obj)
-        .As<::java::util::JList>();
+        .template As<::java::util::JList<E>>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<jobject> set(
+  ::jni_zero::ScopedJavaLocalRef<E> set(
       JNIEnv* env,
       JniIntWrapper p0,
-      const ::jni_zero::JavaRef<jobject>& p1) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_set(env, *this_obj, p0, p1);
+      const ::jni_zero::JavaRef<E>& p1) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_set(env, *this_obj, p0, p1)
+        .template As<E>();
   }
 
   int32_t size(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_size(env, *this_obj);
   }
 
-  void sort(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JComparator>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  void sort(JNIEnv* env, const ::jni_zero::JavaRef<::java::util::JComparator<jobject>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     Java_List_sort(env, *this_obj, p0);
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JSpliterator> spliterator(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JSpliterator<E>> spliterator(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_spliterator(env, *this_obj)
-        .As<::java::util::JSpliterator>();
+        .template As<::java::util::JSpliterator<E>>();
   }
 
-  ::jni_zero::ScopedJavaLocalRef<::java::util::JList> subList(
+  ::jni_zero::ScopedJavaLocalRef<::java::util::JList<E>> subList(
       JNIEnv* env,
       JniIntWrapper p0,
       JniIntWrapper p1) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_subList(env, *this_obj, p0, p1)
-        .As<::java::util::JList>();
+        .template As<::java::util::JList<E>>();
+  }
+
+  template <typename T>
+  ::jni_zero::ScopedJavaLocalRef<JArray<T>> toArray(
+      JNIEnv* env,
+      const ::jni_zero::JavaRef<JArray<T>>& p0) const {
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
+    return Java_List_toArray(env, *this_obj, p0)
+        .template As<JArray<T>>();
   }
 
   ::jni_zero::ScopedJavaLocalRef<JArray<jobject>> toArray(JNIEnv* env) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
+    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList<E>>*>(this);
     return Java_List_toArray(env, *this_obj)
-        .As<JArray<jobject>>();
-  }
-
-  ::jni_zero::ScopedJavaLocalRef<JArray<jobject>> toArray(
-      JNIEnv* env,
-      const ::jni_zero::JavaRef<JArray<jobject>>& p0) const {
-    auto this_obj = reinterpret_cast<const ::jni_zero::JavaRef<::java::util::JList>*>(this);
-    return Java_List_toArray(env, *this_obj, p0)
-        .As<JArray<jobject>>();
+        .template As<JArray<jobject>>();
   }
 
 };
@@ -1325,13 +1354,13 @@ class _CalledByNatives<::java::util::JList> {
 }  // namespace jni_zero_internal
 
 namespace java::util {
-using ListJni = ::jni_zero_internal::_CalledByNatives<::java::util::JList>;
+using ListJni = ::jni_zero_internal::_CalledByNativesStatics<::java::util::JList<jobject>>;
 }
-
 #ifndef _JNI_ZERO_ListJni_DEFINED
-using java::util::ListJni;
 #define _JNI_ZERO_ListJni_DEFINED
+using ::java::util::ListJni;
 #endif
+
 
 #pragma clang diagnostic pop
 #endif  // java_util_List_JNI

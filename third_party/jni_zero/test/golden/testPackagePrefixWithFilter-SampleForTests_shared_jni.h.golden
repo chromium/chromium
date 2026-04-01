@@ -13,143 +13,150 @@
 
 // Relevant jobject subclasses:
 #ifndef _JNI_ZERO_android_graphics_JRect_DEFINED
+#define _JNI_ZERO_android_graphics_JRect_DEFINED
 namespace android::graphics {
 class _JRect : public _jobject {};
 using JRect = _JRect*;
 }
-#define _JNI_ZERO_android_graphics_JRect_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JRect_DEFINED
-using ::android::graphics::JRect;
 #define _JNI_ZERO_JRect_DEFINED
+using ::android::graphics::JRect;
+#endif
+
+#ifndef _JNI_ZERO_java_lang_JInteger_DEFINED
+#define _JNI_ZERO_java_lang_JInteger_DEFINED
+namespace java::lang {
+class _JInteger : public _jobject {};
+using JInteger = _JInteger*;
+}
+#endif
+
+#ifndef _JNI_ZERO_JInteger_DEFINED
+#define _JNI_ZERO_JInteger_DEFINED
+using ::java::lang::JInteger;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JLinkedList_DEFINED
-namespace java::util {
-class _JLinkedList : public _jobject {};
-using JLinkedList = _JLinkedList*;
-}
 #define _JNI_ZERO_java_util_JLinkedList_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T>
+class _JLinkedList : public _jobject {};
+template <typename T>
+using JLinkedList = _JLinkedList<T>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JLinkedList_DEFINED
-using ::java::util::JLinkedList;
 #define _JNI_ZERO_JLinkedList_DEFINED
+using ::java::util::JLinkedList;
 #endif
 
 #ifndef _JNI_ZERO_java_util_JMap_DEFINED
-namespace java::util {
-class _JMap : public _jobject {};
-using JMap = _JMap*;
-}
 #define _JNI_ZERO_java_util_JMap_DEFINED
+namespace java::util {
+template <::jni_zero::internal::IsJobject T1, ::jni_zero::internal::IsJobject T2>
+class _JMap : public _jobject {};
+template <typename T1, typename T2>
+using JMap = _JMap<T1, T2>*;
+}
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JMap_DEFINED
-using ::java::util::JMap;
 #define _JNI_ZERO_JMap_DEFINED
+using ::java::util::JMap;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests : public _jobject {};
 using JSampleForTests = _JSampleForTests*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_DEFINED
-using ::org::jni_zero::JSampleForTests;
 #define _JNI_ZERO_JSampleForTests_DEFINED
+using ::org::jni_zero::JSampleForTests;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerEnum_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerEnum_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests_InnerEnum : public _jobject {};
 using JSampleForTests_InnerEnum = _JSampleForTests_InnerEnum*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerEnum_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_InnerEnum_DEFINED
-using ::org::jni_zero::JSampleForTests_InnerEnum;
 #define _JNI_ZERO_JSampleForTests_InnerEnum_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerEnum;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerInterface_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerInterface_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests_InnerInterface : public _jobject {};
 using JSampleForTests_InnerInterface = _JSampleForTests_InnerInterface*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerInterface_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_InnerInterface_DEFINED
-using ::org::jni_zero::JSampleForTests_InnerInterface;
 #define _JNI_ZERO_JSampleForTests_InnerInterface_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerInterface;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructA_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructA_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests_InnerStructA : public _jobject {};
 using JSampleForTests_InnerStructA = _JSampleForTests_InnerStructA*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructA_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_InnerStructA_DEFINED
-using ::org::jni_zero::JSampleForTests_InnerStructA;
 #define _JNI_ZERO_JSampleForTests_InnerStructA_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerStructA;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
 namespace org::jni_zero {
 class _JSampleForTests_InnerStructB : public _jobject {};
 using JSampleForTests_InnerStructB = _JSampleForTests_InnerStructB*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleForTests_InnerStructB_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
-using ::org::jni_zero::JSampleForTests_InnerStructB;
 #define _JNI_ZERO_JSampleForTests_InnerStructB_DEFINED
+using ::org::jni_zero::JSampleForTests_InnerStructB;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleUnderSamePackage_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleUnderSamePackage_DEFINED
 namespace org::jni_zero {
 class _JSampleUnderSamePackage : public _jobject {};
 using JSampleUnderSamePackage = _JSampleUnderSamePackage*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JSampleUnderSamePackage_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JSampleUnderSamePackage_DEFINED
-using ::org::jni_zero::JSampleUnderSamePackage;
 #define _JNI_ZERO_JSampleUnderSamePackage_DEFINED
+using ::org::jni_zero::JSampleUnderSamePackage;
 #endif
 
 #ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
 namespace org::jni_zero::extrapackage {
 class _JImportsTinySample : public _jobject {};
 using JImportsTinySample = _JImportsTinySample*;
 }
-#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
 #endif
 
-// Alias type into the global namespace.
 #ifndef _JNI_ZERO_JImportsTinySample_DEFINED
-using ::org::jni_zero::extrapackage::JImportsTinySample;
 #define _JNI_ZERO_JImportsTinySample_DEFINED
+using ::org::jni_zero::extrapackage::JImportsTinySample;
 #endif
 
 

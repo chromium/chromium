@@ -28,7 +28,7 @@ def to_jni_expression(sb: common.StringBuilder,
     sb.param_list(['env', rvalue])
     return
 
-  if java_type == java_types.LIST:
+  if java_type.java_class == java_types.LIST_CLASS:
     sb(f'jni_zero::ToJniList')
     sb.param_list(['env', rvalue])
     return
