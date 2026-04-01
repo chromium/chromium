@@ -176,7 +176,9 @@ void OffscreenCanvas::SetSize(gfx::Size size) {
     } else if (context_->IsRenderingContext2D() ||
                context_->IsImageBitmapRenderingContext()) {
       context_->Reset();
-      origin_clean_ = true;
+      if (context_->IsRenderingContext2D()) {
+        origin_clean_ = true;
+      }
     }
     dirty_rect_for_commit_ = SkIRect::MakeWH(Size().width(), Size().height());
     context_->DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
