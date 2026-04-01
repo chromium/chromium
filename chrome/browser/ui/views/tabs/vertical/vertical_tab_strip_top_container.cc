@@ -27,6 +27,7 @@
 
 namespace {
 constexpr int kRegionVerticalPadding = 5;
+constexpr int kComboButtonCollapsedPadding = 2;
 }
 
 VerticalTabStripTopContainer::VerticalTabStripTopContainer(
@@ -70,6 +71,7 @@ void VerticalTabStripTopContainer::Layout(PassKey) {
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
+  const bool is_collapsed = state_controller_->IsCollapsed();
   gfx::Size host_size =
       gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
                                                  : parent()->width(),
@@ -86,7 +88,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
               ->GetPreferredSizeForOrientation(
                   views::LayoutOrientation::kHorizontal)
               .width() >= available_width ||
-      available_width <= VerticalTabStripRegionView::kCollapsedWidth) {
+      is_collapsed) {
     combo_button_orientation_ = views::LayoutOrientation::kVertical;
     int current_y = 0;
 
@@ -106,8 +108,10 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     if (unfocus_button_ && unfocus_button_->GetVisible()) {
       const gfx::Size pref_size = unfocus_button_->GetPreferredSize();
-      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
-                       current_y, pref_size.width(), pref_size.height());
+      int x = is_collapsed
+                  ? 0
+                  : std::max(0, (host_size.width() - pref_size.width()) / 2);
+      gfx::Rect bounds(x, current_y, pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(unfocus_button_.get(),
                                         unfocus_button_->GetVisible(), bounds);
       host_size.SetToMax(gfx::Size(bounds.right(), 0));
@@ -117,8 +121,10 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     if (collapse_button_ && collapse_button_->GetVisible()) {
       const gfx::Size pref_size = collapse_button_->GetPreferredSize();
-      gfx::Rect bounds(std::max(0, (host_size.width() - pref_size.width()) / 2),
-                       current_y, pref_size.width(), pref_size.height());
+      int x = is_collapsed
+                  ? 0
+                  : std::max(0, (host_size.width() - pref_size.width()) / 2);
+      gfx::Rect bounds(x, current_y, pref_size.width(), pref_size.height());
       layout.child_layouts.emplace_back(collapse_button_.get(),
                                         collapse_button_->GetVisible(), bounds);
       host_size.SetToMax(gfx::Size(bounds.right(), 0));
@@ -140,9 +146,17 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
         const gfx::Size pref_size =
             combo_button_->GetPreferredSizeForOrientation(
                 combo_button_orientation_);
-        gfx::Rect bounds(
-            std::max(0, (host_size.width() - pref_size.width()) / 2), current_y,
-            pref_size.width(), pref_size.height());
+        // When collapsed the combo button should fill the width (excluding
+        // padding), this is especially relevant when in the expand-on-hover
+        // state.
+        int width =
+            is_collapsed
+                ? (host_size.width() - (2 * kComboButtonCollapsedPadding))
+                : pref_size.width();
+        int padding = is_collapsed
+                          ? kComboButtonCollapsedPadding
+                          : std::max(0, (host_size.width() - width) / 2);
+        gfx::Rect bounds(padding, current_y, width, pref_size.height());
         layout.child_layouts.emplace_back(combo_button_.get(),
                                           combo_button_->GetVisible(), bounds);
         host_size.SetToMax(gfx::Size(bounds.right(), 0));
