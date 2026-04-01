@@ -71,7 +71,9 @@ CanvasResource::CanvasResource(
     : gpu::ClientImage(std::move(shared_image)),
       owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(
-          ThreadScheduler::Current()->CleanupTaskRunner()) {}
+          ThreadScheduler::Current()->CleanupTaskRunner()) {
+  subclass_manages_destruction_sync_token_ = true;
+}
 
 gpu::InterfaceBase* CanvasResource::InterfaceBase() const {
   if (!ContextProviderWrapper())

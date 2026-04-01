@@ -117,6 +117,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientImage
   friend class SharedImagePool;
   virtual ~ClientImage();
 
+  // Subclasses can set this to true if they have more complex logic if managing
+  // destruction sync token.
+  bool subclass_manages_destruction_sync_token_ = false;
+
  private:
   scoped_refptr<ClientSharedImage> shared_image_;
 
