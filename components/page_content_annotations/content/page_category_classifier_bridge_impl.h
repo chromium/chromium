@@ -15,6 +15,8 @@
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
+class OptimizationGuideLogger;
+
 namespace page_content_annotations {
 
 // A bridge that observes the PageEmbeddingsService and forwards available
@@ -26,7 +28,8 @@ class PageCategoryClassifierBridgeImpl
  public:
   PageCategoryClassifierBridgeImpl(
       PageEmbeddingsService& page_embeddings_service,
-      OnDeviceCategoryClassifier& category_classifier);
+      OnDeviceCategoryClassifier& category_classifier,
+      OptimizationGuideLogger* optimization_guide_logger);
   ~PageCategoryClassifierBridgeImpl() override;
   PageCategoryClassifierBridgeImpl(const PageCategoryClassifierBridgeImpl&) =
       delete;
@@ -45,6 +48,7 @@ class PageCategoryClassifierBridgeImpl
  private:
   const raw_ref<PageEmbeddingsService> page_embeddings_service_;
   const raw_ref<OnDeviceCategoryClassifier> category_classifier_;
+  raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   base::ScopedObservation<PageEmbeddingsService,
                           PageEmbeddingsService::Observer>

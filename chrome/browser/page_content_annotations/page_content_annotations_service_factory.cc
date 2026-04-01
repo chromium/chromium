@@ -168,7 +168,8 @@ PageContentAnnotationsServiceFactory::BuildServiceInstanceForBrowserContext(
       service->SetPageCategoryClassifierBridge(
           std::make_unique<
               page_content_annotations::PageCategoryClassifierBridgeImpl>(
-              *page_embeddings_service, *category_classifier));
+              *page_embeddings_service, *category_classifier,
+              optimization_guide_keyed_service->GetOptimizationGuideLogger()));
     }
 
     return service;

@@ -8,6 +8,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/page_content_annotations/core/on_device_category_classifier.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
@@ -20,9 +22,11 @@ namespace page_content_annotations {
 
 PageCategoryClassifierBridgeImpl::PageCategoryClassifierBridgeImpl(
     PageEmbeddingsService& page_embeddings_service,
-    OnDeviceCategoryClassifier& category_classifier)
+    OnDeviceCategoryClassifier& category_classifier,
+    OptimizationGuideLogger* optimization_guide_logger)
     : page_embeddings_service_(page_embeddings_service),
-      category_classifier_(category_classifier) {
+      category_classifier_(category_classifier),
+      optimization_guide_logger_(optimization_guide_logger) {
   scoped_observation_.Observe(&*page_embeddings_service_);
   category_classifier_observation_.Observe(&*category_classifier_);
 }
@@ -55,8 +59,6 @@ void PageCategoryClassifierBridgeImpl::OnPageEmbeddingsAvailable(
       std::move(title_url_embedding), std::move(passage_embeddings));
 }
 
-// TODO - crbug.com/434047312: Move the metrics recording to the actual user of
-// the classifier scores once implemented.
 void PageCategoryClassifierBridgeImpl::OnCategoriesClassified(
     const GURL& url,
     ukm::SourceId source_id,
@@ -67,6 +69,15 @@ void PageCategoryClassifierBridgeImpl::OnCategoriesClassified(
   for (const Category& category : categories) {
     int64_t score = base::ClampRound(category.score * 100);
     int64_t noisy_score = GenerateRapporNoisedScore(category.score);
+    if (optimization_guide_logger_ &&
+        optimization_guide_logger_->ShouldEnableDebugLogs()) {
+      OPTIMIZATION_GUIDE_LOGGER(
+          optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
+          optimization_guide_logger_)
+          << base::StringPrintf(
+                 "Category classifier result (CategoryType, score): (%d, %f)",
+                 static_cast<int>(category.category_type), category.score);
+    }
     switch (category.category_type) {
       case CategoryType::kEducation:
         base::UmaHistogramPercentage(
