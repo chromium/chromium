@@ -11,6 +11,7 @@
 #include <mfapi.h>
 #include <mferror.h>
 #include <mftransform.h>
+#include <wrl/implements.h>
 
 #include <algorithm>
 #include <iterator>
@@ -212,6 +213,67 @@ bool IsOdd(int value) {
 
 }  // namespace
 
+// A proxy class that implements IMFAsyncCallback and routes the events back to
+// the MediaFoundationVideoEncodeAccelerator safely via a WeakPtr. This
+// decouples the encoder's lifetime from the OS callback's lifetime. If the
+// encoder is destroyed while a callback is pending, the WeakPtr will be
+// invalidated, and the posted task will be safely dropped, preventing a
+// use-after-free.
+class MFAsyncCallbackProxy
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IMFAsyncCallback> {
+ public:
+  MFAsyncCallbackProxy(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::WeakPtr<MediaFoundationVideoEncodeAccelerator> parent)
+      : task_runner_(std::move(task_runner)),
+        parent_weak_ptr_(std::move(parent)) {}
+
+  ~MFAsyncCallbackProxy() override = default;
+
+  IFACEMETHODIMP GetParameters(DWORD* pdwFlags, DWORD* pdwQueue) override {
+    *pdwFlags = MFASYNC_FAST_IO_PROCESSING_CALLBACK;
+    *pdwQueue = MFASYNC_CALLBACK_QUEUE_TIMER;
+    return S_OK;
+  }
+
+  IFACEMETHODIMP Invoke(IMFAsyncResult* pAsyncResult) override {
+    MediaEventType event_type = MEUnknown;
+    HRESULT status = GetEvent(pAsyncResult, &event_type);
+
+    // Invoke() is called on some random OS thread, so we must post to our event
+    // handler since MediaFoundationVideoEncodeAccelerator is single threaded.
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &MediaFoundationVideoEncodeAccelerator::MediaEventHandler,
+            parent_weak_ptr_, event_type, status));
+    return S_OK;
+  }
+
+ private:
+  HRESULT GetEvent(IMFAsyncResult* pAsyncResult, MediaEventType* event_type) {
+    Microsoft::WRL::ComPtr<IUnknown> state;
+    RETURN_IF_FAILED(pAsyncResult->GetState(&state));
+
+    Microsoft::WRL::ComPtr<IMFMediaEventGenerator> event_generator;
+    RETURN_IF_FAILED(state.As(&event_generator));
+
+    Microsoft::WRL::ComPtr<IMFMediaEvent> media_event;
+    RETURN_IF_FAILED(event_generator->EndGetEvent(pAsyncResult, &media_event));
+
+    RETURN_IF_FAILED(media_event->GetType(event_type));
+
+    HRESULT status = S_OK;
+    RETURN_IF_FAILED(media_event->GetStatus(&status));
+    return status;
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::WeakPtr<MediaFoundationVideoEncodeAccelerator> parent_weak_ptr_;
+};
+
 struct MediaFoundationVideoEncodeAccelerator::PendingInput {
   PendingInput() = default;
   ~PendingInput() = default;
@@ -280,7 +342,6 @@ MediaFoundationVideoEncodeAccelerator::
     ~MediaFoundationVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(async_callback_ref_.IsOne());
 }
 
 VideoEncodeAccelerator::SupportedProfiles
@@ -617,7 +678,16 @@ bool MediaFoundationVideoEncodeAccelerator::InitializeMFT(
     return false;
   }
 
-  event_generator_->BeginGetEvent(this, nullptr);
+  proxy_callback_ = Microsoft::WRL::Make<MFAsyncCallbackProxy>(
+      task_runner_, weak_factory_.GetWeakPtr());
+
+  hr = event_generator_->BeginGetEvent(proxy_callback_.Get(),
+                                       event_generator_.Get());
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+                       "Couldn't begin get event: " + PrintHr(hr)});
+    return false;
+  }
 
   // Start the asynchronous processing model
   hr = encoder_->ProcessMessage(MFT_MESSAGE_COMMAND_FLUSH, 0);
@@ -2615,7 +2685,12 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     default:
       break;
   }
-  event_generator_->BeginGetEvent(this, nullptr);
+  HRESULT hr = event_generator_->BeginGetEvent(proxy_callback_.Get(),
+                                               event_generator_.Get());
+  if (FAILED(hr)) {
+    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                       "Failed to begin get event: " + PrintHr(hr)});
+  }
 }
 
 void MediaFoundationVideoEncodeAccelerator::SetState(State state) {
@@ -3002,49 +3077,6 @@ bool MediaFoundationVideoEncodeAccelerator::InitMFVideoProcessor() {
         vp_config, dxgi_device_manager_, media_log_->Clone());
   }
   return initialized;
-}
-
-HRESULT MediaFoundationVideoEncodeAccelerator::GetParameters(DWORD* pdwFlags,
-                                                             DWORD* pdwQueue) {
-  *pdwFlags = MFASYNC_FAST_IO_PROCESSING_CALLBACK;
-  *pdwQueue = MFASYNC_CALLBACK_QUEUE_TIMER;
-  return S_OK;
-}
-
-HRESULT MediaFoundationVideoEncodeAccelerator::Invoke(
-    IMFAsyncResult* pAsyncResult) {
-  ComMFMediaEvent media_event;
-  RETURN_IF_FAILED(event_generator_->EndGetEvent(pAsyncResult, &media_event));
-
-  MediaEventType event_type = MEUnknown;
-  RETURN_IF_FAILED(media_event->GetType(&event_type));
-
-  HRESULT status = S_OK;
-  media_event->GetStatus(&status);
-
-  // Invoke() is called on some random OS thread, so we must post to our event
-  // handler since MediaFoundationVideoEncodeAccelerator is single threaded.
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MediaFoundationVideoEncodeAccelerator::MediaEventHandler,
-                     weak_ptr_, event_type, status));
-  return status;
-}
-
-ULONG MediaFoundationVideoEncodeAccelerator::AddRef() {
-  return async_callback_ref_.Increment();
-}
-
-ULONG MediaFoundationVideoEncodeAccelerator::Release() {
-  DCHECK(!async_callback_ref_.IsOne());
-  return async_callback_ref_.Decrement() ? 1 : 0;
-}
-
-HRESULT MediaFoundationVideoEncodeAccelerator::QueryInterface(REFIID riid,
-                                                              void** ppv) {
-  static const QITAB kQI[] = {
-      QITABENT(MediaFoundationVideoEncodeAccelerator, IMFAsyncCallback), {0}};
-  return QISearch(this, kQI, riid, ppv);
 }
 
 }  // namespace media

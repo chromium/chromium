@@ -45,6 +45,7 @@ namespace media {
 class VideoRateControlWrapper;
 class TemporalScalabilityIdExtractor;
 class VEAEncodingLatencyMetricsHelper;
+class MFAsyncCallbackProxy;
 
 // Media Foundation implementation of the VideoEncodeAccelerator interface for
 // Windows.
@@ -54,9 +55,10 @@ class VEAEncodingLatencyMetricsHelper;
 // correct task runners. It starts an internal encoder thread on which
 // VideoEncodeAccelerator implementation tasks are posted.
 class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
-    : public VideoEncodeAccelerator,
-      public IMFAsyncCallback {
+    : public VideoEncodeAccelerator {
  public:
+  friend class MFAsyncCallbackProxy;
+
   using GetCommandBufferStubCB =
       base::RepeatingCallback<gpu::CommandBufferStub*()>;
   explicit MediaFoundationVideoEncodeAccelerator(
@@ -95,13 +97,6 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_command_buffer_helper_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner) override;
-
-  // IMFAsyncCallback implementation
-  IFACEMETHODIMP GetParameters(DWORD* pdwFlags, DWORD* pdwQueue) override;
-  IFACEMETHODIMP Invoke(IMFAsyncResult* pAsyncResult) override;
-  IFACEMETHODIMP_(ULONG) AddRef() override;
-  IFACEMETHODIMP_(ULONG) Release() override;
-  IFACEMETHODIMP QueryInterface(REFIID riid, void** ppv) override;
 
   struct GetCommandBufferHelperResult {
     GetCommandBufferHelperResult();
@@ -324,7 +319,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   ComMFTransform encoder_;
   ComCodecAPI codec_api_;
   ComMFMediaEventGenerator event_generator_;
-  base::AtomicRefCount async_callback_ref_{1};
+  Microsoft::WRL::ComPtr<IMFAsyncCallback> proxy_callback_;
 
   DWORD input_stream_id_ = 0u;
   DWORD output_stream_id_ = 0u;
