@@ -100,8 +100,11 @@ class MediaScrollView : public views::ScrollView,
   // |media_view_| is owned by the views hierarchy.
   raw_ptr<QuickSettingsMediaView> media_view_ = nullptr;
   raw_ptr<PaginationModel> model_ = nullptr;
-  base::ScopedObservation<PaginationModel, PaginationModelObserver> observer_{
-      this};
+  // TODO(crbug.com/498548994): remove when the MediaScrollView is no longer
+  // outliving the PaginationModel it observes.
+  base::ScopedObservation<PaginationModel,
+                          PaginationModelObserver>::LeakedDanglingUntriaged
+      observer_{this};
 };
 
 BEGIN_METADATA(MediaScrollView)
