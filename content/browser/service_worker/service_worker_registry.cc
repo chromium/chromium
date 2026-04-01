@@ -441,8 +441,8 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
     // `ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl`) will
     // eliminate this IPC overhead.
     storage::mojom::ServiceWorkerFindRegistrationResultPtr result =
-        service_worker_loader_helpers::CreateSyntheticRegistration(client_url,
-                                                                   key);
+        service_worker_loader_helpers::GetOrCreateSyntheticRegistration(
+            client_url, key);
     DidFindRegistrationForClientUrl(
         client_url, key, trace_event_id, std::move(callback),
         storage::mojom::ServiceWorkerDatabaseStatus::kOk, std::move(result),

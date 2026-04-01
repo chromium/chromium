@@ -9,6 +9,7 @@
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
+#include "base/containers/lru_cache.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -478,8 +479,30 @@ bool IsSyntheticResponseDryRunModeEnabled() {
 }
 
 storage::mojom::ServiceWorkerFindRegistrationResultPtr
-CreateSyntheticRegistration(const GURL& client_url,
-                            const blink::StorageKey& key) {
+GetOrCreateSyntheticRegistration(const GURL& client_url,
+                                 const blink::StorageKey& key) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Cache registration IDs based on the StorageKey so that subsequent calls
+  // for the same key return the same registration object. Using LRUCache to
+  // prevent unbounded memory growth.
+  constexpr int kMaxCachedRegistrations = 100;
+  static base::NoDestructor<base::LRUCache<blink::StorageKey, int64_t>>
+      key_to_registration_id_map(kMaxCachedRegistrations);
+
+  static int64_t synthetic_id_counter = 0;
+  int64_t registration_id;
+
+  auto it = key_to_registration_id_map->Get(key);
+  if (it != key_to_registration_id_map->end()) {
+    registration_id = it->second;
+  } else {
+    registration_id =
+        blink::mojom::kSyntheticResponseServiceWorkerRegistrationId -
+        synthetic_id_counter;
+    synthetic_id_counter++;
+    key_to_registration_id_map->Put({key, registration_id});
+  }
+
   GURL::Replacements replacements_for_script;
   replacements_for_script.ClearQuery();
   replacements_for_script.SetPathStr(
@@ -500,8 +523,7 @@ CreateSyntheticRegistration(const GURL& client_url,
   }
 
   auto data = storage::mojom::ServiceWorkerRegistrationData::New();
-  data->registration_id =
-      blink::mojom::kSyntheticResponseServiceWorkerRegistrationId;
+  data->registration_id = registration_id;
   data->scope = kScope;
   data->key = key;
   data->script = kScript;

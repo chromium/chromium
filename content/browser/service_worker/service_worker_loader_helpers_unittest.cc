@@ -11,6 +11,9 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/test/test_render_view_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -327,6 +330,37 @@ TEST(ServiceWorkerLoaderHelpersTest, PathRestriction_ServiceWorkerAllowed) {
   EXPECT_FALSE(IsPathRestrictionSatisfiedWithServiceWorkerAllowedHeader(
       GURL("http://example.com/foo/"), GURL("http://example.com/bar/sw.js"),
       "http://other.com/foo/"));
+}
+
+TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
+  content::BrowserTaskEnvironment task_environment;
+
+  // 1. Create a synthetic registration for origin A using the helper.
+  const GURL kClientUrlA("https://a.test/search?q=test");
+  const blink::StorageKey kKeyA =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrlA));
+  auto resultA = GetOrCreateSyntheticRegistration(kClientUrlA, kKeyA);
+  ASSERT_TRUE(resultA);
+  ASSERT_TRUE(resultA->registration);
+
+  // Subsequent call for the same storage key should return the same registration ID.
+  auto resultA_again = GetOrCreateSyntheticRegistration(kClientUrlA, kKeyA);
+  ASSERT_TRUE(resultA_again);
+  ASSERT_TRUE(resultA_again->registration);
+  EXPECT_EQ(resultA->registration->registration_id,
+            resultA_again->registration->registration_id);
+
+  // It should automatically get a different ID for a different key.
+  const GURL kClientUrlB("https://b.test/search?q=test");
+  const blink::StorageKey kKeyB =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrlB));
+  auto resultB = GetOrCreateSyntheticRegistration(kClientUrlB, kKeyB);
+  ASSERT_TRUE(resultB);
+  ASSERT_TRUE(resultB->registration);
+
+  // They should have different IDs.
+  EXPECT_NE(resultA->registration->registration_id,
+            resultB->registration->registration_id);
 }
 
 class ServiceWorkerLoaderHelpersSyntheticResponseTest
