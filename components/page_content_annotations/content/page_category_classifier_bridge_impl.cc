@@ -75,8 +75,10 @@ void PageCategoryClassifierBridgeImpl::OnCategoriesClassified(
           optimization_guide_common::mojom::LogSource::PAGE_CONTENT_ANNOTATIONS,
           optimization_guide_logger_)
           << base::StringPrintf(
-                 "Category classifier result (CategoryType, score): (%d, %f)",
-                 static_cast<int>(category.category_type), category.score);
+                 "URL: %s, Category classifier result (CategoryType, score): "
+                 "(%d, %f)",
+                 url.spec(), static_cast<int>(category.category_type),
+                 category.score);
     }
     switch (category.category_type) {
       case CategoryType::kEducation:
