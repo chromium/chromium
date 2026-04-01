@@ -783,6 +783,18 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentThemeForTesting() const {
   return GetThemeSpecificsFromCurrentTheme();
 }
 
+std::string ThemeSyncableService::GetSavedLocalThemeExtensionID() const {
+  if (!base::FeatureList::IsEnabled(syncer::kSeparateLocalAndAccountThemes)) {
+    return std::string();
+  }
+
+  std::optional<sync_pb::ThemeSpecifics> specifics = GetSavedLocalTheme();
+  if (specifics && specifics->use_custom_theme()) {
+    return specifics->custom_theme_id();
+  }
+  return std::string();
+}
+
 /* static */
 bool ThemeSyncableService::AreThemeSpecificsEquivalent(
     const sync_pb::ThemeSpecifics& a,

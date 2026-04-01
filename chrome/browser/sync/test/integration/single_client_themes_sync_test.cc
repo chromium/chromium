@@ -34,6 +34,8 @@
 #include "components/sync/test/test_matchers.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
+#include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
@@ -654,10 +656,22 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   UseCustomTheme(GetProfile(0), 0);
   ASSERT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
 
+  const std::string custom_theme_id = GetCustomTheme(0);
+  ASSERT_FALSE(custom_theme_id.empty());
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(GetProfile(0));
+  ASSERT_TRUE(registry->GetInstalledExtension(custom_theme_id));
+  ASSERT_FALSE(registry->disabled_extensions().Contains(custom_theme_id));
+
   GetFakeServer()->InjectEntity(CreateGrayscaleThemeEntity());
 
   ASSERT_TRUE(SetupSync());
   EXPECT_TRUE(GrayscaleThemeChecker(GetProfile(0)).Wait());
+
+  // The custom theme should remain installed but disabled.
+  EXPECT_TRUE(registry->GetInstalledExtension(custom_theme_id));
+  EXPECT_TRUE(registry->disabled_extensions().Contains(custom_theme_id));
 
   // Disable sync.
   ASSERT_TRUE(
@@ -666,6 +680,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,
   // Original local theme should get re-applied.
   EXPECT_TRUE(CustomThemeChecker(GetProfile(0)).Wait());
   EXPECT_FALSE(UsingGrayscaleTheme(GetProfile(0)));
+
+  EXPECT_TRUE(registry->GetInstalledExtension(custom_theme_id));
+  EXPECT_FALSE(registry->disabled_extensions().Contains(custom_theme_id));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientThemesSyncTestWithAccountThemesSeparation,

@@ -110,6 +110,10 @@ class ThemeSyncableService final : public syncer::SyncableService,
   std::string GetClientTag(
       const syncer::EntityData& entity_data) const override;
 
+  // Returns the extension ID of the saved local theme if it's an extension
+  // theme, or an empty string otherwise.
+  std::string GetSavedLocalThemeExtensionID() const;
+
   // Returns a ThemeSpecifics based on the currently applied theme.
   sync_pb::ThemeSpecifics GetThemeSpecificsFromCurrentThemeForTesting() const;
 

@@ -38,6 +38,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/color/color_mixers.h"
+#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/themes/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
@@ -1113,6 +1114,55 @@ TEST_F(ThemeServiceTest, ReinstallerRecoversDefaultTheme) {
   EXPECT_EQ(theme_service()->GetUserColor(), std::nullopt);
   EXPECT_EQ(theme_service()->GetBrowserColorVariant(),
             ui::mojom::BrowserColorVariant::kSystem);
+}
+
+TEST_F(ThemeServiceTest, RemoveUnusedThemesExemptsSavedLocalTheme) {
+  base::test::ScopedFeatureList feature_list{
+      syncer::kSeparateLocalAndAccountThemes};
+
+  ThemeScoper scoper1 = LoadUnpackedTheme();
+  ASSERT_EQ(scoper1.extension_id(), theme_service()->GetThemeID());
+
+  // Save the first theme as the saved local theme. This is achieved by invoking
+  // `WillStartInitialSync()` which this test assumes does precisely this
+  // (verified via ASSERT_EQ below).
+  theme_service()->GetThemeSyncableService()->WillStartInitialSync();
+  ASSERT_EQ(scoper1.extension_id(), theme_service()
+                                        ->GetThemeSyncableService()
+                                        ->GetSavedLocalThemeExtensionID());
+
+  // Install another theme. The first extension shouldn't be uninstalled as it's
+  // the current theme (when it was installed) and also because it's the saved
+  // local theme.
+  ThemeScoper scoper2 = LoadUnpackedTheme();
+  EXPECT_TRUE(IsExtensionDisabled(scoper1.extension_id()));
+  EXPECT_EQ(scoper2.extension_id(), theme_service()->GetThemeID());
+
+  // Both themes should still be installed.
+  EXPECT_TRUE(registry()->GetInstalledExtension(scoper1.extension_id()));
+  EXPECT_TRUE(registry()->GetInstalledExtension(scoper2.extension_id()));
+
+  // Trigger RemoveUnusedThemes. scoper2 is the current theme, so it shouldn't
+  // be removed. scoper1 is the saved local theme, so it also shouldn't be
+  // removed.
+  theme_service()->RemoveUnusedThemes();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(registry()->GetInstalledExtension(scoper1.extension_id()));
+  EXPECT_TRUE(registry()->GetInstalledExtension(scoper2.extension_id()));
+
+  // Now clear the saved local theme and try again. scoper1 should be removed
+  // now because it's neither the current theme nor the saved local theme.
+  pref_service()->ClearPref(prefs::kSavedLocalTheme);
+  ASSERT_TRUE(theme_service()
+                  ->GetThemeSyncableService()
+                  ->GetSavedLocalThemeExtensionID()
+                  .empty());
+  theme_service()->RemoveUnusedThemes();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(registry()->GetInstalledExtension(scoper1.extension_id()));
+  EXPECT_TRUE(registry()->GetInstalledExtension(scoper2.extension_id()));
 }
 
 }  // namespace theme_service_internal

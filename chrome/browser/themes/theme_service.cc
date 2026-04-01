@@ -532,13 +532,19 @@ void ThemeService::RemoveUnusedThemes() {
   }
 
   std::string current_theme = GetThemeID();
+  std::string saved_local_theme;
+  if (theme_syncable_service_) {
+    saved_local_theme =
+        theme_syncable_service_->GetSavedLocalThemeExtensionID();
+  }
   std::vector<std::string> remove_list;
   const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile_)
           ->GenerateInstalledExtensionsSet();
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
   for (const auto& extension : extensions) {
-    if (extension->is_theme() && extension->id() != current_theme) {
+    if (extension->is_theme() && extension->id() != current_theme &&
+        extension->id() != saved_local_theme) {
       // Only uninstall themes which are not disabled or are disabled with
       // reason DISABLE_USER_ACTION. We cannot blanket uninstall all disabled
       // themes because externally installed themes are initially disabled.
