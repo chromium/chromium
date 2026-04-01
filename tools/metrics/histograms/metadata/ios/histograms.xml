@@ -5521,32 +5521,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.PromosManager.Promo.DisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-11-03">
-  <owner>bwwilliams@google.com</owner>
-  <owner>rkgibson@google.com</owner>
-  <owner>huitingyu@google.com</owner>
-  <summary>
-    Logs which promo failed to display. This happens when a promo is requested
-    for display, but isn't properly registered. This seldom happens in practice,
-    but may happen during manual testing by disabling a promo right before the
-    Promos Manager attempts to display it.
-  </summary>
-</histogram>
-
-<histogram name="IOS.PromosManager.Promo.ForcedDisplayFailure"
-    enum="IOSPromosManagerPromo" expires_after="2024-11-03">
-  <owner>bwwilliams@google.com</owner>
-  <owner>rkgibson@google.com</owner>
-  <owner>huitingyu@google.com</owner>
-  <summary>
-    Logs which forced promo failed to display. This happens when a promo is
-    forced for display (via Experimental Settings toggle,) but isn't properly
-    registered (via chrome://flags). This seldom happens in practice, but may
-    happen during manual testing.
-  </summary>
-</histogram>
-
 <histogram name="IOS.PromosManager.Promo.Type" enum="IOSPromosManagerPromoType"
     expires_after="2026-09-27">
   <owner>bwwilliams@google.com</owner>

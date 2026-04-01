@@ -405,23 +405,7 @@
     //
     // These are niche edge cases that almost exclusively occur during local,
     // manual testing.
-    std::optional<promos_manager::Promo> maybeForcedPromo =
-        promos_manager::PromoForName(base::SysNSStringToUTF8(
-            experimental_flags::GetForcedPromoToDisplay()));
-
-    if (maybeForcedPromo.has_value()) {
-      promos_manager::Promo forcedPromo = maybeForcedPromo.value();
-
-      if ([self isPromoUnregistered:forcedPromo]) {
-        base::UmaHistogramEnumeration(
-            "IOS.PromosManager.Promo.ForcedDisplayFailure", forcedPromo);
-      }
-    } else {
-      base::UmaHistogramEnumeration("IOS.PromosManager.Promo.DisplayFailure",
-                                    promo);
-
-      [self.mediator deregisterPromo:promo];
-    }
+    [self.mediator deregisterPromo:promo];
   }
 }
 
@@ -700,19 +684,6 @@
   }
 
   return result;
-}
-
-// Checks if `promo` is properly registered within this coordinator.
-- (BOOL)isPromoUnregistered:(promos_manager::Promo)promo {
-  auto handler_it = _displayHandlerPromos.find(promo);
-  auto provider_it = _viewProviderPromos.find(promo);
-  auto bannered_provider_it = _banneredViewProviderPromos.find(promo);
-  auto alert_provider_it = _alertProviderPromos.find(promo);
-
-  return handler_it == _displayHandlerPromos.end() &&
-         provider_it == _viewProviderPromos.end() &&
-         bannered_provider_it == _banneredViewProviderPromos.end() &&
-         alert_provider_it == _alertProviderPromos.end();
 }
 
 @end
