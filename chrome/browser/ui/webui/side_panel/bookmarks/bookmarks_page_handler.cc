@@ -558,7 +558,9 @@ void BookmarksPageHandler::GetIncognitoAvailableCount(
   for (const int64_t id : node_ids) {
     const bookmarks::BookmarkNode* bookmark =
         bookmarks::GetBookmarkNodeByID(bookmark_model, id);
-    if (bookmarks::IsOpenInIncognitoAllowed({bookmark}, profile)) {
+    // Check if the bookmark is present (i.e. not deleted) and if it is allowed
+    // in incognito mode.
+    if (bookmark && bookmarks::IsOpenInIncognitoAllowed({bookmark}, profile)) {
       count++;
     }
   }
