@@ -7,6 +7,9 @@
 #import <algorithm>
 
 #import "base/check.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "ios/chrome/common/material_timing.h"
 
 namespace {
 // Updates the fractional `progress` of the fullscreen UI layer by interpreting
@@ -52,6 +55,37 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
     return;
   }
 
+  NotifyObserversOfUpdatedState();
+}
+
+void FullscreenBrowserAgent::EnterFullscreen(PassKey, bool animated) {
+  UpdateProgressAndBroadcast(0.0, 0.0, animated);
+}
+
+void FullscreenBrowserAgent::ExitFullscreen(PassKey, bool animated) {
+  UpdateProgressAndBroadcast(1.0, 1.0, animated);
+}
+
+void FullscreenBrowserAgent::UpdateProgressAndBroadcast(CGFloat top_progress,
+                                                        CGFloat bottom_progress,
+                                                        bool animated) {
+  if (top_progress_ == top_progress && bottom_progress_ == bottom_progress) {
+    return;
+  }
+  top_progress_ = top_progress;
+  bottom_progress_ = bottom_progress;
+
+  if (animated) {
+    auto update_state = base::CallbackToBlock(
+        base::BindOnce(&FullscreenBrowserAgent::NotifyObserversOfUpdatedState,
+                       weak_ptr_factory_.GetWeakPtr()));
+    [UIView animateWithDuration:kMaterialDuration1 animations:update_state];
+  } else {
+    NotifyObserversOfUpdatedState();
+  }
+}
+
+void FullscreenBrowserAgent::NotifyObserversOfUpdatedState() {
   updating_insets_ = true;
   UIEdgeInsets old_insets = insets_;
   insets_ = UIEdgeInsetsZero;
@@ -65,14 +99,6 @@ void FullscreenBrowserAgent::IncrementalScroll(CGFloat amount, PassKey) {
       observer.DidUpdateState(this);
     }
   }
-}
-
-void FullscreenBrowserAgent::EnterFullscreen(PassKey, bool animated) {
-  // TODO(crbug.com/496220121): Enter fullscreen.
-}
-
-void FullscreenBrowserAgent::ExitFullscreen(PassKey, bool animated) {
-  // TODO(crbug.com/496220121): Exit fullscreen.
 }
 
 void FullscreenBrowserAgent::IncrementDisabledCounter(PassKey pass_key) {

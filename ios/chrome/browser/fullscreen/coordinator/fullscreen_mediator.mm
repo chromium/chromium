@@ -35,6 +35,9 @@ namespace {
 inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   return FullscreenMediatorPassKeyProvider::passkey();
 }
+
+// The threshold for direction-based snapping.
+const CGFloat kFullscreenSnapThreshold = 10.0;
 }  // namespace
 
 @interface FullscreenMediator () <CRWWebStateObserver,
@@ -61,6 +64,10 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
       _omniboxPositionObserver;
   CGFloat _lastContentOffset;
   BOOL _isBottomOmnibox;
+
+  // Scroll distance since the start of the drag, or since the scroll direction
+  // changed.
+  CGFloat _scrollTotal;
 }
 
 #pragma mark - Public
@@ -210,6 +217,15 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
   CGFloat delta = currentContentOffset - _lastContentOffset;
   _lastContentOffset = currentContentOffset;
 
+  if (delta != 0) {
+    // If the direction changed, reset the _scrollTotal.
+    if ((delta > 0 && _scrollTotal < 0) || (delta < 0 && _scrollTotal > 0)) {
+      _scrollTotal = delta;
+    } else {
+      _scrollTotal += delta;
+    }
+  }
+
   _browserAgent->IncrementalScroll(
       delta, FullscreenMediatorPassKeyProvider::passkey());
 }
@@ -217,24 +233,20 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 - (void)webViewScrollViewWillBeginDragging:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
   _lastContentOffset = webViewScrollViewProxy.contentOffset.y;
-}
-
-- (void)webViewScrollViewWillEndDragging:
-            (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
-                            withVelocity:(CGPoint)velocity
-                     targetContentOffset:(inout CGPoint*)targetContentOffset {
-  // TODO(crbug.com/491845727): Implement snapping animations.
+  _scrollTotal = 0;
 }
 
 - (void)webViewScrollViewDidEndDragging:
             (CRWWebViewScrollViewProxy*)webViewScrollViewProxy
                          willDecelerate:(BOOL)decelerate {
-  // TODO(crbug.com/491845727): Implement snapping animations.
+  if (!decelerate) {
+    [self snap];
+  }
 }
 
 - (void)webViewScrollViewDidEndDecelerating:
     (CRWWebViewScrollViewProxy*)webViewScrollViewProxy {
-  // TODO(crbug.com/491845727): Implement snapping animations.
+  [self snap];
 }
 
 - (void)webViewScrollViewWillBeginZooming:
@@ -279,6 +291,40 @@ inline base::PassKey<FullscreenMediatorPassKeyProvider> PassKey() {
 
 - (void)applicationWillEnterForeground {
   [self exitFullscreenWithAnimation:NO];
+}
+
+#pragma mark - Private
+
+// Snaps the fullscreen progress to 0.0 or 1.0.
+- (void)snap {
+  CGFloat topProgress = _browserAgent->top_progress();
+  CGFloat bottomProgress = _browserAgent->bottom_progress();
+  if ((topProgress == 0.0 && bottomProgress == 0.0) ||
+      (topProgress == 1.0 && bottomProgress == 1.0)) {
+    return;
+  }
+
+  // The type of snap to be executed.
+  enum class SnapType { kExit, kEnter };
+  SnapType snapType = SnapType::kExit;
+
+  if (_scrollTotal > kFullscreenSnapThreshold) {
+    snapType = SnapType::kEnter;
+  } else if (_scrollTotal < -kFullscreenSnapThreshold) {
+    snapType = SnapType::kExit;
+  } else {
+    CGFloat progress = topProgress;
+    if (_browserAgent->min_insets().top == _browserAgent->max_insets().top) {
+      progress = bottomProgress;
+    }
+    snapType = progress >= 0.5 ? SnapType::kExit : SnapType::kEnter;
+  }
+
+  if (snapType == SnapType::kExit) {
+    _browserAgent->ExitFullscreen(PassKey(), /*animated=*/true);
+  } else {
+    _browserAgent->EnterFullscreen(PassKey(), /*animated=*/true);
+  }
 }
 
 @end

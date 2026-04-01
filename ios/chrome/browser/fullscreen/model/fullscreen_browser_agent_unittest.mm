@@ -186,6 +186,43 @@ TEST_F(FullscreenBrowserAgentTest, IncrementalScroll) {
   agent->RemoveObserver(&observer2);
 }
 
+// Tests that EnterFullscreen and ExitFullscreen correctly update progress.
+TEST_F(FullscreenBrowserAgentTest, EnterExitFullscreen) {
+  FullscreenBrowserAgent::CreateForBrowser(browser_.get());
+  FullscreenBrowserAgent* agent =
+      FullscreenBrowserAgent::FromBrowser(browser_.get());
+
+  TestFullscreenBrowserAgentObserver base_observer;
+  agent->AddObserver(&base_observer);
+
+  // Initialize ranges. Top delta = 40.
+  RangeTestFullscreenBrowserAgentObserver observer1(UIRectEdgeTop, 10.0, 50.0);
+  agent->AddObserver(&observer1);
+  InvalidateInsetRange(agent);
+
+  EXPECT_EQ(1.0, agent->top_progress());
+
+  // Enter Fullscreen.
+  agent->EnterFullscreen(PassKey(), /*animated=*/false);
+  EXPECT_EQ(0.0, agent->top_progress());
+  EXPECT_EQ(10.0, agent->insets().top);
+  EXPECT_TRUE(base_observer.will_update_called_);
+  EXPECT_TRUE(base_observer.did_update_called_);
+
+  base_observer.will_update_called_ = false;
+  base_observer.did_update_called_ = false;
+
+  // Exit Fullscreen.
+  agent->ExitFullscreen(PassKey(), /*animated=*/false);
+  EXPECT_EQ(1.0, agent->top_progress());
+  EXPECT_EQ(50.0, agent->insets().top);
+  EXPECT_TRUE(base_observer.will_update_called_);
+  EXPECT_TRUE(base_observer.did_update_called_);
+
+  agent->RemoveObserver(&base_observer);
+  agent->RemoveObserver(&observer1);
+}
+
 // Tests that the disabled counter increments and decrements correctly.
 TEST_F(FullscreenBrowserAgentTest, DisabledCounter) {
   FullscreenBrowserAgent::CreateForBrowser(browser_.get());
