@@ -47,6 +47,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
+#include "components/collaboration/public/features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -2298,7 +2299,9 @@ class WebUIPinnedToolbarActionsBrowserTest
              features::kSkipIPCChannelPausingForNonGuests,
              features::kWebUIInProcessResourceLoadingV2,
              features::kInitialWebUISyncNavStartToCommit,
-             tabs::kHorizontalTabStripComboButton},
+             tabs::kHorizontalTabStripComboButton,
+             // Facilitate testing kActionSidePanelShowComments
+             collaboration::features::kCollaborationComments},
             {}) {}
 
   void SetUpOnMainThread() override {
@@ -2403,6 +2406,11 @@ class WebUIPinnedToolbarActionsBrowserTest
            toolbar_ui_api::mojom::PinnedToolbarAction::kTaskManager},
           {kActionDevTools,
            toolbar_ui_api::mojom::PinnedToolbarAction::kDevTools},
+          {kActionSendSharedTabGroupFeedback,
+           toolbar_ui_api::mojom::PinnedToolbarAction::
+               kSendSharedTabGroupFeedback},
+          {kActionSidePanelShowComments,
+           toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowComments},
       };
 };
 
@@ -2583,4 +2591,39 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, StateAccessors) {
   model_->UpdatePinnedState(kActionPrint, false);
   EXPECT_FALSE(view->IsActionPinned(kActionPrint));
   EXPECT_FALSE(view->IsActionPoppedOut(kActionPrint));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       SetActionElementIdentifier) {
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  actions::ActionId action_id = kActionSendSharedTabGroupFeedback;
+  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action =
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSendSharedTabGroupFeedback;
+
+  model_->UpdatePinnedState(action_id, true);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));
+
+  // Set the identifier.
+  webui_toolbar_view->GetPinnedToolbarActions()->SetActionElementIdentifier(
+      action_id, kSharedTabGroupFeedbackElementId);
+
+  // Verify it is tracked by the C++ interaction system.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return BrowserElements::From(browser())->GetElement(
+               kSharedTabGroupFeedbackElementId) != nullptr;
+  }));
+
+  // Clear the identifier.
+  webui_toolbar_view->GetPinnedToolbarActions()->SetActionElementIdentifier(
+      action_id, ui::ElementIdentifier());
+
+  // Verify it is no longer tracked.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return BrowserElements::From(browser())->GetElement(
+               kSharedTabGroupFeedbackElementId) == nullptr;
+  }));
 }

@@ -28,7 +28,7 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 import {OmniboxTextColor} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 
-export {OmniboxTextColor, ReadonlyOmniboxElement};
+export {OmniboxTextColor, ReadonlyOmniboxElement, TrackedElementManager};
 // clang-format on
 
 const TRACKED_ELEMENTS: Array<{selector: string, id: string}> = [

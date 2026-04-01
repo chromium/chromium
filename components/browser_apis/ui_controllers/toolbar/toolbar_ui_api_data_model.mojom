@@ -203,6 +203,8 @@ enum PinnedToolbarAction {
  kTaskManager,
  kDevTools,
  kTabSearch,
+ kSendSharedTabGroupFeedback,
+ kSidePanelShowComments,
 };
 
 // The state of a pinned toolbar action button that should be displayed.
@@ -215,6 +217,9 @@ struct PinnedToolbarActionState {
 
   // Should this button appear enabled?
   bool enabled;
+
+  // The ElementIdentifier for this action, if any.
+  string? element_id;
 };
 
 struct LocationBarState {

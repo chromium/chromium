@@ -89,6 +89,11 @@ class WebUIToolbarUI : public TopChromeWebUIController {
   void WebUIRenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override;
 
+  // Returns the list of known element identifiers. These elements are HTML
+  // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
+  // UIs.
+  static const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,
                            BindInterfaceBrowserControlsService);
@@ -102,11 +107,6 @@ class WebUIToolbarUI : public TopChromeWebUIController {
 
   void InitBrowserControlsService(DependencyProvider& dependency_provider);
   void InitToolbarUIService(DependencyProvider& dependency_provider);
-
-  // Returns the list of known element identifiers. These elements are HTML
-  // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
-  // UIs.
-  const std::vector<ui::ElementIdentifier> GetKnownElementIdentifiers() const;
 
   std::unique_ptr<browser_controls_api::BrowserControlsService>
       browser_controls_service_;
