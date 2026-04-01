@@ -181,7 +181,7 @@ TEST_F(AutofillAIEntityEditMediatorTest,
 
   EXPECT_TRUE(consumer_.showLoadingStateCalled);
   EXPECT_TRUE(consumer_.hideLoadingStateCalled);
-  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+  EXPECT_TRUE(consumer_.didFinishSavingToLocalAsFallbackCalled);
 
   // Verify the fallback local entity was saved asynchronously.
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(

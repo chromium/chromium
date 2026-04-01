@@ -35,8 +35,11 @@
 // YES if `hideLoadingState` was called on the consumer.
 @property(nonatomic, assign) BOOL hideLoadingStateCalled;
 
-// YES if `didFinishSaving` was called on the consumer.
+// YES if `didFinishSavingWithLocalFallback:` was called with NO.
 @property(nonatomic, assign) BOOL didFinishSavingCalled;
+
+// YES if `didFinishSavingWithLocalFallback:` was called with YES.
+@property(nonatomic, assign) BOOL didFinishSavingToLocalAsFallbackCalled;
 
 @end
 

@@ -235,8 +235,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.interactivePopGestureRecognizer.enabled = YES;
 }
 
-- (void)didFinishSaving {
-  [self.delegate didTapCloseButton:self];
+- (void)didFinishSavingWithLocalFallback:(BOOL)isLocalFallback {
+  if (isLocalFallback) {
+    [self.delegate didFinishSavingToLocalAsFallback:self];
+  } else {
+    [self.delegate didTapCloseButton:self];
+  }
 }
 
 #pragma mark - AutofillAIEntityEditDateItemDelegate

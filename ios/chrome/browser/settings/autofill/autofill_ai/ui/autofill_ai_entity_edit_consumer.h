@@ -37,7 +37,9 @@
 - (void)hideLoadingState;
 
 // Instructs the consumer that saving is complete and it can now dismiss.
-- (void)didFinishSaving;
+// `isLocalFallback` is YES if a server save failed and the item was saved
+// locally.
+- (void)didFinishSavingWithLocalFallback:(BOOL)isLocalFallback;
 
 @end
 

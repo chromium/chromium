@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h",
   "+ios/chrome/browser/autofill/model/autofill_ai_util.h",
   "+ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h",
   "+ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h",

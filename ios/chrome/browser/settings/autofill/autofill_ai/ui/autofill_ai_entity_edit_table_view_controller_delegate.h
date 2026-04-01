@@ -25,6 +25,10 @@
 - (void)didTapEditInWalletButton:
     (AutofillAIEntityEditTableViewController*)viewController;
 
+// Called when the save finishes but had to fall back to local storage.
+- (void)didFinishSavingToLocalAsFallback:
+    (AutofillAIEntityEditTableViewController*)viewController;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_EDIT_TABLE_VIEW_CONTROLLER_DELEGATE_H_

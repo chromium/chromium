@@ -215,7 +215,7 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
   } else {
     // Standard local save.
     _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
-    [self.consumer didFinishSaving];
+    [self.consumer didFinishSavingWithLocalFallback:NO];
   }
 }
 
@@ -255,16 +255,15 @@ NSDateFormatter* CreateDateFormatterForLocale(const std::string& locale) {
 
   if (savedEntity.has_value()) {
     _entityDataManager->AddOrUpdateEntityInstance(std::move(*savedEntity));
+    [self.consumer didFinishSavingWithLocalFallback:NO];
   } else {
     // Wallet save failed, fallback to Local.
     autofill::EntityInstance localEntity = originalEntity.CopyWithNewRecordType(
         autofill::EntityInstance::RecordType::kLocal);
     _entityDataManager->AddOrUpdateEntityInstance(std::move(localEntity));
 
-    // TODO(crbug.com/493915491): Show local save alert.
+    [self.consumer didFinishSavingWithLocalFallback:YES];
   }
-
-  [self.consumer didFinishSaving];
 }
 
 @end

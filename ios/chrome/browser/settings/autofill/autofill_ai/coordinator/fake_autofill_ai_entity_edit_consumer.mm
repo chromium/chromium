@@ -20,8 +20,12 @@
   self.hideLoadingStateCalled = YES;
 }
 
-- (void)didFinishSaving {
-  self.didFinishSavingCalled = YES;
+- (void)didFinishSavingWithLocalFallback:(BOOL)isLocalFallback {
+  if (isLocalFallback) {
+    self.didFinishSavingToLocalAsFallbackCalled = YES;
+  } else {
+    self.didFinishSavingCalled = YES;
+  }
 }
 
 @end

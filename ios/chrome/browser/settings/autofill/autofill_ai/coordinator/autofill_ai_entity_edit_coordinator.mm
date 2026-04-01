@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -226,6 +228,18 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
   [sceneHandler
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:walletURL]];
+}
+
+- (void)didFinishSavingToLocalAsFallback:
+    (AutofillAIEntityEditTableViewController*)viewController {
+  id<AutofillCommands> autofillHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AutofillCommands);
+
+  autofill::AutofillAiErrorDialogContext errorContext;
+  errorContext.type = autofill::AutofillAiErrorDialogType::kTypeLocalSave;
+  [autofillHandler showAutofillAiErrorDialog:errorContext];
+
+  [self.delegate autofillAIEntityEditCoordinatorDidFinish:self];
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
