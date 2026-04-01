@@ -3433,13 +3433,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     bitfields_.SetContainsSelectionFocus(b);
   }
 
-  // Returns true if this layout object is created for an element which will be
-  // changing behaviour for overflow: visible.
-  // See
-  // https://groups.google.com/a/chromium.org/g/blink-dev/c/MuTeW_AFgxA/m/IlT4QVEfAgAJ
-  // for details.
-  bool BelongsToElementChangingOverflowBehaviour() const;
-
   // Should be called after this object has been reinserted into the
   // layout-tree after a style update. Invoked when its out-of-flow/in-flow
   // state changes.

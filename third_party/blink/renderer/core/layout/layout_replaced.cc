@@ -81,29 +81,14 @@ void LayoutReplaced::StyleDidChange(
 
   // Replaced elements can have border-radius clips without clipping overflow;
   // the overflow clipping case is already covered in LayoutBox::StyleDidChange
-  if (old_style && diff.border_radius_changed) {
+  if (diff.border_radius_changed) {
     SetNeedsPaintPropertyUpdate();
   }
 
-  bool had_style = !!old_style;
-  float old_zoom = had_style ? old_style->EffectiveZoom()
-                             : ComputedStyleInitialValues::InitialZoom();
-  if (Style() && StyleRef().EffectiveZoom() != old_zoom)
+  const float old_zoom = old_style ? old_style->EffectiveZoom()
+                                   : ComputedStyleInitialValues::InitialZoom();
+  if (StyleRef().EffectiveZoom() != old_zoom) {
     NaturalSizeChanged();
-
-  if ((IsLayoutImage() || IsVideo() || IsCanvas()) && !ClipsToContentBox() &&
-      !StyleRef().ObjectPropertiesPreventReplacedOverflow()) {
-    static constexpr const char kErrorMessage[] =
-        "Specifying 'overflow: visible' on img, video and canvas tags may "
-        "cause them to produce visual content outside of the element bounds. "
-        "See "
-        "https://github.com/WICG/view-transitions/blob/main/"
-        "debugging_overflow_on_images.md for details.";
-    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-        mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning, kErrorMessage);
-    constexpr bool kDiscardDuplicates = true;
-    GetDocument().AddConsoleMessage(console_message, kDiscardDuplicates);
   }
 }
 
