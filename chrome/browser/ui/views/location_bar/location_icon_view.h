@@ -142,7 +142,7 @@ class LocationIconView : public IconLabelBubbleView {
   void UpdateTextVisibility(bool suppress_animations);
 
   // Updates the accessible properties based on if we are editing or empty.
-  void SetAccessibleProperties(bool is_initialization);
+  void SetAccessibleProperties();
 
   // Updates Icon based on the current state and theme.
   void UpdateIcon();

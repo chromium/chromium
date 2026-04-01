@@ -22,6 +22,7 @@ source_set("location_bar") {
       "location_bar_bubble_delegate_view.h",
       "location_bar_layout.h",
       "location_bar_view.h",
+      "location_icon_state_helper.h",
       "location_icon_view.h",
       "merchant_trust_chip_button_controller.h",
       "omnibox_chip_button.h",
@@ -83,6 +84,7 @@ source_set("impl") {
       "location_bar_bubble_delegate_view.cc",
       "location_bar_layout.cc",
       "location_bar_view.cc",
+      "location_icon_state_helper.cc",
       "location_icon_view.cc",
       "merchant_trust_chip_button_controller.cc",
       "omnibox_chip_button.cc",
@@ -274,6 +276,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "icon_label_bubble_view_unittest.cc",
+    "location_icon_state_helper_unittest.cc",
     "location_icon_view_unittest.cc",
   ]
   deps = [
@@ -282,6 +285,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/test:test_support",
     "//components/omnibox/browser",
+    "//components/omnibox/browser:vector_icons",
     "//components/strings:components_strings",
     "//testing/gtest",
     "//ui/events:gesture_detection",

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_util.h"
+#include "chrome/browser/ui/views/location_bar/location_icon_state_helper.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -76,7 +77,7 @@ LocationIconView::LocationIconView(
   // Readability is guaranteed by the omnibox theme.
   label()->SetAutoColorReadabilityEnabled(false);
 
-  SetAccessibleProperties(/*is_initialization*/ true);
+  SetAccessibleProperties();
 
   ConfigureInkDropForRefresh2023(this, kColorOmniboxIconHover,
                                  kColorOmniboxIconPressed);
@@ -191,22 +192,8 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
 }
 
 bool LocationIconView::GetShowText() const {
-  if (delegate_->IsEditingOrEmpty()) {
-    return false;
-  }
-
-  const auto* location_bar_model = delegate_->GetLocationBarModel();
-  const GURL& url = location_bar_model->GetURL();
-  if (url.SchemeIs(content::kChromeUIScheme) ||
-      url.SchemeIs(extensions::kExtensionScheme) ||
-      url.SchemeIs(url::kFileScheme) ||
-      url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
-      (location_bar_model->IsContextualTasksPage() &&
-       contextual_tasks::ShouldShowExpandedSecurityChip())) {
-    return true;
-  }
-
-  return !location_bar_model->GetSecureDisplayText().empty();
+  return location_bar::ShouldShowSecurityChipText(
+      delegate_->GetLocationBarModel(), delegate_->IsEditingOrEmpty());
 }
 
 const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
@@ -214,57 +201,15 @@ const views::InkDrop* LocationIconView::get_ink_drop_for_testing() {
 }
 
 std::u16string LocationIconView::GetText() const {
-  if (delegate_->IsEditingOrEmpty()) {
-    return std::u16string();
-  }
-
-  if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
-          content::kChromeUIScheme) ||
-      (contextual_tasks::ShouldShowExpandedSecurityChip() &&
-       delegate_->GetLocationBarModel()->IsContextualTasksPage())) {
-    return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
-  }
-
-  if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(url::kFileScheme)) {
-    return l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE);
-  }
-
-  if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
-          dom_distiller::kDomDistillerScheme)) {
-    return l10n_util::GetStringUTF16(IDS_OMNIBOX_READER_MODE);
-  }
-
-  if (delegate_->GetWebContents()) {
-    // On ChromeOS, this can be called using web_contents from
-    // SimpleWebViewDialog::GetWebContents() which always returns null.
-    // TODO(crbug.com/40501128) Remove the null check and make
-    // SimpleWebViewDialog::GetWebContents return the proper web contents
-    // instead.
-    const std::u16string extension_name =
-        extensions::ui_util::GetEnabledExtensionNameForUrl(
-            delegate_->GetLocationBarModel()->GetURL(),
-            delegate_->GetWebContents()->GetBrowserContext());
-    if (!extension_name.empty()) {
-      return extension_name;
-    }
-  }
-
-  return delegate_->GetLocationBarModel()->GetSecureDisplayText();
+  return location_bar::GetSecurityChipText(delegate_->GetLocationBarModel(),
+                                           delegate_->GetWebContents(),
+                                           delegate_->IsEditingOrEmpty());
 }
 
 bool LocationIconView::GetAnimateTextVisibilityChange() const {
-  if (delegate_->IsEditingOrEmpty()) {
-    return false;
-  }
-
-  SecurityLevel level = GetSecurityLevel();
-  // Do not animate transitions from WARNING to DANGEROUS, since
-  // the transition can look confusing/messy.
-  if (level == SecurityLevel::DANGEROUS &&
-      last_update_security_level_ == SecurityLevel::WARNING) {
-    return false;
-  }
-  return (level == SecurityLevel::DANGEROUS || level == SecurityLevel::WARNING);
+  return location_bar::ShouldAnimateSecurityChipTextChange(
+      delegate_->IsEditingOrEmpty(), last_update_security_level_,
+      GetSecurityLevel());
 }
 
 void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
@@ -280,27 +225,27 @@ void LocationIconView::UpdateTextVisibility(bool suppress_animations) {
   }
 }
 
-void LocationIconView::SetAccessibleProperties(bool is_initialization) {
-  ax::mojom::Role role = delegate_->IsEditingOrEmpty()
-                             ? ax::mojom::Role::kImage
-                             : ax::mojom::Role::kPopUpButton;
+void LocationIconView::SetAccessibleProperties() {
+  auto state = location_bar::GetSecurityChipAccessibilityState(
+      delegate_->GetLocationBarModel(), delegate_->IsEditingOrEmpty(),
+      label()->GetText());
 
-  const std::u16string name =
-      delegate_->IsEditingOrEmpty()
-          ? l10n_util::GetStringUTF16(IDS_ACC_SEARCH_ICON)
-          : GetViewAccessibility().GetCachedName();
+  GetViewAccessibility().SetRole(state.role);
+  if (state.name.empty()) {
+    GetViewAccessibility().SetName(
+        std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(state.name);
+  }
 
-  // If no display text exists, ensure that the accessibility label is added.
-  const std::u16string description =
-      delegate_->IsEditingOrEmpty()
-          ? GetViewAccessibility().GetCachedDescription()
-      : label()->GetText().empty()
-          ? delegate_->GetLocationBarModel()->GetSecureAccessibilityText()
-          : std::u16string();
-
-  GetViewAccessibility().SetRole(role);
-  GetViewAccessibility().SetName(name);
-  GetViewAccessibility().SetDescription(description);
+  if (!state.description.empty() || delegate_->IsEditingOrEmpty() ||
+      !label()->GetText().empty()) {
+    if (delegate_->IsEditingOrEmpty()) {
+      GetViewAccessibility().RemoveDescription();
+    } else {
+      GetViewAccessibility().SetDescription(state.description);
+    }
+  }
 }
 
 void LocationIconView::UpdateIcon() {
@@ -375,7 +320,7 @@ void LocationIconView::Update(bool suppress_animations,
   // can depend on the container background.
   UpdateBackground();
   UpdateIcon();
-  SetAccessibleProperties(/*is_initialization*/ false);
+  SetAccessibleProperties();
   // The label text color may have changed in response to changes in security
   // level.
   UpdateLabelColors();
@@ -386,9 +331,7 @@ void LocationIconView::Update(bool suppress_animations,
 
   bool is_editing_or_empty = delegate_->IsEditingOrEmpty();
   // The tooltip should be shown if we are not editing or empty.
-  SetTooltipText(is_editing_or_empty
-                     ? std::u16string()
-                     : l10n_util::GetStringUTF16(IDS_TOOLTIP_LOCATION_ICON));
+  SetTooltipText(location_bar::GetSecurityChipTooltipText(is_editing_or_empty));
 
   // We should only enable/disable the InkDrop if the editing state has changed,
   // as the drop gets recreated when views::InkDrop::Get(this)->SetMode() is
