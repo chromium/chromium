@@ -589,8 +589,8 @@ class ExtensionUpdaterTest : public testing::Test {
   }
 
   bool CanUseUpdateService(ExtensionUpdater* updater,
-                           const std::string& extension_id) {
-    return updater->CanUseUpdateService(extension_id);
+                           const Extension* extension) {
+    return updater->CanUseUpdateService(extension, nullptr);
   }
 
   // Adds a Result with the given data to results.
@@ -2634,7 +2634,7 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   EXPECT_CALL(update_service,
               StartUpdateCheck(
                   ::testing::Field(&ExtensionUpdateCheckParams::update_info,
-                                   ::testing::SizeIs(2)),
+                                   ::testing::SizeIs(3)),
                   _, _));
 
   SetExtensions(enabled_extensions, ExtensionList(), blocklisted_extensions);
@@ -3031,29 +3031,23 @@ class UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl
 
 TEST_F(CanUseUpdateServiceTest, TestDefaults) {
   // Update service can only update webstore extensions when enabled.
-  EXPECT_TRUE(CanUseUpdateService(updater(), store_extension_->id()));
+  EXPECT_TRUE(CanUseUpdateService(updater(), store_extension_.get()));
   // ... and extensions with empty update URL.
-  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_->id()));
+  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_.get()));
   // It can't update off-store extensions.
-  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_->id()));
-  // ... or extensions with empty update URL converted from user script.
-  EXPECT_FALSE(CanUseUpdateService(updater(), userscript_extension_->id()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_.get()));
   // ... or extensions that don't exist.
-  EXPECT_FALSE(CanUseUpdateService(updater(), std::string(32, 'a')));
-  // ... or extensions with empty ID (is it possible?).
-  EXPECT_FALSE(CanUseUpdateService(updater(), ""));
+  EXPECT_FALSE(CanUseUpdateService(updater(), nullptr));
 }
 
 TEST_F(UpdateServiceCanUpdateFeatureEnabledNonDefaultUpdateUrl,
        CanUseUpdateServiceFeatureEnabledNonDefaultUpdateUrl) {
   // Update service can update extensions when the default webstore update url
   // is changed.
-  EXPECT_FALSE(CanUseUpdateService(updater(), store_extension_->id()));
-  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_->id()));
-  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_->id()));
-  EXPECT_FALSE(CanUseUpdateService(updater(), userscript_extension_->id()));
-  EXPECT_FALSE(CanUseUpdateService(updater(), std::string(32, 'a')));
-  EXPECT_FALSE(CanUseUpdateService(updater(), ""));
+  EXPECT_FALSE(CanUseUpdateService(updater(), store_extension_.get()));
+  EXPECT_TRUE(CanUseUpdateService(updater(), emptyurl_extension_.get()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), offstore_extension_.get()));
+  EXPECT_FALSE(CanUseUpdateService(updater(), nullptr));
 }
 
 // TODO(asargent) - (http://crbug.com/12780) add tests for:

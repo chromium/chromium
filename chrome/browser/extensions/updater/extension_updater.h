@@ -55,10 +55,9 @@ class ExtensionCache;
 class ExtensionPrefs;
 class ExtensionRegistrar;
 class ExtensionRegistry;
-class ExtensionSet;
-struct ExtensionUpdateCheckParams;
 class ExtensionUpdaterTest;
 class ExternalInstallManager;
+class PendingExtensionInfo;
 class PendingExtensionManager;
 
 // A class for doing auto-updates of installed Extensions. Used like this:
@@ -275,28 +274,27 @@ class ExtensionUpdater : public KeyedService,
   // or minus 0 to 20% (to help spread load evenly on servers).
   void ScheduleNextCheck();
 
-  // Add fetch records for extensions that are installed to the downloader,
-  // ignoring |pending_ids| so the extension isn't fetched again.
-  void AddToDownloader(const ExtensionSet* extensions,
-                       const std::set<ExtensionId>& pending_ids,
-                       int request_id,
-                       DownloadFetchPriority fetch_priority,
-                       ExtensionUpdateCheckParams* update_check_params);
-
-  // Adds |extension| to the downloader, providing it with |fetch_priority|,
-  // |request_id| and data extracted from the extension object.
-  // |fetch_priority| parameter notifies the downloader the priority of this
-  // extension update (either foreground or background).
-  bool AddExtensionToDownloader(const Extension& extension,
-                                int request_id,
-                                DownloadFetchPriority fetch_priority,
-                                bool is_corrupt_reinstall = false);
-
   // Conduct a check as scheduled by ScheduleNextCheck.
   void NextCheck();
 
   // Posted by CheckSoon().
   void DoCheckSoon();
+
+  // Returns an ExtensionDownloaderTask appropriate for updating |extension|.
+  ExtensionDownloaderTask ToDownloaderTask(const Extension& extension,
+                                           int request_id,
+                                           DownloadFetchPriority fetch_priority,
+                                           bool is_corrupt_reinstall);
+
+  // Returns an ExtensionDownloaderTask appropriate for updating |info|.
+  ExtensionDownloaderTask ToDownloaderTask(const ExtensionId& id,
+                                           const PendingExtensionInfo& info,
+                                           int request_id,
+                                           DownloadFetchPriority fetch_priority,
+                                           bool is_corrupt_reinstall);
+
+  // Removes extensions that can't or shouldn't be updated from the `ids`.
+  void EraseUnupdatableIds(std::set<ExtensionId>& ids) const;
 
   // Implementation of ExtensionDownloaderDelegate.
   void OnExtensionDownloadStageChanged(const ExtensionId& id,
@@ -358,9 +356,11 @@ class ExtensionUpdater : public KeyedService,
   void OnInstallerDone(const base::UnguessableToken& token,
                        const std::optional<CrxInstallError>& error);
 
-  // This function verifies if |extension_id| can be updated using
-  // UpdateService.
-  bool CanUseUpdateService(const ExtensionId& extension_id) const;
+  // Returns whether UpdateService can update an extension. The extension may be
+  // represented by either an Extension or PendingExtensionInfo) depending on
+  // whether it is installed or pending.
+  bool CanUseUpdateService(const Extension* extension_id,
+                           const PendingExtensionInfo* info) const;
 
   // Called when the browser is terminating.
   void OnAppTerminating();
