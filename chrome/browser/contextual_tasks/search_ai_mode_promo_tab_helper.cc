@@ -234,6 +234,32 @@ void SearchAiModePromoTabHelper::DidFinishNavigation(
   }
   aim_search_web_contents_ = initiator.value();
   target_url_ = navigation_handle->GetURL();
+  primary_main_frame_id_ =
+      navigation_handle->GetRenderFrameHost()->GetGlobalId();
+  should_show_promo_ = true;
+  // Fallback timer to show the promo if the page takes too long to load.
+  promo_timer_.Start(FROM_HERE, switches::kSearchAIModePromoPageLoadDelay.Get(),
+                     base::BindOnce(&SearchAiModePromoTabHelper::MaybeShowPromo,
+                                    weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SearchAiModePromoTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  MaybeShowPromo();
+}
+
+void SearchAiModePromoTabHelper::MaybeShowPromo() {
+  if (!should_show_promo_) {
+    return;
+  }
+  should_show_promo_ = false;
+  promo_timer_.Stop();
+
+  // Ensure that we are still looking at the same document that committed.
+  if (web_contents()->GetPrimaryMainFrame()->GetGlobalId() !=
+      primary_main_frame_id_) {
+    SelfDestruct();
+    return;
+  }
 
   signin_promo_controller_ =
       std::make_unique<SearchAIModeSignInPromoController>(web_contents());

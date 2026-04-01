@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -44,6 +45,7 @@ class SearchAiModePromoTabHelper
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
@@ -62,6 +64,7 @@ class SearchAiModePromoTabHelper
   void MaybeTriggerCobrowse(const CoreAccountInfo& account_info);
 
   bool IsAIModeSearch(content::WebContents* web_contents);
+  void MaybeShowPromo();
   // Stops all the observations and destructs `this` object.
   void SelfDestruct();
 
@@ -69,6 +72,9 @@ class SearchAiModePromoTabHelper
   raw_ptr<signin::IdentityManager> identity_manager_;
 
   bool has_checked_initial_navigation_ = false;
+  bool should_show_promo_ = false;
+  base::OneShotTimer promo_timer_;
+  content::GlobalRenderFrameHostId primary_main_frame_id_;
   base::WeakPtr<content::WebContents> aim_search_web_contents_;
   std::unique_ptr<SearchAIModeSignInPromoController> signin_promo_controller_;
   GURL target_url_;

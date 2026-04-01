@@ -297,6 +297,9 @@ extern const base::FeatureParam<SeamlessSigninPromoType>
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableSearchAIModeSigninPromo);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<base::TimeDelta>
+    kSearchAIModePromoPageLoadDelay;
 #endif
 
 #if BUILDFLAG(IS_IOS)

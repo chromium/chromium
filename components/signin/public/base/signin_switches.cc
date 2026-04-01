@@ -368,6 +368,11 @@ constexpr base::FeatureParam<SeamlessSigninStringType>
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 BASE_FEATURE(kEnableSearchAIModeSigninPromo, base::FEATURE_DISABLED_BY_DEFAULT);
+// The delay we allow for the AIM search result to load before we display the
+// sign-in promo bubble.
+const base::FeatureParam<base::TimeDelta> kSearchAIModePromoPageLoadDelay{
+    &kEnableSearchAIModeSigninPromo, "SearchAIModePromoPageLoadDelay",
+    base::Seconds(4)};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_IOS)
