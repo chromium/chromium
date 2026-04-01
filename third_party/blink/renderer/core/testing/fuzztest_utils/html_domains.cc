@@ -49,11 +49,19 @@ const std::vector<const QualifiedName*>& GetAllHtmlAttributes() {
 }  // namespace
 
 fuzztest::Domain<QualifiedName> AnyHtmlTag() {
-  return fuzztest::Map(
+  auto standard = fuzztest::Map(
       [](html_names::HTMLTag tag) -> QualifiedName {
         return html_names::TagToQualifiedName(tag);
       },
       fuzztest::ElementOf<html_names::HTMLTag>(GetAllHtmlTags()));
+  auto custom = fuzztest::ElementOf<QualifiedName>(
+      {QualifiedName(AtomicString("fuzz-plain"), AtomicString("fuzz-plain"),
+                     html_names::xhtmlNamespaceURI),
+       QualifiedName(AtomicString("fuzz-shadow"), AtomicString("fuzz-shadow"),
+                     html_names::xhtmlNamespaceURI),
+       QualifiedName(AtomicString("fuzz-attrs"), AtomicString("fuzz-attrs"),
+                     html_names::xhtmlNamespaceURI)});
+  return fuzztest::OneOf(standard, custom);
 }
 
 fuzztest::Domain<QualifiedName> AnyHtmlAttribute() {

@@ -75,6 +75,10 @@ class DomScenarioRunner
       Element* element,
       base::optional_ref<
           const std::vector<std::pair<QualifiedName, std::string>>> attributes);
+  // Injects predefined custom element definitions via <script>. Enables
+  // JavaScript and defines fuzz-plain, fuzz-shadow, and fuzz-attrs elements.
+  void InjectCustomElementDefinitions();
+
   void SetParent(Element* child,
                  size_t child_index,
                  int parent_index,

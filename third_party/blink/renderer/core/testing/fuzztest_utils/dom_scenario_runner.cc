@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -59,6 +60,7 @@ void DomScenarioRunner::RunTest(const DomScenario& input) {
   HeapVector<Member<Element>> created_elements;
   shadow_host_counter_ = 0;
   LogIfEnabled(base::StrCat({"\n\n", input.ToString()}));
+  InjectCustomElementDefinitions();
   CreateInitialDOM(input, root, created_elements);
   ApplyModifications(root, input.node_specs, created_elements);
   GetDocument().body()->RemoveChildren();
@@ -91,7 +93,14 @@ void DomScenarioRunner::CreateInitialDOM(
 
   for (size_t i = 0; i < input.node_specs.size(); ++i) {
     const auto& node_spec = input.node_specs[i];
-    Element* element = document.CreateRawElement(node_spec.tag);
+    const AtomicString& local_name = node_spec.tag.LocalName();
+    Element* element;
+    if (local_name.contains('-')) {
+      DummyExceptionStateForTesting exception_state;
+      element = document.CreateElementForBinding(local_name, exception_state);
+    } else {
+      element = document.CreateRawElement(node_spec.tag);
+    }
     element->setAttribute(html_names::kIdAttr,
                           AtomicString(StrCat({"id_", String::Number(i)})));
     // Set attributes first because there's a chance that one of the fuzzed
@@ -262,6 +271,44 @@ void DomScenarioRunner::SetParent(
   }
 }
 
+void DomScenarioRunner::InjectCustomElementDefinitions() {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  static const char kCustomElementsJS[] =
+      R"js(customElements.define('fuzz-plain', class extends HTMLElement {});
+
+    customElements.define('fuzz-shadow', class extends HTMLElement {
+      connectedCallback() {
+        if (!this.shadowRoot) {
+          const shadow = this.attachShadow({mode: 'open'});
+          shadow.innerHTML = '<span></span><slot></slot>';
+        }
+      }
+    });
+
+    customElements.define('fuzz-attrs', class extends HTMLElement {
+      constructor() {
+        super();
+        this.attachShadow({mode: 'open'});
+        this.shadowRoot.innerHTML = '<span id="label"></span><slot></slot>';
+      }
+      static get observedAttributes() {
+        return ['title', 'data-label', 'data-state', 'hidden'];
+      }
+      attributeChangedCallback(name, oldValue, newValue) {
+        const label = this.shadowRoot.querySelector('#label');
+        if (label) {
+          label.textContent = newValue || '';
+        }
+      }
+    });)js";
+  Document& document = GetDocument();
+  Element* script = document.CreateRawElement(
+      html_names::TagToQualifiedName(html_names::HTMLTag::kScript));
+  script->setTextContent(AtomicString(kCustomElementsJS));
+  document.head()->appendChild(script);
+  document.UpdateStyleAndLayoutTree();
+}
+
 void DomScenarioRunner::LogIfEnabled(const std::string& message) {
   if (logging_enabled_) {
     LOG(INFO) << message;
@@ -311,18 +358,19 @@ void DomScenarioRunner::SerializeNode(Node* node,
 
     // Children.
     bool has_children = false;
-    bool is_style_element = element->tagName() == "STYLE";
+    bool is_style_element = element->HasTagName(html_names::kStyleTag);
+    bool is_script_element = element->HasTagName(html_names::kScriptTag);
     for (Node* child = element->firstChild(); child;
          child = child->nextSibling()) {
       if (!has_children) {
         base::StrAppend(&result, {"\n"});
         has_children = true;
       }
-      if (is_style_element && IsA<Text>(child)) {
-        String css_text = To<Text>(*child).data();
-        css_text = StrCat({"    ", css_text});
-        css_text.Replace("} ", "}\n    ");
-        base::StrAppend(&result, {css_text.Utf8()});
+      if ((is_style_element || is_script_element) && IsA<Text>(child)) {
+        String text = To<Text>(*child).data();
+        text = StrCat({"    ", text});
+        text.Replace("} ", "}\n    ");
+        base::StrAppend(&result, {text.Utf8()});
       } else {
         SerializeNode(child, result, indent + 1);
       }
