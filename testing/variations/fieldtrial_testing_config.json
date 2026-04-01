@@ -16252,6 +16252,24 @@
             ]
         }
     ],
+    "OnDeviceCategoryClassifier": [
+        {
+            "platforms": [
+                "chromeos",
+                "windows",
+                "mac",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnDeviceCategoryClassifier"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDeviceModelBackgroundDownload": [
         {
             "platforms": [
