@@ -26,6 +26,7 @@
 
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -584,6 +585,22 @@ float SVGAnimationElement::CurrentValuesForPathAnimation(
   }
 
   return percent;
+}
+
+bool SVGAnimationElement::IsValid() const {
+  if (!SVGTests::IsValid()) {
+    return false;
+  }
+  // Also check ancestors. If any ancestor SVG element fails conditional
+  // processing (e.g. a <g> with unmatched systemLanguage), this animation
+  // should not run.
+  for (const Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+    auto* svg_ancestor = DynamicTo<SVGElement>(ancestor);
+    if (svg_ancestor && !svg_ancestor->IsValid()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool SVGAnimationElement::UpdateAnimationMode() {

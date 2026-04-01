@@ -122,7 +122,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool HasKeyPoints() const { return !key_points_.empty(); }
 
  private:
-  bool IsValid() const final { return SVGTests::IsValid(); }
+  bool IsValid() const final;
 
   bool IsAdditive() const;
   bool IsAccumulated() const;
