@@ -322,7 +322,7 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
 
   glic::GlicInvokeOptions options{
       glic::mojom::InvocationSource::kPdfSummarizeButton};
-  options.prompts.push_back("summarize the pdf");
+  options.prompts.push_back("Summarize this document");
   options.conversation = glic::NewConversation();
 
   if (has_consented) {
