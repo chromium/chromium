@@ -223,8 +223,9 @@ Suggestion::PlusAddressPayload::~PlusAddressPayload() = default;
 
 Suggestion::AutofillAiPayload::AutofillAiPayload() = default;
 
-Suggestion::AutofillAiPayload::AutofillAiPayload(EntityInstance::EntityId guid)
-    : guid(std::move(guid)) {}
+Suggestion::AutofillAiPayload::AutofillAiPayload(EntityInstance::EntityId guid,
+                                                 bool requires_server_fetch)
+    : guid(std::move(guid)), requires_server_fetch(requires_server_fetch) {}
 
 Suggestion::AutofillAiPayload::AutofillAiPayload(const AutofillAiPayload&) =
     default;

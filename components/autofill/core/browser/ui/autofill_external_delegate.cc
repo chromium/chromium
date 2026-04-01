@@ -1446,12 +1446,9 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
                                client.GetWeakPtr(),
                                SuggestionHidingReason::kAcceptSuggestion));
 
-  const bool is_sensitive = WillFillSensitiveAttributes(
-      *entity, *form_structure, autofill_field->section(),
-      client.GetAppLocale());
   const bool should_fetch_from_server =
-      is_sensitive && entity->IsMaskedServerEntity() &&
-      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
+      suggestion.GetPayload<Suggestion::AutofillAiPayload>()
+          .requires_server_fetch;
   // Add logic on top of `fill_and_hide` to incorporate the fetching of server
   // entities.
   if (should_fetch_from_server) {
@@ -1488,6 +1485,9 @@ void AutofillExternalDelegate::FillAutofillAiFormAndHidePopup(
   }
 
   // Before running `hide_and_fill`, potentially ask for a re-auth.
+  const bool is_sensitive = WillFillSensitiveAttributes(
+      *entity, *form_structure, autofill_field->section(),
+      client.GetAppLocale());
   const bool should_reauth =
       is_sensitive &&
       prefs::IsAutofillAiReauthBeforeFillingEnabled(client.GetPrefs());

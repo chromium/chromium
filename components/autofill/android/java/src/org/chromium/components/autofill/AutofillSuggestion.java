@@ -30,6 +30,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final @Nullable String mFeatureForIph;
     private final @Nullable String mIphDescriptionText;
     private final @Nullable GURL mCustomIconUrl;
+    private final boolean mShowLoadingOnAcceptance;
     private final @Nullable Payload mPayload;
 
     public sealed interface Payload permits AutofillProfilePayload, PaymentsPayload {}
@@ -49,6 +50,8 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
+     * @param showLoadingOnAcceptance Whether accepting this suggestion should show a loading UI
+     *     (e.g., if it requires a fetch from the server).
      * @param payload Additional data passed with the suggestion.
      */
     @VisibleForTesting
@@ -65,6 +68,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String featureForIph,
             @Nullable String iphDescriptionText,
             @Nullable GURL customIconUrl,
+            boolean showLoadingOnAcceptance,
             @Nullable Payload payload) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
@@ -78,6 +82,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mFeatureForIph = featureForIph;
         mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
+        mShowLoadingOnAcceptance = showLoadingOnAcceptance;
         mPayload = payload;
     }
 
@@ -148,6 +153,14 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mVoiceOver;
     }
 
+    /**
+     * Returns whether accepting this suggestion should show a loading UI (e.g., if it requires a
+     * fetch from the server).
+     */
+    public boolean showLoadingOnAcceptance() {
+        return mShowLoadingOnAcceptance;
+    }
+
     public @Nullable AutofillProfilePayload getAutofillProfilePayload() {
         if (mPayload instanceof AutofillProfilePayload) {
             return (AutofillProfilePayload) mPayload;
@@ -181,6 +194,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
                 && Objects.equals(this.mIphDescriptionText, other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
+                && this.mShowLoadingOnAcceptance == other.mShowLoadingOnAcceptance
                 && Objects.equals(this.mPayload, other.mPayload);
     }
 
@@ -198,6 +212,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 this.mFeatureForIph,
                 this.mIphDescriptionText,
                 this.mCustomIconUrl,
+                this.mShowLoadingOnAcceptance,
                 this.mPayload);
     }
 
@@ -215,6 +230,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         private @Nullable String mSecondarySubLabel;
         private @Nullable String mVoiceOver;
         private int mSuggestionType;
+        private boolean mShowLoadingOnAcceptance;
         private @Nullable Payload mPayload;
 
         public Builder setIconId(int iconId) {
@@ -277,6 +293,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setShowLoadingOnAcceptance(boolean showLoadingOnAcceptance) {
+            this.mShowLoadingOnAcceptance = showLoadingOnAcceptance;
+            return this;
+        }
+
         public Builder setPayload(Payload payload) {
             this.mPayload = payload;
             return this;
@@ -300,6 +321,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mFeatureForIph,
                     mIphDescriptionText,
                     mCustomIconUrl,
+                    mShowLoadingOnAcceptance,
                     mPayload);
         }
     }

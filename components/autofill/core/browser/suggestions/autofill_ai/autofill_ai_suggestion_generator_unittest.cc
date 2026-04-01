@@ -41,6 +41,7 @@ using enum SuggestionType;
 using FieldPrediction =
     AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction;
 using test::GetFlightReservationEntityInstanceWithRandomGuid;
+using test::GetPassportEntityInstance;
 using test::GetPassportEntityInstanceWithRandomGuid;
 using test::MaskEntityInstance;
 using ::testing::Contains;
@@ -67,6 +68,16 @@ Matcher<const Suggestion&> HasLabel(const std::u16string& label) {
 
 Matcher<const Suggestion&> HasType(SuggestionType type) {
   return Field("Suggestion::type", &Suggestion::type, type);
+}
+
+Matcher<const Suggestion&> HasRequiresServerFetch(bool requires_server_fetch) {
+  return ResultOf(
+      "Suggestion::payload",
+      [](const Suggestion& s) {
+        return std::get<Suggestion::AutofillAiPayload>(s.payload)
+            .requires_server_fetch;
+      },
+      requires_server_fetch);
 }
 
 auto SuggestionsAre(auto&&... matchers) {
@@ -387,6 +398,59 @@ TEST_F(AutofillAiSuggestionGeneratorTest, GetFillingSuggestion_PassportEntity) {
             GetPassportNumber(passport_entity));
   // The third field is not of Autofill AI type.
   EXPECT_EQ(GetFillValueForField(*payload, field(2)), std::nullopt);
+}
+
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_LocalPassportEntity_DoesNotRequireServerFetch) {
+  EntityInstance passport_entity = GetPassportEntityInstanceWithRandomGuid();
+  SetEntities({passport_entity});
+  SetForm({NAME_FULL, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER});
+
+  // Local passport should not require a server fetch.
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      SuggestionsAre(AllOf(HasMainText(GetPassportName(passport_entity)),
+                           HasIcon(Suggestion::Icon::kPassport),
+                           HasRequiresServerFetch(false))));
+}
+
+// Tests that a masked server entity requires a server fetch when the feature
+// is enabled.
+TEST_F(AutofillAiSuggestionGeneratorTest,
+       GetFillingSuggestion_MaskedServerPassport_RequiresServerFetch) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiWalletPrivatePasses);
+
+  EntityInstance passport_entity = MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  SetEntities({passport_entity});
+  SetForm({PASSPORT_NUMBER});
+
+  // Masked server passport should require a server fetch.
+  EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
+              SuggestionsAre(AllOf(HasIcon(Suggestion::Icon::kPassport),
+                                   HasRequiresServerFetch(true))));
+}
+
+TEST_F(
+    AutofillAiSuggestionGeneratorTest,
+    GetFillingSuggestion_MaskedServerPassport_DoesNotRequireServerFetchIfNoSensitiveFieldInForm) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillAiWalletPrivatePasses);
+
+  EntityInstance passport_entity = MaskEntityInstance(GetPassportEntityInstance(
+      {.record_type = EntityInstance::RecordType::kServerWallet}));
+  SetEntities({passport_entity});
+  // Form has Name and Issue date, not Passport Number.
+  SetForm({NAME_FULL, PASSPORT_ISSUE_DATE});
+
+  // Since the form doesn't ask for any sensitive attribute (like Passport
+  // Number), we don't need a server fetch, even if the entity is a masked
+  // server entity.
+  EXPECT_THAT(
+      CreateAutofillAiFillingSuggestions(field(0)),
+      SuggestionsAre(AllOf(HasMainText(GetPassportName(passport_entity)),
+                           HasRequiresServerFetch(false))));
 }
 
 // Tests that the flight icon is shown for flight reservation entities.

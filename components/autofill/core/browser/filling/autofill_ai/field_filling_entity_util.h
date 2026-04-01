@@ -55,6 +55,15 @@ bool WillFillSensitiveAttributes(const EntityInstance& entity,
                                  const Section& section,
                                  std::string_view app_locale);
 
+// Returns whether filling `form`'s `section` with `entity` will require a
+// server fetch. This returns true only if the form contains fields that match
+// sensitive attributes that are currently masked, and the feature
+// `features::kAutofillAiWalletPrivatePasses` is enabled.
+bool WillRequireServerFetch(const EntityInstance& entity,
+                            const FormStructure& form,
+                            const Section& section,
+                            std::string_view app_locale);
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_FIELD_FILLING_ENTITY_UTIL_H_

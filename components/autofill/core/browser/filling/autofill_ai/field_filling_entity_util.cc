@@ -314,4 +314,13 @@ bool WillFillSensitiveAttributes(const EntityInstance& entity,
       });
 }
 
+bool WillRequireServerFetch(const EntityInstance& entity,
+                            const FormStructure& form,
+                            const Section& section,
+                            std::string_view app_locale) {
+  return entity.IsMaskedServerEntity() &&
+         WillFillSensitiveAttributes(entity, form, section, app_locale) &&
+         base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses);
+}
+
 }  // namespace autofill

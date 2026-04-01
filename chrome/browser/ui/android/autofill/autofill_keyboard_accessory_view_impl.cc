@@ -123,6 +123,12 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
 
     auto* custom_icon_url =
         std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+    bool show_loading_on_acceptance = false;
+    if (const auto* ai_payload =
+            std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
+      show_loading_on_acceptance = ai_payload->requires_server_fetch;
+    }
+
     java_suggestions.push_back(
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
             env, label, sublabel, suggestion.voice_over.value_or(u""),
@@ -135,7 +141,8 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            suggestion.HasDeactivatedStyle(), payload));
+            suggestion.HasDeactivatedStyle(), show_loading_on_acceptance,
+            payload));
   }
   gfx::RectF bounds = controller_->element_bounds();
   Java_AutofillKeyboardAccessoryViewBridge_show(

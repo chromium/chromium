@@ -103,7 +103,8 @@ struct Suggestion {
 
   struct AutofillAiPayload final {
     AutofillAiPayload();
-    explicit AutofillAiPayload(EntityInstance::EntityId guid);
+    explicit AutofillAiPayload(EntityInstance::EntityId guid,
+                               bool requires_server_fetch = false);
     AutofillAiPayload(const AutofillAiPayload&);
     AutofillAiPayload(AutofillAiPayload&&);
     AutofillAiPayload& operator=(const AutofillAiPayload&);
@@ -114,6 +115,10 @@ struct Suggestion {
                            const AutofillAiPayload&) = default;
 
     EntityInstance::EntityId guid;
+
+    // Whether selecting this suggestion requires fetching data from a server.
+    // E.g. retrieving masked credentials.
+    bool requires_server_fetch = false;
   };
 
   using Guid = base::StrongAlias<class GuidTag, std::string>;

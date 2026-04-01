@@ -2242,8 +2242,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
 
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload =
-      Suggestion::AutofillAiPayload(masked_passport.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
   std::vector<Suggestion> suggestions = {fill_suggestion};
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
   ON_CALL(autofill_client(), GetAutofillSuggestions)
@@ -2326,8 +2326,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
 
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload =
-      Suggestion::AutofillAiPayload(masked_passport.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
   std::vector<Suggestion> suggestions = {fill_suggestion};
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
   ON_CALL(autofill_client(), GetAutofillSuggestions)
@@ -2364,8 +2364,8 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
   // Show suggestions for `masked_passport`.
   IssueOnQuery({.fields = {{.role = PASSPORT_NUMBER}}});
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
-  fill_suggestion.payload =
-      Suggestion::AutofillAiPayload(masked_passport.guid());
+  fill_suggestion.payload = Suggestion::AutofillAiPayload(
+      masked_passport.guid(), /*requires_server_fetch=*/true);
   std::vector<Suggestion> suggestions = {fill_suggestion};
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
   ON_CALL(autofill_client(), GetAutofillSuggestions)
