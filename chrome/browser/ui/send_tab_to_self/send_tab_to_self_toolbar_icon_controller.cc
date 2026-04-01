@@ -66,15 +66,8 @@ void SendTabToSelfToolbarIconController::StorePendingEntry(
 
   // |pending_entry_| might already be set, but it's better to overwrite
   // it with a fresher value.
-  pending_entry_ = std::make_unique<SendTabToSelfEntry>(
-      new_entry_pending_notification->GetGUID(),
-      new_entry_pending_notification->GetURL(),
-      new_entry_pending_notification->GetTitle(),
-      new_entry_pending_notification->GetSharedTime(),
-      new_entry_pending_notification->GetDeviceName(),
-      new_entry_pending_notification->GetTargetDeviceSyncCacheGuid(),
-      new_entry_pending_notification->GetPageContext(),
-      new_entry_pending_notification->GetNavigationHistory());
+  pending_entry_ =
+      std::make_unique<SendTabToSelfEntry>(*new_entry_pending_notification);
   // Prevent adding the observer several times. This might happen when the
   // window is inactive and this method is called more than once (i.e. the
   // server sends multiple entry batches).
