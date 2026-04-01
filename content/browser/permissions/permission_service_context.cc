@@ -20,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -46,10 +47,10 @@ DOCUMENT_USER_DATA_KEY_IMPL(
 class PermissionServiceContext::PermissionSubscription {
  public:
   PermissionSubscription(
-      PermissionResult last_known_result,
+      blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
       PermissionServiceContext* context,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer)
-      : last_known_result_(last_known_result),
+      : last_known_status_(std::move(last_known_status)),
         context_(context),
         observer_(std::move(observer)) {
     observer_.set_disconnect_handler(base::BindOnce(
@@ -73,15 +74,15 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
   void StoreResultAtBFCacheEntry() {
-    result_at_bf_cache_entry_ = last_known_result_;
+    status_at_bf_cache_entry_ = last_known_status_.Clone();
   }
 
   void NotifyPermissionResultChangedIfNeeded() {
-    DCHECK(result_at_bf_cache_entry_.has_value());
-    if (result_at_bf_cache_entry_ != last_known_result_) {
-      observer_->OnPermissionStatusChange(last_known_result_.status);
+    DCHECK(status_at_bf_cache_entry_);
+    if (!status_at_bf_cache_entry_->Equals(*last_known_status_)) {
+      observer_->OnPermissionStatusChange(last_known_status_.Clone());
     }
-    result_at_bf_cache_entry_.reset();
+    status_at_bf_cache_entry_.reset();
   }
 
   void OnPermissionStatusChanged(PermissionResult permission_result) {
@@ -89,13 +90,19 @@ class PermissionServiceContext::PermissionSubscription {
       return;
     }
 
-    last_known_result_ = permission_result;
+    blink::mojom::PermissionStatusWithDetailsPtr new_status =
+        PermissionUtil::ToPermissionStatusWithDetails(permission_result);
+    if (new_status == last_known_status_) {
+      return;
+    }
+
+    last_known_status_ = std::move(new_status);
 
     // Dispatching events while in BFCache is redundant. Permissions code in
     // renderer process would decide to drop the event by looking at document's
     // active status.
-    if (!result_at_bf_cache_entry_.has_value()) {
-      observer_->OnPermissionStatusChange(permission_result.status);
+    if (!status_at_bf_cache_entry_) {
+      observer_->OnPermissionStatusChange(last_known_status_.Clone());
     }
   }
 
@@ -106,17 +113,16 @@ class PermissionServiceContext::PermissionSubscription {
   }
 
  private:
-  PermissionResult last_known_result_ =
-      PermissionResult(PermissionStatus::LAST);
+  blink::mojom::PermissionStatusWithDetailsPtr last_known_status_;
   const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
   PermissionController::SubscriptionId id_;
 
   // Optional variable to store the last status before the corresponding
-  // RenderFrameHost enters  BFCache, and will be cleared when the
+  // RenderFrameHost enters BFCache, and will be cleared when the
   // RenderFrameHost is restored from BFCache. Non-empty value indicates that
   // the RenderFrameHost is in BFCache.
-  std::optional<PermissionResult> result_at_bf_cache_entry_;
+  blink::mojom::PermissionStatusWithDetailsPtr status_at_bf_cache_entry_;
   base::WeakPtrFactory<PermissionSubscription> weak_ptr_factory_{this};
 };
 
@@ -174,7 +180,7 @@ void PermissionServiceContext::CreateSubscription(
     const blink::mojom::PermissionDescriptorPtr& permission,
     const url::Origin& origin,
     PermissionResult current_result,
-    PermissionResult last_known_result,
+    blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
     bool should_include_device_status,
     mojo::PendingRemote<blink::mojom::PermissionObserver> observer) {
   BrowserContext* browser_context = GetBrowserContext();
@@ -183,11 +189,9 @@ void PermissionServiceContext::CreateSubscription(
   }
 
   auto subscription = std::make_unique<PermissionSubscription>(
-      last_known_result, this, std::move(observer));
+      last_known_status.Clone(), this, std::move(observer));
 
-  if (current_result != last_known_result) {
-    subscription->OnPermissionStatusChanged(current_result);
-  }
+  subscription->OnPermissionStatusChanged(current_result);
 
   if (render_frame_host_ &&
       render_frame_host_->IsInLifecycleState(

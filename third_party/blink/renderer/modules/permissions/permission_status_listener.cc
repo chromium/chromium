@@ -67,11 +67,12 @@ void PermissionStatusListener::NotifyEventListener(
 }
 
 void PermissionStatusListener::OnPermissionStatusChange(
-    MojoPermissionStatus status) {
-  if (status_ == status)
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  if (status_ == status->status) {
     return;
+  }
 
-  status_ = status;
+  status_ = status->status;
 
   // The `observers_` list can change in response to permission status change
   // events as the observers map to PermissionStatus JS objects which can be
@@ -85,7 +86,7 @@ void PermissionStatusListener::OnPermissionStatusChange(
 
   for (const auto& observer : observers) {
     if (observer)
-      observer->OnPermissionStatusChange(status);
+      observer->OnPermissionStatusChange(status->status);
     else
       RemoveObserver(observer);
   }

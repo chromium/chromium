@@ -119,7 +119,8 @@ class MODULES_EXPORT ImageCapture final
 
   // mojom::blink::PermissionObserver implementation.
   // Called when we get an updated PTZ permission value from the browser.
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr status) override;
 
   void GetMojoPhotoState(ScriptPromiseResolverBase*, PromiseResolverFunction);
   void OnMojoGetPhotoState(ScriptPromiseResolverBase*,

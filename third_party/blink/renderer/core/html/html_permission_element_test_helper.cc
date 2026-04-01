@@ -19,7 +19,7 @@ PermissionStatusChangeWaiter::PermissionStatusChangeWaiter(
     : receiver_(this, std::move(receiver)), callback_(std::move(callback)) {}
 
 void PermissionStatusChangeWaiter::OnPermissionStatusChange(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   if (callback_) {
     std::move(callback_).Run();
   }
@@ -133,7 +133,8 @@ void PermissionElementTestPermissionService::NotifyPermissionStatusChange(
     mojom::blink::PermissionStatus status) {
   for (const auto& observer : observers_) {
     if (observer.first == name) {
-      observer.second->OnPermissionStatusChange(status);
+      observer.second->OnPermissionStatusChange(
+          mojom::blink::PermissionStatusWithDetails::New(status, nullptr));
     }
   }
   WaitForPermissionStatusChange(status);
@@ -145,7 +146,8 @@ void PermissionElementTestPermissionService::WaitForPermissionStatusChange(
   base::RunLoop run_loop;
   auto waiter = std::make_unique<PermissionStatusChangeWaiter>(
       observer.BindNewPipeAndPassReceiver(), run_loop.QuitClosure());
-  observer->OnPermissionStatusChange(status);
+  observer->OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetails::New(status, nullptr));
   run_loop.Run();
 }
 

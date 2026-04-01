@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/frame/cached_permission_status.h"
 
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -118,16 +119,17 @@ void CachedPermissionStatus::RegisterPermissionObserver(
   CHECK(inserted.is_new_entry);
 }
 
-void CachedPermissionStatus::OnPermissionStatusChange(PermissionStatus status) {
+void CachedPermissionStatus::OnPermissionStatusChange(
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   auto permission_name = permission_observer_receivers_.current_context();
-  permission_status_map_.Set(permission_name, status);
+  permission_status_map_.Set(permission_name, status->status);
   auto it = clients_.find(permission_name);
   if (it == clients_.end()) {
     return;
   }
   const auto client_set = it->value;
   for (auto const& client : client_set) {
-    client->OnPermissionStatusChange(permission_name, status);
+    client->OnPermissionStatusChange(permission_name, status->status);
   }
 }
 

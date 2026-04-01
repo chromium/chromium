@@ -1853,8 +1853,8 @@ bool FetchLaterManager::IsBackgroundSyncGranted() const {
 }
 
 void FetchLaterManager::OnPermissionStatusChange(
-    mojom::blink::PermissionStatus status) {
-  background_sync_permission_ = status;
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  background_sync_permission_ = status->status;
 }
 
 size_t FetchLaterManager::NumLoadersForTesting() const {

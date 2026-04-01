@@ -29,7 +29,8 @@ class PermissionStatusChangeWaiter : public mojom::blink::PermissionObserver {
       base::OnceClosure callback);
 
   // mojom::blink::PermissionObserver override
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr status) override;
 
  private:
   mojo::Receiver<mojom::blink::PermissionObserver> receiver_;

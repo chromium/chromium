@@ -21,6 +21,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
@@ -30,8 +31,12 @@
 namespace content {
 
 namespace {
+using testing::Eq;
+using testing::InvokeWithoutArgs;
+using testing::Not;
+
 constexpr char kTestUrl[] = "https://google.com";
-}
+}  // namespace
 
 class PermissionServiceImplTest : public RenderViewHostTestHarness {
  public:
@@ -128,6 +133,75 @@ TEST_F(PermissionServiceImplTest, RequestPermission) {
     remote()->RequestPermission(std::move(descriptor), future.GetCallback());
     EXPECT_EQ(future.Take(), expected_status);
   }
+}
+
+class MockPermissionObserver : public blink::mojom::PermissionObserver {
+ public:
+  explicit MockPermissionObserver(
+      mojo::PendingReceiver<blink::mojom::PermissionObserver> receiver)
+      : receiver_(this, std::move(receiver)) {}
+
+  MOCK_METHOD(void,
+              OnPermissionStatusChange,
+              (blink::mojom::PermissionStatusWithDetailsPtr),
+              (override));
+
+ private:
+  mojo::Receiver<blink::mojom::PermissionObserver> receiver_;
+};
+
+TEST_F(PermissionServiceImplTest, AddPermissionObserver) {
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kDenied});
+
+  auto descriptor = blink::mojom::PermissionDescriptor::New();
+  descriptor->name = blink::mojom::PermissionName::GEOLOCATION;
+
+  base::test::TestFuture<blink::mojom::PermissionStatusWithDetailsPtr> future;
+  remote()->HasPermission(descriptor.Clone(), future.GetCallback());
+
+  auto initial_status = blink::mojom::PermissionStatusWithDetails::New(
+      blink::mojom::PermissionStatus::GRANTED,
+      blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+          blink::mojom::GeolocationAccuracy::kApproximate));
+  EXPECT_EQ(future.Take(), initial_status);
+
+  mojo::PendingRemote<blink::mojom::PermissionObserver> observer_remote;
+  MockPermissionObserver observer(
+      observer_remote.InitWithNewPipeAndPassReceiver());
+  remote()->AddPermissionObserver(descriptor.Clone(), std::move(initial_status),
+                                  std::move(observer_remote));
+
+  // Changing precise from Denied to Ask shouldn't result in a status update.
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kAsk});
+
+  // Changing precise from Ask to Allowed should trigger an update.
+  GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+      GURL(kTestUrl), GURL(), ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kAllowed});
+
+  auto expected_new_status = blink::mojom::PermissionStatusWithDetails::New(
+      blink::mojom::PermissionStatus::GRANTED,
+      blink::mojom::PermissionDetails::NewGeolocationAccuracy(
+          blink::mojom::GeolocationAccuracy::kPrecise));
+
+  // OnPermissionStatusChange should be called only once with
+  // expected_new_status.
+  EXPECT_CALL(observer,
+              OnPermissionStatusChange(Not(Eq(std::ref(expected_new_status)))))
+      .Times(0);
+  base::RunLoop run_loop;
+  base::RepeatingClosure done = run_loop.QuitClosure();
+  EXPECT_CALL(observer,
+              OnPermissionStatusChange(Eq(std::ref(expected_new_status))))
+      .WillOnce(InvokeWithoutArgs([done]() { done.Run(); }));
+  run_loop.Run();
 }
 
 }  // namespace content

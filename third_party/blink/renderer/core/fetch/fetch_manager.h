@@ -126,7 +126,8 @@ class CORE_EXPORT FetchLaterManager final
       const ResourceLoaderOptions& options) const;
 
   // mojom::blink::PermissionObserver overrides:
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr status) override;
 
   // Returns true if BackgroundSync permission has been enabled for the
   // ExecutionContext of this.

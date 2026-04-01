@@ -1584,11 +1584,11 @@ base::TimeDelta AudioContext::PlatformBufferDuration() const {
 }
 
 void AudioContext::OnPermissionStatusChange(
-    mojom::blink::PermissionStatus status) {
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
 
-  stats_update_restrictor_->SetCapturePermission(status);
-  microphone_permission_status_ = status;
+  stats_update_restrictor_->SetCapturePermission(status->status);
+  microphone_permission_status_ = status->status;
   if (is_media_device_service_initialized_) {
     CHECK_LT(pending_device_list_updates_, std::numeric_limits<int>::max());
     pending_device_list_updates_++;

@@ -65,7 +65,8 @@ class PermissionStatusListener final
   void NotifyEventListener(const AtomicString& event_type, bool is_added);
 
   // mojom::blink::PermissionObserver
-  void OnPermissionStatusChange(MojoPermissionStatus) override;
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr) override;
 
   MojoPermissionStatus status_;
   MojoPermissionDescriptor descriptor_;

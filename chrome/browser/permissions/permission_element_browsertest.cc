@@ -257,8 +257,8 @@ class PermissionServiceInterceptor : public blink::mojom::PermissionObserver {
 
   // blink::mojom::PermissionObserver implementation.
   void OnPermissionStatusChange(
-      blink::mojom::PermissionStatus status) override {
-    if (status == blink::mojom::PermissionStatus::GRANTED) {
+      blink::mojom::PermissionStatusWithDetailsPtr status) override {
+    if (status->status == blink::mojom::PermissionStatus::GRANTED) {
       loop_.Quit();
     }
   }

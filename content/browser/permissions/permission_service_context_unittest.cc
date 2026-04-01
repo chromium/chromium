@@ -52,7 +52,7 @@ class TestPermissionObserver : public blink::mojom::PermissionObserver {
 
   // blink::mojom::PermissionObserver implementation.
   void OnPermissionStatusChange(
-      blink::mojom::PermissionStatus status) override {
+      blink::mojom::PermissionStatusWithDetailsPtr status) override {
     change_event_count_++;
   }
 
@@ -107,7 +107,7 @@ class PermissionServiceContextTest : public RenderViewHostTestHarness {
         content::PermissionDescriptorUtil::
             CreatePermissionDescriptorForPermissionType(type),
         origin_, PermissionResult(current_status),
-        PermissionResult(last_status),
+        blink::mojom::PermissionStatusWithDetails::New(last_status, nullptr),
         /*should_include_device_status=*/false, observer->GetRemote());
     WaitForAsyncTasksToComplete();
     return observer;
@@ -188,8 +188,9 @@ TEST_F(PermissionServiceContextTest,
           CreatePermissionDescriptorForPermissionType(
               PermissionType::GEOLOCATION),
       url::Origin::Create(GURL(kTestUrl)),
-      PermissionResult(blink::mojom::PermissionStatus::ASK),
-      PermissionResult(blink::mojom::PermissionStatus::ASK),
+      PermissionResult(blink::mojom::PermissionStatus::DENIED),
+      blink::mojom::PermissionStatusWithDetails::New(
+          blink::mojom::PermissionStatus::DENIED, nullptr),
       /*should_include_device_status=*/false, observer_child->GetRemote());
   SimulatePermissionChangedEvent(blink::PermissionType::GEOLOCATION,
                                  blink::mojom::PermissionStatus::ASK);

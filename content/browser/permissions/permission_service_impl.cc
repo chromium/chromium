@@ -484,10 +484,9 @@ void PermissionServiceImpl::AddPermissionObserver(
   }
 
   PermissionResult current_result = GetPermissionResult(permission);
-  context_->CreateSubscription(permission, origin_, current_result,
-                               PermissionResult(last_known_status->status),
-                               /*should_include_device_status*/ false,
-                               std::move(observer));
+  context_->CreateSubscription(
+      permission, origin_, current_result, std::move(last_known_status),
+      /*should_include_device_status*/ false, std::move(observer));
 }
 
 void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
@@ -505,9 +504,11 @@ void PermissionServiceImpl::AddPageEmbeddedPermissionObserver(
       should_include_device_status
           ? GetCombinedPermissionAndDeviceResult(permission)
           : GetPermissionResultForCurrentContext(permission);
-  context_->CreateSubscription(
-      permission, origin_, current_result, PermissionResult(last_known_status),
-      should_include_device_status, std::move(observer));
+  context_->CreateSubscription(permission, origin_, current_result,
+                               blink::mojom::PermissionStatusWithDetails::New(
+                                   last_known_status, nullptr),
+                               should_include_device_status,
+                               std::move(observer));
 }
 
 void PermissionServiceImpl::NotifyEventListener(

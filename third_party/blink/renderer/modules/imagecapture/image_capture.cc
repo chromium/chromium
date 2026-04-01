@@ -2573,8 +2573,8 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
 }
 
 void ImageCapture::OnPermissionStatusChange(
-    mojom::blink::PermissionStatus status) {
-  pan_tilt_zoom_permission_ = status;
+    mojom::blink::PermissionStatusWithDetailsPtr status) {
+  pan_tilt_zoom_permission_ = status->status;
 }
 
 bool ImageCapture::HasPanTiltZoomPermissionGranted() const {

@@ -72,7 +72,7 @@ class CONTENT_EXPORT PermissionServiceContext
       const blink::mojom::PermissionDescriptorPtr& permission,
       const url::Origin& origin,
       PermissionResult current_result,
-      PermissionResult last_known_result,
+      blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
       bool should_include_device_status,
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 

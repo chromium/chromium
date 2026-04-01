@@ -222,7 +222,8 @@ class MockPermissionService final : public mojom::blink::PermissionService {
 
   void NotifyObserver() {
     CHECK(observer_.is_bound());
-    observer_->OnPermissionStatusChange(permission_);
+    observer_->OnPermissionStatusChange(
+        mojom::blink::PermissionStatusWithDetails::New(permission_, nullptr));
   }
 
   mojom::blink::PermissionStatus permission_ =

@@ -150,7 +150,8 @@ class MODULES_EXPORT AudioContext final
   void HandlePostRenderTasks() override;
 
   // mojom::blink::PermissionObserver
-  void OnPermissionStatusChange(mojom::blink::PermissionStatus) override;
+  void OnPermissionStatusChange(
+      mojom::blink::PermissionStatusWithDetailsPtr status) override;
 
   // mojom::blink::MediaDevicesListener
   void OnDevicesChanged(mojom::blink::MediaDeviceType,

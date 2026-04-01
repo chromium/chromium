@@ -95,7 +95,7 @@ struct PermissionDescriptor {
 
 // Interface a client can implement to observe permission changes.
 interface PermissionObserver {
-  OnPermissionStatusChange(PermissionStatus status);
+  OnPermissionStatusChange(PermissionStatusWithDetails status);
 };
 
 // Interface that is implemented in the renderer and receives change events
