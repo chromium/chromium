@@ -41,6 +41,7 @@ class CORE_EXPORT InspectorWebMCPAgent final
 
   // Protocol methods.
   protocol::Response enable() override;
+  protocol::Response disable() override;
 
   // Probes
   void WebMCPToolAdded(Document* document, const ToolData& name);

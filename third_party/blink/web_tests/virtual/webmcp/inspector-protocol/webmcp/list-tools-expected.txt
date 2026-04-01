@@ -121,4 +121,6 @@ Removing {
         }
     ]
 }
+Disabling WebMCP Domain...
+Registering even more tools (should not be reported)...
 

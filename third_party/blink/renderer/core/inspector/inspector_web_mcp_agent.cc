@@ -113,6 +113,12 @@ protocol::Response InspectorWebMCPAgent::enable() {
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorWebMCPAgent::disable() {
+  enabled_.Set(false);
+  instrumenting_agents_->RemoveInspectorWebMCPAgent(this);
+  return protocol::Response::Success();
+}
+
 void InspectorWebMCPAgent::WebMCPToolAdded(Document* document,
                                            const ToolData& tool) {
   LocalFrame* frame = document->GetFrame();

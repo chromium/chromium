@@ -48,6 +48,9 @@ experimental domain WebMCP
   # all currently registered tools.
   command enable
 
+  # Disables the WebMCP domain.
+  command disable
+
   # Event fired when new tools are added.
   event toolsAdded
     parameters

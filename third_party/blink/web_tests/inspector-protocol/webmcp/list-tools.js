@@ -50,6 +50,14 @@
             const form = document.getElementById("initial_declarative");
             form.remove();
         };
+
+        window.registerEvenMoreTools = function() {
+            navigator.modelContext.registerTool({
+              execute: echo,
+              name: "newer_imperative_tool",
+              description: "Another imperative tool",
+            });
+        };
       </script>
       `,
       'Tests that WebMCP toolsAdded and toolsRemoved events fire correctly.');
@@ -65,6 +73,12 @@
 
   testRunner.log('Unregistering one of each...');
   await dp.Runtime.evaluate({expression: 'window.unregisterOneOfEach()'});
+
+  testRunner.log('Disabling WebMCP Domain...');
+  await dp.WebMCP.disable();
+
+  testRunner.log('Registering even more tools (should not be reported)...');
+  await dp.Runtime.evaluate({expression: 'window.registerEvenMoreTools()'});
 
   testRunner.completeTest();
 });
