@@ -106,7 +106,8 @@ enum class ActorLoginFederatedLoginResult {
   kFrameNotActive = 8,
   kExpectedAccountNotPresent = 9,
   kTimeout = 10,
-  kMaxValue = kTimeout,
+  kTimeoutByEmbedder = 11,
+  kMaxValue = kTimeoutByEmbedder,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorLoginFederatedLoginResult)
 
