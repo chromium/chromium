@@ -66,8 +66,10 @@ LongScreenshotsTabService::LongScreenshotsTabService(
       google_amp_cache_path_regex_(kGoogleAmpCachePathPattern),
       google_amp_viewer_path_regex_(kGoogleAmpViewerPathPattern),
       google_news_path_regex_(kGoogleNewsPathPattern),
-      memory_pressure_listener_registration_(
-          base::MemoryPressureListenerTag::kLongScreenshotsTabService,
+      memory_consumer_registration_(
+          "LongScreenshotsTabService",
+          // TODO(crbug.com/489671163): Use correct traits.
+          std::nullopt,
           this) {
   DCHECK(google_amp_cache_path_regex_.ok());
   DCHECK(google_amp_viewer_path_regex_.ok());
@@ -101,7 +103,7 @@ void LongScreenshotsTabService::CaptureTab(
     paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
     paint_preview::mojom::ClipCoordOverride clip_y_coord_override) {
   // If the system is under memory pressure don't try to capture.
-  if (GetMemoryLimit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kLowMemoryDetected);

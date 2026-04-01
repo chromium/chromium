@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/paint_preview/common/mock_paint_preview_recorder.h"
@@ -108,6 +109,7 @@ class LongScreenshotsTabServiceTest : public ChromeRenderViewHostTestHarness {
   const base::FilePath& GetPath() const { return temp_dir_.GetPath(); }
 
  private:
+  base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
   std::unique_ptr<LongScreenshotsTabService> service_;
   base::ScopedTempDir temp_dir_;
 };
