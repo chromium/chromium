@@ -205,21 +205,6 @@ void UiMetricsRecorder::OnPostLoginAnimationFinish() {
   user_session_start_time_ = base::TimeTicks::Now();
 }
 
-void UiMetricsRecorder::ReportPercentDroppedFramesInOneSecondWindow2(
-    double percent) {
-  UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.PercentDroppedFrames_1sWindow2",
-                           percent);
-
-  // Time to exclude from user session to be reported under "InSession" metric.
-  constexpr base::TimeDelta chopped_user_session_time = base::Minutes(1);
-  if (user_session_start_time_ &&
-      base::TimeTicks::Now() - user_session_start_time_.value() >=
-          chopped_user_session_time) {
-    UMA_HISTOGRAM_PERCENTAGE(
-        "Ash.Smoothness.PercentDroppedFrames_1sWindow2.InSession", percent);
-  }
-}
-
 void UiMetricsRecorder::ReportEventLatency(
     const viz::BeginFrameArgs& args,
     std::vector<cc::EventLatencyTracker::LatencyData> latencies) {

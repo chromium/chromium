@@ -61,7 +61,6 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportPercentDroppedFramesInOneSecondWindow2(double percent) override;
   void ReportEventLatency(
       const viz::BeginFrameArgs& args,
       std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;

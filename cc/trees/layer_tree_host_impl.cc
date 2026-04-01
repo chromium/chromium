@@ -602,7 +602,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
     compositor_frame_reporting_controller_->set_event_latency_tracker(this);
 
 #if BUILDFLAG(IS_CHROMEOS)
-    frame_sorter_.EnableReportForUI();
     frame_trackers_.UpdateSmoothThreadHistory(
         FrameInfo::SmoothEffectDrivingThread::kMain, /*modifier-*/ 1);
 #endif  // BUILDFLAG(IS_CHROMEOS)
