@@ -19,7 +19,7 @@ schema_sources_ = [
   "cookies.json",
   "debugger.json",
   "desktop_capture.json",
-  "developer_private.idl",
+  "developer_private.webidl",
   "downloads_internal.idl",
   "downloads.idl",
   "enterprise_hardware_platform.idl",
