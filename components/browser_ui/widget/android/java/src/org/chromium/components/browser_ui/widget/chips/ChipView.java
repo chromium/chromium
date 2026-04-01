@@ -202,6 +202,10 @@ public class ChipView extends LinearLayout {
                         R.styleable.ChipView_primaryTextStartPadding,
                         getResources()
                                 .getDimensionPixelSize(R.dimen.chip_primary_text_start_padding));
+        int loadingViewSize =
+                a.getDimensionPixelSize(
+                        R.styleable.ChipView_loadingViewSize,
+                        getResources().getDimensionPixelSize(R.dimen.chip_loading_view_size));
         a.recycle();
 
         mStartIcon = new ChromeImageView(getContext());
@@ -214,7 +218,6 @@ public class ChipView extends LinearLayout {
             chipStartPadding = (chipHeight - iconHeight) / 2;
         }
 
-        int loadingViewSize = getResources().getDimensionPixelSize(R.dimen.chip_loading_view_size);
         int loadingViewHeightPadding = (iconHeight - loadingViewSize) / 2;
         int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
         mLoadingView = new LoadingView(getContext());
