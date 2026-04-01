@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
@@ -24,6 +26,8 @@ namespace signin {
 const char kDiceProtocolVersion[] = "1";
 
 namespace {
+
+using DiceResponseHeaderDictionary = base::flat_map<std::string, std::string>;
 
 // Request parameters.
 const char kRequestSigninAll[] = "all_accounts";
@@ -62,36 +66,42 @@ DiceAction GetDiceActionFromHeader(const std::string& value) {
   }
 }
 
-}  // namespace
-
-DiceHeaderHelper::DiceHeaderHelper(AccountConsistencyMethod account_consistency)
-    : account_consistency_(account_consistency) {}
-
-// static
-DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
-    const std::string& header_value) {
-  DCHECK(!header_value.empty());
-  DiceResponseParams params;
-  ResponseHeaderDictionary header_dictionary =
-      ParseAccountConsistencyResponseHeader(header_value);
-  auto action_it = header_dictionary.find(kSigninActionAttrName);
-  if (action_it == header_dictionary.end()) {
-    return params;
+// Helper to parse a single account consistency group (comma or semicolon
+// separated).
+// Expects one of the following formats:
+// * delimiter="," group="key1=value1,key2=value2,key3=value3"
+// * delimiter=";" group="key1=value1;key2=value2;key3=value3"
+// Returns the dictionary containing the keys and values.
+DiceResponseHeaderDictionary ParseGroup(std::string_view group,
+                                        std::string_view delimiter) {
+  DiceResponseHeaderDictionary dictionary;
+  for (std::string_view field :
+       base::SplitStringPiece(group, delimiter, base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    size_t delim = field.find_first_of('=');
+    if (delim == std::string::npos) {
+      continue;
+    }
+    dictionary.insert({std::string(field.substr(0, delim)),
+                       base::UnescapeURLComponent(
+                           field.substr(delim + 1),
+                           base::UnescapeRule::PATH_SEPARATORS |
+                               base::UnescapeRule::
+                                   URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS)});
   }
+  return dictionary;
+}
 
+DiceResponseParams::SigninInfo::SigninAccount BuildSigninAccount(
+    const DiceResponseHeaderDictionary& dict) {
   DiceResponseParams::AccountInfo account_info;
   std::string authorization_code;
   bool no_authorization_code = false;
   std::string supported_algorithms_for_token_binding;
   bool mtls_token_binding = false;
 
-  ResponseHeaderDictionary::const_iterator it = header_dictionary.begin();
-  for (; it != header_dictionary.end(); ++it) {
-    const std::string key_name(it->first);
-    const std::string value(it->second);
-    if (key_name == kSigninActionAttrName) {
-      // Do nothing, handled separately below.
-    } else if (key_name == kSigninIdAttrName) {
+  for (const auto& [key_name, value] : dict) {
+    if (key_name == kSigninIdAttrName) {
       account_info.gaia_id = GaiaId(value);
     } else if (key_name == kSigninEmailAttrName) {
       account_info.email = value;
@@ -110,44 +120,105 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
       supported_algorithms_for_token_binding = value;
     } else if (key_name == kSigninMtlsTokenBindingAttrName) {
       mtls_token_binding = true;
+    } else if (key_name == kSigninActionAttrName) {
+      // Handled separately initially.
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
     }
   }
 
-  switch (GetDiceActionFromHeader(action_it->second)) {
-    case DiceAction::NONE:
-    case DiceAction::SIGNOUT:
+  return {std::move(account_info), std::move(authorization_code),
+          no_authorization_code,
+          std::move(supported_algorithms_for_token_binding),
+          mtls_token_binding};
+}
+
+}  // namespace
+
+DiceHeaderHelper::DiceHeaderHelper(AccountConsistencyMethod account_consistency)
+    : account_consistency_(account_consistency) {}
+
+// static
+DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
+    const std::string& header_value) {
+  DCHECK(!header_value.empty());
+  DiceResponseParams params;
+
+  // The header can be in two formats:
+  // 1. Legacy: action=SIGNIN,id=id1,email=email1
+  // 2. Grouped: action=SIGNIN;id=id1;email=email1,id=id2;email=email2
+  //
+  // In the grouped format, attributes within an account are separated by ';',
+  // and accounts are separated by ','.
+  bool is_grouped_format = header_value.find(';') != std::string::npos;
+  std::vector<DiceResponseHeaderDictionary> parsed_accounts;
+
+  if (is_grouped_format) {
+    for (std::string_view group :
+         base::SplitStringPiece(header_value, ",", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      parsed_accounts.push_back(ParseGroup(group, ";"));
+    }
+  } else {
+    // Legacy format.
+    parsed_accounts.push_back(ParseGroup(header_value, ","));
+  }
+
+  if (parsed_accounts.empty()) {
+    return params;
+  }
+
+  // `parsed_accounts[0]` should contain an action, and one account info.
+  // For other items in `parsed_accounts`, only the account info is used. The
+  // action (if any) is assumed to be the same as in `parsed_accounts[0]`.
+  auto action_it = parsed_accounts[0].find(kSigninActionAttrName);
+  if (action_it == parsed_accounts[0].end()) {
+    return params;
+  }
+
+  DiceAction action = GetDiceActionFromHeader(action_it->second);
+  switch (action) {
+    case DiceAction::SIGNIN:
+      params.data.emplace<DiceResponseParams::SigninInfo>();
+      break;
+    case DiceAction::ENABLE_SYNC:
+      params.data.emplace<DiceResponseParams::EnableSyncInfo>();
+      break;
+    default:
       DLOG(WARNING) << "Only SIGNIN and ENABLE_SYNC are supported through "
                     << "X-Chrome-ID-Consistency-Response :" << header_value;
       return params;
-    case DiceAction::SIGNIN: {
-      DiceResponseParams::SigninInfo& signin_info =
-          params.data.emplace<DiceResponseParams::SigninInfo>();
-      signin_info.AddAccount({std::move(account_info),
-                              std::move(authorization_code),
-                              no_authorization_code,
-                              std::move(supported_algorithms_for_token_binding),
-                              mtls_token_binding});
-      break;
+  }
+
+  if (action == DiceAction::ENABLE_SYNC) {
+    DiceResponseParams::SigninInfo::SigninAccount signin_account =
+        BuildSigninAccount(parsed_accounts[0]);
+    if (!signin_account.authorization_code.empty()) {
+      DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
     }
-    case DiceAction::ENABLE_SYNC: {
-      DiceResponseParams::EnableSyncInfo& enable_sync_info =
-          params.data.emplace<DiceResponseParams::EnableSyncInfo>();
-      enable_sync_info.account_info = std::move(account_info);
-      if (!authorization_code.empty()) {
-        DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
-      }
-      if (no_authorization_code) {
-        DLOG(WARNING)
-            << "No authorization code header expected only with SIGNIN action";
-      }
-      if (!supported_algorithms_for_token_binding.empty()) {
-        DLOG(WARNING) << "Eligible for token binding attribute expected only "
-                         "with SIGNIN action";
-      }
-      break;
+    if (signin_account.no_authorization_code) {
+      DLOG(WARNING)
+          << "No authorization code header expected only with SIGNIN action";
     }
+    if (!signin_account.supported_algorithms_for_token_binding.empty()) {
+      DLOG(WARNING) << "Eligible for token binding attribute expected only "
+                       "with SIGNIN action";
+    }
+    params.enable_sync_info()->account_info =
+        std::move(signin_account.account_info);
+    return params;
+  }
+
+  // SIGNIN action.
+  // Precaution against duplicate accounts in the header. The first one wins.
+  base::flat_set<GaiaId> seen_ids;
+  for (const auto& dict : parsed_accounts) {
+    DiceResponseParams::SigninInfo::SigninAccount account =
+        BuildSigninAccount(dict);
+    if (!seen_ids.insert(account.account_info.gaia_id).second) {
+      continue;
+    }
+    params.signin_info()->AddAccount(std::move(account));
   }
 
   return params;
@@ -167,10 +238,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
   std::vector<int> session_indices;
   ResponseHeaderDictionary header_dictionary =
       ParseAccountConsistencyResponseHeader(header_value);
-  ResponseHeaderDictionary::const_iterator it = header_dictionary.begin();
-  for (; it != header_dictionary.end(); ++it) {
-    const std::string key_name(it->first);
-    const std::string value(it->second);
+  for (const auto& [key_name, value] : header_dictionary) {
     if (key_name == kSignoutObfuscatedIDAttrName) {
       std::string trimmed_value = value;
       // The Gaia ID is wrapped in quotes.

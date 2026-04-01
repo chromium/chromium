@@ -60,6 +60,13 @@ class RequestAdapterWrapper {
 
 class DiceHeaderHelperTest : public testing::Test {
  protected:
+  // Common constants for tests.
+  const GaiaId kGaiaID = GaiaId("gaia_id");
+  const std::string kEmail = "foo@example.com";
+  const std::string kAuthorizationCode = "authorization_code";
+  const std::string kSupportedTokenBindingAlgorithms = "ES256 RS256";
+  const int kSessionIndex = 42;
+
   DiceHeaderHelperTest() {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs_.registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs_.registry());
@@ -89,8 +96,26 @@ class DiceHeaderHelperTest : public testing::Test {
                                      std::nullopt));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  void VerifySigninAccount(
+      const DiceResponseParams::SigninInfo::SigninAccount& account,
+      const GaiaId& expected_gaia_id,
+      const std::string& expected_email,
+      int expected_session_index,
+      const std::string& expected_auth_code,
+      bool expected_no_auth_code = false,
+      const std::string& expected_supported_tb_algorithms = "",
+      bool expected_mtls_token_binding = false) {
+    EXPECT_EQ(expected_gaia_id, account.account_info.gaia_id);
+    EXPECT_EQ(expected_email, account.account_info.email);
+    EXPECT_EQ(expected_session_index, account.account_info.session_index);
+    EXPECT_EQ(expected_auth_code, account.authorization_code);
+    EXPECT_EQ(expected_no_auth_code, account.no_authorization_code);
+    EXPECT_EQ(expected_supported_tb_algorithms,
+              account.supported_algorithms_for_token_binding);
+    EXPECT_EQ(expected_mtls_token_binding, account.mtls_token_binding);
+  }
 
+  base::test::TaskEnvironment task_environment_;
   bool sync_enabled_ = false;
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
@@ -109,124 +134,112 @@ TEST_F(DiceHeaderHelperTest, TestDiceInvalidResponseParams) {
   EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention());
 }
 
-TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams) {
-  const char kAuthorizationCode[] = "authorization_code";
-  const char kEmail[] = "foo@example.com";
-  const GaiaId kGaiaID("gaia_id");
-  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
-  const int kSessionIndex = 42;
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_Signin) {
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
+                         "authorization_code=%s,"
+                         "eligible_for_token_binding=%s,",
+                         kGaiaID.ToString().c_str(), kEmail.c_str(),
+                         kSessionIndex, kAuthorizationCode.c_str(),
+                         kSupportedTokenBindingAlgorithms.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
 
   {
-    // SIGNIN response.
-    base::HistogramTester histogram_tester;
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
-            "action=SIGNIN,id=%s,email=%s,authuser=%i,"
-            "authorization_code=%s,"
-            "eligible_for_token_binding=%s,",
-            kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
-            kAuthorizationCode, kSupportedTokenBindingAlgorithms));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
-    const auto* signin_info = params.signin_info();
-    ASSERT_TRUE(signin_info);
-    const auto* account = signin_info->GetInitiator();
-    ASSERT_TRUE(account);
-    EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
-    EXPECT_EQ(kEmail, account->account_info.email);
-    EXPECT_EQ(kSessionIndex, account->account_info.session_index);
-    EXPECT_EQ(kAuthorizationCode, account->authorization_code);
-    EXPECT_EQ(kSupportedTokenBindingAlgorithms,
-              account->supported_algorithms_for_token_binding);
-    EXPECT_FALSE(account->mtls_token_binding);
-    histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true,
-                                        1);
+    SCOPED_TRACE("Verifying Signin Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode, /*expected_no_auth_code=*/false,
+                        kSupportedTokenBindingAlgorithms);
   }
+  histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true, 1);
+}
 
-  {
-    // ENABLE_SYNC response.
-    DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
-        base::StringPrintf("action=ENABLE_SYNC,id=%s,email=%s,authuser=%i",
-                           kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention());
-    const auto* enable_sync_info = params.enable_sync_info();
-    ASSERT_TRUE(enable_sync_info);
-    EXPECT_EQ(kGaiaID, enable_sync_info->account_info.gaia_id);
-    EXPECT_EQ(kEmail, enable_sync_info->account_info.email);
-    EXPECT_EQ(kSessionIndex, enable_sync_info->account_info.session_index);
-  }
-
-  {
-    // Signin response with no_authorization_code and missing
-    // authorization_code.
-    base::HistogramTester histogram_tester;
-    DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
-        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
-                           "no_authorization_code=true",
-                           kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
-    const auto* signin_info = params.signin_info();
-    ASSERT_TRUE(signin_info);
-    const auto* account = signin_info->GetInitiator();
-    ASSERT_TRUE(account);
-    EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
-    EXPECT_EQ(kEmail, account->account_info.email);
-    EXPECT_EQ(kSessionIndex, account->account_info.session_index);
-    EXPECT_TRUE(account->authorization_code.empty());
-    EXPECT_TRUE(account->no_authorization_code);
-    EXPECT_FALSE(account->mtls_token_binding);
-    histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false,
-                                        1);
-  }
-
-  {
-    // Missing authorization code and no_authorization_code.
-    base::HistogramTester histogram_tester;
-    DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
-        base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i",
-                           kGaiaID.ToString().c_str(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
-    EXPECT_FALSE(params.IsValid());
-    histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
-  }
-
-  {
-    // Missing email in SIGNIN.
-    DiceResponseParams params =
-        DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
-            "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s",
-            kGaiaID.ToString().c_str(), kSessionIndex, kAuthorizationCode));
-    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
-    EXPECT_FALSE(params.IsValid());
-  }
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_EnableSync) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=ENABLE_SYNC,id=%s,email=%s,authuser=%i",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention());
+  const auto* enable_sync_info = params.enable_sync_info();
+  ASSERT_TRUE(enable_sync_info);
+  EXPECT_EQ(kGaiaID, enable_sync_info->account_info.gaia_id);
+  EXPECT_EQ(kEmail, enable_sync_info->account_info.email);
+  EXPECT_EQ(kSessionIndex, enable_sync_info->account_info.session_index);
 }
 
 TEST_F(DiceHeaderHelperTest,
-       BuildDiceSigninResponseParamsWithMtlsTokenBinding) {
-  const char kAuthorizationCode[] = "authorization_code";
-  const char kEmail[] = "foo@example.com";
-  const GaiaId kGaiaID("gaia_id");
-  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
-  const int kSessionIndex = 42;
+       BuildDiceSigninResponseParams_NoAuthorizationCode) {
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN,id=%s,email=%s,authuser=%i,"
+          "no_authorization_code=true",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+
+  {
+    SCOPED_TRACE("Verifying No Auth Code Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        /*expected_auth_code=*/"",
+                        /*expected_no_auth_code=*/true);
+  }
+  histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false, 1);
+}
+
+TEST_F(
+    DiceHeaderHelperTest,
+    BuildDiceSigninResponseParams_MissingAuthorizationCodeAndNoAuthorizationCode) {
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN,id=%s,email=%s,authuser=%i",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  EXPECT_FALSE(params.IsValid());
+  histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MissingEmail) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s",
+          kGaiaID.ToString().c_str(), kSessionIndex,
+          kAuthorizationCode.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  EXPECT_FALSE(params.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParams_MtlsTokenBinding) {
   base::HistogramTester histogram_tester;
   DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
       base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i,"
                          "authorization_code=%s,"
                          "eligible_for_token_binding=%s,"
                          "mtls_token_binding=true",
-                         kGaiaID.ToString().c_str(), kEmail, kSessionIndex,
-                         kAuthorizationCode, kSupportedTokenBindingAlgorithms));
+                         kGaiaID.ToString().c_str(), kEmail.c_str(),
+                         kSessionIndex, kAuthorizationCode.c_str(),
+                         kSupportedTokenBindingAlgorithms.c_str()));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
   ASSERT_TRUE(signin_info);
   const auto* account = signin_info->GetInitiator();
   ASSERT_TRUE(account);
-  EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
-  EXPECT_EQ(kEmail, account->account_info.email);
-  EXPECT_EQ(kSessionIndex, account->account_info.session_index);
-  EXPECT_EQ(kAuthorizationCode, account->authorization_code);
-  EXPECT_EQ(kSupportedTokenBindingAlgorithms,
-            account->supported_algorithms_for_token_binding);
-  EXPECT_TRUE(account->mtls_token_binding);
+
+  {
+    SCOPED_TRACE("Verifying MTLS Token Binding Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode, /*expected_no_auth_code=*/false,
+                        kSupportedTokenBindingAlgorithms,
+                        /*expected_mtls_token_binding=*/true);
+  }
   histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", true, 1);
 }
 
@@ -323,30 +336,327 @@ TEST_F(DiceHeaderHelperTest,
 }
 
 TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMixedOrder) {
-  const char kAuthorizationCode[] = "authorization_code";
-  const char kEmail[] = "foo@example.com";
-  const GaiaId kGaiaID("gaia_id");
-  const char kSupportedTokenBindingAlgorithms[] = "ES256 RS256";
-  const int kSessionIndex = 42;
-
-  DiceResponseParams params =
-      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
-          "id=%s,action=SIGNIN,authuser=%i,eligible_for_token_binding=%s,email="
-          "%s,"
-          "authorization_code=%s",
-          kGaiaID.ToString(), kSessionIndex, kSupportedTokenBindingAlgorithms,
-          kEmail, kAuthorizationCode));
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("id=%s,action=SIGNIN,authuser=%i,eligible_for_token_"
+                         "binding=%s,email=%s,authorization_code=%s",
+                         kGaiaID.ToString().c_str(), kSessionIndex,
+                         kSupportedTokenBindingAlgorithms.c_str(),
+                         kEmail.c_str(), kAuthorizationCode.c_str()));
   EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
   const auto* signin_info = params.signin_info();
   ASSERT_TRUE(signin_info);
   const auto* account = signin_info->GetInitiator();
   ASSERT_TRUE(account);
-  EXPECT_EQ(kGaiaID, account->account_info.gaia_id);
-  EXPECT_EQ(kEmail, account->account_info.email);
-  EXPECT_EQ(kSessionIndex, account->account_info.session_index);
-  EXPECT_EQ(kAuthorizationCode, account->authorization_code);
-  EXPECT_EQ(kSupportedTokenBindingAlgorithms,
-            account->supported_algorithms_for_token_binding);
+
+  {
+    SCOPED_TRACE("Verifying Mixed Order Comma Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode, /*expected_no_auth_code=*/false,
+                        kSupportedTokenBindingAlgorithms);
+  }
+
+  {
+    // Semicolon delimiter.
+    DiceResponseParams params_grouped =
+        DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+            "id=%s;action=SIGNIN;authuser=%i;eligible_for_token_binding=%s;"
+            "email=%s;authorization_code=%s",
+            kGaiaID.ToString().c_str(), kSessionIndex,
+            kSupportedTokenBindingAlgorithms.c_str(), kEmail.c_str(),
+            kAuthorizationCode.c_str()));
+    EXPECT_EQ(DiceAction::SIGNIN, params_grouped.user_intention());
+    const auto* signin_info_grouped = params_grouped.signin_info();
+    ASSERT_TRUE(signin_info_grouped);
+    const auto* account_grouped = signin_info_grouped->GetInitiator();
+    ASSERT_TRUE(account_grouped);
+
+    {
+      SCOPED_TRACE("Verifying Mixed Order Semicolon Account");
+      VerifySigninAccount(*account_grouped, kGaiaID, kEmail, kSessionIndex,
+                          kAuthorizationCode, /*expected_no_auth_code=*/false,
+                          kSupportedTokenBindingAlgorithms);
+    }
+  }
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsSemicolon_Signin) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN;id=%s;email=%s;authuser=%i;authorization_code=%s",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex,
+          kAuthorizationCode.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+
+  {
+    SCOPED_TRACE("Verifying Semicolon Signin Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode);
+  }
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsSemicolon_EnableSync) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=ENABLE_SYNC;id=%s;email=%s;authuser=%i",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::ENABLE_SYNC, params.user_intention());
+  const auto* enable_sync_info = params.enable_sync_info();
+  ASSERT_TRUE(enable_sync_info);
+  EXPECT_EQ(kGaiaID, enable_sync_info->account_info.gaia_id);
+  EXPECT_EQ(kEmail, enable_sync_info->account_info.email);
+  EXPECT_EQ(kSessionIndex, enable_sync_info->account_info.session_index);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsSemicolon_NoAuthorizationCode) {
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN;id=%s;email=%s;authuser=%i;"
+          "no_authorization_code=true",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+
+  {
+    SCOPED_TRACE("Verifying Semicolon No Auth Code Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        /*expected_auth_code=*/"",
+                        /*expected_no_auth_code=*/true);
+  }
+  histogram_tester.ExpectUniqueSample("Signin.DiceAuthorizationCode", false, 1);
+}
+
+TEST_F(
+    DiceHeaderHelperTest,
+    BuildDiceSigninResponseParamsSemicolon_MissingAuthorizationCodeAndNoAuthorizationCode) {
+  base::HistogramTester histogram_tester;
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN;id=%s;email=%s;authuser=%i",
+          kGaiaID.ToString().c_str(), kEmail.c_str(), kSessionIndex));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  EXPECT_FALSE(params.IsValid());
+  histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsSemicolon_MissingEmail) {
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(base::StringPrintf(
+          "action=SIGNIN;id=%s;authuser=%i;authorization_code=%s",
+          kGaiaID.ToString().c_str(), kSessionIndex,
+          kAuthorizationCode.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  EXPECT_FALSE(params.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsSemicolon_AllFields) {
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("action=SIGNIN;id=%s;email=%s;authuser=%i;"
+                         "authorization_code=%s;"
+                         "eligible_for_token_binding=%s;"
+                         "mtls_token_binding=true",
+                         kGaiaID.ToString().c_str(), kEmail.c_str(),
+                         kSessionIndex, kAuthorizationCode.c_str(),
+                         kSupportedTokenBindingAlgorithms.c_str()));
+
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto* account = signin_info->GetInitiator();
+  ASSERT_TRUE(account);
+
+  {
+    SCOPED_TRACE("Verifying Semicolon All Fields Account");
+    VerifySigninAccount(*account, kGaiaID, kEmail, kSessionIndex,
+                        kAuthorizationCode, /*expected_no_auth_code=*/false,
+                        kSupportedTokenBindingAlgorithms,
+                        /*expected_mtls_token_binding=*/true);
+  }
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsMultiAccount_MissingData) {
+  // Multi-Account Format: Comma between accounts, semicolon within accounts.
+  // Missing data.
+  DiceResponseParams params = DiceHeaderHelper::BuildDiceSigninResponseParams(
+      base::StringPrintf("action=SIGNIN;id=other_id;email=other_email,"
+                         "action=SIGNIN;id=%s;email=%s;authorization_code=%s",
+                         kGaiaID.ToString().c_str(), kEmail.c_str(),
+                         kAuthorizationCode.c_str()));
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  ASSERT_EQ(2u, signin_info->accounts().size());
+  EXPECT_EQ(GaiaId("other_id"),
+            signin_info->accounts()[0].account_info.gaia_id);
+  EXPECT_EQ(kGaiaID, signin_info->accounts()[1].account_info.gaia_id);
+  EXPECT_FALSE(params.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest, BuildDiceSigninResponseParamsMultiAccount_Basic) {
+  std::string header_value =
+      "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=id2;email=email2;authuser=2;authorization_code=code2";
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+
+  // Metadata is required to identify the initiator when multiple accounts are
+  // present.
+  params.signin_info()->set_connected_accounts_metadata(
+      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+          .initiator_id = GaiaId("id2")});
+
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto& accounts = signin_info->accounts();
+  ASSERT_EQ(2u, accounts.size());
+
+  {
+    SCOPED_TRACE("Verifying Account 1");
+    VerifySigninAccount(accounts[0], GaiaId("id1"), "email1", 1, "code1");
+  }
+  {
+    SCOPED_TRACE("Verifying Account 2");
+    VerifySigninAccount(accounts[1], GaiaId("id2"), "email2", 2, "code2");
+  }
+
+  const auto* initiator = signin_info->GetInitiator();
+  ASSERT_TRUE(initiator);
+  EXPECT_EQ(GaiaId("id2"), initiator->account_info.gaia_id);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsMultiAccount_AllFields) {
+  const GaiaId kGaiaID1("id1");
+  const GaiaId kGaiaID2("id2");
+  const std::string kSupportedAlgorithms2 = "ES256";
+
+  std::string header_value = base::StringPrintf(
+      "action=SIGNIN;id=%s;email=email1;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=%s;email=email2;authuser=2;authorization_code=code2;"
+      "eligible_for_token_binding=%s;mtls_token_binding=true",
+      kGaiaID1.ToString().c_str(), kGaiaID2.ToString().c_str(),
+      kSupportedAlgorithms2.c_str());
+
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+
+  params.signin_info()->set_connected_accounts_metadata(
+      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{.initiator_id =
+                                                                    kGaiaID2});
+
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  const auto* signin_info = params.signin_info();
+  ASSERT_TRUE(signin_info);
+  const auto& accounts = signin_info->accounts();
+  ASSERT_EQ(2u, accounts.size());
+
+  {
+    SCOPED_TRACE("Verifying Account 1 (Basic)");
+    VerifySigninAccount(accounts[0], kGaiaID1, "email1", 1, "code1");
+  }
+  {
+    SCOPED_TRACE("Verifying Account 2 (All Fields)");
+    VerifySigninAccount(accounts[1], kGaiaID2, "email2", 2, "code2",
+                        /*expected_no_auth_code=*/false, kSupportedAlgorithms2,
+                        /*expected_mtls_token_binding=*/true);
+  }
+
+  const auto* initiator = signin_info->GetInitiator();
+  ASSERT_TRUE(initiator);
+  EXPECT_EQ(kGaiaID2, initiator->account_info.gaia_id);
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsMultiAccount_Duplicates) {
+  std::string header_value = base::StringPrintf(
+      "action=SIGNIN;id=%s;email=%s;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=%s;email=%s;authuser=2;authorization_code=code2",
+      kGaiaID.ToString().c_str(), kEmail.c_str(), kGaiaID.ToString().c_str(),
+      kEmail.c_str());
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+
+  params.signin_info()->set_connected_accounts_metadata(
+      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{.initiator_id =
+                                                                    kGaiaID});
+
+  EXPECT_EQ(1U, params.signin_info()->accounts().size());
+  {
+    SCOPED_TRACE("Verifying Preserved Account");
+    VerifySigninAccount(params.signin_info()->accounts()[0], kGaiaID, kEmail, 1,
+                        "code1");
+  }
+  EXPECT_TRUE(params.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsMultiAccount_TrailingSemicolon) {
+  std::string header_value = base::StringPrintf(
+      "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
+      "action=SIGNIN;id=id2;email=email2;authuser=2;authorization_code=code2;");
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+
+  params.signin_info()->set_connected_accounts_metadata(
+      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+          .initiator_id = GaiaId("id2")});
+
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  ASSERT_TRUE(params.signin_info());
+  const auto& accounts = params.signin_info()->accounts();
+  ASSERT_EQ(2U, accounts.size());
+
+  {
+    SCOPED_TRACE("Verifying Account 1");
+    VerifySigninAccount(accounts[0], GaiaId("id1"), "email1", 1, "code1");
+  }
+  {
+    SCOPED_TRACE("Verifying Account 2");
+    VerifySigninAccount(accounts[1], GaiaId("id2"), "email2", 2, "code2");
+  }
+  EXPECT_TRUE(params.IsValid());
+}
+
+TEST_F(DiceHeaderHelperTest,
+       BuildDiceSigninResponseParamsMultiAccount_DifferentActionsFirstWins) {
+  std::string header_value = base::StringPrintf(
+      "action=SIGNIN;id=id1;email=email1;authuser=1;authorization_code=code1,"
+      "action=ENABLE_SYNC;id=id2;email=email2;authuser=2;authorization_code="
+      "code2");
+  DiceResponseParams params =
+      DiceHeaderHelper::BuildDiceSigninResponseParams(header_value);
+
+  params.signin_info()->set_connected_accounts_metadata(
+      DiceResponseParams::SigninInfo::ConnectedAccountsMetadata{
+          .initiator_id = GaiaId("id2")});
+
+  EXPECT_EQ(DiceAction::SIGNIN, params.user_intention());
+  ASSERT_TRUE(params.signin_info());
+  const auto& accounts = params.signin_info()->accounts();
+  ASSERT_EQ(2U, accounts.size());
+
+  {
+    SCOPED_TRACE("Verifying Account 1 (Signin wins)");
+    VerifySigninAccount(accounts[0], GaiaId("id1"), "email1", 1, "code1");
+  }
+  {
+    SCOPED_TRACE("Verifying Account 2 (EnableSync parsed as Signin)");
+    VerifySigninAccount(accounts[1], GaiaId("id2"), "email2", 2, "code2");
+  }
+
+  EXPECT_TRUE(params.IsValid());
 }
 
 TEST_F(DiceHeaderHelperTest, ParseConnectedAccountsMetadata) {
