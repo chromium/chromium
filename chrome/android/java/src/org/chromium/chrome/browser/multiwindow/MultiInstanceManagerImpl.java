@@ -30,7 +30,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -458,33 +458,23 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
         return false;
     }
 
-    @Override
-    public @Nullable Intent createNewWindowIntent(
-            boolean isIncognito, @NewWindowAppSource int source) {
-        assert !isIncognito : "Opening an incognito window isn't supported";
-        assert mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                        || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()
-                : "Current windowing mode doesn't support opening a new window";
-
+    public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
         Intent intent = mMultiWindowModeStateDispatcher.getOpenInOtherWindowIntent();
-        if (intent == null) {
-            return null;
-        }
+        if (intent == null) return;
 
-        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-
-        // Remove LAUNCH_ADJACENT flag if shouldOpenInAdjacentWindow() is false.
-        if (!MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity)) {
-            intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-        }
-
-        return intent;
+        onMultiInstanceModeStarted();
+        ReparentingTabsTask.from(tabs)
+                .begin(
+                        mActivity,
+                        intent,
+                        /* startActivityOptions= */ null,
+                        /* finalizeCallback= */ null);
+        RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
     private void openNewWindow(boolean incognito, @NewWindowAppSource int source) {
-        Intent intent = createNewWindowIntent(incognito, source);
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(mActivity, incognito, source);
         if (intent == null) {
             return;
         }

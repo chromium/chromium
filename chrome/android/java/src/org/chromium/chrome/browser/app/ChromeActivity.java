@@ -1099,8 +1099,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                     tabModelSelector,
                                     browserWindowType,
                                     supportedProfileType,
-                                    desktopWindowStateManager,
-                                    multiInstanceManager),
+                                    desktopWindowStateManager),
                             pendingId);
 
             // 4. Add windowing features.

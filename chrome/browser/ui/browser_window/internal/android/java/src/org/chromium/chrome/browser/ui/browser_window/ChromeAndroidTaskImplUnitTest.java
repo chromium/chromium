@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -1042,42 +1041,6 @@ public class ChromeAndroidTaskImplUnitTest {
                 "Feature should not be removed from the Task.",
                 testFeature2,
                 chromeAndroidTask.getFeatureForTesting(featureKey2));
-    }
-
-    @Test
-    public void createIntentForNormalBrowserWindow_notIncognito_callsMultiInstanceManager() {
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var multiInstanceManager =
-                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mMultiInstanceManager;
-
-        // Act.
-        var intent = chromeAndroidTask.createIntentForNormalBrowserWindow(/* isIncognito= */ false);
-
-        // Assert.
-        assertNotNull(intent);
-        verify(multiInstanceManager, times(1))
-                .createNewWindowIntent(
-                        /* isIncognito= */ false, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
-    }
-
-    @Test
-    public void createIntentForNormalBrowserWindow_incognito_callsMultiInstanceManager() {
-        // Arrange.
-        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
-        var chromeAndroidTask = chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
-        var multiInstanceManager =
-                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mMultiInstanceManager;
-
-        // Act.
-        var intent = chromeAndroidTask.createIntentForNormalBrowserWindow(/* isIncognito= */ true);
-
-        // Assert.
-        assertNotNull(intent);
-        verify(multiInstanceManager, times(1))
-                .createNewWindowIntent(
-                        /* isIncognito= */ true, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
     @Test

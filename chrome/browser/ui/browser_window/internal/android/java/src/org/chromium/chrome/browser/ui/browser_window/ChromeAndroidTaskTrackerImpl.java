@@ -22,6 +22,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask.PendingTaskInfo;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -322,6 +324,23 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return nativeBrowserWindowPtrs;
     }
 
+    @Nullable
+    private Activity findSourceActivityForNewWindow() {
+        // TODO(crbug.com/494034453) Don't just find the first activity.
+        for (ChromeAndroidTask task : mTasks.values()) {
+            var windowAndroid = task.getTopActivityWindowAndroid();
+            if (windowAndroid == null) {
+                continue;
+            }
+
+            Activity activity = windowAndroid.getActivity().get();
+            if (activity != null) {
+                return activity;
+            }
+        }
+        return null;
+    }
+
     private @Nullable Intent createNewWindowIntent(AndroidBrowserWindowCreateParams createParams) {
         var profile = createParams.getProfile();
         boolean isIncognito = profile.isIncognitoBranded();
@@ -333,13 +352,17 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         @BrowserWindowType int browserWindowType = createParams.getWindowType();
         switch (browserWindowType) {
             case BrowserWindowType.NORMAL:
-                for (ChromeAndroidTask task : mTasks.values()) {
-                    var intent = task.createIntentForNormalBrowserWindow(isIncognito);
-                    if (intent != null) {
-                        return intent;
-                    }
+                Activity sourceActivity = findSourceActivityForNewWindow();
+
+                if (sourceActivity == null) {
+                    return null;
                 }
-                return null;
+
+                return MultiInstanceOrchestratorFactory.getInstance()
+                        .createNewWindowIntent(
+                                sourceActivity,
+                                isIncognito,
+                                NewWindowAppSource.BROWSER_WINDOW_CREATOR);
             case BrowserWindowType.POPUP:
                 var popupIntentCreator = assertNonNull(PopupIntentCreatorProvider.getInstance());
                 Rect bounds = createParams.getInitialBoundsInDp();

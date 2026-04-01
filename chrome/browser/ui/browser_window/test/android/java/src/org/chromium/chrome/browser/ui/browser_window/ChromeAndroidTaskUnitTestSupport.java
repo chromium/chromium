@@ -49,7 +49,8 @@ import org.chromium.chrome.browser.customtabs.PopupIntentCreator;
 import org.chromium.chrome.browser.customtabs.PopupIntentCreatorProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
@@ -367,15 +368,14 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockIncognitoTabModel.getProfile()).thenReturn(null);
 
         var mockDesktopWindowStateManager = mock(DesktopWindowStateManager.class);
-        var mockMultiInstanceManager = createMockMultiInstanceManager();
+        mockMultiInstanceOrchestrator();
 
         return new ChromeAndroidTask.ActivityScopedObjects(
                 activityWindowAndroid,
                 mockTabModelSelector,
                 windowType,
                 profileType,
-                mockDesktopWindowStateManager,
-                mockMultiInstanceManager);
+                mockDesktopWindowStateManager);
     }
 
     /**
@@ -620,8 +620,8 @@ public final class ChromeAndroidTaskUnitTestSupport {
         when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(maxWindowMetrics);
     }
 
-    private static MultiInstanceManager createMockMultiInstanceManager() {
-        var mockMultiInstanceManager = mock(MultiInstanceManager.class);
+    public static void mockMultiInstanceOrchestrator() {
+        var mockOrchestrator = mock(MultiInstanceOrchestrator.class);
 
         // Unit tests don't need to care what the Intent is. They only need to verify the correct
         // MultiInstanceManager API is called.
@@ -630,11 +630,13 @@ public final class ChromeAndroidTaskUnitTestSupport {
         // (1) The Intent is not null; and
         // (2) The Intent has the FLAG_ACTIVITY_NEW_TASK flag to avoid the "background Activity
         // launch" error in unit tests.
+
         var intent = new Intent();
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        when(mockMultiInstanceManager.createNewWindowIntent(anyBoolean(), anyInt()))
+        when(mockOrchestrator.createNewWindowIntent(any(), anyBoolean(), anyInt()))
                 .thenReturn(intent);
-        return mockMultiInstanceManager;
+
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
     }
 }

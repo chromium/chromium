@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui.browser_window;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.role.RoleManager;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build;
@@ -41,7 +40,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.Activit
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcherProvider;
 import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -748,24 +746,6 @@ final class ChromeAndroidTaskImpl
     public void removeAllFeaturesForActivity(ActivityWindowAndroid activityWindowAndroid) {
         ThreadUtils.assertOnUiThread();
         removeAllFeaturesForActivityInternal(activityWindowAndroid);
-    }
-
-    @Override
-    public @Nullable Intent createIntentForNormalBrowserWindow(boolean isIncognito) {
-        ThreadUtils.assertOnUiThread();
-        var internalActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
-        if (internalActivityScopedObjects == null) {
-            return null;
-        }
-        var topActivityScopedObjects = internalActivityScopedObjects.mActivityScopedObjects;
-
-        var multiInstanceManager = topActivityScopedObjects.mMultiInstanceManager;
-        if (multiInstanceManager == null) {
-            return null;
-        }
-
-        return multiInstanceManager.createNewWindowIntent(
-                isIncognito, NewWindowAppSource.BROWSER_WINDOW_CREATOR);
     }
 
     // TODO(crbug.com/486858979): Mark this as deprecated and add Activity as a parameter.

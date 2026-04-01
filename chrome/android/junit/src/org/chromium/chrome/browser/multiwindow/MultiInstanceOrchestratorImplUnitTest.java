@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyBoolean;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -84,6 +89,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Spy private MultiWindowUtils mMultiWindowUtils;
 
     private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     private TabGroupMetadata mTabGroupMetadata;
@@ -92,6 +98,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Before
     public void setup() {
         MultiWindowTestUtils.enableMultiInstance();
+        MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiInstanceOrchestratorImpl.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
         mMultiInstanceOrchestrator = MultiInstanceOrchestratorImpl.getInstance();
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
@@ -111,6 +118,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(mTabbedActivity1.getPackageName())
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         when(mTabbedActivity1.getResources()).thenReturn(mock(Resources.class));
+        when(mActivity.getPackageName())
+                .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         MultiWindowUtils.setActivityByWindowIdForTesting(SOURCE_WINDOW_ID, mTabbedActivity1);
         MultiWindowUtils.setActivityByWindowIdForTesting(DEST_WINDOW_ID, mTabbedActivity2);
     }
@@ -118,6 +127,144 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @After
     public void teardown() {
         ApplicationStatus.destroyForJUnitTests();
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_incognito_addsIncognitoIntentExtra() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity,
+                        /* isIncognito= */ true,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        assertNotNull(intent);
+        assertTrue(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ false));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_notIncognito_skipsIncognitoIntentExtra() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+        assertNotNull(intent);
+        assertFalse(
+                intent.getBooleanExtra(
+                        IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, /* defaultValue= */ true));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_nonMultiWindowMode_opensFullScreen() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // The new window shouldn't be opened as an adjacent window.
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                false);
+
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        assertNotNull(intent);
+        assertEquals(0, (intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT));
+    }
+
+    @Test
+    @Config(sdk = 32)
+    public void testCreateNewWindowIntent_nonMultiWindowMode_opensAdjacently() {
+        when(mActivity.isInMultiWindowMode()).thenReturn(false);
+
+        // The new window should be opened as an adjacent window.
+        FeatureOverrides.overrideParam(
+                ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL,
+                MultiWindowUtils.OPEN_ADJACENTLY_PARAM,
+                true);
+
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        assertNotNull(intent);
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_multiWindowMode_opensAdjacently() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        when(mActivity.isInMultiWindowMode()).thenReturn(true);
+
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity,
+                        /* isIncognito= */ false,
+                        NewWindowAppSource.BROWSER_WINDOW_CREATOR);
+
+        assertNotNull(intent);
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_incognito_throwsException_preApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mMultiInstanceOrchestrator.createNewWindowIntent(
+                                mActivity, /* isIncognito= */ true, NewWindowAppSource.MENU));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_unsupportedWindowingMode_throwsException_preApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        when(mActivity.isInMultiWindowMode()).thenReturn(false);
+        when(mMultiWindowUtils.isInMultiDisplayMode(any(Activity.class))).thenReturn(false);
+
+        assertThrows(
+                AssertionError.class,
+                () ->
+                        mMultiInstanceOrchestrator.createNewWindowIntent(
+                                mActivity, /* isIncognito= */ false, NewWindowAppSource.MENU));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_nullIntent_returnsNull_preApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+        doReturn(true).when(mMultiWindowUtils).isInMultiWindowMode(any(Activity.class));
+
+        assertNull(
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity, /* isIncognito= */ false, NewWindowAppSource.MENU));
+    }
+
+    @Test
+    public void testCreateNewWindowIntent_multiWindowMode_launchesAdjacently_preApi31() {
+        MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(false);
+
+        // Multi-window mode.
+        doReturn(true).when(mMultiWindowUtils).isInMultiWindowMode(any(Activity.class));
+        doReturn(ChromeTabbedActivity.class)
+                .when(mMultiWindowUtils)
+                .getOpenInOtherWindowActivity(mActivity);
+        when(mActivity.isInMultiWindowMode()).thenReturn(true);
+
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity, /* isIncognito= */ false, NewWindowAppSource.MENU);
+
+        assertNotNull(intent);
+        assertTrue((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT) != 0);
     }
 
     @Test

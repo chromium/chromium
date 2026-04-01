@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.multiwindow;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,6 +31,18 @@ public interface MultiInstanceOrchestrator {
      * @param multiInstanceManager The {@link MultiInstanceManager} created for {@code activity}.
      */
     void onInitialize(Activity activity, MultiInstanceManager multiInstanceManager);
+
+    /**
+     * Creates an {@link Intent} for a new ChromeTabbedActivity instance.
+     *
+     * @param sourceActivity The activity used to launch the intent.
+     * @param isIncognito Whether the new window should be in incognito mode.
+     * @param source The new window creation source used for metrics.
+     * @return The new {@link Intent} as described above, or {@code null} if the new window cannot
+     *     be created.
+     */
+    @Nullable Intent createNewWindowIntent(
+            Activity sourceActivity, boolean isIncognito, @NewWindowAppSource int source);
 
     /**
      * Moves the specified tabs to a new ChromeTabbedActivity instance.

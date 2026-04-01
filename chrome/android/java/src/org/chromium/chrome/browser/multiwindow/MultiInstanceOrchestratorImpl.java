@@ -20,6 +20,7 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTabsTask;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -68,6 +69,53 @@ import java.util.Map;
         assert !mActivityMultiInstanceManagerAssignments.containsKey(activity)
                 : "A MultiInstanceManager for this Activity already exists.";
         mActivityMultiInstanceManagerAssignments.put(activity, multiInstanceManager);
+    }
+
+    @Override
+    public @Nullable Intent createNewWindowIntent(
+            Activity sourceActivity, boolean isIncognito, @NewWindowAppSource int source) {
+        boolean isInMultiWindowMode =
+                MultiWindowUtils.getInstance().isInMultiWindowMode(sourceActivity);
+        boolean isInMultiDisplayMode =
+                MultiWindowUtils.getInstance().isInMultiDisplayMode(sourceActivity);
+
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            boolean openAdjacently =
+                    (MultiWindowUtils.canEnterMultiWindowMode()
+                                    || isInMultiWindowMode
+                                    || isInMultiDisplayMode)
+                            && MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity);
+
+            Intent intent =
+                    MultiWindowUtils.createNewWindowIntent(
+                            sourceActivity,
+                            MultiInstanceManager.INVALID_WINDOW_ID,
+                            /* preferNew= */ true,
+                            openAdjacently,
+                            source);
+            intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
+            return intent;
+        }
+
+        assert !isIncognito : "Opening an incognito window isn't supported";
+        assert isInMultiWindowMode || isInMultiDisplayMode
+                : "Current windowing mode doesn't support opening a new window";
+
+        Class<? extends Activity> targetActivity =
+                MultiWindowUtils.getInstance().getOpenInOtherWindowActivity(sourceActivity);
+        if (targetActivity == null) return null;
+
+        Intent intent = new Intent(sourceActivity, targetActivity);
+        MultiWindowUtils.setOpenInOtherWindowIntentExtras(intent, sourceActivity, targetActivity);
+
+        intent.putExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, source);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        if (MultiWindowUtils.shouldOpenInAdjacentWindow(sourceActivity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
+        }
+
+        return intent;
     }
 
     @Override

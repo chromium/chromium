@@ -50,6 +50,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedWithNativeObserver;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestrator;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.browser_window.PendingActionManager.PendingAction;
 import org.chromium.ui.display.DisplayAndroid;
@@ -78,6 +80,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         DisplayAndroid.setNonMultiDisplayForTesting(mockDisplay);
 
         ChromeAndroidTaskUnitTestSupport.createMockAndroidBrowserWindowNatives();
+
+        var mockOrchestrator = mock(MultiInstanceOrchestrator.class);
+        MultiInstanceOrchestratorFactory.setInstanceForTesting(mockOrchestrator);
     }
 
     @After

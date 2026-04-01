@@ -213,7 +213,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     @Override
     public void openNewWindow(boolean isIncognito) {
         RecordUserAction.record("Android.WindowManager.NewWindow");
-        Intent intent = createNewWindowIntent(isIncognito, NewWindowAppSource.WINDOW_MANAGER);
+        Intent intent =
+                mMultiInstanceOrchestrator.createNewWindowIntent(
+                        mActivity, isIncognito, NewWindowAppSource.WINDOW_MANAGER);
         assert intent != null : "The Intent to open a new window must not be null";
 
         mActivity.startActivity(intent);
@@ -230,25 +232,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 moveCallback,
                 getInstanceInfo(instanceType),
                 titleId);
-    }
-
-    @Override
-    public @Nullable Intent createNewWindowIntent(
-            boolean isIncognito, @NewWindowAppSource int source) {
-        boolean openAdjacently =
-                (MultiWindowUtils.canEnterMultiWindowMode()
-                                || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
-                                || mMultiWindowModeStateDispatcher.isInMultiDisplayMode())
-                        && MultiWindowUtils.shouldOpenInAdjacentWindow(mActivity);
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        mActivity,
-                        /* windowId= */ INVALID_WINDOW_ID,
-                        /* preferNew= */ true,
-                        openAdjacently,
-                        source);
-        intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW, isIncognito);
-        return intent;
     }
 
     @Override
