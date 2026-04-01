@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_P(ActionCommandsApiTest,
   ToolbarActionViewModel* popup_owner =
       extensions_container->popup_owner_for_testing();
   EXPECT_TRUE(popup_owner);
-  EXPECT_TRUE(popup_owner->GetPopupNativeView());
+  EXPECT_TRUE(popup_owner->GetPopupNativeViewForTesting());
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 

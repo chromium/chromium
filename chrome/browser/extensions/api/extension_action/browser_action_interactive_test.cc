@@ -246,7 +246,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
   bool HasPopupNativeView() {
     ToolbarActionViewModel* popup_owner =
         extensions_container()->popup_owner_for_testing();
-    return popup_owner ? !!popup_owner->GetPopupNativeView() : false;
+    return popup_owner ? !!popup_owner->GetPopupNativeViewForTesting() : false;
   }
 
   // Trigger a focus loss to close the popup.
@@ -254,7 +254,7 @@ class BrowserActionInteractiveTest : public ExtensionApiTest {
     ToolbarActionViewModel* popup_owner =
         extensions_container()->popup_owner_for_testing();
     EXPECT_TRUE(popup_owner);
-    EXPECT_TRUE(popup_owner->GetPopupNativeView());
+    EXPECT_TRUE(popup_owner->GetPopupNativeViewForTesting());
     ExtensionHostTestHelper host_helper(profile());
 
 #if BUILDFLAG(IS_MAC)
@@ -616,7 +616,8 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, DestroyHWNDDoesNotCrash) {
   ToolbarActionViewModel* popup_owner =
       extensions_container()->popup_owner_for_testing();
   ASSERT_TRUE(popup_owner);
-  const gfx::NativeView popup_view = popup_owner->GetPopupNativeView();
+  const gfx::NativeView popup_view =
+      popup_owner->GetPopupNativeViewForTesting();
   EXPECT_NE(gfx::NativeView(), popup_view);
 
   const HWND popup_hwnd = views::HWNDForNativeView(popup_view);
@@ -1034,7 +1035,7 @@ class NavigatingExtensionPopupInteractiveTest
     content::WebContents* popup = popup_observer.Wait();
 
     // Verify popup is visible.
-    ASSERT_TRUE(model->GetPopupNativeView());
+    ASSERT_TRUE(model->GetPopupNativeViewForTesting());
 
     GURL popup_url = popup_extension().GetResourceURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
@@ -1077,7 +1078,7 @@ class NavigatingExtensionPopupInteractiveTest
 
       extensions_container()->HideActivePopup();
       ASSERT_FALSE(extensions_container()->popup_owner_for_testing());
-      ASSERT_FALSE(model->GetPopupNativeView());
+      ASSERT_FALSE(model->GetPopupNativeViewForTesting());
     }
 
     // Make sure that the web navigation did not succeed somewhere outside of

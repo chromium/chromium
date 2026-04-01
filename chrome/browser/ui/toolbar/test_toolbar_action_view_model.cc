@@ -76,7 +76,7 @@ void TestToolbarActionViewModel::HidePopup() {
   popup_showing_ = false;
 }
 
-gfx::NativeView TestToolbarActionViewModel::GetPopupNativeView() {
+gfx::NativeView TestToolbarActionViewModel::GetPopupNativeViewForTesting() {
   return gfx::NativeView();
 }
 

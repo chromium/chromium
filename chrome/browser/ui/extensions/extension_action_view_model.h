@@ -86,7 +86,7 @@ class ExtensionActionViewModel
   bool IsEnabled(content::WebContents* web_contents) const override;
   bool IsShowingPopup() const override;
   void HidePopup() override;
-  gfx::NativeView GetPopupNativeView() override;
+  gfx::NativeView GetPopupNativeViewForTesting() override;
   ui::MenuModel* GetContextMenu(
       extensions::ExtensionContextMenuModel::ContextMenuSource
           context_menu_source) override;

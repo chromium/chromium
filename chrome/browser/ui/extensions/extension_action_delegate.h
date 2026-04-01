@@ -49,7 +49,7 @@ class ExtensionActionDelegate {
   virtual void HidePopup() = 0;
 
   // Returns the native view for the popup, if one is active.
-  virtual gfx::NativeView GetPopupNativeView() = 0;
+  virtual gfx::NativeView GetPopupNativeViewForTesting() = 0;
 
   // Begins the process of showing the popup for the extension action on the
   // current web contents. |by_user| is true if popup is being triggered by a

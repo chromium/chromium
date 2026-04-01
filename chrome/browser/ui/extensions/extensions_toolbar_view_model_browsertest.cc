@@ -44,7 +44,9 @@ class FakeExtensionActionDelegate : public ExtensionActionDelegate {
   void UnregisterCommand() override {}
   bool IsShowingPopup() const override { return false; }
   void HidePopup() override {}
-  gfx::NativeView GetPopupNativeView() override { return gfx::NativeView(); }
+  gfx::NativeView GetPopupNativeViewForTesting() override {
+    return gfx::NativeView();
+  }
   void TriggerPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                     PopupShowAction show_action,
                     bool by_user,

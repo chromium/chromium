@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/extensions/extension_view_host_factory.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
@@ -64,8 +65,9 @@ void ExtensionActionDelegateAndroid::HidePopup() {
   toolbar_android_->HideActivePopup();
 }
 
-gfx::NativeView ExtensionActionDelegateAndroid::GetPopupNativeView() {
-  // TODO(crbug.com/461981075)
+gfx::NativeView ExtensionActionDelegateAndroid::GetPopupNativeViewForTesting() {
+  // Unused for Android tests.
+  NOTIMPLEMENTED();
   return nullptr;
 }
 
