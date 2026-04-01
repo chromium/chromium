@@ -33,6 +33,9 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   UIView* _webStateView;
   NSArray<NSLayoutConstraint*>* _webStateViewConstraints;
   ComposeboxInputPlateViewController* _inputViewController;
+  // Fade added behind the input plate.
+  UIView* _inputViewFade;
+  CALayer* _fadeGradient;
   AssistantAIMHeaderView* _headerView;
   NSLayoutConstraint* _headerTopMargin;
   NSLayoutConstraint* _inputPlateBottomMargin;
@@ -47,6 +50,12 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   }
   [self setUpHeader];
   [self setUpWebStateView];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  [_inputViewController.view layoutIfNeeded];
+  _fadeGradient.frame = _inputViewFade.bounds;
 }
 
 - (void)addInputViewController:
@@ -67,7 +76,13 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
       setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
                                       forAxis:UILayoutConstraintAxisVertical];
 
-  [self setupConstraints];
+  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+    [self createInputViewFade];
+    [self.view insertSubview:_inputViewFade
+                belowSubview:_inputViewController.view];
+  }
+
+  [self setupInputPlateConstraints];
 }
 
 - (void)adjustForContainerOpenPercentage:(CGFloat)percentage {
@@ -95,7 +110,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
   [_headerView adjustForPercentage:effectPercentage];
 }
 
-- (void)setupConstraints {
+- (void)setupInputPlateConstraints {
   _inputPlateBottomMargin = [_inputViewController.view.bottomAnchor
       constraintEqualToAnchor:self.view.bottomAnchor
                      constant:-kInputPlateMargin];
@@ -107,8 +122,21 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
                        constant:kInputPlateMargin],
     [_inputViewController.view.trailingAnchor
         constraintEqualToAnchor:self.view.trailingAnchor
-                       constant:-kInputPlateMargin]
+                       constant:-kInputPlateMargin],
   ]];
+
+  if (_inputViewFade) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_inputViewFade.topAnchor
+          constraintEqualToAnchor:_inputViewController.view.topAnchor],
+      [_inputViewFade.leadingAnchor
+          constraintEqualToAnchor:self.view.leadingAnchor],
+      [_inputViewFade.trailingAnchor
+          constraintEqualToAnchor:self.view.trailingAnchor],
+      [_inputViewFade.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor],
+    ]];
+  }
 
   // TODO(crbug.com/493187015): Investigate why `keyboardLayoutGuide` cannot be
   // used here. When the keyboard is hidden, `keyboardLayoutGuide.topAnchor`
@@ -145,7 +173,32 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 
 #pragma mark - Private
 
-// Called right before the keybord is shown.
+// Creates a fade effect behind the input plate.
+- (void)createInputViewFade {
+  if (_inputViewFade) {
+    [_inputViewFade removeFromSuperview];
+  }
+
+  UIColor* fadeColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  _inputViewFade = [[UIView alloc] init];
+  _inputViewFade.userInteractionEnabled = NO;
+  _inputViewFade.translatesAutoresizingMaskIntoConstraints = NO;
+  _inputViewFade.backgroundColor = fadeColor;
+
+  CAGradientLayer* gradientLayer = [[CAGradientLayer alloc] init];
+  gradientLayer.locations = @[ @(0.0), @(1.0) ];
+  gradientLayer.colors = @[
+    (id)[UIColor clearColor].CGColor,
+    (id)[fadeColor colorWithAlphaComponent:0.9].CGColor,
+  ];
+  gradientLayer.startPoint = CGPointMake(0.5, 0.0);
+  gradientLayer.endPoint = CGPointMake(0.5, 1);
+
+  _inputViewFade.layer.mask = gradientLayer;
+  _fadeGradient = gradientLayer;
+}
+
+// Called right before the keyboard is shown.
 - (void)keyboardWillShow:(NSNotification*)notification {
   NSDictionary* userInfo = notification.userInfo;
   NSTimeInterval duration =
