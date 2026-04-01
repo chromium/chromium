@@ -228,7 +228,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
-      std::string histogram) final;
+      std::string histogram) const final;
   bool ShowAutofillFieldIphForFeature(const FormFieldData& field,
                                       AutofillClient::IphFeature feature) final;
   void HideAutofillFieldIph() final;

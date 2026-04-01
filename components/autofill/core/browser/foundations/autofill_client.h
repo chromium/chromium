@@ -678,12 +678,12 @@ class AutofillClient {
   // Returns a pointer to a DeviceAuthenticator. Might be nullptr if the given
   // platform is not supported.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticator();
+  GetDeviceAuthenticator() const;
 
   // Same as `GetDeviceAuthenticator()` but also logs authentication results to
   // `histogram`.
   virtual std::unique_ptr<device_reauth::DeviceAuthenticator>
-  GetDeviceAuthenticator(std::string histogram);
+  GetDeviceAuthenticator(std::string histogram) const;
 
   // Attaches the IPH for `feature` to the `field`, on
   // platforms that it. If another IPH has been shown for the tab, the IPH is

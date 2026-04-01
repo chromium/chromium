@@ -280,7 +280,7 @@ class MockAutofillClient : public TestAutofillClient {
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
               GetDeviceAuthenticator,
               (std::string),
-              (override));
+              (const, override));
 
 #if BUILDFLAG(IS_IOS)
   // Mock the client query ID check.

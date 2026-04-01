@@ -39,12 +39,6 @@ class MandatoryReauthManagerTest : public testing::Test {
  public:
   void SetUp() override {
     autofill_client_ = std::make_unique<TestAutofillClient>();
-    std::unique_ptr<device_reauth::MockDeviceAuthenticator>
-        mock_device_authenticator =
-            std::make_unique<device_reauth::MockDeviceAuthenticator>();
-
-    autofill_client_->SetDeviceAuthenticator(
-        std::move(mock_device_authenticator));
     mandatory_reauth_manager_ =
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
     SetUpAuthentication(/*biometrics_available=*/true,

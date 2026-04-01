@@ -438,33 +438,14 @@ class TestAutofillClientTemplate : public T {
   }
 
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator(
-      std::string histogram) override {
+      std::string histogram) const override {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_CHROMEOS)
-    if (device_authenticator_) {
-      return std::move(device_authenticator_);
-    }
     return std::make_unique<device_reauth::MockDeviceAuthenticator>();
 #else
     return nullptr;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  device_reauth::MockDeviceAuthenticator* GetDeviceAuthenticatorPtr() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_CHROMEOS)
-    return device_authenticator_.get();
-#else
-    return nullptr;
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_CHROMEOS)
-  }
-
-  void SetDeviceAuthenticator(
-      std::unique_ptr<device_reauth::MockDeviceAuthenticator>
-          device_authenticator) {
-    device_authenticator_ = std::move(device_authenticator);
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -729,8 +710,6 @@ class TestAutofillClientTemplate : public T {
               /*strike_database=*/nullptr);
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
-  std::unique_ptr<device_reauth::MockDeviceAuthenticator>
-      device_authenticator_ = nullptr;
   std::unique_ptr<one_time_tokens::SmsOtpBackend> injected_sms_otp_backend_;
   std::unique_ptr<one_time_tokens::OneTimeTokenService>
       injected_one_time_token_service_;

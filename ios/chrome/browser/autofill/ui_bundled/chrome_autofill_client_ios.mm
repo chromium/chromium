@@ -502,7 +502,7 @@ bool ChromeAutofillClientIOS::ShouldFormatForLargeKeyboardAccessory() const {
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-ChromeAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) {
+ChromeAutofillClientIOS::GetDeviceAuthenticator(std::string histogram) const {
   device_reauth::DeviceAuthParams params(
       base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill, std::move(histogram));
   id<ReauthenticationProtocol> reauthModule =

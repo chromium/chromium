@@ -220,6 +220,15 @@ class MockSyncService : public syncer::TestSyncService {
   MOCK_METHOD(syncer::DataTypeSet, GetActiveDataTypes, (), (const override));
 };
 
+class MockAutofillClient : public autofill::TestContentAutofillClient {
+ public:
+  using autofill::TestContentAutofillClient::TestContentAutofillClient;
+  MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,
+              GetDeviceAuthenticator,
+              (std::string),
+              (const, override));
+};
+
 class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
  public:
   AutofillPrivateApiBrowserTest() {
@@ -255,7 +264,7 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
   autofill::TestAddressDataManager& address_data_manager() {
     return personal_data_manager().test_address_data_manager();
   }
-  autofill::TestContentAutofillClient* autofill_client() {
+  MockAutofillClient* autofill_client() {
     return test_autofill_client_injector_[GetActiveWebContents()];
   }
   autofill::TestPaymentsDataManager& payments_data_manager() {
@@ -274,7 +283,7 @@ class AutofillPrivateApiBrowserTest : public extensions::ExtensionApiTest {
   }
 
  private:
-  autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
+  autofill::TestAutofillClientInjector<MockAutofillClient>
       test_autofill_client_injector_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -746,7 +755,8 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiAuthToViewSensitiveEntityTest,
           .WillOnce(Return(true));
       EXPECT_CALL(*authenticator, AuthenticateWithMessage)
           .WillOnce(RunOnceCallback<1>(true));
-      autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+      EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+          .WillOnce(Return(std::move(authenticator)));
 
       auto function = base::MakeRefCounted<
           extensions::
@@ -769,7 +779,8 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiAuthToViewSensitiveEntityTest,
           .WillOnce(Return(true));
       EXPECT_CALL(*authenticator, AuthenticateWithMessage)
           .WillOnce(RunOnceCallback<1>(false));
-      autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+      EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+          .WillOnce(Return(std::move(authenticator)));
 
       auto function = base::MakeRefCounted<
           extensions::
@@ -786,12 +797,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiAuthToViewSensitiveEntityTest,
   } else {
     // Authentication should be SKIPPED, either because the feature or the pref
     // are off.
-    auto authenticator =
-        std::make_unique<device_reauth::MockDeviceAuthenticator>();
-    EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
-        .Times(0);
-    EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
-    autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+    EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator).Times(0);
 
     auto function = base::MakeRefCounted<
         extensions::
@@ -856,7 +862,8 @@ IN_PROC_BROWSER_TEST_F(
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetEntityInstanceByGuidFunction>();
@@ -886,7 +893,8 @@ IN_PROC_BROWSER_TEST_F(
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetEntityInstanceByGuidFunction>();
@@ -917,7 +925,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiGetEntityInstanceAuthEnabledTest,
   EXPECT_CALL(*authenticator, CanAuthenticateWithBiometricOrScreenLock)
       .Times(0);
   EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetEntityInstanceByGuidFunction>();
@@ -944,7 +953,8 @@ IN_PROC_BROWSER_TEST_F(
   auto authenticator =
       std::make_unique<device_reauth::MockDeviceAuthenticator>();
   EXPECT_CALL(*authenticator, AuthenticateWithMessage).Times(0);
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateGetEntityInstanceByGuidFunction>();
@@ -1040,7 +1050,8 @@ IN_PROC_BROWSER_TEST_F(
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(true));
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateToggleAutofillAiReauthRequirementFunction>();
@@ -1063,7 +1074,8 @@ IN_PROC_BROWSER_TEST_F(
       .WillOnce(Return(true));
   EXPECT_CALL(*authenticator, AuthenticateWithMessage)
       .WillOnce(RunOnceCallback<1>(false));
-  autofill_client()->SetDeviceAuthenticator(std::move(authenticator));
+  EXPECT_CALL(*autofill_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(std::move(authenticator)));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateToggleAutofillAiReauthRequirementFunction>();

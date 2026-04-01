@@ -252,12 +252,12 @@ ActorKeyMetricsRecorder* AutofillClient::GetActorKeyMetricsRecorder() {
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-AutofillClient::GetDeviceAuthenticator(std::string histogram) {
+AutofillClient::GetDeviceAuthenticator(std::string histogram) const {
   return nullptr;
 }
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-AutofillClient::GetDeviceAuthenticator() {
+AutofillClient::GetDeviceAuthenticator() const {
   return GetDeviceAuthenticator("");
 }
 

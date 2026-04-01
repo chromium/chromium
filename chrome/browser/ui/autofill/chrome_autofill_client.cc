@@ -1166,7 +1166,7 @@ ChromeAutofillClient::GetAutofillMessageController() {
 #endif
 
 std::unique_ptr<device_reauth::DeviceAuthenticator>
-ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) {
+ChromeAutofillClient::GetDeviceAuthenticator(std::string histogram) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
   device_reauth::DeviceAuthParams params(
