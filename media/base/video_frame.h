@@ -226,6 +226,17 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
       const gfx::Size& natural_size,
       base::TimeDelta timestamp);
 
+  // Overload of above method that does not take coded_size param and instead
+  // passes the coded_size from `shared_image`.
+  static scoped_refptr<VideoFrame> WrapSharedImage(
+      VideoPixelFormat format,
+      scoped_refptr<gpu::ClientSharedImage> shared_image,
+      gpu::SyncToken sync_token,
+      ReleaseMailboxCB shared_image_release_cb,
+      const gfx::Rect& visible_rect,
+      const gfx::Size& natural_size,
+      base::TimeDelta timestamp);
+
   // Wraps a mappable shared image with a VideoFrame. Mappable Shared Images are
   // backed by CPU mappable gpu buffers or shared memory buffers.
   // TODO(crbug.com/40263579): Once all VideoFrame clients are fully converted

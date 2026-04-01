@@ -379,7 +379,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
   }
 
   scoped_refptr<VideoFrame> frame = CreateFrameForNativeTexturesInternal(
-      format, coded_size, visible_rect, natural_size, timestamp);
+      format, shared_image->size(), visible_rect, natural_size, timestamp);
   if (!frame) {
     return nullptr;
   }
@@ -390,6 +390,21 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
     frame->SetReleaseMailboxCB(std::move(shared_image_release_cb));
   }
   return frame;
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
+    VideoPixelFormat format,
+    scoped_refptr<gpu::ClientSharedImage> shared_image,
+    gpu::SyncToken sync_token,
+    ReleaseMailboxCB shared_image_release_cb,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp) {
+  CHECK(shared_image);
+  return WrapSharedImage(
+      format, shared_image, sync_token, std::move(shared_image_release_cb),
+      shared_image->size(), visible_rect, natural_size, timestamp);
 }
 
 scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
