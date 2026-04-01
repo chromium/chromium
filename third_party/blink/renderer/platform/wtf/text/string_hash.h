@@ -67,7 +67,7 @@ struct HashTraits<String> : SimpleClassHashTraits<String> {
 
   // Avoid implicit conversion to String just to hash or compare.
   // We would like to add overloads for StringView and AtomicString too,
-  // but there are classes (e.g. WebString, V8StringResource) with
+  // but there are classes (e.g. WebString) with
   // implicit conversion operators both to String and one of the others,
   // which would cause ambiguous overloads.
   static unsigned GetHash(const char* key) {

@@ -98,8 +98,8 @@ inline AtomicString ToCoreAtomicString(v8::Isolate* isolate,
 
 // This method will return a null String if the v8::Value does not contain a
 // v8::String.  It will not call ToString() on the v8::Value. If you want
-// ToString() to be called, please use the TONATIVE_FOR_V8STRINGRESOURCE_*()
-// macros instead.
+// ToString() to be called, please use value->ToString() and
+// ToBlinkString<String>() instead.
 inline String ToCoreStringWithUndefinedOrNullCheck(v8::Isolate* isolate,
                                                    v8::Local<v8::Value> value) {
   if (value.IsEmpty() || !value->IsString())

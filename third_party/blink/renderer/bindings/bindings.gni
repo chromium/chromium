@@ -174,7 +174,6 @@ blink_core_sources_bindings =
                     "core/v8/v8_script_runner.cc",
                     "core/v8/v8_script_runner.h",
                     "core/v8/v8_set_return_value_for_core.h",
-                    "core/v8/v8_string_resource.h",
                     "core/v8/v8_throw_dom_exception.cc",
                     "core/v8/v8_throw_dom_exception.h",
                     "core/v8/v8_wasm_response_extensions.cc",

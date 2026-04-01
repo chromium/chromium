@@ -13,7 +13,6 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
@@ -42,11 +41,11 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       v8::Local<v8::Value> chunk,
       TransformStreamDefaultController* controller,
       ExceptionState& exception_state) override {
-    V8StringResource<> input_resource{script_state_->GetIsolate(), chunk};
-    if (!input_resource.Prepare(exception_state)) {
+    String input = NativeValueTraits<IDLString>::NativeValue(
+        script_state_->GetIsolate(), chunk, exception_state);
+    if (exception_state.HadException()) {
       return EmptyPromise();
     }
-    const String input = input_resource;
     if (input.empty())
       return ToResolvedUndefinedPromise(script_state_.Get());
 

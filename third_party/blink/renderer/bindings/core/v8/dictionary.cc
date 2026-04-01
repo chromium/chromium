@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
@@ -159,22 +158,20 @@ HashMap<String, String> Dictionary::GetOwnPropertiesAsStringHashMap(
     if (!GetStringValueInArray(V8Context(), property_names, i).ToLocal(&key)) {
       return HashMap<String, String>();
     }
-    V8StringResource<> string_key(GetIsolate(), key);
-    if (!string_key.Prepare(exception_state)) {
-      return HashMap<String, String>();
-    }
+    String string_key = ToBlinkString<String>(GetIsolate(), key, kExternalize);
 
     v8::Local<v8::Value> value;
     if (!dictionary_object_->Get(V8Context(), key).ToLocal(&value)) {
       return HashMap<String, String>();
     }
-    V8StringResource<> string_value(GetIsolate(), value);
-    if (!string_value.Prepare(exception_state)) {
+    auto string_value = NativeValueTraits<IDLString>::NativeValue(
+        GetIsolate(), value, exception_state);
+    if (exception_state.HadException()) {
       return HashMap<String, String>();
     }
-
-    if (!static_cast<const String&>(string_key).empty())
+    if (!string_key.empty()) {
       own_properties.Set(string_key, string_value);
+    }
   }
 
   return own_properties;
@@ -198,10 +195,7 @@ Vector<String> Dictionary::GetPropertyNames(
     if (!GetStringValueInArray(V8Context(), property_names, i).ToLocal(&key)) {
       return Vector<String>();
     }
-    V8StringResource<> string_key(GetIsolate(), key);
-    if (!string_key.Prepare(exception_state)) {
-      return Vector<String>();
-    }
+    String string_key = ToBlinkString<String>(GetIsolate(), key, kExternalize);
 
     names.push_back(string_key);
   }
