@@ -1,3 +1,28 @@
+//! Constrained decoding (structured outputs) for Large Language Models.
+//!
+//! This crate enforces arbitrary context-free grammars on LLM output, enabling
+//! structured generation with negligible overhead (~50μs per token for a 128k
+//! tokenizer). Context-free grammars can be provided with a Lark-like syntax,
+//! with specialised support for JSON.
+//!
+//! # Key types
+//!
+//! - [`ParserFactory`] — compiles grammars and holds shared tokenizer state.
+//! - [`TokenParser`] — built via [`ParserFactory::create_parser()`]; drives
+//!   a single generation session.
+//! - [`Constraint`] — main entry point wrapping a `TokenParser` and exposing
+//!   the sampling-loop API.
+//!
+//! # Usage pattern
+//!
+//! 1. Call [`Constraint::compute_mask()`] to obtain the set of allowed tokens.
+//!    This may take >1 ms and is best run on a background thread.
+//! 2. Sample a token from the LLM using the mask.
+//! 3. Pass the sampled token to [`Constraint::commit_token()`] (very fast).
+//! 4. Repeat until a stop result is returned.
+//!
+//! See the `sample_parser` crate for a complete usage example.
+
 #![allow(clippy::comparison_chain)]
 #![allow(clippy::needless_range_loop)]
 

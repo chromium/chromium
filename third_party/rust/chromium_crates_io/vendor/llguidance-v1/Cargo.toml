@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.87"
 name = "llguidance"
-version = "1.6.1"
+version = "1.7.0"
 build = "build.rs"
 autolib = false
 autobins = false
@@ -101,7 +101,7 @@ version = "1.0.138"
 features = ["preserve_order"]
 
 [dependencies.toktrie]
-version = "1.6.1"
+version = "1.7.0"
 
 [dev-dependencies.criterion]
 version = "0.8.1"

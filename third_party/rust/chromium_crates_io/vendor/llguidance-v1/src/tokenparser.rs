@@ -8,6 +8,11 @@ use crate::{
 use anyhow::{ensure, Result};
 use toktrie::{InferenceCapabilities, SimpleVob, TokEnv, TokenId, INVALID_TOKEN};
 
+/// Token-level parser that drives a single constrained-generation session.
+///
+/// Created by [`ParserFactory::create_parser()`] and typically wrapped in a
+/// [`crate::Constraint`] for the sampling loop.  Maintains the grammar state,
+/// computes token masks, and processes sampled tokens.
 #[derive(Clone)]
 pub struct TokenParser {
     pub token_env: TokEnv,
@@ -21,7 +26,7 @@ pub struct TokenParser {
     pub dbg_grammar: String,
     last_step_stats: ParserStats,
     max_step_stats: ParserStats,
-    eos_token: TokenId,
+    eos_tokens: Vec<TokenId>,
 
     had_rollback: bool,
     had_backtrack: bool,
@@ -91,7 +96,7 @@ impl TokenParser {
             factory.perf_counters(),
         )?;
         parser.metrics_mut().rand = factory.next_rng();
-        let eos_token = token_env.tok_trie().eos_token();
+        let eos_tokens = token_env.tok_trie().eos_tokens().to_vec();
 
         Ok(TokenParser {
             bias_computer: factory.slicer().clone(),
@@ -108,7 +113,7 @@ impl TokenParser {
             error_message: None,
             parser,
             dbg_grammar: String::new(),
-            eos_token,
+            eos_tokens,
             llm_tokens: Vec::new(),
             llm_bytes: Vec::new(),
             grm_prefix: Vec::new(),
@@ -126,6 +131,10 @@ impl TokenParser {
 
     pub fn get_capture(&self, name: &str) -> Option<&[u8]> {
         self.parser.get_capture(name)
+    }
+
+    pub fn captures(&self) -> &[(String, Vec<u8>)] {
+        self.parser.captures()
     }
 
     // regular .clone() uses a shared lexer state
@@ -389,7 +398,7 @@ impl TokenParser {
         let new_len = self.llm_tokens.len() - n_tokens;
         let mut bytes_to_drop = 0;
         for tok in &self.llm_tokens[new_len..] {
-            if *tok == self.eos_token {
+            if self.eos_tokens.contains(tok) {
                 // doesn't count; we hope it's last though...
                 bytes_to_drop += 0;
             } else {
@@ -492,8 +501,12 @@ impl TokenParser {
             return Err(self.stop_for_parser_error("", s));
         }
 
-        if self.eos_token != INVALID_TOKEN && self.is_accepting() {
-            allowed_tokens.allow_token(self.eos_token);
+        if self.is_accepting() {
+            for &eos in &self.eos_tokens {
+                if eos != INVALID_TOKEN {
+                    allowed_tokens.allow_token(eos);
+                }
+            }
         }
 
         self.log_final(&prefix, &allowed_tokens);
@@ -797,7 +810,7 @@ impl TokenParser {
         }
         self.max_tokens_total -= 1;
 
-        if token == self.eos_token {
+        if self.eos_tokens.contains(&token) {
             if self.parser.scan_eos() {
                 // it got scanned correctly, so we remove it
                 // this only happens for gen() terminated by EOS
@@ -838,7 +851,10 @@ impl TokenParser {
     /// This generally should be called after consume_token().
     pub fn check_stop(&mut self) -> Result<bool> {
         let empty_token_prefix = !self.has_ff_bytes();
-        let pending_eos = self.llm_tokens.last() == Some(&self.eos_token);
+        let pending_eos = self
+            .llm_tokens
+            .last()
+            .is_some_and(|t| self.eos_tokens.contains(t));
         let lexer_bytes = self.parser.has_pending_lexeme_bytes();
         let is_accepting = self.is_accepting();
         let can_advance = self.parser.can_advance();

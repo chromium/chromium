@@ -3,7 +3,7 @@
 /// S. Owens, J. Reppy, and A. Turon.
 /// Regular Expression Derivatives Reexamined".
 /// Journal of Functional Programming 19(2):173-190, March 2009.
-/// https://www.khoury.northeastern.edu/home/turon/re-deriv.pdf (retrieved 15 Nov 2024)
+/// <https://www.khoury.northeastern.edu/home/turon/re-deriv.pdf> (retrieved 15 Nov 2024)
 use anyhow::{bail, Result};
 use derivre::raw::{DerivCache, ExprSet, NextByteCache, RelevanceCache, VecHashCons};
 use serde::{Deserialize, Serialize};

@@ -14,7 +14,7 @@
 
 /**
  * Include special tokens in the output.
- * They may look like <|something|>, <something_else>, or <[12345]> if they don't have a name.
+ * They may look like `<|something|>`, `<something_else>`, or `<[12345]>` if they don't have a name.
  */
 #define LLG_DECODE_INCLUDE_SPECIAL 1
 
@@ -186,6 +186,11 @@ typedef size_t (*LlgTokenizeFn)(const void *user_data,
                                 uint32_t *output_tokens,
                                 size_t output_tokens_len);
 
+/**
+ * This struct must be zero-initialized (e.g., `= {}` in C/C++) before setting fields.
+ * New fields may be appended in future versions, and zero-initialization ensures
+ * they receive safe default values.
+ */
 typedef struct LlgTokenizerInit {
   /**
    * The number of tokens in the vocabulary
@@ -212,14 +217,14 @@ typedef struct LlgTokenizerInit {
   const char *tokenizer_json;
   /**
    * Set to true to enable hack that works around the tokenize_fn only
-   * accepting valid UTF-8 strings and possibly adding <BOS> etc.
-   * TODO: the <BOS> bit not implemented yet
+   * accepting valid UTF-8 strings and possibly adding `<BOS>` etc.
+   * TODO: the `<BOS>` bit not implemented yet
    */
   bool tokenize_assumes_string;
   /**
    * Tokenization function, see LlgTokenizeFn docs.
    * It should only tokenize the bytes and not add
-   * any <BOS> etc. It should also work on any byte sequence, including
+   * any `<BOS>` etc. It should also work on any byte sequence, including
    * invalid UTF-8. If this is not the case, set tokenize_assumes_string to true.
    * Either way, this function has to be thread-safe!
    */
@@ -240,6 +245,87 @@ typedef struct LlgTokenizerInit {
    */
   const char *const *slices;
 } LlgTokenizerInit;
+
+/**
+ * V2 of the tokenizer initialization struct.
+ * Extends LlgTokenizerInit with support for multiple EOS tokens.
+ * Use with `llg_new_tokenizer_v2()`.
+ *
+ * Initialize with: `LlgTokenizerInitV2 init = {}; init.struct_size = sizeof(init);`
+ * The library only reads `struct_size` bytes from the pointer, so callers
+ * compiled against an older header (with a smaller struct) will work with
+ * newer library versions — any new fields default to zero.
+ */
+typedef struct LlgTokenizerInitV2 {
+  /**
+   * Must be set to `sizeof(LlgTokenizerInitV2)`.
+   * The library uses this to determine how many bytes to read, enabling
+   * forward compatibility when new fields are appended in future versions.
+   */
+  size_t struct_size;
+  /**
+   * The number of tokens in the vocabulary
+   */
+  uint32_t vocab_size;
+  /**
+   * The token ID for the end of sentence token
+   * For chat mode, set it to end-of-turn token
+   */
+  LlgToken tok_eos;
+  /**
+   * An array of the lengths of the token strings (vocab_size elements)
+   */
+  const uint32_t *token_lens;
+  /**
+   * A pointer to the token strings
+   * The length of this the sum of all token_lens
+   */
+  const uint8_t *token_bytes;
+  /**
+   * Instead of passing token_lens and token_bytes, this can be set to
+   * the contents of HF tokenizer.json file.
+   */
+  const char *tokenizer_json;
+  /**
+   * Set to true to enable hack that works around the tokenize_fn only
+   * accepting valid UTF-8 strings and possibly adding `<BOS>` etc.
+   * TODO: the `<BOS>` bit not implemented yet
+   */
+  bool tokenize_assumes_string;
+  /**
+   * Tokenization function, see LlgTokenizeFn docs.
+   * It should only tokenize the bytes and not add
+   * any `<BOS>` etc. It should also work on any byte sequence, including
+   * invalid UTF-8. If this is not the case, set tokenize_assumes_string to true.
+   * Either way, this function has to be thread-safe!
+   */
+  LlgTokenizeFn tokenize_fn;
+  /**
+   * Set to true to not use tokenize_fn and instead tokenize greedily,
+   * which is often incorrect and may reduce accuracy.
+   */
+  bool use_approximate_greedy_tokenize_fn;
+  /**
+   * User data to pass to the tokenize_fn
+   */
+  const void *tokenize_user_data;
+  /**
+   * Tokenizer partitions for the slicer optimization.
+   * This is array of pointers to strings, terminated with NULL (argv style).
+   * Pass NULL to use defaults. Pass empty array to disable.
+   */
+  const char *const *slices;
+  /**
+   * Additional EOS token IDs beyond `tok_eos`.
+   * Points to an array of `tok_eos_extra_count` elements.
+   * When NULL (the default for zero-initialized structs), only `tok_eos` is used.
+   */
+  const LlgToken *tok_eos_extra;
+  /**
+   * Number of elements in the `tok_eos_extra` array.
+   */
+  uint32_t tok_eos_extra_count;
+} LlgTokenizerInitV2;
 
 
 
@@ -346,6 +432,25 @@ struct LlgConstraint *llg_clone_constraint(const struct LlgConstraint *cc);
 struct LlgTokenizer *llg_new_tokenizer(const struct LlgTokenizerInit *tok_init,
                                        char *error_string,
                                        size_t error_string_len);
+
+/**
+ * Create a new tokenizer from a LlgTokenizerInitV2 struct.
+ * This is the v2 API that supports multiple EOS tokens.
+ *
+ * The `tok_init` pointer must be valid and `tok_init->struct_size` must be set
+ * to `sizeof(LlgTokenizerInitV2)` as known by the caller. The library will
+ * only read `struct_size` bytes, so callers compiled against an older (smaller)
+ * version of the struct will work with newer library versions — new fields
+ * default to zero.
+ *
+ * `tok_init` must point to at least `tok_init->struct_size` bytes of
+ * initialized memory, and `struct_size` must be at least
+ * `offsetof(LlgTokenizerInitV2, token_lens)` (i.e., include struct_size,
+ * vocab_size, and the complete tok_eos field).
+ */
+struct LlgTokenizer *llg_new_tokenizer_v2(const struct LlgTokenizerInitV2 *tok_init,
+                                          char *error_string,
+                                          size_t error_string_len);
 
 /**
  * Clone a tokenizer.
@@ -458,12 +563,12 @@ void llg_free_stop_controller(struct LlgStopController *stop_ctrl);
  * (backtracking is always disabled, and ff_tokens can be retrieved using llg_matcher_compute_ff_tokens()).
  * The data is of different format, depending on constraint_type:
  * - "regex" - data is regular expression in rust regex format
- *   see https://docs.rs/regex/latest/regex/#syntax
+ *   see <https://docs.rs/regex/latest/regex/#syntax>
  * - "json" or "json_schema" - data is (stringifed) JSON schema
- *   see https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md
+ *   see <https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md>
  * - "json_object" - equivalent to JSON schema: {"type":"object"}
  * - "lark" - data is grammar in a variant of Lark syntax
- *   see https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md
+ *   see <https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md>
  * - "llguidance" or "guidance" - data is a list of Lark or JSON schemas in JSON format
  */
 struct LlgMatcher *llg_new_matcher(const struct LlgConstraintInit *init,

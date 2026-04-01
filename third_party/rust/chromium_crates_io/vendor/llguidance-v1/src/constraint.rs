@@ -8,6 +8,11 @@ use crate::{
     panic_utils, TokenParser,
 };
 
+/// High-level entry point for constrained decoding.
+///
+/// Wraps a [`TokenParser`] and exposes a two-step sampling-loop API:
+/// [`Constraint::compute_mask()`] returns the set of allowed tokens, and
+/// [`Constraint::commit_token()`] advances the grammar state after sampling.
 #[derive(Clone)]
 pub struct Constraint {
     pub parser: TokenParser,

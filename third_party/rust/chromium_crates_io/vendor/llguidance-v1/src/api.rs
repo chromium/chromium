@@ -324,12 +324,12 @@ impl TopLevelGrammar {
 
     /// The data is of different format, depending on tag:
     /// - "regex" - data is regular expression in rust regex format
-    ///   see https://docs.rs/regex/latest/regex/#syntax
+    ///   see <https://docs.rs/regex/latest/regex/#syntax>
     /// - "json" or "json_schema" - data is (stringifed) JSON schema
-    ///   see https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md
+    ///   see <https://github.com/guidance-ai/llguidance/blob/main/docs/json_schema.md>
     /// - "json_object" - equivalent to JSON schema: {"type":"object"}
     /// - "lark" - data is grammar in a variant of Lark syntax
-    ///   see https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md
+    ///   see <https://github.com/guidance-ai/llguidance/blob/main/docs/syntax.md>
     /// - "llguidance" or "guidance" - data is a list of Lark or JSON schemas in JSON format
     pub fn from_tagged_str(tag: &str, data: &str) -> Result<Self> {
         match tag {

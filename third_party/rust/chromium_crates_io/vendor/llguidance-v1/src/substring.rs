@@ -10,8 +10,8 @@ struct State<'a> {
     regex: Option<ExprRef>,
 }
 
-/// For details see https://en.wikipedia.org/wiki/Suffix_automaton.
-/// Implementation is based on https://cp-algorithms.com/string/suffix-automaton.html
+/// For details see <https://en.wikipedia.org/wiki/Suffix_automaton>.
+/// Implementation is based on <https://cp-algorithms.com/string/suffix-automaton.html>
 struct SuffixAutomaton<'a> {
     states: Vec<State<'a>>,
     last: usize,

@@ -109,8 +109,7 @@ impl Matcher {
     pub fn compute_mask_or_eos(&mut self) -> Result<SimpleVob> {
         self.with_inner(|inner| {
             if inner.parser.stop_reason() != StopReason::NotStopped {
-                let trie = inner.parser.token_env.tok_trie();
-                Ok(trie.singleton_token_set(trie.eos_token()))
+                Ok(inner.parser.token_env.tok_trie().eos_token_set())
             } else {
                 inner.parser.compute_mask()
             }
@@ -215,6 +214,20 @@ impl Matcher {
     pub fn invalidate_bias_cache(&mut self) {
         if let MatcherState::Normal(inner) = &mut self.0 {
             inner.parser.invalidate_bias_cache();
+        }
+    }
+
+    pub fn get_capture(&self, name: &str) -> Option<&[u8]> {
+        match &self.0 {
+            MatcherState::Normal(inner) => inner.parser.get_capture(name),
+            MatcherState::Error(_) => None,
+        }
+    }
+
+    pub fn captures(&self) -> &[(String, Vec<u8>)] {
+        match &self.0 {
+            MatcherState::Normal(inner) => inner.parser.captures(),
+            MatcherState::Error(_) => &[],
         }
     }
 }

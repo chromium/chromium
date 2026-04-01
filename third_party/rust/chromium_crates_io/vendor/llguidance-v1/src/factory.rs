@@ -9,6 +9,11 @@ use crate::{
     Logger, TokenParser,
 };
 
+/// Compiles grammars and holds shared tokenizer state.
+///
+/// A single `ParserFactory` is typically created once per model/tokenizer
+/// and reused across requests.  Call [`ParserFactory::create_parser()`] to
+/// obtain a [`TokenParser`] for an individual generation session.
 pub struct ParserFactory {
     tok_env: TokEnv,
     slicer: Arc<SlicedBiasComputer>,
