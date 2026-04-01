@@ -4,7 +4,19 @@
 
 #include "chrome/browser/enterprise/platform_auth/entra_provider_android.h"
 
+#include "base/check_is_test.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/json/json_reader.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/values.h"
+#include "components/policy/core/common/policy_logger.h"
+#include "net/http/http_request_headers.h"
+#include "net/http/http_util.h"
 
 namespace enterprise_auth {
 
@@ -15,7 +27,94 @@ static constexpr auto kSupportedOrigins =
         {"https://login.microsoftonline.com", "https://login.microsoft.com",
          "https://login.windows.net", "https://login.microsoftonline.us",
          "https://login.partner.microsoftonline.cn"});
+
+static constexpr char kHeaderNamePrefix[] = "x-ms-";
+
+static constexpr char kLogTag[] = "[Android Entra SSO]";
+
+std::string TokenReadResultToString(
+    EntraProviderAndroid::TokenReadResult result_code) {
+  switch (result_code) {
+    case EntraProviderAndroid::TokenReadResult::kOk:
+      return "kOk";
+    case EntraProviderAndroid::TokenReadResult::kUnexpectedError:
+      return "kUnexpectedError";
+    case EntraProviderAndroid::TokenReadResult::kNoBrokerRegistered:
+      return "kNoBrokerRegistered";
+    case EntraProviderAndroid::TokenReadResult::kSignatureVerificationFailed:
+      return "kSignatureVerificationFailed";
+    case EntraProviderAndroid::TokenReadResult::kInvalidBundleFormat:
+      return "kInvalidBundleFormat";
+  }
 }
+
+void JsonParsingFailed(const std::string_view raw_json) {
+  LOG_POLICY(ERROR, POLICY_AUTH)
+      << kLogTag
+      << " Getting authentication tokens failed! The JSON "
+         "returned by the AccountManager is invalid.";
+}
+
+void ParseJsonHeaders(PlatformAuthProviderManager::GetDataCallback callback,
+                      std::string_view headers_raw_json) {
+  const std::optional<base::DictValue> headers_dict =
+      base::JSONReader::ReadDict(
+          headers_raw_json,
+          base::JSON_PARSE_RFC | base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!headers_dict.has_value()) {
+    JsonParsingFailed(headers_raw_json);
+    std::move(callback).Run({});
+    return;
+  }
+
+  const base::DictValue* const headers_field =
+      headers_dict.value().FindDict("headers");
+  if (!headers_field) {
+    JsonParsingFailed(headers_raw_json);
+    std::move(callback).Run({});
+    return;
+  }
+
+  net::HttpRequestHeaders result_headers;
+  for (const auto [key, value] : *headers_field) {
+    if (!base::StartsWith(key, kHeaderNamePrefix,
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
+    }
+    if (!net::HttpUtil::IsValidHeaderName(key)) {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Skipping invalid header name: " << key;
+      continue;
+    }
+
+    const std::string* const str_value = value.GetIfString();
+    if (!str_value) {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Invalid header value type for key " << key << ": "
+          << value.DebugString();
+      continue;
+    }
+
+    if (net::HttpUtil::IsValidHeaderValue(*str_value)) {
+      result_headers.SetHeader(key, *str_value);
+    } else {
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " Invalid header name: value pair " << key << ": "
+          << *str_value;
+    }
+  }
+
+  VLOG_POLICY(2, POLICY_AUTH)
+      << kLogTag << " Attaching this number of headers to the request: "
+      << result_headers.GetHeaderVector().size();
+  std::move(callback).Run(std::move(result_headers));
+}
+
+}  // namespace
+
+EntraProviderAndroid::EntraProviderAndroid() = default;
+
+EntraProviderAndroid::~EntraProviderAndroid() = default;
 
 bool EntraProviderAndroid::SupportsOriginFiltering() {
   return true;
@@ -33,8 +132,70 @@ void EntraProviderAndroid::FetchOrigins(
 void EntraProviderAndroid::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  // TODO: b/484014627 - fetch the headers from Android.
-  std::move(callback).Run({});
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+  VLOG_POLICY(2, POLICY_AUTH)
+      << kLogTag << " fetching headers for " << url.spec();
+  if (sso_disabled_) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  // Binds OnJavaHeadersRead to the main thread with the
+  // PlatformAuthProviderManager's callback.
+  auto result_callback =
+      base::BindOnce(&EntraProviderAndroid::OnJavaHeadersRead,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+  auto thread_safe_callback =
+      base::BindPostTaskToCurrentDefault(std::move(result_callback));
+
+  // Create a task to run on a thread pool which will synchronously read tokens
+  // from the Android OS.
+  base::OnceCallback<void()> task;
+  if (mock_java_read_tokens_) {
+    CHECK_IS_TEST();
+    task =
+        base::BindOnce(mock_java_read_tokens_, std::move(thread_safe_callback));
+  } else {
+    // TODO: b/484014627 - use the real Java call for the task.
+    CHECK(false) << "not implemented";
+  }
+
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      std::move(task));
+}
+
+void EntraProviderAndroid::OnJavaHeadersRead(
+    PlatformAuthProviderManager::GetDataCallback callback,
+    TokenReadResult result_code,
+    std::string result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+  switch (result_code) {
+    case TokenReadResult::kNoBrokerRegistered:
+      VLOG_POLICY(2, POLICY_AUTH)
+          << kLogTag << " tokens fetching failed with "
+          << TokenReadResultToString(result_code) << ": " << result;
+      sso_disabled_ = true;
+      std::move(callback).Run({});
+      return;
+    case TokenReadResult::kSignatureVerificationFailed:
+    case TokenReadResult::kUnexpectedError:
+      LOG_POLICY(ERROR, POLICY_AUTH)
+          << kLogTag << " tokens fetching failed with "
+          << TokenReadResultToString(result_code) << ": " << result;
+      sso_disabled_ = true;
+      std::move(callback).Run({});
+      return;
+    case TokenReadResult::kInvalidBundleFormat:
+      LOG_POLICY(WARNING, POLICY_AUTH)
+          << kLogTag << " tokens fetching failed with "
+          << TokenReadResultToString(result_code) << ": " << result;
+      std::move(callback).Run({});
+      return;
+    case TokenReadResult::kOk:
+      ParseJsonHeaders(std::move(callback), result);
+      return;
+  }
 }
 
 }  // namespace enterprise_auth
