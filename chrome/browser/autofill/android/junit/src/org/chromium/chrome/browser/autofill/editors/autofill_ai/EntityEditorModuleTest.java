@@ -342,6 +342,22 @@ public class EntityEditorModuleTest {
 
     @Test
     @SmallTest
+    public void testDeleteNewEntity() {
+        EntityInstance newPassport =
+                new EntityInstance.Builder(PASSPORT_TYPE)
+                        .setGUID("")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
+        showEditorDialog(newPassport);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertFalse(model.get(EntityEditorProperties.ALLOW_DELETE));
+    }
+
+    @Test
+    @SmallTest
     public void testEditorFields() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(LOCAL_PASSPORT);

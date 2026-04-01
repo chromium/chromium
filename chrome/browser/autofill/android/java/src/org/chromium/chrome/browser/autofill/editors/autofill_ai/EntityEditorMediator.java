@@ -107,8 +107,9 @@ class EntityEditorMediator {
     }
 
     private PropertyModel buildEditorModel() {
+        final boolean isNewEntity = TextUtils.isEmpty(mEntityInstance.getGUID());
         String editorTitle =
-                TextUtils.isEmpty(mEntityInstance.getGUID())
+                isNewEntity
                         ? mEntityInstance.getEntityType().getAddEntityTypeString()
                         : mEntityInstance.getEntityType().getEditEntityTypeString();
         return new PropertyModel.Builder(EntityEditorProperties.ALL_KEYS)
@@ -126,7 +127,9 @@ class EntityEditorMediator {
                         DELETE_CONFIRMATION_PRIMARY_BUTTON_TEXT_ID,
                         R.string.autofill_delete_suggestion_button)
                 .with(DELETE_CALLBACK, this::onDelete)
-                .with(ALLOW_DELETE, mEntityInstance.getRecordType() == RecordType.LOCAL)
+                .with(
+                        ALLOW_DELETE,
+                        !isNewEntity && mEntityInstance.getRecordType() == RecordType.LOCAL)
                 .with(VALIDATE_ON_SHOW, false)
                 .with(EDITOR_FIELDS, getEditorFields())
                 .with(OPEN_HELP_CALLBACK, this::onOpenHelpAndFeedback)
