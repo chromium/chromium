@@ -9210,6 +9210,13 @@
     "expiry_milestone": 150
   },
   {
+    "name": "use-persistent-cache-for-code-cache",
+    "owners": [
+      "//components/persistent_cache/OWNERS"
+    ],
+    "expiry_milestone": 153
+  },
+  {
     "name": "use-primary-and-tonal-buttons-for-promos",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
     "expiry_milestone": 150

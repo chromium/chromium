@@ -13013,6 +13013,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kImportExportFlagsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kImportExportFlags)},
 
+    {"use-persistent-cache-for-code-cache",
+     flag_descriptions::kUsePersistentCacheForCodeCacheName,
+     flag_descriptions::kUsePersistentCacheForCodeCacheDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kUsePersistentCacheForCodeCache)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
