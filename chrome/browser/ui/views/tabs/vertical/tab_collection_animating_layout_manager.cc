@@ -74,8 +74,6 @@ TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
       delegate_(delegate),
       animation_axis_(animation_axis),
       animate_host_size_(animate_host_size) {
-  // TODO(crbug.com/459824840): Determine the appropriate animation duration.
-  // Currently set to match the duration of TabContainerImpl.
   animation_.SetSlideDuration(
       gfx::Animation::RichAnimationDuration(base::Milliseconds(200)));
   animation_.SetTweenType(gfx::Tween::EASE_IN_OUT);
