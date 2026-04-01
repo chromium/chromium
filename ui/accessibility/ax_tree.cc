@@ -2039,6 +2039,18 @@ bool AXTree::UpdateNode(const AXNodeData& src,
     node->SetData(src);
   }
 
+  // The browser must not trust the renderer to correctly supply the
+  // kClipsChildren attribute for rootWebArea nodes. A compromised renderer
+  // could omit it to supply out-of-bounds coordinates that bypass clipping,
+  // allowing spoofed accessibility focus rings and synthesized taps at
+  // arbitrary screen locations. Enforce the attribute unconditionally.
+  if (src.role == ax::mojom::Role::kRootWebArea) {
+    AXNodeData enforced_data = node->data();
+    enforced_data.AddBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren,
+                                   true);
+    node->SetData(enforced_data);
+  }
+
   // If we come across a page breaking object, mark the tree as a paginated root
   if (src.GetBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject))
     has_pagination_support_ = true;

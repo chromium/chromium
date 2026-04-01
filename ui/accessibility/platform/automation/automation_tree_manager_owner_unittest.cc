@@ -572,7 +572,9 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsAppIdConstruction) {
     node_data1.role =
         i == 0 ? ax::mojom::Role::kDesktop : ax::mojom::Role::kRootWebArea;
     node_data1.child_ids.push_back(2);
-    node_data1.relative_bounds.bounds = gfx::RectF(100, 100, 100, 100);
+    // The rootWebArea enforces kClipsChildren, so ensure the root bounds
+    // are large enough to contain the child button.
+    node_data1.relative_bounds.bounds = gfx::RectF(100, 100, 200, 200);
     tree_update.nodes.emplace_back();
     auto& node_data2 = tree_update.nodes.back();
     node_data2.id = 2;
@@ -637,7 +639,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
         i == 0 ? ax::mojom::Role::kDesktop : ax::mojom::Role::kRootWebArea;
     node_data1.child_ids.push_back(2);
     node_data1.child_ids.push_back(3);
-    node_data1.relative_bounds.bounds = gfx::RectF(100, 100, 100, 100);
+    node_data1.relative_bounds.bounds = gfx::RectF(100, 100, 200, 200);
     tree_update.nodes.emplace_back();
     auto& node_data2 = tree_update.nodes.back();
     node_data2.id = 2;
@@ -702,7 +704,7 @@ TEST_F(AutomationTreeManagerOwnerTest, GetBoundsNestedAppIdConstruction) {
 
   // Similar to the button, but not scaled. This does not cross an app id
   // boundary, so is also offset by the parent tree's root (100 + 100).
-  EXPECT_EQ(gfx::Rect(200, 200, 100, 100),
+  EXPECT_EQ(gfx::Rect(200, 200, 200, 200),
             CallComputeGlobalNodeBounds(wrapper_1, wrapper1_root));
 }
 

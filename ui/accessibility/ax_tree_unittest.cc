@@ -1798,6 +1798,50 @@ TEST(AXTreeTest, GetBoundsCropsChildToRoot) {
   EXPECT_EQ("(50, 700) size (150 x 150)", GetUnclippedBoundsAsString(tree, 5));
 }
 
+// Verify that bounds are clipped to the rootWebArea even when the
+// kClipsChildren attribute is intentionally omitted. A compromised renderer
+// must not be able to bypass clipping by stripping the attribute.
+TEST(AXTreeTest, RootWebAreaEnforcesClippingWithoutAttribute) {
+  AXTreeUpdate tree_update;
+  tree_update.root_id = 1;
+  tree_update.nodes.resize(3);
+  tree_update.nodes[0].id = 1;
+  tree_update.nodes[0].role = ax::mojom::Role::kRootWebArea;
+  tree_update.nodes[0].relative_bounds.bounds = gfx::RectF(0, 0, 800, 600);
+  // Deliberately omit kClipsChildren on the root.
+  tree_update.nodes[0].child_ids.push_back(2);
+  tree_update.nodes[0].child_ids.push_back(3);
+
+  // Child with bounds extending beyond the root to the right/bottom.
+  tree_update.nodes[1].id = 2;
+  tree_update.nodes[1].relative_bounds.bounds = gfx::RectF(700, 500, 200, 200);
+
+  // Child completely outside the root (above/left).
+  tree_update.nodes[2].id = 3;
+  tree_update.nodes[2].relative_bounds.bounds =
+      gfx::RectF(-300, -300, 100, 100);
+
+  AXTree tree(tree_update);
+
+  // kClipsChildren should have been enforced on the rootWebArea.
+  EXPECT_TRUE(
+      tree.root()->GetBoolAttribute(ax::mojom::BoolAttribute::kClipsChildren));
+
+  // Node 2 should be clipped to the root bounds.
+  EXPECT_EQ("(700, 500) size (100 x 100)", GetBoundsAsString(tree, 2));
+  // Node 3 is fully offscreen, so it gets clamped to the nearest edge.
+  EXPECT_EQ("(0, 0) size (1 x 1)", GetBoundsAsString(tree, 3));
+
+  // Unclipped bounds remain unaffected.
+  EXPECT_EQ("(700, 500) size (200 x 200)", GetUnclippedBoundsAsString(tree, 2));
+  EXPECT_EQ("(-300, -300) size (100 x 100)",
+            GetUnclippedBoundsAsString(tree, 3));
+
+  // Offscreen state should be reported correctly.
+  EXPECT_FALSE(IsNodeOffscreen(tree, 2));
+  EXPECT_TRUE(IsNodeOffscreen(tree, 3));
+}
+
 TEST(AXTreeTest, GetBoundsSetsOffscreenIfClipsChildren) {
   AXTreeUpdate tree_update;
   tree_update.root_id = 1;
@@ -4816,7 +4860,7 @@ TEST(AXTreeTest, SingleUpdateDeletesNewlyCreatedChildNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea\n",
+      "id=1 rootWebArea clips_children\n",
       tree.ToString(/*verbose*/ false));
 
   // Unserialize again, but with another add child.
@@ -4829,7 +4873,7 @@ TEST(AXTreeTest, SingleUpdateDeletesNewlyCreatedChildNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea child_ids=2\n"
+      "id=1 rootWebArea clips_children child_ids=2\n"
       "  id=2 genericContainer\n",
       tree.ToString(/*verbose*/ false));
 }
@@ -4880,7 +4924,7 @@ TEST(AXTreeTest, SingleUpdateReparentsNodeMultipleTimes) {
 
   ASSERT_TRUE(tree.Unserialize(tree_update)) << tree.error();
   EXPECT_EQ(
-      "AXTree\nid=1 rootWebArea child_ids=2,3\n"
+      "AXTree\nid=1 rootWebArea clips_children child_ids=2,3\n"
       "  id=2 list child_ids=4\n"
       "    id=4 listItem\n"
       "  id=3 list\n",
@@ -4894,7 +4938,7 @@ TEST(AXTreeTest, SingleUpdateReparentsNodeMultipleTimes) {
 
   ASSERT_TRUE(tree.Unserialize(tree_update)) << tree.error();
   EXPECT_EQ(
-      "AXTree\nid=1 rootWebArea child_ids=2,3\n"
+      "AXTree\nid=1 rootWebArea clips_children child_ids=2,3\n"
       "  id=2 list\n"
       "  id=3 list child_ids=4\n"
       "    id=4 listItem\n",
@@ -4927,7 +4971,7 @@ TEST(AXTreeTest, SingleUpdateIgnoresNewlyCreatedUnignoredChildNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea child_ids=2\n"
+      "id=1 rootWebArea clips_children child_ids=2\n"
       "  id=2 genericContainer IGNORED\n",
       tree.ToString(/*verbose*/ false));
 }
@@ -4945,7 +4989,7 @@ TEST(AXTreeTest, SingleUpdateTogglesIgnoredStateAfterCreatingNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea\n",
+      "id=1 rootWebArea clips_children\n",
       tree.ToString(/*verbose*/ false));
 
   AXTreeUpdate tree_update;
@@ -4969,7 +5013,7 @@ TEST(AXTreeTest, SingleUpdateTogglesIgnoredStateAfterCreatingNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea child_ids=2,3\n"
+      "id=1 rootWebArea clips_children child_ids=2,3\n"
       "  id=2 genericContainer IGNORED\n"
       "  id=3 genericContainer\n",
       tree.ToString(/*verbose*/ false));
@@ -4994,7 +5038,7 @@ TEST(AXTreeTest, SingleUpdateTogglesIgnoredStateBeforeDestroyingNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea child_ids=2,3\n"
+      "id=1 rootWebArea clips_children child_ids=2,3\n"
       "  id=2 genericContainer\n"
       "  id=3 genericContainer IGNORED\n",
       tree.ToString(/*verbose*/ false));
@@ -5015,7 +5059,7 @@ TEST(AXTreeTest, SingleUpdateTogglesIgnoredStateBeforeDestroyingNode) {
 
   ASSERT_EQ(
       "AXTree\n"
-      "id=1 rootWebArea\n",
+      "id=1 rootWebArea clips_children\n",
       tree.ToString(/*verbose*/ false));
 }
 
