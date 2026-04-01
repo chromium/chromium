@@ -22,6 +22,7 @@ namespace content {
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
 CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
+    bool is_native_picker,
     SCContentFilter* filter,
     base::OnceCallback<void(content::DesktopMediaID::Id, SCStream*)>
         stream_created_callback,

@@ -224,8 +224,8 @@ class ScreenCaptureKitDeviceMacTest : public testing::Test {
 
   void CreateDevice(const DesktopMediaID& source) {
     if (@available(macOS 13.2, *)) {
-      device_ = CreateScreenCaptureKitDeviceMac(source, nil, base::DoNothing(),
-                                                nullptr);
+      device_ = CreateScreenCaptureKitDeviceMac(
+          source, /*is_native_picker=*/false, nil, base::DoNothing(), nullptr);
     }
   }
 
@@ -353,6 +353,30 @@ TEST_F(ScreenCaptureKitDeviceMacTest, StartAndCaptureFrame) {
     ASSERT_NO_FATAL_FAILURE(SimulateAndVerifyFrame(mock_client_ptr));
 
     device_->StopAndDeAllocate();
+  } else {
+    GTEST_SKIP();
+  }
+}
+
+TEST_F(ScreenCaptureKitDeviceMacTest,
+       NativePickerSessionWithNilFilterReturnsError) {
+  if (@available(macOS 13.2, *)) {
+    DesktopMediaID source(DesktopMediaID::TYPE_SCREEN, 1);
+
+    // Create device with is_native_picker = true and filter = nil.
+    device_ = CreateScreenCaptureKitDeviceMac(source, /*is_native_picker=*/true,
+                                              nil, base::DoNothing(), nullptr);
+
+    auto mock_client = std::make_unique<media::MockVideoCaptureDeviceClient>();
+
+    EXPECT_CALL(
+        *mock_client,
+        OnError(media::VideoCaptureError::kScreenCaptureKitFailedStartCapture,
+                _, _))
+        .Times(1);
+
+    media::VideoCaptureParams params;
+    device_->AllocateAndStart(params, std::move(mock_client));
   } else {
     GTEST_SKIP();
   }

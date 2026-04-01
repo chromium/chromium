@@ -264,11 +264,13 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
   explicit ScreenCaptureKitDeviceMac(
       const DesktopMediaID& source,
+      bool is_native_picker,
       SCContentFilter* filter,
       StreamCallback stream_created_callback,
       std::unique_ptr<content::PipScreenCaptureCoordinatorProxy>
           pip_screen_capture_coordinator_proxy)
       : source_(source),
+        is_native_picker_session_(is_native_picker),
         filter_(filter),
         stream_created_callback_(std::move(stream_created_callback)),
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -635,7 +637,16 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       // SCContentSharingPicker is used where filter_ is set on creation.
       CreateStream(filter_);
     } else {
-      // Chrome picker is used.
+      if (is_native_picker_session_) {
+        client()->OnError(
+            media::VideoCaptureError::kScreenCaptureKitFailedStartCapture,
+            FROM_HERE,
+            "Native picker session failed to start due to missing authorized "
+            "filter");
+        return;
+      }
+      // Fall back to user-selected window/screen discovery for
+      // non-native-picker sessions.
       auto content_callback = base::BindPostTask(
           device_task_runner_,
           base::BindRepeating(
@@ -704,6 +715,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 
  private:
   const DesktopMediaID source_;
+  const bool is_native_picker_session_;
   SCContentFilter* const filter_;
   StreamCallback stream_created_callback_;
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
@@ -742,6 +754,7 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
 API_AVAILABLE(macos(13.2))
 std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
+    bool is_native_picker,
     SCContentFilter* filter,
     ScreenCaptureKitDeviceMac::StreamCallback callback,
     std::unique_ptr<content::PipScreenCaptureCoordinatorProxy>
@@ -775,7 +788,7 @@ std::unique_ptr<media::VideoCaptureDevice> CreateScreenCaptureKitDeviceMac(
                                      : SCREEN_CAPTURER_CREATED_WITHOUT_AUDIO);
 
   return std::make_unique<ScreenCaptureKitDeviceMac>(
-      source, filter, std::move(callback),
+      source, is_native_picker, filter, std::move(callback),
       std::move(pip_screen_capture_coordinator_proxy));
 }
 

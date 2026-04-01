@@ -197,7 +197,8 @@ DesktopCaptureImplementation CreatePlatformDependentVideoCaptureDevice(
       (desktop_id.type == DesktopMediaID::TYPE_SCREEN &&
        base::FeatureList::IsEnabled(kScreenCaptureKitMacScreen))) {
     device_out = CreateScreenCaptureKitDeviceMac(
-        desktop_id, std::move(pip_screen_capture_coordinator_proxy));
+        desktop_id, /*is_native_picker=*/false,
+        std::move(pip_screen_capture_coordinator_proxy));
     if (device_out) {
       return kScreenCaptureKitDeviceMac;
     }

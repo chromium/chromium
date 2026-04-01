@@ -19,6 +19,7 @@ class WebContents;
 std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
 CreateScreenCaptureKitDeviceMac(
     const DesktopMediaID& source,
+    bool is_native_picker,
     std::unique_ptr<PipScreenCaptureCoordinatorProxy>
         pip_screen_capture_coordinator_proxy);
 

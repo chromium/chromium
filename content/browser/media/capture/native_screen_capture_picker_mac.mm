@@ -414,7 +414,7 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
   VLOG(1) << "NSCPM::CreateDevice: source.id = " << source.id
           << ", sessions_.count = " << sessions_.size();
   return CreateScreenCaptureKitDeviceMac(
-      source, session.filter,
+      source, /*is_native_picker=*/true, session.filter,
       base::BindPostTask(
           device_task_runner_,
           base::BindOnce(&NativeScreenCapturePickerMac::UpdateStreamMap,
