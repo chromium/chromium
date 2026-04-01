@@ -115,9 +115,9 @@ void VerticalDraggedTabsContainer::ApplyUpdatesForDragPositionChange() {
                         base::to_address(host_view_), scroll_view,
                         dragged_bounds_in_container));
 
-  HandleTabDragInContainer(dragged_bounds_in_container);
-
   UpdateDraggingViewTransforms(point_in_container);
+
+  HandleTabDragInContainer(dragged_bounds_in_container);
 }
 
 void VerticalDraggedTabsContainer::OnTabDragExited(
