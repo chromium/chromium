@@ -294,12 +294,18 @@ class FakeCatapApi : public CatapApi {
   }
   OSStatus AudioDeviceStop(AudioDeviceID in_device,
                            AudioDeviceIOProcID in_proc_id) override {
+    if (should_fail_audio_device_stop) {
+      return -1;
+    }
     stopped_device = in_device;
     stopped_proc_id = in_proc_id;
     return noErr;
   }
   OSStatus AudioDeviceDestroyIOProcID(AudioDeviceID in_device,
                                       AudioDeviceIOProcID in_proc_id) override {
+    if (should_fail_audio_device_destroy) {
+      return -1;
+    }
     destroyed_io_proc_id_for_device = in_device;
     destroyed_io_proc_id = in_proc_id;
     client_data = nullptr;
@@ -340,6 +346,11 @@ class FakeCatapApi : public CatapApi {
   }
 
   // Public properties that can be modified by the tests.
+
+  // Controls the success of the AudioDeviceStop() call.
+  bool should_fail_audio_device_stop = false;
+  // Controls the success of the AudioDeviceDestroyIOProcID() call.
+  bool should_fail_audio_device_destroy = false;
 
   // If `true`, `AudioObjectSetPropertyData()` will return `noErr` when setting
   // the tap description. Otherwise it will return an error, which simulates
@@ -1262,6 +1273,95 @@ TEST_F(CatapAudioInputStreamTest, CreateIOProcIDTimeoutFeatureDisabled) {
     stream_->Close();
     fake_catap_api_ = nullptr;
     stream_.ClearAndDelete();
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, SurvivesLateCallbackIfStopFails) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    // Extract the OS callback and the proxy pointer (client_data) before
+    // teardown.
+    AudioDeviceIOProc audio_proc = fake_catap_api()->audio_proc;
+    void* proxy_client_data = fake_catap_api()->client_data;
+    ASSERT_NE(audio_proc, nullptr);
+    ASSERT_NE(proxy_client_data, nullptr);
+
+    // Force AudioDeviceStop to fail.
+    fake_catap_api()->should_fail_audio_device_stop = true;
+
+    // Stop and destroy the stream.
+    // Because stop fails, the proxy will be intentionally leaked.
+    stream_->Stop();
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
+
+    // Simulate the rogue callback.
+    const AudioTimeStamp* in_now = nullptr;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    input_data.mBuffers[0].mNumberChannels = kNumberOfChannelsStereo;
+    input_data.mBuffers[0].mDataByteSize = data_byte_size;
+    input_data.mBuffers[0].mData = data_buffer.data();
+    AudioTimeStamp input_time = {};
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    OSStatus status = audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, proxy_client_data);
+
+    EXPECT_EQ(status, noErr);
+  }
+}
+
+TEST_F(CatapAudioInputStreamTest, SurvivesLateCallbackIfDestroyFails) {
+  if (@available(macOS 14.2, *)) {
+    CreateStream();
+    EXPECT_EQ(stream_->Open(), AudioInputStream::OpenOutcome::kSuccess);
+    stream_->Start(&fake_callback_);
+
+    AudioDeviceIOProc audio_proc = fake_catap_api()->audio_proc;
+    void* proxy_client_data = fake_catap_api()->client_data;
+    ASSERT_NE(audio_proc, nullptr);
+    ASSERT_NE(proxy_client_data, nullptr);
+
+    // Force AudioDeviceDestroyIOProcID to fail.
+    fake_catap_api()->should_fail_audio_device_destroy = true;
+
+    // Stop and destroy the stream.
+    // Because destroy process IO proc fails, the proxy will be intentionally
+    // leaked.
+    stream_->Stop();
+    stream_->Close();
+    fake_catap_api_ = nullptr;
+    stream_.ClearAndDelete();
+
+    // Simulate the rogue callback.
+    const AudioTimeStamp* in_now = nullptr;
+    const uint32_t data_byte_size = kCatapLoopbackDefaultFramesPerBuffer *
+                                    sizeof(Float32) * kNumberOfChannelsStereo;
+    std::vector<uint8_t> data_buffer(data_byte_size);
+
+    AudioBufferList input_data;
+    input_data.mNumberBuffers = 1;
+    input_data.mBuffers[0].mNumberChannels = kNumberOfChannelsStereo;
+    input_data.mBuffers[0].mDataByteSize = data_byte_size;
+    input_data.mBuffers[0].mData = data_buffer.data();
+    AudioTimeStamp input_time = {};
+    AudioBufferList* output_data = nullptr;
+    const AudioTimeStamp* output_time = nullptr;
+
+    OSStatus status = audio_proc(0, in_now, &input_data, &input_time,
+                                 output_data, output_time, proxy_client_data);
+
+    EXPECT_EQ(status, noErr);
   }
 }
 

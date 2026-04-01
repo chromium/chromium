@@ -27,6 +27,8 @@
 namespace media {
 
 class CatapApi;
+class CatapIoProcProxy;
+
 class PropertyListenerHelper;
 
 // Captures audio loopback using the CoreAudio API for macOS 14.2
@@ -238,6 +240,13 @@ class MEDIA_EXPORT API_AVAILABLE(macos(14.2)) CatapAudioInputStreamSource {
       kAudioObjectUnknown;
   CATapDescription* __strong tap_description_
       GUARDED_BY_CONTEXT(sequence_checker_) = nil;
+  // Tracks if the synchronous fences failed during teardown.
+  bool stop_failed_ = false;
+
+  // The proxy passed to CoreAudio.
+  std::unique_ptr<CatapIoProcProxy> io_proc_proxy_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
   bool is_device_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
