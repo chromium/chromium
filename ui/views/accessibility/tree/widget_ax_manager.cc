@@ -51,6 +51,7 @@ bool ShouldSerializeEvent(Event event_type) {
   switch (event_type) {
     // TODO(crbug.com/40672441): Add events here as needed.
     case Event::kActiveDescendantChanged:
+    case Event::kCheckedStateChanged:
     case Event::kChildrenChanged:
       return false;
     default:
@@ -78,7 +79,6 @@ bool ShouldSerializeEvent(Event event_type) {
   // being addressed incrementally, one event at a time.
   switch (event_type) {
     case Event::kAlert:
-    case Event::kCheckedStateChanged:
     case Event::kExpandedChanged:
     case Event::kFocusAfterMenuClose:
     case Event::kFocusContext:

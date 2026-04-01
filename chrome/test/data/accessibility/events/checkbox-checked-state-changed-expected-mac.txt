@@ -1,0 +1,1 @@
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=1
