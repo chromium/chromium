@@ -258,6 +258,18 @@ TEST_P(AudioFileReaderTest, AAC_ADTS) {
           base::Microseconds(384733), 16967, 13312);
 }
 
+TEST_P(AudioFileReaderTest, AAC_ObsRemuxVariablePacketDurations) {
+  Initialize("obs_remux_variable_aac_durations.mp4");
+  ASSERT_TRUE(reader_->Open());
+  EXPECT_EQ(2, reader_->channels());
+  EXPECT_EQ(48000, reader_->sample_rate());
+
+  // Regression test for OBS-remuxed MP4 audio with alternating AAC packet
+  // durations. Intermediate decoded buffers must not be tail-trimmed based on
+  // these packet durations.
+  ReadAndVerify("-3.33,-0.33,-0.34,0.42,-1.97,-1.96,", 301040, 0.09);
+}
+
 TEST_P(AudioFileReaderTest, MidStreamConfigChangesFail) {
   RunTestFailingDecode("midstream_config_change.mp3");
 }

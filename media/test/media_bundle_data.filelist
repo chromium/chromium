@@ -417,6 +417,7 @@ data/noise-xhe-aac-mono.mp4
 data/noise-xhe-aac.mp4
 data/nonzero-start-time.webm
 data/npot-video.h264
+data/obs_remux_variable_aac_durations.mp4
 data/one_frame_1280x720.mjpeg
 data/opus-test.opus
 data/opus-trimming-test.mp4

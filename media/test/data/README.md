@@ -1812,6 +1812,13 @@ Used in the webaudio opus web test, and copied here for use with the AudioFileRe
 directly. This helps separate test failures due to the file reader implementation
 from issues with the WebAudio implementation that consumes it.
 
+### AAC trimming regression sample
+
+* obs_remux_variable_aac_durations.mp4
+
+OBS-recorded MKV remuxed to MP4, copied from the decodeaudiodata-sample
+repro. Used by AudioFileReader tests to cover alternating AAC packet durations that should not cause intermediate decoded buffers to be tail-trimmed.
+
 ### DTS Audio
 
 #### dts.bin
