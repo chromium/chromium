@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_ASH_INLINE_LOGIN_DIALOG_ONBOARDING_H_
 
+#include <memory>
+
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
@@ -28,12 +31,12 @@ namespace ash {
 // the dialog is shown during onboarding.
 class InlineLoginDialogOnboarding : public InlineLoginDialog {
  public:
-  class Delegate : public views::WidgetObserver {
+  class Delegate {
    public:
     explicit Delegate(InlineLoginDialogOnboarding* dialog);
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
-    ~Delegate() override;
+    ~Delegate();
 
     // Closes the dialog without making it executing the callback.
     void CloseWithoutCallback();
@@ -42,20 +45,19 @@ class InlineLoginDialogOnboarding : public InlineLoginDialog {
 
     void UpdateDialogBounds(const gfx::Rect& new_bounds);
 
-    InlineLoginDialogOnboarding* dialog() { return dialog_; }
+    InlineLoginDialogOnboarding* dialog() { return dialog_.get(); }
 
    private:
-    // views::WidgetObserver:
-    void OnWidgetClosing(views::Widget* widget) override;
-
-    raw_ptr<InlineLoginDialogOnboarding> dialog_ = nullptr;
-    raw_ptr<views::Widget> widget_ = nullptr;
+    base::WeakPtr<InlineLoginDialogOnboarding> dialog_;
+    std::unique_ptr<views::Widget> widget_;
   };
 
   static InlineLoginDialogOnboarding* Show(
       const gfx::Size& size,
       gfx::NativeWindow window,
       base::OnceCallback<void(void)> dialog_closed_callback);
+
+  base::WeakPtr<InlineLoginDialogOnboarding> GetWeakPtr();
 
  protected:
   // ui::WebDialogDelegate overrides
@@ -81,6 +83,8 @@ class InlineLoginDialogOnboarding : public InlineLoginDialog {
 
   gfx::Size size_;
   base::OnceCallback<void(void)> dialog_closed_callback_;
+
+  base::WeakPtrFactory<InlineLoginDialogOnboarding> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

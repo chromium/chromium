@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog_onboarding.h"
 
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -17,16 +18,18 @@ namespace ash {
 
 InlineLoginDialogOnboarding::Delegate::Delegate(
     InlineLoginDialogOnboarding* dialog)
-    : dialog_(dialog) {
-  widget_ = views::Widget::GetWidgetForNativeView(dialog->GetHostView());
-  widget_->AddObserver(this);
+    : dialog_(dialog->GetWeakPtr()) {
+  widget_ = base::WrapUnique(
+      views::Widget::GetWidgetForNativeView(dialog->GetHostView()));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      [](Delegate* delegate, views::Widget::ClosedReason reason) {
+        delegate->widget_.reset();
+        delegate->dialog_ = nullptr;
+      },
+      base::Unretained(this)));
 }
 
 InlineLoginDialogOnboarding::Delegate::~Delegate() {
-  if (widget_) {
-    widget_->RemoveObserver(this);
-  }
-
   CloseWithoutCallback();
 }
 
@@ -48,17 +51,6 @@ void InlineLoginDialogOnboarding::Delegate::UpdateDialogBounds(
   if (dialog_) {
     dialog_->UpdateDialogBounds(new_bounds);
   }
-}
-
-void InlineLoginDialogOnboarding::Delegate::OnWidgetClosing(
-    views::Widget* widget) {
-  if (!dialog_ || widget != widget_) {
-    return;
-  }
-
-  widget->RemoveObserver(this);
-  widget_ = nullptr;
-  dialog_ = nullptr;
 }
 
 // static
@@ -110,6 +102,7 @@ void InlineLoginDialogOnboarding::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   InlineLoginDialog::AdjustWidgetInitParams(params);
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
+  params->ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
 }
 
 void InlineLoginDialogOnboarding::OnDialogClosed(
@@ -119,6 +112,11 @@ void InlineLoginDialogOnboarding::OnDialogClosed(
   }
 
   InlineLoginDialog::OnDialogClosed(json_retval);
+}
+
+base::WeakPtr<InlineLoginDialogOnboarding>
+InlineLoginDialogOnboarding::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace ash
