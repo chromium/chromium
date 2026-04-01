@@ -46,11 +46,13 @@ class GraphInfoBuilder final {
 
   // Optionally provide `handle` to identify this constant operand; otherwise a
   // handle will be generated automatically.
-  OperandId BuildConstant(const std::vector<uint32_t>& dimensions,
-                          OperandDataType type,
-                          base::span<const uint8_t> values,
-                          blink::WebNNPendingConstantToken handle =
-                              blink::WebNNPendingConstantToken());
+  OperandId BuildConstant(
+      const std::vector<uint32_t>& dimensions,
+      OperandDataType type,
+      base::span<const uint8_t> values,
+      blink::WebNNPendingConstantToken handle =
+          blink::WebNNPendingConstantToken(),
+      const std::vector<uint32_t>& pending_permutation = {});
 
   void AddOutput(const std::string& name, OperandId operand_id);
 

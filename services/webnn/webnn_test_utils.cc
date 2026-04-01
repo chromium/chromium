@@ -59,9 +59,15 @@ OperandId GraphInfoBuilder::BuildConstant(
     const std::vector<uint32_t>& dimensions,
     OperandDataType type,
     base::span<const uint8_t> values,
-    blink::WebNNPendingConstantToken handle) {
+    blink::WebNNPendingConstantToken handle,
+    const std::vector<uint32_t>& pending_permutation) {
   OperandId operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kConstant);
+
+  if (!pending_permutation.empty()) {
+    graph_info_->operands[operand_id.value()]->descriptor.SetPendingPermutation(
+        pending_permutation);
+  }
 
   graph_builder_remote_->get()->CreatePendingConstant(
       handle, type, mojo_base::BigBuffer(values));
