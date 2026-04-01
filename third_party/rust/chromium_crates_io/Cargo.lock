@@ -20,6 +20,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "aho-corasick"
+version = "1.1.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
 name = "android_system_properties"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -168,6 +176,7 @@ name = "chromium"
 version = "0.1.0"
 dependencies = [
  "ahash",
+ "aho-corasick",
  "antlr4rust",
  "anyhow",
  "base64",

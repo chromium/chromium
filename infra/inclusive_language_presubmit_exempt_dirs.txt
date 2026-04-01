@@ -67,7 +67,6 @@ chrome/browser/support_tool/ash
 chrome/browser/ui
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox
 chrome/browser/ui/views/search_engines
-chrome/browser/ui/views/side_panel
 chrome/browser/ui/webui/settings
 chrome/browser/win
 chromecast
@@ -624,6 +623,7 @@ third_party/rapidhash
 third_party/rust/chromium_crates_io/supply-chain
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8
 third_party/rust/chromium_crates_io/vendor/ahash-v0_8/.github/workflows
+third_party/rust/chromium_crates_io/vendor/aho-corasick-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/android_system_properties-v0_1
 third_party/rust/chromium_crates_io/vendor/anstyle-v1
 third_party/rust/chromium_crates_io/vendor/antlr4rust-v0_5
@@ -770,8 +770,6 @@ third_party/rust/chromium_crates_io/vendor/windows-link-v0_2
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Wdk/System/SystemServices
 third_party/rust/chromium_crates_io/vendor/windows-sys-v0_52/src/Windows/Win32/Networking/Clustering
-third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8
-third_party/rust/chromium_crates_io/vendor/zerocopy-v0_8/src
 third_party/rust/chromium_crates_io/vendor/zip-v8
 third_party/rust/chromium_crates_io/vendor/zip-v8/src
 third_party/rust/chromium_crates_io/vendor/zmij-v1

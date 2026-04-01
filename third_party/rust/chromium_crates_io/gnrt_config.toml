@@ -119,6 +119,11 @@ group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
+[crate.aho-corasick]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
 [crate.android_system_properties]
 extra_kv = { allow_unsafe = true }
 
