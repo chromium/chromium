@@ -31,6 +31,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/features.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -325,4 +326,85 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // A request for the osdd url was made after the activation.
   prerender_helper()->WaitForRequest(osdd_url, 1);
+}
+
+class SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest
+    : public SearchEngineTabHelperPrerenderingBrowserTest {
+ public:
+  SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kPrerenderActivationByFormSubmission);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verifies that a prerender activation won't affect the keyword generation
+// logic.
+IN_PROC_BROWSER_TEST_F(
+    SearchEngineTabHelperPrerenderingFormSubmissionBrowserTest,
+    GenerateKeywordAfterPrerenderActivation) {
+  GetNewTabWithTestSearchEngineTabHelper();
+  TemplateURLService* url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  ASSERT_TRUE(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
+  TemplateURLService::TemplateURLVector template_urls =
+      url_service->GetTemplateURLs();
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Trigger prerender with form submission, and the query parameters are the
+  // results of the form data. The case is constructed in a way to make the form
+  // identified as searchable.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/simple.html?hl=en&q=test");
+  content::TestActivationManager activation_manager(GetWebContents(),
+                                                    prerender_url);
+  prerender_helper()->AddPrerendersAsync(
+      {prerender_url},
+      /*eagerness=*/std::nullopt,
+      /*no_vary_search_hint=*/std::nullopt,
+      /*target_hint=*/std::string(),
+      /*ruleset_tag=*/std::nullopt,
+      /*world_id=*/content::ISOLATED_WORLD_ID_GLOBAL,
+      /*form_submission=*/true);
+  content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
+      *GetWebContents(), prerender_url);
+
+  // The form submission script is constructed in a way to be identified as
+  // searchable by the heuristic logic in `blink::WebSearchableFormData`. In
+  // this way, the template url is searchable and will be added on the primary
+  // page after prerender activation.
+  ASSERT_TRUE(content::ExecJs(GetWebContents()->GetPrimaryMainFrame(),
+                              content::JsReplace(R"(
+    const form = document.createElement('form');
+    form.action = $1;
+    const htmlString = `
+        <input type="hidden" name="hl" value="en">
+        <input type="text" name="q" value="test">
+        <input type="submit" name="btnM" value="Mock Search">
+    `;
+    form.insertAdjacentHTML('beforeend', htmlString);
+    document.body.appendChild(form);
+    form.submit();
+    )",
+                                                 prerender_url)));
+  activation_manager.WaitForNavigationFinished();
+  EXPECT_TRUE(activation_manager.was_activated());
+
+  // A new template url is added on the primary page.
+  std::string target_template_url_string =
+      embedded_test_server()
+          ->GetURL("/simple.html?hl=en&q={searchTerms}&btnM=Mock+Search")
+          .spec();
+  bool target_template_url_exists = std::ranges::any_of(
+      url_service->GetTemplateURLs(),
+      [&target_template_url_string](const TemplateURL* t_url) {
+        return t_url && t_url->url() == target_template_url_string;
+      });
+  EXPECT_NE(template_urls, url_service->GetTemplateURLs());
+  EXPECT_TRUE(target_template_url_exists);
 }
