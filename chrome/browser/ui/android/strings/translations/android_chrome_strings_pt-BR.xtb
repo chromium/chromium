@@ -768,7 +768,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4270730597186910506">Monitorar ou parar de monitorar um produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
-<translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>
+<translation id="4282440837784183472">Sua organização, <ph name="MANAGED_DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu admin pode configurar ou restringir determinados recursos.</translation>
 <translation id="4283234489712362947"><ph name="TAB_TITLE" />, guia anônima picture-in-picture</translation>
 <translation id="4285498937028063278">Liberar guia</translation>
 <translation id="4285846616383034558">Cookies, cache e outros dados de sites</translation>

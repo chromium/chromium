@@ -539,7 +539,7 @@
 <translation id="1839331950812095887">总结想法的几个字词</translation>
 <translation id="1839551713262164453">由于出现错误，未能成功验证政策值</translation>
 <translation id="1840009953725035797">家庭影院系统</translation>
-<translation id="184153295865602321">为提高安全性，在使用自动填充功能进行支付时，请始终使用指纹、面孔或其他屏幕解锁方式</translation>
+<translation id="184153295865602321">为提高安全性，在使用自动填充功能进行支付前，一律使用指纹、面孔或其他屏幕解锁方式验证身份</translation>
 <translation id="1842969606798536927">付款</translation>
 <translation id="184517536440397176">必须先征得家长或监护人的同意，然后才能访问此网站。在向他们提出请求之前，我们需要确认你的身份。</translation>
 <translation id="1846432862466000825">塑料（存档用）</translation>
@@ -1034,7 +1034,7 @@
 <translation id="2608019759319359258">主题被屏蔽后，将不会用于展示个性化广告</translation>
 <translation id="2610561535971892504">点击复制</translation>
 <translation id="2612676031748830579">卡号</translation>
-<translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将被删除</translation>
+<translation id="2612993535136743634">您的设备和 Google 账号中保存的所有安全码都将删除</translation>
 <translation id="2614835674900828050">无法用于此购买交易</translation>
 <translation id="2616412942031748191">搜索引擎优化与营销</translation>
 <translation id="2618206371527040026">学术会议与出版物</translation>
@@ -2217,7 +2217,7 @@
 <translation id="4480760608050410381">MP4 视频</translation>
 <translation id="448363931695049633">披萨</translation>
 <translation id="4489023393592172404">Kaku 4 信封</translation>
-<translation id="4489977488133295402">验证您的身份以自动填充支付方式</translation>
+<translation id="4489977488133295402">先验证身份，再自动填充支付方式</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
 <translation id="4493480324863638523">网址无效。必须是采用标准架构的网址，例如“http://example.com”或“https://example.com”。</translation>
@@ -2601,7 +2601,7 @@
 <translation id="5114987907971894280">虚拟现实</translation>
 <translation id="5115232566827194440">受限受管理访客会话的替换设置</translation>
 <translation id="5115563688576182185">（64 位）</translation>
-<translation id="5116015291385561204">验证身份以自动填充敏感信息</translation>
+<translation id="5116015291385561204">先验证身份，再自动填充敏感信息</translation>
 <translation id="5120526915373271910">家庭片</translation>
 <translation id="5122786942953798871">信封（棉纸）</translation>
 <translation id="5123063207673082822">周末</translation>
@@ -3908,7 +3908,7 @@
 <translation id="7162277662076933695">智能读卡器</translation>
 <translation id="7163295244162773898">{0,plural, =1{复制这个机密文件？}other{复制这些机密文件？}}</translation>
 <translation id="7168625890036931112">“<ph name="DATA_CONTROLS_RESTRICTION" />”不是此平台支持的限制条件</translation>
-<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将被删除</translation>
+<translation id="7170930892977483182">您的设备和 Google 钱包中保存的所有安全码都将删除</translation>
 <translation id="717330890047184534">GAIA ID：</translation>
 <translation id="7173338713290252554">网上的既往价格</translation>
 <translation id="7174545416324379297">已合并</translation>
@@ -5008,7 +5008,7 @@
 <translation id="8918062451146297192">虚拟卡的银行卡验证码 (CVC)</translation>
 <translation id="8919740778133505789">跑车</translation>
 <translation id="8919895429178014996">隐藏所有项</translation>
-<translation id="8919989290032064330">要验证您的身份以自动填充支付方式吗？</translation>
+<translation id="8919989290032064330">要先验证身份，再自动填充支付方式吗？</translation>
 <translation id="8922013791253848639">在此网站上始终允许显示广告</translation>
 <translation id="8922734931659847428">被您访问过且发生了<ph name="BEGIN_LINK" />旧版技术事件<ph name="END_LINK" />的部分网页网址的列表</translation>
 <translation id="892588693504540538">打孔（右上角）</translation>
