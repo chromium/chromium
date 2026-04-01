@@ -140,7 +140,8 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
     manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                triggered_field.global_id(), &profile,
-                               AutofillTriggerSource::kPopup);
+                               AutofillTriggerSource::kPopup,
+                               /*blocked_fields=*/{});
   }
 
   void NavigateAndTriggerAutofill() {
@@ -801,7 +802,8 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
     TestAutofillManager* manager = autofill_manager_injector_[rfh];
     manager->FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                triggered_field.global_id(), &card,
-                               AutofillTriggerSource::kPopup);
+                               AutofillTriggerSource::kPopup,
+                               /*blocked_fields=*/{});
   }
 
   // Returns a form with `num_fields` fields. If no such form exists and no such

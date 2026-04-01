@@ -173,7 +173,8 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().back().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -190,7 +191,8 @@ TEST_P(CvcStorageMetricsTest, LogSelectedMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -219,7 +221,8 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -240,7 +243,8 @@ TEST_P(CvcStorageMetricsTest, LogFilledMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(GetExpectedHistogramName()),
@@ -271,7 +275,8 @@ TEST_P(CvcStorageMetricsTest, LogSubmitMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
   SubmitForm(form());
 
   EXPECT_THAT(

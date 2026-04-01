@@ -330,14 +330,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData&,
                const FieldGlobalId&,
                const FillingPayload&,
-               AutofillTriggerSource),
-              (override));
-  MOCK_METHOD(void,
-              FillOrPreviewFields,
-              (mojom::ActionPersistence,
-               const FormData&,
-               const FieldGlobalId&,
-               const FillingPayload&,
                AutofillTriggerSource,
                const base::flat_set<FieldGlobalId>&),
               (override));
@@ -755,7 +747,7 @@ TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -964,7 +956,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedBnplEntry_FormIsFilled) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(card),
-                        AutofillTriggerSource::kPopup));
+                        AutofillTriggerSource::kPopup, _));
 
   Suggestion::PaymentsPayload payments_payload;
   payments_payload.extracted_amount_in_micros = expected_amount;
@@ -1257,7 +1249,8 @@ TEST_F(AutofillExternalDelegateTest, OnTabSelected_PayLater) {
           /*field_id=*/testing::_,
           /*filling_payload=*/
           testing::VariantWith<const CreditCard*>(testing::Eq(&test_card)),
-          /*trigger_source=*/testing::_))
+          /*trigger_source=*/testing::_,
+          /*blocked_fields=*/testing::_))
       .Times(1);
 
   std::move(captured_fill_callback).Run(test_card);
@@ -1552,7 +1545,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   external_delegate().DidSelectSuggestion(CreateAutofillSuggestion(
       SuggestionType::kAddressEntry, u"baz foo",
       Suggestion::AutofillProfilePayload(Suggestion::Guid(profile.guid()))));
@@ -1578,7 +1571,7 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateClearPreviewedForm) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(card), _));
+                        IsQueriedFieldId(), HasFillingPayload(card), _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate().DidSelectSuggestion(suggestion);
@@ -1677,7 +1670,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(
@@ -1716,14 +1709,14 @@ TEST_F(AutofillExternalDelegateTest, TestAddressSuggestion_FillAndPreview) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 
   // Test fill.
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -1745,9 +1738,10 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Preview) {
       Suggestion::IdentityCredentialPayload());
 
   // Test preview.
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewForm(mojom::ActionPersistence::kPreview,
-                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
+                        IsQueriedFieldId(), _, _, _));
   external_delegate().DidSelectSuggestion(suggestion);
 }
 
@@ -1765,9 +1759,10 @@ TEST_F(AutofillExternalDelegateTest, TestVerifiedEmailSuggestion_Fill) {
       .WillByDefault(Return(&mock));
 
   // Expect that the form filler gets notified.
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                        IsQueriedFieldId(), _, _, _));
   // Expect that the delegate gets notified and pretend that the user has
   // accepted the prompt.
   EXPECT_CALL(mock, NotifySuggestionAccepted(_, /*show_modal=*/true, _))
@@ -1837,7 +1832,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(profile),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 
@@ -1848,7 +1843,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptSuggestion_TriggerSource) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(profile),
-                        AutofillTriggerSource::kManualFallback));
+                        AutofillTriggerSource::kManualFallback, _));
   external_delegate().DidAcceptSuggestion(suggestion,
                                           SuggestionPosition{.row = 1});
 }
@@ -1875,14 +1870,14 @@ TEST_F(AutofillExternalDelegateTest, FillAutofillAiFillsFullForm) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
   external_delegate().DidSelectSuggestion(fill_suggestion);
 
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
 }
 
@@ -1942,7 +1937,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_ReauthAccepted) {
         autofill_manager(),
         FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                           IsQueriedFieldId(), HasFillingPayload(passport),
-                          DefaultTriggerSource()));
+                          DefaultTriggerSource(), _));
   }
 
   external_delegate().DidAcceptSuggestion(fill_suggestion, {});
@@ -2111,7 +2106,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_NoAuthenticator) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
@@ -2139,7 +2134,7 @@ TEST_F(AutofillExternalDelegateTest, AutofillAiReauthFlow_FlagOff) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
@@ -2171,7 +2166,7 @@ TEST_F(AutofillExternalDelegateTest,
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
 
   Suggestion fill_suggestion(SuggestionType::kFillAutofillAi);
   fill_suggestion.payload = Suggestion::AutofillAiPayload(passport.guid());
@@ -2198,7 +2193,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedOtpSuggestion) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(otp_fill_data),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kOneTimePasswordEntry,
                                /*main_text_value=*/otp_value),
@@ -2266,7 +2261,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
         autofill_manager(),
         FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                           IsQueriedFieldId(), HasFillingPayload(full_passport),
-                          DefaultTriggerSource()));
+                          DefaultTriggerSource(), _));
     EXPECT_CALL(
         autofill_client(),
         HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -2306,7 +2301,7 @@ TEST_F(AutofillExternalDelegateWithWalletPrivatePassesTest,
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(masked_passport),
-                        DefaultTriggerSource()));
+                        DefaultTriggerSource(), _));
   EXPECT_CALL(
       autofill_client(),
       HideAutofillSuggestions(SuggestionHidingReason::kAcceptSuggestion));
@@ -2505,7 +2500,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   external_delegate().DidSelectSuggestion(suggestions[0]);
   EXPECT_CALL(
       autofill_client(),
@@ -2522,7 +2517,7 @@ TEST_F(AutofillExternalDelegatePlusAddressTest,
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(profile), _));
+                        IsQueriedFieldId(), HasFillingPayload(profile), _, _));
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});
 }
@@ -2830,7 +2825,7 @@ TEST_F(AutofillExternalDelegateTest, AcceptedSaveAndFillEntry_FillForm) {
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
                         IsQueriedFieldId(), HasFillingPayload(card),
-                        AutofillTriggerSource::kCreditCardSaveAndFill));
+                        AutofillTriggerSource::kCreditCardSaveAndFill, _));
 
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kSaveAndFillCreditCardEntry),
@@ -2984,7 +2979,7 @@ TEST_F(AutofillExternalDelegateTest, ScanCreditCard_FillForm) {
           });
   EXPECT_CALL(autofill_manager(),
               FillOrPreviewForm(mojom::ActionPersistence::kFill, _, _,
-                                HasFillingPayload(card), _));
+                                HasFillingPayload(card), _, _));
   external_delegate().DidAcceptSuggestion(
       CreateAutofillSuggestion(SuggestionType::kScanCreditCard), {});
 }
@@ -3186,9 +3181,10 @@ TEST_F(AutofillExternalDelegateTest, AcceptVirtualCardOptionItem) {
   FormData form;
   CreditCard card = test::GetMaskedServerCard();
   pdm().payments_data_manager().AddCreditCard(card);
-  EXPECT_CALL(autofill_manager(),
-              FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                HasQueriedFormId(), IsQueriedFieldId(), _, _));
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewForm(mojom::ActionPersistence::kFill, HasQueriedFormId(),
+                        IsQueriedFieldId(), _, _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate().DidAcceptSuggestion(suggestion,
@@ -3202,7 +3198,7 @@ TEST_F(AutofillExternalDelegateTest, SelectVirtualCardOptionItem) {
   EXPECT_CALL(
       autofill_manager(),
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, HasQueriedFormId(),
-                        IsQueriedFieldId(), HasFillingPayload(card), _));
+                        IsQueriedFieldId(), HasFillingPayload(card), _, _));
   Suggestion suggestion(SuggestionType::kVirtualCreditCardEntry);
   suggestion.payload = Suggestion::Guid(card.guid());
   external_delegate().DidSelectSuggestion(suggestion);

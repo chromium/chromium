@@ -83,13 +83,7 @@ class TestBrowserAutofillManagerWithTestCCAM
 
   void Reset() override;
 
-  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                         const FormData& form,
-                         const FieldGlobalId& field_id,
-                         const FillingPayload& filling_payload,
-                         AutofillTriggerSource trigger_source) override;
-
-  void FillOrPreviewFields(
+  void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FieldGlobalId& field_id,

@@ -266,7 +266,7 @@ class AutofillMetricsBaseTest : public WithTestAutofillClientDriverManager<
         mojom::ActionPersistence::kFill, form,
         form.fields()[field_index].global_id(),
         personal_data().address_data_manager().GetProfileByGUID(profile_guid),
-        AutofillTriggerSource::kPopup);
+        AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
   }
 
   void FillLoyaltyCard(const FormData& form,

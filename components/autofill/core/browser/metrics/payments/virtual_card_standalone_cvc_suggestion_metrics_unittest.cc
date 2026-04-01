@@ -112,7 +112,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -133,7 +134,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -164,7 +166,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -187,7 +190,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
           "Autofill.VirtualCard.StandaloneCvc.FormEvents"),
@@ -217,7 +221,8 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form(),
                                        form().fields().front().global_id(),
                                        paydm().GetCreditCardByGUID(kCardGuid),
-                                       AutofillTriggerSource::kPopup);
+                                       AutofillTriggerSource::kPopup,
+                                       /*blocked_fields=*/{});
   SubmitForm(form());
 
   EXPECT_THAT(

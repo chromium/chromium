@@ -194,14 +194,6 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FormData& form,
                const FieldGlobalId& field_id,
                const FillingPayload& filling_payload,
-               AutofillTriggerSource trigger_source),
-              (override));
-  MOCK_METHOD(void,
-              FillOrPreviewFields,
-              (mojom::ActionPersistence action_persistence,
-               const FormData& form,
-               const FieldGlobalId& field_id,
-               const FillingPayload& filling_payload,
                AutofillTriggerSource trigger_source,
                const base::flat_set<FieldGlobalId>& blocked_fields),
               (override));
@@ -414,7 +406,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
       FillOrPreviewForm(
           mojom::ActionPersistence::kFill, form_, form_.fields()[0].global_id(),
           ::testing::VariantWith<const CreditCard*>(Pointee(test_card)),
-          AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet));
+          AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet, _));
 
   // Run the captured callback, simulating a successful VCN fetch.
   std::move(captured_callback).Run(test_card);

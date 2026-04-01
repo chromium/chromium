@@ -333,7 +333,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAccepted) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, otp_form,
       otp_form.fields().front().global_id(), &fill_data,
-      AutofillTriggerSource::kPopup);
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
 
   SubmitForm(otp_form);
   DeleteDriverToCommitMetrics();
@@ -485,7 +485,7 @@ TEST_F(OtpFormEventLoggerIntegrationTest, OtpAcceptedAndCorrected) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, otp_form,
       otp_form.fields().front().global_id(), &fill_data,
-      AutofillTriggerSource::kPopup);
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
   // Simulate the user correcting the value.
   SimulateUserChangedFieldTo(otp_form, otp_form.fields().front().global_id(),
                              u"654321");

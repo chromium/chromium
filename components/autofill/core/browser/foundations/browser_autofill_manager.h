@@ -153,23 +153,13 @@ class BrowserAutofillManager : public AutofillManager {
   ~BrowserAutofillManager() override;
 
   // Fills or previews `form` with the information in `filling_payload`.
+  // `action_persistence` denotes whether the operation should fill or preview
+  // the form.
   // `field_id` is the ID of the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.
-  // `action_persistence` denotes whether the operation is a filling or preview
-  // operation.
-  virtual void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                                 const FormData& form,
-                                 const FieldGlobalId& field_id,
-                                 const FillingPayload& filling_payload,
-                                 AutofillTriggerSource trigger_source);
-
-  // Fills or previews `form` with the information in `filling_payload`.
   // `blocked_fields` are fields which must not be filled because another
   // filling product of higher priority claims them.
-  //
-  // TODO(crbug.com/489959284): Add blocked_fields to the signature of
-  // FillOrPreviewForm and remove this method.
-  virtual void FillOrPreviewFields(
+  virtual void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
       const FieldGlobalId& field_id,

@@ -136,7 +136,8 @@ void FillCard(content::RenderFrameHost* rfh,
   auto& manager = TestAutofillManager::GetForRenderFrameHost(rfh);
   manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                             triggered_field.global_id(), &card,
-                            AutofillTriggerSource::kPopup);
+                            AutofillTriggerSource::kPopup,
+                            /*blocked_fields=*/{});
 }
 
 // Returns the values of all fields in the  frames of `web_contents`.

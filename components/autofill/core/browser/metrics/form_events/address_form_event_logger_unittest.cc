@@ -69,7 +69,8 @@ class CategoryResolvedKeyMetricsTest : public AutofillMetricsBaseTest,
     autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                                          form.fields().front().global_id(),
                                          &profile,
-                                         AutofillTriggerSource::kPopup);
+                                         AutofillTriggerSource::kPopup,
+                                         /*blocked_fields=*/{});
   }
 
  protected:

@@ -87,23 +87,12 @@ void TestBrowserAutofillManagerWithTestCCAM::FillOrPreviewForm(
     const FormData& form,
     const FieldGlobalId& field_id,
     const FillingPayload& filling_payload,
-    AutofillTriggerSource trigger_source) {
-  last_trigger_field_id_ = field_id;
-  TestBrowserAutofillManager::FillOrPreviewForm(
-      action_persistence, form, field_id, filling_payload, trigger_source);
-}
-
-void TestBrowserAutofillManagerWithTestCCAM::FillOrPreviewFields(
-    mojom::ActionPersistence action_persistence,
-    const FormData& form,
-    const FieldGlobalId& field_id,
-    const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
   last_trigger_field_id_ = field_id;
-  TestBrowserAutofillManager::FillOrPreviewFields(
-      action_persistence, form, field_id, filling_payload, trigger_source,
-      blocked_fields);
+  TestBrowserAutofillManager::FillOrPreviewForm(action_persistence, form,
+                                                field_id, filling_payload,
+                                                trigger_source, blocked_fields);
 }
 
 TestActorChromeAutofillClient::TestActorChromeAutofillClient(

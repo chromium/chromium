@@ -202,7 +202,8 @@ void AutofillHandler::ContinueTrigger(
         autofill_driver->GetAutofillManager())
         .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
                            global_field_id, &tmp_autofill_card,
-                           autofill::AutofillTriggerSource::kDevtools);
+                           autofill::AutofillTriggerSource::kDevtools,
+                           /*blocked_fields=*/{});
   }
   if (address) {
     std::string country_code =
@@ -234,7 +235,8 @@ void AutofillHandler::ContinueTrigger(
         autofill_driver->GetAutofillManager())
         .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form,
                            global_field_id, &tmp_autofill_profile,
-                           autofill::AutofillTriggerSource::kDevtools);
+                           autofill::AutofillTriggerSource::kDevtools,
+                           /*blocked_fields=*/{});
   }
 
   callback->sendSuccess();
