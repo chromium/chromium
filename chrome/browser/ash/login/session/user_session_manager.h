@@ -326,6 +326,12 @@ class UserSessionManager
   void SetEolNotificationHandlerFactoryForTesting(
       const EolNotificationHandlerFactoryCallback& eol_notification_factory);
 
+  using FrozenUpdateNotificationHandlerFactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<FrozenUpdateNotification>(
+          PrefService& prefs)>;
+  void SetFrozenUpdateNotificationHandlerFactoryForTesting(
+      const FrozenUpdateNotificationHandlerFactoryCallback&
+          frozen_update_notification_factory);
   // Sets a testing callback which invoked when session restore is finished.
   // The caller should check `UserSessionsRestored()` is false beforehand.
   void SetOnPendingUserSessionRestoreFinishedForTesting(
@@ -634,6 +640,11 @@ class UserSessionManager
 
   // Callback that allows tests to inject a test EolNotification implementation.
   EolNotificationHandlerFactoryCallback eol_notification_handler_test_factory_;
+
+  // Callback that allows tests to inject a test
+  // FrozenUpdateNotification implementation.
+  FrozenUpdateNotificationHandlerFactoryCallback
+      frozen_update_notification_handler_test_factory_;
 
   // Whether `metrics::BeginFirstWebContentsProfiling()` has been called. Should
   // only be called once per program lifetime.

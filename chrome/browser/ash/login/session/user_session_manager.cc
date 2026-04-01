@@ -2411,7 +2411,9 @@ void UserSessionManager::CheckFrozenUpdateInfo(user_manager::User* user) {
   auto iter = frozen_update_notification_handler_.find(user->GetAccountId());
   if (iter == frozen_update_notification_handler_.end()) {
     auto frozen_update_notification =
-        std::make_unique<FrozenUpdateNotification>(*prefs);
+        frozen_update_notification_handler_test_factory_.is_null()
+            ? std::make_unique<FrozenUpdateNotification>(*prefs)
+            : frozen_update_notification_handler_test_factory_.Run(*prefs);
 
     iter = frozen_update_notification_handler_
                .insert(std::make_pair(user->GetAccountId(),
@@ -2704,6 +2706,13 @@ void UserSessionManager::SetEolNotificationHandlerFactoryForTesting(
     const EolNotificationHandlerFactoryCallback&
         eol_notification_handler_factory) {
   eol_notification_handler_test_factory_ = eol_notification_handler_factory;
+}
+
+void UserSessionManager::SetFrozenUpdateNotificationHandlerFactoryForTesting(
+    const FrozenUpdateNotificationHandlerFactoryCallback&
+        frozen_update_notification_handler_factory) {
+  frozen_update_notification_handler_test_factory_ =
+      frozen_update_notification_handler_factory;
 }
 
 void UserSessionManager::SetOnPendingUserSessionRestoreFinishedForTesting(

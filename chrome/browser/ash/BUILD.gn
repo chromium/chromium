@@ -299,6 +299,7 @@ group("browser_tests") {
     "//chrome/browser/ash/file_system_provider:browser_tests",
     "//chrome/browser/ash/first_party_sets:browser_tests",
     "//chrome/browser/ash/floating_sso:browser_tests",
+    "//chrome/browser/ash/frozen_update:browser_tests",
     "//chrome/browser/ash/geolocation:browser_tests",
     "//chrome/browser/ash/guest_os:browser_tests",
     "//chrome/browser/ash/input_device_settings:browser_tests",

@@ -1,0 +1,8 @@
+include_rules = [
+  "+chrome/browser/ash/login",
+  "+chrome/browser/ash/login/session",
+  "+chrome/browser/ash/login/test",
+  "+chrome/browser/ui/webui/ash/login",
+  "+chrome/test/base",
+  "+ui/message_center",
+]

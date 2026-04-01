@@ -23,6 +23,9 @@ class FrozenUpdateNotification final
   // Returns true if the notification needs to be displayed.
   static bool ShouldShowFrozenUpdateNotification(PrefService& prefs);
 
+  static constexpr char kFrozenUpdateNotificationId[] =
+      "chrome://product_frozen_update";
+
   // PrefService for the user's profile pref
   // `prefs` must not be nullptr, and must outlive this instance.
   explicit FrozenUpdateNotification(PrefService& prefs);
@@ -47,9 +50,6 @@ class FrozenUpdateNotification final
 
  private:
   friend class FrozenUpdateNotificationTestBase;
-
-  static constexpr char kFrozenUpdateNotificationId[] =
-      "chrome://product_frozen_update";
 
   // Buttons that appear in the notification.  This is exposed for testing
   // purposes only and should never be directly used.
