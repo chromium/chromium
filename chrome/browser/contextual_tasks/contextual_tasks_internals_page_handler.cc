@@ -63,12 +63,11 @@ void ContextualTasksInternalsPageHandler::GetRelevantContext(
     return;
   }
 
+  contextual_tasks::TabSelectionOptions options;
+  options.tab_selection_mode = request->tab_selection_mode;
+  options.min_model_score = request->min_model_score;
   context_service_->GetRelevantTabsForQuery(
-      {
-          .tab_selection_mode = request->tab_selection_mode,
-          .min_model_score = request->min_model_score,
-      },
-      request->query,
+      options, request->query,
       /*explicit_urls=*/{},
       base::BindOnce(
           [](GetRelevantContextCallback callback,

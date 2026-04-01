@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -430,10 +431,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
-      "some text",
-      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{valid_url()},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -451,6 +453,89 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, FiltersForWindow) {
+  BrowserWindowInterface* first_window = browser();
+  // Navigate to a valid URL in the current window.
+  NavigateToValidURL();
+
+  NotifyEmbedderMetadata();
+
+  // Create a new browser window.
+  BrowserWindowInterface* new_browser =
+      CreateBrowserWindow(BrowserWindowCreateParams(
+          *browser()->profile(), /*from_user_gesture=*/false));
+  ASSERT_TRUE(new_browser);
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // No tabs in the new window, so no embeddings should be requested.
+    EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
+
+    base::test::TestFuture<std::vector<content::WebContents*>> future;
+    TabSelectionOptions options;
+    options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+    options.browser_window_interface = new_browser->GetWeakPtr();
+    service()->GetRelevantTabsForQuery(options, "some text",
+                                       /*explicit_urls=*/{valid_url()},
+                                       future.GetCallback());
+    EXPECT_TRUE(future.Get().empty());
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.ContextDeterminationStatus",
+        ContextDeterminationStatus::kNoEligibleTabs, 1);
+  }
+
+  {
+    base::HistogramTester histogram_tester;
+
+    std::vector<page_content_annotations::PassageEmbedding>
+        fake_page_embeddings = {
+            // Not match.
+            {std::make_pair(
+                 "passage 1",
+                 page_content_annotations::EmbeddingPassageType::kPageContent),
+             CreateFakeEmbedding(0.1f)},
+            // Match - active tab is added.
+            {std::make_pair(
+                 "passage 2",
+                 page_content_annotations::EmbeddingPassageType::kPageContent),
+             CreateFakeEmbedding(1.0f)},
+            // Match - should be skipped.
+            {std::make_pair(
+                 "passage 3",
+                 page_content_annotations::EmbeddingPassageType::kPageContent),
+             CreateFakeEmbedding(1.0f)}};
+    EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+        .WillRepeatedly(Return(fake_page_embeddings));
+
+    base::test::TestFuture<std::vector<content::WebContents*>> future;
+    TabSelectionOptions options;
+    options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+    options.browser_window_interface = first_window->GetWeakPtr();
+    service()->GetRelevantTabsForQuery(options, "some text",
+                                       /*explicit_urls=*/{valid_url()},
+                                       future.GetCallback());
+    EXPECT_EQ(1u, future.Get().size());
+
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.RelevantTabsCount", 1, 1);
+    histogram_tester.ExpectTotalCount(
+        "ContextualTasks.Context.ContextCalculationLatency", 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.ContextDeterminationStatus",
+        ContextDeterminationStatus::kSuccess, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.ExplicitTabsCount", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.TabOverlapCount", 1, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
+    histogram_tester.ExpectUniqueSample(
+        "ContextualTasks.Context.TabExcessCount", 0, 1);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
@@ -483,11 +568,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       .WillOnce(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch,
-       .tab_selection_timeout = base::Seconds(1)},
-      "some text",
-      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  options.tab_selection_timeout = base::Seconds(1);
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{valid_url()},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -519,11 +605,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, TimedOut) {
   EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_)).Times(0);
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch,
-       .tab_selection_timeout = base::Milliseconds(100)},
-      "some text",
-      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  options.tab_selection_timeout = base::Milliseconds(100);
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{valid_url()},
+                                     future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectUniqueSample(
@@ -545,10 +632,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       .WillOnce(Return(false));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
-      "some text",
-      /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -577,10 +665,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
-      "some text",
-      /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_TRUE(future.Get().empty());
 
   histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
@@ -626,10 +715,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       "OptimizationGuide.PageContentAnnotationsService.ContentAnnotated", 1);
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch},
-      "some text",
-      /*explicit_urls=*/{valid_url()}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{valid_url()},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 }
 
@@ -677,8 +767,10 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextServiceParameterizedTest,
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = params.mode;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = params.mode}, "summarize the test page",
+      options, "summarize the test page",
       /*explicit_urls=*/{GURL("https://notinrelevantset.com")},
       future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
@@ -783,9 +875,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -831,9 +924,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
       .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_EQ(1u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -869,9 +963,10 @@ IN_PROC_BROWSER_TEST_F(
       .WillRepeatedly(Return(fake_page_embeddings));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 
   histogram_tester.ExpectUniqueSample(
@@ -894,10 +989,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   NotifyEmbedderMetadata();
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "summarize the test page",
-      /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "summarize the test page",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
 
   EXPECT_EQ(1u, future.Get().size());
 
@@ -938,9 +1034,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   test_clock_.Advance(base::Seconds(1800));
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "some text", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "some text", /*explicit_urls=*/{},
+                                     future.GetCallback());
   EXPECT_EQ(0u, future.Get().size());
 }
 
@@ -995,9 +1092,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "summarize the test page",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
 
   ASSERT_TRUE(logging_future.Wait());
 
@@ -1040,9 +1139,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
-  service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+  service()->GetRelevantTabsForQuery(options, "summarize the test page",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
 
   ASSERT_TRUE(logging_future.Wait());
 
@@ -1112,9 +1213,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
 
   base::test::TestFuture<std::vector<content::WebContents*>> future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
   service()->GetRelevantTabsForQuery(
-      {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-      "test query", /*explicit_urls=*/{}, future.GetCallback());
+      options, "test query", /*explicit_urls=*/{}, future.GetCallback());
 
   ASSERT_TRUE(logging_future.Wait());
 
@@ -1211,9 +1313,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   // Initial prefs default site exclusions are empty so all tabs are eligible.
   {
     base::test::TestFuture<std::vector<content::WebContents*>> future;
-    service()->GetRelevantTabsForQuery(
-        {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-        "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+    TabSelectionOptions options;
+    options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+    service()->GetRelevantTabsForQuery(options, "summarize the test page",
+                                       /*explicit_urls=*/{},
+                                       future.GetCallback());
 
     auto tabs = future.Get();
     EXPECT_EQ(4u, tabs.size());
@@ -1234,9 +1338,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   // and en.c.test get filtered by the above exclusions.
   {
     base::test::TestFuture<std::vector<content::WebContents*>> future;
-    service()->GetRelevantTabsForQuery(
-        {.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring},
-        "summarize the test page", /*explicit_urls=*/{}, future.GetCallback());
+    TabSelectionOptions options;
+    options.tab_selection_mode = mojom::TabSelectionMode::kMultiSignalScoring;
+    service()->GetRelevantTabsForQuery(options, "summarize the test page",
+                                       /*explicit_urls=*/{},
+                                       future.GetCallback());
 
     auto tabs = future.Get();
     EXPECT_EQ(1u, tabs.size());

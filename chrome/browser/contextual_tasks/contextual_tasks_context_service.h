@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -22,6 +23,7 @@
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
+class BrowserWindowInterface;
 class GURL;
 class OptimizationGuideKeyedService;
 class Profile;
@@ -71,6 +73,13 @@ struct TabSelectionOptions {
 
   // If set, tab selection will time out after this duration.
   std::optional<base::TimeDelta> tab_selection_timeout;
+
+  // If non-null, only tabs from this browser window will be selected.
+  base::WeakPtr<BrowserWindowInterface> browser_window_interface;
+
+  TabSelectionOptions();
+  ~TabSelectionOptions();
+  TabSelectionOptions(const TabSelectionOptions&);
 };
 
 // A service used to determine the relevant context for a given task.
@@ -144,7 +153,11 @@ class ContextualTasksContextService
   void OnRequestTimedOut(int64_t request_id);
 
   // Returns all tabs for the profile that are eligible for selection.
-  std::vector<content::WebContents*> GetAllEligibleTabs();
+  //
+  // This function will scope the eligible tabs to what's in
+  // `browser_window_interface` if it is not null.
+  std::vector<content::WebContents*> GetAllEligibleTabs(
+      base::WeakPtr<BrowserWindowInterface> browser_window_interface);
 
   // Creates the QueryState including active tab context.
   QueryState CreateQueryState(

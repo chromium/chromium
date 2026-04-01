@@ -370,6 +370,7 @@ if (!is_android) {
       "//chrome/browser/signin",
       "//chrome/browser/tab_list",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/browser/ui/lens",
       "//chrome/test:test_support",

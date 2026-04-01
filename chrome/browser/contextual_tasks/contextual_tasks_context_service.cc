@@ -351,7 +351,8 @@ void ContextualTasksContextService::OnQueryEmbeddingReady(
   AUTO_CONTEXT_LOG(
       base::StringPrintf("Processing query embedding for %s", query));
 
-  std::vector<content::WebContents*> all_tabs = GetAllEligibleTabs();
+  std::vector<content::WebContents*> all_tabs =
+      GetAllEligibleTabs(options.browser_window_interface);
   if (all_tabs.empty()) {
     AUTO_CONTEXT_LOG("No eligible tabs");
     RecordContextDeterminationStatus(
@@ -423,11 +424,17 @@ void ContextualTasksContextService::OnRequestTimedOut(int64_t request_id) {
 }
 
 std::vector<content::WebContents*>
-ContextualTasksContextService::GetAllEligibleTabs() {
+ContextualTasksContextService::GetAllEligibleTabs(
+    base::WeakPtr<BrowserWindowInterface> browser_window_interface) {
   std::vector<content::WebContents*> all_tabs;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this, &all_tabs](BrowserWindowInterface* browser) {
+      [this, &all_tabs,
+       browser_window_interface](BrowserWindowInterface* browser) {
         if (browser->GetProfile() != profile_) {
+          return true;
+        }
+        if (browser_window_interface &&
+            browser != browser_window_interface.get()) {
           return true;
         }
         TabListInterface* tab_list = TabListInterface::From(browser);
@@ -452,7 +459,8 @@ ContextualTasksContextService::GetAllEligibleTabs() {
           }
           all_tabs.push_back(web_contents);
         }
-        return true;
+        // Stop iterating if the browser window interface is specified.
+        return !browser_window_interface;
       });
   return all_tabs;
 }
@@ -731,5 +739,9 @@ ContextualTasksContextService::PendingRequest::PendingRequest(
     base::OnceCallback<void(std::vector<content::WebContents*>)> callback)
     : task_id(task_id), callback(std::move(callback)) {}
 ContextualTasksContextService::PendingRequest::~PendingRequest() = default;
+
+TabSelectionOptions::TabSelectionOptions() = default;
+TabSelectionOptions::~TabSelectionOptions() = default;
+TabSelectionOptions::TabSelectionOptions(const TabSelectionOptions&) = default;
 
 }  // namespace contextual_tasks
