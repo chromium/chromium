@@ -1921,13 +1921,21 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       if (auto* layer =
               layers.LayerByElementId(wire->backdrop_mask_element_id)) {
         if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
-          return base::unexpected(
-              "Invalid backdrop_mask_element_id: layer is not a "
-              "TileDisplayLayer");
+          return base::unexpected(base::StrCat(
+              {"Invalid backdrop_mask_element_id (",
+               base::NumberToString(
+                   wire->backdrop_mask_element_id.GetInternalValue()),
+               ") on effect node ", base::NumberToString(wire->id),
+               ": layer is not a TileDisplayLayer"}));
         }
       } else {
-        return base::unexpected(
-            "Invalid backdrop_mask_element_id: layer not found");
+        return base::unexpected(base::StrCat(
+            {"Invalid backdrop_mask_element_id (",
+             base::NumberToString(
+                 wire->backdrop_mask_element_id.GetInternalValue()),
+             ") on effect node ", base::NumberToString(wire->id),
+             ": layer not found. Total layers: ",
+             base::NumberToString(layers.NumLayers())}));
       }
     }
   }

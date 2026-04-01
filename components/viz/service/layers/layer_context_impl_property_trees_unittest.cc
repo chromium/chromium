@@ -1541,8 +1541,14 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
-            "Invalid backdrop_mask_element_id: layer not found");
+  EXPECT_EQ(
+      result.error(),
+      base::StrCat(
+          {"Invalid backdrop_mask_element_id (",
+           base::NumberToString(non_existent_element_id.GetInternalValue()),
+           ") on effect node ",
+           base::NumberToString(cc::kSecondaryRootPropertyNodeId),
+           ": layer not found. Total layers: 1"}));
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
@@ -1560,9 +1566,13 @@ TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
 
   auto result = layer_context_impl_->DoUpdateDisplayTree(std::move(update));
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(),
-            "Invalid backdrop_mask_element_id: layer is not a "
-            "TileDisplayLayer");
+  EXPECT_EQ(
+      result.error(),
+      base::StrCat({"Invalid backdrop_mask_element_id (",
+                    base::NumberToString(mask_element_id.GetInternalValue()),
+                    ") on effect node ",
+                    base::NumberToString(cc::kSecondaryRootPropertyNodeId),
+                    ": layer is not a TileDisplayLayer"}));
 }
 
 TEST_F(LayerContextImplUpdateDisplayTreeEffectNodeTest,
